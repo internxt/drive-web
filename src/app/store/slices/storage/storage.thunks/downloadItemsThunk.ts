@@ -4,7 +4,7 @@ import storageThunks from '.';
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { DownloadFileTask, DownloadFolderTask, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
@@ -77,10 +77,10 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
       const errors = action.payload as unknown[];
 
       if (errors && errors.length > 0) {
-        notificationsService.show({ text: i18n.get('error.downloadingItems'), type: ToastType.Error });
+        notificationsService.show({ text: get('error.downloadingItems'), type: ToastType.Error });
       } else {
         notificationsService.show({
-          text: i18n.get('error.downloadingFile', { reason: action.error.message || '' }),
+          text: get('error.downloadingFile', { reason: action.error.message || '' }),
           type: ToastType.Error,
         });
       }

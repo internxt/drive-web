@@ -4,13 +4,11 @@ import _ from 'lodash';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import { StorageState } from '../storage.model';
-import { useTranslation } from 'react-i18next';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
@@ -56,6 +54,6 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+      notificationsService.show({ text: get('error.fetchingFolderContent'), type: ToastType.Error });
     });
 };

@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
@@ -16,7 +16,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
     ? [
         { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
         {
-          name: i18n.get('views.account.tabs.account.view.backups'),
+          name: get('views.account.tabs.account.view.backups'),
           usageInBytes: plan.usageDetails.backups,
           color: 'indigo',
         },
@@ -26,7 +26,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   const userSubscription = plan.subscription;
 
   return (
-    <Section className={className} title={i18n.get('drive.usage')}>
+    <Section className={className} title={get('drive.usage')}>
       <Card>
         {products && plan.planLimit && userSubscription ? (
           <>

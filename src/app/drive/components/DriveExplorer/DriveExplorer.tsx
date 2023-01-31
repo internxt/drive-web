@@ -38,7 +38,6 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import { useTranslation } from 'react-i18next';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -56,9 +55,9 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
-
-const { t } = useTranslation();
+// import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 const PAGINATION_LIMIT = 60;
 
@@ -93,8 +92,6 @@ interface DriveExplorerProps {
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-
   const {
     selectedItems,
     isLoading,
@@ -111,7 +108,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onFileUploaded,
     onItemsMoved,
   } = props;
-
+  const dispatch = useAppDispatch();
+  const { t } = useTranslation();
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -247,6 +245,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
+
   const isRecents = title === t('views.recents.head');
   const isTrash = title === t('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
@@ -284,7 +283,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <NameCollisionContainer />
+      {/* <NameCollisionContainer /> */}
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />

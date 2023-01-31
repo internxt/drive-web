@@ -3,14 +3,12 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DevicePlatform } from '../../../core/types';
-import { useTranslation } from 'react-i18next';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
@@ -57,7 +55,7 @@ export async function moveFile(
     .catch((error) => {
       const castedError = errorService.castError(error);
       if (castedError.status) {
-        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
+        castedError.message = get(`tasks.move-file.errors.${castedError.status}`);
       }
       throw castedError;
     });

@@ -1,40 +1,40 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { ArrowsClockwise, Check, LockKey, Shield } from 'phosphor-react';
 
 export default function Features({ className = '' }: { className?: string }): JSX.Element {
   const sections: { title: string; icon: typeof Shield; points: string[] }[] = [
     {
-      title: i18n.get('views.account.tabs.plans.features.sections.section1.title'),
+      title: get('views.account.tabs.plans.features.sections.section1.title'),
       icon: Shield,
       points: [
-        i18n.get('views.account.tabs.plans.features.sections.section1.point1'),
-        i18n.get('views.account.tabs.plans.features.sections.section1.point2'),
-        i18n.get('views.account.tabs.plans.features.sections.section1.point3'),
+        get('views.account.tabs.plans.features.sections.section1.point1'),
+        get('views.account.tabs.plans.features.sections.section1.point2'),
+        get('views.account.tabs.plans.features.sections.section1.point3'),
       ],
     },
     {
-      title: i18n.get('views.account.tabs.plans.features.sections.section2.title'),
+      title: get('views.account.tabs.plans.features.sections.section2.title'),
       icon: LockKey,
       points: [
-        i18n.get('views.account.tabs.plans.features.sections.section2.point1'),
-        i18n.get('views.account.tabs.plans.features.sections.section2.point2'),
-        i18n.get('views.account.tabs.plans.features.sections.section2.point3'),
+        get('views.account.tabs.plans.features.sections.section2.point1'),
+        get('views.account.tabs.plans.features.sections.section2.point2'),
+        get('views.account.tabs.plans.features.sections.section2.point3'),
       ],
     },
     {
-      title: i18n.get('views.account.tabs.plans.features.sections.section3.title'),
+      title: get('views.account.tabs.plans.features.sections.section3.title'),
       icon: ArrowsClockwise,
       points: [
-        i18n.get('views.account.tabs.plans.features.sections.section3.point1'),
-        i18n.get('views.account.tabs.plans.features.sections.section3.point2'),
-        i18n.get('views.account.tabs.plans.features.sections.section3.point3'),
+        get('views.account.tabs.plans.features.sections.section3.point1'),
+        get('views.account.tabs.plans.features.sections.section3.point2'),
+        get('views.account.tabs.plans.features.sections.section3.point3'),
       ],
     },
   ];
   return (
     <div className={`${className}`}>
       <h1 className="text-2xl font-medium text-gray-100 lg:text-center">
-        {i18n.get('views.account.tabs.plans.features.title')}
+        {get('views.account.tabs.plans.features.title')}
       </h1>
       <div className="mt-7 justify-between space-y-6 lg:flex lg:space-y-0 lg:space-x-6">
         {sections.map((section) => (

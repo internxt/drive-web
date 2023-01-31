@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import authService from '../../../../../auth/services/auth.service';
@@ -23,7 +23,7 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   function onClick() {
     if (plan.subscription?.type === 'subscription') {
       notificationsService.show({
-        text: i18n.get('views.account.tabs.account.deleteAccount.isSubscribed'),
+        text: get('views.account.tabs.account.deleteAccount.isSubscribed'),
         type: ToastType.Info,
       });
     } else {
@@ -36,7 +36,7 @@ export default function DeleteAccount({ className = '' }: { className?: string }
       setIsLoading(true);
       await authService.cancelAccount();
       notificationsService.show({
-        text: i18n.get('views.account.tabs.account.deleteAccount.confirmationEmail'),
+        text: get('views.account.tabs.account.deleteAccount.confirmationEmail'),
         type: ToastType.Success,
       });
       onClose();
@@ -49,11 +49,11 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   }
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.account.deleteAccount.head')}>
+    <Section className={className} title={get('views.account.tabs.account.deleteAccount.head')}>
       <Card>
-        <p className="text-gray-80">{i18n.get('views.account.tabs.account.deleteAccount.description')}</p>
+        <p className="text-gray-80">{get('views.account.tabs.account.deleteAccount.description')}</p>
         <Button className="mt-5" variant="secondary" onClick={onClick}>
-          {i18n.get('views.account.tabs.account.deleteAccount.head')}
+          {get('views.account.tabs.account.deleteAccount.head')}
         </Button>
       </Card>
       <Dialog
@@ -61,10 +61,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
         onClose={onClose}
         onSecondaryAction={onClose}
         onPrimaryAction={onConfirm}
-        secondaryAction={i18n.get('modals.deleteAccountModal.cancel')}
-        primaryAction={i18n.get('modals.deleteAccountModal.confirm')}
-        title={i18n.get('modals.deleteAccountModal.title')}
-        subtitle={i18n.get('modals.deleteAccountModal.subtitle')}
+        secondaryAction={get('modals.deleteAccountModal.cancel')}
+        primaryAction={get('modals.deleteAccountModal.confirm')}
+        title={get('modals.deleteAccountModal.title')}
+        subtitle={get('modals.deleteAccountModal.subtitle')}
         primaryActionColor="danger"
         isLoading={isLoading}
       />

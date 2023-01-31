@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 
 export default function Toolbar({
@@ -23,8 +23,8 @@ export default function Toolbar({
         <p style={{ paddingTop: '1px' }} className="ml-2 font-medium text-gray-80">
           {`${numberOfSelectedItems} ${
             numberOfSelectedItems > 1
-              ? i18n.get('modals.deletePhotosModal.multiToolBar')
-              : i18n.get('modals.deletePhotosModal.singleToolBar')
+              ? get('modals.deletePhotosModal.multiToolBar')
+              : get('modals.deletePhotosModal.singleToolBar')
           }`}
         </p>
       </div>

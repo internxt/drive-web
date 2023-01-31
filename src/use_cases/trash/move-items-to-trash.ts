@@ -5,7 +5,7 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
@@ -26,18 +26,18 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
 
   const id = notificationsService.show({
     type: ToastType.Success,
-    text: i18n.get('notificationMessages.itemsMovedToTrash', {
+    text: get('notificationMessages.itemsMovedToTrash', {
       item:
         itemsToTrash.length > 1
-          ? i18n.get('general.files')
+          ? get('general.files')
           : itemsToTrash[0].isFolder === true
-          ? i18n.get('general.folder')
-          : i18n.get('general.file'),
+          ? get('general.folder')
+          : get('general.file'),
       s: itemsToTrash.length > 1 ? 's' : '',
     }),
 
     action: {
-      text: i18n.get('actions.undo'),
+      text: get('actions.undo'),
       onClick: async () => {
         notificationsService.dismiss(id);
         if (itemsToTrash.length > 0) {

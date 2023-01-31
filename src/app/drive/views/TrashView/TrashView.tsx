@@ -7,7 +7,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import getTrash from '../../../../use_cases/trash/get_trash';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -24,12 +24,7 @@ class TrashView extends Component<TrashViewProps> {
   render(): ReactNode {
     const { items, isLoadingItemsOnTrash } = this.props;
     return (
-      <DriveExplorer
-        title={i18n.get('trash.trash')}
-        titleClassName="px-3"
-        isLoading={isLoadingItemsOnTrash}
-        items={items}
-      />
+      <DriveExplorer title={get('trash.trash')} titleClassName="px-3" isLoading={isLoadingItemsOnTrash} items={items} />
     );
   }
 }

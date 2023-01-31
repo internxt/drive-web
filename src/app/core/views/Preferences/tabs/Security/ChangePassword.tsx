@@ -1,8 +1,8 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { get } from 'app/i18n/services/i18n.service';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { changePassword } from '../../../../../auth/services/auth.service';
-import { useTranslation } from 'react-i18next';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
@@ -11,8 +11,6 @@ import Modal from '../../../../../shared/components/Modal';
 import ValidPassword from '../../../../../shared/components/ValidPassword';
 import { RootState } from '../../../../../store';
 import Section from '../../components/Section';
-
-const { t } = useTranslation();
 
 export default function ChangePassword({
   className = '',
@@ -26,11 +24,11 @@ export default function ChangePassword({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Section className={className} title={t('views.account.tabs.security.changePassword.title')}>
+    <Section className={className} title={get('views.account.tabs.security.changePassword.title')}>
       <Card>
-        <p className="text-gray-60">{t('views.account.tabs.security.changePassword.description')}</p>
+        <p className="text-gray-60">{get('views.account.tabs.security.changePassword.description')}</p>
         <Button className="mt-3" onClick={() => setIsModalOpen(true)} dataTest="change-password-button">
-          {t('views.account.tabs.security.changePassword.button')}
+          {get('views.account.tabs.security.changePassword.button')}
         </Button>
       </Card>
       <ChangePasswordModal
@@ -70,7 +68,7 @@ function ChangePasswordModal({
   async function handleSubmit() {
     setIsLoading(true);
     await changePassword(passwordPayload.password, currentPassword, email);
-    notificationsService.show({ text: t('success.passwordChanged'), type: ToastType.Success });
+    notificationsService.show({ text: get('success.passwordChanged'), type: ToastType.Success });
     onPasswordChanged(passwordPayload.password);
     onClose();
     setIsLoading(false);
@@ -86,11 +84,11 @@ function ChangePasswordModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{t('modals.changePasswordModal.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{get('modals.changePasswordModal.title')}</h1>
       <ValidPassword
         username={email}
         className="mt-4"
-        label={t('modals.changePasswordModal.newPassword') as string}
+        label={get('modals.changePasswordModal.newPassword') as string}
         value={passwordPayload.password}
         onChange={setPasswordPayload}
         disabled={isLoading}
@@ -101,15 +99,15 @@ function ChangePasswordModal({
         onChange={setPasswordConfirmation}
         variant="password"
         className="mt-3"
-        label={t('modals.changePasswordModal.confirmPassword') as string}
+        label={get('modals.changePasswordModal.confirmPassword') as string}
         accent={isConfirmationWrong ? 'error' : undefined}
-        message={isConfirmationWrong ? (t('modals.changePasswordModal.errors.doesntMatch') as string) : undefined}
+        message={isConfirmationWrong ? (get('modals.changePasswordModal.errors.doesntMatch') as string) : undefined}
         disabled={isLoading}
         dataTest="new-password-confirmation"
       />
       <div className="mt-3 flex justify-end">
         <Button variant="secondary" disabled={isLoading} onClick={onClose}>
-          {t('actions.cancel')}
+          {get('actions.cancel')}
         </Button>
         <Button
           loading={isLoading}
@@ -118,7 +116,7 @@ function ChangePasswordModal({
           className="ml-2"
           dataTest="next-button"
         >
-          {t('actions.next')}
+          {get('actions.next')}
         </Button>
       </div>
     </Modal>

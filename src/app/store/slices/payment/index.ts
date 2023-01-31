@@ -4,12 +4,10 @@ import { RootState } from '../..';
 import { ProductData, ProductPriceType, StripeSessionMode } from '../../../payment/types';
 import envService from '../../../core/services/env.service';
 import errorService from '../../../core/services/error.service';
-import { useTranslation } from 'react-i18next';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import paymentService, { CreatePaymentSessionPayload } from '../../../payment/services/payment.service';
 import analyticsService from '../../../analytics/services/analytics.service';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 interface PaymentState {
   isBuying: boolean;
@@ -57,7 +55,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
       const castedError = errorService.castError(err);
 
       notificationsService.show({
-        text: t('error.redirectToStripe', {
+        text: get('error.redirectToStripe', {
           reason: castedError.message,
         }),
         type: ToastType.Error,
@@ -80,7 +78,7 @@ export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPaylo
       const castedError = errorService.castError(err);
 
       notificationsService.show({
-        text: t('error.redirectToStripe', {
+        text: get('error.redirectToStripe', {
           reason: castedError.message,
         }),
         type: ToastType.Error,

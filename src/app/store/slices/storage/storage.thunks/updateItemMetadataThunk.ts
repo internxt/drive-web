@@ -6,7 +6,7 @@ import { RootState } from '../../..';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from 'app/drive/types';
 import fileService from 'app/drive/services/file.service';
 import folderService from 'app/drive/services/folder.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import storageSelectors from '../storage.selectors';
 
@@ -48,8 +48,8 @@ export const updateItemMetadataThunkExtraReducers = (builder: ActionReducerMapBu
     .addCase(updateItemMetadataThunk.fulfilled, () => undefined)
     .addCase(updateItemMetadataThunk.rejected, (state, action) => {
       const errorMessage = (action.error?.message || '').includes('this name exists')
-        ? i18n.get('error.fileAlreadyExists')
-        : i18n.get('error.changingName');
+        ? get('error.fileAlreadyExists')
+        : get('error.changingName');
 
       notificationsService.show({ text: errorMessage, type: ToastType.Error });
     });

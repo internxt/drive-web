@@ -8,7 +8,7 @@ import { storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 export interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -37,7 +37,7 @@ class RecentsView extends Component<RecentsViewProps> {
 
     return (
       <DriveExplorer
-        title={i18n.get('views.recents.head')}
+        title={get('views.recents.head')}
         titleClassName="px-3"
         isLoading={isLoadingRecents}
         items={items}

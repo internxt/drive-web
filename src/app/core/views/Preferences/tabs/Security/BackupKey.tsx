@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { saveAs } from 'file-saver';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
@@ -11,24 +11,24 @@ export default function BackupKey({ className = '' }: { className?: string }): J
     const mnemonic = localStorageService.get('xMnemonic');
     if (!mnemonic) {
       notificationsService.show({
-        text: i18n.get('views.account.tabs.security.backupKey.error'),
+        text: get('views.account.tabs.security.backupKey.error'),
         type: ToastType.Error,
       });
     } else {
       saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
       notificationsService.show({
-        text: i18n.get('views.account.tabs.security.backupKey.success'),
+        text: get('views.account.tabs.security.backupKey.success'),
         type: ToastType.Success,
       });
     }
   }
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.security.backupKey.title')}>
+    <Section className={className} title={get('views.account.tabs.security.backupKey.title')}>
       <Card>
-        <p className="text-gray-60">{i18n.get('views.account.tabs.security.backupKey.description')}</p>
+        <p className="text-gray-60">{get('views.account.tabs.security.backupKey.description')}</p>
         <Button onClick={handleExport} className="mt-3">
-          {i18n.get('views.account.tabs.security.backupKey.button')}
+          {get('views.account.tabs.security.backupKey.button')}
         </Button>
       </Card>
     </Section>

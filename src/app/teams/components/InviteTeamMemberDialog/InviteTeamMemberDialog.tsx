@@ -12,7 +12,7 @@ import AuthButton from 'app/shared/components/AuthButton';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { getMembers, removeMember, sendEmailTeamsMember } from '../../services/teams.service';
 import { uiActions } from 'app/store/slices/ui';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import { IFormValues } from 'app/core/types';
@@ -48,7 +48,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
         notificationsService.show({
-          text: i18n.get('success.teamInvitationSent', { email: formData.email }),
+          text: get('success.teamInvitationSent', { email: formData.email }),
           type: ToastType.Success,
         });
         const userExists = members.some((userObj) => userObj.user === formData.email);
@@ -75,9 +75,9 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
       const filterRemovedMember = members.filter((member) => member.user !== memberToDelete.user);
 
       setMembers(filterRemovedMember);
-      notificationsService.show({ text: i18n.get('success.deletedTeamMember', { resource }), type: ToastType.Success });
+      notificationsService.show({ text: get('success.deletedTeamMember', { resource }), type: ToastType.Success });
     } catch (err: unknown) {
-      notificationsService.show({ text: i18n.get('error.deleteTeamMember'), type: ToastType.Error });
+      notificationsService.show({ text: get('error.deleteTeamMember'), type: ToastType.Error });
     }
   };
 
@@ -115,7 +115,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
                   {member.isInvitation ? (
                     <UilUserPlus className="mr-1 h-5 text-gray-50" />
                   ) : (
-                    <UilUserPlus className="text-green mr-1 h-5" />
+                    <UilUserPlus className="mr-1 h-5 text-green" />
                   )}
                   <div className="flex flex-1 justify-start px-5">
                     <span className="w-72 truncate overflow-ellipsis">{member.user}</span>

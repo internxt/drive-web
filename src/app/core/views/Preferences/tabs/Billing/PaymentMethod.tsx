@@ -17,7 +17,7 @@ import jcbIcon from '../../../../../../assets/icons/card-brands/jcb.png';
 import mastercardIcon from '../../../../../../assets/icons/card-brands/mastercard.png';
 import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.png';
 import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,7 +46,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
   const card = state.tag === 'ready' ? state.card : null;
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.billing.paymentMethod.head')}>
+    <Section className={className} title={get('views.account.tabs.billing.paymentMethod.head')}>
       <Card>
         {state.tag === 'ready' && card ? (
           <div className="flex">
@@ -61,7 +61,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
               <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
             </div>
             <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
-              {i18n.get('actions.edit')}
+              {get('actions.edit')}
             </Button>
           </div>
         ) : state.tag === 'loading' ? (
@@ -99,9 +99,7 @@ function PaymentMethodModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">
-        {i18n.get('views.account.tabs.billing.paymentMethod.title')}
-      </h1>
+      <h1 className="text-2xl font-medium text-gray-80">{get('views.account.tabs.billing.paymentMethod.title')}</h1>
       {setupIntentSecret ? (
         <Elements stripe={paymentService.getStripe()} options={{ clientSecret: setupIntentSecret }}>
           <PaymentForm onClose={onClose} />
@@ -136,10 +134,10 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
       {error && <p className="mt-2 text-sm text-red-std">{error}</p>}
       <div className="mt-3 flex items-center justify-end">
         <Button variant="secondary" onClick={onClose}>
-          {i18n.get('actions.cancel')}
+          {get('actions.cancel')}
         </Button>
         <Button onClick={handleSubmit} className="ml-2">
-          {i18n.get('actions.submit')}
+          {get('actions.submit')}
         </Button>
       </div>
     </>
@@ -149,8 +147,8 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
 function Empty() {
   return (
     <div className="text-center">
-      <h1 className="font-medium text-gray-60">{i18n.get('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{i18n.get('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
+      <h1 className="font-medium text-gray-60">{get('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
+      <p className="text-sm text-gray-50">{get('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
     </div>
   );
 }

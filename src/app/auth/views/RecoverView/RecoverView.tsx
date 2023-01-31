@@ -13,13 +13,11 @@ import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import { useTranslation } from 'react-i18next';
 import { decryptTextWithKey } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 export default function RecoverView(): JSX.Element {
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
@@ -200,7 +198,7 @@ export default function RecoverView(): JSX.Element {
 
             {showLastPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">{t('error.lastPasswordError')}</span>
+                <span className="w-56 text-sm font-medium text-red-60">{get('error.lastPasswordError')}</span>
               </div>
             )}
             {showCurrentPasswordError && (

@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
@@ -34,21 +34,21 @@ export default function Lock({
       if (correctCredentials) {
         onUnlock(password);
       } else {
-        setFormState({ tag: 'error', errorMessage: i18n.get('views.account.tabs.security.lock.errors.incorrect') });
+        setFormState({ tag: 'error', errorMessage: get('views.account.tabs.security.lock.errors.incorrect') });
       }
     } catch (err) {
       console.error(err);
-      setFormState({ tag: 'error', errorMessage: i18n.get('views.account.tabs.security.lock.errors.notVerified') });
+      setFormState({ tag: 'error', errorMessage: get('views.account.tabs.security.lock.errors.notVerified') });
     }
   }
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.security.label')}>
+    <Section className={className} title={get('views.account.tabs.security.label')}>
       <Card>
-        <h1 className="text-lg font-medium text-gray-80">{i18n.get('views.account.tabs.security.lock.title')}</h1>
-        <p className="mt-3 text-gray-80">{i18n.get('views.account.tabs.security.lock.description')}</p>
+        <h1 className="text-lg font-medium text-gray-80">{get('views.account.tabs.security.lock.title')}</h1>
+        <p className="mt-3 text-gray-80">{get('views.account.tabs.security.lock.description')}</p>
         <Input
-          label={i18n.get('views.account.tabs.security.lock.inputLabel')}
+          label={get('views.account.tabs.security.lock.inputLabel')}
           className="mt-3"
           variant="password"
           onChange={setPassword}
@@ -64,7 +64,7 @@ export default function Lock({
             onClick={onAccess}
             dataTest="access-button"
           >
-            {i18n.get('actions.access')}
+            {get('actions.access')}
           </Button>
         </div>
       </Card>

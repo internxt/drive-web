@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 // import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 import navigationService from 'app/core/services/navigation.service';
 import userService from '../../services/user.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks, initializeUserThunk } from 'app/store/slices/user';
@@ -226,7 +226,7 @@ export default function Auth(): JSX.Element {
       await userService.sendDeactivationEmail(email);
       postMessage({ action: 'recover_email_sent' });
     } catch (err: unknown) {
-      postMessage({ action: 'error', msg: i18n.get('error.deactivatingAccount') });
+      postMessage({ action: 'error', msg: get('error.deactivatingAccount') });
     }
   };
 

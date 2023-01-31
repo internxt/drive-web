@@ -5,7 +5,7 @@ import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/sha
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
@@ -86,7 +86,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
          */
-        throw new Error(i18n.get('error.linkExpired'));
+        throw new Error(get('error.linkExpired'));
       }
     });
   }, []);
@@ -206,7 +206,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{i18n.get('actions.download')}</span>
+        <span className="font-medium">{get('actions.download')}</span>
       </>
     );
   } else {
@@ -216,13 +216,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{i18n.get('actions.downloading')}</span>
+          <span>{get('actions.downloading')}</span>
           {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+          <span className="font-medium">{get('actions.downloaded')}</span>
         </>
       );
   }

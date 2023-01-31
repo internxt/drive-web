@@ -1,5 +1,5 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import Input from '../Input';
 import PasswordStrengthIndicator from '../PasswordStrengthIndicator';
@@ -32,13 +32,13 @@ export default function ValidPassword({
         tag: 'error',
         label:
           result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? i18n.get('modals.changePasswordModal.errors.notComplex')
-            : i18n.get('modals.changePasswordModal.errors.shortPassword'),
+            ? get('modals.changePasswordModal.errors.notComplex')
+            : get('modals.changePasswordModal.errors.shortPassword'),
       });
     } else if (result.strength === 'medium') {
-      setState({ tag: 'warning', label: i18n.get('modals.changePasswordModal.errors.weakPassword') });
+      setState({ tag: 'warning', label: get('modals.changePasswordModal.errors.weakPassword') });
     } else {
-      setState({ tag: 'success', label: i18n.get('modals.changePasswordModal.strongPassword') });
+      setState({ tag: 'success', label: get('modals.changePasswordModal.strongPassword') });
     }
 
     onChange({ valid: result.valid, password: input });

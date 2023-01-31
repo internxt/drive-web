@@ -1,5 +1,5 @@
 import errorService from 'app/core/services/error.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
@@ -38,7 +38,7 @@ export async function downloadSharedFolderUsingStreamSaver(
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
   const writableStream = streamSaver.createWriteStream(`${sharedFolderMeta.name}.zip`, {});

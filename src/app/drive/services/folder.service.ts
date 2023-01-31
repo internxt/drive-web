@@ -4,7 +4,6 @@ import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
 import { DevicePlatform } from '../../core/types';
 import analyticsService from '../../analytics/services/analytics.service';
-import { useTranslation } from 'react-i18next';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
@@ -13,8 +12,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 export interface IFolders {
   bucket: string;
@@ -390,7 +388,7 @@ export async function moveFolder(folderId: number, destination: number): Promise
     .catch((err) => {
       const castedError = errorService.castError(err);
       if (castedError.status) {
-        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+        castedError.message = get(`tasks.move-folder.errors.${castedError.status}`);
       }
       throw castedError;
     });

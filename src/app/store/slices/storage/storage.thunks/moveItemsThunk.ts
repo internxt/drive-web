@@ -4,7 +4,7 @@ import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import { DriveItemData } from 'app/drive/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import storageService from 'app/drive/services/storage.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
@@ -25,7 +25,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return void notificationsService.show({ text: i18n.get('error.movingItemInsideItself'), type: ToastType.Error });
+      return void notificationsService.show({ text: get('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
     for (const [index, item] of items.entries()) {
@@ -102,6 +102,6 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
     .addCase(moveItemsThunk.pending, () => undefined)
     .addCase(moveItemsThunk.fulfilled, () => undefined)
     .addCase(moveItemsThunk.rejected, (state, action) => {
-      notificationsService.show({ text: action.error.message || i18n.get('error.movingItem'), type: ToastType.Error });
+      notificationsService.show({ text: action.error.message || get('error.movingItem'), type: ToastType.Error });
     });
 };

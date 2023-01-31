@@ -1,7 +1,7 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { RadioGroup } from '@headlessui/react';
 
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
@@ -29,17 +29,6 @@ export interface NameCollisionDialogProps {
   onSubmitButtonPressed({ operationType, operation, itemsToUpload, itemsToReplace }: OnSubmitPressed): void;
 }
 
-const options = [
-  {
-    operation: 'replace' as const,
-    name: i18n.get('modals.renameModal.replaceItem'),
-  },
-  {
-    operation: 'keep' as const,
-    name: i18n.get('modals.renameModal.keepBoth'),
-  },
-];
-
 const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
   isOpen,
   operationType,
@@ -49,20 +38,26 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
   onCloseDialog,
   onSubmitButtonPressed,
 }: NameCollisionDialogProps) => {
+  const options = [
+    {
+      operation: 'replace' as const,
+      name: get('modals.renameModal.replaceItem'),
+    },
+    {
+      operation: 'keep' as const,
+      name: get('modals.renameModal.keepBoth'),
+    },
+  ];
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
-  const title =
-    newItems?.length > 1 ? i18n.get('modals.renameModal.titleMultipleItems') : i18n.get('modals.renameModal.title');
+  const title = newItems?.length > 1 ? get('modals.renameModal.titleMultipleItems') : get('modals.renameModal.title');
   const description =
     newItems?.length > 1
-      ? i18n.get('modals.renameModal.multipleDescription')
-      : i18n.get('modals.renameModal.description', { itemName: newItems[0]?.name });
+      ? get('modals.renameModal.multipleDescription')
+      : get('modals.renameModal.description', { itemName: newItems[0]?.name });
   const primaryButtonText = useMemo(
-    () =>
-      operationType === OPERATION_TYPE.MOVE
-        ? i18n.get('modals.renameModal.move')
-        : i18n.get('modals.renameModal.upload'),
+    () => (operationType === OPERATION_TYPE.MOVE ? get('modals.renameModal.move') : get('modals.renameModal.upload')),
     [operationType],
   );
 
@@ -135,7 +130,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {i18n.get('actions.cancel')}
+            {get('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
             {primaryButtonText}

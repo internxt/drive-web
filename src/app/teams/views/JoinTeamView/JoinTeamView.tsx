@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { match } from 'react-router';
 
-import { useTranslation } from 'react-i18next';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -11,8 +10,7 @@ import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
 import httpService from '../../../core/services/http.service';
 import { AppView } from '../../../core/types';
-
-const { t } = useTranslation();
+import { get } from 'app/i18n/services/i18n.service';
 
 export interface JoinTeamViewProps {
   dispatch: AppDispatch;
@@ -56,14 +54,14 @@ class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState>
         if (response.status === 200) {
           this.setState({ isTeamActivated: true });
           localStorage.setItem('teamActivation', 'true');
-          notificationsService.show({ text: t('success.joinedToTheTeam'), type: ToastType.Success });
+          // notificationsService.show({ text: get('success.joinedToTheTeam'), type: ToastType.Success });
           navigationService.push(AppView.Login);
 
           dispatch(userThunks.initializeUserThunk());
         } else {
           // Wrong activation
           this.setState({ isTeamActivated: false });
-          notificationsService.show({ text: t('error.invalidActivationCode'), type: ToastType.Error });
+          // notificationsService.show({ text: get('error.invalidActivationCode'), type: ToastType.Error });
         }
       })
       .catch((err: unknown) => {

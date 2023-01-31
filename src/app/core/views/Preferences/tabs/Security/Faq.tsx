@@ -1,30 +1,30 @@
 import { Disclosure } from '@headlessui/react';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { CaretUp } from 'phosphor-react';
 import Section from '../../components/Section';
 
 export default function Faq({ className = '' }: { className?: string }): JSX.Element {
   const questions: { title: string; body: string }[] = [
     {
-      title: i18n.get('views.account.tabs.security.faq.faq1.title'),
-      body: i18n.get('views.account.tabs.security.faq.faq1.description'),
+      title: get('views.account.tabs.security.faq.faq1.title'),
+      body: get('views.account.tabs.security.faq.faq1.description'),
     },
     {
-      title: i18n.get('views.account.tabs.security.faq.faq2.title'),
-      body: i18n.get('views.account.tabs.security.faq.faq2.description'),
+      title: get('views.account.tabs.security.faq.faq2.title'),
+      body: get('views.account.tabs.security.faq.faq2.description'),
     },
     {
-      title: i18n.get('views.account.tabs.security.faq.faq3.title'),
-      body: i18n.get('views.account.tabs.security.faq.faq3.description'),
+      title: get('views.account.tabs.security.faq.faq3.title'),
+      body: get('views.account.tabs.security.faq.faq3.description'),
     },
     {
-      title: i18n.get('views.account.tabs.security.faq.faq4.title'),
-      body: i18n.get('views.account.tabs.security.faq.faq4.description'),
+      title: get('views.account.tabs.security.faq.faq4.title'),
+      body: get('views.account.tabs.security.faq.faq4.description'),
     },
   ];
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.security.faq.title')}>
+    <Section className={className} title={get('views.account.tabs.security.faq.title')}>
       {questions.map((question, i) => (
         <Disclosure defaultOpen={i === 0} key={i}>
           {({ open }) => (

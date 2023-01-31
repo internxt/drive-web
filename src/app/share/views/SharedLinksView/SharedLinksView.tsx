@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { Trash, Link, LinkBreak, Gear, Copy } from 'phosphor-react';
@@ -29,7 +29,7 @@ const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN ||
 
 function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
-  notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  notificationsService.show({ text: get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
 export default function SharedLinksView(): JSX.Element {
@@ -117,9 +117,7 @@ export default function SharedLinksView(): JSX.Element {
       }
 
       const stringLinksDeleted =
-        selectedItems.length > 1
-          ? i18n.get('shared-links.toast.links-deleted')
-          : i18n.get('shared-links.toast.link-deleted');
+        selectedItems.length > 1 ? get('shared-links.toast.links-deleted') : get('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
       await fetchItems(0, orderBy, 'substitute');
       closeConfirmDelete();
@@ -160,8 +158,8 @@ export default function SharedLinksView(): JSX.Element {
           </div>
         </div>
       }
-      title={i18n.get('shared-links.empty-state.title')}
-      subtitle={i18n.get('shared-links.empty-state.subtitle')}
+      title={get('shared-links.empty-state.title')}
+      subtitle={get('shared-links.empty-state.subtitle')}
     />
   );
 
@@ -175,7 +173,7 @@ export default function SharedLinksView(): JSX.Element {
     <div className="flex w-full flex-shrink-0 flex-col">
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
-          <p className="text-lg">{i18n.get('shared-links.shared-links')}</p>
+          <p className="text-lg">{get('shared-links.shared-links')}</p>
         </div>
 
         <div className="flex flex-row items-center">
@@ -196,27 +194,27 @@ export default function SharedLinksView(): JSX.Element {
         <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
           header={[
             {
-              label: i18n.get('shared-links.list.link-content'),
+              label: get('shared-links.list.link-content'),
               width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
             {
-              label: i18n.get('shared-links.list.shared'),
+              label: get('shared-links.list.shared'),
               width: 'w-40', //w-1/12
               name: 'views',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: i18n.get('shared-links.list.created'),
+              label: get('shared-links.list.created'),
               width: 'w-40', //w-2/12
               name: 'createdAt',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: i18n.get('shared-links.list.size'),
+              label: get('shared-links.list.size'),
               width: 'w-40', //w-1.5/12
               name: 'fileSize',
               orderable: false,
@@ -275,7 +273,7 @@ export default function SharedLinksView(): JSX.Element {
           hasMoreItems={hasMoreItems}
           menu={[
             {
-              name: i18n.get('shared-links.item-menu.copy-link'),
+              name: get('shared-links.item-menu.copy-link'),
               icon: Copy,
               action: (props: any) => {
                 const itemType = props.isFolder ? 'folder' : 'file';
@@ -288,7 +286,7 @@ export default function SharedLinksView(): JSX.Element {
               },
             },
             {
-              name: i18n.get('shared-links.item-menu.link-settings'),
+              name: get('shared-links.item-menu.link-settings'),
               icon: Gear,
               action: (props: any) => {
                 dispatch(storageActions.setItemToShare({ share: props, item: props.item }));
@@ -299,7 +297,7 @@ export default function SharedLinksView(): JSX.Element {
               },
             },
             {
-              name: i18n.get('shared-links.item-menu.delete-link'),
+              name: get('shared-links.item-menu.delete-link'),
               icon: LinkBreak,
               action: (props) => {
                 setIsDeleteDialogModalOpen(true);
@@ -322,22 +320,22 @@ export default function SharedLinksView(): JSX.Element {
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
-        secondaryAction={i18n.get('modals.removeSharedLinkModal.cancel')}
+        secondaryAction={get('modals.removeSharedLinkModal.cancel')}
         title={
           selectedItems.length > 1
-            ? i18n.get('shared-links.item-menu.deleteLinks')
-            : i18n.get('shared-links.item-menu.deleteLink')
+            ? get('shared-links.item-menu.deleteLinks')
+            : get('shared-links.item-menu.deleteLink')
         }
         subtitle={
           selectedItems.length > 1
-            ? i18n.get('modals.removeSharedLinkModal.multiSharedDescription')
-            : i18n.get('modals.removeSharedLinkModal.singleSharedDescription')
+            ? get('modals.removeSharedLinkModal.multiSharedDescription')
+            : get('modals.removeSharedLinkModal.singleSharedDescription')
         }
         onPrimaryAction={onDeleteSelectedItems}
         primaryAction={
           selectedItems.length > 1
-            ? i18n.get('modals.removeSharedLinkModal.deleteLinks')
-            : i18n.get('modals.removeSharedLinkModal.deleteLink')
+            ? get('modals.removeSharedLinkModal.deleteLinks')
+            : get('modals.removeSharedLinkModal.deleteLink')
         }
         primaryActionColor="danger"
       />
@@ -379,7 +377,7 @@ function UpdateLinkModal({
     const updatedItem = await shareService.updateShareLink(params);
     onShareUpdated(updatedItem as ShareTypes.ShareLink & { code: string });
     setSavingLinkChanges(false);
-    //notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+    //notificationsService.show({ text: get('shared-links.toast.link-updated'), type: ToastType.Success });
   }
 
   function copyLink() {
@@ -387,7 +385,7 @@ function UpdateLinkModal({
     const link = shareService.buildLinkFromShare(mnemonic, linkToUpdate);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     copy(link);
-    notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    notificationsService.show({ text: get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   }
 
   return (
@@ -418,16 +416,14 @@ function UpdateLinkModal({
             >
               <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
-                  <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
+                  <span className="font-medium">{get('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
                     {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}`) || ''}`}
                   </span>
                 </Dialog.Title>
 
                 <div className="flex flex-col">
-                  <span className="text-lg font-semibold text-gray-80">
-                    {i18n.get('shared-links.link-settings.views')}
-                  </span>
+                  <span className="text-lg font-semibold text-gray-80">{get('shared-links.link-settings.views')}</span>
                   <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
                 </div>
 
@@ -437,7 +433,7 @@ function UpdateLinkModal({
                     disabled={false}
                     className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                   >
-                    <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
+                    <span>{get('shared-links.link-settings.copy-link')}</span>
                     <Link size={24} />
                   </BaseButton>
 
@@ -454,7 +450,7 @@ function UpdateLinkModal({
                       isLoading={savingLinkChanges}
                       className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                     >
-                      {i18n.get('shared-links.link-settings.close')}
+                      {get('shared-links.link-settings.close')}
                     </BaseButton>
                   </div>
                 </div>

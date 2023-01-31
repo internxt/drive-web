@@ -25,7 +25,7 @@ import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -199,13 +199,13 @@ function SignUp(props: SignUpProps): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <span className="text-2xl font-medium">{i18n.get('auth.signup.title')}</span>
+        <span className="text-2xl font-medium">{get('auth.signup.title')}</span>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>{i18n.get('auth.email')}</span>
+            <span>{get('auth.email')}</span>
             <TextInput
-              placeholder={i18n.get('auth.email')}
+              placeholder={get('auth.email')}
               label="email"
               type="email"
               disabled={hasEmailParam}
@@ -217,10 +217,10 @@ function SignUp(props: SignUpProps): JSX.Element {
           </label>
 
           <label className="space-y-0.5">
-            <span>{i18n.get('auth.password')}</span>
+            <span>{get('auth.password')}</span>
             <PasswordInput
               className={passwordState ? passwordState.tag : ''}
-              placeholder={i18n.get('auth.password')}
+              placeholder={get('auth.password')}
               label="password"
               maxLength={MAX_PASSWORD_LENGTH}
               register={register}
@@ -243,7 +243,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
           <Button
             disabled={isLoading}
-            text={i18n.get('auth.signup.title')}
+            text={get('auth.signup.title')}
             disabledText={isValid ? 'Encrypting...' : 'Create account'}
             loading={isLoading}
             style="button-primary"
@@ -252,20 +252,20 @@ function SignUp(props: SignUpProps): JSX.Element {
         </div>
       </form>
       <span className="mt-2 w-full text-xs text-gray-50">
-        {i18n.get('auth.terms1')}{' '}
+        {get('auth.terms1')}{' '}
         <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-          {i18n.get('auth.terms2')}
+          {get('auth.terms2')}
         </a>
       </span>
 
       <div className="mt-4 flex w-full items-center justify-center">
         <span className="select-none text-sm text-gray-80">
-          {i18n.get('auth.signup.haveAccount')}{' '}
+          {get('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            {i18n.get('auth.signup.login')}
+            {get('auth.signup.login')}
           </Link>
         </span>
       </div>

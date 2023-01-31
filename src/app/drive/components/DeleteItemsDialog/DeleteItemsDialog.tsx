@@ -6,7 +6,7 @@ import { setItemsToDelete } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData } from '../../types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import deleteItems from '../../../../use_cases/trash/delete-items';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
@@ -49,15 +49,15 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   return (
     <Modal maxWidth="max-w-md" isOpen={isOpen} onClose={onClose}>
       <div className="flex flex-col space-y-5">
-        <p className="text-2xl font-medium text-gray-100">{i18n.get('drive.deleteItems.title')}</p>
-        <p className="text-lg text-gray-80">{i18n.get('drive.deleteItems.advice')}</p>
+        <p className="text-2xl font-medium text-gray-100">{get('drive.deleteItems.title')}</p>
+        <p className="text-lg text-gray-80">{get('drive.deleteItems.advice')}</p>
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {i18n.get('actions.cancel')}
+            {get('actions.cancel')}
           </Button>
           <Button disabled={isLoading} variant="accent" onClick={onAccept} dataTest="delete-button">
-            {isLoading ? i18n.get('drive.deleteItems.progress') : i18n.get('drive.deleteItems.accept')}
+            {isLoading ? get('drive.deleteItems.progress') : get('drive.deleteItems.accept')}
           </Button>
         </div>
       </div>

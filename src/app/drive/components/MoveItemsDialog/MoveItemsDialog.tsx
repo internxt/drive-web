@@ -9,7 +9,7 @@ import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData, FolderPath } from '../../types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
@@ -157,7 +157,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     name && setSelectedFolderName(name);
   };
 
-  const title = `${props.isTrash ? i18n.get('drive.dropdown.restore') : i18n.get('actions.move')} ${
+  const title = `${props.isTrash ? get('drive.dropdown.restore') : get('actions.move')} ${
     itemsToMove.length > 1 ? itemsToMove.length + ' items' : '"' + itemsToMove[0]?.name + '"'
   }`;
 
@@ -235,12 +235,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <div className="text-medium flex cursor-pointer items-center text-base text-primary">
               <FolderPlus className="mr-2 h-5 w-full text-primary" />
               <span className="cursor-pointer whitespace-pre text-base font-medium text-primary">
-                {i18n.get('actions.upload.folder')}
+                {get('actions.upload.folder')}
               </span>
             </div>
           </BaseButton>
           <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
-            {i18n.get('actions.cancel')}
+            {get('actions.cancel')}
           </Button>
           <Button
             disabled={isLoading}
@@ -252,11 +252,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           >
             {isLoading
               ? !props.isTrash
-                ? i18n.get('actions.moving')
-                : i18n.get('actions.navigating')
+                ? get('actions.moving')
+                : get('actions.navigating')
               : !props.isTrash
-              ? i18n.get('actions.move')
-              : i18n.get('actions.restoreHere')}
+              ? get('actions.move')
+              : get('actions.restoreHere')}
           </Button>
         </div>
       </div>

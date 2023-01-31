@@ -6,7 +6,7 @@ import { uiActions } from 'app/store/slices/ui';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import './ShareItemDialog.scss';
 import { storageActions } from 'app/store/slices/storage';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { aes, items } from '@internxt/lib';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -26,7 +26,7 @@ interface ShareItemDialogProps {
 function copyShareLink(type: string, code: string, token: string) {
   const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
-  notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  notificationsService.show({ text: get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
 const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => {
@@ -53,7 +53,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       itemId: share?.id as string,
       plainPassword: isPasswordProtected ? itemPassword : null,
     });
-    notificationsService.show({ text: i18n.get('notificationMessages.linkUpdated'), type: ToastType.Info });
+    notificationsService.show({ text: get('notificationMessages.linkUpdated'), type: ToastType.Info });
 
     close();
   };
@@ -63,7 +63,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   return (
     <BaseDialog
       isOpen={isOpen}
-      title={i18n.get('shareItemDialog.title')}
+      title={get('shareItemDialog.title')}
       subTitle={itemFullName}
       dialogRounded={true}
       panelClasses="w-screen max-w-lg"
@@ -77,7 +77,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       <div className="mb-5 flex flex-col">
         <div className="mx-5">
           <div className="justify-left flex flex-col">
-            <p className="text-base font-medium">{i18n.get('shareItemDialog.access')}</p>
+            <p className="text-base font-medium">{get('shareItemDialog.access')}</p>
             <div>
               <label className="flex flex-row items-center">
                 <input
@@ -85,15 +85,15 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
                   checked={isPasswordProtected}
                   onChange={() => setIsPasswordProtected(!isPasswordProtected)}
                 />
-                <p className="ml-2 text-base font-medium">{i18n.get('shareItemDialog.protect')}</p>
+                <p className="ml-2 text-base font-medium">{get('shareItemDialog.protect')}</p>
               </label>
             </div>
-            <p className="px-6 text-sm font-normal">{i18n.get('shareItemDialog.addSecurePassword')}</p>
+            <p className="px-6 text-sm font-normal">{get('shareItemDialog.addSecurePassword')}</p>
           </div>
           <div className="ml-6 mt-3 w-80">
             <PasswordInput
               value={isSavedAlreadyWithPassword ? (passwordInputVirgin ? 'xxxxxxxxx' : itemPassword) : itemPassword}
-              placeholder={i18n.get('shareItemDialog.password')}
+              placeholder={get('shareItemDialog.password')}
               disabled={!isPasswordProtected}
               onChange={(evt) => setItemPassword(evt.target.value)}
               onFocus={() => setPasswordInputVirgin(false)}
@@ -102,13 +102,13 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
           <hr className="border-t-1 my-6 border-neutral-40" />
           <div className="mb-8 flex flex-row justify-between">
             <div className="flex w-52 flex-col items-start">
-              <p className="text-base font-medium">{i18n.get('shareItemDialog.views')}</p>
+              <p className="text-base font-medium">{get('shareItemDialog.views')}</p>
               <p className="text-base font-normal">
-                {share?.views === 0 ? i18n.get('shareItemDialog.noViewsYet') : share?.views}
+                {share?.views === 0 ? get('shareItemDialog.noViewsYet') : share?.views}
               </p>
             </div>
             <div className="flex w-52 flex-col items-start">
-              <p className="text-base font-medium">{i18n.get('shareItemDialog.dateCreated')}</p>
+              <p className="text-base font-medium">{get('shareItemDialog.dateCreated')}</p>
               <p className="text-base font-normal">
                 {dateService.format(dateShareLink as string, 'dddd, D MMM YYYY, hh:mm')}
               </p>
@@ -134,21 +134,21 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
               {isLinkCopied ? (
                 <>
                   <Check size={24} className="mr-2 text-primary" />
-                  <p className="text-base font-medium text-primary">{i18n.get('shareItemDialog.buttons.linkCopied')}</p>
+                  <p className="text-base font-medium text-primary">{get('shareItemDialog.buttons.linkCopied')}</p>
                 </>
               ) : (
                 <>
                   <Copy size={24} className="mr-2 text-primary" />
-                  <p className="text-base font-medium text-primary">{i18n.get('shareItemDialog.buttons.copyLink')}</p>
+                  <p className="text-base font-medium text-primary">{get('shareItemDialog.buttons.copyLink')}</p>
                 </>
               )}
             </button>
             <div className="flex">
               <button onClick={onClose} className="mr-2 rounded-lg bg-gray-5 px-5 py-2 text-base font-medium">
-                {i18n.get('shareItemDialog.buttons.cancel')}
+                {get('shareItemDialog.buttons.cancel')}
               </button>
               <button onClick={onSubmit} className="rounded-lg bg-primary px-5 py-2 text-base font-medium text-white">
-                {i18n.get('shareItemDialog.buttons.save')}
+                {get('shareItemDialog.buttons.save')}
               </button>
             </div>
           </div>

@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
 import { ReactNode } from 'react';
@@ -66,24 +66,24 @@ export default function AccountPopover({
         </div>
       </div>
       <div className="flex items-center justify-between px-3 pb-1">
-        <p className="text-sm text-gray-50">{i18n.get('views.account.popover.spaceUsed', { space: percentageUsed })}</p>
+        <p className="text-sm text-gray-50">{get('views.account.popover.spaceUsed', { space: percentageUsed })}</p>
         {plan.showUpgrade && (
           <Link to="/preferences?tab=billing" className="text-sm font-medium text-primary no-underline">
-            {i18n.get('actions.upgrade')}
+            {get('actions.upgrade')}
           </Link>
         )}
       </div>
       {separator}
       <Item onClick={onDownloadAppButtonClicked}>
         <Desktop size={20} />
-        <p className="ml-3">{i18n.get('views.account.popover.downloadApp')}</p>
+        <p className="ml-3">{get('views.account.popover.downloadApp')}</p>
       </Item>
       <Link
         to="/preferences"
         className="flex cursor-pointer items-center py-2 px-3 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 active:bg-gray-5"
       >
         <Gear size={20} />
-        <p className="ml-3">{i18n.get('views.account.popover.settings')}</p>
+        <p className="ml-3">{get('views.account.popover.settings')}</p>
       </Link>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
@@ -94,7 +94,7 @@ export default function AccountPopover({
       <Item onClick={onLogout} data-test="logout">
         <SignOut size={20} />
         <p className="ml-3" data-test="logout">
-          {i18n.get('views.account.popover.logout')}
+          {get('views.account.popover.logout')}
         </p>
       </Item>
     </div>

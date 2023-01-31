@@ -1,6 +1,6 @@
 import { SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
 import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
 import { Iterator } from 'app/core/collections';
@@ -32,7 +32,7 @@ export async function downloadSharedFolderUsingFileSystemAPI(
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }));
   }
 
   const getTotalDownloadedBytes = () => {

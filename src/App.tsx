@@ -25,7 +25,6 @@ import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspac
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
-import { useTranslation } from 'react-i18next';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -38,8 +37,6 @@ interface AppProps {
   user: UserSettings | undefined;
   dispatch: AppDispatch;
 }
-
-const t = useTranslation();
 
 class App extends Component<AppProps> {
   constructor(props: AppProps) {

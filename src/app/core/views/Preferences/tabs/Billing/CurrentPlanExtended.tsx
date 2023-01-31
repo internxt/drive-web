@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -54,7 +54,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   }
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.billing.currentPlan')}>
+    <Section className={className} title={get('views.account.tabs.billing.currentPlan')}>
       <Card>
         {plan.planLimit && userSubscription ? (
           <>
@@ -62,16 +62,16 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
             {subscriptionExtension && (
               <div className="mt-4 flex flex-col items-center border-t border-gray-5">
                 <h1 className="mt-4 font-medium text-gray-80">
-                  {i18n.get('views.account.tabs.billing.subsRenew', {
+                  {get('views.account.tabs.billing.subsRenew', {
                     daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
                   })}
                 </h1>
                 <p className="text-xs text-gray-50">
-                  {i18n.get('views.account.tabs.billing.billed', {
+                  {get('views.account.tabs.billing.billed', {
                     interval:
                       subscriptionExtension.interval === 'monthly'
-                        ? i18n.get('general.renewalPeriod.monthly')
-                        : i18n.get('general.renewalPeriod.annually'),
+                        ? get('general.renewalPeriod.monthly')
+                        : get('general.renewalPeriod.annually'),
                     renewDate: subscriptionExtension.renewDate,
                   })}
                 </p>
@@ -80,7 +80,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   onClick={cancelSubscription}
                   className="mt-2 text-xs text-gray-60"
                 >
-                  {i18n.get('views.account.tabs.billing.cancelSubscription')}
+                  {get('views.account.tabs.billing.cancelSubscription')}
                 </button>
               </div>
             )}

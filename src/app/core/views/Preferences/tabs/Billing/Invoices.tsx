@@ -1,5 +1,5 @@
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import { DownloadSimple } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { bytesToString } from '../../../../../drive/services/size.service';
@@ -39,7 +39,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
       <div className="flex">
         <div className="flex flex-grow flex-col">
           <h1 className="mb-0.5 text-xs font-medium text-gray-80">
-            {i18n.get('views.account.tabs.billing.invoices.billingDate')}
+            {get('views.account.tabs.billing.invoices.billingDate')}
           </h1>
           {invoices.map(({ created, id }, i) => (
             <div
@@ -76,7 +76,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
     );
 
   return (
-    <Section className={className} title={i18n.get('views.account.tabs.billing.invoices.head')}>
+    <Section className={className} title={get('views.account.tabs.billing.invoices.head')}>
       <Card>{body}</Card>
     </Section>
   );
@@ -85,8 +85,8 @@ export default function Invoices({ className = '' }: { className?: string }): JS
 function Empty() {
   return (
     <div className="text-center">
-      <h1 className="font-medium text-gray-60">{i18n.get('views.account.tabs.billing.invoices.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{i18n.get('views.account.tabs.billing.invoices.empty.subtitle')}</p>
+      <h1 className="font-medium text-gray-60">{get('views.account.tabs.billing.invoices.empty.title')}</h1>
+      <p className="text-sm text-gray-50">{get('views.account.tabs.billing.invoices.empty.subtitle')}</p>
     </div>
   );
 }

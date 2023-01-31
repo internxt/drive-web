@@ -1,4 +1,4 @@
-import i18n from 'app/i18n/services/i18n.service';
+import { get } from 'app/i18n/services/i18n.service';
 import bigLogo from 'assets/icons/big-logo.svg';
 import LogIn from '../../components/LogIn/LogIn';
 
@@ -26,14 +26,14 @@ export default function SignInView(props: SignInProps): JSX.Element {
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            {i18n.get('general.terms')}
+            {get('general.terms')}
           </a>
           <a
             href="https://help.internxt.com"
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            {i18n.get('general.help')}
+            {get('general.help')}
           </a>
         </div>
       )}
