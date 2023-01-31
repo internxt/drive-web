@@ -156,7 +156,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const currentFolder = findCurrentFolder(currentBreadcrumb);
-  const isBreadcrumbItemShared = currentFolder[0]?.shares?.length !== 0;
+  const isBreadcrumbItemShared = currentFolder[0]?.shares && currentFolder[0]?.shares?.length !== 0;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
