@@ -17,7 +17,6 @@ import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { get } from 'app/i18n/services/i18n.service';
 import { useTranslation } from 'react-i18next';
 
 interface SidenavProps {
@@ -29,17 +28,7 @@ interface SidenavProps {
   isLoadingPlanUsage: boolean;
 }
 
-interface SidenavState {
-  isLgScreen: boolean;
-}
 const Sidenav = (props: SidenavProps) => {
-  // constructor(props: SidenavProps) {
-  //   super(props);
-
-  //   state = {
-  //     isLgScreen: screenService.isLg(),
-  //   };
-  // }
   const [state, setState] = useState({
     isLgScreen: screenService.isLg(),
   });

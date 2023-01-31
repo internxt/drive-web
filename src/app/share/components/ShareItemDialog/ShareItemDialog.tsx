@@ -18,7 +18,6 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
-import { get } from 'app/i18n/services/i18n.service';
 
 interface ShareItemDialogProps {
   share?: ShareLink;

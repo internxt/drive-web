@@ -30,21 +30,17 @@ interface NavbarProps {
   plan: PlanState;
 }
 
-class Navbar extends React.Component<NavbarProps> {
-  constructor(props: NavbarProps) {
-    super(props);
-  }
-
-  onSearchButtonClicked = (): void => {
+const Navbar = (props: NavbarProps) => {
+  const onSearchButtonClicked = (): void => {
     // TODO: do search
   };
 
-  onSupportButtonClicked = (): void => {
+  const onSupportButtonClicked = (): void => {
     window.open('https://help.internxt.com/');
   };
 
-  onChangeWorkspaceButtonClicked = (): void => {
-    const { dispatch, currentFolderId } = this.props;
+  const onChangeWorkspaceButtonClicked = (): void => {
+    const { dispatch, currentFolderId } = props;
 
     dispatch(sessionThunks.changeWorkspaceThunk());
     dispatch(storageThunks.resetNamePathThunk());
@@ -52,17 +48,17 @@ class Navbar extends React.Component<NavbarProps> {
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
-  onLogoutButtonClicked = (): void => {
-    this.props.dispatch(userThunks.logoutThunk());
+  const onLogoutButtonClicked = (): void => {
+    props.dispatch(userThunks.logoutThunk());
   };
 
-  onInviteMemberClick = (): void => {
-    this.props.dispatch(uiActions.setIsInviteMemberDialogOpen(true));
+  const onInviteMemberClick = (): void => {
+    props.dispatch(uiActions.setIsInviteMemberDialogOpen(true));
   };
 
-  onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
+  const onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {
     if (validationService.validateSearchText(e.target.value)) {
-      this.props.dispatch(
+      props.dispatch(
         storageActions.setFilters({
           text: e.target.value,
         }),
@@ -70,51 +66,48 @@ class Navbar extends React.Component<NavbarProps> {
     }
   };
 
-  render(): ReactNode {
-    const { user, storageFilters, hideSearch } = this.props;
-    if (!user) throw new Error('User is not defined');
+  const { user, storageFilters, hideSearch } = props;
+  if (!user) throw new Error('User is not defined');
 
-    return (
-      <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
-        {hideSearch ? (
-          <div />
-        ) : (
-          <div className="flex">
-            <input
-              value={storageFilters.text}
-              onChange={this.onSearchInputChange}
-              type="text"
-              placeholder="Search in this folder"
-              className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:w-full focus:ring-0"
-            />
-            <MagnifyingGlass
-              onClick={this.onSearchButtonClicked}
-              className="relative right-7 top-2.5 cursor-pointer"
-              size={16}
-            />
-          </div>
-        )}
+  return (
+    <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
+      {hideSearch ? (
+        <div />
+      ) : (
         <div className="flex">
-          <Link
-            to="/preferences"
-            className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:text-gray-80 hover:bg-gray-5 active:bg-gray-10"
-          >
-            <Gear size={24} />
-          </Link>
-          <AccountPopover
-            className="mr-5 z-40"
-            user={user}
-            plan={{
-              ...this.props.plan,
-              showUpgrade:
-                (this.props.plan.individualPlan && this.props.plan.individualPlan.name === 'Free Plan') ?? false,
-            }}
+          <input
+            value={storageFilters.text}
+            onChange={onSearchInputChange}
+            type="text"
+            placeholder="Search in this folder"
+            className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:w-full focus:ring-0"
+          />
+          <MagnifyingGlass
+            onClick={onSearchButtonClicked}
+            className="relative right-7 top-2.5 cursor-pointer"
+            size={16}
           />
         </div>
+      )}
+      <div className="flex">
+        <Link
+          to="/preferences"
+          className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"
+        >
+          <Gear size={24} />
+        </Link>
+        <AccountPopover
+          className="z-40 mr-5"
+          user={user}
+          plan={{
+            ...props.plan,
+            showUpgrade: (props.plan.individualPlan && props.plan.individualPlan.name === 'Free Plan') ?? false,
+          }}
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default connect((state: RootState) => {
   const isTeam = sessionSelectors.isTeam(state);

@@ -22,7 +22,6 @@ import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslation } from 'react-i18next';
-import { get } from 'app/i18n/services/i18n.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 

@@ -5,10 +5,12 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
-import { get } from 'app/i18n/services/i18n.service';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { useTranslation } from 'react-i18next';
+import { get } from 'app/i18n/services/i18n.service';
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
+  // const { t } = useTranslation();
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,
