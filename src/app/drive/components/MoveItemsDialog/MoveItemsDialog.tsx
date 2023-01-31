@@ -9,7 +9,6 @@ import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData, FolderPath } from '../../types';
-import { get } from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
@@ -19,6 +18,7 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
+import { useTranslation } from 'react-i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -27,6 +27,7 @@ interface MoveItemsDialogProps {
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
+  const { t } = useTranslation();
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
   const [destinationId, setDestinationId] = useState(0);
@@ -157,7 +158,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     name && setSelectedFolderName(name);
   };
 
-  const title = `${props.isTrash ? get('drive.dropdown.restore') : get('actions.move')} ${
+  const title = `${props.isTrash ? t('drive.dropdown.restore') : t('actions.move')} ${
     itemsToMove.length > 1 ? itemsToMove.length + ' items' : '"' + itemsToMove[0]?.name + '"'
   }`;
 
@@ -235,12 +236,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <div className="text-medium flex cursor-pointer items-center text-base text-primary">
               <FolderPlus className="mr-2 h-5 w-full text-primary" />
               <span className="cursor-pointer whitespace-pre text-base font-medium text-primary">
-                {get('actions.upload.folder')}
+                {t('actions.upload.folder')}
               </span>
             </div>
           </BaseButton>
           <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
-            {get('actions.cancel')}
+            {t('actions.cancel')}
           </Button>
           <Button
             disabled={isLoading}
@@ -252,11 +253,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           >
             {isLoading
               ? !props.isTrash
-                ? get('actions.moving')
-                : get('actions.navigating')
+                ? t('actions.moving')
+                : t('actions.navigating')
               : !props.isTrash
-              ? get('actions.move')
-              : get('actions.restoreHere')}
+              ? t('actions.move')
+              : t('actions.restoreHere')}
           </Button>
         </div>
       </div>

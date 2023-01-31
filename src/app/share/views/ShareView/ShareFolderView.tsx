@@ -5,7 +5,6 @@ import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/sha
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { get } from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
@@ -23,6 +22,7 @@ import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
+import { useTranslation } from 'react-i18next';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -43,6 +43,7 @@ interface ShareViewState {
 const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to proceed';
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
+  const { t } = useTranslation();
   const FOLDERS_LIMIT_BY_REQUEST = 16;
   const FILES_LIMIT_BY_REQUEST = 128;
   const token = props.match.params.token;
@@ -86,7 +87,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
          */
-        throw new Error(get('error.linkExpired'));
+        throw new Error(t('error.linkExpired') as string);
       }
     });
   }, []);
@@ -206,7 +207,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{get('actions.download')}</span>
+        <span className="font-medium">{t('actions.download')}</span>
       </>
     );
   } else {
@@ -216,13 +217,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{get('actions.downloading')}</span>
+          <span>{t('actions.downloading')}</span>
           {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{get('actions.downloaded')}</span>
+          <span className="font-medium">{t('actions.downloaded')}</span>
         </>
       );
   }

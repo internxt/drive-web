@@ -11,7 +11,7 @@ import {
 } from 'phosphor-react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -30,6 +30,7 @@ interface FileDropdownActionsProps {
 }
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
+  const { t } = useTranslation();
   const onDownloadButtonClicked = (e: MouseEvent): void => {
     const { onDownloadButtonClicked } = props;
 
@@ -105,31 +106,31 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareButtonClicked}>
           <Link className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.getLink')}</span>
+          <span>{t('drive.dropdown.getLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareCopyButtonClicked}>
           <Copy className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.copyLink')}</span>
+          <span>{t('drive.dropdown.copyLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareSettings) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareSettingsButtonClicked}>
           <Gear className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.linkSettings')}</span>
+          <span>{t('drive.dropdown.linkSettings')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareDeleteLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareDeleteButtonClicked}>
           <LinkBreak className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.deleteLink')}</span>
+          <span>{t('drive.dropdown.deleteLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.Info) && props.isTrash ? (
         <Dropdown.Item id="recover" onClick={onRecoverButtonClicked}>
           <ClockCounterClockwise className="mr-1 h-5 text-blue-60" />
-          <span>{get('drive.dropdown.restore')}</span>
+          <span>{t('drive.dropdown.restore')}</span>
         </Dropdown.Item>
       ) : null}
 
@@ -138,7 +139,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {!hiddenActions.includes(DriveItemAction.Rename) && !props.isTrash ? (
         <Dropdown.Item id="rename" onClick={onRenameButtonClicked}>
           <PencilSimple className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.rename')}</span>
+          <span>{t('drive.dropdown.rename')}</span>
         </Dropdown.Item>
       ) : null}
 
@@ -151,7 +152,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {!hiddenActions.includes(DriveItemAction.Download) && !props.isTrash ? (
         <Dropdown.Item id="download" onClick={onDownloadButtonClicked}>
           <DownloadSimple className="mr-1 h-5 w-5 text-blue-60" />
-          <span>{get('drive.dropdown.download')}</span>
+          <span>{t('drive.dropdown.download')}</span>
         </Dropdown.Item>
       ) : null}
       <hr className="my-1.5 text-neutral-30"></hr>
@@ -162,7 +163,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           onClick={!props.isTrash ? onDeleteButtonClicked : onDeletePermanentlyButtonClicked}
         >
           <Trash className={`mr-1 h-5 w-5 ${props.isTrash ? 'text-blue-60' : ''}`} />
-          <span>{props.isTrash ? get('drive.dropdown.deletePermanently') : get('drive.dropdown.moveToTrash')}</span>
+          <span>{props.isTrash ? t('drive.dropdown.deletePermanently') : t('drive.dropdown.moveToTrash')}</span>
         </Dropdown.Item>
       ) : null}
     </div>

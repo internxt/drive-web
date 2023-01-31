@@ -7,7 +7,6 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import getTrash from '../../../../use_cases/trash/get_trash';
-import { get } from 'app/i18n/services/i18n.service';
 import { useTranslation } from 'react-i18next';
 
 export interface TrashViewProps {

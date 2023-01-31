@@ -12,7 +12,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 export interface IFolders {
   bucket: string;
@@ -368,6 +368,7 @@ async function fetchFolderTree(folderId: number): Promise<{
 }
 
 export async function moveFolder(folderId: number, destination: number): Promise<StorageTypes.MoveFolderResponse> {
+  const { t } = useTranslation();
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
     folderId: folderId,
@@ -388,7 +389,7 @@ export async function moveFolder(folderId: number, destination: number): Promise
     .catch((err) => {
       const castedError = errorService.castError(err);
       if (castedError.status) {
-        castedError.message = get(`tasks.move-folder.errors.${castedError.status}`);
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
       }
       throw castedError;
     });

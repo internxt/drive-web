@@ -4,7 +4,6 @@ import { match } from 'react-router';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import { get } from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
@@ -21,6 +20,7 @@ import JSZip from 'jszip';
 import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { useTranslation } from 'react-i18next';
 
 interface SharePhotosProps {
   match: match<{
@@ -30,6 +30,7 @@ interface SharePhotosProps {
 }
 
 const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
+  const { t } = useTranslation();
   const { token, code } = props.match.params;
 
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -63,7 +64,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
        * TODO: Check that the server returns proper error message instead
        * of assuming that everything means that the link has expired
        */
-      throw new Error(get('error.linkExpired'));
+      throw new Error(t('error.linkExpired') as string);
     });
   };
 
@@ -93,7 +94,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
-          throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }));
+          throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
         const canUseReadableStreamMethod =
           'WritableStream' in window &&
@@ -186,7 +187,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{get('actions.download')}</span>
+        <span className="font-medium">{t('actions.download')}</span>
       </>
     );
   } else {
@@ -196,13 +197,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{get('actions.downloading')}</span>
+          <span>{t('actions.downloading')}</span>
           {<span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{get('actions.downloaded')}</span>
+          <span className="font-medium">{t('actions.downloaded')}</span>
         </>
       );
   }

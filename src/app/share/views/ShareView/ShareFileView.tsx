@@ -7,7 +7,6 @@ import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
 import network from 'app/network';
-import { get } from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../app/store/hooks';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
@@ -27,6 +26,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
+import { useTranslation } from 'react-i18next';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -52,6 +52,7 @@ interface ShareViewState {
 }
 
 export default function ShareFileView(props: ShareViewProps): JSX.Element {
+  const { t } = useTranslation();
   const token = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -76,7 +77,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
          */
-        throw new Error(get('error.linkExpired'));
+        throw new Error(t('error.linkExpired') as string);
       }
     });
   }, []);
@@ -285,7 +286,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
             >
               <UilEye height="20" width="20" />
-              <span>{get('actions.view')}</span>
+              <span>{t('actions.view')}</span>
             </button>
           )}
 
@@ -298,20 +299,20 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               <>
                 {/* Download completed */}
                 <UilCheck height="24" width="24" />
-                <span className="font-medium">{get('actions.downloaded')}</span>
+                <span className="font-medium">{t('actions.downloaded')}</span>
               </>
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
                 <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
-                <span>{get('actions.downloading')}</span>
+                <span>{t('actions.downloading')}</span>
                 <span className="font-normal text-blue-20">{progress}%</span>
               </>
             ) : (
               <>
                 {/* Download button */}
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{get('actions.download')}</span>
+                <span className="font-medium">{t('actions.download')}</span>
               </>
             )}
           </button>

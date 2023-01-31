@@ -1,4 +1,3 @@
-import { get } from 'app/i18n/services/i18n.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userSelectors } from 'app/store/slices/user';
@@ -7,8 +6,10 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
 import { CaretDown, CaretUp } from 'phosphor-react';
+import { useTranslation } from 'react-i18next';
 
 const ReferralsWidget = (props: { className?: string }): JSX.Element => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
@@ -46,7 +47,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
         <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>
       </div>
       <span className={`ml-2 text-sm ${referral.isCompleted ? 'text-gray-40' : 'text-gray-80'}`}>
-        {get(`referrals.items.${referral.key}`, {
+        {t(`referrals.items.${referral.key}`, {
           steps: referral.steps,
           completedSteps: referral.completedSteps,
         })}
@@ -67,13 +68,13 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
         <div className="flex items-center justify-between">
           <div className="">
             <span className="font-medium text-gray-80">
-              {get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
+              {t('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
             </span>
             <p className="text-xs font-medium">
               <span className="text-green-dark">
-                {get('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) }) +
+                {t('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) }) +
                   ' ' +
-                  get('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
+                  t('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
               </span>
             </p>
           </div>
@@ -93,7 +94,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
             href="https://help.internxt.com/"
             rel="noopener noreferrer"
           >
-            {get('actions.moreInfo')}
+            {t('actions.moreInfo')}
           </a>
         )}
       </div>

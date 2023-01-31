@@ -10,7 +10,7 @@ import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 interface DriveExplorerListProps {
   isLoading: boolean;
@@ -24,6 +24,7 @@ interface DriveExplorerListProps {
 }
 
 const DriveExplorerList = (props: DriveExplorerListProps) => {
+  const { t } = useTranslation();
   function hasItems(): boolean {
     return props.items.length > 0;
   }
@@ -107,23 +108,23 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
           />
         </div>
         <div className="box-content flex w-1/12 cursor-pointer items-center px-3" onClick={() => sortBy('type')}>
-          {get('drive.list.columns.type')}
+          {t('drive.list.columns.type')}
           {order.by === 'type' && sortButtonFactory()}
         </div>
         <div className="flex flex-grow cursor-pointer items-center" onClick={() => sortBy('name')}>
-          {get('drive.list.columns.name')}
+          {t('drive.list.columns.name')}
           {order.by === 'name' && sortButtonFactory()}
         </div>
         <div className="hidden w-2/12 items-center xl:flex"></div>
         <div className="hidden w-3/12 cursor-pointer items-center lg:flex" onClick={() => sortBy('updatedAt')}>
-          {get('drive.list.columns.modified')}
+          {t('drive.list.columns.modified')}
           {order.by === 'updatedAt' && sortButtonFactory()}
         </div>
         <div className="flex w-1/12 cursor-pointer items-center" onClick={() => sortBy('size')}>
-          {get('drive.list.columns.size')}
+          {t('drive.list.columns.size')}
           {order.by === 'size' && sortButtonFactory()}
         </div>
-        <div className="flex w-1/12 items-center rounded-tr-4px">{get('drive.list.columns.actions')}</div>
+        <div className="flex w-1/12 items-center rounded-tr-4px">{t('drive.list.columns.actions')}</div>
       </div>
       <div className="h-full overflow-y-auto">
         {isLoading ? (

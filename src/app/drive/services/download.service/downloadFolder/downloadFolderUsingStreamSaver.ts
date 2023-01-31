@@ -8,7 +8,7 @@ import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../network.service';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -31,6 +31,7 @@ export default async function downloadFolderUsingStreamSaver({
   errorCallback?: (err: Error) => void;
   isTeam: boolean;
 }): Promise<[Promise<void>, () => void]> {
+  const { t } = useTranslation();
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
@@ -41,7 +42,7 @@ export default async function downloadFolderUsingStreamSaver({
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});

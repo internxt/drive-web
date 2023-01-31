@@ -56,7 +56,6 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 // import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
-import { get } from 'app/i18n/services/i18n.service';
 import { useTranslation } from 'react-i18next';
 
 const PAGINATION_LIMIT = 60;

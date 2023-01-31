@@ -1,5 +1,4 @@
 import errorService from 'app/core/services/error.service';
-import { get } from 'app/i18n/services/i18n.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
@@ -7,6 +6,7 @@ import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
 import { Network } from '../../network.service';
+import { useTranslation } from 'react-i18next';
 
 interface FolderPackage {
   folderId: number;
@@ -32,13 +32,14 @@ export async function downloadSharedFolderUsingStreamSaver(
     progressCallback: (progress: number) => void;
   },
 ): Promise<void> {
+  const { t } = useTranslation();
   const downloadingSize: Record<number, number> = {};
   const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${sharedFolderMeta.name}.zip`, {});

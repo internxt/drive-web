@@ -1,5 +1,5 @@
-import { get } from 'app/i18n/services/i18n.service';
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../Tooltip';
 
@@ -16,6 +16,7 @@ export default function UsageDetails({
     color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'teal' | 'mint' | 'primary' | 'gray';
   }[];
 }): JSX.Element {
+  const { t } = useTranslation();
   const [barWidth, setBarWidth] = useState(0);
   const barRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +59,7 @@ export default function UsageDetails({
     <div className={`${className}`}>
       <div className="flex justify-between">
         <p className="text-gray-80">
-          {get('views.account.tabs.account.usage', {
+          {t('views.account.tabs.account.usage', {
             totalUsed: bytesToString(totalUsedInBytes),
             totalSpace: bytesToString(planLimitInBytes),
           })}
