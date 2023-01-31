@@ -22,9 +22,10 @@ i18next
     debug: true,
   });
 
-export function get(value: string, object?: any): string {
+export function get(value: string, object?: any): any {
   const { t } = useTranslation();
-  return t(value);
+  const result = t(value, object);
+  return result;
 }
 
 export default i18next;

@@ -14,9 +14,10 @@ import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
@@ -83,8 +84,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
-            title={get('views.photos.empty.title')}
-            subtitle={get('views.photos.empty.description')}
+            title={t('views.photos.empty.title')}
+            subtitle={t('views.photos.empty.description')}
             icon={
               <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
             }
@@ -123,13 +124,13 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         isOpen={deletePending === 'selected'}
         title={
           numberOfSelectedItems > 1
-            ? get('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
-            : get('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+            ? t('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : t('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
         }
-        subtitle={get('modals.deletePhotosModal.subtitle')}
+        subtitle={t('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction={get('modals.deletePhotosModal.buttons.delete')}
-        secondaryAction={get('modals.deletePhotosModal.buttons.cancel')}
+        primaryAction={t('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={t('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <Dialog
@@ -137,7 +138,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
         title="Delete this item?"
-        subtitle={get('modals.deletePhotosModal.subtitle')}
+        subtitle={t('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
         primaryAction="Delete"
         secondaryAction="Cancel"

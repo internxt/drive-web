@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from 'phosphor-react';
 import { connect } from 'react-redux';
 
@@ -18,6 +18,7 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -31,30 +32,34 @@ interface SidenavProps {
 interface SidenavState {
   isLgScreen: boolean;
 }
-class Sidenav extends React.Component<SidenavProps, SidenavState> {
-  constructor(props: SidenavProps) {
-    super(props);
+const Sidenav = (props: SidenavProps) => {
+  // constructor(props: SidenavProps) {
+  //   super(props);
 
-    this.state = {
-      isLgScreen: screenService.isLg(),
+  //   state = {
+  //     isLgScreen: screenService.isLg(),
+  //   };
+  // }
+  const [state, setState] = useState({
+    isLgScreen: screenService.isLg(),
+  });
+  const { t } = useTranslation();
+
+  useEffect(() => {
+    window.addEventListener('resize', onWindowResized);
+
+    return () => {
+      window.removeEventListener('resize', onWindowResized);
     };
-  }
+  }, []);
 
-  componentDidMount() {
-    window.addEventListener('resize', this.onWindowResized);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onWindowResized);
-  }
-
-  onWindowResized = () => {
-    this.setState({
+  const onWindowResized = () => {
+    setState({
       isLgScreen: screenService.isLg(),
     });
   };
 
-  onDownloadAppButtonClicked = (): void => {
+  const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
       const download = await desktopService.getDownloadAppUrl();
       return download;
@@ -71,49 +76,47 @@ class Sidenav extends React.Component<SidenavProps, SidenavState> {
       });
   };
 
-  onLogoClicked = (): void => {
+  const onLogoClicked = (): void => {
     navigationService.push(AppView.Drive);
   };
 
-  render(): JSX.Element {
-    const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = this.props;
+  const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = props;
 
-    return (
-      <div className="flex w-64 flex-col">
-        <div
-          className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-neutral-30 pl-8"
-          onClick={this.onLogoClicked}
-        >
-          <InternxtLogo className="h-auto w-28" />
+  return (
+    <div className="flex w-64 flex-col">
+      <div
+        className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-neutral-30 pl-8"
+        onClick={onLogoClicked}
+      >
+        <InternxtLogo className="h-auto w-28" />
+      </div>
+      <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
+        <div className="mt-2">
+          <SidenavItem label={t('sideNav.drive')} to="/app" Icon={FolderSimple} />
+          <SidenavItem label={t('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
+          <SidenavItem label={t('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
+          <SidenavItem label={t('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
+          <SidenavItem label={t('sideNav.recents')} to="/app/recents" Icon={Clock} />
+          <SidenavItem label={t('sideNav.trash')} to="/app/trash" Icon={Trash} />
+          <SidenavItem label={t('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
         </div>
-        <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
-          <div className="mt-2">
-            {/* <SidenavItem label={get('sideNav.drive')} to="/app" Icon={FolderSimple} />
-            <SidenavItem label={get('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
-            <SidenavItem label={get('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
-            <SidenavItem label={get('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
-            <SidenavItem label={get('sideNav.recents')} to="/app/recents" Icon={Clock} />
-            <SidenavItem label={get('sideNav.trash')} to="/app/trash" Icon={Trash} />
-            <SidenavItem label={get('sideNav.desktop')} Icon={Desktop} onClick={this.onDownloadAppButtonClicked} /> */}
-          </div>
-          {this.props.subscription && this.props.subscription.type === 'free' ? (
-            <ReferralsWidget />
-          ) : (
-            <div className="flex-grow"></div>
-          )}
+        {props.subscription && props.subscription.type === 'free' ? (
+          <ReferralsWidget />
+        ) : (
+          <div className="flex-grow"></div>
+        )}
 
-          <div className="mt-8 mb-11 px-5">
-            <PlanUsage
-              limit={planLimit}
-              usage={planUsage}
-              isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
-            ></PlanUsage>
-          </div>
+        <div className="mt-8 mb-11 px-5">
+          <PlanUsage
+            limit={planLimit}
+            usage={planUsage}
+            isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
+          ></PlanUsage>
         </div>
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default connect((state: RootState) => ({
   user: state.user.user,

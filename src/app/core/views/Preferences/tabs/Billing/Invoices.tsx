@@ -1,7 +1,7 @@
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
-import { get } from 'app/i18n/services/i18n.service';
 import { DownloadSimple } from 'phosphor-react';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
@@ -12,6 +12,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     paymentService
@@ -39,7 +40,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
       <div className="flex">
         <div className="flex flex-grow flex-col">
           <h1 className="mb-0.5 text-xs font-medium text-gray-80">
-            {get('views.account.tabs.billing.invoices.billingDate')}
+            {t('views.account.tabs.billing.invoices.billingDate')}
           </h1>
           {invoices.map(({ created, id }, i) => (
             <div
@@ -76,17 +77,18 @@ export default function Invoices({ className = '' }: { className?: string }): JS
     );
 
   return (
-    <Section className={className} title={get('views.account.tabs.billing.invoices.head')}>
+    <Section className={className} title={t('views.account.tabs.billing.invoices.head')}>
       <Card>{body}</Card>
     </Section>
   );
 }
 
 function Empty() {
+  const { t } = useTranslation();
   return (
     <div className="text-center">
-      <h1 className="font-medium text-gray-60">{get('views.account.tabs.billing.invoices.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{get('views.account.tabs.billing.invoices.empty.subtitle')}</p>
+      <h1 className="font-medium text-gray-60">{t('views.account.tabs.billing.invoices.empty.title')}</h1>
+      <p className="text-sm text-gray-50">{t('views.account.tabs.billing.invoices.empty.subtitle')}</p>
     </div>
   );
 }

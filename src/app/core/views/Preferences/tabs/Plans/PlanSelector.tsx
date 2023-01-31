@@ -2,6 +2,7 @@ import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { get } from 'app/i18n/services/i18n.service';
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -13,6 +14,7 @@ import { planActions, PlanState } from '../../../../../store/slices/plan';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
+  const { t } = useTranslation();
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -82,17 +84,17 @@ export default function PlanSelector({ className = '' }: { className?: string })
         <div className="flex flex-row rounded-lg bg-cool-gray-10 p-0.5 text-sm">
           <IntervalSwitch
             active={interval === 'month'}
-            text={get('general.renewal.monthly')}
+            text={t('general.renewal.monthly')}
             onClick={() => setInterval('month')}
           />
           <IntervalSwitch
             active={interval === 'year'}
-            text={get('general.renewal.annually')}
+            text={t('general.renewal.annually')}
             onClick={() => setInterval('year')}
           />
           <IntervalSwitch
             active={interval === 'lifetime'}
-            text={get('general.renewal.lifetime')}
+            text={t('general.renewal.lifetime')}
             onClick={() => setInterval('lifetime')}
           />
         </div>
@@ -152,6 +154,7 @@ function Price({
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
+  const { t } = useTranslation();
 
   if (interval === 'month') {
     amountMonthly = amount;
@@ -166,11 +169,7 @@ function Price({
   }
 
   const displayButtonText =
-    button === 'change'
-      ? get('actions.change')
-      : button === 'current'
-      ? get('drive.currentPlan')
-      : get('actions.upgrade');
+    button === 'change' ? t('actions.change') : button === 'current' ? t('drive.currentPlan') : t('actions.upgrade');
 
   return (
     <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
@@ -178,16 +177,16 @@ function Price({
       <div className="mt-5 border-t border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">
         {interval === 'lifetime'
-          ? get('views.account.tabs.plans.card.lifetime', {
+          ? t('views.account.tabs.plans.card.lifetime', {
               amount: displayAmount(amount),
             })
-          : get('views.account.tabs.plans.card.monthly', {
+          : t('views.account.tabs.plans.card.monthly', {
               amount: displayAmount(amountMonthly),
             })}
       </p>
       {interval !== 'lifetime' && (
         <p className=" text-gray-50">
-          {get('views.account.tabs.plans.card.annually', {
+          {t('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
         </p>

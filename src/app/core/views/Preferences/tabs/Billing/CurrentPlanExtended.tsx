@@ -1,5 +1,5 @@
-import { get } from 'app/i18n/services/i18n.service';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -13,6 +13,7 @@ import Section from '../../components/Section';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const { t } = useTranslation();
 
   const userSubscription = plan.subscription;
 
@@ -54,7 +55,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   }
 
   return (
-    <Section className={className} title={get('views.account.tabs.billing.currentPlan')}>
+    <Section className={className} title={t('views.account.tabs.billing.currentPlan')}>
       <Card>
         {plan.planLimit && userSubscription ? (
           <>
@@ -62,16 +63,16 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
             {subscriptionExtension && (
               <div className="mt-4 flex flex-col items-center border-t border-gray-5">
                 <h1 className="mt-4 font-medium text-gray-80">
-                  {get('views.account.tabs.billing.subsRenew', {
+                  {t('views.account.tabs.billing.subsRenew', {
                     daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
                   })}
                 </h1>
                 <p className="text-xs text-gray-50">
-                  {get('views.account.tabs.billing.billed', {
+                  {t('views.account.tabs.billing.billed', {
                     interval:
                       subscriptionExtension.interval === 'monthly'
-                        ? get('general.renewalPeriod.monthly')
-                        : get('general.renewalPeriod.annually'),
+                        ? t('general.renewalPeriod.monthly')
+                        : t('general.renewalPeriod.annually'),
                     renewDate: subscriptionExtension.renewDate,
                   })}
                 </p>
@@ -80,7 +81,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   onClick={cancelSubscription}
                   className="mt-2 text-xs text-gray-60"
                 >
-                  {get('views.account.tabs.billing.cancelSubscription')}
+                  {t('views.account.tabs.billing.cancelSubscription')}
                 </button>
               </div>
             )}

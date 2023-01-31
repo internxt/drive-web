@@ -1,4 +1,4 @@
-import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
@@ -11,12 +11,13 @@ import Section from '../../components/Section';
 
 export default function Usage({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const { t } = useTranslation();
 
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = plan.usageDetails
     ? [
         { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
         {
-          name: get('views.account.tabs.account.view.backups'),
+          name: t('views.account.tabs.account.view.backups'),
           usageInBytes: plan.usageDetails.backups,
           color: 'indigo',
         },
@@ -26,7 +27,7 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   const userSubscription = plan.subscription;
 
   return (
-    <Section className={className} title={get('drive.usage')}>
+    <Section className={className} title={t('drive.usage')}>
       <Card>
         {products && plan.planLimit && userSubscription ? (
           <>
