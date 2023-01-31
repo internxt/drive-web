@@ -193,24 +193,26 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
               <>
                 {/* Login / Create account */}
                 <div className="flex flex-row space-x-3">
-                  <Link to="/login" className="no-underline">
-                    <div
-                      className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg px-4
+                  <div
+                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg px-4
                                     font-medium text-cool-gray-90 no-underline hover:text-cool-gray-90"
-                    >
-                      Login
-                    </div>
-                  </Link>
+                    onClick={() => {
+                      window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
+                    }}
+                  >
+                    Login
+                  </div>
 
-                  <Link to="/new" className="no-underline">
-                    <div
-                      className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg bg-cool-gray-10
+                  <div
+                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg bg-cool-gray-10
                                     px-4 font-medium text-cool-gray-90 no-underline
                                     hover:text-cool-gray-90"
-                    >
-                      Create account
-                    </div>
-                  </Link>
+                    onClick={() => {
+                      window.location.href = process.env.REACT_APP_HOSTNAME + '/new';
+                    }}
+                  >
+                    Create account
+                  </div>
                 </div>
               </>
             )}
