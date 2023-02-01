@@ -1,20 +1,86 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+
+import storageThunks from '.';
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
+import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import i18n from 'app/i18n/services/i18n.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import date from 'app/core/services/date.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { downloadFile } from 'app/network/download';
-import { DriveItemData } from 'app/drive/types';
-import localStorageService from 'app/core/services/local-storage.service';
+import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
-import { DownloadFileTask, TaskStatus, TaskType } from 'app/tasks/types';
-import folderService from 'app/drive/services/folder.service';
 import errorService from 'app/core/services/error.service';
+import folderService from 'app/drive/services/folder.service';
+import { downloadFile } from 'app/network/download';
+import localStorageService from 'app/core/services/local-storage.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import date from 'app/core/services/date.service';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
+  async (items: DriveItemData[], { dispatch, requestId, rejectWithValue }) => {
+    if (items.length > 1) {
+      await dispatch(downloadItemsAsZipThunk(items));
+      return;
+    }
+    const errors: unknown[] = [];
+    const taskGroupId = requestId;
+    const tasksIds: string[] = [];
+
+    // * 1. Creates tasks
+    for (const item of items) {
+      if (item.isFolder) {
+        const taskId = tasksService.create<DownloadFolderTask>({
+          action: TaskType.DownloadFolder,
+          relatedTaskId: taskGroupId,
+          folder: item,
+          compressionFormat: 'zip',
+          showNotification: true,
+          cancellable: true,
+        });
+
+        tasksIds.push(taskId);
+      } else {
+        const taskId = tasksService.create<DownloadFileTask>({
+          action: TaskType.DownloadFile,
+          file: item,
+          showNotification: true,
+          cancellable: true,
+          relatedTaskId: taskGroupId,
+        });
+
+        tasksIds.push(taskId);
+      }
+    }
+
+    // * 2. Executes tasks
+    for (const [index, item] of items.entries()) {
+      const taskId = tasksIds[index];
+
+      if (item.isFolder) {
+        await dispatch(
+          storageThunks.downloadFolderThunk({
+            folder: item as DriveFolderData,
+            options: { taskId },
+          }),
+        );
+      } else {
+        await dispatch(
+          storageThunks.downloadFileThunk({
+            file: item as DriveFileData,
+            options: { taskId },
+          }),
+        );
+      }
+    }
+
+    if (errors.length > 0) {
+      return rejectWithValue(errors);
+    }
+  },
+);
+
+export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
+  'storage/downloadItemsAsZip',
   async (items: DriveItemData[], { rejectWithValue }) => {
     const errors: unknown[] = [];
     const downloadProgress: number[] = [];
