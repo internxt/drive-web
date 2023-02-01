@@ -1,7 +1,8 @@
 {
   "lang": {
-    "es": "Español",
-    "en": "Inglés"
+    "title": "Lenguaje",
+    "es": "Español (ES)",
+    "en": "Inglés(US)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -357,8 +358,8 @@
       }
     },
     "redirectToApp": {
-      "message": "Thank you",
-      "goToApp": "Go back to app"
+      "message": "Grácias!",
+      "goToApp": "Volver a la aplicación"
     }
   },
   "modals": {

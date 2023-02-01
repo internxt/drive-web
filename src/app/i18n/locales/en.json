@@ -1,7 +1,8 @@
 {
   "lang": {
-    "es": "Spanish",
-    "en": "English"
+    "title": "Language",
+    "es": "Spanish (ES)",
+    "en": "English (US)"
   },
   "auth": {
     "email": "Email",

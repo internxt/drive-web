@@ -57,6 +57,7 @@ import {
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 // import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 import { useTranslation } from 'react-i18next';
+import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 
 const PAGINATION_LIMIT = 60;
 
@@ -282,7 +283,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     <div className="flex h-full flex-grow flex-col px-8" data-test="drag-and-drop-area">
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {/* <NameCollisionContainer /> */}
+      <NameCollisionContainer />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
