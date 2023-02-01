@@ -381,7 +381,6 @@ function UpdateLinkModal({
   }
 
   function copyLink() {
-    const { t } = useTranslation();
     const mnemonic = localStorageService.getUser()!.mnemonic;
     const link = shareService.buildLinkFromShare(mnemonic, linkToUpdate);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

@@ -65,7 +65,6 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   const userEmail: string = localStorageService.getUser()?.email || '';
 
   const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
-    const { t } = useTranslation();
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
