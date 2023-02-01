@@ -19,15 +19,16 @@ import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
   items: DriveItemData[];
+  text: TFunction;
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
-  const { t } = useTranslation();
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
   const [destinationId, setDestinationId] = useState(0);
@@ -67,12 +68,13 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       props.onItemsMoved && props.onItemsMoved();
 
+      console.log('Items moved');
       setIsLoading(false);
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       setIsLoading(false);
-      console.log(castedError.message);
+      console.log('Error en MoveItemsDialog', castedError.message);
     }
   };
 
@@ -158,7 +160,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     name && setSelectedFolderName(name);
   };
 
-  const title = `${props.isTrash ? t('drive.dropdown.restore') : t('actions.move')} ${
+  const title = `${props.isTrash ? props.text('drive.dropdown.restore') : props.text('actions.move')} ${
     itemsToMove.length > 1 ? itemsToMove.length + ' items' : '"' + itemsToMove[0]?.name + '"'
   }`;
 
@@ -236,12 +238,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <div className="text-medium flex cursor-pointer items-center text-base text-primary">
               <FolderPlus className="mr-2 h-5 w-full text-primary" />
               <span className="cursor-pointer whitespace-pre text-base font-medium text-primary">
-                {t('actions.upload.folder')}
+                {props.text('actions.upload.folder')}
               </span>
             </div>
           </BaseButton>
           <Button disabled={isLoading} variant="secondary" onClick={onClose} className="mr-3">
-            {t('actions.cancel')}
+            {props.text('actions.cancel')}
           </Button>
           <Button
             disabled={isLoading}
@@ -253,11 +255,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           >
             {isLoading
               ? !props.isTrash
-                ? t('actions.moving')
-                : t('actions.navigating')
+                ? props.text('actions.moving')
+                : props.text('actions.navigating')
               : !props.isTrash
-              ? t('actions.move')
-              : t('actions.restoreHere')}
+              ? props.text('actions.move')
+              : props.text('actions.restoreHere')}
           </Button>
         </div>
       </div>

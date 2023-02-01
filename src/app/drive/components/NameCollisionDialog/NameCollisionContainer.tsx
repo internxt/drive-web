@@ -1,4 +1,5 @@
 import { FC, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import NameCollisionDialog, { OnSubmitPressed, OPERATION_TYPE } from '.';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -27,6 +28,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   foldersToRename,
   driveFoldersToRename,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [repeatedItemsToUpload, setRepeatedItemsToUpload] = useState<(File | DriveItemData)[]>([]);
   const [driveRepeatedItems, setDriveRepeatedItems] = useState<DriveItemData[]>([]);
@@ -87,7 +89,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToMove: DriveItemData[];
   }) => {
-    await moveItemsToTrash(itemsToReplace);
+    await moveItemsToTrash(itemsToReplace, t);
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
@@ -113,7 +115,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToUpload: (IRoot | File)[];
   }) => {
-    await moveItemsToTrash(itemsToReplace);
+    await moveItemsToTrash(itemsToReplace, t);
 
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {

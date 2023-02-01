@@ -141,7 +141,7 @@
             "trash": "Trash",
             "free": {
               "planName": "Free plan",
-              "button": "upgrade"
+              "button": "Upgrade"
             },
             "lifetime": {
               "planName": "Lifetime"

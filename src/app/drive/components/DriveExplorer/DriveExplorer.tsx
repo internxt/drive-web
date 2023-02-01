@@ -180,7 +180,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    moveItemsToTrash(selectedItems);
+    moveItemsToTrash(selectedItems, t);
   };
 
   const onDeletePermanentlyButtonClicked = () => {
@@ -284,7 +284,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <NameCollisionContainer />
-      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} text={t} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <UploadItemsFailsDialog />
 

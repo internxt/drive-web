@@ -10,7 +10,8 @@ import { Menu, Transition } from '@headlessui/react';
 export default function Language(): JSX.Element {
   const { t } = useTranslation();
   const [currentLang, setCurrentLang] = React.useState<DefaultTFuncReturn>(t('lang.en'));
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
       <div
         className="flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
@@ -38,9 +39,11 @@ export default function Language(): JSX.Element {
         >
           <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
             {menuItems && (
-              <div className="w-full">
+              <div className="w-full border-t border-gray-10">
                 {menuItems?.map((item, index) => (
-                  <Menu.Item key={'menuitem-' + index}>{item}</Menu.Item>
+                  <div className="pt-2">
+                    <Menu.Item key={'menuitem-' + index}>{item}</Menu.Item>
+                  </div>
                 ))}
               </div>
             )}

@@ -323,7 +323,7 @@ export default function SharedLinksView(): JSX.Element {
         onSecondaryAction={closeConfirmDelete}
         secondaryAction={t('modals.removeSharedLinkModal.cancel')}
         title={
-          selectedItems.length > 1 ? t('shared-links.item-menu.deleteLinks') : t('shared-links.item-menu.deleteLink')
+          selectedItems.length > 1 ? t('shared-links.item-menu.delete-links') : t('shared-links.item-menu.delete-link')
         }
         subtitle={
           selectedItems.length > 1
