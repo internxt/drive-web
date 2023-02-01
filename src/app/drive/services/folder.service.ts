@@ -65,6 +65,11 @@ export interface FetchFolderContentResponse {
   user_id: number;
 }
 
+export interface DownloadFolderAsZipOptions {
+  destination: FlatFolderZip;
+  closeWhenFinished?: boolean;
+}
+
 export function createFolder(
   currentFolderId: number,
   folderName: string,
@@ -221,7 +226,7 @@ async function addAllFilesToZip(
   return allFiles;
 }
 
-async function addAllFoldersToZip(
+export async function addAllFoldersToZip(
   currentAbsolutePath: string,
   iterator: Iterator<DriveFolderData>,
   zip: FlatFolderZip,
@@ -254,20 +259,23 @@ async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
   updateProgress: (progress: number) => void,
+  options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
 
-  const zip = new FlatFolderZip(rootFolder.name, {
-    progress(loadedBytes) {
-      if (!totalSizeIsReady) {
-        return;
-      }
-      updateProgress(Math.min(loadedBytes / totalSize, 1));
-    },
-  });
+  const zip =
+    options?.destination ||
+    new FlatFolderZip(rootFolder.name, {
+      progress(loadedBytes) {
+        if (!totalSizeIsReady) {
+          return;
+        }
+        updateProgress(Math.min(loadedBytes / totalSize, 1));
+      },
+    });
 
   const user = localStorageService.getUser();
 
@@ -322,8 +330,9 @@ async function downloadFolderAsZip(
     } while (pendingFolders.length > 0);
 
     totalSizeIsReady = true;
-
-    await zip.close();
+    if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+      await zip.close();
+    }
   } catch (err) {
     zip.abort();
     throw errorService.castError(err);
@@ -400,6 +409,7 @@ const folderService = {
   moveFolder,
   fetchFolderTree,
   downloadFolderAsZip,
+  addAllFoldersToZip,
 };
 
 export default folderService;
