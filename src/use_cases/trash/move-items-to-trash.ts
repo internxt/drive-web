@@ -47,7 +47,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], t: TFunction): Pr
           );
 
           store.dispatch(storageActions.clearSelectedItems());
-          await recoverItemsFromTrash(itemsToTrash, destinationId);
+          await recoverItemsFromTrash(itemsToTrash, destinationId, t);
         }
       },
     },

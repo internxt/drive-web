@@ -19,7 +19,7 @@ import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
+import { t, TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -63,7 +63,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId);
+        await restoreItemsFromTrash(itemsToMove, destinationFolderId, t);
       }
 
       props.onItemsMoved && props.onItemsMoved();

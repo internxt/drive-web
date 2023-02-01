@@ -13,6 +13,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
 import { DriveItemData } from 'app/drive/types';
+import { useTranslation } from 'react-i18next';
+import { TFunction } from 'i18next';
 
 async function trackMove(response, type) {
   const user = localStorageService.getUser() as UserSettings;
@@ -82,6 +84,7 @@ async function afterMoving(
   itemsToRecover: DriveItemData[],
   destinationId: number,
   failedItems: DriveItemData[],
+  t: TFunction,
 ): Promise<void> {
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
@@ -99,7 +102,7 @@ async function afterMoving(
 
     notificationsService.show({
       type: ToastType.Success,
-      text: get('notificationMessage.restoreItems', {
+      text: t('notificationMessage.restoreItems', {
         itemsToRecover: itemsToRecover.length > 1 ? 's' : '',
       }),
     });
@@ -111,7 +114,11 @@ async function afterMoving(
   }
 }
 
-const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinationId: number): Promise<void> => {
+const recoverItemsFromTrash = async (
+  itemsToRecover: DriveItemData[],
+  destinationId: number,
+  t: TFunction,
+): Promise<void> => {
   const failedItems: DriveItemData[] = [];
   for (const item of itemsToRecover) {
     if (item.isFolder) {
@@ -120,7 +127,7 @@ const recoverItemsFromTrash = async (itemsToRecover: DriveItemData[], destinatio
       await moveFile(item, item.fileId, destinationId, item.bucket, failedItems);
     }
   }
-  return afterMoving(itemsToRecover, destinationId, failedItems);
+  return afterMoving(itemsToRecover, destinationId, failedItems, t);
 };
 
 export default recoverItemsFromTrash;
