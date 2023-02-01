@@ -531,9 +531,8 @@
     "item-menu": {
       "copy-link": "Copiar link",
       "link-settings": "Configuración de enlace",
-      "delete-link": "Eliminar",
-      "deleteLink": "Eliminar enlace",
-      "deleteLinks": "Eliminar enlaces"
+      "delete-link": "Eliminar enlaces",
+      "delete-links": "Eliminar enlaces"
     },
     "link-settings": {
       "share-settings": "Configuración de enlace",

@@ -530,7 +530,8 @@
     "item-menu": {
       "copy-link": "Copy link",
       "link-settings": "Share settings",
-      "delete-link": "Delete link"
+      "delete-link": "Delete link",
+      "delete-links": "Delete links"
     },
     "link-settings": {
       "share-settings": "Share settings",
