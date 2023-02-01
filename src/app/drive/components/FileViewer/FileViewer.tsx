@@ -9,15 +9,26 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import {
+  compareThumbnail,
+  getThumbnailFrom,
+  setCurrentThumbnail,
+  setThumbnails,
+  ThumbnailToUpload,
+  uploadThumbnail,
+} from 'app/drive/services/thumbnail.service';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
-import { updateDatabaseFileSourceData } from '../../services/database.service';
-import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
+import {
+  getDatabaseFilePrewiewData,
+  getDatabaseFileSourceData,
+  updateDatabaseFilePrewiewData,
+  updateDatabaseFileSourceData,
+} from '../../services/database.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -58,6 +69,8 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
+    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
       name: driveFile.name,
@@ -69,7 +82,10 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);
 
-    if (thumbnailGenerated.file && (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+    const isDifferentThumbnailOrNotExists =
+      !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
+
+    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
       const thumbnailToUpload: ThumbnailToUpload = {
         fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
@@ -104,14 +120,26 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
             driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
         }
         setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+        await updateDatabaseFilePrewiewData({
+          fileId: driveFile.id,
+          folderId: driveFile.folderId,
+          previewBlob: thumbnailToUpload.content,
+          updatedAt: driveFile.updatedAt,
+        });
       }
+    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
+      await updateDatabaseFilePrewiewData({
+        fileId: driveFile.id,
+        folderId: driveFile.folderId,
+        previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
+        updatedAt: driveFile.updatedAt,
+      });
     }
   };
 
-  const checkIfDatabaseBlobIsOlder = async (fileToView?: DriveFileData) => {
+  const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
     const fileId = fileToView?.id;
-    const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-    const databaseBlob = await lruFilesCacheManager.get(fileId?.toString() as string);
+    const databaseBlob = await getDatabaseFileSourceData({ fileId });
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
@@ -120,7 +148,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
           dateTwo: fileToView?.updatedAt as string,
         });
 
-    if (fileToView && databaseBlob && !isDatabaseBlobOlder) {
+    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
@@ -130,7 +158,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
   };
 
   useEffect(() => {
-    if (isTypeAllowed && show) {
+    if (isTypeAllowed && show && file) {
       const abortController = new AbortController();
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
@@ -138,8 +166,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
           downloader(abortController)
             .then(async (fileBlob) => {
               setBlob(fileBlob);
-
-              updateDatabaseFileSourceData({
+              await updateDatabaseFileSourceData({
                 folderId: file?.folderId,
                 sourceBlob: fileBlob,
                 fileId: file?.id,

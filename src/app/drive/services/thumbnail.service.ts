@@ -8,7 +8,11 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { thumbnailableExtension, thumbnailableImageExtension, thumbnailablePdfExtension } from 'app/drive/types/file-types';
+import {
+  thumbnailableExtension,
+  thumbnailableImageExtension,
+  thumbnailablePdfExtension,
+} from 'app/drive/types/file-types';
 import { FileToUpload } from './file.service/uploadFile';
 import Resizer from 'react-image-file-resizer';
 import { DriveItemData, ThumbnailConfig } from '../types';
@@ -28,10 +32,10 @@ export interface ThumbnailToUpload {
 }
 
 interface ThumbnailGenerated {
-  file: File | null,
+  file: File | null;
   max_width: number;
   max_height: number;
-  type: string
+  type: string;
 }
 
 const getImageThumbnail = (file: File): Promise<ThumbnailGenerated['file']> => {
@@ -44,12 +48,10 @@ const getImageThumbnail = (file: File): Promise<ThumbnailGenerated['file']> => {
       ThumbnailConfig.Quality,
       0,
       (uri) => {
-        if (uri && uri instanceof File)
-          resolve(uri);
-        else
-          resolve(null);
+        if (uri && uri instanceof File) resolve(uri);
+        else resolve(null);
       },
-      'file'
+      'file',
     );
   });
 };
@@ -87,7 +89,7 @@ export const uploadThumbnail = async (
   thumbnailToUpload: ThumbnailToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
-  abortController?: AbortController
+  abortController?: AbortController,
 ): Promise<Thumbnail> => {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
 
@@ -103,7 +105,7 @@ export const uploadThumbnail = async (
   const bucketFile = await uploadToBucket(bucketId, {
     creds: {
       pass: bridgePass,
-      user: bridgeUser
+      user: bridgeUser,
     },
     filecontent: thumbnailToUpload.content,
     filesize: thumbnailToUpload.size,
@@ -111,7 +113,7 @@ export const uploadThumbnail = async (
     progressCallback: (totalBytes, uploadedBytes) => {
       updateProgressCallback(uploadedBytes / totalBytes);
     },
-    abortController
+    abortController,
   });
 
   const storageClient = SdkFactory.getInstance().createStorageClient();
@@ -129,22 +131,32 @@ export const uploadThumbnail = async (
   return await storageClient.createThumbnailEntry(thumbnailEntry);
 };
 
+/**
+ * Generates a thumbnail from the given file to upload.
+ * @async
+ * @function
+ * @param {FileToUpload} fileToUpload - The file to generate the thumbnail from.
+ * @returns {Promise<ThumbnailGenerated>} - A promise that returns the generated thumbnail.
+ */
 export const getThumbnailFrom = async (fileToUpload: FileToUpload): Promise<ThumbnailGenerated> => {
   let thumbnailFile: File | null = null;
   const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
+
   if (thumbnailableImageExtension.includes(fileType)) {
     thumbnailFile = await getImageThumbnail(fileToUpload.content);
   } else if (thumbnailablePdfExtension.includes(fileType)) {
     const firstPDFpageImage = await getPDFThumbnail(fileToUpload.content);
+
     if (firstPDFpageImage) {
       thumbnailFile = await getImageThumbnail(firstPDFpageImage);
     }
   }
+
   return {
     file: thumbnailFile,
     type: String(ThumbnailConfig.Type),
     max_width: Number(ThumbnailConfig.MaxWidth),
-    max_height: Number(ThumbnailConfig.MaxHeight)
+    max_height: Number(ThumbnailConfig.MaxHeight),
   };
 };
 
@@ -152,8 +164,9 @@ export const generateThumbnailFromFile = async (
   fileToUpload: FileToUpload,
   fileId: number,
   userEmail: string,
-  isTeam: boolean): Promise<{ thumbnail: Thumbnail, thumbnailFile: File } | null> => {
-    const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
+  isTeam: boolean,
+): Promise<{ thumbnail: Thumbnail; thumbnailFile: File } | null> => {
+  const fileType = fileToUpload.type ? String(fileToUpload.type).toLowerCase() : '';
   if (thumbnailableExtension.includes(fileType)) {
     try {
       const thumbnail = await getThumbnailFrom(fileToUpload);
@@ -165,33 +178,50 @@ export const generateThumbnailFromFile = async (
           max_width: thumbnail.max_width,
           max_height: thumbnail.max_height,
           type: thumbnail.type,
-          content: thumbnail.file
+          content: thumbnail.file,
         };
-        const updateProgressCallback = () => { return; };
+        const updateProgressCallback = () => {
+          return;
+        };
         const abortController = new AbortController();
 
-        const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
+        const thumbnailUploaded = await uploadThumbnail(
+          userEmail,
+          thumbnailToUpload,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+        );
 
         return {
           thumbnail: thumbnailUploaded,
-          thumbnailFile: thumbnail.file
+          thumbnailFile: thumbnail.file,
         };
       }
-    } catch (error) { console.log(error); };
+    } catch (error) {
+      console.log(error);
+    }
   }
   return null;
 };
 
 export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isTeam: boolean): Promise<Blob> => {
-  const updateProgressCallback = () => { return; };
+  const updateProgressCallback = () => {
+    return;
+  };
   const abortController = new AbortController();
   return await fetchFileBlob(
     { fileId: thumbnailToDownload.bucket_file, bucketId: thumbnailToDownload.bucket_id } as Downloadable,
-    { isTeam, updateProgressCallback, abortController }
+    { isTeam, updateProgressCallback, abortController },
   );
 };
 
-export const setCurrentThumbnail = (thumbnailBlob: Blob, newThumbnail: Thumbnail, item: DriveItemData, dispatch: AppDispatch): void => {
+export const setCurrentThumbnail = (
+  thumbnailBlob: Blob,
+  newThumbnail: Thumbnail,
+  item: DriveItemData,
+  dispatch: AppDispatch,
+): void => {
   const currentThumbnail = Object.assign({}, newThumbnail);
   currentThumbnail.urlObject = URL.createObjectURL(thumbnailBlob);
 
@@ -220,9 +250,18 @@ export const setThumbnails = (thumbnails: Thumbnail[], item: DriveItemData, disp
   );
 };
 
+/**
+ * Compares two thumbnails to determine if they are the same
+ * @function
+ * @param {Thumbnail} thumbnail - Thumbnail to compare.
+ * @param {ThumbnailGenerated} compareTo - Thumbnail being compared to.
+ * @returns {boolean} Returns true if both thumbnails are the same.
+ */
 export const compareThumbnail = (thumbnail: Thumbnail, compareTo: ThumbnailGenerated): boolean => {
-  return (Number(thumbnail.size) === Number(compareTo.file?.size)
-    && String(thumbnail.type) === String(compareTo.type)
-    && (Number(thumbnail.max_width)) === (Number(compareTo.max_width))
-    && (Number(thumbnail.max_height)) === (Number(compareTo.max_height)));
+  return (
+    Number(thumbnail.size) === Number(compareTo.file?.size) &&
+    String(thumbnail.type) === String(compareTo.type) &&
+    Number(thumbnail.max_width) === Number(compareTo.max_width) &&
+    Number(thumbnail.max_height) === Number(compareTo.max_height)
+  );
 };
