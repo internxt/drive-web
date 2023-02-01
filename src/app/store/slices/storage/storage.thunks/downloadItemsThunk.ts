@@ -19,7 +19,7 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
     const errors: unknown[] = [];
     const downloadProgress: number[] = [];
     const abortController = new AbortController();
-    const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:MM');
+    const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
     const folderName = `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
 
