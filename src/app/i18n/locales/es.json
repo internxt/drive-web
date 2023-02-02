@@ -371,6 +371,10 @@
     }
   },
   "modals": {
+    "renameItemDialog": {
+      "title": "Renombrar",
+      "label": "Nombre"
+    },
     "renameModal": {
       "title": "El item ya existe",
       "titleMultipleItems": "Multiples archivos existen",
@@ -773,8 +777,9 @@
     "disable": "Desactivar",
     "move": "Mover",
     "moving": "Moviendo...",
-    "navigating": "Navigating...",
-    "restoreHere": "Restaurar aquí"
+    "navigating": "Restaurando...",
+    "restoreHere": "Restaurar aquí",
+    "rename": "Renombrar"
   },
   "drive": {
     "usage": "Uso",
@@ -798,7 +803,8 @@
       "linkSettings": "Ajustes del enlace",
       "deleteLink": "Eliminar enlace",
       "restore": "Restaurar",
-      "deletePermanently": "Eliminar permanentemente"
+      "deletePermanently": "Eliminar permanentemente",
+      "move": "Mover"
     },
     "deleteItems": {
       "title": "Eliminar permanentemente?",

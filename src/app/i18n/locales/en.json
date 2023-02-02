@@ -370,6 +370,10 @@
     }
   },
   "modals": {
+    "renameItemDialog": {
+      "title": "Rename",
+      "label": "Name"
+    },
     "renameModal": {
       "title": "Item already exists",
       "titleMultipleItems": "Multiple items already exist",
@@ -773,7 +777,8 @@
     "move": "Move",
     "moving": "Moving...",
     "navigating": "Navigating...",
-    "restoreHere": "Restore here"
+    "restoreHere": "Restore here",
+    "rename": "Rename"
   },
   "drive": {
     "usage": "Usage",
@@ -797,7 +802,8 @@
       "linkSettings": "Link settings",
       "deleteLink": "Delete link",
       "restore": "Restore",
-      "deletePermanently": "Delete permanently"
+      "deletePermanently": "Delete permanently",
+      "move": "Move"
     },
     "deleteItems": {
       "title": "Delete permanently?",

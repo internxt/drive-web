@@ -388,9 +388,9 @@ export async function moveFolder(folderId: number, destination: number): Promise
     })
     .catch((err) => {
       const castedError = errorService.castError(err);
-      // if (castedError.status) {
-      //   castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      // }
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+      }
       throw castedError;
     });
 }

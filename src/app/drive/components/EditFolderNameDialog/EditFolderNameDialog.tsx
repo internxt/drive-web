@@ -81,12 +81,12 @@ const CreateFolderDialog = (): JSX.Element => {
   return (
     <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
       <form className="flex flex-col space-y-5" onSubmit={(e) => onRenameButtonClicked(e)}>
-        <p className="text-2xl font-medium text-gray-100">Rename</p>
+        <p className="text-2xl font-medium text-gray-100">{t('modals.renameItemDialog.title')}</p>
 
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label="Name"
+          label={t('modals.renameItemDialog.label') as string}
           value={folderName}
           placeholder={folderName}
           onChange={(name) => {
@@ -103,7 +103,7 @@ const CreateFolderDialog = (): JSX.Element => {
             {t('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
-            Rename
+            {t('actions.rename')}
           </Button>
         </div>
       </form>

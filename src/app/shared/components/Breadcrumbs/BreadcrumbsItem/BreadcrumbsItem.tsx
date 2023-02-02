@@ -257,7 +257,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                     >
                       <Link size={20} />
-                      <p className="ml-3">Get Link</p>
+                      <p className="ml-3">{t('drive.dropdown.getLink')}</p>
                     </div>
                   )}
                 </Menu.Item>
@@ -272,7 +272,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <Copy size={20} />
-                        <p className="ml-3">Copy link</p>
+                        <p className="ml-3">{t('drive.dropdown.copyLink')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -285,7 +285,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <Gear size={20} />
-                        <p className="ml-3">Link Settings</p>
+                        <p className="ml-3">{t('drive.dropdown.linkSettings')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -298,7 +298,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <LinkBreak size={20} />
-                        <p className="ml-3">Delete link</p>
+                        <p className="ml-3">{t('drive.dropdown.deleteLink')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -313,7 +313,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <PencilSimple size={20} />
-                    <p className="ml-3">Rename</p>
+                    <p className="ml-3">{t('drive.dropdown.rename')}</p>
                   </div>
                 )}
               </Menu.Item>
@@ -326,7 +326,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <ArrowsOutCardinal size={20} />
-                    <p className="ml-3">Move</p>
+                    <p className="ml-3">{t('drive.dropdown.move')}</p>
                   </div>
                 )}
               </Menu.Item>
@@ -340,7 +340,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <DownloadSimple size={20} />
-                    <p className="ml-3">Download</p>
+                    <p className="ml-3">{t('drive.dropdown.download')}</p>
                   </div>
                 )}
               </Menu.Item>
@@ -354,7 +354,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <Trash size={20} />
-                    <p className="ml-3">Move to Trash</p>
+                    <p className="ml-3">{t('drive.dropdown.moveToTrash')}</p>
                   </div>
                 )}
               </Menu.Item>

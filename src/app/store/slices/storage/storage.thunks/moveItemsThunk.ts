@@ -12,6 +12,7 @@ import storageSelectors from '../storage.selectors';
 import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { t } from 'i18next';
+import { get } from 'app/i18n/services/i18n.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -25,7 +26,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
+      return void notificationsService.show({ text: get('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
     for (const [index, item] of items.entries()) {
@@ -102,6 +103,9 @@ export const moveItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<Sto
     .addCase(moveItemsThunk.pending, () => undefined)
     .addCase(moveItemsThunk.fulfilled, () => undefined)
     .addCase(moveItemsThunk.rejected, (state, action) => {
-      notificationsService.show({ text: action.error.message || t('error.movingItem'), type: ToastType.Error });
+      notificationsService.show({
+        text: 'error',
+        type: ToastType.Error,
+      });
     });
 };

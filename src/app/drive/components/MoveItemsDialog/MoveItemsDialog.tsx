@@ -20,7 +20,7 @@ import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslation } from 'react-i18next';
-import { t, TFunction } from 'i18next';
+import { TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -30,6 +30,7 @@ interface MoveItemsDialogProps {
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
+  const { t } = useTranslation();
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
   const [destinationId, setDestinationId] = useState(0);
@@ -177,7 +178,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       <div className="flex flex-col space-y-5">
         {/* Title */}
         <div className="flex text-2xl font-medium text-gray-100">
-          <span className="flex whitespace-nowrap">{`${props.isTrash ? 'Restore' : 'Move'}`} "</span>
+          <span className="flex whitespace-nowrap">
+            {`${props.isTrash ? t('actions.restore') : t('actions.move')}`} "
+          </span>
           <span className="max-w-fit flex-1 truncate">{itemsToMove[0]?.name}</span>
           <span className="flex">"</span>
         </div>
@@ -229,7 +232,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
             <div className="flex cursor-pointer items-center text-base font-medium text-primary">
               <FolderSimplePlus className="mr-2 h-6 w-6" />
-              <span>New folder</span>
+              <span>{t('actions.upload.folder')}</span>
             </div>
           </BaseButton>
 
@@ -244,7 +247,13 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
               }
             >
-              {isLoading ? (!props.isTrash ? 'Moving...' : 'Navigating...') : !props.isTrash ? 'Move' : 'Restore here'}
+              {isLoading
+                ? !props.isTrash
+                  ? t('actions.moving')
+                  : t('actions.navigating')
+                : !props.isTrash
+                ? t('actions.move')
+                : t('actions.restoreHere')}
             </Button>
           </div>
         </div>

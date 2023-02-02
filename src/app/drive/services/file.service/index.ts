@@ -9,6 +9,7 @@ import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { useTranslation } from 'react-i18next';
+import { t } from 'i18next';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
@@ -34,7 +35,6 @@ export async function moveFile(
   destination: number,
   bucketId: string,
 ): Promise<StorageTypes.MoveFileResponse> {
-  const { t } = useTranslation();
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFilePayload = {
     fileId: fileId,
