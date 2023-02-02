@@ -60,12 +60,8 @@ function ForgotPassword(): JSX.Element {
           </Link>
 
           <div className="flex flex-col space-y-1">
-            <h1 className="text-2xl font-medium text-gray-100">Forgot password</h1>
-            <p className="font-regular text-sm text-gray-80">
-              As specified in the security section of the app, your password is used for encryption and decryption and
-              only you have access to it. Therefore, we can't restore your account without the password. You can
-              register again by entering your email below so we can delete your account and all your files.
-            </p>
+            <h1 className="text-2xl font-medium text-gray-100">{t('auth.forgotPassword.title')}</h1>
+            <p className="font-regular text-sm text-gray-80">{t('auth.forgotPassword.description')}</p>
           </div>
         </div>
 
@@ -73,9 +69,9 @@ function ForgotPassword(): JSX.Element {
           <>
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <label className="space-y-1">
-                <span>Email</span>
+                <span>{t('auth.email')}</span>
                 <TextInput
-                  placeholder="Email"
+                  placeholder={t('auth.email')}
                   label="email"
                   type="email"
                   register={register}
@@ -96,7 +92,7 @@ function ForgotPassword(): JSX.Element {
 
               <Button
                 disabled={isLoading}
-                text={isLoading ? 'Sending email...' : 'Send instructions'}
+                text={isLoading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.sendInstructions')}
                 loading={isLoading}
                 style="button-primary"
                 disabledText="Send instructions"

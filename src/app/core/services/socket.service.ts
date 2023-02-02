@@ -39,10 +39,9 @@ export default class RealtimeService {
       }
     });
 
-    // this.socket.on('connect_error', (error) => {
-    //   if (!isProduction())
-    //     console.error('[REALTIME] CONNECTION ERROR:', error);
-    // });
+    this.socket.on('connect_error', (error) => {
+      if (!isProduction()) console.error('[REALTIME] CONNECTION ERROR:', error);
+    });
   }
 
   getClientId(): string {

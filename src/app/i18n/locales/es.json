@@ -21,6 +21,12 @@
       "title": "Crear una cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión"
+    },
+    "forgotPassword": {
+      "title": "Contraseña olvidada",
+      "description": "Como se especifica en la sección de seguridad de la aplicación, tu contraseña se utiliza para cifrar y descifrar y sólo tú tienes acceso a ella. Por lo tanto, no podemos restaurar tu cuenta sin la contraseña. Puedes registrarte de nuevo introduciendo tu correo electrónico a continuación para que podamos eliminar tu cuenta y todos tus archivos.",
+      "sendInstructions": "Enviar instrucciones",
+      "sending": "Enviando..."
     }
   },
   "general": {

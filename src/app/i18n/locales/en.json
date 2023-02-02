@@ -20,6 +20,12 @@
       "title": "Create account",
       "haveAccount": "already have an account?",
       "login": "Log in"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
+      "sendInstructions": "Send instructions",
+      "sending": "Sending..."
     }
   },
   "general": {
@@ -551,6 +557,7 @@
       "links-deleted": "Link(s) deleted"
     }
   },
+
   "trash": {
     "trash": "Trash",
     "clearTrash": "Trash has been cleared",
