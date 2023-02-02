@@ -14,6 +14,10 @@ import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import date from 'app/core/services/date.service';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
+import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
 export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/downloadItems',
@@ -83,6 +87,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], {
   'storage/downloadItemsAsZip',
   async (items: DriveItemData[], { rejectWithValue }) => {
     const errors: unknown[] = [];
+    const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
     const abortController = new AbortController();
     const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
@@ -150,25 +155,44 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], {
           );
           downloadProgress[index] = 1;
         } else {
-          const fileStream = await downloadFile({
-            fileId: driveItem.fileId,
-            bucketId: driveItem.bucket,
-            creds: {
-              user: user.bridgeUser,
-              pass: user.userId,
-            },
-            mnemonic: user.mnemonic,
-            options: {
-              abortController,
-              notifyProgress: (totalBytes, downloadedBytes) => {
-                const progress = downloadedBytes / totalBytes;
+          let fileStream: ReadableStream<Uint8Array> | null = null;
+          const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
-                downloadProgress[index] = progress;
-
-                updateProgressCallback(calculateProgress());
+          if (cachedFile?.source && !isCachedFileOlder) {
+            const blob = cachedFile.source as Blob;
+            downloadProgress[index] = 1;
+            fileStream = blob.stream();
+          } else {
+            const downloadedFileStream = await downloadFile({
+              fileId: driveItem.fileId,
+              bucketId: driveItem.bucket,
+              creds: {
+                user: user.bridgeUser,
+                pass: user.userId,
               },
-            },
-          });
+              mnemonic: user.mnemonic,
+              options: {
+                abortController,
+                notifyProgress: (totalBytes, downloadedBytes) => {
+                  const progress = downloadedBytes / totalBytes;
+
+                  downloadProgress[index] = progress;
+
+                  updateProgressCallback(calculateProgress());
+                },
+              },
+            });
+            const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+            await updateDatabaseFileSourceData({
+              folderId: driveItem.folderId,
+              sourceBlob,
+              fileId: driveItem.id,
+              updatedAt: driveItem.updatedAt,
+            });
+
+            fileStream = sourceBlob.stream();
+          }
 
           folder.addFile(`${driveItem.name}.${driveItem.type}`, fileStream);
         }

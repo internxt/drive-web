@@ -13,6 +13,10 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { updateDatabaseFileSourceData } from './database.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 
 export interface IFolders {
   bucket: string;
@@ -300,8 +304,16 @@ async function downloadFolderAsZip(
 
       const files = await addAllFilesToZip(
         folderToDownload.name,
-        (file) => {
-          return downloadFile({
+        async (file) => {
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+          if (cachedFile?.source && !isCachedFileOlder) {
+            updateProgress(1);
+            return cachedFile.source.stream();
+          }
+          const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
             creds: {
@@ -310,6 +322,16 @@ async function downloadFolderAsZip(
             },
             mnemonic: user.mnemonic,
           });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
         },
         filesIterator,
         zip,
