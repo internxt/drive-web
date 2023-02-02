@@ -432,7 +432,7 @@
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
-    "loadingFile": "Loading file...",
+    "loadingFile": "Loading preview",
     "list": {
       "columns": {
         "type": "Type",
