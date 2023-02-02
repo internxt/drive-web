@@ -5,10 +5,10 @@ import localStorageService from 'app/core/services/local-storage.service';
 
 let deviceLang = navigator.language.split('-')[0];
 
-if (!localStorageService.get('language')) {
-  localStorageService.set('language', deviceLang);
-} else {
+if (localStorageService.get('language')) {
   deviceLang = localStorageService.get('language') as string;
+} else {
+  localStorageService.set('language', deviceLang);
 }
 
 i18next
@@ -36,4 +36,5 @@ export function get(value: string, object?: Record<string, unknown>): string {
   const result = t(value, object as TFunctionDetailedResult) as string;
   return result;
 }
+
 export default i18next;
