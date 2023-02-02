@@ -220,7 +220,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
                       <div className="h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                         <div
                           className="h-1.5 rounded-full bg-white"
-                          style={{ width: `${(progress as number) * 100}%` }}
+                          style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
                         />
                       </div>
                     </div>
