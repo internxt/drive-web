@@ -140,7 +140,7 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
           {t('actions.cancel')}
         </Button>
         <Button onClick={handleSubmit} className="ml-2">
-          {t('actions.submit')}
+          {t('actions.save')}
         </Button>
       </div>
     </>

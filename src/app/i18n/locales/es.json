@@ -24,6 +24,7 @@
     }
   },
   "general": {
+    "new": "nuevo",
     "of": "de",
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
@@ -553,6 +554,7 @@
   },
   "trash": {
     "trash": "Papelera",
+    "clearTrash": "La papelera ha sido vaciada",
     "list": {
       "name": "Nombre",
       "size": "Tamaño",

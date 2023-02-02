@@ -23,6 +23,7 @@
     }
   },
   "general": {
+    "new": "new",
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
@@ -552,6 +553,7 @@
   },
   "trash": {
     "trash": "Trash",
+    "clearTrash": "Trash has been cleared",
     "list": {
       "name": "Name",
       "size": "Size",
@@ -726,7 +728,7 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "Item {{itemsToRecover}} restored"
+    "restoreItems": "{{itemsToRecover}} restored"
   },
   "actions": {
     "undo": "Undo",

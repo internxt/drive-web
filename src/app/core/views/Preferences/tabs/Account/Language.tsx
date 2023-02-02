@@ -1,4 +1,4 @@
-import React, { forwardRef, ReactNode } from 'react';
+import React, { forwardRef, ReactNode, useEffect } from 'react';
 import i18next, { DefaultTFuncReturn, t } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import Section from '../../components/Section';
@@ -16,6 +16,7 @@ const deviceLang = getLanguage();
 
 export default function Language(): JSX.Element {
   const { t } = useTranslation();
+
   const [currentLang, setCurrentLang] = React.useState<DefaultTFuncReturn>(deviceLang as string);
 
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
