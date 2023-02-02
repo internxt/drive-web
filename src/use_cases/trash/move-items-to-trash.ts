@@ -7,6 +7,8 @@ import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 
+const MAX_ITEMS_TO_DELETE = 50;
+
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
@@ -21,10 +23,9 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   store.dispatch(storageActions.clearSelectedItems());
 
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
-  // await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
 
-  for (let i = 0; i < items.length; i += 50) {
-    const itemsToDelete = items.slice(i, i + 50);
+  for (let i = 0; i < items.length; i += MAX_ITEMS_TO_DELETE) {
+    const itemsToDelete = items.slice(i, i + MAX_ITEMS_TO_DELETE);
     await trashClient.addItemsToTrash({ items: itemsToDelete } as AddItemsToTrashPayload);
   }
 
