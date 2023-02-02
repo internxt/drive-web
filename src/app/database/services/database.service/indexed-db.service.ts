@@ -11,6 +11,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
         objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
         db.createObjectStore('lru_cache');
       }
+      if (oldVersion <= 3) {
+        db.createObjectStore('account_settings');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,

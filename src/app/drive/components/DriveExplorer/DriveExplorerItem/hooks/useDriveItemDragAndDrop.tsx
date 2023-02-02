@@ -109,7 +109,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
           if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
-          
+
           dispatch(
             storageThunks.moveItemsThunk({
               items: unrepeatedItems,

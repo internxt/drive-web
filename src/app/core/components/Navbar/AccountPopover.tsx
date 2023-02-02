@@ -1,15 +1,17 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import Avatar from '../../../shared/components/Avatar';
 import Popover from '../../../shared/components/Popover';
 import { useAppDispatch } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
+import AvatarWrapper from '../../views/Preferences/tabs/Account/AvatarWrapper';
 
 export default function AccountPopover({
   className = '',
@@ -21,13 +23,20 @@ export default function AccountPopover({
   plan: { planLimit: number; planUsage: number; showUpgrade: boolean };
 }): JSX.Element {
   const dispatch = useAppDispatch();
+
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
   const { t } = useTranslation();
   const fullName = `${user.name} ${user.lastname}`;
-  const button = <Avatar diameter={36} fullName={fullName} src={user.avatar} />;
+
+  const button = <AvatarWrapper diameter={36} fullName={fullName} avatarSrcURL={user.avatar} />;
 
   const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
 
   const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+
+  useEffect(() => {
+    getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
+  }, [user.avatar]);
 
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
@@ -57,7 +66,12 @@ export default function AccountPopover({
   const panel = (
     <div className="w-52">
       <div className="flex items-center p-3">
-        <Avatar className="flex-shrink-0" diameter={36} fullName={fullName} src={user.avatar} />
+        <Avatar
+          className="flex-shrink-0"
+          diameter={36}
+          fullName={fullName}
+          src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
+        />
         <div className="ml-2 min-w-0">
           <h1 className="truncate font-medium text-gray-80" style={{ lineHeight: 1 }}>
             {fullName}

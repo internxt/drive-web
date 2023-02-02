@@ -1,4 +1,4 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
 dayjs.extend(relativeTime);
@@ -15,10 +15,20 @@ function isDateOneBefore({ dateOne, dateTwo }: { dateOne: Date | string; dateTwo
   return dayjs(dateOne).isBefore(dayjs(dateTwo));
 }
 
+function getCurrentDate(format?: string): string {
+  return dayjs().format(format);
+}
+
+function getExpirationDate(expiresValue: number): Dayjs {
+  return dayjs.unix(expiresValue);
+}
+
 const dateService = {
   format,
   fromNow,
   isDateOneBefore,
+  getCurrentDate,
+  getExpirationDate,
 };
 
 export default dateService;

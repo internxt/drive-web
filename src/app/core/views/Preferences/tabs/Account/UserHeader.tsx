@@ -14,6 +14,8 @@ import { deleteUserAvatarThunk, updateUserAvatarThunk } from '../../../../../sto
 import { useAppDispatch } from '../../../../../store/hooks';
 import Dropdown from '../../../../../shared/components/Dropdown';
 import { useTranslation } from 'react-i18next';
+import { getDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
+
 const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 export default function UserHeader({ className = '' }: { className?: string }): JSX.Element {
@@ -25,6 +27,11 @@ export default function UserHeader({ className = '' }: { className?: string }): 
   const fullName = `${user.name} ${user.lastname}`;
 
   const [openModal, setOpenModal] = useState(false);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
+  }, [user.avatar]);
 
   async function deleteAvatar() {
     await dispatch(deleteUserAvatarThunk()).unwrap();
@@ -47,7 +54,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
         openDirection={'right'}
       >
         <div className="relative">
-          <Avatar diameter={80} fullName={fullName} src={user.avatar} />
+          <Avatar diameter={80} fullName={fullName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
           <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
             <Camera size={16} />
           </div>

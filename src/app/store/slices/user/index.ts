@@ -18,6 +18,8 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import RealtimeService from 'app/core/services/socket.service';
+import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { extractAvatarURLID } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 
 interface UserState {
   isInitializing: boolean;
@@ -125,6 +127,13 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
     if (!currentUser) throw new Error('User is not defined');
 
     const { avatar } = await userService.updateUserAvatar(payload);
+
+    const uuid = extractAvatarURLID(avatar);
+    await updateDatabaseProfileAvatar({
+      sourceURL: avatar,
+      avatarBlob: payload.avatar,
+      uuid: uuid ?? '',
+    });
     dispatch(userActions.setUser({ ...currentUser, avatar }));
   },
 );
@@ -135,6 +144,7 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
     const currentUser = getState().user.user;
     if (!currentUser) throw new Error('User is not defined');
 
+    await deleteDatabaseProfileAvatar();
     await userService.deleteUserAvatar();
     dispatch(userActions.setUser({ ...currentUser, avatar: null }));
   },

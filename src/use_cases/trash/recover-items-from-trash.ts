@@ -52,6 +52,7 @@ function moveFile(
     destinationPath: uuid.v4(),
   };
   return storageClient
+
     .moveFile(payload)
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
@@ -100,16 +101,13 @@ async function afterMoving(
     store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
     store.dispatch(storageActions.clearSelectedItems());
 
+    const toastText = itemsToRecover[0].deleted
+      ? `Item${itemsToRecover.length > 1 ? 's' : ''} restored`
+      : `Item${itemsToRecover.length > 1 ? 's' : ''} moved`;
+
     notificationsService.show({
       type: ToastType.Success,
-      text: t('notificationMessages.restoreItems', {
-        itemsToRecover:
-          itemsToRecover.length > 1
-            ? t('general.files')
-            : itemsToRecover[0].type === 'folder'
-            ? t('general.folder')
-            : t('general.file'),
-      }),
+      text: toastText,
     });
   }
 

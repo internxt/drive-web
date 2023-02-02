@@ -1,6 +1,29 @@
-import databaseService, { DatabaseCollection } from '../../database/services/database.service';
+import databaseService, { AvatarBlobData, DatabaseCollection } from '../../database/services/database.service';
 import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
+
+const updateDatabaseProfileAvatar = async ({
+  sourceURL,
+  avatarBlob,
+  uuid,
+}: {
+  sourceURL: string;
+  uuid: string;
+  avatarBlob: Blob;
+}): Promise<void> => {
+  databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
+    srcURL: sourceURL,
+    avatarBlob,
+    uuid,
+  });
+};
+
+const getDatabaseProfileAvatar = async (): Promise<AvatarBlobData | undefined> =>
+  databaseService.get(DatabaseCollection.Account_settings, 'profile_avatar');
+
+const deleteDatabaseProfileAvatar = async (): Promise<void> => {
+  databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
+};
 
 const updateDatabaseFilePrewiewData = async ({
   fileId,
@@ -35,18 +58,20 @@ const updateDatabaseFileSourceData = async ({
 }: {
   fileId: number;
   folderId: number;
-  updatedAt: string;
   sourceBlob: Blob;
+  updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
 
   lruFilesCacheManager.set(
     fileId.toString(),
     {
+      ...fileData,
       id: fileId,
+      parentId: folderId,
       source: sourceBlob,
       updatedAt: updatedAt,
-      parentId: folderId,
     },
     sourceBlob.size,
   );
@@ -83,4 +108,12 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 };
 
-export { updateDatabaseFilePrewiewData, updateDatabaseFileSourceData, deleteDatabasePhotos, deleteDatabaseItems };
+export {
+  getDatabaseProfileAvatar,
+  updateDatabaseProfileAvatar,
+  deleteDatabaseProfileAvatar,
+  updateDatabaseFilePrewiewData,
+  updateDatabaseFileSourceData,
+  deleteDatabasePhotos,
+  deleteDatabaseItems,
+};
