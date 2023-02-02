@@ -32,6 +32,7 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import { useTranslation } from 'react-i18next';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -41,6 +42,7 @@ interface BreadcrumbsItemProps {
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const namePath = useAppSelector((state) => state.storage.namePath);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
@@ -164,7 +166,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   const onDeleteButtonClicked = async () => {
     const previousBreadcrumb = props.items[props.items.length - 2];
-    await moveItemsToTrash(currentFolder);
+    await moveItemsToTrash(currentFolder, t);
     onItemClicked(previousBreadcrumb);
   };
 
@@ -240,7 +242,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <FolderSimplePlus size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                    <p className="ml-3">{t('actions.upload.folder')}</p>
                   </div>
                 )}
               </Menu.Item>

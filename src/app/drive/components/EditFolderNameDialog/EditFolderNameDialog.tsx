@@ -9,8 +9,10 @@ import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
+import { useTranslation } from 'react-i18next';
 
 const CreateFolderDialog = (): JSX.Element => {
+  const { t } = useTranslation();
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const currentBreadcrumb = namePath.slice(-1);
@@ -58,13 +60,13 @@ const CreateFolderDialog = (): JSX.Element => {
           onClose();
         })
         .catch((e) => {
-          const errorMessage = e?.message?.includes('already exists') && i18n.get('error.creatingFolder');
+          const errorMessage = e?.message?.includes('already exists') && t('error.creatingFolder');
           setError(errorMessage);
           setIsLoading(false);
           return e;
         });
     } else {
-      setError(i18n.get('error.folderCannotBeEmpty'));
+      setError(t('error.folderCannotBeEmpty') as string);
     }
   };
 
@@ -98,7 +100,7 @@ const CreateFolderDialog = (): JSX.Element => {
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {i18n.get('actions.cancel')}
+            {t('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
             Rename
