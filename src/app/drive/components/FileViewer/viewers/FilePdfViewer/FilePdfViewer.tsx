@@ -51,7 +51,11 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
       <Fragment>
         <div>
           <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
-            <Page height={window.innerHeight * zoomRange[zoom]} pageNumber={pageNumber} />
+            <div className="flex flex-col space-y-3">
+              {Array.from(new Array(numPages), (el, index) => (
+                <Page height={window.innerHeight * zoomRange[zoom]} key={`page_${index + 1}`} pageNumber={index + 1} />
+              ))}
+            </div>
           </Document>
 
           {/* Preview controls */}
@@ -68,37 +72,9 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
             <div className="z-10 flex flex-row items-center justify-center space-x-1.5">
               <div className="flex flex-row items-center justify-center">
-                <button
-                  onClick={previousPage}
-                  disabled={isFirstPage}
-                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <UilArrowLeft
-                    height="24"
-                    width="24"
-                    className={`${isFirstPage ? 'opacity-50' : ''} pointer-events-none`}
-                  />
-                </button>
-
                 <span className="z-10 px-2 font-medium">
                   {pageNumber} of {numPages}
                 </span>
-
-                <button
-                  onClick={nextPage}
-                  disabled={isLastPage}
-                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <UilArrowRight
-                    height="24"
-                    width="24"
-                    className={`${isLastPage ? 'opacity-50' : ''} pointer-events-none`}
-                  />
-                </button>
               </div>
 
               <div className="h-8 w-px bg-white bg-opacity-10" />
