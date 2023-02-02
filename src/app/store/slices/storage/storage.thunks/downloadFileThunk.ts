@@ -32,13 +32,13 @@ const defaultDownloadFileThunkOptions = {
   showErrors: true,
 };
 
-const checkIfCachedSourceIsOlder = ({
+export const checkIfCachedSourceIsOlder = ({
   cachedFile,
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
   file: DriveFileData;
-}) => {
+}): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
     : dateService.isDateOneBefore({

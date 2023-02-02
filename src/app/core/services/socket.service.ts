@@ -22,6 +22,7 @@ export default class RealtimeService {
       auth: {
         token: getToken(),
       },
+      reconnection: isProduction(),
       withCredentials: true,
     });
 
