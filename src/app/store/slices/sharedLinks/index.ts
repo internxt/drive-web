@@ -17,6 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
 import { storageActions, storageSelectors } from '../storage';
 import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -100,7 +101,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       const share = await shareService.createShare(requestPayload);
       const link = shareService.getLinkFromShare(share, code, mnemonic, requestPayload.type);
       navigator.clipboard.writeText(link);
-      notificationsService.show({ text: get('notificationMessages.copyLink'), type: ToastType.Success });
+      notificationsService.show({ text: t('notificationMessages.copyLink'), type: ToastType.Success });
 
       const coercedShareLink: unknown = { ...share, isFolder: item.isFolder };
       dispatch(

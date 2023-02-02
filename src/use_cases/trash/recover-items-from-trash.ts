@@ -102,8 +102,13 @@ async function afterMoving(
 
     notificationsService.show({
       type: ToastType.Success,
-      text: t('notificationMessage.restoreItems', {
-        itemsToRecover: itemsToRecover.length > 1 ? 's' : '',
+      text: t('notificationMessages.restoreItems', {
+        itemsToRecover:
+          itemsToRecover.length > 1
+            ? t('general.files')
+            : itemsToRecover[0].type === 'folder'
+            ? t('general.folder')
+            : t('general.file'),
       }),
     });
   }

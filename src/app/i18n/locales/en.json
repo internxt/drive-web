@@ -568,7 +568,8 @@
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "All processes have finished"
+      "allProcessesHaveFinished": "All processes have finished",
+      "processing": "Processing {{pending}} of {{finished}}"
     },
     "create-folder": {
       "status": {
@@ -601,9 +602,6 @@
         "cancelled": "Upload cancelled"
       },
       "errors": {}
-    },
-    "taskLogger": {
-      "processing": "Processing {{pending}} of {{finished}}"
     },
     "download-file": {
       "status": {

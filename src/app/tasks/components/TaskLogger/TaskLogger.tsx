@@ -9,8 +9,10 @@ import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from 'phosphor-react';
 import { get } from 'app/i18n/services/i18n.service';
+import { useTranslation } from 'react-i18next';
 
 const TaskLogger = (): JSX.Element => {
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
@@ -63,13 +65,13 @@ const TaskLogger = (): JSX.Element => {
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
-            <span>{get('tasks.messages.allProcessesHaveFinished')}</span>
+            <span>{t('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
               <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
 
               <span>
-                {get('tasks.create-folder.taskLogger.processing', {
+                {t('tasks.messages.processing', {
                   pending: Object.values(finishedNotifications).length,
                   finished: allNotifications.length,
                 })}

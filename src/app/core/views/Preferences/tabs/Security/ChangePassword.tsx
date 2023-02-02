@@ -118,7 +118,7 @@ function ChangePasswordModal({
           className="ml-2"
           dataTest="next-button"
         >
-          {t('actions.next')}
+          {t('modals.changePasswordModal.title')}
         </Button>
       </div>
     </Modal>

@@ -2,7 +2,7 @@
   "lang": {
     "title": "Lenguaje",
     "es": "Español (ES)",
-    "en": "Inglés(US)"
+    "en": "Inglés (US)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -347,7 +347,7 @@
             },
             "faq3": {
               "title": "¿Puedo recuperar mi cuenta con la clave de recuperación?",
-              "description": "Si gurdas tu clave de recuperación en un lugar seguro, podrás recuperar tu cuenta siguiendo los pasos que encontrarás en el email que recibirás tras hacer clic en ‘¿Has olvidado tu contraseña?’."
+              "description": "Si guardas tu clave de recuperación en un lugar seguro, podrás recuperar tu cuenta siguiendo los pasos que encontrarás en el email que recibirás tras hacer clic en ‘¿Has olvidado tu contraseña?’."
             },
             "faq4": {
               "title": "¿Perderé mis archivos si cambio mi contraseña?",
@@ -569,7 +569,8 @@
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "Todos los procesos han finalizado"
+      "allProcessesHaveFinished": "Todos los procesos han finalizado",
+      "processing": "Procesando {{pending}} de {{finished}}"
     },
     "create-folder": {
       "status": {
@@ -579,9 +580,7 @@
         "error": "Error durante la creación de la carpeta",
         "cancelled": "Creación de carpeta cancelada"
       },
-      "taskLogger": {
-        "processing": "Procesando {{pending}} de {{finished}}"
-      },
+      "taskLogger": {},
       "errors": {}
     },
     "upload-file": {
@@ -713,7 +712,7 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movido{{s}} a la papelera",
-    "restoreItems": "Item {{itemsToRecover}} restablecidos"
+    "restoreItems": "{{itemsToRecover}} restablecido."
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
