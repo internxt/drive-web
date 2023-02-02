@@ -21,7 +21,12 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
   store.dispatch(storageActions.clearSelectedItems());
 
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
-  await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
+  // await trashClient.addItemsToTrash({ items } as AddItemsToTrashPayload);
+
+  for (let i = 0; i < items.length; i += 50) {
+    const itemsToDelete = items.slice(i, i + 50);
+    await trashClient.addItemsToTrash({ items: itemsToDelete } as AddItemsToTrashPayload);
+  }
 
   const id = notificationsService.show({
     type: ToastType.Success,
@@ -43,6 +48,6 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       },
     },
   });
-};;
+};
 
 export default moveItemsToTrash;

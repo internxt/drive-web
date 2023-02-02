@@ -8,6 +8,7 @@ import './DriveExplorerGrid.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface DriveExplorerGridProps {
+  folderId: number;
   isLoading: boolean;
   items: DriveItemData[];
   onEndOfScroll(): void;
@@ -71,6 +72,7 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
               scrollableTarget="scrollableList"
               className="files-grid z-0 flex-grow"
               style={{ overflow: 'visible' }}
+              scrollThreshold={0.6}
             >
               {this.itemsFolderList}
               {this.itemsFileList}
