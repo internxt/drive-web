@@ -2,7 +2,8 @@
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
-    "en": "English (US)"
+    "en": "English (US)",
+    "deviceLang": "device lang: {{lang}}"
   },
   "auth": {
     "email": "Email",

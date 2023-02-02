@@ -1,23 +1,32 @@
 import React, { forwardRef, ReactNode, useEffect } from 'react';
-import i18next, { DefaultTFuncReturn, t } from 'i18next';
+import i18next, { DefaultTFuncReturn } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
 import { CaretDown } from 'phosphor-react';
 import { Menu, Transition } from '@headlessui/react';
+import localStorageService from 'app/core/services/local-storage.service';
 
 function getLanguage(): string {
-  const deviceLanguage = navigator.language;
-  localStorage.setItem('language', deviceLanguage);
-  return deviceLanguage.includes('en') ? 'English (US)' : 'Español (ES)';
+  const deviceLanguage = localStorageService.get('language') as string;
+  return deviceLanguage;
 }
 
 const deviceLang = getLanguage();
 
 export default function Language(): JSX.Element {
   const { t } = useTranslation();
+  const [lang, setLang] = React.useState<string>(deviceLang);
+  const isLocalLang = localStorageService.get('language') ? true : false;
+  const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>(
+    !isLocalLang
+      ? t('lang.deviceLang', { lang: deviceLang === 'en' ? 'English (US)' : 'Español (ES)' })
+      : t(`lang.${deviceLang}`),
+  );
 
-  const [currentLang, setCurrentLang] = React.useState<DefaultTFuncReturn>(deviceLang as string);
+  useEffect(() => {
+    localStorageService.set('language', lang);
+  }, [lang]);
 
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
@@ -67,23 +76,25 @@ export default function Language(): JSX.Element {
         <LangDropdown
           title={
             <div className="flex w-full flex-row justify-between">
-              <p>{currentLang}</p>
+              <p>{currentLangText}</p>
               <CaretDown size={20} />
             </div>
           }
           menuItems={[
             <MenuItem
               onClick={() => {
+                setLang('en');
                 i18next.changeLanguage('en');
-                setCurrentLang(t('lang.en') as string);
+                setCurrentLangText(t('lang.en') as string);
               }}
             >
               <p>{t('lang.en')}</p>
             </MenuItem>,
             <MenuItem
               onClick={() => {
+                setLang('es');
                 i18next.changeLanguage('es');
-                setCurrentLang(t('lang.es') as string);
+                setCurrentLangText(t('lang.es') as string);
               }}
             >
               <p>{t('lang.es')}</p>
