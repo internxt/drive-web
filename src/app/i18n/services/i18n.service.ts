@@ -3,8 +3,6 @@ import i18next, { TFunctionDetailedResult } from 'i18next';
 import { useTranslation } from 'react-i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 
-const isProduction = process.env.NODE_ENV !== 'production';
-
 let deviceLang = navigator.language.split('-')[0];
 
 if (!localStorageService.get('language')) {
@@ -28,7 +26,6 @@ i18next
     lng: deviceLang,
     defaultNS: 'translation',
     ns: ['translation'],
-    debug: isProduction ? false : true,
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
