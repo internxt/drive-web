@@ -725,7 +725,9 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movido{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} restablecido{{s}}."
+    "restoreItems": "{{itemsToRecover}} restablecido{{s}}.",
+    "itemDeleted": "{{item}} eliminado",
+    "itemsDeleted": "Archivos eliminados"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

@@ -740,7 +740,9 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} restored"
+    "restoreItems": "{{itemsToRecover}} restored",
+    "itemDeleted": "{{itemsToDelete}} deleted",
+    "itemsDeleted": "Files deleted"
   },
   "actions": {
     "undo": "Undo",
