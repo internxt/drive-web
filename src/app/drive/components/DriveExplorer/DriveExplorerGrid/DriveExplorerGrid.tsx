@@ -55,7 +55,7 @@ const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
   return (
     <>
       {isLoading ? (
-        <div className="files-grid flex-grow">{loadingSkeleton}</div>
+        <div className="files-grid flex-grow">{loadingSkeleton()}</div>
       ) : (
         <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
           <InfiniteScroll

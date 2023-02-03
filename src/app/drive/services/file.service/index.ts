@@ -8,7 +8,6 @@ import uploadFile from './uploadFile';
 import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 
 export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
