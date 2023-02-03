@@ -7,12 +7,18 @@ import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/service
 import { Abortable } from './Abortable';
 import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import localStorageService from 'app/core/services/local-storage.service';
-import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+
 import { SerializablePhoto } from 'app/store/slices/photos';
 import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
+import {
+  getDatabasePhotosPrewiewData,
+  getDatabasePhotosSourceData,
+  updateDatabasePhotosPrewiewData,
+  updateDatabasePhotosSourceData,
+} from '../drive/services/database.service';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -109,7 +115,8 @@ async function getFileDownloadStream(
   const encryptedContentParts: ReadableStream<Uint8Array>[] = [];
 
   for (const downloadUrl of downloadUrls) {
-    const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
+    const useProxy =
+      process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadUrl).hostname.includes('internxt');
     const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadUrl;
     const encryptedStream = await fetch(fetchUrl, { signal: abortController?.signal }).then((res) => {
       if (!res.body) {
@@ -242,7 +249,7 @@ export async function getPhotoPreview(
     abortController: AbortController;
   },
 ): Promise<string> {
-  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+  const previewInCache = await getDatabasePhotosPrewiewData({ photoId: photo.id });
   let blob: Blob;
 
   if (previewInCache && previewInCache.preview) blob = previewInCache.preview;
@@ -259,7 +266,7 @@ export async function getPhotoPreview(
     );
 
     blob = await binaryStreamToBlob(readable);
-    databaseService.put(DatabaseCollection.Photos, photo.id, { preview: blob });
+    updateDatabasePhotosPrewiewData({ photoId: photo.id, preview: blob });
   }
 
   return URL.createObjectURL(blob);
@@ -274,8 +281,8 @@ export async function getPhotoBlob({
   bucketId: string;
   abortController?: AbortController;
 }): Promise<Blob> {
-  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
-
+  const previewInCache = await getDatabasePhotosSourceData({ photoId: photo.id });
+  console.log({ previewInCache });
   if (previewInCache && previewInCache.source) {
     return Promise.resolve(previewInCache.source);
   }
@@ -285,9 +292,7 @@ export async function getPhotoBlob({
     { updateProgressCallback: () => undefined, abortController },
   );
 
-  databaseService.get(DatabaseCollection.Photos, photo.id).then((previewInCacheRefresh) => {
-    databaseService.put(DatabaseCollection.Photos, photo.id, { ...(previewInCacheRefresh ?? {}), source: photoBlob });
-  });
+  await updateDatabasePhotosSourceData({ photoId: photo.id, source: photoBlob });
 
   return photoBlob;
 }
@@ -303,7 +308,7 @@ export async function getPhotoCachedOrStream({
   onProgress?: (progress: number) => void;
   abortController?: AbortController;
 }): Promise<Blob | ReadableStream<Uint8Array>> {
-  const previewInCache = await databaseService.get(DatabaseCollection.Photos, photo.id);
+  const previewInCache = await getDatabasePhotosSourceData({ photoId: photo.id });
 
   if (previewInCache && previewInCache.source) {
     onProgress?.(1);
@@ -312,7 +317,7 @@ export async function getPhotoCachedOrStream({
 
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
 
-  return downloadFile({
+  const downloadedPhotoStream = await downloadFile({
     bucketId,
     fileId: photo.fileId,
     creds: {
@@ -329,4 +334,9 @@ export async function getPhotoCachedOrStream({
 
     throw err;
   });
+
+  const photoBlob = await binaryStreamToBlob(downloadedPhotoStream);
+  await updateDatabasePhotosSourceData({ photoId: photo.id, source: photoBlob });
+
+  return Promise.resolve(photoBlob);
 }

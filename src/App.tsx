@@ -27,6 +27,8 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import { pdfjs } from 'react-pdf';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -60,6 +62,8 @@ class App extends Component<AppProps> {
 
     await LRUFilesCacheManager.getInstance();
     await LRUFilesPreviewCacheManager.getInstance();
+    await LRUPhotosCacheManager.getInstance();
+    await LRUPhotosPreviewsCacheManager.getInstance();
 
     try {
       await this.props.dispatch(

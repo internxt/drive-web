@@ -33,6 +33,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
 
       if (payload.length === 1) {
         const [photo] = payload;
+
         const photoBlob = await getPhotoBlob({ photo, bucketId, abortController });
 
         if (!abortController.signal.aborted) {
@@ -69,7 +70,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
               generalProgress[photo.id] = progress;
               updateTaskProgress();
             },
-            abortController
+            abortController,
           });
 
           if (photoSource instanceof Blob) {
@@ -88,8 +89,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     } catch (err) {
       const error = errorService.castError(err);
 
-      if (abortController.signal.aborted)
-        tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
+      if (abortController.signal.aborted) tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
       else {
         console.error(error);
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });

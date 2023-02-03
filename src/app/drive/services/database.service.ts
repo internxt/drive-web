@@ -2,9 +2,12 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
+  PhotosData,
 } from '../../database/services/database.service';
 import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from '../../database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosCacheManager } from '../../database/services/database.service/LRUPhotosCacheManager';
+import { LRUPhotosPreviewsCacheManager } from '../../database/services/database.service/LRUPhotosPreviewCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
@@ -61,6 +64,56 @@ const getDatabaseFilePrewiewData = async ({ fileId }: { fileId: number }): Promi
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
   return lruFilesPreviewCacheManager.get(fileId.toString());
+};
+
+const updateDatabasePhotosPrewiewData = async ({
+  photoId,
+  preview,
+}: {
+  photoId: string;
+  preview: Blob;
+}): Promise<void> => {
+  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
+  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
+
+  lruPhotosPreviewCacheManager.set(
+    photoId,
+    {
+      ...photoData,
+      preview: preview,
+    },
+    preview.size,
+  );
+};
+
+const getDatabasePhotosPrewiewData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
+  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
+  return lruPhotosPreviewCacheManager.get(photoId);
+};
+
+const updateDatabasePhotosSourceData = async ({
+  photoId,
+  source,
+}: {
+  photoId: string;
+  source: Blob;
+}): Promise<void> => {
+  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
+  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
+  console.log({ photoData });
+  lruPhotosCacheManager.set(
+    photoId,
+    {
+      ...photoData,
+      source: source,
+    },
+    source.size,
+  );
+};
+
+const getDatabasePhotosSourceData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
+  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
+  return lruPhotosCacheManager.get(photoId);
 };
 
 const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
@@ -134,6 +187,10 @@ export {
   updateDatabaseFilePrewiewData,
   getDatabaseFileSourceData,
   updateDatabaseFileSourceData,
+  getDatabasePhotosPrewiewData,
+  updateDatabasePhotosPrewiewData,
+  getDatabasePhotosSourceData,
+  updateDatabasePhotosSourceData,
   deleteDatabasePhotos,
   deleteDatabaseItems,
 };
