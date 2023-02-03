@@ -3,10 +3,10 @@ import { UilCheckCircle } from '@iconscout/react-unicons';
 
 import React, { useEffect, useState } from 'react';
 import navigationService from 'app/core/services/navigation.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const RedirectToAppView = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const qs = queryString.parse(navigationService.history.location.search);
   const [appUrl] = useState(`inxt://${qs.path || ''}`);
   const [anchorRef] = useState(React.createRef<HTMLAnchorElement>());
@@ -20,13 +20,13 @@ const RedirectToAppView = (): JSX.Element => {
       <div className="mb-4 rounded-1/2 bg-green">
         <UilCheckCircle size={50} className="scale-125 transform text-white" />
       </div>
-      <h1 className="mb-6 text-xl font-semibold">{t('views.redirectToApp.message')}</h1>
+      <h1 className="mb-6 text-xl font-semibold">{translate('views.redirectToApp.message')}</h1>
       <a
         className="w-full max-w-sm rounded-lg bg-blue-60 py-2 px-4 text-white no-underline hover:bg-blue-70 hover:text-white"
         ref={anchorRef}
         href={appUrl}
       >
-        {t('views.redirectToApp.goToApp')}
+        {translate('views.redirectToApp.goToApp')}
       </a>
     </div>
   );

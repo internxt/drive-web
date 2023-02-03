@@ -5,7 +5,7 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const OPERATION_TYPE = {
   UPLOAD: 'upload',
@@ -38,27 +38,31 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
   onCloseDialog,
   onSubmitButtonPressed,
 }: NameCollisionDialogProps) => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const options = [
     {
       operation: 'replace' as const,
-      name: t('modals.renameModal.replaceItem'),
+      name: translate('modals.renameModal.replaceItem'),
     },
     {
       operation: 'keep' as const,
-      name: t('modals.renameModal.keepBoth'),
+      name: translate('modals.renameModal.keepBoth'),
     },
   ];
   const [isLoading, setIsLoading] = useState(false);
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
-  const title = newItems?.length > 1 ? t('modals.renameModal.titleMultipleItems') : t('modals.renameModal.title');
+  const title =
+    newItems?.length > 1 ? translate('modals.renameModal.titleMultipleItems') : translate('modals.renameModal.title');
   const description =
     newItems?.length > 1
-      ? t('modals.renameModal.multipleDescription')
-      : t('modals.renameModal.description', { itemName: newItems[0]?.name });
+      ? translate('modals.renameModal.multipleDescription')
+      : translate('modals.renameModal.description', { itemName: newItems[0]?.name });
   const primaryButtonText = useMemo(
-    () => (operationType === OPERATION_TYPE.MOVE ? t('modals.renameModal.move') : t('modals.renameModal.upload')),
+    () =>
+      operationType === OPERATION_TYPE.MOVE
+        ? translate('modals.renameModal.move')
+        : translate('modals.renameModal.upload'),
     [operationType],
   );
 
@@ -131,7 +135,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {t('actions.cancel')}
+            {translate('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
             {primaryButtonText}

@@ -9,10 +9,10 @@ import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const CreateFolderDialog = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const currentBreadcrumb = namePath.slice(-1);
@@ -60,13 +60,13 @@ const CreateFolderDialog = (): JSX.Element => {
           onClose();
         })
         .catch((e) => {
-          const errorMessage = e?.message?.includes('already exists') && t('error.creatingFolder');
+          const errorMessage = e?.message?.includes('already exists') && translate('error.creatingFolder');
           setError(errorMessage);
           setIsLoading(false);
           return e;
         });
     } else {
-      setError(t('error.folderCannotBeEmpty') as string);
+      setError(translate('error.folderCannotBeEmpty') as string);
     }
   };
 
@@ -81,12 +81,12 @@ const CreateFolderDialog = (): JSX.Element => {
   return (
     <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
       <form className="flex flex-col space-y-5" onSubmit={(e) => onRenameButtonClicked(e)}>
-        <p className="text-2xl font-medium text-gray-100">{t('modals.renameItemDialog.title')}</p>
+        <p className="text-2xl font-medium text-gray-100">{translate('modals.renameItemDialog.title')}</p>
 
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label={t('modals.renameItemDialog.label') as string}
+          label={translate('modals.renameItemDialog.label') as string}
           value={folderName}
           placeholder={folderName}
           onChange={(name) => {
@@ -100,10 +100,10 @@ const CreateFolderDialog = (): JSX.Element => {
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {t('actions.cancel')}
+            {translate('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
-            {t('actions.rename')}
+            {translate('actions.rename')}
           </Button>
         </div>
       </form>

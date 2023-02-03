@@ -18,6 +18,7 @@ import './index.scss';
 import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
+import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -36,7 +37,9 @@ store.dispatch(referralsThunks.initializeThunk());
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <TranslationProvider>
+        <App />
+      </TranslationProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById('root'),

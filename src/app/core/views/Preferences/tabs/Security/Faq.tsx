@@ -1,31 +1,32 @@
 import { Disclosure } from '@headlessui/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretUp } from 'phosphor-react';
-import { useTranslation } from 'react-i18next';
 import Section from '../../components/Section';
 
 export default function Faq({ className = '' }: { className?: string }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
+
   const questions: { title: string; body: string }[] = [
     {
-      title: t('views.account.tabs.security.faq.faq1.title'),
-      body: t('views.account.tabs.security.faq.faq1.description'),
+      title: translate('views.account.tabs.security.faq.faq1.title'),
+      body: translate('views.account.tabs.security.faq.faq1.description'),
     },
     {
-      title: t('views.account.tabs.security.faq.faq2.title'),
-      body: t('views.account.tabs.security.faq.faq2.description'),
+      title: translate('views.account.tabs.security.faq.faq2.title'),
+      body: translate('views.account.tabs.security.faq.faq2.description'),
     },
     {
-      title: t('views.account.tabs.security.faq.faq3.title'),
-      body: t('views.account.tabs.security.faq.faq3.description'),
+      title: translate('views.account.tabs.security.faq.faq3.title'),
+      body: translate('views.account.tabs.security.faq.faq3.description'),
     },
     {
-      title: t('views.account.tabs.security.faq.faq4.title'),
-      body: t('views.account.tabs.security.faq.faq4.description'),
+      title: translate('views.account.tabs.security.faq.faq4.title'),
+      body: translate('views.account.tabs.security.faq.faq4.description'),
     },
   ];
 
   return (
-    <Section className={className} title={t('views.account.tabs.security.faq.title')}>
+    <Section className={className} title={translate('views.account.tabs.security.faq.title')}>
       {questions.map((question, i) => (
         <Disclosure defaultOpen={i === 0} key={i}>
           {({ open }) => (

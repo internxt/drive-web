@@ -18,13 +18,14 @@ import mastercardIcon from '../../../../../../assets/icons/card-brands/mastercar
 import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.png';
 import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
 import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [state, setState] = useState<{ tag: 'ready'; card: PaymentMethod['card'] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
   const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
     visa: visaIcon,
@@ -47,7 +48,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
   const card = state.tag === 'ready' ? state.card : null;
 
   return (
-    <Section className={className} title={t('views.account.tabs.billing.paymentMethod.head')}>
+    <Section className={className} title={translate('views.account.tabs.billing.paymentMethod.head')}>
       <Card>
         {state.tag === 'ready' && card ? (
           <div className="flex">
@@ -62,7 +63,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
               <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
             </div>
             <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
-              {t('actions.edit')}
+              {translate('actions.edit')}
             </Button>
           </div>
         ) : state.tag === 'loading' ? (
@@ -81,7 +82,7 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
 
 function PaymentMethodModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const [setupIntentSecret, setSetupIntentSecret] = useState<null | string>(null);
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
   useEffectAsync(async () => {
     if (isOpen) {
@@ -101,7 +102,9 @@ function PaymentMethodModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.billing.paymentMethod.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">
+        {translate('views.account.tabs.billing.paymentMethod.title')}
+      </h1>
       {setupIntentSecret ? (
         <Elements stripe={paymentService.getStripe()} options={{ clientSecret: setupIntentSecret }}>
           <PaymentForm onClose={onClose} />
@@ -114,7 +117,7 @@ function PaymentMethodModal({ isOpen, onClose }: { isOpen: boolean; onClose: () 
 }
 function PaymentForm({ onClose }: { onClose: () => void }) {
   const [error, setError] = useState<null | string>(null);
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const stripe = useStripe();
   const elements = useElements();
   async function handleSubmit() {
@@ -137,10 +140,10 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
       {error && <p className="mt-2 text-sm text-red-std">{error}</p>}
       <div className="mt-3 flex items-center justify-end">
         <Button variant="secondary" onClick={onClose}>
-          {t('actions.cancel')}
+          {translate('actions.cancel')}
         </Button>
         <Button onClick={handleSubmit} className="ml-2">
-          {t('actions.save')}
+          {translate('actions.save')}
         </Button>
       </div>
     </>
@@ -148,11 +151,11 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
 }
 
 function Empty() {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   return (
     <div className="text-center">
-      <h1 className="font-medium text-gray-60">{t('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{t('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
+      <h1 className="font-medium text-gray-60">{translate('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
+      <p className="text-sm text-gray-50">{translate('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
     </div>
   );
 }

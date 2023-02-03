@@ -6,7 +6,7 @@ import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
 import { Network } from '../../network.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FolderPackage {
   folderId: number;
@@ -32,14 +32,14 @@ export async function downloadSharedFolderUsingStreamSaver(
     progressCallback: (progress: number) => void;
   },
 ): Promise<void> {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const downloadingSize: Record<number, number> = {};
   const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+    throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${sharedFolderMeta.name}.zip`, {});
@@ -89,7 +89,7 @@ export async function downloadSharedFolderUsingStreamSaver(
             fileToken: bucketToken,
             progressCallback: (fileProgress) => {
               downloadingSize[file.id] = file.size * fileProgress;
-              const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+              const totalDownloadedSize = Object.values(downloadingSize).reduce((translate, x) => translate + x, 0);
               const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
 
               (options.progressCallback || (() => undefined))(totalProgress);

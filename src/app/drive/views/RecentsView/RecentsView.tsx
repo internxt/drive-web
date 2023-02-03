@@ -8,7 +8,7 @@ import { storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -17,7 +17,7 @@ export interface RecentsViewProps {
 }
 
 const RecentsView = (props: RecentsViewProps) => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   useEffect(() => {
     props.dispatch(storageThunks.resetNamePathThunk());
     refreshRecents();
@@ -37,7 +37,7 @@ const RecentsView = (props: RecentsViewProps) => {
 
   return (
     <DriveExplorer
-      title={t('views.recents.head') as string}
+      title={translate('views.recents.head') as string}
       titleClassName="px-3"
       isLoading={isLoadingRecents}
       items={items}

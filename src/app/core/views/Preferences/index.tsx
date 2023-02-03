@@ -1,5 +1,5 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { createContext, useEffect, useRef, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
@@ -15,16 +15,16 @@ export const TabContext = createContext<{
 }>({ activeTab: 'account', setActiveTab: () => undefined });
 
 export default function Preferences(): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const TABS: {
     id: PreferencesTabID;
     label: string;
     component: React.FunctionComponent<{ className?: string }>;
   }[] = [
-    { id: 'account', label: t('views.account.tabs.account.label'), component: AccountTab },
-    { id: 'billing', label: t('views.account.tabs.billing.label'), component: BillingTab },
-    { id: 'plans', label: t('views.account.tabs.plans.label'), component: PlansTab },
-    { id: 'security', label: t('views.account.tabs.security.label'), component: SecurityTab },
+    { id: 'account', label: translate('views.account.tabs.account.label'), component: AccountTab },
+    { id: 'billing', label: translate('views.account.tabs.billing.label'), component: BillingTab },
+    { id: 'plans', label: translate('views.account.tabs.plans.label'), component: PlansTab },
+    { id: 'security', label: translate('views.account.tabs.security.label'), component: SecurityTab },
   ];
 
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');

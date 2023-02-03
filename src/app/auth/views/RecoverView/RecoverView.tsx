@@ -17,10 +17,10 @@ import { decryptTextWithKey } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function RecoverView(): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -199,13 +199,13 @@ export default function RecoverView(): JSX.Element {
 
             {showLastPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">{t('error.lastPasswordError')}</span>
+                <span className="w-56 text-sm font-medium text-red-60">{translate('error.lastPasswordError')}</span>
               </div>
             )}
             {showCurrentPasswordError && (
               <div className="my-1 flex">
                 <span className="w-56 text-sm font-medium text-red-60">
-                  The current password you introduce doesn't match. Please make sure it is correct.
+                  The current password you introduce doesn'translate match. Please make sure it is correct.
                 </span>
               </div>
             )}
@@ -219,7 +219,7 @@ export default function RecoverView(): JSX.Element {
             </div>
 
             <div className="mt-3 flex w-full justify-center text-sm">
-              <span className="mr-2">Don't you know what this is about?</span>
+              <span className="mr-2">Don'translate you know what this is about?</span>
               <Link to="/app">Go home</Link>
             </div>
           </form>

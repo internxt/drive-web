@@ -14,6 +14,7 @@ import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkelet
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -25,7 +26,7 @@ export default function BackupsAsFoldersList({
   onFolderPush: (folder: DriveFolderData) => void;
 }): JSX.Element {
   const dispatch = useDispatch();
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [isLoading, setIsloading] = useState(true);
   const Skeleton = Array(10)
     .fill(0)
@@ -80,11 +81,11 @@ export default function BackupsAsFoldersList({
        bg-white py-3 text-sm font-semibold text-neutral-400"
         >
           <div className="box-content flex w-0.5/12 items-center justify-start pl-3"></div>
-          <div className="flex flex-grow items-center px-3">{t('drive.list.columns.name')}</div>
+          <div className="flex flex-grow items-center px-3">{translate('drive.list.columns.name')}</div>
           <div className="hidden w-2/12 items-center xl:flex"></div>
-          <div className="hidden w-3/12 items-center lg:flex">{t('drive.list.columns.modified')}</div>
-          <div className="flex w-2/12 items-center">{t('drive.list.columns.size')}</div>
-          <div className="flex w-1/12 items-center">{t('drive.list.columns.actions')}</div>
+          <div className="hidden w-3/12 items-center lg:flex">{translate('drive.list.columns.modified')}</div>
+          <div className="flex w-2/12 items-center">{translate('drive.list.columns.size')}</div>
+          <div className="flex w-1/12 items-center">{translate('drive.list.columns.actions')}</div>
         </div>
       )}
       <div className="flex-grow overflow-y-auto">

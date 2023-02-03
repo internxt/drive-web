@@ -16,22 +16,22 @@ import shareService from 'app/share/services/share.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
   item: DriveItemData;
 }
 
-function copyShareLink(type: string, code: string, token: string, t: TFunction) {
+function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
   const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
-  notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
 const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const isSavedAlreadyWithPassword = !!share?.hashed_password;
   const dispatch = useAppDispatch();
   const [itemPassword, setItemPassword] = useState('');
@@ -55,7 +55,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       itemId: share?.id as string,
       plainPassword: isPasswordProtected ? itemPassword : null,
     });
-    notificationsService.show({ text: t('notificationMessages.linkUpdated'), type: ToastType.Info });
+    notificationsService.show({ text: translate('notificationMessages.linkUpdated'), type: ToastType.Info });
 
     close();
   };
@@ -65,7 +65,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   return (
     <BaseDialog
       isOpen={isOpen}
-      title={t('shareItemDialog.title')}
+      title={translate('shareItemDialog.title')}
       subTitle={itemFullName}
       dialogRounded={true}
       panelClasses="w-screen max-w-lg"
@@ -75,11 +75,11 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       weightIcon="light"
       dataTest="share-item-dialog"
     >
-      <hr className="border-t-1 mb-5 w-screen border-neutral-40" />
+      <hr className="border-translate-1 mb-5 w-screen border-neutral-40" />
       <div className="mb-5 flex flex-col">
         <div className="mx-5">
           <div className="justify-left flex flex-col">
-            <p className="text-base font-medium">{t('shareItemDialog.access')}</p>
+            <p className="text-base font-medium">{translate('shareItemDialog.access')}</p>
             <div>
               <label className="flex flex-row items-center">
                 <input
@@ -87,30 +87,30 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
                   checked={isPasswordProtected}
                   onChange={() => setIsPasswordProtected(!isPasswordProtected)}
                 />
-                <p className="ml-2 text-base font-medium">{t('shareItemDialog.protect')}</p>
+                <p className="ml-2 text-base font-medium">{translate('shareItemDialog.protect')}</p>
               </label>
             </div>
-            <p className="px-6 text-sm font-normal">{t('shareItemDialog.addSecurePassword')}</p>
+            <p className="px-6 text-sm font-normal">{translate('shareItemDialog.addSecurePassword')}</p>
           </div>
           <div className="ml-6 mt-3 w-80">
             <PasswordInput
               value={isSavedAlreadyWithPassword ? (passwordInputVirgin ? 'xxxxxxxxx' : itemPassword) : itemPassword}
-              placeholder={t('shareItemDialog.password') as string}
+              placeholder={translate('shareItemDialog.password') as string}
               disabled={!isPasswordProtected}
               onChange={(evt) => setItemPassword(evt.target.value)}
               onFocus={() => setPasswordInputVirgin(false)}
             />
           </div>
-          <hr className="border-t-1 my-6 border-neutral-40" />
+          <hr className="border-translate-1 my-6 border-neutral-40" />
           <div className="mb-8 flex flex-row justify-between">
             <div className="flex w-52 flex-col items-start">
-              <p className="text-base font-medium">{t('shareItemDialog.views')}</p>
+              <p className="text-base font-medium">{translate('shareItemDialog.views')}</p>
               <p className="text-base font-normal">
-                {share?.views === 0 ? t('shareItemDialog.noViewsYet') : share?.views}
+                {share?.views === 0 ? translate('shareItemDialog.noViewsYet') : share?.views}
               </p>
             </div>
             <div className="flex w-52 flex-col items-start">
-              <p className="text-base font-medium">{t('shareItemDialog.dateCreated')}</p>
+              <p className="text-base font-medium">{translate('shareItemDialog.dateCreated')}</p>
               <p className="text-base font-normal">
                 {dateService.format(dateShareLink as string, 'dddd, D MMM YYYY, hh:mm')}
               </p>
@@ -130,27 +130,29 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
                 const itemType = share?.isFolder || temporaryShare.is_folder ? 'folder' : 'file';
                 const encryptedCode = share?.code || (temporaryShare?.encryptedCode as string);
                 const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
-                copyShareLink(itemType, plainCode, share?.token as string, t);
+                copyShareLink(itemType, plainCode, share?.token as string, translate as TFunction);
               }}
             >
               {isLinkCopied ? (
                 <>
                   <Check size={24} className="mr-2 text-primary" />
-                  <p className="text-base font-medium text-primary">{t('shareItemDialog.buttons.linkCopied')}</p>
+                  <p className="text-base font-medium text-primary">
+                    {translate('shareItemDialog.buttons.linkCopied')}
+                  </p>
                 </>
               ) : (
                 <>
                   <Copy size={24} className="mr-2 text-primary" />
-                  <p className="text-base font-medium text-primary">{t('shareItemDialog.buttons.copyLink')}</p>
+                  <p className="text-base font-medium text-primary">{translate('shareItemDialog.buttons.copyLink')}</p>
                 </>
               )}
             </button>
             <div className="flex">
               <button onClick={onClose} className="mr-2 rounded-lg bg-gray-5 px-5 py-2 text-base font-medium">
-                {t('shareItemDialog.buttons.cancel')}
+                {translate('shareItemDialog.buttons.cancel')}
               </button>
               <button onClick={onSubmit} className="rounded-lg bg-primary px-5 py-2 text-base font-medium text-white">
-                {t('shareItemDialog.buttons.save')}
+                {translate('shareItemDialog.buttons.save')}
               </button>
             </div>
           </div>

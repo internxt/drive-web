@@ -8,9 +8,10 @@ import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { useAppSelector } from 'app/store/hooks';
 import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
 import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const referrals = useAppSelector((state) => state.referrals.list);
@@ -20,11 +21,11 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
       setIsLoading(true);
       await userService.inviteAFriend(email);
       setEmail('');
-      notificationsService.show({ text: t('success.inviteAFriend', { email }), type: ToastType.Info });
+      notificationsService.show({ text: translate('success.inviteAFriend', { email }), type: ToastType.Info });
     } catch (err) {
       const castedError = errorService.castError(err);
       notificationsService.show({
-        text: t('error.inviteAFriend', { message: castedError.message }),
+        text: translate('error.inviteAFriend', { message: castedError.message }),
         type: ToastType.Error,
       });
     } finally {
@@ -34,14 +35,14 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
 
   return (
     <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 bg-neutral-10 p-6`}>
-      <span className="mb-1 block w-full text-center font-semibold">{t('inviteAFriend.title')}</span>
+      <span className="mb-1 block w-full text-center font-semibold">{translate('inviteAFriend.title')}</span>
       <span className="m-auto block max-w-xs text-center text-sm text-neutral-100">
-        {t('inviteAFriend.descriptionWidget', { N: inviteAFriendReferral?.steps })}
+        {translate('inviteAFriend.descriptionWidget', { N: inviteAFriendReferral?.steps })}
       </span>
       <div className="mt-6 flex">
         <input
           className="no-ring semi-dense mr-2 flex-grow border border-neutral-30"
-          placeholder={t('form.fields.email.placeholder') as string}
+          placeholder={translate('form.fields.email.placeholder') as string}
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -52,7 +53,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
           className="primary inverse"
           onClick={onSendButtonClicked}
         >
-          {t('inviteAFriend.actions.sendInvitation') as string}
+          {translate('inviteAFriend.actions.sendInvitation') as string}
         </BaseButton>
       </div>
     </div>

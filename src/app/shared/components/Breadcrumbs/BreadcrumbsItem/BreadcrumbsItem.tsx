@@ -25,14 +25,14 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { uiActions } from '../../../../store/slices/ui';
-import i18n from '../../../../i18n/services/i18n.service';
 import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -42,7 +42,7 @@ interface BreadcrumbsItemProps {
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const namePath = useAppSelector((state) => state.storage.namePath);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
@@ -166,7 +166,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   const onDeleteButtonClicked = async () => {
     const previousBreadcrumb = props.items[props.items.length - 2];
-    await moveItemsToTrash(currentFolder, t);
+    await moveItemsToTrash(currentFolder, translate as TFunction);
     onItemClicked(previousBreadcrumb);
   };
 
@@ -242,11 +242,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <FolderSimplePlus size={20} />
-                    <p className="ml-3">{t('actions.upload.folder')}</p>
+                    <p className="ml-3">{translate('actions.upload.folder')}</p>
                   </div>
                 )}
               </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              <div className="border-translate my-0.5 mx-3 border-gray-10" />
               {!isBreadcrumbItemShared ? (
                 <Menu.Item>
                   {({ active }) => (
@@ -257,7 +257,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                     >
                       <Link size={20} />
-                      <p className="ml-3">{t('drive.dropdown.getLink')}</p>
+                      <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
                     </div>
                   )}
                 </Menu.Item>
@@ -272,7 +272,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <Copy size={20} />
-                        <p className="ml-3">{t('drive.dropdown.copyLink')}</p>
+                        <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -285,7 +285,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <Gear size={20} />
-                        <p className="ml-3">{t('drive.dropdown.linkSettings')}</p>
+                        <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -298,7 +298,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <LinkBreak size={20} />
-                        <p className="ml-3">{t('drive.dropdown.deleteLink')}</p>
+                        <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -313,7 +313,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <PencilSimple size={20} />
-                    <p className="ml-3">{t('drive.dropdown.rename')}</p>
+                    <p className="ml-3">{translate('drive.dropdown.rename')}</p>
                   </div>
                 )}
               </Menu.Item>
@@ -326,11 +326,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <ArrowsOutCardinal size={20} />
-                    <p className="ml-3">{t('drive.dropdown.move')}</p>
+                    <p className="ml-3">{translate('drive.dropdown.move')}</p>
                   </div>
                 )}
               </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              <div className="border-translate my-0.5 mx-3 border-gray-10" />
               <Menu.Item>
                 {({ active }) => (
                   <div
@@ -340,11 +340,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <DownloadSimple size={20} />
-                    <p className="ml-3">{t('drive.dropdown.download')}</p>
+                    <p className="ml-3">{translate('drive.dropdown.download')}</p>
                   </div>
                 )}
               </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
+              <div className="border-translate my-0.5 mx-3 border-gray-10" />
               <Menu.Item>
                 {({ active }) => (
                   <div
@@ -354,7 +354,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                   >
                     <Trash size={20} />
-                    <p className="ml-3">{t('drive.dropdown.moveToTrash')}</p>
+                    <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
                   </div>
                 )}
               </Menu.Item>

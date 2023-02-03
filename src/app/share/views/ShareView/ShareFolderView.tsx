@@ -22,7 +22,7 @@ import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -43,7 +43,7 @@ interface ShareViewState {
 const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to proceed';
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const FOLDERS_LIMIT_BY_REQUEST = 16;
   const FILES_LIMIT_BY_REQUEST = 128;
   const token = props.match.params.token;
@@ -87,7 +87,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
          */
-        throw new Error(t('error.linkExpired') as string);
+        throw new Error(translate('error.linkExpired') as string);
       }
     });
   }, []);
@@ -207,7 +207,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{t('actions.download')}</span>
+        <span className="font-medium">{translate('actions.download')}</span>
       </>
     );
   } else {
@@ -217,13 +217,13 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{t('actions.downloading')}</span>
+          <span>{translate('actions.downloading')}</span>
           {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{t('actions.downloaded')}</span>
+          <span className="font-medium">{translate('actions.downloaded')}</span>
         </>
       );
   }

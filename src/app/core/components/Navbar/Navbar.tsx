@@ -17,7 +17,7 @@ import { Gear, MagnifyingGlass } from 'phosphor-react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -32,7 +32,8 @@ interface NavbarProps {
 }
 
 const Navbar = (props: NavbarProps) => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
+
   const onSearchButtonClicked = (): void => {
     // TODO: do search
   };
@@ -81,7 +82,7 @@ const Navbar = (props: NavbarProps) => {
             value={storageFilters.text}
             onChange={onSearchInputChange}
             type="text"
-            placeholder={t('general.searchBar') as string}
+            placeholder={translate('general.searchBar') as string}
             className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:w-full focus:ring-0"
           />
           <MagnifyingGlass

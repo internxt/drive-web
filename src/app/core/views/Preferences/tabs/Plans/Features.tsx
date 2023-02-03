@@ -1,41 +1,41 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ArrowsClockwise, Check, LockKey, Shield } from 'phosphor-react';
-import { useTranslation } from 'react-i18next';
 
 export default function Features({ className = '' }: { className?: string }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const sections: { title: string; icon: typeof Shield; points: string[] }[] = [
     {
-      title: t('views.account.tabs.plans.features.sections.section1.title'),
+      title: translate('views.account.tabs.plans.features.sections.section1.title'),
       icon: Shield,
       points: [
-        t('views.account.tabs.plans.features.sections.section1.point1'),
-        t('views.account.tabs.plans.features.sections.section1.point2'),
-        t('views.account.tabs.plans.features.sections.section1.point3'),
+        translate('views.account.tabs.plans.features.sections.section1.point1'),
+        translate('views.account.tabs.plans.features.sections.section1.point2'),
+        translate('views.account.tabs.plans.features.sections.section1.point3'),
       ],
     },
     {
-      title: t('views.account.tabs.plans.features.sections.section2.title'),
+      title: translate('views.account.tabs.plans.features.sections.section2.title'),
       icon: LockKey,
       points: [
-        t('views.account.tabs.plans.features.sections.section2.point1'),
-        t('views.account.tabs.plans.features.sections.section2.point2'),
-        t('views.account.tabs.plans.features.sections.section2.point3'),
+        translate('views.account.tabs.plans.features.sections.section2.point1'),
+        translate('views.account.tabs.plans.features.sections.section2.point2'),
+        translate('views.account.tabs.plans.features.sections.section2.point3'),
       ],
     },
     {
-      title: t('views.account.tabs.plans.features.sections.section3.title'),
+      title: translate('views.account.tabs.plans.features.sections.section3.title'),
       icon: ArrowsClockwise,
       points: [
-        t('views.account.tabs.plans.features.sections.section3.point1'),
-        t('views.account.tabs.plans.features.sections.section3.point2'),
-        t('views.account.tabs.plans.features.sections.section3.point3'),
+        translate('views.account.tabs.plans.features.sections.section3.point1'),
+        translate('views.account.tabs.plans.features.sections.section3.point2'),
+        translate('views.account.tabs.plans.features.sections.section3.point3'),
       ],
     },
   ];
   return (
     <div className={`${className}`}>
       <h1 className="text-2xl font-medium text-gray-100 lg:text-center">
-        {t('views.account.tabs.plans.features.title')}
+        {translate('views.account.tabs.plans.features.title')}
       </h1>
       <div className="mt-7 justify-between space-y-6 lg:flex lg:space-y-0 lg:space-x-6">
         {sections.map((section) => (

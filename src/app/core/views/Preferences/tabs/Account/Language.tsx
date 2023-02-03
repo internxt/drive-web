@@ -6,6 +6,7 @@ import Card from 'app/shared/components/Card';
 import { CaretDown } from 'phosphor-react';
 import { Menu, Transition } from '@headlessui/react';
 import localStorageService from 'app/core/services/local-storage.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 function getLanguage(): string {
   const deviceLanguage = localStorageService.get('language') as string;
@@ -15,7 +16,7 @@ function getLanguage(): string {
 const deviceLang = getLanguage();
 
 export default function Language(): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [lang, setLang] = React.useState<string>(deviceLang);
   const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>(
     deviceLang === 'en' ? 'English (US)' : 'Español (ES)',
@@ -53,7 +54,7 @@ export default function Language(): JSX.Element {
         >
           <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
             {menuItems && (
-              <div className="w-full border-t border-gray-10">
+              <div className="border-translate w-full border-gray-10">
                 {menuItems?.map((item, index) => (
                   <div className="pt-2" key={'menuitem-' + index}>
                     <Menu.Item>{item}</Menu.Item>
@@ -68,7 +69,7 @@ export default function Language(): JSX.Element {
   }
 
   return (
-    <Section className="" title={t('lang.title')}>
+    <Section className="" title={translate('lang.title')}>
       <Card>
         <LangDropdown
           title={
@@ -82,19 +83,19 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang('en');
                 i18next.changeLanguage('en');
-                setCurrentLangText(t('lang.en') as string);
+                setCurrentLangText(translate('lang.en') as string);
               }}
             >
-              <p>{t('lang.en')}</p>
+              <p>{translate('lang.en')}</p>
             </MenuItem>,
             <MenuItem
               onClick={() => {
                 setLang('es');
                 i18next.changeLanguage('es');
-                setCurrentLangText(t('lang.es') as string);
+                setCurrentLangText(translate('lang.es') as string);
               }}
             >
-              <p>{t('lang.es')}</p>
+              <p>{translate('lang.es')}</p>
             </MenuItem>,
           ]}
         />

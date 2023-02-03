@@ -19,7 +19,8 @@ import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -28,7 +29,7 @@ interface MoveItemsDialogProps {
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
   const [destinationId, setDestinationId] = useState(0);
@@ -156,7 +157,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId, t);
+        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction);
       }
 
       props.onItemsMoved && props.onItemsMoved();
@@ -177,7 +178,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         {/* Title */}
         <div className="flex text-2xl font-medium text-gray-100">
           <span className="flex whitespace-nowrap">
-            {`${props.isTrash ? t('actions.restore') : t('actions.move')}`} "
+            {`${props.isTrash ? translate('actions.restore') : translate('actions.move')}`} "
           </span>
           <span className="max-w-fit flex-1 truncate">{itemsToMove[0]?.name}</span>
           <span className="flex">"</span>
@@ -230,13 +231,13 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
           <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
             <div className="flex cursor-pointer items-center text-base font-medium text-primary">
               <FolderSimplePlus className="mr-2 h-6 w-6" />
-              <span>{t('actions.upload.folder')}</span>
+              <span>{translate('actions.upload.folder')}</span>
             </div>
           </BaseButton>
 
           <div className="flex space-x-2">
             <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-              {t('actions.cancel')}
+              {translate('actions.cancel')}
             </Button>
             <Button
               disabled={isLoading}
@@ -247,11 +248,11 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             >
               {isLoading
                 ? !props.isTrash
-                  ? t('actions.moving')
-                  : t('actions.navigating')
+                  ? translate('actions.moving')
+                  : translate('actions.navigating')
                 : !props.isTrash
-                ? t('actions.move')
-                : t('actions.restoreHere')}
+                ? translate('actions.move')
+                : translate('actions.restoreHere')}
             </Button>
           </div>
         </div>

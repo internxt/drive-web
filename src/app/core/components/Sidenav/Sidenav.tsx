@@ -18,6 +18,7 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -32,7 +33,8 @@ const Sidenav = (props: SidenavProps) => {
   const [state, setState] = useState({
     isLgScreen: screenService.isLg(),
   });
-  const { t } = useTranslation();
+
+  const { translate } = useTranslationContext();
 
   useEffect(() => {
     window.addEventListener('resize', onWindowResized);
@@ -81,13 +83,13 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
         <div className="mt-2">
-          <SidenavItem label={t('sideNav.drive')} to="/app" Icon={FolderSimple} />
-          <SidenavItem label={t('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
-          <SidenavItem label={t('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
-          <SidenavItem label={t('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
-          <SidenavItem label={t('sideNav.recents')} to="/app/recents" Icon={Clock} />
-          <SidenavItem label={t('sideNav.trash')} to="/app/trash" Icon={Trash} />
-          <SidenavItem label={t('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
+          <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
+          <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
+          <SidenavItem label={translate('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
+          <SidenavItem label={translate('sideNav.recents')} to="/app/recents" Icon={Clock} />
+          <SidenavItem label={translate('sideNav.trash')} to="/app/trash" Icon={Trash} />
+          <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
         </div>
         {props.subscription && props.subscription.type === 'free' ? (
           <ReferralsWidget />

@@ -2,6 +2,7 @@ import { IconProps } from 'phosphor-react';
 import { ReactNode } from 'react';
 import { matchPath, NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SidenavItemProps {
   label: string;
@@ -13,7 +14,8 @@ interface SidenavItemProps {
 
 const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): JSX.Element => {
   const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
-  const { t } = useTranslation();
+
+  const { translate } = useTranslationContext();
 
   const content: ReactNode = (
     <div className="flex h-10 w-full items-center justify-between">
@@ -23,7 +25,7 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
       </div>
       {showNew && (
         <div className="h-5 rounded-full bg-primary px-2.5 text-xs font-medium uppercase text-white">
-          <p className="leading-5">{t('general.new')}</p>
+          <p className="leading-5">{translate('general.new')}</p>
         </div>
       )}
     </div>

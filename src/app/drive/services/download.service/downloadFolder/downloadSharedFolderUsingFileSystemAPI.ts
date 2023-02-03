@@ -3,7 +3,7 @@ import errorService from 'app/core/services/error.service';
 import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
 import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
 import { Iterator } from 'app/core/collections';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FolderRef {
   name: string;
@@ -28,16 +28,16 @@ export async function downloadSharedFolderUsingFileSystemAPI(
     progressCallback: (downloadedBytes: number) => void;
   },
 ): Promise<void> {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const downloads: { [key: SharedDirectoryFolder['id']]: number } = {};
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+    throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const getTotalDownloadedBytes = () => {
-    return Object.values(downloads).reduce((t, x) => t + x, 0);
+    return Object.values(downloads).reduce((translate, x) => translate + x, 0);
   };
 
   const progressIntervalId = setInterval(() => {

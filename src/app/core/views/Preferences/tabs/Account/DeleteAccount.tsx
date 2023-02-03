@@ -1,5 +1,5 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import authService from '../../../../../auth/services/auth.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -12,7 +12,7 @@ import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
 export default function DeleteAccount({ className = '' }: { className?: string }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -24,7 +24,7 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   function onClick() {
     if (plan.subscription?.type === 'subscription') {
       notificationsService.show({
-        text: t('views.account.tabs.account.deleteAccount.isSubscribed'),
+        text: translate('views.account.tabs.account.deleteAccount.isSubscribed'),
         type: ToastType.Info,
       });
     } else {
@@ -37,7 +37,7 @@ export default function DeleteAccount({ className = '' }: { className?: string }
       setIsLoading(true);
       await authService.cancelAccount();
       notificationsService.show({
-        text: t('views.account.tabs.account.deleteAccount.confirmationEmail'),
+        text: translate('views.account.tabs.account.deleteAccount.confirmationEmail'),
         type: ToastType.Success,
       });
       onClose();
@@ -50,11 +50,11 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   }
 
   return (
-    <Section className={className} title={t('views.account.tabs.account.deleteAccount.head')}>
+    <Section className={className} title={translate('views.account.tabs.account.deleteAccount.head')}>
       <Card>
-        <p className="text-gray-80">{t('views.account.tabs.account.deleteAccount.description')}</p>
+        <p className="text-gray-80">{translate('views.account.tabs.account.deleteAccount.description')}</p>
         <Button className="mt-5" variant="secondary" onClick={onClick}>
-          {t('views.account.tabs.account.deleteAccount.head')}
+          {translate('views.account.tabs.account.deleteAccount.head')}
         </Button>
       </Card>
       <Dialog
@@ -62,10 +62,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
         onClose={onClose}
         onSecondaryAction={onClose}
         onPrimaryAction={onConfirm}
-        secondaryAction={t('modals.deleteAccountModal.cancel')}
-        primaryAction={t('modals.deleteAccountModal.confirm')}
-        title={t('modals.deleteAccountModal.title')}
-        subtitle={t('modals.deleteAccountModal.subtitle')}
+        secondaryAction={translate('modals.deleteAccountModal.cancel')}
+        primaryAction={translate('modals.deleteAccountModal.confirm')}
+        title={translate('modals.deleteAccountModal.title')}
+        subtitle={translate('modals.deleteAccountModal.subtitle')}
         primaryActionColor="danger"
         isLoading={isLoading}
       />

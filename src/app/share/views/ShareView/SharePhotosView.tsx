@@ -20,7 +20,7 @@ import JSZip from 'jszip';
 import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SharePhotosProps {
   match: match<{
@@ -30,7 +30,7 @@ interface SharePhotosProps {
 }
 
 const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const { token, code } = props.match.params;
 
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -64,7 +64,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
        * TODO: Check that the server returns proper error message instead
        * of assuming that everything means that the link has expired
        */
-      throw new Error(t('error.linkExpired') as string);
+      throw new Error(translate('error.linkExpired') as string);
     });
   };
 
@@ -94,7 +94,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
-          throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+          throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
         const canUseReadableStreamMethod =
           'WritableStream' in window &&
@@ -187,7 +187,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{t('actions.download')}</span>
+        <span className="font-medium">{translate('actions.download')}</span>
       </>
     );
   } else {
@@ -197,13 +197,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{t('actions.downloading')}</span>
+          <span>{translate('actions.downloading')}</span>
           {<span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{t('actions.downloaded')}</span>
+          <span className="font-medium">{translate('actions.downloaded')}</span>
         </>
       );
   }

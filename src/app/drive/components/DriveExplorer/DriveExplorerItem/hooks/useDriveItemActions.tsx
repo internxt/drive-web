@@ -15,7 +15,8 @@ import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -42,7 +43,7 @@ interface DriveItemActions {
 }
 
 const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const [nameEditPending, setNameEditPending] = useState(false);
   const [nameInputRef] = useState(createRef<HTMLInputElement>());
@@ -163,7 +164,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onDeleteButtonClicked = (e: React.MouseEvent): void => {
     e.stopPropagation();
-    moveItemsToTrash([item], t);
+    moveItemsToTrash([item], translate as TFunction);
   };
 
   const onDeletePermanentlyButtonClicked = (e: React.MouseEvent): void => {

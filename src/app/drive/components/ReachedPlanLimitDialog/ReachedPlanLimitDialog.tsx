@@ -4,10 +4,10 @@ import BaseButton from 'app/shared/components/forms/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const dispatch = useAppDispatch();
 
@@ -27,16 +27,16 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   return (
     <BaseDialog title="Run out of space" isOpen={isOpen} onClose={onClose}>
       <span className="my-6 block w-full px-8 text-center text-base text-neutral-900">
-        {t('error.noSpaceAvailable')}
+        {translate('error.noSpaceAvailable')}
       </span>
 
       <div className="flex w-full items-center justify-center bg-neutral-20 py-6">
         <div className="flex w-64 px-8">
           <BaseButton onClick={() => onClose()} className="transparent mr-2 w-11/12">
-            {t('actions.cancel') as string}
+            {translate('actions.cancel') as string}
           </BaseButton>
           <BaseButton className="primary ml-2 w-11/12" onClick={() => onAccept()}>
-            {t('actions.upgrade') as string}
+            {translate('actions.upgrade') as string}
           </BaseButton>
         </div>
       </div>

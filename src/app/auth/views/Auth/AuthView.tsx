@@ -16,10 +16,10 @@ import errorService from 'app/core/services/error.service';
 import { useEffect, useState } from 'react';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function Auth(): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
 
   const postMessage = (data: Record<string, unknown>) => {
@@ -66,7 +66,7 @@ export default function Auth(): JSX.Element {
 
   //   grecaptcha.ready(() => {
   //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-  //       // Can't wait or token will expire
+  //       // Can'translate wait or token will expire
   //       data.token = token;
   //       signup(data);
   //     });
@@ -227,7 +227,7 @@ export default function Auth(): JSX.Element {
       await userService.sendDeactivationEmail(email);
       postMessage({ action: 'recover_email_sent' });
     } catch (err: unknown) {
-      postMessage({ action: 'error', msg: t('error.deactivatingAccount') });
+      postMessage({ action: 'error', msg: translate('error.deactivatingAccount') });
     }
   };
 

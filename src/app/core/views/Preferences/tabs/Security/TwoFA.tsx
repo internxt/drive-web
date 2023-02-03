@@ -17,11 +17,11 @@ import Copyable from '../../../../../shared/components/Copyable';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Input from '../../../../../shared/components/Input';
 import errorService from '../../../../services/error.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function TwoFA({ className = '', password }: { className?: string; password: string }): JSX.Element {
   const [status, setStatus] = useState<'loading' | 'enabled' | 'disabled'>('loading');
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
   useEffect(() => {
     userHas2FAStored().then(({ tfaEnabled }) => {
@@ -38,22 +38,24 @@ export default function TwoFA({ className = '', password }: { className?: string
   const [disableModalOpen, setDisableModalOpen] = useState(false);
 
   return (
-    <Section className={className} title={t('views.account.tabs.security.2FA.title')}>
+    <Section className={className} title={translate('views.account.tabs.security.2FA.title')}>
       <Card>
-        <p className="text-gray-60">{t('views.account.tabs.security.2FA.description')}</p>
+        <p className="text-gray-60">{translate('views.account.tabs.security.2FA.description')}</p>
         <div className="mt-3">
           {status === 'enabled' ? (
             <div className="flex">
               <div className="flex items-center font-medium text-green">
                 <CheckCircle size={20} weight="fill" />
-                <p className="ml-1">{t('views.account.tabs.security.2FA.enabled')}</p>
+                <p className="ml-1">{translate('views.account.tabs.security.2FA.enabled')}</p>
                 <Button className="ml-4" variant="secondary" onClick={() => setDisableModalOpen(true)}>
-                  {t('views.account.tabs.security.2FA.disable')}
+                  {translate('views.account.tabs.security.2FA.disable')}
                 </Button>
               </div>
             </div>
           ) : status === 'disabled' ? (
-            <Button onClick={() => setEnableModalOpen(true)}>{t('views.account.tabs.security.2FA.button')}</Button>
+            <Button onClick={() => setEnableModalOpen(true)}>
+              {translate('views.account.tabs.security.2FA.button')}
+            </Button>
           ) : (
             <div className="flex h-10 items-center">
               <Spinner className="block h-5 w-5 text-primary" />
@@ -85,7 +87,7 @@ function EnableModal({
   onClose: () => void;
   onEnabled: () => void;
 }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   useEffect(() => {
     if (isOpen) {
       setStep(0);
@@ -97,15 +99,15 @@ function EnableModal({
 
   const [step, setStep] = useState(0);
   const steps = [
-    t('views.account.tabs.security.2FA.modal.steps.download.title'),
-    t('views.account.tabs.security.2FA.modal.steps.qr.title'),
-    t('views.account.tabs.security.2FA.modal.steps.backup-key.title'),
-    t('views.account.tabs.security.2FA.modal.steps.enable.title'),
+    translate('views.account.tabs.security.2FA.modal.steps.download.title'),
+    translate('views.account.tabs.security.2FA.modal.steps.qr.title'),
+    translate('views.account.tabs.security.2FA.modal.steps.backup-key.title'),
+    translate('views.account.tabs.security.2FA.modal.steps.enable.title'),
   ];
 
   const downloadStep = (
     <div className="pt-2 pb-5">
-      <p className="text-gray-80">{t('views.account.tabs.security.2FA.modal.steps.download.description')}</p>
+      <p className="text-gray-80">{translate('views.account.tabs.security.2FA.modal.steps.download.description')}</p>
       <div className="mt-2 flex flex-row items-center justify-center space-x-4">
         <a href="https://apps.apple.com/us/app/authy/id494168017" target="_blank" rel="noreferrer">
           <img src={appStoreIcon} height={40} width={135} alt="App Store" />
@@ -132,11 +134,11 @@ function EnableModal({
       {qr ? (
         <>
           <img className="-m-3" src={qr.img} alt="Bidi code" />
-          <p className="ml-8 text-gray-50">{t('views.account.tabs.security.2FA.modal.or')}</p>
+          <p className="ml-8 text-gray-50">{translate('views.account.tabs.security.2FA.modal.or')}</p>
           <div className="ml-8 flex flex-col items-center">
             <Copyable className="w-60" text={qr.key} />
             <p className="mt-2 px-2 text-center text-sm text-gray-60">
-              {t('views.account.tabs.security.2FA.modal.steps.qr.description')}
+              {translate('views.account.tabs.security.2FA.modal.steps.qr.description')}
             </p>
           </div>
         </>
@@ -152,7 +154,7 @@ function EnableModal({
       <div className="mt-2 flex items-center">
         <Warning size={24} className="text-yellow" style={{ marginLeft: '83px' }} weight="fill" />
         <p className="ml-2 w-64 text-sm text-gray-60">
-          {t('views.account.tabs.security.2FA.modal.steps.backup-key.description')}
+          {translate('views.account.tabs.security.2FA.modal.steps.backup-key.description')}
         </p>
       </div>
     </div>
@@ -166,7 +168,7 @@ function EnableModal({
       try {
         setActivateState('loading');
         await authService.store2FA(qr.key, activateValue);
-        notificationsService.show({ text: t('success.twoFactorAuthActivated'), type: ToastType.Success });
+        notificationsService.show({ text: translate('success.twoFactorAuthActivated'), type: ToastType.Success });
         onEnabled();
         onClose();
       } catch (err) {
@@ -178,14 +180,14 @@ function EnableModal({
   const activateStep = (
     <div className="py-5">
       <Input
-        label={t('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
+        label={translate('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
         value={activateValue}
         disabled={activateState === 'loading'}
         accent={activateState === 'error' ? 'error' : undefined}
         onChange={setActivateValue}
         message={
           activateState === 'error'
-            ? (t('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
+            ? (translate('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
             : undefined
         }
       />
@@ -196,10 +198,10 @@ function EnableModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.security.2FA.modal.title')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.tabs.security.2FA.modal.title')}</h1>
       <h2 className="mt-5 flex items-center">
         <p className="mt-0.5 text-gray-50">
-          {t('views.account.tabs.security.2FA.modal.stepsLabel', {
+          {translate('views.account.tabs.security.2FA.modal.stepsLabel', {
             current: step + 1,
             total: steps.length,
           })}
@@ -213,16 +215,16 @@ function EnableModal({
           onClick={step === 0 ? onClose : () => setStep(step - 1)}
           disabled={activateState === 'loading'}
         >
-          {step === 0 ? t('actions.cancel') : t('actions.back')}
+          {step === 0 ? translate('actions.cancel') : translate('actions.back')}
         </Button>
         <div className="ml-2">
           {step !== steps.length - 1 ? (
             <Button onClick={() => setStep(step + 1)} disabled={qr === null && step === 1}>
-              {t('actions.next')}
+              {translate('actions.next')}
             </Button>
           ) : (
             <Button onClick={handleActivate} disabled={activateValue.length < 6} loading={activateState === 'loading'}>
-              {t('views.account.tabs.security.2FA.modal.button')}
+              {translate('views.account.tabs.security.2FA.modal.button')}
             </Button>
           )}
         </div>
@@ -242,7 +244,7 @@ function DisableModal({
   onDisabled: () => void;
   password: string;
 }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   useEffect(() => {
     if (isOpen) {
       setStatus('ready');
@@ -260,37 +262,39 @@ function DisableModal({
 
       await deactivate2FA(encryptedSalt, password, authCode);
 
-      notificationsService.show({ text: t('success.twoFactorAuthDisabled'), type: ToastType.Success });
+      notificationsService.show({ text: translate('success.twoFactorAuthDisabled'), type: ToastType.Success });
       onDisabled();
       onClose();
     } catch (err) {
       setStatus('error');
       const castedError = errorService.castError(err);
 
-      notificationsService.show({ text: castedError.message || t('error.serverError'), type: ToastType.Error });
+      notificationsService.show({ text: castedError.message || translate('error.serverError'), type: ToastType.Error });
     }
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.security.2FA.titleDisable')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.tabs.security.2FA.titleDisable')}</h1>
       <Input
         className="mt-4"
-        label={t('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
+        label={translate('views.account.tabs.security.2FA.modal.2FALabelCode') as string}
         disabled={status === 'loading'}
         accent={status === 'error' ? 'error' : undefined}
         message={
-          status === 'error' ? (t('views.account.tabs.security.2FA.modal.errors.incorrect') as string) : undefined
+          status === 'error'
+            ? (translate('views.account.tabs.security.2FA.modal.errors.incorrect') as string)
+            : undefined
         }
         value={authCode}
         onChange={setAuthCode}
       />
       <div className="mt-4 flex justify-end">
         <Button onClick={onClose} variant="secondary" disabled={status === 'loading'}>
-          {t('actions.cancel')}
+          {translate('actions.cancel')}
         </Button>
         <Button className="ml-2" loading={status === 'loading'} onClick={handleDisable} disabled={authCode.length < 6}>
-          {t('actions.disable')}
+          {translate('actions.disable')}
         </Button>
       </div>
     </Modal>

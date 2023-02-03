@@ -11,7 +11,7 @@ import { aes } from '@internxt/lib';
 import { Network } from '../../drive/services/network.service';
 import { Transition } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function ShareDialog({
   onClose,
@@ -22,7 +22,8 @@ export default function ShareDialog({
   photos: PhotoId[];
   isOpen: boolean;
 }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -82,7 +83,7 @@ export default function ShareDialog({
   function onCopy() {
     if (status.tag === 'done') {
       navigator.clipboard.writeText(status.link);
-      notificationsService.show({ text: t('success.linkCopied'), type: ToastType.Success });
+      notificationsService.show({ text: translate('success.linkCopied'), type: ToastType.Success });
       onClose();
     }
   }
@@ -116,13 +117,13 @@ export default function ShareDialog({
         />
         <h1 className="mt-4 text-xl font-semibold text-gray-80">
           {numberOfSelectedItems > 1
-            ? t('modals.sharePhotosModal.multiTitle', { item: numberOfSelectedItems })
-            : t('modals.sharePhotosModal.singleTitle', { item: numberOfSelectedItems })}
+            ? translate('modals.sharePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : translate('modals.sharePhotosModal.singleTitle', { item: numberOfSelectedItems })}
         </h1>
-        <p className="mt-3 ml-5 text-left font-medium text-gray-80">{t('modals.sharePhotosModal.options')}</p>
+        <p className="mt-3 ml-5 text-left font-medium text-gray-80">{translate('modals.sharePhotosModal.options')}</p>
         <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
           <div className="flex font-medium text-gray-80">
-            <p>{t('modals.sharePhotosModal.openCount')}</p>
+            <p>{translate('modals.sharePhotosModal.openCount')}</p>
             <input
               disabled={status.tag !== 'ready'}
               className="outline-none mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
@@ -131,14 +132,14 @@ export default function ShareDialog({
               value={views}
               onChange={(e) => setViews(parseInt(e.target.value))}
             />
-            <p>{t('modals.sharePhotosModal.times')}</p>
+            <p>{translate('modals.sharePhotosModal.times')}</p>
             {status.tag === 'done' && (
               <button className="ml-4 text-sm font-medium text-primary" onClick={goBackToStart}>
-                {t('modals.sharePhotosModal.change')}
+                {translate('modals.sharePhotosModal.change')}
               </button>
             )}
           </div>
-          <p className="text-sm text-gray-40">{t('modals.sharePhotosModal.limit')}</p>
+          <p className="text-sm text-gray-40">{translate('modals.sharePhotosModal.limit')}</p>
         </div>
         <div className="mt-3 flex h-10 space-x-2">
           {status.tag === 'ready' ? (
@@ -147,25 +148,25 @@ export default function ShareDialog({
                 onClick={onClose}
                 className="flex-1 rounded-lg bg-gray-5 font-medium text-gray-80 active:bg-gray-10"
               >
-                {t('modals.sharePhotosModal.buttons.cancel')}
+                {translate('modals.sharePhotosModal.buttons.cancel')}
               </button>
               <button
                 onClick={onCreateShare}
                 className="flex flex-1 items-center justify-center rounded-lg bg-primary font-medium text-white active:bg-primary-dark"
               >
-                <p>{t('modals.sharePhotosModal.buttons.create')}</p> <Link className="ml-3" size={20} />
+                <p>{translate('modals.sharePhotosModal.buttons.create')}</p> <Link className="ml-3" size={20} />
               </button>
             </>
           ) : status.tag === 'loading' ? (
             <button disabled className="flex-1 rounded-lg bg-gray-5 font-medium text-gray-80 active:bg-gray-10">
-              {t('modals.sharePhotosModal.buttons.creating')}
+              {translate('modals.sharePhotosModal.buttons.creating')}
             </button>
           ) : (
             <button
               onClick={onCopy}
               className="flex flex-1 items-center justify-center rounded-lg bg-primary font-medium text-white active:bg-primary-dark"
             >
-              <p>{t('modals.sharePhotosModal.buttons.copyLink')}</p> <Copy className="ml-3" size={20} />
+              <p>{translate('modals.sharePhotosModal.buttons.copyLink')}</p> <Copy className="ml-3" size={20} />
             </button>
           )}
         </div>

@@ -1,4 +1,5 @@
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DownloadSimple } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +13,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
   useEffect(() => {
     paymentService
@@ -40,12 +41,12 @@ export default function Invoices({ className = '' }: { className?: string }): JS
       <div className="flex">
         <div className="flex flex-grow flex-col">
           <h1 className="mb-0.5 text-xs font-medium text-gray-80">
-            {t('views.account.tabs.billing.invoices.billingDate')}
+            {translate('views.account.tabs.billing.invoices.billingDate')}
           </h1>
           {invoices.map(({ created, id }, i) => (
             <div
               key={id}
-              className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'} text-sm text-gray-80`}
+              className={`border-translate border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'} text-sm text-gray-80`}
             >
               {displayDate(created)}
             </div>
@@ -54,7 +55,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
         <div className="flex flex-col">
           <h1 className="mb-0.5 text-xs font-medium text-gray-80">Plan</h1>
           {invoices.map(({ bytesInPlan, pdf, id }, i) => (
-            <div key={id} className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
+            <div key={id} className={`border-translate border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
               <div className="flex justify-between">
                 <p className="text-sm text-gray-50">{bytesToString(bytesInPlan)}</p>
                 <a
@@ -77,18 +78,18 @@ export default function Invoices({ className = '' }: { className?: string }): JS
     );
 
   return (
-    <Section className={className} title={t('views.account.tabs.billing.invoices.head')}>
+    <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
       <Card>{body}</Card>
     </Section>
   );
 }
 
 function Empty() {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   return (
     <div className="text-center">
-      <h1 className="font-medium text-gray-60">{t('views.account.tabs.billing.invoices.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{t('views.account.tabs.billing.invoices.empty.subtitle')}</p>
+      <h1 className="font-medium text-gray-60">{translate('views.account.tabs.billing.invoices.empty.title')}</h1>
+      <p className="text-sm text-gray-50">{translate('views.account.tabs.billing.invoices.empty.subtitle')}</p>
     </div>
   );
 }

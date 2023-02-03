@@ -8,7 +8,7 @@ import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../network.service';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -31,7 +31,7 @@ export default async function downloadFolderUsingStreamSaver({
   errorCallback?: (err: Error) => void;
   isTeam: boolean;
 }): Promise<[Promise<void>, () => void]> {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
@@ -42,7 +42,7 @@ export default async function downloadFolderUsingStreamSaver({
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+    throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
@@ -75,7 +75,7 @@ export default async function downloadFolderUsingStreamSaver({
         const [fileStreamPromise, actionState] = network.getFileDownloadStream(file.bucket, file.fileId, {
           progressCallback: (fileProgress) => {
             downloadingSize[file.id] = file.size * fileProgress;
-            const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+            const totalDownloadedSize = Object.values(downloadingSize).reduce((translate, x) => translate + x, 0);
             const totalProgress = totalDownloadedSize / size;
 
             (updateProgressCallback || (() => undefined))(totalProgress);

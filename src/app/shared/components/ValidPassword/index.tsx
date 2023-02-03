@@ -1,6 +1,6 @@
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import Input from '../Input';
 import PasswordStrengthIndicator from '../PasswordStrengthIndicator';
 
@@ -21,7 +21,7 @@ export default function ValidPassword({
   disabled?: boolean;
   dataTest?: string;
 }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [state, setState] = useState<{ tag: 'error' | 'warning' | 'success'; label: string } | null>(null);
 
   const [showIndicator, setShowIndicator] = useState(false);
@@ -33,13 +33,13 @@ export default function ValidPassword({
         tag: 'error',
         label:
           result.reason === 'NOT_COMPLEX_ENOUGH'
-            ? t('modals.changePasswordModal.errors.notComplex')
-            : t('modals.changePasswordModal.errors.shortPassword'),
+            ? translate('modals.changePasswordModal.errors.notComplex')
+            : translate('modals.changePasswordModal.errors.shortPassword'),
       });
     } else if (result.strength === 'medium') {
-      setState({ tag: 'warning', label: t('modals.changePasswordModal.errors.weakPassword') });
+      setState({ tag: 'warning', label: translate('modals.changePasswordModal.errors.weakPassword') });
     } else {
-      setState({ tag: 'success', label: t('modals.changePasswordModal.strongPassword') });
+      setState({ tag: 'success', label: translate('modals.changePasswordModal.strongPassword') });
     }
 
     onChange({ valid: result.valid, password: input });

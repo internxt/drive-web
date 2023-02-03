@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
@@ -13,7 +14,7 @@ import Section from '../../components/Section';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
   const userSubscription = plan.subscription;
 
@@ -42,11 +43,11 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     try {
       await paymentService.cancelSubscription();
       await dispatch(planThunks.initializeThunk()).unwrap();
-      notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
+      notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
     } catch (err) {
       console.error(err);
       notificationsService.show({
-        text: t('notificationMessages.errorCancelSubscription'),
+        text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       });
     } finally {
@@ -55,24 +56,24 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   }
 
   return (
-    <Section className={className} title={t('views.account.tabs.billing.currentPlan')}>
+    <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
       <Card>
         {plan.planLimit && userSubscription ? (
           <>
             <CurrentPlanWrapper userSubscription={userSubscription} bytesInPlan={plan.planLimit} />
             {subscriptionExtension && (
-              <div className="mt-4 flex flex-col items-center border-t border-gray-5">
+              <div className="border-translate mt-4 flex flex-col items-center border-gray-5">
                 <h1 className="mt-4 font-medium text-gray-80">
-                  {t('views.account.tabs.billing.subsRenew', {
+                  {translate('views.account.tabs.billing.subsRenew', {
                     daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
                   })}
                 </h1>
                 <p className="text-xs text-gray-50">
-                  {t('views.account.tabs.billing.billed', {
+                  {translate('views.account.tabs.billing.billed', {
                     interval:
                       subscriptionExtension.interval === 'monthly'
-                        ? t('general.renewalPeriod.monthly')
-                        : t('general.renewalPeriod.annually'),
+                        ? translate('general.renewalPeriod.monthly')
+                        : translate('general.renewalPeriod.annually'),
                     renewDate: subscriptionExtension.renewDate,
                   })}
                 </p>
@@ -81,7 +82,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   onClick={cancelSubscription}
                   className="mt-2 text-xs text-gray-60"
                 >
-                  {t('views.account.tabs.billing.cancelSubscription')}
+                  {translate('views.account.tabs.billing.cancelSubscription')}
                 </button>
               </div>
             )}

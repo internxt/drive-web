@@ -57,8 +57,9 @@ import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { useTranslation } from 'react-i18next';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 const PAGINATION_LIMIT = 60;
 
@@ -110,7 +111,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onItemsMoved,
   } = props;
   const dispatch = useAppDispatch();
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -181,7 +182,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    moveItemsToTrash(selectedItems, t);
+    moveItemsToTrash(selectedItems, translate as TFunction);
   };
 
   const onDeletePermanentlyButtonClicked = () => {
@@ -247,8 +248,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
 
-  const isRecents = title === t('views.recents.head');
-  const isTrash = title === t('trash.trash');
+  const isRecents = title === translate('views.recents.head');
+  const isTrash = title === translate('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
   const itemsList = getLimitedItems();
 
@@ -261,7 +262,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
-  const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  const separatorH = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
@@ -308,21 +309,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   menuItems={[
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
-                      <p className="ml-3">{t('actions.upload.folder')}</p>
+                      <p className="ml-3">{translate('actions.upload.folder')}</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>
                       <FileArrowUp size={20} />
-                      <p className="ml-3">{t('actions.upload.uploadFiles')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
                     </MenuItem>,
                     <MenuItem onClick={onUploadFolderButtonClicked}>
                       <UploadSimple size={20} />
-                      <p className="ml-3">{t('actions.upload.uploadFolder')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
                     </MenuItem>,
                   ]}
                 >
                   <div className="flex flex-row items-center space-x-2.5">
-                    <span className="font-medium">{t('actions.upload.new')}</span>
+                    <span className="font-medium">{translate('actions.upload.new')}</span>
                     <div className="flex items-center space-x-0.5">
                       <Plus weight="bold" className="h-4 w-4" />
                       <CaretDown weight="fill" className="h-3 w-3" />
@@ -394,36 +395,36 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title={t('views.recents.empty.noResults')}
-                    subtitle={t('views.recents.empty.dragNDrop')}
+                    title={translate('views.recents.empty.noResults')}
+                    subtitle={translate('views.recents.empty.dragNDrop')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: t('views.recents.empty.uploadFiles'),
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
                 ) : isRecents ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title={t('views.recents.empty.title')}
-                    subtitle={t('views.recents.empty.description')}
+                    title={translate('views.recents.empty.title')}
+                    subtitle={translate('views.recents.empty.description')}
                   />
                 ) : isTrash ? (
                   <Empty
                     icon={<EmptyTrash />}
-                    title={t('trash.empty-state.title')}
-                    subtitle={t('trash.empty-state.subtitle')}
+                    title={translate('trash.empty-state.title')}
+                    subtitle={translate('trash.empty-state.subtitle')}
                   />
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title={t('views.recents.empty.folderEmpty')}
-                    subtitle={t('views.recents.empty.folderEmptySubtitle')}
+                    title={translate('views.recents.empty.folderEmpty')}
+                    subtitle={translate('views.recents.empty.folderEmptySubtitle')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: t('views.recents.empty.uploadFiles'),
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />

@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
 import Button from '../../../../../shared/components/Button/Button';
@@ -16,7 +16,7 @@ export default function Lock({
   className?: string;
   onUnlock: (password: string) => void;
 }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
 
   const [password, setPassword] = useState('');
@@ -35,21 +35,21 @@ export default function Lock({
       if (correctCredentials) {
         onUnlock(password);
       } else {
-        setFormState({ tag: 'error', errorMessage: t('views.account.tabs.security.lock.errors.incorrect') });
+        setFormState({ tag: 'error', errorMessage: translate('views.account.tabs.security.lock.errors.incorrect') });
       }
     } catch (err) {
       console.error(err);
-      setFormState({ tag: 'error', errorMessage: t('views.account.tabs.security.lock.errors.notVerified') });
+      setFormState({ tag: 'error', errorMessage: translate('views.account.tabs.security.lock.errors.notVerified') });
     }
   }
 
   return (
-    <Section className={className} title={t('views.account.tabs.security.label')}>
+    <Section className={className} title={translate('views.account.tabs.security.label')}>
       <Card>
-        <h1 className="text-lg font-medium text-gray-80">{t('views.account.tabs.security.lock.title')}</h1>
-        <p className="mt-3 text-gray-80">{t('views.account.tabs.security.lock.description')}</p>
+        <h1 className="text-lg font-medium text-gray-80">{translate('views.account.tabs.security.lock.title')}</h1>
+        <p className="mt-3 text-gray-80">{translate('views.account.tabs.security.lock.description')}</p>
         <Input
-          label={t('views.account.tabs.security.lock.inputLabel') as string}
+          label={translate('views.account.tabs.security.lock.inputLabel') as string}
           className="mt-3"
           variant="password"
           onChange={setPassword}
@@ -65,7 +65,7 @@ export default function Lock({
             onClick={onAccess}
             dataTest="access-button"
           >
-            {t('actions.access')}
+            {translate('actions.access')}
           </Button>
         </div>
       </Card>

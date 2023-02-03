@@ -12,7 +12,7 @@ import BaseButton from 'app/shared/components/forms/BaseButton';
 import { ProductData } from '../../types';
 import { paymentThunks } from 'app/store/slices/payment';
 import moneyService from '../../services/money.service';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ProductItemProps {
   product: ProductData;
@@ -22,7 +22,7 @@ interface ProductItemProps {
 }
 
 const ProductItem = (props: ProductItemProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const [isLgScreen, setIsLgScreen] = useState(screenService.isLg());
   const [teamMembersCount, setTeamMembersCount] = useState(2);
@@ -53,11 +53,11 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
     }
   };
   const desktopBuyButtonLabel =
-    isBuyButtonDisabled && isCurrentProduct ? t('general.loading.redirecting') : t('actions.buy');
+    isBuyButtonDisabled && isCurrentProduct ? translate('general.loading.redirecting') : translate('actions.buy');
   const tabletBuyButtonLabel =
     isBuyButtonDisabled && isCurrentProduct
-      ? t('general.loading.redirecting')
-      : monthlyAmountFormatted + '/' + t('general.time.month');
+      ? translate('general.loading.redirecting')
+      : monthlyAmountFormatted + '/' + translate('general.time.month');
   const sizeClassName = props.product.metadata.is_drive ? 'square' : '';
 
   useEffect(() => {
@@ -69,9 +69,9 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       <div
         className={`${
           isPlanActive ? 'visible' : 'invisible'
-        } flex items-center justify-center rounded-t-lg bg-blue-60 py-2 text-xs font-semibold text-white`}
+        } rounded-translate-lg flex items-center justify-center bg-blue-60 py-2 text-xs font-semibold text-white`}
       >
-        {t('drive.currentPlan')}
+        {translate('drive.currentPlan')}
       </div>
       <div
         className={`${sizeClassName} flex flex-col justify-center
@@ -85,7 +85,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         {/* MONTHLY AMOUNT */}
         <div className="flex items-center justify-center">
           <span className="mr-2 text-3xl font-bold">{monthlyAmountFormatted}</span>
-          <span className="h-fit">/{t('general.time.month')}</span>
+          <span className="h-fit">/{translate('general.time.month')}</span>
         </div>
 
         {/* TOTAL AMOUNT */}
@@ -103,16 +103,16 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
               <Fragment>
                 <span className="mr-1">{totalAmountFormatted}</span>
                 <span className="text-xs text-neutral-100">
-                  /{t(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
+                  /{translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
                 </span>
               </Fragment>
             </div>
           </div>
         ) : (
           <span className="mt-2 mb-4 text-center text-xs text-neutral-80">
-            {t('general.billing.billedEachPeriod', {
+            {translate('general.billing.billedEachPeriod', {
               price: totalAmountFormatted,
-              period: t(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+              period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
             })}
           </span>
         )}
@@ -136,9 +136,9 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
         </div>
 
         <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
-          {t('general.billing.billedEachPeriod', {
+          {translate('general.billing.billedEachPeriod', {
             price: totalAmountFormatted,
-            period: t(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
+            period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
           })}
         </span>
       </div>

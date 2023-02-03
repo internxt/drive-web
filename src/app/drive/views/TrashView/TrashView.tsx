@@ -7,7 +7,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import getTrash from '../../../../use_cases/trash/get_trash';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -16,7 +16,7 @@ export interface TrashViewProps {
 }
 
 const TrashView = (props: TrashViewProps) => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   useEffect(() => {
     props.dispatch(storageThunks.resetNamePathThunk());
     getTrash();
@@ -25,7 +25,7 @@ const TrashView = (props: TrashViewProps) => {
   const { items, isLoadingItemsOnTrash } = props;
   return (
     <DriveExplorer
-      title={t('trash.trash') as string}
+      title={translate('trash.trash') as string}
       titleClassName="px-3"
       isLoading={isLoadingItemsOnTrash}
       items={items}

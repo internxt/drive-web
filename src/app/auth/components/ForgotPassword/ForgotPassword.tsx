@@ -9,10 +9,10 @@ import { IFormValues } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 function ForgotPassword(): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const {
     register,
     formState: { errors },
@@ -29,13 +29,13 @@ function ForgotPassword(): JSX.Element {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
-      notificationsService.show({ text: t('success.accountDeactivationEmailSent'), type: ToastType.Success });
+      notificationsService.show({ text: translate('success.accountDeactivationEmailSent'), type: ToastType.Success });
       if (showErrors === false) {
         setStep(2);
       }
     } catch (err: unknown) {
-      notificationsService.show({ text: t('error.deactivatingAccount'), type: ToastType.Error });
-      setEmailErrors(t('error.deactivatingAccount') as string);
+      notificationsService.show({ text: translate('error.deactivatingAccount'), type: ToastType.Error });
+      setEmailErrors(translate('error.deactivatingAccount') as string);
       setShowErrors(true);
     } finally {
       setIsLoading(false);
@@ -60,8 +60,8 @@ function ForgotPassword(): JSX.Element {
           </Link>
 
           <div className="flex flex-col space-y-1">
-            <h1 className="text-2xl font-medium text-gray-100">{t('auth.forgotPassword.title')}</h1>
-            <p className="font-regular text-sm text-gray-80">{t('auth.forgotPassword.description')}</p>
+            <h1 className="text-2xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
+            <p className="font-regular text-sm text-gray-80">{translate('auth.forgotPassword.description')}</p>
           </div>
         </div>
 
@@ -69,15 +69,15 @@ function ForgotPassword(): JSX.Element {
           <>
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <label className="space-y-1">
-                <span>{t('auth.email')}</span>
+                <span>{translate('auth.email')}</span>
                 <TextInput
-                  placeholder={t('auth.email')}
+                  placeholder={translate('auth.email')}
                   label="email"
                   type="email"
                   register={register}
                   onFocus={() => setShowErrors(false)}
                   required={true}
-                  minLength={{ value: 1, message: t('notificationMessages.emailNotEmpty') }}
+                  minLength={{ value: 1, message: translate('notificationMessages.emailNotEmpty') }}
                   error={errors.email}
                 />
                 {showErrors && (
@@ -92,7 +92,11 @@ function ForgotPassword(): JSX.Element {
 
               <Button
                 disabled={isLoading}
-                text={isLoading ? t('auth.forgotPassword.sending') : t('auth.forgotPassword.sendInstructions')}
+                text={
+                  isLoading
+                    ? translate('auth.forgotPassword.sending')
+                    : translate('auth.forgotPassword.sendInstructions')
+                }
                 loading={isLoading}
                 style="button-primary"
                 disabledText="Send instructions"

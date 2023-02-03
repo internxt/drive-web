@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,7 @@ import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
@@ -24,7 +25,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
   async function onResend() {
     setIsSendingVerificationEmail(true);
     await userService.sendVerificationEmail();
-    notificationsService.show({ text: t('notificationMessages.verificationEmail'), type: ToastType.Success });
+    notificationsService.show({ text: translate('notificationMessages.verificationEmail'), type: ToastType.Success });
     setIsSendingVerificationEmail(false);
   }
 
@@ -34,31 +35,31 @@ export default function AccountDetails({ className = '' }: { className?: string 
   const isVerified = user.emailVerified;
 
   return (
-    <Section className={className} title={t('views.account.tabs.account.accountDetails.head')}>
+    <Section className={className} title={translate('views.account.tabs.account.accountDetails.head')}>
       <Card>
         <div className="flex justify-between">
           <div className="flex min-w-0">
-            <Detail label={t('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
+            <Detail label={translate('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
             <Detail
-              label={t('views.account.tabs.account.accountDetails.card.lastname')}
+              label={translate('views.account.tabs.account.accountDetails.card.lastname')}
               value={user.lastname}
               className="ml-8 pr-2"
             />
           </div>
           <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
-            {t('actions.edit')}
+            {translate('actions.edit')}
           </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
-            <Detail label={t('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
+            <Detail label={translate('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
             {!isVerified && (
               <button
                 onClick={onResend}
                 disabled={isSendingVerificationEmail}
                 className="font-medium text-primary hover:text-primary-dark disabled:text-gray-60"
               >
-                {t('views.account.tabs.account.accountDetails.card.resendEmail')}
+                {translate('views.account.tabs.account.accountDetails.card.resendEmail')}
               </button>
             )}
           </div>
@@ -66,12 +67,14 @@ export default function AccountDetails({ className = '' }: { className?: string 
             style="dark"
             title={
               isVerified
-                ? t('views.account.tabs.account.accountDetails.verify.verified')
-                : t('views.account.tabs.account.accountDetails.verify.verify')
+                ? translate('views.account.tabs.account.accountDetails.verify.verified')
+                : translate('views.account.tabs.account.accountDetails.verify.verify')
             }
             popsFrom="top"
             subtitle={
-              isVerified ? undefined : (t('views.account.tabs.account.accountDetails.verify.description') as string)
+              isVerified
+                ? undefined
+                : (translate('views.account.tabs.account.accountDetails.verify.description') as string)
             }
           >
             {isVerified ? (
@@ -112,7 +115,7 @@ function AccountDetailsModal({
   name: string;
   lastname: string;
 }) {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const [nameValue, setNameValue] = useState(name);
   const [lastnameValue, setLastnameValue] = useState(lastname);
@@ -153,11 +156,13 @@ function AccountDetailsModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.account.accountDetails.head')}</h1>
+      <h1 className="text-2xl font-medium text-gray-80">
+        {translate('views.account.tabs.account.accountDetails.head')}
+      </h1>
       <Input
         disabled={status.tag === 'loading'}
         className="mt-4"
-        label={t('views.account.tabs.account.accountDetails.name') as string}
+        label={translate('views.account.tabs.account.accountDetails.name') as string}
         value={nameValue}
         onChange={setNameValue}
         accent={nameIsInvalid ? 'error' : undefined}
@@ -167,7 +172,7 @@ function AccountDetailsModal({
       <Input
         disabled={status.tag === 'loading'}
         className="mt-3"
-        label={t('views.account.tabs.account.accountDetails.lastname') as string}
+        label={translate('views.account.tabs.account.accountDetails.lastname') as string}
         value={lastnameValue}
         onChange={setLastnameValue}
         accent={lastnameIsInvalid ? 'error' : undefined}
@@ -176,10 +181,10 @@ function AccountDetailsModal({
       />
       <div className="mt-3 flex justify-end">
         <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
-          {t('actions.cancel')}
+          {translate('actions.cancel')}
         </Button>
         <Button loading={status.tag === 'loading'} className="ml-2" onClick={onSave}>
-          {t('actions.save')}
+          {translate('actions.save')}
         </Button>
       </div>
     </Modal>

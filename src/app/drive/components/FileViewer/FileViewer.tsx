@@ -24,7 +24,7 @@ import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
 import { updateDatabaseFileSourceData } from '../../services/database.service';
 import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -41,7 +41,7 @@ export interface FormatFileViewerProps {
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
 const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerProps): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -213,7 +213,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                       space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
                   >
                     <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
-                    <span>{t('drive.loadingFile')}</span>
+                    <span>{translate('drive.loadingFile')}</span>
                   </div>
                 )}
               </div>
@@ -224,7 +224,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
               className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
             >
-              <span>{t('error.noFilePreview')}</span>
+              <span>{translate('error.noFilePreview')}</span>
             </div>
           )}
 
@@ -262,7 +262,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                           ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{t('actions.download')}</span>
+                <span className="font-medium">{translate('actions.download')}</span>
               </button>
             </div>
           </div>
