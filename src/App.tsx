@@ -26,6 +26,7 @@ import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapp
 import { pdfjs } from 'react-pdf';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import { t } from 'i18next';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -123,7 +124,7 @@ class App extends Component<AppProps> {
                z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white opacity-80 drop-shadow-2xl"
               >
-                {/* {t('general.stage.development')} */}
+                {t('general.stage.development')}
               </span>
             )}
 

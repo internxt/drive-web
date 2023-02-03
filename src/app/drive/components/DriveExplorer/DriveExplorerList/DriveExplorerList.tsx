@@ -100,7 +100,7 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
       <div className="files-list flex border-b border-neutral-30 bg-white py-3 text-sm font-semibold text-neutral-500">
         <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
           <input
-            disabled={!hasItems}
+            disabled={!hasItems()}
             readOnly
             checked={isAllSelected()}
             onClick={onSelectAllButtonClicked}
@@ -129,14 +129,14 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
       </div>
       <div className="h-full overflow-y-auto">
         {isLoading ? (
-          loadingSkeleton
+          loadingSkeleton()
         ) : (
           <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
             <InfiniteScroll
-              dataLength={itemsList.length}
+              dataLength={itemsList().length}
               next={onEndOfScroll}
               hasMore={hasMoreItems}
-              loader={loadingSkeleton}
+              loader={loadingSkeleton()}
               scrollableTarget="scrollableList"
               className="z-0 h-full"
               style={{ overflow: 'visible' }}
