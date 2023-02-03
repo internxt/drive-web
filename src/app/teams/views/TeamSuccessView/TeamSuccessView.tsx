@@ -5,14 +5,14 @@ import teamsService from '../../services/teams.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { userThunks } from 'app/store/slices/user';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 export default function Success(props: { match: match<{ sessionId: string }> }): JSX.Element {
   const dispatch = useAppDispatch();
 
   teamsService.checkSessionStripe(props.match.params.sessionId).then(() => {
     dispatch(userThunks.logoutThunk());
-    notificationsService.show({ text: get('success.teamsSubscriptionRedeemed'), type: ToastType.Info });
+    notificationsService.show({ text: t('success.teamsSubscriptionRedeemed'), type: ToastType.Info });
   });
 
   return (

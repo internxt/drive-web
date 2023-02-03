@@ -756,7 +756,9 @@
     "itemDeleted": "{{itemsToDelete}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
-    "verificationEmail": "Verification email has been sent"
+    "verificationEmail": "Verification email has been sent",
+    "successCancelSubscription": "Your subscription has been cancelled",
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
   },
   "actions": {
     "undo": "Undo",
@@ -794,7 +796,8 @@
     "moving": "Moving...",
     "navigating": "Navigating...",
     "restoreHere": "Restore here",
-    "rename": "Rename"
+    "rename": "Rename",
+    "restore": "Restore"
   },
   "drive": {
     "usage": "Usage",

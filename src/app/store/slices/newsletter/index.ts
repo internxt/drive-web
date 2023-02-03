@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import { get } from 'app/i18n/services/i18n.service';
 import newsletterService from 'app/newsletter/services/newsletterService';
+import { t } from 'i18next';
 
 import { RootState } from '../..';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -35,7 +35,7 @@ export const newsletterSlice = createSlice({
         state.isSubscribing = false;
 
         notificationsService.show({
-          text: get('success.subscribeToNewsletter', { email: action.meta.arg.email }),
+          text: t('success.subscribeToNewsletter', { email: action.meta.arg.email }),
 
           type: ToastType.Info,
         });
@@ -44,7 +44,7 @@ export const newsletterSlice = createSlice({
         state.isSubscribing = false;
 
         notificationsService.show({
-          text: get('error.subscribeToNewsletter', { message: action.error.message }),
+          text: t('error.subscribeToNewsletter', { message: action.error.message }),
           type: ToastType.Error,
         });
       });

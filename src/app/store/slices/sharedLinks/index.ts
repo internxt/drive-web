@@ -16,7 +16,6 @@ import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
 import { storageActions, storageSelectors } from '../storage';
-import { get } from 'app/i18n/services/i18n.service';
 import { t } from 'i18next';
 
 export interface ShareLinksState {
@@ -72,7 +71,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email: bridgeUser });
         // close();
-        notificationsService.show({ text: get('error.shareLinkMissingBucket'), type: ToastType.Error });
+        notificationsService.show({ text: t('error.shareLinkMissingBucket'), type: ToastType.Error });
         dispatch(userThunks.logoutThunk());
 
         return;
@@ -151,7 +150,7 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
       }),
     );
 
-    const stringLinksDeleted = get('shared-links.toast.link-deleted');
+    const stringLinksDeleted = t('shared-links.toast.link-deleted');
     notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
   },
 );

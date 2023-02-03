@@ -10,7 +10,7 @@ import errorService from '../../../core/services/error.service';
 import navigationService from '../../../core/services/navigation.service';
 import httpService from '../../../core/services/http.service';
 import { AppView } from '../../../core/types';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 export interface JoinTeamViewProps {
   dispatch: AppDispatch;
@@ -54,14 +54,14 @@ class JoinTeamView extends React.Component<JoinTeamViewProps, JoinTeamViewState>
         if (response.status === 200) {
           this.setState({ isTeamActivated: true });
           localStorage.setItem('teamActivation', 'true');
-          // notificationsService.show({ text: get('success.joinedToTheTeam'), type: ToastType.Success });
+          notificationsService.show({ text: t('success.joinedToTheTeam'), type: ToastType.Success });
           navigationService.push(AppView.Login);
 
           dispatch(userThunks.initializeUserThunk());
         } else {
           // Wrong activation
           this.setState({ isTeamActivated: false });
-          // notificationsService.show({ text: get('error.invalidActivationCode'), type: ToastType.Error });
+          notificationsService.show({ text: t('error.invalidActivationCode'), type: ToastType.Error });
         }
       })
       .catch((err: unknown) => {

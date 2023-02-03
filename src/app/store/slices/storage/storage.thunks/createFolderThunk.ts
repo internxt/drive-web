@@ -7,7 +7,7 @@ import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../.
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import folderService from '../../../../drive/services/folder.service';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface CreateFolderThunkOptions {
@@ -91,8 +91,8 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
 
       if (requestOptions?.showErrors) {
         const errorMessage = action.error.message?.includes('already exists')
-          ? get('error.folderAlreadyExists')
-          : get('error.creatingFolder');
+          ? t('error.folderAlreadyExists')
+          : t('error.creatingFolder');
 
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }

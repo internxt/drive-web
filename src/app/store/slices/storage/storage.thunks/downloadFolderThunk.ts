@@ -4,7 +4,7 @@ import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
@@ -132,7 +132,7 @@ export const downloadFolderThunkExtraReducers = (builder: ActionReducerMapBuilde
         const errorMessage = rejectedValue?.message || action.error.message;
 
         notificationsService.show({
-          text: get('error.downloadingFolder', { message: errorMessage || '' }),
+          text: t('error.downloadingFolder', { message: errorMessage || '' }),
           type: ToastType.Error,
         });
       }

@@ -9,7 +9,7 @@ import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/type
 import { SerializablePhoto } from '..';
 import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
 import { FlatFolderZip } from 'app/core/services/stream.service';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -42,7 +42,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
-          throw new Error(get('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+          throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
 
         const folder = new FlatFolderZip('photos', { abortController });

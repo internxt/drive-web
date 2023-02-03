@@ -31,10 +31,4 @@ i18next
     },
   });
 
-export function get(value: string, object?: Record<string, unknown>): string {
-  const { t } = useTranslation();
-  const result = t(value, object as TFunctionDetailedResult) as string;
-  return result;
-}
-
 export default i18next;

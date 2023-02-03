@@ -17,7 +17,7 @@ import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import fileService from 'app/drive/services/file.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -228,7 +228,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(get('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -396,7 +396,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
-      throw new Error(get('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -590,7 +590,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(get('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -774,7 +774,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
-      throw new Error(get('error.uploadingItems') as string);
+      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -788,7 +788,7 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
 
       if (requestOptions?.showErrors) {
         notificationsService.show({
-          text: get('error.uploadingFile', { reason: action.error.message || '' }),
+          text: t('error.uploadingFile', { reason: action.error.message || '' }),
           type: ToastType.Error,
         });
       }

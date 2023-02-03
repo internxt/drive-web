@@ -17,6 +17,7 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import './index.scss';
 import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';
+import './app/i18n/services/i18n.service';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));

@@ -42,11 +42,11 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     try {
       await paymentService.cancelSubscription();
       await dispatch(planThunks.initializeThunk()).unwrap();
-      notificationsService.show({ text: 'Your subscription has been cancelled' });
+      notificationsService.show({ text: t('notificationMessages.successCancelSubscription') });
     } catch (err) {
       console.error(err);
       notificationsService.show({
-        text: 'Something went wrong while cancelling your subscription',
+        text: t('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       });
     } finally {

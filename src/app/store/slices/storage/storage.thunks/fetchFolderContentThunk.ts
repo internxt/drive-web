@@ -8,7 +8,7 @@ import notificationsService, { ToastType } from '../../../../notifications/servi
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
@@ -54,6 +54,6 @@ export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBu
     })
     .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
-      notificationsService.show({ text: get('error.fetchingFolderContent'), type: ToastType.Error });
+      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });
 };

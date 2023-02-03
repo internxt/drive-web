@@ -740,7 +740,9 @@
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",
-    "verificationEmail": "Correo de verificación enviado"
+    "verificationEmail": "Correo de verificación enviado",
+    "successCancelSubscription": "Tu suscripción ha sido cancelada",
+    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -794,7 +796,8 @@
     "moving": "Moviendo...",
     "navigating": "Restaurando...",
     "restoreHere": "Restaurar aquí",
-    "rename": "Renombrar"
+    "rename": "Renombrar",
+    "restore": "Restaurar"
   },
   "drive": {
     "usage": "Uso",

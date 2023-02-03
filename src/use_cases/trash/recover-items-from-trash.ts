@@ -4,7 +4,7 @@ import analyticsService from 'app/analytics/services/analytics.service';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform } from 'app/core/types';
-import { get } from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import * as uuid from 'uuid';
 import { store } from '../../app/store';
@@ -31,7 +31,7 @@ function handleError(err: unknown) {
     notificationsService.show({ text: 'Item with same name already exists', type: ToastType.Error });
   } else {
     if (castedError.status) {
-      castedError.message = get(`tasks.move-folder.errors.${castedError.status}`);
+      castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
     }
   }
 }

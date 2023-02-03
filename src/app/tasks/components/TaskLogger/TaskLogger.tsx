@@ -8,7 +8,6 @@ import tasksService from '../../services/tasks.service';
 import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from 'phosphor-react';
-import { get } from 'app/i18n/services/i18n.service';
 import { useTranslation } from 'react-i18next';
 
 const TaskLogger = (): JSX.Element => {
