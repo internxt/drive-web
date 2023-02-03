@@ -17,7 +17,6 @@ import jcbIcon from '../../../../../../assets/icons/card-brands/jcb.png';
 import mastercardIcon from '../../../../../../assets/icons/card-brands/mastercard.png';
 import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.png';
 import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {

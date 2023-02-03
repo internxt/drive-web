@@ -17,7 +17,6 @@ import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SidenavProps {

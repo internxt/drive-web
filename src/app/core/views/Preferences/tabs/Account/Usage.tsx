@@ -1,5 +1,4 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useTranslation } from 'react-i18next';
 
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';

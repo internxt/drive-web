@@ -3,7 +3,6 @@ import BackupListItem from './BackupListItem';
 import { useAppDispatch } from '../../../store/hooks';
 import { backupsThunks } from '../../../store/slices/backups';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface Props {

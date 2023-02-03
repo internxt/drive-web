@@ -7,7 +7,6 @@ import errorService from 'app/core/services/error.service';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { useAppSelector } from 'app/store/hooks';
 import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {

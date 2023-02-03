@@ -3,7 +3,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
 import { ReactNode, useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import Avatar from '../../../shared/components/Avatar';

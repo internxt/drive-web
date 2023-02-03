@@ -1,6 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import bigLogo from 'assets/icons/big-logo.svg';
-import { useTranslation } from 'react-i18next';
 import ForgotPassword from '../../components/ForgotPassword/ForgotPassword';
 
 interface RemoveAccountProps {

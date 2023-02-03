@@ -1,6 +1,5 @@
 import React, { forwardRef, ReactNode, useEffect } from 'react';
 import i18next, { DefaultTFuncReturn } from 'i18next';
-import { useTranslation } from 'react-i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
 import { CaretDown } from 'phosphor-react';

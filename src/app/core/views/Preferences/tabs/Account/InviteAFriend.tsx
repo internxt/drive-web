@@ -4,7 +4,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
 import { CheckCircle, Info, Question } from 'phosphor-react';
 import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import userService from '../../../../../auth/services/user.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';

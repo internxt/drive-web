@@ -13,7 +13,6 @@ import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function BackupsAsFoldersList({

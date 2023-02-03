@@ -1,8 +1,7 @@
+import { useEffect, useState } from 'react';
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DownloadSimple } from 'phosphor-react';
-import { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';

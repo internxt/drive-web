@@ -3,7 +3,6 @@ import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import './SharedFolderTooBigDialog.scss';
-import { useTranslation } from 'react-i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const SharedFolderTooBigDialog = (): JSX.Element => {

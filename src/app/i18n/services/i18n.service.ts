@@ -1,6 +1,5 @@
 import { initReactI18next } from 'react-i18next';
-import i18next, { TFunctionDetailedResult } from 'i18next';
-import { useTranslation } from 'react-i18next';
+import i18next from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 
 let deviceLang = navigator.language.split('-')[0];
@@ -22,6 +21,7 @@ i18next
         translation: require('../locales/es.json'),
       },
     },
+    debug: true,
     fallbackLng: 'en',
     lng: deviceLang,
     defaultNS: 'translation',
