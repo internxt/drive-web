@@ -31,8 +31,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         )
     : null;
 
-  console.log(updateProgress);
-
   return file && downloader ? (
     <FileViewer
       show={showPreview}
