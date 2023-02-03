@@ -13,7 +13,6 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
-import { useTranslation } from 'react-i18next';
 import { t } from 'i18next';
 
 export interface IFolders {
@@ -378,9 +377,9 @@ export async function moveFolder(folderId: number, destination: number): Promise
     })
     .catch((err) => {
       const castedError = errorService.castError(err);
-      // if (castedError.status) {
-      //   castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
-      // }
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+      }
       throw castedError;
     });
 }

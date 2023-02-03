@@ -20,13 +20,11 @@ import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslation } from 'react-i18next';
-import { TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
   items: DriveItemData[];
-  text: TFunction;
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {

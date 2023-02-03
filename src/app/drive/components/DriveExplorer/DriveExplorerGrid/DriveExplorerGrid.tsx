@@ -59,10 +59,10 @@ const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
       ) : (
         <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
           <InfiniteScroll
-            dataLength={itemsList.length}
+            dataLength={itemsList().length}
             next={onEndOfScroll}
             hasMore={hasMoreItems}
-            loader={loadingSkeleton}
+            loader={loadingSkeleton()}
             scrollableTarget="scrollableList"
             className="files-grid z-0 flex-grow"
             style={{ overflow: 'visible' }}

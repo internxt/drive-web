@@ -25,6 +25,7 @@ interface DriveExplorerListProps {
 
 const DriveExplorerList = (props: DriveExplorerListProps) => {
   const { t } = useTranslation();
+
   function hasItems(): boolean {
     return props.items.length > 0;
   }

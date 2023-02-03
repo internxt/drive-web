@@ -171,7 +171,7 @@ export default function LogIn(): JSX.Element {
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
-                placeholder={t('auth.login.2FAPwd')}
+                placeholder={t('auth.login.twoFactorAuthenticationCode')}
                 error={errors.twoFactorCode}
                 register={register}
                 required={true}

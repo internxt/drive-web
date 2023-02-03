@@ -13,7 +13,6 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
 import { DriveItemData } from 'app/drive/types';
-import { useTranslation } from 'react-i18next';
 import { TFunction } from 'i18next';
 
 async function trackMove(response, type) {

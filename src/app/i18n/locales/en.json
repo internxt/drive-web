@@ -17,7 +17,7 @@
       "dontHaveAccount": "Don't have an account?",
       "createAccount": "Create account",
       "2FA": "Two factor code",
-      "2FAPwd": "Two factor authentication code"
+      "twoFactorAuthenticationCode": "Two factor authentication code"
     },
     "signup": {
       "title": "Create account",
