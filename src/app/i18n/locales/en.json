@@ -8,7 +8,9 @@
   "auth": {
     "email": "Email",
     "password": "Password",
-    "terms": "By creating an account, you accept the terms and conditions",
+    "terms1": "By creating an account, ",
+    "terms2": "you accept the terms and conditions",
+    "decrypting": "Decrypting...",
     "login": {
       "title": "Log in",
       "forgotPwd": "Forgot your password?",
@@ -34,6 +36,8 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
+    "searchBar": "Search in this folder",
+
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -111,7 +115,9 @@
         "description": "Recent uploads or files you recently interacted with will show up here automatically",
         "folderEmpty": "This folder is empty",
         "folderEmptySubtitle": "Drag and drop files or click to select files and upload",
-        "uploadFiles": "Upload files"
+        "uploadFiles": "Upload files",
+        "noResults": "There are no results for this search",
+        "dragNDrop": "Drag and drop here or click on upload button"
       }
     },
     "photos": {
@@ -163,6 +169,8 @@
           },
           "accountDetails": {
             "head": "Account details",
+            "name": "Name",
+            "lastname": "Lastname",
             "card": {
               "name": "Name",
               "lastname": "Lastname",
@@ -174,6 +182,10 @@
               "verify": "Verify your email",
               "verified": "Verified email",
               "description": "Check your inbox or spam"
+            },
+            "editProfile": {
+              "name": "Name",
+              "lastname": "Lastname"
             }
           },
           "deleteAccount": {
@@ -742,7 +754,9 @@
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored",
     "itemDeleted": "{{itemsToDelete}} deleted",
-    "itemsDeleted": "Files deleted"
+    "itemsDeleted": "Files deleted",
+    "emailNotEmpty": "Email must not be empty",
+    "verificationEmail": "Verification email has been sent"
   },
   "actions": {
     "undo": "Undo",

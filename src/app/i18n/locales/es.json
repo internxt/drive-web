@@ -10,6 +10,7 @@
     "password": "Contraseña",
     "terms1": "Creando una cuenta, aceptas los",
     "terms2": "términos y condiciones.",
+    "decrypting": "Descifrando...",
     "login": {
       "title": "Iniciar sesión",
       "forgotPwd": "¿Has olvidado tu contraseña?",
@@ -35,6 +36,8 @@
     "of": "de",
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
+    "searchBar": "Buscar en esta carpeta",
+
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -112,7 +115,9 @@
         "description": "Los archivos que hayas abierto recientemente aparecerán aquí",
         "folderEmpty": "Esta carpeta está vacía",
         "folderEmptySubtitle": "Arrastra y suelta los archivos o haz clic para seleccionarlos y cargarlos",
-        "uploadFiles": "Subir archivos"
+        "uploadFiles": "Subir archivos",
+        "noResults": "No hay resultados para esta búsqueda",
+        "dragNDrop": "Arrastra un archivo o haz clic en el botón para subir un archivo"
       }
     },
     "photos": {
@@ -164,6 +169,8 @@
           },
           "accountDetails": {
             "head": "Detalles de la cuenta",
+            "name": "Nombre",
+            "lastname": "Apellido",
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
@@ -174,7 +181,11 @@
             "verify": {
               "verify": "Verifica tu correo",
               "verified": "Correo verificado",
-              "description": "Revisa tu bandeja de entrada o spam"
+              "description": "Revisa tu correo electrónico"
+            },
+            "editProfile": {
+              "name": "Nombre",
+              "lastname": "Apellido"
             }
           },
           "deleteAccount": {
@@ -340,7 +351,7 @@
             "title": "Clave de recuperación",
             "description": "En caso de que olvides tu contraseña, puedes usar tu clave de recuperación para recuperar tu cuenta. Nunca compartas esta clave con nadie.",
             "button": "Exportar clave",
-            "success": "Clave de copia de seguridad descargada correctamente",
+            "success": "Clave de copia de seguridad descargada",
             "error": "No hemos podido generar tu clave de seguridad"
           },
           "faq": {
@@ -438,7 +449,7 @@
     "deleteAccountModal": {
       "title": "¿Estás seguro?",
       "subtitle": "Todos tus archivos serán eliminados para siempre y perderás acceso a tu cuenta de Internxt.",
-      "cancel": "cancelar",
+      "cancel": "Cancelar",
       "confirm": "Confirmar"
     },
     "changePasswordModal": {
@@ -450,7 +461,7 @@
         "shortPassword": "La contraseña debe tener al menos 8 caracteres",
         "notComplex": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
         "weakPassword": "La contraseña es débil",
-        "doesntMatch": "La contraseñas no coinciden"
+        "doesntMatch": "Las contraseñas no coinciden"
       }
     },
     "2FAAuthenticationModal": {}
@@ -506,7 +517,7 @@
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
     "your-devices": "Tus dispositivos",
-    "back-to-devices": "Go back to devices",
+    "back-to-devices": "Volver a los dispositivos",
     "empty": {
       "title": "No tienes copias de seguridad",
       "subtitle": "Configura tus copias de seguridad en la aplicación de escritorio",
@@ -543,7 +554,7 @@
     "item-menu": {
       "copy-link": "Copiar link",
       "link-settings": "Configuración de enlace",
-      "delete-link": "Eliminar enlaces",
+      "delete-link": "Eliminar enlace",
       "delete-links": "Eliminar enlaces"
     },
     "link-settings": {
@@ -621,7 +632,7 @@
     "download-file": {
       "status": {
         "pending": "Pendiente",
-        "decrypting": "Decrypting file",
+        "decrypting": "Descifrando archivo",
         "in-process": "{{progress}}% Descargando archivo",
         "success": "Archivo descargado",
         "error": "Error durante la descarga",
@@ -727,7 +738,9 @@
     "itemsMovedToTrash": "{{item}} movido{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restablecido{{s}}.",
     "itemDeleted": "{{item}} eliminado",
-    "itemsDeleted": "Archivos eliminados"
+    "itemsDeleted": "Archivos eliminados",
+    "emailNotEmpty": "El correo no debe estar vacío",
+    "verificationEmail": "Correo de verificación enviado"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -809,7 +822,7 @@
       "move": "Mover"
     },
     "deleteItems": {
-      "title": "Eliminar permanentemente?",
+      "title": "¿Eliminar permanentemente?",
       "advice": "Esta acción no se puede deshacer.",
       "accept": "Eliminar",
       "progress": "Eliminando..."

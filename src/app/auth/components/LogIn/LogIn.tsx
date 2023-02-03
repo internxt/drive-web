@@ -193,7 +193,7 @@ export default function LogIn(): JSX.Element {
           <Button
             disabled={isLoggingIn}
             text={t('auth.login.title')}
-            disabledText={isValid ? 'Decrypting...' : 'Log in'}
+            disabledText={isValid ? (t('auth.decrypting') as string) : (t('auth.login.title') as string)}
             loading={isLoggingIn}
             style="button-primary"
             className="w-full"

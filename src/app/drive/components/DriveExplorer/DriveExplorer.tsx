@@ -395,12 +395,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
+                    title={t('views.recents.empty.noResults')}
+                    subtitle={t('views.recents.empty.dragNDrop')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: t('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />

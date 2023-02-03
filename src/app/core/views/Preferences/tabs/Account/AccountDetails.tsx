@@ -24,7 +24,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
   async function onResend() {
     setIsSendingVerificationEmail(true);
     await userService.sendVerificationEmail();
-    notificationsService.show({ text: 'Verification email has been sent', type: ToastType.Success });
+    notificationsService.show({ text: t('notificationMessages.verificationEmail'), type: ToastType.Success });
     setIsSendingVerificationEmail(false);
   }
 
@@ -112,11 +112,7 @@ function AccountDetailsModal({
   name: string;
   lastname: string;
 }) {
-  useEffect(() => {
-    if (isOpen) {
-      setStatus({ tag: 'ready' });
-    }
-  }, [isOpen]);
+  const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const [nameValue, setNameValue] = useState(name);
   const [lastnameValue, setLastnameValue] = useState(lastname);
@@ -127,6 +123,12 @@ function AccountDetailsModal({
 
   const nameIsInvalid = status.tag === 'error' && status.type === 'NAME_INVALID';
   const lastnameIsInvalid = status.tag === 'error' && status.type === 'LASTNAME_INVALID';
+
+  useEffect(() => {
+    if (isOpen) {
+      setStatus({ tag: 'ready' });
+    }
+  }, [isOpen]);
 
   function validate(value: string) {
     return value.length > 0 && value.length < 20;
@@ -151,11 +153,11 @@ function AccountDetailsModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Account details</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{t('views.account.tabs.account.accountDetails.head')}</h1>
       <Input
         disabled={status.tag === 'loading'}
         className="mt-4"
-        label="Name"
+        label={t('views.account.tabs.account.accountDetails.name') as string}
         value={nameValue}
         onChange={setNameValue}
         accent={nameIsInvalid ? 'error' : undefined}
@@ -165,7 +167,7 @@ function AccountDetailsModal({
       <Input
         disabled={status.tag === 'loading'}
         className="mt-3"
-        label="Lastname"
+        label={t('views.account.tabs.account.accountDetails.lastname') as string}
         value={lastnameValue}
         onChange={setLastnameValue}
         accent={lastnameIsInvalid ? 'error' : undefined}
@@ -174,10 +176,10 @@ function AccountDetailsModal({
       />
       <div className="mt-3 flex justify-end">
         <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
-          Cancel
+          {t('actions.cancel')}
         </Button>
         <Button loading={status.tag === 'loading'} className="ml-2" onClick={onSave}>
-          Save
+          {t('actions.save')}
         </Button>
       </div>
     </Modal>

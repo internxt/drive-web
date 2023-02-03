@@ -77,7 +77,7 @@ function ForgotPassword(): JSX.Element {
                   register={register}
                   onFocus={() => setShowErrors(false)}
                   required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  minLength={{ value: 1, message: t('notificationMessages.emailNotEmpty') }}
                   error={errors.email}
                 />
                 {showErrors && (
