@@ -50,10 +50,15 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     <div className="flex max-h-full items-center justify-center">
       <Fragment>
         <div>
-          <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
+          <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
             <div className="flex flex-col space-y-3">
               {Array.from(new Array(numPages), (el, index) => (
-                <Page height={window.innerHeight * zoomRange[zoom]} key={`page_${index + 1}`} pageNumber={index + 1} />
+                <Page
+                  height={window.innerHeight * zoomRange[zoom]}
+                  loading=""
+                  key={`page_${index + 1}`}
+                  pageNumber={index + 1}
+                />
               ))}
             </div>
           </Document>

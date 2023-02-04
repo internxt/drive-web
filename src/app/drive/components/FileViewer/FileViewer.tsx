@@ -1,15 +1,20 @@
 import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
 import i18n from '../../../i18n/services/i18n.service';
 
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import {
+  compareThumbnail,
+  getThumbnailFrom,
+  setCurrentThumbnail,
+  setThumbnails,
+  ThumbnailToUpload,
+  uploadThumbnail,
+} from 'app/drive/services/thumbnail.service';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
@@ -18,6 +23,8 @@ import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
 import { updateDatabaseFileSourceData } from '../../services/database.service';
 import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
+import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
+import iconService from 'app/drive/services/icon.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -25,6 +32,7 @@ interface FileViewerProps {
   onDownload: () => void;
   downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
+  progress?: number;
 }
 
 export interface FormatFileViewerProps {
@@ -33,7 +41,8 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerProps): JSX.Element => {
+const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: FileViewerProps): JSX.Element => {
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -183,7 +192,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
           <Dialog.Overlay
-            className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-blur-md
+            className="fixed inset-0 bg-black bg-opacity-85 backdrop-blur-md
                                     backdrop-filter"
           />
 
@@ -199,14 +208,23 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                     <Viewer blob={blob} />
                   </Suspense>
                 ) : (
-                  <div
-                    tabIndex={0}
-                    className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
-                      space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
-                  >
-                    <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
-                    <span>{i18n.get('drive.loadingFile')}</span>
-                  </div>
+                  <>
+                    <div
+                      tabIndex={0}
+                      className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium"
+                    >
+                      <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                      <span className="text-lg">{filename}</span>
+                      <span className="text-white">{i18n.get('drive.loadingFile')}</span>
+                      <div className="h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                        <div
+                          className="h-1.5 rounded-full bg-white"
+                          style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
@@ -239,10 +257,13 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 focus:bg-opacity-5"
               >
-                <UilMultiply height="20" width="20" />
+                <UilMultiply height={24} width={24} />
               </button>
 
-              <Dialog.Title className="truncate">{filename}</Dialog.Title>
+              <Dialog.Title className="flex flex-row items-center truncate text-lg">
+                <ItemIconComponent className="mr-3" width={32} height={32} />
+                {filename}
+              </Dialog.Title>
             </div>
 
             {/* Download button */}
