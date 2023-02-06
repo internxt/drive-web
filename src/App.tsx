@@ -25,6 +25,7 @@ import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspac
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
+import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 import { t } from 'i18next';
 
@@ -58,6 +59,7 @@ class App extends Component<AppProps> {
     });
 
     await LRUFilesCacheManager.getInstance();
+    await LRUFilesPreviewCacheManager.getInstance();
 
     try {
       await this.props.dispatch(
