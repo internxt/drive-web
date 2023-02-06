@@ -204,11 +204,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(uiActions.setIsEditFolderNameDialog(true));
   };
 
-  const onDeleteBuckupButtonClicked = () => {
+  const onDeleteBackupButtonClicked = () => {
     dispatch(uiActions.setIsDeleteBackupDialog(true));
   };
 
-  const onDownloadBuckupButtonClicked = () => {
+  const onDownloadBackupButtonClicked = () => {
     dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
   };
 
@@ -374,7 +374,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                   <Menu.Item>
                     {({ active }) => (
                       <div
-                        onClick={onDownloadBuckupButtonClicked}
+                        onClick={onDownloadBackupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
@@ -387,7 +387,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                   <Menu.Item>
                     {({ active }) => (
                       <div
-                        onClick={onDeleteBuckupButtonClicked}
+                        onClick={onDeleteBackupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
