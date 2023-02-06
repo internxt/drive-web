@@ -37,10 +37,8 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
         }
         onClose();
         props.goToFolder(previousBreadcrumb.id);
-      } catch (err: unknown) {
-        const castedError = errorService.castError(err);
-
-        console.log(castedError.message);
+      } catch (e: unknown) {
+        errorService.reportError(e);
       }
     } else {
       try {
@@ -49,9 +47,8 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
         await dispatch(backupsThunks.fetchDevicesThunk());
         onClose();
         props.goToFolder(previousBreadcrumb.id);
-      } catch (err: unknown) {
-        const castedError = errorService.castError(err);
-        console.log(castedError.message);
+      } catch (e: unknown) {
+        errorService.reportError(e);
       }
     }
   };
