@@ -28,7 +28,7 @@
     "i18next": "^22.4.9",
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
-    "jszip": "=3.2.2",
+    "jszip": "=3.8.0",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "openpgp": "^4.10.10",
