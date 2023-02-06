@@ -105,16 +105,16 @@ async function afterMoving(
           itemsToRecover:
             itemsToRecover.length > 1
               ? t('general.files')
-              : itemsToRecover[0].isFolder === true
+              : itemsToRecover[0].isFolder
               ? t('general.folder')
               : t('general.file'),
-          s: itemsToRecover.length > 1 ? 's' : '',
+          s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
         })
       : t('notificationMessages.itemsMovedToTrash', {
           item:
             itemsToRecover.length > 1
               ? t('general.files')
-              : itemsToRecover[0].isFolder === true
+              : itemsToRecover[0].isFolder
               ? t('general.folder')
               : t('general.file'),
           s: itemsToRecover.length > 1 ? 's' : '',
