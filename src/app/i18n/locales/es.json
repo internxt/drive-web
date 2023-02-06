@@ -181,7 +181,7 @@
             "verify": {
               "verify": "Verifica tu correo",
               "verified": "Correo verificado",
-              "description": "Revisa tu correo electrónico"
+              "description": "Revisa tu correo"
             },
             "editProfile": {
               "name": "Nombre",
@@ -777,6 +777,7 @@
     "view": "Ver",
     "accessFile": "Acceder al archivo",
     "upgradeNow": "Comprar espacio",
+    "purchasePlan": "Comprar plan",
     "upgrade": "Ampliar",
     "deleteAccount": "Eliminar permanentemente la cuenta",
     "changePassword": "Cambiar contraseña",
@@ -868,7 +869,7 @@
   "inviteAFriend": {
     "title": "Invita a un amigo",
     "descriptionWidget": "Consigue hasta {{N}}GB extra de almacenamiento gratuito invitando a tus amigos (1GB por usuario registrado a través de tu invitación)",
-    "description": "Corre la voz, obtén 1 GB por cada amigo que invites a Internxt. Consigue hasta {{N}}GB en total.",
+    "description": "Obtén 1 GB por cada amigo que invites a Internxt. Consigue hasta {{N}}GB en total.",
     "label": "Invitar a",
     "placeholder": "Correo electrónico",
     "actions": {

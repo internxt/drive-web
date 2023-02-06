@@ -1,7 +1,12 @@
 import { initReactI18next } from 'react-i18next';
 import i18next from 'i18next';
+import localStorageService from 'app/core/services/local-storage.service';
 
-const deviceLang = navigator.language.split('-')[0];
+let deviceLang = navigator.language.split('-')[0];
+
+if (localStorageService.get('language')) {
+  deviceLang = localStorageService.get('language') as string;
+}
 
 function isProduction(): boolean {
   return process.env.NODE_ENV === 'production';

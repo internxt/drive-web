@@ -172,7 +172,7 @@ function Price({
       ? translate('actions.change')
       : button === 'current'
       ? translate('drive.currentPlan')
-      : translate('actions.upgrade');
+      : translate('actions.purchasePlan');
 
   return (
     <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>

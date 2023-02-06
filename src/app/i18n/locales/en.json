@@ -181,7 +181,7 @@
             "verify": {
               "verify": "Verify your email",
               "verified": "Verified email",
-              "description": "Check your inbox or spam"
+              "description": "Check your inbox"
             },
             "editProfile": {
               "name": "Name",
@@ -777,6 +777,7 @@
     "view": "View",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now",
+    "purchasePlan": "Upgrade now",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
@@ -868,7 +869,7 @@
   "inviteAFriend": {
     "title": "Invite a friend",
     "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Spread the word, get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
+    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
     "label": "Friend email address",
     "placeholder": "Enter friend email",
     "actions": {
