@@ -23,7 +23,6 @@ export default function Language(): JSX.Element {
 
   useEffect(() => {
     localStorageService.set('language', lang);
-    i18next.changeLanguage(lang);
   }, [lang]);
 
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
