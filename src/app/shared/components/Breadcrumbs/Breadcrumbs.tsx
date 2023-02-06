@@ -10,6 +10,7 @@ export interface BreadcrumbItemData {
   active: boolean;
   isFirstPath?: boolean;
   dialog?: boolean;
+  isBackup?: boolean;
   onClick?: () => void;
 }
 

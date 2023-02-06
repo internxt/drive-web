@@ -32,6 +32,7 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -48,6 +49,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const allItems = useAppSelector((state) => state.storage.levels);
   const currentBreadcrumb = namePath[namePath.length - 1];
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
+  const currentDevice = useAppSelector((state) => state.backups.currentDevice);
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
@@ -162,7 +164,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const onDeleteButtonClicked = async () => {
+  const onMoveToTrashButtonClicked = async () => {
     const previousBreadcrumb = props.items[props.items.length - 2];
     await moveItemsToTrash(currentFolder);
     onItemClicked(previousBreadcrumb);
@@ -202,6 +204,14 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(uiActions.setIsEditFolderNameDialog(true));
   };
 
+  const onDeleteBuckupButtonClicked = () => {
+    dispatch(uiActions.setIsDeleteBackupDialog(true));
+  };
+
+  const onDownloadBuckupButtonClicked = () => {
+    dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
+  };
+
   return (
     <>
       {!props.item.active && !props.item.dialog ? (
@@ -231,131 +241,164 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                 'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
               }
             >
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={onCreateFolderButtonClicked}
-                    className={`${
-                      active && 'bg-gray-5'
-                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                  >
-                    <FolderSimplePlus size={20} />
-                    <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
-                  </div>
-                )}
-              </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
-              {!isBreadcrumbItemShared ? (
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onCreateLinkButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <Link size={20} />
-                      <p className="ml-3">Get Link</p>
-                    </div>
+              {!props.item.isBackup ? (
+                <>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onCreateFolderButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <FolderSimplePlus size={20} />
+                        <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  {!isBreadcrumbItemShared ? (
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          onClick={onCreateLinkButtonClicked}
+                          className={`${
+                            active && 'bg-gray-5'
+                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        >
+                          <Link size={20} />
+                          <p className="ml-3">Get Link</p>
+                        </div>
+                      )}
+                    </Menu.Item>
+                  ) : (
+                    <>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onCopyLinkButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <Copy size={20} />
+                            <p className="ml-3">Copy link</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onLinkSettingsButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <Gear size={20} />
+                            <p className="ml-3">Link Settings</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onDeleteLinkButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <LinkBreak size={20} />
+                            <p className="ml-3">Delete link</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </>
                   )}
-                </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onEditButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <PencilSimple size={20} />
+                        <p className="ml-3">Rename</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onMoveButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <ArrowsOutCardinal size={20} />
+                        <p className="ml-3">Move</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onDownloadButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <DownloadSimple size={20} />
+                        <p className="ml-3">Download</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onMoveToTrashButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Trash size={20} />
+                        <p className="ml-3">Move to Trash</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                </>
               ) : (
                 <>
                   <Menu.Item>
                     {({ active }) => (
                       <div
-                        onClick={onCopyLinkButtonClicked}
+                        onClick={onDownloadBuckupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
-                        <Copy size={20} />
-                        <p className="ml-3">Copy link</p>
+                        <DownloadSimple size={20} />
+                        <p className="ml-3">Download</p>
                       </div>
                     )}
                   </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
                       <div
-                        onClick={onLinkSettingsButtonClicked}
+                        onClick={onDeleteBuckupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
-                        <Gear size={20} />
-                        <p className="ml-3">Link Settings</p>
-                      </div>
-                    )}
-                  </Menu.Item>
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div
-                        onClick={onDeleteLinkButtonClicked}
-                        className={`${
-                          active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                      >
-                        <LinkBreak size={20} />
-                        <p className="ml-3">Delete link</p>
+                        <Trash size={20} />
+                        <p className="ml-3">Delete</p>
                       </div>
                     )}
                   </Menu.Item>
                 </>
               )}
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={onEditButtonClicked}
-                    className={`${
-                      active && 'bg-gray-5'
-                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                  >
-                    <PencilSimple size={20} />
-                    <p className="ml-3">Rename</p>
-                  </div>
-                )}
-              </Menu.Item>
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={onMoveButtonClicked}
-                    className={`${
-                      active && 'bg-gray-5'
-                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                  >
-                    <ArrowsOutCardinal size={20} />
-                    <p className="ml-3">Move</p>
-                  </div>
-                )}
-              </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={onDownloadButtonClicked}
-                    className={`${
-                      active && 'bg-gray-5'
-                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                  >
-                    <DownloadSimple size={20} />
-                    <p className="ml-3">Download</p>
-                  </div>
-                )}
-              </Menu.Item>
-              <div className="my-0.5 mx-3 border-t border-gray-10" />
-              <Menu.Item>
-                {({ active }) => (
-                  <div
-                    onClick={onDeleteButtonClicked}
-                    className={`${
-                      active && 'bg-gray-5'
-                    } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                  >
-                    <Trash size={20} />
-                    <p className="ml-3">Move to Trash</p>
-                  </div>
-                )}
-              </Menu.Item>
             </Menu.Items>
           </Transition>
         </Menu>

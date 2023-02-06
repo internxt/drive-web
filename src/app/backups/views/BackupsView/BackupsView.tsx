@@ -14,6 +14,7 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import Dialog from '../../../shared/components/Dialog/Dialog';
+import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 
 export default function BackupsView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -87,6 +88,7 @@ export default function BackupsView(): JSX.Element {
       label: currentDevice.name,
       icon: null,
       active: false,
+      isBackup: true,
     });
   } else if (currentDevice) {
     backupsAsFoldersPath.forEach((item, i) => {
@@ -98,6 +100,7 @@ export default function BackupsView(): JSX.Element {
         id: item.id,
         label: item.name,
         icon: null,
+        isBackup: true,
         ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),
       });
     });
@@ -129,6 +132,7 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div className="mb-5 flex flex-grow flex-col px-8 pt-6">
+      <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
