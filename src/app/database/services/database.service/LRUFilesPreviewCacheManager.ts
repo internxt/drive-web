@@ -1,10 +1,10 @@
 import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 import databaseService, { DatabaseCollection, DriveItemBlobData, LRUCacheTypes } from '.';
 
-class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
+class LevelsBlobsPreviewsCache implements ICacheStorage<DriveItemBlobData> {
   async getSize(key: string): Promise<number> {
     const blobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
-    return blobItem?.source?.size || 0;
+    return blobItem?.preview?.size || 0;
   }
 
   get(key: string): Promise<DriveItemBlobData | undefined> {
@@ -18,8 +18,8 @@ class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
 
   delete(key: string): void {
     databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key)).then((databaseData) => {
-      if (databaseData?.preview) {
-        databaseService.put(DatabaseCollection.LevelsBlobs, parseInt(key), { ...databaseData, source: undefined });
+      if (databaseData?.source) {
+        databaseService.put(DatabaseCollection.LevelsBlobs, parseInt(key), { ...databaseData, preview: undefined });
         return;
       }
       databaseService.delete(DatabaseCollection.LevelsBlobs, parseInt(key));
@@ -27,35 +27,35 @@ class LevelsBlobsCache implements ICacheStorage<DriveItemBlobData> {
   }
 
   async has(key: string): Promise<boolean> {
-    const exists = !!(await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key)))?.source;
+    const exists = !!(await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key)))?.preview;
     return exists;
   }
 
   updateLRUState(lruState: LRUCacheStruture): void {
-    databaseService.put(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobs, lruState);
+    databaseService.put(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobsPreview, lruState);
   }
 }
 
-const MB_450_IN_BYTES = 471859200;
+const MB_50_IN_BYTES = 52428800;
 
-export class LRUFilesCacheManager {
+export class LRUFilesPreviewCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
 
   public static getInstance(): LRUCache<DriveItemBlobData> {
-    if (!LRUFilesCacheManager.instance) {
-      const levelsBlobsCache = new LevelsBlobsCache();
+    if (!LRUFilesPreviewCacheManager.instance) {
+      const levelsBlobsCache = new LevelsBlobsPreviewsCache();
 
-      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobs).then((lruCacheState) => {
+      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobsPreview).then((lruCacheState) => {
         if (lruCacheState) {
-          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES, {
+          LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES, {
             lruKeyList: lruCacheState.lruKeyList,
             itemsListSize: lruCacheState.itemsListSize,
           });
         } else {
-          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES);
+          LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES);
         }
       });
     }
-    return LRUFilesCacheManager.instance;
+    return LRUFilesPreviewCacheManager.instance;
   }
 }
