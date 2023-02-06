@@ -6,7 +6,7 @@ import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
 import { Network } from '../../network.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { t } from 'i18next';
 
 interface FolderPackage {
   folderId: number;
@@ -32,14 +32,13 @@ export async function downloadSharedFolderUsingStreamSaver(
     progressCallback: (progress: number) => void;
   },
 ): Promise<void> {
-  const { translate } = useTranslationContext();
   const downloadingSize: Record<number, number> = {};
   const network = new Network('NONE', 'NONE', 'NONE');
   const zip = new JSZip();
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${sharedFolderMeta.name}.zip`, {});

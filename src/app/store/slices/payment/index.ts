@@ -7,7 +7,7 @@ import errorService from '../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import paymentService, { CreatePaymentSessionPayload } from '../../../payment/services/payment.service';
 import analyticsService from '../../../analytics/services/analytics.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { t } from 'i18next';
 
 interface PaymentState {
   isBuying: boolean;
@@ -31,7 +31,6 @@ export interface TeamsCheckoutThunkPayload {
 export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { state: RootState }>(
   'payment/checkout',
   async (payload: CheckoutThunkPayload) => {
-    const { translate } = useTranslationContext();
     const body: CreatePaymentSessionPayload = {
       test: envService.isProduction() ? undefined : true,
       // eslint-disable-next-line max-len
@@ -56,7 +55,7 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
       const castedError = errorService.castError(err);
 
       notificationsService.show({
-        text: translate('error.redirectToStripe', {
+        text: t('error.redirectToStripe', {
           reason: castedError.message,
         }),
         type: ToastType.Error,
@@ -68,7 +67,6 @@ export const checkoutThunk = createAsyncThunk<void, CheckoutThunkPayload, { stat
 export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPayload, { state: RootState }>(
   'payment/teamsCheckout',
   async (payload: TeamsCheckoutThunkPayload) => {
-    const { translate } = useTranslationContext();
     const mode =
       payload.product.price.type === ProductPriceType.OneTime
         ? StripeSessionMode.Payment
@@ -80,7 +78,7 @@ export const teamsCheckoutThunk = createAsyncThunk<void, TeamsCheckoutThunkPaylo
       const castedError = errorService.castError(err);
 
       notificationsService.show({
-        text: translate('error.redirectToStripe', {
+        text: t('error.redirectToStripe', {
           reason: castedError.message,
         }),
         type: ToastType.Error,
