@@ -7,7 +7,7 @@ import downloadService from 'app/drive/services/download.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { DriveFileData } from 'app/drive/types';
 import AppError from 'app/core/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -138,7 +138,7 @@ export const downloadFileThunkExtraReducers = (builder: ActionReducerMapBuilder<
         const errorMessage = rejectedValue?.message || action.error.message;
 
         notificationsService.show({
-          text: i18n.get('error.downloadingFile', { message: errorMessage || '' }),
+          text: t('error.downloadingFile', { message: errorMessage || '' }),
           type: ToastType.Error,
         });
       }

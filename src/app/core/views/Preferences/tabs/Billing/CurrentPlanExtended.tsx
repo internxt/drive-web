@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -12,6 +13,7 @@ import Section from '../../components/Section';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const { translate } = useTranslationContext();
 
   const userSubscription = plan.subscription;
 
@@ -40,11 +42,11 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     try {
       await paymentService.cancelSubscription();
       await dispatch(planThunks.initializeThunk()).unwrap();
-      notificationsService.show({ text: 'Your subscription has been cancelled' });
+      notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
     } catch (err) {
       console.error(err);
       notificationsService.show({
-        text: 'Something went wrong while cancelling your subscription',
+        text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       });
     } finally {
@@ -53,25 +55,33 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   }
 
   return (
-    <Section className={className} title="Current plan">
+    <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
       <Card>
         {plan.planLimit && userSubscription ? (
           <>
             <CurrentPlanWrapper userSubscription={userSubscription} bytesInPlan={plan.planLimit} />
             {subscriptionExtension && (
-              <div className="mt-4 flex flex-col items-center border-t border-gray-5">
+              <div className="border-translate mt-4 flex flex-col items-center border-gray-5">
                 <h1 className="mt-4 font-medium text-gray-80">
-                  Subscription renews in {subscriptionExtension.daysUntilRenewal} days
+                  {translate('views.account.tabs.billing.subsRenew', {
+                    daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
+                  })}
                 </h1>
                 <p className="text-xs text-gray-50">
-                  Billed {subscriptionExtension.interval} {subscriptionExtension.renewDate}
+                  {translate('views.account.tabs.billing.billed', {
+                    interval:
+                      subscriptionExtension.interval === 'monthly'
+                        ? translate('general.renewalPeriod.monthly')
+                        : translate('general.renewalPeriod.annually'),
+                    renewDate: subscriptionExtension.renewDate,
+                  })}
                 </p>
                 <button
                   disabled={cancellingSubscription}
                   onClick={cancelSubscription}
                   className="mt-2 text-xs text-gray-60"
                 >
-                  Cancel subscription
+                  {translate('views.account.tabs.billing.cancelSubscription')}
                 </button>
               </div>
             )}

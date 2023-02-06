@@ -3,11 +3,12 @@ import { StorageState } from '../storage.model';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
-import i18n from '../../../../i18n/services/i18n.service';
 import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import folderService from '../../../../drive/services/folder.service';
+import { t } from 'i18next';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
@@ -90,10 +91,10 @@ export const createFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
 
       if (requestOptions?.showErrors) {
         const errorMessage = action.error.message?.includes('already exists')
-          ? i18n.get('error.folderAlreadyExists')
-          : i18n.get('error.creatingFolder');
+          ? t('error.folderAlreadyExists')
+          : t('error.creatingFolder');
 
-        //notificationsService.show({ text: errorMessage, type: ToastType.Error });
+        notificationsService.show({ text: errorMessage, type: ToastType.Error });
       }
     });
 };

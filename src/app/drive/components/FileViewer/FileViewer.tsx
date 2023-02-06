@@ -2,7 +2,6 @@ import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import i18n from '../../../i18n/services/i18n.service';
 
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
@@ -29,6 +28,7 @@ import {
 } from '../../services/database.service';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -47,6 +47,7 @@ const extensionsList = fileExtensionService.computeExtensionsLists(fileExtension
 
 const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: FileViewerProps): JSX.Element => {
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
+  const { translate } = useTranslationContext();
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -236,7 +237,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
-                      <span className="text-white">{i18n.get('drive.loadingFile')}</span>
+                      <span className="text-white">{translate('drive.loadingFile')}</span>
                       <div className="h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                         <div
                           className="h-1.5 rounded-full bg-white"
@@ -254,7 +255,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
               className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
             >
-              <span>{i18n.get('error.noFilePreview')}</span>
+              <span>{translate('error.noFilePreview')}</span>
             </div>
           )}
 
@@ -295,7 +296,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
                           ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
+                <span className="font-medium">{translate('actions.download')}</span>
               </button>
             </div>
           </div>
