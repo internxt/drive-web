@@ -33,7 +33,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], t: TFunction): Pr
           : itemsToTrash[0].isFolder === true
           ? t('general.folder')
           : t('general.file'),
-      s: itemsToTrash.length > 1 ? 's' : '',
+      s: itemsToTrash.length > 1 ? 'os' : itemsToTrash[0].isFolder === true ? 'a' : 'o',
     }),
 
     action: {

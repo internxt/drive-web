@@ -735,7 +735,7 @@
   "notificationMessages": {
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
-    "itemsMovedToTrash": "{{item}} movido{{s}} a la papelera",
+    "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restablecido{{s}}.",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
