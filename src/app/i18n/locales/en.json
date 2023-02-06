@@ -512,7 +512,9 @@
     "browserNotSupported": "Browser not supported ({{userAgent}})",
     "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
-    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support."
+    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
+    "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
+    "emptyPassword": "Previous password must not be empty"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

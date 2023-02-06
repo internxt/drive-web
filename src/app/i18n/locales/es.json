@@ -392,7 +392,7 @@
       "description": "{{itemName}} ya existe en esta localización. Deseas reemplazarlo o mantener los dos?",
       "multipleDescription": "Más de un elemento existe en esta localización. Deseas reemplazarlos o mantenerlos?",
       "replaceItem": "Reemplazar el item",
-      "keepBoth": "mantener los dos",
+      "keepBoth": "Mantener los dos",
       "upload": "Subir",
       "move": "Mover"
     },
@@ -493,8 +493,8 @@
     "redirectToStripe": "Ha fallado la redirección a Stripe. Póngase en contacto con nosotros. Razón: {{reason}}",
     "deactivatingAccount": "Error al desactivar la cuenta. Please contact us",
     "fetchingFolderContent": "Error al obtener la carpeta",
-    "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {{reason}}",
+    "uploadingFolder": "Error al subir la carpeta",
+    "uploadingFile": "Error al subir el archivo: {{reason}}",
     "uploadingItems": "No se ha podido subir alguno de los elementos",
     "downloadingFile": "Error descargando archivo: {{message}}",
     "downloadingFolder": "Error descargando carpeta: {{message}}",
@@ -506,13 +506,15 @@
     "teamInvitation": "No se ha podido enviar el correo electrónico de invitación",
     "noSpaceAvailable": "Tu Internxt Drive está lleno. Consigue más espacio cambiando de plan",
     "sharedFolderTooBig": "Internxt Drive no admite compartir carpetas de más de 1 GB",
-    "titleCarpetaCompartidaDemasiadoGrande": "Acción no compatible",
+    "titleSharedFolderTooBig": "Acción no compatible",
     "workingOnIt": "Estamos trabajando para ofrecerte una mejor experiencia",
     "noFilePreview": "No hay vista previa de archivos disponible",
     "browserNotSupported": "Navegador no compatible ({{userAgent}})",
     "inviteAFriend": "Error al enviar la invitación a un amigo: {{message}}",
     "subscribeToNewsletter": "Error al suscribirse al boletín: {{message}}",
-    "lastPasswordError": "La contraseña que has introducido como última parece no ser válida. Inténtalo de nuevo y, si el problema persiste, ponte en contacto con nuestro servicio de asistencia."
+    "lastPasswordError": "La contraseña que has introducido como última parece no ser válida. Inténtalo de nuevo y, si el problema persiste, ponte en contacto con nuestro servicio de asistencia.",
+    "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
+    "emptyPassword": "La contraseña no puede estar vacía."
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",

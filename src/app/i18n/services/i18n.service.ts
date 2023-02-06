@@ -1,8 +1,11 @@
 import { initReactI18next } from 'react-i18next';
 import i18next from 'i18next';
-import localStorageService from 'app/core/services/local-storage.service';
 
 const deviceLang = navigator.language.split('-')[0];
+
+function isProduction(): boolean {
+  return process.env.NODE_ENV === 'production';
+}
 
 i18next
   .use(initReactI18next) // passes i18n down to react-i18next
@@ -15,7 +18,7 @@ i18next
         translation: require('../locales/es.json'),
       },
     },
-    debug: true,
+    debug: isProduction() ? false : true,
     fallbackLng: 'en',
     lng: deviceLang,
     defaultNS: 'translation',

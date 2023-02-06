@@ -171,7 +171,7 @@ export default function RecoverView(): JSX.Element {
               }
               register={register}
               required={true}
-              minLength={{ value: 1, message: 'Current password must not be empty' }}
+              minLength={{ value: 1, message: translate('error.emptyPassword') }}
               error={errors.password}
             />
 
@@ -193,7 +193,7 @@ export default function RecoverView(): JSX.Element {
               }
               register={register}
               required={true}
-              minLength={{ value: 1, message: 'Previous password must not be empty' }}
+              minLength={{ value: 1, message: translate('error.emptyPassword') }}
               error={errors.password}
             />
 
@@ -204,9 +204,7 @@ export default function RecoverView(): JSX.Element {
             )}
             {showCurrentPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">
-                  The current password you introduce doesn'translate match. Please make sure it is correct.
-                </span>
+                <span className="w-56 text-sm font-medium text-red-60">{translate('error.incorrectPassword')}</span>
               </div>
             )}
 
@@ -219,7 +217,7 @@ export default function RecoverView(): JSX.Element {
             </div>
 
             <div className="mt-3 flex w-full justify-center text-sm">
-              <span className="mr-2">Don'translate you know what this is about?</span>
+              <span className="mr-2">Don't you know what this is about?</span>
               <Link to="/app">Go home</Link>
             </div>
           </form>
