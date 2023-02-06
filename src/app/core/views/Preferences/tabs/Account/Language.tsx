@@ -16,9 +16,9 @@ const deviceLang = getLanguage();
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [lang, setLang] = React.useState<string>(deviceLang);
+  const [lang, setLang] = React.useState<string>(deviceLang === 'es' ? 'es' : 'en');
   const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>(
-    deviceLang === 'en' ? 'English (US)' : 'Español (ES)',
+    deviceLang === 'es' ? 'Español (ES)' : 'English (US)',
   );
 
   useEffect(() => {
