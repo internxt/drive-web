@@ -15,6 +15,7 @@ import { LRUFilesCacheManager } from '../../../../database/services/database.ser
 import { saveAs } from 'file-saver';
 import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
+import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -32,13 +33,13 @@ const defaultDownloadFileThunkOptions = {
   showErrors: true,
 };
 
-const checkIfCachedSourceIsOlder = ({
+export const checkIfCachedSourceIsOlder = ({
   cachedFile,
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
   file: DriveFileData;
-}) => {
+}): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
     : dateService.isDateOneBefore({
@@ -84,8 +85,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         },
       });
 
-      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-      const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+      const cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
       const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
       if (cachedFile?.source && !isCachedFileOlder) {
