@@ -389,10 +389,10 @@
     "renameModal": {
       "title": "El item ya existe",
       "titleMultipleItems": "Multiples archivos existen",
-      "description": "{{itemName}} ya existe en esta localización. Deseas reemplazarlo o mantener los dos?",
+      "description": "{{itemName}} ya existe en esta carpeta. ¿Deseas reemplazarlo o mantener los dos?",
       "multipleDescription": "Más de un elemento existe en esta localización. Deseas reemplazarlos o mantenerlos?",
-      "replaceItem": "Reemplazar el item",
-      "keepBoth": "Mantener los dos",
+      "replaceItem": "Reemplazar el ítem",
+      "keepBoth": "Mantener ambos",
       "upload": "Subir",
       "move": "Mover"
     },
