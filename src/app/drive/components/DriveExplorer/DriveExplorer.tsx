@@ -61,7 +61,8 @@ import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContaine
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
 
-const PAGINATION_LIMIT = 60;
+const PAGINATION_LIMIT = 100;
+const UPLOAD_ITEMS_LIMIT = 1000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -128,6 +129,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     deviceService.redirectForMobile();
   }, []);
 
+  useEffect(() => {
+    setHasMoreItems(true);
+    setFakePaginationLimit(PAGINATION_LIMIT);
+  }, [currentFolderId]);
+
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
   };
@@ -143,7 +149,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
 
-    if (files.length < 1000) {
+    if (files.length < UPLOAD_ITEMS_LIMIT) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
@@ -220,9 +226,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     const existsMoreItems = items.length > fakePaginationLimit;
 
     setHasMoreItems(existsMoreItems);
-    setTimeout(() => {
-      if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-    }, 1000);
+    if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
   };
 
   const getLimitedItems = () => items.slice(0, fakePaginationLimit);
@@ -379,6 +383,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
+                  folderId={currentFolderId}
                   items={itemsList}
                   isLoading={isLoading}
                   onEndOfScroll={getMoreItems}
@@ -499,7 +504,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < 1000) {
+  if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly

@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
 import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { connect } from 'react-redux';
@@ -13,6 +13,7 @@ import InfiniteScroll from 'react-infinite-scroll-component';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface DriveExplorerListProps {
+  folderId: number;
   isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
@@ -23,23 +24,41 @@ interface DriveExplorerListProps {
   isTrash?: boolean;
 }
 
-const DriveExplorerList = (props: DriveExplorerListProps) => {
+const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const { translate } = useTranslationContext();
 
-  function hasItems(): boolean {
-    return props.items.length > 0;
-  }
+  const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
 
-  function itemsList(): JSX.Element[] {
+  useEffect(() => {
+    setIsAllSelectedEnabled(false);
+  }, [props.folderId]);
+
+  useEffect(() => {
+    if (props.selectedItems.length === props.items.length) {
+      setIsAllSelectedEnabled(true);
+    } else {
+      setIsAllSelectedEnabled(false);
+    }
+  }, [props.selectedItems]);
+
+  useEffect(() => {
+    if (isAllSelectedEnabled) {
+      dispatch(storageActions.selectItems(props.items));
+    }
+  }, [props.items.length]);
+
+  const hasItems = props.items.length > 0;
+
+  const itemsList = (): JSX.Element[] => {
     return props.items.map((item: DriveItemData) => {
       const itemParentId = item.parentId || item.folderId;
       const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
 
       return <DriveExplorerListItem isTrash={props.isTrash} key={itemKey} item={item} />;
     });
-  }
+  };
 
-  function itemsFileList(): JSX.Element[] {
+  const itemsFileList = (): JSX.Element[] => {
     return props.items
       .filter((item) => !item.isFolder)
       .map((item: DriveItemData) => {
@@ -48,9 +67,9 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
 
         return <DriveExplorerListItem key={itemKey} item={item} isTrash={props.isTrash} />;
       });
-  }
+  };
 
-  function itemsFolderList(): JSX.Element[] {
+  const itemsFolderList = (): JSX.Element[] => {
     return props.items
       .filter((item) => item.isFolder)
       .map((item: DriveItemData) => {
@@ -59,23 +78,21 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
 
         return <DriveExplorerListItem key={itemKey} item={item} isTrash={props.isTrash} />;
       });
-  }
+  };
 
-  function isAllSelected(): boolean {
-    const { selectedItems, items } = props;
+  const isAllSelected = () => {
+    const isAllItemsSelected = props.selectedItems.length === props.items.length && props.items.length > 0;
+    return isAllItemsSelected;
+  };
 
-    return selectedItems.length === items.length && items.length > 0;
-  }
-
-  function loadingSkeleton(): JSX.Element[] {
-    return Array(20)
+  const loadingSkeleton = (): JSX.Element[] =>
+    Array(60)
       .fill(0)
       .map((n, i) => <DriveListItemSkeleton key={i} />);
-  }
 
   const onSelectAllButtonClicked = () => {
     const { dispatch, items } = props;
-
+    setIsAllSelectedEnabled(!isAllSelectedEnabled);
     isAllSelected() ? dispatch(storageActions.clearSelectedItems()) : dispatch(storageActions.selectItems(items));
   };
 
@@ -90,6 +107,7 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
         : OrderDirection.Asc;
     dispatch(storageActions.setOrder({ by: orderBy, direction }));
   };
+
   const sortButtonFactory = () => {
     const IconComponent = order.direction === OrderDirection.Desc ? UilArrowDown : UilArrowUp;
     return <IconComponent className="ml-2" />;
@@ -100,7 +118,7 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
       <div className="files-list flex border-b border-neutral-30 bg-white py-3 text-sm font-semibold text-neutral-500">
         <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
           <input
-            disabled={!hasItems()}
+            disabled={!hasItems}
             readOnly
             checked={isAllSelected()}
             onClick={onSelectAllButtonClicked}
@@ -140,6 +158,7 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
               scrollableTarget="scrollableList"
               className="z-0 h-full"
               style={{ overflow: 'visible' }}
+              scrollThreshold={0.6}
             >
               {itemsFolderList()}
               {itemsFileList()}
@@ -149,7 +168,7 @@ const DriveExplorerList = (props: DriveExplorerListProps) => {
       </div>
     </div>
   );
-};
+});
 
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,

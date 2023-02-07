@@ -514,7 +514,8 @@
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
-    "emptyPassword": "Previous password must not be empty"
+    "emptyPassword": "Previous password must not be empty",
+    "errorMovingToTrash": "An error occurred while moving the items to trash."
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

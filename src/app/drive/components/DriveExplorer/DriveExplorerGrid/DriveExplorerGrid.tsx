@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { FC } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
@@ -8,13 +8,14 @@ import './DriveExplorerGrid.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
 
 interface DriveExplorerGridProps {
+  folderId: number;
   isLoading: boolean;
   items: DriveItemData[];
   onEndOfScroll(): void;
   hasMoreItems: boolean;
 }
 
-const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
+const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridProps) => {
   function loadingSkeleton(): JSX.Element[] {
     return Array(20)
       .fill(0)
@@ -66,6 +67,7 @@ const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
             scrollableTarget="scrollableList"
             className="files-grid z-0 flex-grow"
             style={{ overflow: 'visible' }}
+            scrollThreshold={0.6}
           >
             {itemsFolderList()}
             {itemsFileList()}
