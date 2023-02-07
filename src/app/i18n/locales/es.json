@@ -514,7 +514,8 @@
     "subscribeToNewsletter": "Error al suscribirse al boletín: {{message}}",
     "lastPasswordError": "La contraseña que has introducido como última parece no ser válida. Inténtalo de nuevo y, si el problema persiste, ponte en contacto con nuestro servicio de asistencia.",
     "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
-    "emptyPassword": "La contraseña no puede estar vacía."
+    "emptyPassword": "La contraseña no puede estar vacía.",
+    "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura."
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",

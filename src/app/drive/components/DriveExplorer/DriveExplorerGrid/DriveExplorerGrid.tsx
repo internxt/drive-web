@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React, { FC } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
@@ -15,7 +15,7 @@ interface DriveExplorerGridProps {
   hasMoreItems: boolean;
 }
 
-const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
+const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridProps) => {
   function loadingSkeleton(): JSX.Element[] {
     return Array(20)
       .fill(0)
