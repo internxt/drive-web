@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageSelectors } from 'app/store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import getTrash from '../../../../use_cases/trash/get_trash';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -14,17 +15,23 @@ export interface TrashViewProps {
   dispatch: AppDispatch;
 }
 
-class TrashView extends Component<TrashViewProps> {
-  componentDidMount(): void {
-    this.props.dispatch(storageThunks.resetNamePathThunk());
+const TrashView = (props: TrashViewProps) => {
+  const { translate } = useTranslationContext();
+  useEffect(() => {
+    props.dispatch(storageThunks.resetNamePathThunk());
     getTrash();
-  }
+  }, []);
 
-  render(): ReactNode {
-    const { items, isLoadingItemsOnTrash } = this.props;
-    return <DriveExplorer title="Trash" titleClassName="px-3" isLoading={isLoadingItemsOnTrash} items={items} />;
-  }
-}
+  const { items, isLoadingItemsOnTrash } = props;
+  return (
+    <DriveExplorer
+      title={translate('trash.trash') as string}
+      titleClassName="px-3"
+      isLoading={isLoadingItemsOnTrash}
+      items={items}
+    />
+  );
+};
 
 export default connect((state: RootState) => {
   return {

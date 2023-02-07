@@ -1,20 +1,33 @@
-import _ from 'lodash';
-import format from 'string-template';
-import { Locale } from '../types';
+import { initReactI18next } from 'react-i18next';
+import i18next from 'i18next';
+import localStorageService from 'app/core/services/local-storage.service';
+import envService from 'app/core/services/env.service';
 
-import locales from '../locales';
+let deviceLang = navigator.language.split('-')[0];
 
-class I18nService {
-  currentLocale: string = Locale.English;
-
-  get(key: string, values = {}): string {
-    const messageTemplate = _.get(locales[this.currentLocale], key) || key;
-    const result = format(messageTemplate, values);
-
-    return result;
-  }
+if (localStorageService.get('language')) {
+  deviceLang = localStorageService.get('language') as string;
 }
 
-const i18n = new I18nService();
+i18next
+  .use(initReactI18next) // passes i18n down to react-i18next
+  .init({
+    resources: {
+      en: {
+        translation: require('../locales/en.json'),
+      },
+      es: {
+        translation: require('../locales/es.json'),
+      },
+    },
+    debug: !envService.isProduction(),
+    fallbackLng: 'en',
+    lng: deviceLang,
+    defaultNS: 'translation',
+    ns: ['translation'],
+    interpolation: {
+      escapeValue: false, // not needed for react as it escapes by default
+    },
+  });
 
-export default i18n;
+export default i18next;

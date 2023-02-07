@@ -5,9 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import AuthButton from 'app/shared/components/AuthButton';
-import {
-  changePassword,
-} from '../../services/auth.service';
+import { changePassword } from '../../services/auth.service';
 import UilLock from '@iconscout/react-unicons/icons/uil-lock';
 import UilEyeSlash from '@iconscout/react-unicons/icons/uil-eye-slash';
 import UilEye from '@iconscout/react-unicons/icons/uil-eye';
@@ -15,13 +13,14 @@ import errorService from 'app/core/services/error.service';
 import { AppView, IFormValues, LocalStorageItem } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import BaseInput from 'app/shared/components/forms/inputs/BaseInput';
-import i18n from '../../../i18n/services/i18n.service';
 import { decryptTextWithKey } from '../../../crypto/services/utils';
 import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Link } from 'react-router-dom';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function RecoverView(): JSX.Element {
+  const { translate } = useTranslationContext();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   if (!isAuthenticated) {
     navigationService.push(AppView.Login);
@@ -91,7 +90,9 @@ export default function RecoverView(): JSX.Element {
   }
 
   const restoreCorruptedMnemonic = async (
-    user: UserSettings, last_password: string, current_password: string
+    user: UserSettings,
+    last_password: string,
+    current_password: string,
   ): Promise<void> => {
     const mnemonic = user.mnemonic;
 
@@ -100,24 +101,24 @@ export default function RecoverView(): JSX.Element {
 
     if (isCorrupted) {
       throw new Error('Provided last password is not valid or needs more iterations');
-    } else { // We got the clean mnemonic
+    } else {
+      // We got the clean mnemonic
       // Store it on the state
       setMnemonicToStorage(clearMnemonic);
       // Update persistence
-      await changePassword(current_password, current_password, user.email)
-        .catch(() => {
-          // If there is error, rollback corrupted mnemonic for next try
-          setMnemonicToStorage(mnemonic);
-          // And alert parent
-          throw new Error('INVALID_CURRENT_PASSWORD');
-        });
+      await changePassword(current_password, current_password, user.email).catch(() => {
+        // If there is error, rollback corrupted mnemonic for next try
+        setMnemonicToStorage(mnemonic);
+        // And alert parent
+        throw new Error('INVALID_CURRENT_PASSWORD');
+      });
     }
   };
 
   const setMnemonicToStorage = (mnemonic) => {
     const newUser = {
       ...user,
-      mnemonic: mnemonic
+      mnemonic: mnemonic,
     };
     localStorageService.set(LocalStorageItem.User, JSON.stringify(newUser));
     localStorageService.set('xMnemonic', mnemonic);
@@ -134,104 +135,93 @@ export default function RecoverView(): JSX.Element {
 
   return (
     <div className="flex h-full w-full">
-
-      <div className="flex flex-col items-center justify-center w-full">
-
-        {
-          showSuccess
-            ?
-            <div className="flex flex-col items-center w-72">
-              <span
-                className="cursor-pointer text-sm text-center text-blue-60 hover:text-blue-80 mt-3.5 font-medium"
-              >
-                Your keys have been recovered correctly.<br/>You can upload your content now.
+      <div className="flex w-full flex-col items-center justify-center">
+        {showSuccess ? (
+          <div className="flex w-72 flex-col items-center">
+            <span className="mt-3.5 cursor-pointer text-center text-sm font-medium text-blue-60 hover:text-blue-80">
+              Your keys have been recovered correctly.
+              <br />
+              You can upload your content now.
+            </span>
+          </div>
+        ) : (
+          <form className="flex w-72 flex-col" onSubmit={handleSubmit(onSubmit)}>
+            <div className="mt-3 flex w-full justify-center text-sm">
+              <span className="mr-2 font-medium">
+                We are going to recover your original key, please introduce your passwords.
               </span>
             </div>
-            :
-            <form className="flex flex-col w-72" onSubmit={handleSubmit(onSubmit)}>
-              <div className="flex w-full justify-center text-sm mt-3">
-            <span className="mr-2 font-medium">
-              We are going to recover your original key, please introduce your passwords.
-            </span>
-              </div>
-              <span className="text-sm text-neutral-500 mt-1.5 mb-6" />
+            <span className="mt-1.5 mb-6 text-sm text-neutral-500" />
 
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Current password"
-                label={'password'}
-                type={showPassword ? 'text' : 'password'}
-                icon={
-                  password ? (
-                    showPassword ? (
-                      <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
-                    ) : (
-                      <UilEye className="w-4" onClick={() => setShowPassword(true)} />
-                    )
+            <BaseInput
+              className="mb-2.5"
+              placeholder="Current password"
+              label={'password'}
+              type={showPassword ? 'text' : 'password'}
+              icon={
+                password ? (
+                  showPassword ? (
+                    <UilEyeSlash className="w-4" onClick={() => setShowPassword(false)} />
                   ) : (
-                    <UilLock className="w-4" />
+                    <UilEye className="w-4" onClick={() => setShowPassword(true)} />
                   )
-                }
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Current password must not be empty' }}
-                error={errors.password}
-              />
+                ) : (
+                  <UilLock className="w-4" />
+                )
+              }
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: translate('error.emptyPassword') }}
+              error={errors.password}
+            />
 
-              <BaseInput
-                className="mb-2.5"
-                placeholder="Previous password"
-                label={'lastPassword'}
-                type={showLastPassword ? 'text' : 'password'}
-                icon={
-                  lastPassword ? (
-                    showLastPassword ? (
-                      <UilEyeSlash className="w-4" onClick={() => setShowLastPassword(false)} />
-                    ) : (
-                      <UilEye className="w-4" onClick={() => setShowLastPassword(true)} />
-                    )
+            <BaseInput
+              className="mb-2.5"
+              placeholder="Previous password"
+              label={'lastPassword'}
+              type={showLastPassword ? 'text' : 'password'}
+              icon={
+                lastPassword ? (
+                  showLastPassword ? (
+                    <UilEyeSlash className="w-4" onClick={() => setShowLastPassword(false)} />
                   ) : (
-                    <UilLock className="w-4" />
+                    <UilEye className="w-4" onClick={() => setShowLastPassword(true)} />
                   )
-                }
-                register={register}
-                required={true}
-                minLength={{ value: 1, message: 'Previous password must not be empty' }}
-                error={errors.password}
+                ) : (
+                  <UilLock className="w-4" />
+                )
+              }
+              register={register}
+              required={true}
+              minLength={{ value: 1, message: translate('error.emptyPassword') }}
+              error={errors.password}
+            />
+
+            {showLastPasswordError && (
+              <div className="my-1 flex">
+                <span className="w-56 text-sm font-medium text-red-60">{translate('error.lastPasswordError')}</span>
+              </div>
+            )}
+            {showCurrentPasswordError && (
+              <div className="my-1 flex">
+                <span className="w-56 text-sm font-medium text-red-60">{translate('error.incorrectPassword')}</span>
+              </div>
+            )}
+
+            <div className="mt-2">
+              <AuthButton
+                isDisabled={isProcessing || !isValid}
+                text="Recover"
+                textWhenDisabled={isValid ? 'Decrypting...' : 'Recover'}
               />
+            </div>
 
-              {
-                showLastPasswordError
-                &&
-                <div className="flex my-1">
-                  <span className="text-red-60 text-sm w-56 font-medium">{i18n.get('error.lastPasswordError')}</span>
-                </div>
-              }
-              {
-                showCurrentPasswordError
-                &&
-                <div className="flex my-1">
-              <span className="text-red-60 text-sm w-56 font-medium">
-                The current password you introduce doesn't match. Please make sure it is correct.
-              </span>
-                </div>
-              }
-
-              <div className="mt-2">
-                <AuthButton
-                  isDisabled={isProcessing || !isValid}
-                  text="Recover"
-                  textWhenDisabled={isValid ? 'Decrypting...' : 'Recover'}
-                />
-              </div>
-
-              <div className="flex w-full justify-center text-sm mt-3">
-                <span className="mr-2">Don't you know what this is about?</span>
-                <Link to="/app">Go home</Link>
-              </div>
-            </form>
-        }
-
+            <div className="mt-3 flex w-full justify-center text-sm">
+              <span className="mr-2">Don't you know what this is about?</span>
+              <Link to="/app">Go home</Link>
+            </div>
+          </form>
+        )}
       </div>
     </div>
   );

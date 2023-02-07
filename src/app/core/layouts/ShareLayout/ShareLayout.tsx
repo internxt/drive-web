@@ -13,12 +13,14 @@ import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ShareLayoutProps {
   children: JSX.Element;
 }
 
 export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
+  const { translate } = useTranslationContext();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
   const dispatch = useAppDispatch();
@@ -67,16 +69,16 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
             <div className="flex h-full flex-col justify-center space-y-20">
               <div className="flex flex-col space-y-2">
-                <span className="text-xl opacity-60">WE ARE INTERNXT</span>
-                <p className="text-3xl font-semibold leading-none">Private and secure cloud storage</p>
+                <span className="text-xl opacity-60">{translate('shareLayout.title')}</span>
+                <p className="text-3xl font-semibold leading-none">{translate('shareLayout.subtitle')}</p>
               </div>
 
               <div className="flex flex-col space-y-3 text-xl">
                 {[
-                  { icon: Shield, label: 'Privacy by design' },
-                  { icon: EndToEnd, label: 'End-to-end encryption' },
-                  { icon: Lock, label: 'Military-grade encryption' },
-                  { icon: EyeSlash, label: 'Zero-knowledge technology' },
+                  { icon: Shield, label: translate('shareLayout.labels.privacy') },
+                  { icon: EndToEnd, label: translate('shareLayout.labels.end-to-end') },
+                  { icon: Lock, label: translate('shareLayout.labels.military-grade') },
+                  { icon: EyeSlash, label: translate('shareLayout.labels.zero-knowledge') },
                 ].map((item) => (
                   <div className="flex flex-row items-center space-x-3" key={item.icon}>
                     <img src={item.icon} className="h-6 w-6" />
@@ -96,7 +98,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
                                   px-6 text-xl font-semibold text-blue-70 no-underline"
                   >
-                    <span>Try out Internxt</span>
+                    <span>{translate('shareLayout.tryInternxt')}</span>
                   </div>
                 </div>
               </a>
@@ -152,7 +154,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                               className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                             >
-                              Go to Internxt Drive
+                              {translate('shareLayout.topBar.drive')}
                             </button>
                           </Link>
                         )}
@@ -167,7 +169,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                           >
-                            Download Desktop App
+                            {translate('shareLayout.topBar.downloadApp')}
                           </button>
                         )}
                       </Menu.Item>
@@ -181,7 +183,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex w-full
                                             items-center rounded-md px-4 py-2 font-medium`}
                           >
-                            Log out
+                            {translate('shareLayout.topBar.logout')}
                           </button>
                         )}
                       </Menu.Item>
@@ -200,7 +202,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
                     }}
                   >
-                    Login
+                    {translate('shareLayout.topBar.login')}
                   </div>
 
                   <div
@@ -211,7 +213,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/new';
                     }}
                   >
-                    Create account
+                    {translate('shareLayout.topBar.createAccount')}
                   </div>
                 </div>
               </>
@@ -226,7 +228,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                                     px-4 font-medium text-primary no-underline
                                     hover:text-primary-dark"
               >
-                Get started
+                {translate('shareLayout.topBar.getStarted')}
               </div>
             </Link>
           </div>

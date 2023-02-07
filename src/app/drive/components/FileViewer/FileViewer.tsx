@@ -2,7 +2,6 @@ import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import i18n from '../../../i18n/services/i18n.service';
 
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
@@ -21,10 +20,15 @@ import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import dateService from '../../../core/services/date.service';
-import { updateDatabaseFileSourceData } from '../../services/database.service';
-import { LRUFilesCacheManager } from '../../../database/services/database.service/LRUFilesCacheManager';
+import {
+  getDatabaseFilePrewiewData,
+  getDatabaseFileSourceData,
+  updateDatabaseFilePrewiewData,
+  updateDatabaseFileSourceData,
+} from '../../services/database.service';
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -43,6 +47,7 @@ const extensionsList = fileExtensionService.computeExtensionsLists(fileExtension
 
 const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: FileViewerProps): JSX.Element => {
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
+  const { translate } = useTranslationContext();
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -67,6 +72,8 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
 
   const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
+    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
       name: driveFile.name,
@@ -78,7 +85,10 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);
 
-    if (thumbnailGenerated.file && (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+    const isDifferentThumbnailOrNotExists =
+      !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
+
+    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
       const thumbnailToUpload: ThumbnailToUpload = {
         fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
@@ -113,14 +123,26 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
             driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
         }
         setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+        await updateDatabaseFilePrewiewData({
+          fileId: driveFile.id,
+          folderId: driveFile.folderId,
+          previewBlob: thumbnailToUpload.content,
+          updatedAt: driveFile.updatedAt,
+        });
       }
+    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
+      await updateDatabaseFilePrewiewData({
+        fileId: driveFile.id,
+        folderId: driveFile.folderId,
+        previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
+        updatedAt: driveFile.updatedAt,
+      });
     }
   };
 
-  const checkIfDatabaseBlobIsOlder = async (fileToView?: DriveFileData) => {
+  const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
     const fileId = fileToView?.id;
-    const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-    const databaseBlob = await lruFilesCacheManager.get(fileId?.toString() as string);
+    const databaseBlob = await getDatabaseFileSourceData({ fileId });
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
@@ -129,7 +151,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
           dateTwo: fileToView?.updatedAt as string,
         });
 
-    if (fileToView && databaseBlob && !isDatabaseBlobOlder) {
+    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
@@ -139,7 +161,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
   };
 
   useEffect(() => {
-    if (isTypeAllowed && show) {
+    if (isTypeAllowed && show && file) {
       const abortController = new AbortController();
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
@@ -147,8 +169,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
           downloader(abortController)
             .then(async (fileBlob) => {
               setBlob(fileBlob);
-
-              updateDatabaseFileSourceData({
+              await updateDatabaseFileSourceData({
                 folderId: file?.folderId,
                 sourceBlob: fileBlob,
                 fileId: file?.id,
@@ -218,7 +239,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
-                      <span className="text-white">{i18n.get('drive.loadingFile')}</span>
+                      <span className="text-white">{translate('drive.loadingFile')}</span>
                       <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                         <div
                           className="h-1.5 rounded-full bg-white"
@@ -236,7 +257,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
               className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
             >
-              <span>{i18n.get('error.noFilePreview')}</span>
+              <span>{translate('error.noFilePreview')}</span>
             </div>
           )}
 
@@ -277,7 +298,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
                           ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
+                <span className="font-medium">{translate('actions.download')}</span>
               </button>
             </div>
           </div>

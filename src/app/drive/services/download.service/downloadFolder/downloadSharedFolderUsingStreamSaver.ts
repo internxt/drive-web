@@ -1,5 +1,4 @@
 import errorService from 'app/core/services/error.service';
-import i18n from 'app/i18n/services/i18n.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
@@ -7,6 +6,7 @@ import streamSaver from 'streamsaver';
 import { items } from '@internxt/lib';
 
 import { Network } from '../../network.service';
+import { t } from 'i18next';
 
 interface FolderPackage {
   folderId: number;
@@ -38,7 +38,7 @@ export async function downloadSharedFolderUsingStreamSaver(
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${sharedFolderMeta.name}.zip`, {});
@@ -88,7 +88,7 @@ export async function downloadSharedFolderUsingStreamSaver(
             fileToken: bucketToken,
             progressCallback: (fileProgress) => {
               downloadingSize[file.id] = file.size * fileProgress;
-              const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+              const totalDownloadedSize = Object.values(downloadingSize).reduce((translate, x) => translate + x, 0);
               const totalProgress = totalDownloadedSize / sharedFolderMeta.size;
 
               (options.progressCallback || (() => undefined))(totalProgress);

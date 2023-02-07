@@ -4,7 +4,6 @@ import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
 import { DevicePlatform } from '../../core/types';
 import analyticsService from '../../analytics/services/analytics.service';
-import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
@@ -17,6 +16,7 @@ import { LRUFilesCacheManager } from 'app/database/services/database.service/LRU
 import { updateDatabaseFileSourceData } from './database.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
+import { t } from 'i18next';
 
 export interface IFolders {
   bucket: string;
@@ -419,7 +419,7 @@ export async function moveFolder(folderId: number, destination: number): Promise
     .catch((err) => {
       const castedError = errorService.castError(err);
       if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
       }
       throw castedError;
     });

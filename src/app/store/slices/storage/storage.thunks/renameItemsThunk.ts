@@ -4,7 +4,7 @@ import { StorageState } from '../storage.model';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import { DriveItemData } from 'app/drive/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import storageSelectors from '../storage.selectors';
 import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
@@ -106,7 +106,7 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
     const promises: Promise<any>[] = [];
 
     if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return void notificationsService.show({ text: i18n.get('error.movingItemInsideItself'), type: ToastType.Error });
+      return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
     const state = getState();
     const currentFolderItems = storageSelectors.currentFolderItems(state);
@@ -181,7 +181,7 @@ export const renameItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(renameItemsThunk.fulfilled, () => undefined)
     .addCase(renameItemsThunk.rejected, (state, action) => {
       notificationsService.show({
-        text: action.error.message || i18n.get('error.renamingItem'),
+        text: action.error.message || t('error.renamingItem'),
         type: ToastType.Error,
       });
     });

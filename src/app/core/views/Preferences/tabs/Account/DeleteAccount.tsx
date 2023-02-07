@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import authService from '../../../../../auth/services/auth.service';
@@ -11,6 +12,7 @@ import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
 export default function DeleteAccount({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -21,7 +23,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
 
   function onClick() {
     if (plan.subscription?.type === 'subscription') {
-      notificationsService.show({ text: 'Please, cancel your subscription first', type: ToastType.Info });
+      notificationsService.show({
+        text: translate('views.account.tabs.account.deleteAccount.isSubscribed'),
+        type: ToastType.Info,
+      });
     } else {
       setIsDialogOpen(true);
     }
@@ -31,7 +36,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
     try {
       setIsLoading(true);
       await authService.cancelAccount();
-      notificationsService.show({ text: 'Confirmation email has been sent', type: ToastType.Success });
+      notificationsService.show({
+        text: translate('views.account.tabs.account.deleteAccount.confirmationEmail'),
+        type: ToastType.Success,
+      });
       onClose();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -42,13 +50,11 @@ export default function DeleteAccount({ className = '' }: { className?: string }
   }
 
   return (
-    <Section className={className} title="Delete account">
+    <Section className={className} title={translate('views.account.tabs.account.deleteAccount.head')}>
       <Card>
-        <p className="text-gray-80">
-          If you delete your account, your data will be gone forever. This action cannot be undone.
-        </p>
+        <p className="text-gray-80">{translate('views.account.tabs.account.deleteAccount.description')}</p>
         <Button className="mt-5" variant="secondary" onClick={onClick}>
-          Delete account
+          {translate('views.account.tabs.account.deleteAccount.head')}
         </Button>
       </Card>
       <Dialog
@@ -56,10 +62,10 @@ export default function DeleteAccount({ className = '' }: { className?: string }
         onClose={onClose}
         onSecondaryAction={onClose}
         onPrimaryAction={onConfirm}
-        secondaryAction="Cancel"
-        primaryAction="Confirm"
-        title="Are you sure?"
-        subtitle="All your files will be gone forever and you will lose access to your Internxt account."
+        secondaryAction={translate('modals.deleteAccountModal.cancel')}
+        primaryAction={translate('modals.deleteAccountModal.confirm')}
+        title={translate('modals.deleteAccountModal.title')}
+        subtitle={translate('modals.deleteAccountModal.subtitle')}
         primaryActionColor="danger"
         isLoading={isLoading}
       />

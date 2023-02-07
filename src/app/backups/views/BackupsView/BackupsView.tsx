@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 
 import DeviceList from '../../components/DeviceList/DeviceList';
-import i18n from 'app/i18n/services/i18n.service';
 import { Device } from '../../types';
 import BackupsList from '../../components/BackupList/BackupList';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
@@ -14,8 +13,10 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import Dialog from '../../../shared/components/Dialog/Dialog';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function BackupsView(): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isLoadingDevices = useAppSelector((state) => state.backups.isLoadingDevices);
   const isLoadingDeviceBackups = useAppSelector((state) => state.backups.isLoadingDeviceBackups);
@@ -141,7 +142,7 @@ export default function BackupsView(): JSX.Element {
         primaryActionColor="danger"
       />
       <div className="flex items-baseline pb-4">
-        {currentDevice ? backupsBreadcrumbs : <p className="px-3 py-1 text-lg"> {i18n.get('backups.your-devices')}</p>}
+        {currentDevice ? backupsBreadcrumbs : <p className="px-3 py-1 text-lg"> {translate('backups.your-devices')}</p>}
       </div>
       {body}
     </div>

@@ -14,26 +14,22 @@ interface DriveExplorerGridProps {
   hasMoreItems: boolean;
 }
 
-class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
-  constructor(props: DriveExplorerGridProps) {
-    super(props);
-  }
-
-  get loadingSkeleton(): JSX.Element[] {
+const DriveExplorerGrid = (props: DriveExplorerGridProps) => {
+  function loadingSkeleton(): JSX.Element[] {
     return Array(20)
       .fill(0)
       .map((n, i) => <DriveGridItemSkeleton key={i} />);
   }
 
-  get itemsList(): JSX.Element[] {
-    return this.props.items.map((item) => {
+  function itemsList(): JSX.Element[] {
+    return props.items.map((item) => {
       const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
       return <DriveExplorerGridItem key={itemKey} item={item} />;
     });
   }
 
-  get itemsFileList(): JSX.Element[] {
-    return this.props.items
+  function itemsFileList(): JSX.Element[] {
+    return props.items
       .filter((item) => !item.isFolder)
       .map((item) => {
         const itemParentId = item.parentId || item.folderId;
@@ -43,8 +39,8 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
       });
   }
 
-  get itemsFolderList(): JSX.Element[] {
-    return this.props.items
+  function itemsFolderList(): JSX.Element[] {
+    return props.items
       .filter((item) => item.isFolder)
       .map((item) => {
         const itemParentId = item.parentId || item.folderId;
@@ -54,32 +50,30 @@ class DriveExplorerGrid extends React.Component<DriveExplorerGridProps> {
       });
   }
 
-  render(): ReactNode {
-    const { isLoading, onEndOfScroll, hasMoreItems } = this.props;
+  const { isLoading, onEndOfScroll, hasMoreItems } = props;
 
-    return (
-      <>
-        {isLoading ? (
-          <div className="files-grid flex-grow">{this.loadingSkeleton}</div>
-        ) : (
-          <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
-            <InfiniteScroll
-              dataLength={this.itemsList.length}
-              next={onEndOfScroll}
-              hasMore={hasMoreItems}
-              loader={this.loadingSkeleton}
-              scrollableTarget="scrollableList"
-              className="files-grid z-0 flex-grow"
-              style={{ overflow: 'visible' }}
-            >
-              {this.itemsFolderList}
-              {this.itemsFileList}
-            </InfiniteScroll>
-          </div>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      {isLoading ? (
+        <div className="files-grid flex-grow">{loadingSkeleton()}</div>
+      ) : (
+        <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
+          <InfiniteScroll
+            dataLength={itemsList().length}
+            next={onEndOfScroll}
+            hasMore={hasMoreItems}
+            loader={loadingSkeleton()}
+            scrollableTarget="scrollableList"
+            className="files-grid z-0 flex-grow"
+            style={{ overflow: 'visible' }}
+          >
+            {itemsFolderList()}
+            {itemsFileList()}
+          </InfiniteScroll>
+        </div>
+      )}
+    </>
+  );
+};
 
 export default connect()(DriveExplorerGrid);
