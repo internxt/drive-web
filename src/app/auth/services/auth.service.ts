@@ -35,6 +35,7 @@ export async function logOut(): Promise<void> {
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
+  window.location.reload();
 }
 
 export function cancelAccount(): Promise<void> {

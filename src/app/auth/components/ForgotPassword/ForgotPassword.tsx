@@ -7,11 +7,12 @@ import userService from '../../services/user.service';
 
 import { IFormValues } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import i18n from 'app/i18n/services/i18n.service';
 import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 function ForgotPassword(): JSX.Element {
+  const { translate } = useTranslationContext();
   const {
     register,
     formState: { errors },
@@ -28,13 +29,13 @@ function ForgotPassword(): JSX.Element {
     try {
       setIsLoading(true);
       await userService.sendDeactivationEmail(email);
-      notificationsService.show({ text: i18n.get('success.accountDeactivationEmailSent'), type: ToastType.Success });
+      notificationsService.show({ text: translate('success.accountDeactivationEmailSent'), type: ToastType.Success });
       if (showErrors === false) {
         setStep(2);
       }
     } catch (err: unknown) {
-      //notificationsService.show({ text: i18n.get('error.deactivatingAccount'), type: ToastType.Error });
-      setEmailErrors(i18n.get('error.deactivatingAccount'));
+      notificationsService.show({ text: translate('error.deactivatingAccount'), type: ToastType.Error });
+      setEmailErrors(translate('error.deactivatingAccount') as string);
       setShowErrors(true);
     } finally {
       setIsLoading(false);
@@ -59,12 +60,8 @@ function ForgotPassword(): JSX.Element {
           </Link>
 
           <div className="flex flex-col space-y-1">
-            <h1 className="text-2xl font-medium text-gray-100">Forgot password</h1>
-            <p className="font-regular text-sm text-gray-80">
-              As specified in the security section of the app, your password is used for encryption and decryption and
-              only you have access to it. Therefore, we can't restore your account without the password. You can
-              register again by entering your email below so we can delete your account and all your files.
-            </p>
+            <h1 className="text-2xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
+            <p className="font-regular text-sm text-gray-80">{translate('auth.forgotPassword.description')}</p>
           </div>
         </div>
 
@@ -72,15 +69,15 @@ function ForgotPassword(): JSX.Element {
           <>
             <form className="w-full space-y-4" onSubmit={handleSubmit(onSubmit)}>
               <label className="space-y-1">
-                <span>Email</span>
+                <span>{translate('auth.email')}</span>
                 <TextInput
-                  placeholder="Email"
+                  placeholder={translate('auth.email')}
                   label="email"
                   type="email"
                   register={register}
                   onFocus={() => setShowErrors(false)}
                   required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  minLength={{ value: 1, message: translate('notificationMessages.emailNotEmpty') }}
                   error={errors.email}
                 />
                 {showErrors && (
@@ -95,7 +92,11 @@ function ForgotPassword(): JSX.Element {
 
               <Button
                 disabled={isLoading}
-                text={isLoading ? 'Sending email...' : 'Send instructions'}
+                text={
+                  isLoading
+                    ? translate('auth.forgotPassword.sending')
+                    : translate('auth.forgotPassword.sendInstructions')
+                }
                 loading={isLoading}
                 style="button-primary"
                 disabledText="Send instructions"

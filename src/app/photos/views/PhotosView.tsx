@@ -14,8 +14,10 @@ import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
@@ -82,8 +84,8 @@ export default function PhotosView({ className = '' }: { className?: string }): 
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
-            title="Your gallery is empty"
-            subtitle="Start using Internxt mobile app to sync all your photos"
+            title={translate('views.photos.empty.title')}
+            subtitle={translate('views.photos.empty.description')}
             icon={
               <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
             }
@@ -120,11 +122,15 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'selected'}
-        title={`Delete ${numberOfSelectedItems} selected ${numberOfSelectedItems > 1 ? 'items' : 'item'}?`}
-        subtitle="You can't undo this action"
+        title={
+          numberOfSelectedItems > 1
+            ? translate('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : translate('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+        }
+        subtitle={translate('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
+        primaryAction={translate('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={translate('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <Dialog
@@ -132,7 +138,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
         title="Delete this item?"
-        subtitle="You can't undo this action"
+        subtitle={translate('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
         primaryAction="Delete"
         secondaryAction="Cancel"

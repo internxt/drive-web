@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
 import { ReactNode, useEffect, useState } from 'react';
@@ -24,14 +25,14 @@ export default function AccountPopover({
   const dispatch = useAppDispatch();
 
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-
+  const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
 
   const button = <AvatarWrapper diameter={36} fullName={fullName} avatarSrcURL={user.avatar} />;
 
   const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
 
-  const separator = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  const separator = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
 
   useEffect(() => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
@@ -79,24 +80,26 @@ export default function AccountPopover({
         </div>
       </div>
       <div className="flex items-center justify-between px-3 pb-1">
-        <p className="text-sm text-gray-50">{`${percentageUsed}% space used`}</p>
+        <p className="text-sm text-gray-50">
+          {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
+        </p>
         {plan.showUpgrade && (
           <Link to="/preferences?tab=billing" className="text-sm font-medium text-primary no-underline">
-            Upgrade
+            {translate('actions.upgrade')}
           </Link>
         )}
       </div>
       {separator}
       <Item onClick={onDownloadAppButtonClicked}>
         <Desktop size={20} />
-        <p className="ml-3">Download app</p>
+        <p className="ml-3">{translate('views.account.popover.downloadApp')}</p>
       </Item>
       <Link
         to="/preferences"
         className="flex cursor-pointer items-center py-2 px-3 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 active:bg-gray-5"
       >
         <Gear size={20} />
-        <p className="ml-3">Settings</p>
+        <p className="ml-3">{translate('views.account.popover.settings')}</p>
       </Link>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
@@ -107,7 +110,7 @@ export default function AccountPopover({
       <Item onClick={onLogout} data-test="logout">
         <SignOut size={20} />
         <p className="ml-3" data-test="logout">
-          Log out
+          {translate('views.account.popover.logout')}
         </p>
       </Item>
     </div>

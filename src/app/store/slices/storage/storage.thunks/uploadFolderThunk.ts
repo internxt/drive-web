@@ -5,13 +5,13 @@ import { RootState } from '../../..';
 import { uploadItemsParallelThunk, uploadItemsParallelThunkNoCheck } from './uploadItemsThunk';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import storageThunks from '.';
-import i18n from '../../../../i18n/services/i18n.service';
 import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import { t } from 'i18next';
 
 export interface IRoot {
   name: string;
@@ -362,10 +362,10 @@ export const uploadFolderThunkExtraReducers = (builder: ActionReducerMapBuilder<
     .addCase(uploadFolderThunk.pending, () => undefined)
     .addCase(uploadFolderThunk.fulfilled, () => undefined)
     .addCase(uploadFolderThunk.rejected, (state, action) => {
-      let errorMessage = i18n.get('error.uploadingFolder');
+      let errorMessage = t('error.uploadingFolder');
 
       if (action.error.message?.includes('already exists')) {
-        errorMessage = i18n.get('error.folderAlreadyExists');
+        errorMessage = t('error.folderAlreadyExists');
       } else {
         errorMessage = action.error.message || action.error + '';
       }
