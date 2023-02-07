@@ -33,6 +33,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
 
       if (payload.length === 1) {
         const [photo] = payload;
+
         const photoBlob = await getPhotoBlob({ photo, bucketId, abortController });
 
         if (!abortController.signal.aborted) {

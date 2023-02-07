@@ -11,7 +11,6 @@ import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { LRUFilesCacheManager } from '../../../../database/services/database.service/LRUFilesCacheManager';
 import { saveAs } from 'file-saver';
 import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
