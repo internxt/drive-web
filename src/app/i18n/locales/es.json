@@ -464,6 +464,12 @@
         "doesntMatch": "Las contraseñas no coinciden"
       }
     },
+    "deleteBackupModal": {
+      "title": "¿Estás seguro?",
+      "subtitle": "Tu copia de seguridad se borrará.",
+      "primaryAction": "Confirmar",
+      "secondaryAction": "Cancelar"
+    },
     "2FAAuthenticationModal": {}
   },
   "form": {
@@ -539,6 +545,10 @@
         "size": "Tamaño",
         "actions": "Acciones"
       }
+    },
+    "dropdown": {
+      "download": "Descargar",
+      "delete": "Eliminar"
     }
   },
   "shared-links": {

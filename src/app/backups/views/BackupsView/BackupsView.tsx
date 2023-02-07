@@ -77,7 +77,7 @@ export default function BackupsView(): JSX.Element {
   const breadcrumbsItems: BreadcrumbItemData[] = [
     {
       id: -1,
-      label: 'Devices',
+      label: `${translate('backups.your-devices')}`,
       icon: <UilHdd className="mr-1 h-4 w-4" />,
       active: true,
       onClick: () => goBack(),
@@ -139,10 +139,10 @@ export default function BackupsView(): JSX.Element {
         onClose={onCloseDeleteModal}
         onSecondaryAction={onCloseDeleteModal}
         onPrimaryAction={onConfirmDelete}
-        secondaryAction="Cancel"
-        primaryAction="Confirm"
-        title="Are you sure?"
-        subtitle="Your backup device will be deleted."
+        title={translate('modals.deleteBackupModal.title')}
+        subtitle={translate('modals.deleteBackupModal.subtitle')}
+        primaryAction={translate('modals.deleteBackupModal.primaryAction')}
+        secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
       <div className="flex items-baseline pb-4">

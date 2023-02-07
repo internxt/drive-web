@@ -9,12 +9,15 @@ import { backupsThunks } from 'app/store/slices/backups';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import Dialog from '../../../shared/components/Dialog/Dialog';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+
 interface DeleteBackupDialogProps {
   items: BreadcrumbItemData[];
   goToFolder: (folderId: number) => void;
 }
 
 const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteBackupDialogOpen);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
@@ -60,10 +63,10 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
         onClose={onClose}
         onSecondaryAction={onClose}
         onPrimaryAction={onAccept}
-        secondaryAction="Cancel"
-        primaryAction="Confirm"
-        title="Are you sure?"
-        subtitle="Your backup will be deleted."
+        title={translate('modals.deleteBackupModal.title')}
+        subtitle={translate('modals.deleteBackupModal.subtitle')}
+        primaryAction={translate('modals.deleteBackupModal.primaryAction')}
+        secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
     </>

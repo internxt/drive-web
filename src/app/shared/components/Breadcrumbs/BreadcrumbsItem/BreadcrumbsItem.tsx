@@ -382,7 +382,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <DownloadSimple size={20} />
-                        <p className="ml-3">{translate('drive.dropdown.download')}</p>
+                        <p className="ml-3">{translate('backups.dropdown.download')}</p>
                       </div>
                     )}
                   </Menu.Item>
@@ -395,7 +395,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
                       >
                         <Trash size={20} />
-                        <p className="ml-3">Delete</p>
+                        <p className="ml-3">{translate('backups.dropdown.delete')}</p>
                       </div>
                     )}
                   </Menu.Item>
