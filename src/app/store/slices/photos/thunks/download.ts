@@ -10,6 +10,7 @@ import { SerializablePhoto } from '..';
 import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
 import { FlatFolderZip } from 'app/core/services/stream.service';
 import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -21,6 +22,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     const abortController = new AbortController();
 
     let taskId = '';
+    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
     try {
       taskId = tasksService.create({
@@ -40,9 +42,8 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
           await downloadFileFromBlob(photoBlob, `${photo.name}.${photo.type}`);
         }
       } else {
-        const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
-
         if (isBrave) {
+          notificationsService.show({ text: t('error.braveNotSupportMultiplePhotosDowload'), type: ToastType.Error });
           throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
 
@@ -89,8 +90,16 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     } catch (err) {
       const error = errorService.castError(err);
 
-      if (abortController.signal.aborted) tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
-      else {
+      if (!isBrave)
+        errorService.reportError(err, {
+          extra: {
+            payload,
+          },
+        });
+
+      if (abortController.signal.aborted) {
+        tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
+      } else {
         console.error(error);
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });
       }
