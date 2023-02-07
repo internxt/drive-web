@@ -22,8 +22,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function LogIn(): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const {
     register,
@@ -124,13 +126,13 @@ export default function LogIn(): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-medium">Log in</h1>
+        <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>Email</span>
+            <span>{translate('auth.email')}</span>
             <TextInput
-              placeholder="Email"
+              placeholder={translate('auth.email')}
               label="email"
               type="email"
               register={register}
@@ -141,7 +143,7 @@ export default function LogIn(): JSX.Element {
 
           <label className="space-y-0.5">
             <div className="flex flex-row items-center justify-between">
-              <span className="font-normal">Password</span>
+              <span className="font-normal">{translate('auth.password')}</span>
               <Link
                 onClick={(): void => {
                   // analyticsService.trackUserResetPasswordRequest();
@@ -149,13 +151,13 @@ export default function LogIn(): JSX.Element {
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
-                Forgot your password?
+                {translate('auth.login.forgotPwd')}
               </Link>
             </div>
 
             <PasswordInput
-              placeholder="Password"
-              label={'password'}
+              placeholder={translate('auth.password')}
+              label="password"
               register={register}
               required={true}
               minLength={{ value: 1, message: 'Password must not be empty' }}
@@ -165,11 +167,11 @@ export default function LogIn(): JSX.Element {
 
           {showTwoFactor && (
             <label className="space-y-0.5">
-              <span>Two factor code</span>
+              <span>{translate('auth.login.2FA')}</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
-                placeholder="Two factor authentication code"
+                placeholder={translate('auth.login.twoFactorAuthenticationCode')}
                 error={errors.twoFactorCode}
                 register={register}
                 required={true}
@@ -190,8 +192,10 @@ export default function LogIn(): JSX.Element {
 
           <Button
             disabled={isLoggingIn}
-            text="Log in"
-            disabledText={isValid ? 'Decrypting...' : 'Log in'}
+            text={translate('auth.login.title')}
+            disabledText={
+              isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
+            }
             loading={isLoggingIn}
             style="button-primary"
             className="w-full"
@@ -201,12 +205,12 @@ export default function LogIn(): JSX.Element {
 
       <div className="mt-4 flex w-full justify-center text-sm">
         <span>
-          Don't have an account?{' '}
+          {translate('auth.login.dontHaveAccount')}{' '}
           <Link
             to="/new"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            Create account
+            {translate('auth.login.createAccount')}
           </Link>
         </span>
       </div>

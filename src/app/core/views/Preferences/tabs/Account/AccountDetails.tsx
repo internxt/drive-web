@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CheckCircle, Warning } from 'phosphor-react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -15,6 +16,7 @@ import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
@@ -22,7 +24,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
   async function onResend() {
     setIsSendingVerificationEmail(true);
     await userService.sendVerificationEmail();
-    notificationsService.show({ text: 'Verification email has been sent', type: ToastType.Success });
+    notificationsService.show({ text: translate('notificationMessages.verificationEmail'), type: ToastType.Success });
     setIsSendingVerificationEmail(false);
   }
 
@@ -32,35 +34,47 @@ export default function AccountDetails({ className = '' }: { className?: string 
   const isVerified = user.emailVerified;
 
   return (
-    <Section className={className} title="Account details">
+    <Section className={className} title={translate('views.account.tabs.account.accountDetails.head')}>
       <Card>
         <div className="flex justify-between">
           <div className="flex min-w-0">
-            <Detail label="Name" value={user.name} />
-            <Detail label="Lastname" value={user.lastname} className="ml-8 pr-2" />
+            <Detail label={translate('views.account.tabs.account.accountDetails.card.name')} value={user.name} />
+            <Detail
+              label={translate('views.account.tabs.account.accountDetails.card.lastname')}
+              value={user.lastname}
+              className="ml-8 pr-2"
+            />
           </div>
           <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsModalOpen(true)}>
-            Edit
+            {translate('actions.edit')}
           </Button>
         </div>
         <div className="mt-5 flex items-center justify-between">
           <div>
-            <Detail label="Email" value={user.email} />
+            <Detail label={translate('views.account.tabs.account.accountDetails.card.email')} value={user.email} />
             {!isVerified && (
               <button
                 onClick={onResend}
                 disabled={isSendingVerificationEmail}
                 className="font-medium text-primary hover:text-primary-dark disabled:text-gray-60"
               >
-                Resend verification email
+                {translate('views.account.tabs.account.accountDetails.card.resendEmail')}
               </button>
             )}
           </div>
           <Tooltip
             style="dark"
-            title={isVerified ? 'Verified email' : 'Verify your email'}
+            title={
+              isVerified
+                ? translate('views.account.tabs.account.accountDetails.verify.verified')
+                : translate('views.account.tabs.account.accountDetails.verify.verify')
+            }
             popsFrom="top"
-            subtitle={isVerified ? undefined : 'Check your inbox or spam'}
+            subtitle={
+              isVerified
+                ? undefined
+                : (translate('views.account.tabs.account.accountDetails.verify.description') as string)
+            }
           >
             {isVerified ? (
               <CheckCircle weight="fill" className="text-green" size={24} />
@@ -100,11 +114,7 @@ function AccountDetailsModal({
   name: string;
   lastname: string;
 }) {
-  useEffect(() => {
-    if (isOpen) {
-      setStatus({ tag: 'ready' });
-    }
-  }, [isOpen]);
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const [nameValue, setNameValue] = useState(name);
   const [lastnameValue, setLastnameValue] = useState(lastname);
@@ -115,6 +125,12 @@ function AccountDetailsModal({
 
   const nameIsInvalid = status.tag === 'error' && status.type === 'NAME_INVALID';
   const lastnameIsInvalid = status.tag === 'error' && status.type === 'LASTNAME_INVALID';
+
+  useEffect(() => {
+    if (isOpen) {
+      setStatus({ tag: 'ready' });
+    }
+  }, [isOpen]);
 
   function validate(value: string) {
     return value.length > 0 && value.length < 20;
@@ -139,11 +155,13 @@ function AccountDetailsModal({
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Account details</h1>
+      <h1 className="text-2xl font-medium text-gray-80">
+        {translate('views.account.tabs.account.accountDetails.head')}
+      </h1>
       <Input
         disabled={status.tag === 'loading'}
         className="mt-4"
-        label="Name"
+        label={translate('views.account.tabs.account.accountDetails.name') as string}
         value={nameValue}
         onChange={setNameValue}
         accent={nameIsInvalid ? 'error' : undefined}
@@ -153,7 +171,7 @@ function AccountDetailsModal({
       <Input
         disabled={status.tag === 'loading'}
         className="mt-3"
-        label="Lastname"
+        label={translate('views.account.tabs.account.accountDetails.lastname') as string}
         value={lastnameValue}
         onChange={setLastnameValue}
         accent={lastnameIsInvalid ? 'error' : undefined}
@@ -162,10 +180,10 @@ function AccountDetailsModal({
       />
       <div className="mt-3 flex justify-end">
         <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
-          Cancel
+          {translate('actions.cancel')}
         </Button>
         <Button loading={status.tag === 'loading'} className="ml-2" onClick={onSave}>
-          Save
+          {translate('actions.save')}
         </Button>
       </div>
     </Modal>

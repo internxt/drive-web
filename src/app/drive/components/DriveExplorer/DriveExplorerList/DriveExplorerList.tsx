@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions } from '../../../../store/slices/storage';
-import i18n from '../../../../i18n/services/i18n.service';
 import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -25,6 +25,8 @@ interface DriveExplorerListProps {
 }
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
+  const { translate } = useTranslationContext();
+
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
 
   useEffect(() => {
@@ -125,23 +127,23 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           />
         </div>
         <div className="box-content flex w-1/12 cursor-pointer items-center px-3" onClick={() => sortBy('type')}>
-          {i18n.get('drive.list.columns.type')}
+          {translate('drive.list.columns.type')}
           {order.by === 'type' && sortButtonFactory()}
         </div>
         <div className="flex flex-grow cursor-pointer items-center" onClick={() => sortBy('name')}>
-          {i18n.get('drive.list.columns.name')}
+          {translate('drive.list.columns.name')}
           {order.by === 'name' && sortButtonFactory()}
         </div>
         <div className="hidden w-2/12 items-center xl:flex"></div>
         <div className="hidden w-3/12 cursor-pointer items-center lg:flex" onClick={() => sortBy('updatedAt')}>
-          {i18n.get('drive.list.columns.modified')}
+          {translate('drive.list.columns.modified')}
           {order.by === 'updatedAt' && sortButtonFactory()}
         </div>
         <div className="flex w-1/12 cursor-pointer items-center" onClick={() => sortBy('size')}>
-          {i18n.get('drive.list.columns.size')}
+          {translate('drive.list.columns.size')}
           {order.by === 'size' && sortButtonFactory()}
         </div>
-        <div className="flex w-1/12 items-center rounded-tr-4px">{i18n.get('drive.list.columns.actions')}</div>
+        <div className="flex w-1/12 items-center rounded-tr-4px">{translate('drive.list.columns.actions')}</div>
       </div>
       <div className="h-full overflow-y-auto">
         {isLoading ? (

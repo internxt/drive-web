@@ -42,6 +42,7 @@ function clear(): void {
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
+  localStorage.removeItem('language');
 }
 
 const localStorageService = {

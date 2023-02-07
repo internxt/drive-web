@@ -7,7 +7,7 @@ import downloadService from 'app/drive/services/download.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { DriveFileData } from 'app/drive/types';
 import AppError from 'app/core/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -15,6 +15,7 @@ import { LRUFilesCacheManager } from '../../../../database/services/database.ser
 import { saveAs } from 'file-saver';
 import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
+import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -32,13 +33,13 @@ const defaultDownloadFileThunkOptions = {
   showErrors: true,
 };
 
-const checkIfCachedSourceIsOlder = ({
+export const checkIfCachedSourceIsOlder = ({
   cachedFile,
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
   file: DriveFileData;
-}) => {
+}): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
     : dateService.isDateOneBefore({
@@ -84,8 +85,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         },
       });
 
-      const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-      const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+      const cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
       const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
       if (cachedFile?.source && !isCachedFileOlder) {
@@ -138,7 +138,7 @@ export const downloadFileThunkExtraReducers = (builder: ActionReducerMapBuilder<
         const errorMessage = rejectedValue?.message || action.error.message;
 
         notificationsService.show({
-          text: i18n.get('error.downloadingFile', { message: errorMessage || '' }),
+          text: t('error.downloadingFile', { message: errorMessage || '' }),
           type: ToastType.Error,
         });
       }

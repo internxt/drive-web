@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import bigLogo from 'assets/icons/big-logo.svg';
 import ForgotPassword from '../../components/ForgotPassword/ForgotPassword';
 
@@ -6,6 +7,7 @@ interface RemoveAccountProps {
 }
 
 function RemoveAccount(props: RemoveAccountProps): JSX.Element {
+  const { translate } = useTranslationContext();
   return (
     <div className={`flex h-full w-full flex-col bg-white ${props.displayIframe ? '' : 'overflow-auto sm:bg-gray-5'}`}>
       {!props.displayIframe && (
@@ -25,14 +27,14 @@ function RemoveAccount(props: RemoveAccountProps): JSX.Element {
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            Terms and conditions
+            {translate('general.terms')}
           </a>
           <a
             href="https://help.internxt.com"
             target="_blank"
             className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
           >
-            Need help?
+            {translate('general.help')}
           </a>
         </div>
       )}

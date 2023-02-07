@@ -8,7 +8,7 @@ import errorService from 'app/core/services/error.service';
 import { getEnvironmentConfig, Network } from '../../network.service';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -41,7 +41,7 @@ export default async function downloadFolderUsingStreamSaver({
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const writableStream = streamSaver.createWriteStream(`${folder.name}.zip`, {});
@@ -74,7 +74,7 @@ export default async function downloadFolderUsingStreamSaver({
         const [fileStreamPromise, actionState] = network.getFileDownloadStream(file.bucket, file.fileId, {
           progressCallback: (fileProgress) => {
             downloadingSize[file.id] = file.size * fileProgress;
-            const totalDownloadedSize = Object.values(downloadingSize).reduce((t, x) => t + x, 0);
+            const totalDownloadedSize = Object.values(downloadingSize).reduce((translate, x) => translate + x, 0);
             const totalProgress = totalDownloadedSize / size;
 
             (updateProgressCallback || (() => undefined))(totalProgress);

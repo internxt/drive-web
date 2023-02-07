@@ -40,7 +40,6 @@ import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -59,6 +58,8 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 const PAGINATION_LIMIT = 100;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -94,8 +95,6 @@ interface DriveExplorerProps {
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-
   const {
     selectedItems,
     isLoading,
@@ -112,7 +111,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onFileUploaded,
     onItemsMoved,
   } = props;
-
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -188,7 +188,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    moveItemsToTrash(selectedItems);
+    moveItemsToTrash(selectedItems, translate as TFunction);
   };
 
   const onDeletePermanentlyButtonClicked = () => {
@@ -251,8 +251,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
-  const isRecents = title === 'Recents';
-  const isTrash = title === 'Trash';
+
+  const isRecents = title === translate('views.recents.head');
+  const isTrash = title === translate('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
   const itemsList = getLimitedItems();
 
@@ -265,7 +266,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
-  const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  const separatorH = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
@@ -312,21 +313,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   menuItems={[
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      <p className="ml-3">{translate('actions.upload.folder')}</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>
                       <FileArrowUp size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
                     </MenuItem>,
                     <MenuItem onClick={onUploadFolderButtonClicked}>
                       <UploadSimple size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
                     </MenuItem>,
                   ]}
                 >
                   <div className="flex flex-row items-center space-x-2.5">
-                    <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                    <span className="font-medium">{translate('actions.upload.new')}</span>
                     <div className="flex items-center space-x-0.5">
                       <Plus weight="bold" className="h-4 w-4" />
                       <CaretDown weight="fill" className="h-3 w-3" />
@@ -399,36 +400,36 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
+                    title={translate('views.recents.empty.noResults')}
+                    subtitle={translate('views.recents.empty.dragNDrop')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
                 ) : isRecents ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="No recents files to show"
-                    subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                    title={translate('views.recents.empty.title')}
+                    subtitle={translate('views.recents.empty.description')}
                   />
                 ) : isTrash ? (
                   <Empty
                     icon={<EmptyTrash />}
-                    title={i18n.get('trash.empty-state.title')}
-                    subtitle={i18n.get('trash.empty-state.subtitle')}
+                    title={translate('trash.empty-state.title')}
+                    subtitle={translate('trash.empty-state.subtitle')}
                   />
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop files or click to select files and upload"
+                    title={translate('views.recents.empty.folderEmpty')}
+                    subtitle={translate('views.recents.empty.folderEmptySubtitle')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />

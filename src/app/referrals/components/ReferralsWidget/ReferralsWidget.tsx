@@ -1,4 +1,3 @@
-import i18n from 'app/i18n/services/i18n.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { userSelectors } from 'app/store/slices/user';
@@ -7,18 +6,20 @@ import usersReferralsService from 'app/referrals/services/users-referrals.servic
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
 import { CaretDown, CaretUp } from 'phosphor-react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const ReferralsWidget = (props: { className?: string }): JSX.Element => {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isCollapsed = useAppSelector((state) => state.ui.isReferralsWidgetCollapsed);
   const setIsCollapsed = (value) => dispatch(uiActions.setIsReferralsWidgetCollapsed(value));
   const isLoadingReferrals = useAppSelector((state) => state.referrals.isLoading);
   const hasReferralsProgram = useAppSelector(userSelectors.hasReferralsProgram);
   const referrals = useAppSelector((state) => state.referrals.list);
-  const creditSum = referrals.reduce((t, x) => t + x.credit * x.steps, 0);
-  const currentCredit = referrals.reduce((t, x) => x.completedSteps * x.credit + t, 0);
+  const creditSum = referrals.reduce((translate, x) => translate + x.credit * x.steps, 0);
+  const currentCredit = referrals.reduce((translate, x) => x.completedSteps * x.credit + translate, 0);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const completedReferrals = referrals.every(referral => referral.isCompleted === true);
+  const completedReferrals = referrals.every((referral) => referral.isCompleted === true);
   const isWidgetHidden = !hasReferralsProgram || isLoadingReferrals || isTeam || completedReferrals;
 
   const onCollapseButtonClicked = () => {
@@ -32,19 +33,21 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   const referralsList = referrals.map((referral) => (
     <div
       key={referral.key}
-      className={` ${usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'cursor-pointer' : ''
-        } flex items-center`}
+      className={` ${
+        usersReferralsService.hasClickAction(referral.key) && !referral.isCompleted ? 'cursor-pointer' : ''
+      } flex items-center`}
       onClick={() => onReferralItemClicked(referral)}
     >
       <div
         className={`flex h-5 w-10
-       flex-none justify-center rounded-lg text-xs font-medium ${referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
-          }`}
+       flex-none justify-center rounded-lg text-xs font-medium ${
+         referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
+       }`}
       >
         <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>
       </div>
       <span className={`ml-2 text-sm ${referral.isCompleted ? 'text-gray-40' : 'text-gray-80'}`}>
-        {i18n.get(`referrals.items.${referral.key}`, {
+        {translate(`referrals.items.${referral.key}`, {
           steps: referral.steps,
           completedSteps: referral.completedSteps,
         })}
@@ -56,18 +59,22 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
     <div className="flex-grow"></div>
   ) : (
     <div className="flex flex-grow flex-col justify-end">
-      <div className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${props.className || ''}`}>
+      <div
+        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${
+          props.className || ''
+        }`}
+      >
         {/* HEADER */}
         <div className="flex items-center justify-between">
           <div className="">
             <span className="font-medium text-gray-80">
-              {i18n.get('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
+              {translate('referrals.rewards.title', { creditSum: sizeService.bytesToString(creditSum) })}
             </span>
             <p className="text-xs font-medium">
               <span className="text-green-dark">
-                {i18n.get('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) }) +
+                {translate('referrals.rewards.progress', { currentCredit: sizeService.bytesToString(currentCredit) }) +
                   ' ' +
-                  i18n.get('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
+                  translate('referrals.rewards.limit', { creditSum: sizeService.bytesToString(creditSum) })}
               </span>
             </p>
           </div>
@@ -87,7 +94,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
             href="https://help.internxt.com/"
             rel="noopener noreferrer"
           >
-            {i18n.get('actions.moreInfo')}
+            {translate('actions.moreInfo')}
           </a>
         )}
       </div>
