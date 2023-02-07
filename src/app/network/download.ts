@@ -282,7 +282,7 @@ export async function getPhotoBlob({
   abortController?: AbortController;
 }): Promise<Blob> {
   const previewInCache = await getDatabasePhotosSourceData({ photoId: photo.id });
-  console.log({ previewInCache });
+
   if (previewInCache && previewInCache.source) {
     return Promise.resolve(previewInCache.source);
   }

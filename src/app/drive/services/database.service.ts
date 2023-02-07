@@ -100,7 +100,7 @@ const updateDatabasePhotosSourceData = async ({
 }): Promise<void> => {
   const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
   const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
-  console.log({ photoData });
+
   lruPhotosCacheManager.set(
     photoId,
     {
