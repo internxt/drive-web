@@ -464,6 +464,12 @@
         "doesntMatch": "Password confirmation does not match the password"
       }
     },
+    "deleteBackupModal": {
+      "title": "Are you sure?",
+      "subtitle": "Your backup will be deleted.",
+      "primaryAction": "Confirm",
+      "secondaryAction": "Cancel"
+    },
     "2FAAuthenticationModal": {}
   },
   "form": {
@@ -540,6 +546,10 @@
         "size": "Size",
         "actions": "Actions"
       }
+    },
+    "dropdown": {
+      "download": "Download",
+      "delete": "Delete"
     }
   },
   "shared-links": {

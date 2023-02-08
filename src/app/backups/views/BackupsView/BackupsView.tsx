@@ -13,6 +13,7 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import Dialog from '../../../shared/components/Dialog/Dialog';
+import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function BackupsView(): JSX.Element {
@@ -76,7 +77,7 @@ export default function BackupsView(): JSX.Element {
   const breadcrumbsItems: BreadcrumbItemData[] = [
     {
       id: -1,
-      label: 'Devices',
+      label: `${translate('backups.your-devices')}`,
       icon: <UilHdd className="mr-1 h-4 w-4" />,
       active: true,
       onClick: () => goBack(),
@@ -88,6 +89,7 @@ export default function BackupsView(): JSX.Element {
       label: currentDevice.name,
       icon: null,
       active: false,
+      isBackup: true,
     });
   } else if (currentDevice) {
     backupsAsFoldersPath.forEach((item, i) => {
@@ -99,6 +101,7 @@ export default function BackupsView(): JSX.Element {
         id: item.id,
         label: item.name,
         icon: null,
+        isBackup: true,
         ...(i === backupsAsFoldersPath.length - 1 ? { active: false } : clickableOptions),
       });
     });
@@ -130,15 +133,16 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div className="mb-5 flex flex-grow flex-col px-8 pt-6">
+      <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}
         onClose={onCloseDeleteModal}
         onSecondaryAction={onCloseDeleteModal}
         onPrimaryAction={onConfirmDelete}
-        secondaryAction="Cancel"
-        primaryAction="Confirm"
-        title="Are you sure?"
-        subtitle="Your backup device will be deleted."
+        title={translate('modals.deleteBackupModal.title')}
+        subtitle={translate('modals.deleteBackupModal.subtitle')}
+        primaryAction={translate('modals.deleteBackupModal.primaryAction')}
+        secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
       <div className="flex items-baseline pb-4">
