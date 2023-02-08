@@ -4,7 +4,6 @@ import { aes } from '@internxt/lib';
 import httpService from '../../core/services/http.service';
 import { DevicePlatform } from '../../core/types';
 import analyticsService from '../../analytics/services/analytics.service';
-import i18n from '../../i18n/services/i18n.service';
 import localStorageService from '../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
@@ -13,6 +12,11 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { Iterator } from 'app/core/collections';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import { downloadFile } from 'app/network/download';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { updateDatabaseFileSourceData } from './database.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
+import { t } from 'i18next';
 
 export interface IFolders {
   bucket: string;
@@ -63,6 +67,11 @@ export interface FetchFolderContentResponse {
   updatedAt: string;
   userId: number;
   user_id: number;
+}
+
+export interface DownloadFolderAsZipOptions {
+  destination: FlatFolderZip;
+  closeWhenFinished?: boolean;
 }
 
 export function createFolder(
@@ -221,7 +230,7 @@ async function addAllFilesToZip(
   return allFiles;
 }
 
-async function addAllFoldersToZip(
+export async function addAllFoldersToZip(
   currentAbsolutePath: string,
   iterator: Iterator<DriveFolderData>,
   zip: FlatFolderZip,
@@ -254,20 +263,23 @@ async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
   updateProgress: (progress: number) => void,
+  options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
 
-  const zip = new FlatFolderZip(rootFolder.name, {
-    progress(loadedBytes) {
-      if (!totalSizeIsReady) {
-        return;
-      }
-      updateProgress(Math.min(loadedBytes / totalSize, 1));
-    },
-  });
+  const zip =
+    options?.destination ||
+    new FlatFolderZip(rootFolder.name, {
+      progress(loadedBytes) {
+        if (!totalSizeIsReady) {
+          return;
+        }
+        updateProgress(Math.min(loadedBytes / totalSize, 1));
+      },
+    });
 
   const user = localStorageService.getUser();
 
@@ -292,8 +304,16 @@ async function downloadFolderAsZip(
 
       const files = await addAllFilesToZip(
         folderToDownload.name,
-        (file) => {
-          return downloadFile({
+        async (file) => {
+          const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
+          const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+          const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+          if (cachedFile?.source && !isCachedFileOlder) {
+            updateProgress(1);
+            return cachedFile.source.stream();
+          }
+          const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
             creds: {
@@ -302,6 +322,16 @@ async function downloadFolderAsZip(
             },
             mnemonic: user.mnemonic,
           });
+
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          await updateDatabaseFileSourceData({
+            folderId: file.folderId,
+            sourceBlob,
+            fileId: file.id,
+            updatedAt: file.updatedAt,
+          });
+
+          return sourceBlob.stream();
         },
         filesIterator,
         zip,
@@ -322,8 +352,9 @@ async function downloadFolderAsZip(
     } while (pendingFolders.length > 0);
 
     totalSizeIsReady = true;
-
-    await zip.close();
+    if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+      await zip.close();
+    }
   } catch (err) {
     zip.abort();
     throw errorService.castError(err);
@@ -388,7 +419,7 @@ export async function moveFolder(folderId: number, destination: number): Promise
     .catch((err) => {
       const castedError = errorService.castError(err);
       if (castedError.status) {
-        castedError.message = i18n.get(`tasks.move-folder.errors.${castedError.status}`);
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
       }
       throw castedError;
     });
@@ -400,6 +431,7 @@ const folderService = {
   moveFolder,
   fetchFolderTree,
   downloadFolderAsZip,
+  addAllFoldersToZip,
 };
 
 export default folderService;

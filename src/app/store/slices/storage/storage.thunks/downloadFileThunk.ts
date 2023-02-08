@@ -7,10 +7,14 @@ import downloadService from 'app/drive/services/download.service';
 import tasksService from 'app/tasks/services/tasks.service';
 import { DriveFileData } from 'app/drive/types';
 import AppError from 'app/core/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 import errorService from 'app/core/services/error.service';
 import { TaskStatus } from 'app/tasks/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { saveAs } from 'file-saver';
+import dateService from '../../../../core/services/date.service';
+import { DriveItemBlobData } from '../../../../database/services/database.service';
+import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -26,6 +30,23 @@ interface DownloadFileThunkPayload {
 const defaultDownloadFileThunkOptions = {
   showNotifications: true,
   showErrors: true,
+};
+
+export const checkIfCachedSourceIsOlder = ({
+  cachedFile,
+  file,
+}: {
+  cachedFile: DriveItemBlobData | undefined;
+  file: DriveFileData;
+}): boolean => {
+  const isCachedFileOlder = !cachedFile?.updatedAt
+    ? true
+    : dateService.isDateOneBefore({
+        dateOne: cachedFile?.updatedAt as string,
+        dateTwo: file?.updatedAt as string,
+      });
+
+  return isCachedFileOlder;
 };
 
 export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload, { state: RootState }>(
@@ -59,11 +80,20 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         taskId: options.taskId,
         merge: {
           status: TaskStatus.Decrypting,
-          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled')
+          stop: async () => (abortController as { abort: (reason?: string) => void }).abort('Download cancelled'),
         },
       });
 
-      await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      const cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+      const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+
+      if (cachedFile?.source && !isCachedFileOlder) {
+        updateProgressCallback(100);
+        const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
+        saveAs(cachedFile?.source, completeFileName);
+      } else {
+        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+      }
 
       tasksService.updateTask({
         taskId: options.taskId,
@@ -107,7 +137,7 @@ export const downloadFileThunkExtraReducers = (builder: ActionReducerMapBuilder<
         const errorMessage = rejectedValue?.message || action.error.message;
 
         notificationsService.show({
-          text: i18n.get('error.downloadingFile', { message: errorMessage || '' }),
+          text: t('error.downloadingFile', { message: errorMessage || '' }),
           type: ToastType.Error,
         });
       }

@@ -6,10 +6,10 @@ import errorService from '../../../../core/services/error.service';
 import downloadFileFromBlob from '../../../../drive/services/download.service/downloadFileFromBlob';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
-import i18n from '../../../../i18n/services/i18n.service';
 import { SerializablePhoto } from '..';
 import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
 import { FlatFolderZip } from 'app/core/services/stream.service';
+import { t } from 'i18next';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -33,6 +33,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
 
       if (payload.length === 1) {
         const [photo] = payload;
+
         const photoBlob = await getPhotoBlob({ photo, bucketId, abortController });
 
         if (!abortController.signal.aborted) {
@@ -42,7 +43,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
-          throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+          throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
 
         const folder = new FlatFolderZip('photos', { abortController });
@@ -69,7 +70,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
               generalProgress[photo.id] = progress;
               updateTaskProgress();
             },
-            abortController
+            abortController,
           });
 
           if (photoSource instanceof Blob) {
@@ -88,8 +89,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     } catch (err) {
       const error = errorService.castError(err);
 
-      if (abortController.signal.aborted)
-        tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
+      if (abortController.signal.aborted) tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
       else {
         console.error(error);
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });

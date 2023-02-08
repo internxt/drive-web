@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
+import { useState } from 'react';
 
 interface FileViewerWrapperProps {
   file: DriveFileData | null;
@@ -16,18 +17,29 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const dispatch = useAppDispatch();
   const onDownload = () => file && dispatch(storageThunks.downloadItemsThunk([file as DriveItemData]));
+  const [updateProgress, setUpdateProgress] = useState(0);
 
   const downloader = file
-    ? (abortController: AbortController) => 
-        downloadService.fetchFileBlob({ ...file, bucketId: file.bucket }, {
-          updateProgressCallback: () => undefined,
-          isTeam,
-          abortController
-        })
+    ? (abortController: AbortController) =>
+        downloadService.fetchFileBlob(
+          { ...file, bucketId: file.bucket },
+          {
+            updateProgressCallback: (progress) => setUpdateProgress(progress),
+            isTeam,
+            abortController,
+          },
+        )
     : null;
 
   return file && downloader ? (
-    <FileViewer show={showPreview} file={file} onClose={onClose} onDownload={onDownload} downloader={downloader} />
+    <FileViewer
+      show={showPreview}
+      file={file}
+      onClose={onClose}
+      onDownload={onDownload}
+      downloader={downloader}
+      progress={updateProgress}
+    />
   ) : (
     <div className="hidden" />
   );

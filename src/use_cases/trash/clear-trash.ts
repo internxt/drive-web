@@ -2,6 +2,7 @@ import { SdkFactory } from '../../app/core/factory/sdk';
 import { storageActions } from '../../app/store/slices/storage';
 import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import { t } from 'i18next';
 
 const ClearTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
@@ -12,7 +13,7 @@ const ClearTrash = async (): Promise<void> => {
 
   notificationsService.show({
     type: ToastType.Success,
-    text: 'Trash has been cleared',
+    text: t('trash.clearTrash'),
   });
 };
 

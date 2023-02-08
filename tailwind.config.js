@@ -98,6 +98,7 @@ module.exports = {
       minWidth: {
         104: '26rem',
         activity: '296px',
+        breadcrumb: 'min(128px, 2ch)',
       },
       padding: {
         '20px': '20px',

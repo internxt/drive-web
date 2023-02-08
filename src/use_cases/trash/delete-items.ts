@@ -4,6 +4,8 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { SdkFactory } from '../../app/core/factory/sdk';
 import { DriveItemData } from '../../app/drive/types';
 import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { t } from 'i18next';
 
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToDelete.map((item) => {
@@ -15,12 +17,19 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.deleteItemsPermanently({ items } as DeleteItemsPermanentlyPayload);
 
+  await deleteDatabaseItems(itemsToDelete);
+
   store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
   store.dispatch(storageActions.clearSelectedItems());
 
   notificationsService.show({
     type: ToastType.Success,
-    text: `${items.length > 1 ? items.length : ''} Item${items.length > 1 ? 's' : ''} deleted`,
+    text:
+      items.length > 1
+        ? t('notificationMessages.itemsDeleted')
+        : t('notificationMessages.itemDeleted', {
+            item: itemsToDelete[0].isFolder === true ? t('general.folder') : t('general.file'),
+          }),
   });
 };
 

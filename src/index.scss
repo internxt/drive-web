@@ -365,7 +365,7 @@ code {
 
   button.tertiary,
   .base-button.tertiary {
-    @apply text-gray-80 transition-colors duration-100 ease-in-out hover:bg-gray-5 active:bg-gray-10;
+    @apply text-gray-80 transition-colors duration-100 ease-in-out;
 
     &:disabled {
       @apply pointer-events-none text-gray-40;

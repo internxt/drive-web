@@ -22,7 +22,8 @@ export default class RealtimeService {
       auth: {
         token: getToken(),
       },
-      withCredentials: true
+      reconnection: isProduction(),
+      withCredentials: true,
     });
 
     this.socket.on('connect', () => {
@@ -40,8 +41,7 @@ export default class RealtimeService {
     });
 
     this.socket.on('connect_error', (error) => {
-      if (!isProduction())
-        console.error('[REALTIME] CONNECTION ERROR:', error);
+      if (!isProduction()) console.error('[REALTIME] CONNECTION ERROR:', error);
     });
   }
 

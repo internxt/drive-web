@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { saveAs } from 'file-saver';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
@@ -6,25 +7,29 @@ import localStorageService from '../../../../services/local-storage.service';
 import Section from '../../components/Section';
 
 export default function BackupKey({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   function handleExport() {
     const mnemonic = localStorageService.get('xMnemonic');
     if (!mnemonic) {
-      notificationsService.show({ text: 'We could not generate your backup key', type: ToastType.Error });
+      notificationsService.show({
+        text: translate('views.account.tabs.security.backupKey.error'),
+        type: ToastType.Error,
+      });
     } else {
       saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
-      notificationsService.show({ text: 'Backup key downloaded succesfully', type: ToastType.Success });
+      notificationsService.show({
+        text: translate('views.account.tabs.security.backupKey.success'),
+        type: ToastType.Success,
+      });
     }
   }
 
   return (
-    <Section className={className} title="Backup key">
+    <Section className={className} title={translate('views.account.tabs.security.backupKey.title')}>
       <Card>
-        <p className="text-gray-60">
-          In case you forget your password you can use your backup key to recover your account. Never share this code
-          with anyone.
-        </p>
+        <p className="text-gray-60">{translate('views.account.tabs.security.backupKey.description')}</p>
         <Button onClick={handleExport} className="mt-3">
-          Export backup key
+          {translate('views.account.tabs.security.backupKey.button')}
         </Button>
       </Card>
     </Section>

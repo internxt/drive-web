@@ -13,9 +13,13 @@ import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { deleteUserAvatarThunk, updateUserAvatarThunk } from '../../../../../store/slices/user';
 import { useAppDispatch } from '../../../../../store/hooks';
 import Dropdown from '../../../../../shared/components/Dropdown';
+import { getDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+
 const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 export default function UserHeader({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   if (!user) throw new Error('User is not defined');
@@ -23,25 +27,34 @@ export default function UserHeader({ className = '' }: { className?: string }): 
   const fullName = `${user.name} ${user.lastname}`;
 
   const [openModal, setOpenModal] = useState(false);
+  const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
+
+  useEffect(() => {
+    getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
+  }, [user.avatar]);
 
   async function deleteAvatar() {
     await dispatch(deleteUserAvatarThunk()).unwrap();
-    notificationsService.show({ type: ToastType.Success, text: 'Avatar successfully deleted' });
+    notificationsService.show({ type: ToastType.Success, text: translate('views.account.avatar.removed') });
   }
 
-  const dropdownOptions = [{ text: 'Upload new photo', onClick: () => setOpenModal(true) }];
+  const dropdownOptions = [{ text: translate('views.account.avatar.updatePhoto'), onClick: () => setOpenModal(true) }];
 
   if (user.avatar) {
-    dropdownOptions.push({ text: 'Delete photo', onClick: deleteAvatar });
+    dropdownOptions.push({ text: translate('views.account.avatar.removePhoto'), onClick: deleteAvatar });
   }
 
   return (
     <div className={`${className} flex h-44 flex-col items-center p-5`}>
-      <Dropdown options={dropdownOptions}
-        classMenuItems={'-left-6 mt-22 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'}
-        openDirection={'right'}>
+      <Dropdown
+        options={dropdownOptions}
+        classMenuItems={
+          '-left-6 mt-22 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'
+        }
+        openDirection={'right'}
+      >
         <div className="relative">
-          <Avatar diameter={80} fullName={fullName} src={user.avatar} />
+          <Avatar diameter={80} fullName={fullName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
           <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
             <Camera size={16} />
           </div>
@@ -56,6 +69,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
 }
 
 function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);
   const editorRef = useRef<AvatarEditorType>(null);
@@ -69,7 +83,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
   function validateFile(file: File) {
     if (file.size > 1024 * 1024 * 10) {
-      notificationsService.show({ type: ToastType.Error, text: 'Please choose an image under 10MB of size' });
+      notificationsService.show({ type: ToastType.Error, text: translate('views.account.avatar.underLimitSize') });
     } else {
       setState({ tag: 'editing', source: file, zoom: 1 });
     }
@@ -104,17 +118,17 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
 
       await dispatch(updateUserAvatarThunk({ avatar: avatarBlob })).unwrap();
 
-      notificationsService.show({ type: ToastType.Success, text: 'Avatar has been successfully updated' });
+      notificationsService.show({ type: ToastType.Success, text: translate('views.account.avatar.success') });
       onClose();
     } catch (err) {
       console.error(err);
-      notificationsService.show({ type: ToastType.Error, text: 'Something happened while uploading your avatar' });
+      notificationsService.show({ type: ToastType.Error, text: translate('views.account.avatar.error') });
     }
   }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">Upload avatar</h1>
+      <h1 className="text-2xl font-medium text-gray-80">{translate('views.account.avatar.title')}</h1>
       <div className="mt-4">
         {state.tag !== 'empty' ? (
           <div>
@@ -156,7 +170,7 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
             >
               <div className="text-gray-20 hover:text-gray-30">
                 <Image className="mx-auto" weight="light" size={80} />
-                <p className="font-medium">Select or drop a picture</p>
+                <p className="font-medium">{translate('views.account.avatar.dragNDrop')}</p>
               </div>
             </div>
           </>
@@ -166,16 +180,16 @@ function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
         <div className="flex">
           {state.tag === 'empty' ? (
             <Button variant="secondary" onClick={onClose}>
-              Cancel
+              {translate('actions.cancel')}
             </Button>
           ) : (
             <Button variant="secondary" onClick={() => setState({ tag: 'empty' })} disabled={state.tag === 'loading'}>
-              Back
+              {translate('actions.back')}
             </Button>
           )}
           {state.tag !== 'empty' && (
             <Button loading={state.tag === 'loading'} className="ml-2" onClick={onSave}>
-              Save
+              {translate('actions.save')}
             </Button>
           )}
         </div>

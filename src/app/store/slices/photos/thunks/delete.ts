@@ -4,6 +4,7 @@ import { photosSlice } from '..';
 
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
+import { deleteDatabasePhotos } from '../../../../drive/services/database.service';
 
 export const deleteThunk = createAsyncThunk<void, PhotoId[], { state: RootState }>(
   'photos/delete',
@@ -18,5 +19,6 @@ export const deleteThunk = createAsyncThunk<void, PhotoId[], { state: RootState 
     const promises = payload.map((id) => photos.deletePhotoById(id));
 
     await Promise.all(promises);
+    await deleteDatabasePhotos(payload);
   },
 );

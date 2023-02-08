@@ -8,7 +8,6 @@ import { DndProvider } from 'react-dnd';
 import configService from './app/core/services/config.service';
 import errorService from './app/core/services/error.service';
 import envService from './app/core/services/env.service';
-import i18n from './app/i18n/services/i18n.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
 import layouts from './app/core/layouts';
@@ -25,7 +24,12 @@ import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
+import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
+import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import { t } from 'i18next';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -55,6 +59,11 @@ class App extends Component<AppProps> {
     window.addEventListener('online', () => {
       dispatch(sessionActions.setHasConnection(true));
     });
+
+    await LRUFilesCacheManager.getInstance();
+    await LRUFilesPreviewCacheManager.getInstance();
+    await LRUPhotosCacheManager.getInstance();
+    await LRUPhotosPreviewsCacheManager.getInstance();
 
     try {
       await this.props.dispatch(
@@ -90,8 +99,15 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, isSurveyDialogOpen, fileViewerItem, dispatch } =
-      this.props;
+    const {
+      isInitialized,
+      isAuthenticated,
+      isFileViewerOpen,
+      isNewsletterDialogOpen,
+      isSurveyDialogOpen,
+      fileViewerItem,
+      dispatch,
+    } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
 
@@ -114,7 +130,7 @@ class App extends Component<AppProps> {
                z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white opacity-80 drop-shadow-2xl"
               >
-                {i18n.get('general.stage.development')}
+                {t('general.stage.development')}
               </span>
             )}
 

@@ -1,5 +1,43 @@
 {
+  "lang": {
+    "title": "Language",
+    "es": "Spanish (ES)",
+    "en": "English (US)",
+    "deviceLang": "device lang: {{lang}}"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "Password",
+    "terms1": "By creating an account, ",
+    "terms2": "you accept the terms and conditions",
+    "decrypting": "Decrypting...",
+    "login": {
+      "title": "Log in",
+      "forgotPwd": "Forgot your password?",
+      "dontHaveAccount": "Don't have an account?",
+      "createAccount": "Create account",
+      "2FA": "Two factor code",
+      "twoFactorAuthenticationCode": "Two factor authentication code"
+    },
+    "signup": {
+      "title": "Create account",
+      "haveAccount": "already have an account?",
+      "login": "Log in"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
+      "sendInstructions": "Send instructions",
+      "sending": "Sending..."
+    }
+  },
   "general": {
+    "new": "new",
+    "of": "of",
+    "terms": "Terms and conditions",
+    "help": "Need help?",
+    "searchBar": "Search in this folder",
+
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -9,6 +47,11 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
+      "monthly": "monthly",
+      "annually": "annually",
+      "lifetime": "Lifetime"
+    },
+    "renewal": {
       "monthly": "Monthly",
       "annually": "Annually",
       "lifetime": "Lifetime"
@@ -21,14 +64,161 @@
       "month": "month"
     },
     "billing": {
-      "billedEachPeriod": "{price} billed {period}",
+      "billedEachPeriod": "{{price}} billed {{period}}",
       "oneTimePayment": "One-time payment"
+    },
+    "files": "Files",
+    "file": "File",
+    "folder": "Folder"
+  },
+  "shareLayout": {
+    "title": "WE ARE INTERNXT",
+    "subtitle": "Private and secure cloud storage",
+    "labels": {
+      "privacy": "Privacy by design",
+      "end-to-end": "End-to-end encryption",
+      "military-grade": "Military-grade encryption",
+      "zero-knowledge": "Zero-knowledge technology"
+    },
+    "tryInternxt": "Try out Internxt",
+    "topBar": {
+      "drive": "Go to Internxt Drive",
+      "downloadApp": "Download Desktop App",
+      "logout": "Log out",
+      "login": "Login",
+      "createAccount": "Create Account",
+      "getStarted": "Get started"
     }
   },
+  "shareItemPwdView": {
+    "title": "This link is password protected",
+    "putPwd": "Please enter the password provided",
+    "putPwd1": "by the sender for access.",
+    "password": "Password",
+    "pwdLayout": "password",
+    "access": "Access"
+  },
+  "sideNav": {
+    "drive": "Drive",
+    "photos": "Photos",
+    "backups": "Backups",
+    "sharedLinks": "Shared Links",
+    "recents": "Recents",
+    "trash": "Trash",
+    "desktop": "Desktop"
+  },
   "views": {
+    "recents": {
+      "head": "Recents",
+      "empty": {
+        "title": "No recents files to show",
+        "description": "Recent uploads or files you recently interacted with will show up here automatically",
+        "folderEmpty": "This folder is empty",
+        "folderEmptySubtitle": "Drag and drop files or click to select files and upload",
+        "uploadFiles": "Upload files",
+        "noResults": "There are no results for this search",
+        "dragNDrop": "Drag and drop here or click on upload button"
+      }
+    },
+    "photos": {
+      "empty": {
+        "title": "Your gallery is empty",
+        "description": "Start using Internxt mobile app to sync all your photos"
+      }
+    },
     "account": {
       "title": "Account",
+      "avatar": {
+        "title": "Upload avatar",
+        "removePhoto": "Delete photo",
+        "updatePhoto": "Upload new photo",
+        "dragNDrop": "Select or drop a picture",
+        "success": "Avatar has been successfully updated",
+        "error": "Something happened while uploading your avatar",
+        "removed": "Avatar successfully deleted",
+        "underLimitSize": "Please choose an image under 10MB of size"
+      },
+      "popover": {
+        "downloadApp": "Download app",
+        "settings": "Settings",
+        "logout": "Log out",
+        "spaceUsed": "{{space}}% space used"
+      },
       "tabs": {
+        "account": {
+          "label": "Account",
+          "title": "Personal",
+          "usage": "Used {{totalUsed}} of {{totalSpace}}",
+          "view": {
+            "backups": "Backups",
+            "photos": "Photos",
+            "trash": "Trash",
+            "free": {
+              "planName": "Free plan",
+              "button": "Upgrade"
+            },
+            "lifetime": {
+              "planName": "Lifetime"
+            },
+            "subscription": {
+              "planName": "Subscription",
+              "button": "change",
+              "yearly": "year",
+              "monthly": "month"
+            }
+          },
+          "accountDetails": {
+            "head": "Account details",
+            "name": "Name",
+            "lastname": "Lastname",
+            "card": {
+              "name": "Name",
+              "lastname": "Lastname",
+              "edit": "Edit",
+              "email": "Email",
+              "resendEmail": "Resend verification email"
+            },
+            "verify": {
+              "verify": "Verify your email",
+              "verified": "Verified email",
+              "description": "Check your inbox"
+            },
+            "editProfile": {
+              "name": "Name",
+              "lastname": "Lastname"
+            }
+          },
+          "deleteAccount": {
+            "head": "Delete account",
+            "description": "If you delete your account, your data will be gone forever. This action cannot be undone.",
+            "isSubscribed": "Please, cancel your subscription first",
+            "confirmationEmail": "Confirmation email has been sent"
+          }
+        },
+        "billing": {
+          "label": "Billing",
+          "currentPlan": "Current plan",
+          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
+          "cancelSubscription": "Cancel subscription",
+          "billed": "Billed {{interval}} {{renewDate}}",
+          "paymentMethod": {
+            "head": "Payment method",
+            "empty": {
+              "title": "You are on free plan",
+              "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
+            },
+            "title": "Add new payment method"
+          },
+          "invoices": {
+            "head": "Invoices",
+            "billingDate": "Billing date",
+            "empty": {
+              "title": "You are in free plan",
+              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
+            },
+            "download": "Download invoice"
+          }
+        },
         "info": {
           "title": "Personal",
           "description": "Check your storage user and account details",
@@ -42,6 +232,7 @@
           }
         },
         "plans": {
+          "label": "Plans",
           "title": "Plans",
           "description": "Find the different storage and solution options that Internxt offers",
           "changeWorkspace": {
@@ -49,20 +240,35 @@
             "business": "Change to Plans for Business"
           },
           "viewAllFeatures": "View all features",
-          "features": [
-            {
-              "title": "Premium support",
-              "description": "You will always have the best treatment from our customer service, for us you are part of the family."
-            },
-            {
-              "title": "Private",
-              "description": "Internxt is not just another cloud storage solution, we don’t share or sell your data."
-            },
-            {
-              "title": "Secure",
-              "description": "We use zero-knowledge to ensure that your data remains private by client-side encrypting it."
+
+          "card": {
+            "annually": "€{{amount}} billed annually",
+            "monthly": "€{{amount}} per month",
+            "lifetime": "€{{amount}}"
+          },
+          "features": {
+            "title": "Features included in all plans",
+            "sections": {
+              "section1": {
+                "title": "Satisfaction guaranteed",
+                "point1": "All subscriptions have 30-day money-back guarantees.",
+                "point2": "Cancel any time, no tricks.",
+                "point3": "Premium support."
+              },
+              "section2": {
+                "title": "Secure by default",
+                "point1": "Military-grade encryption to ensure your privacy.",
+                "point2": "Encrypted file storage and sharing.",
+                "point3": "Zero-knowledge cloud storage."
+              },
+              "section3": {
+                "title": "Unlimited access and sync",
+                "point1": "Access your files, photos, and backups from all your devices.",
+                "point2": "Sync with unlimited bandwidth.",
+                "point3": "Backup any folder on your computer."
+              }
             }
-          ]
+          }
         },
         "password": {
           "title": "Password",
@@ -72,7 +278,7 @@
             "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
           },
           "advice2": {
-            "title": "What should you keep in mind so that your pasword is secure?",
+            "title": "What should you keep in mind so that your password is secure?",
             "description": ""
           },
           "advice3": {
@@ -85,50 +291,86 @@
           }
         },
         "security": {
-          "title": "Security",
-          "description": "Manage Two-Factor Authentication (2FA) and change your password",
-          "advice": {
-            "title": "Two-Factor Authentication (2FA)",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an extra verification when you log in. In addition to your password, you’ll also need a generated code."
+          "label": "Security",
+          "lock": {
+            "title": "Enter your password to continue",
+            "description": "For security reasons, you must enter your password before being able to make any changes on this page.",
+            "inputLabel": "Password",
+            "errors": {
+              "incorrect": "Incorrect password, please try again",
+              "notVerified": "We could not verify your password"
+            }
           },
-          "two-factor-auth": {
-            "stepsLabel": "{current} of {total}",
-            "steps": {
-              "download": {
-                "title": "Download Authy",
-                "description": {
-                  "line1": "We recomend using",
-                  "line2": "Authy",
-                  "line3": ", but you can use any 2FA app."
+          "changePassword": {
+            "title": "Change password",
+            "description": "Remember that if you forget the password, you will lose access to all your files. We recommend using a password manager.",
+            "button": "Change password"
+          },
+          "2FA": {
+            "title": "Two Factor Authentication (2FA)",
+            "titleDisable": "Disable Two-Factor Authentication",
+            "description": "Two-factor authentication provides an extra layer of security y requiring an extra verification when you log in. In addition to your password, you'll also need a generated code.",
+            "button": "Enable",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "modal": {
+              "title": "Two Factor Authentication",
+              "stepsLabel": "{{current}} of {{total}}",
+              "button": "Enable 2FA",
+              "2FALabelCode": "Two-Factor Authentication code",
+              "or": "OR",
+              "steps": {
+                "download": {
+                  "title": "Download Authy",
+                  "description": "We recommend using Authy, but you can setup the 2FA process with any other 2FA of your choice."
+                },
+                "qr": {
+                  "title": "Scan QR with the 2FA app",
+                  "description": "If you are unable to scan he QR, insert this code into the app."
+                },
+                "backup-key": {
+                  "title": "Save backup key",
+                  "description": "Copy this code and keep it secure, you will need it in case you lose your device."
+                },
+                "enable": {
+                  "title": "Confirm 2FA activation",
+                  "description": "Two-factor authentication code"
+                },
+                "disable": {
+                  "title": "Disable Two-Factor Authentication",
+                  "description": "To disable Two-Factor Authentication, type the code generated by the app into the input below."
                 }
               },
-              "qr": {
-                "title": "Scan QR with Authy",
-                "description": {
-                  "line1": "Scan QR code",
-                  "line2": "OR",
-                  "line3": "If you are unable to scan the QR, insert this code into the app"
-                }
-              },
-              "backup-key": {
-                "title": "Save backup key",
-                "description": {
-                  "line1": "Copy this code and keep it secure, you",
-                  "line2": "will need it in case you lose your device."
-                }
-              },
-              "enable": {
-                "title": "Confirm 2FA activation",
-                "description": {
-                  "line1": "To enable Two-Factor Authentication, type the code generated by the app into the input below."
-                }
-              },
-              "disable": {
-                "title": "Disable Two-Factor Authentication",
-                "description": {
-                  "line1": "To disable Two-Factor Authentication, type the code generated by the app into the input below."
-                }
+              "errors": {
+                "incorrect": "The code is not correct, try again",
+                "notVerified": "We could not verify your code"
               }
+            }
+          },
+          "backupKey": {
+            "title": "Backup key",
+            "description": "In case you forget your password you can use your backup key to recover your account. Never share this code with anyone.",
+            "button": "Export backup key",
+            "success": "Backup key downloaded successfully",
+            "error": "We could not generate your backup key"
+          },
+          "faq": {
+            "title": "Did you miss anything?",
+            "faq1": {
+              "title": "Why do I lose all my files if I lose my password?",
+              "description": "Your password is the only way to access your account, the Internxt team cannot access your account on change your password. This is to prevent anyone from accessing your account or steal your information. <br/><br/>Among other things your password is used to encrypt your encryption key so not even the Internxt has access to it. Every time you log in you need your password to decrypt this encryption key that way we ensure you are the only one holding the encryption keys."
+            },
+            "faq2": {
+              "title": "How can I keep safe my credentials?",
+              "description": "We recommend to use a password manager to store your credentials safely not just for accessing the Internxt platform but to keep yourself safe and productive while browsing."
+            },
+            "faq3": {
+              "title": "Can I recover my account with the backup key?",
+              "description": "If you keep somewhere safe your encryption key, recover your data following the steps outlined in the email you will receive when clicking “forgot password”."
+            },
+            "faq4": {
+              "title": "Do I lose all my files if I change my password?",
+              "description": "No, since you are already logged in you can change your password without losing anything. Make sure you have chosen a strong password and it is not found in any data breach."
             }
           }
         }
@@ -140,16 +382,89 @@
     }
   },
   "modals": {
+    "renameItemDialog": {
+      "title": "Rename",
+      "label": "Name"
+    },
     "renameModal": {
       "title": "Item already exists",
       "titleMultipleItems": "Multiple items already exist",
-      "description": "{itemName} already exists in this location. Do you want to replace it or you want to keep both?",
+      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
       "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
       "replaceItem": "Replace current item",
       "keepBoth": "Keep both",
       "upload": "Upload",
       "move": "Move"
-    }
+    },
+    "removeSharedLinkModal": {
+      "title": "Delete link",
+      "multiSharedDescription": "Users with the links will lose access to the shared content",
+      "singleSharedDescription": "Users with the link will lose access to the shared content",
+      "cancel": "Cancel",
+      "deleteLinks": "Delete links",
+      "deleteLink": "Delete link"
+    },
+    "newFolderModal": {
+      "title": "New folder",
+      "label": "Name",
+      "placeholder": "Untitled folder",
+      "untitled": "Untitled folder"
+    },
+    "deletePhotosModal": {
+      "multiToolBar": "items selected",
+      "singleToolBar": "item selected",
+      "multiTitle": "Delete {{item}} selected items?",
+      "singleTitle": "Delete {{item}} selected item?",
+      "subtitle": "You can't undo this action",
+      "buttons": {
+        "cancel": "Cancel",
+        "delete": "Delete"
+      }
+    },
+    "sharePhotosModal": {
+      "singleTitle": "Share {{item}} photo",
+      "multiTitle": "Share {{item}} photos",
+      "options": "Link options",
+      "limit": "Limit number of time users can open this link",
+      "openCount": "Open count limit",
+      "times": "times",
+      "change": "Change",
+      "buttons": {
+        "cancel": "Cancel",
+        "create": "Create link",
+        "creating": "Creating link...",
+        "copyLink": "Copy link"
+      }
+    },
+    "friendsInvitedModal": {
+      "title": "Friends invited",
+      "email": "Email",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "empty": "You have not invited anyone yet",
+      "resend": "Resend invitation",
+      "resentInvitation": "Invitation resent successfully",
+      "resendError": "Error while resending email: {{reason}}"
+    },
+    "deleteAccountModal": {
+      "title": "Are you sure?",
+      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    },
+    "changePasswordModal": {
+      "title": "Change password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "strongPassword": "Password is strong",
+      "errors": {
+        "shortPassword": "Password has to be at least 8 characters long",
+        "notComplex": "Password is not complex enough",
+        "weakPassword": "Password is weak",
+        "doesntMatch": "Password confirmation does not match the password"
+      }
+    },
+    "2FAAuthenticationModal": {}
   },
   "form": {
     "fields": {
@@ -159,7 +474,8 @@
     }
   },
   "error": {
-    "genericError": "There was an error: {reason}",
+    "wrongPassword": "Wrong password, try again or contact link owner",
+    "genericError": "There was an error: {{reason}}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",
     "changingName": "Error during name change",
@@ -174,14 +490,14 @@
     "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
     "unavailableLink": "Unavailable link",
     "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
-    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {reason}",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {{reason}}",
     "deactivatingAccount": "Error deactivating account. Please contact us.",
     "fetchingFolderContent": "Error fetching folder content",
     "uploadingFolder": "Error uploading folder",
-    "uploadingFile": "Error uploading file: {reason}",
+    "uploadingFile": "Error uploading file: {{reason}}",
     "uploadingItems": "Some of the elements could not be uploaded",
-    "downloadingFile": "Error downloading file: {message}",
-    "downloadingFolder": "Error downloading folder: {message}",
+    "downloadingFile": "Error downloading file: {{message}}",
+    "downloadingFolder": "Error downloading folder: {{message}}",
     "downloadingItems": "Some of the elements could not be downloaded",
     "movingItemInsideItself": "You can't move a folder inside itself",
     "movingItem": "Error when moving item/s",
@@ -193,15 +509,23 @@
     "titleSharedFolderTooBig": "Unsupported Action",
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
-    "browserNotSupported": "Browser not supported ({userAgent})",
-    "inviteAFriend": "Error sending the invitation to a friend: {message}",
-    "subscribeToNewsletter": "Error subscribing to newsletter: {message}",
-    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support."
+    "browserNotSupported": "Browser not supported ({{userAgent}})",
+    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
+    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
+    "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
+    "emptyPassword": "Previous password must not be empty",
+    "errorMovingToTrash": "An error occurred while moving the items to trash."
   },
   "backups": {
-    "backups-from": "Backups from {deviceName}",
+    "backups-from": "Backups from {{deviceName}}",
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
+    "empty": {
+      "title": "You don't have backups yet",
+      "subtitle": "Set up your backups on the desktop app",
+      "downloadApp": "Download desktop app"
+    },
     "devices-list": {
       "columns": {
         "name": "Name",
@@ -223,7 +547,8 @@
     "list": {
       "link-content": "Link content",
       "shared": "Shared",
-      "created": "Created"
+      "created": "Created",
+      "size": "Size"
     },
     "empty-state": {
       "title": "Nothing shared yet",
@@ -232,7 +557,8 @@
     "item-menu": {
       "copy-link": "Copy link",
       "link-settings": "Share settings",
-      "delete-link": "Delete link"
+      "delete-link": "Delete link",
+      "delete-links": "Delete links"
     },
     "link-settings": {
       "share-settings": "Share settings",
@@ -251,8 +577,10 @@
       "links-deleted": "Link(s) deleted"
     }
   },
+
   "trash": {
     "trash": "Trash",
+    "clearTrash": "Trash has been cleared",
     "list": {
       "name": "Name",
       "size": "Size",
@@ -269,7 +597,8 @@
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "All processes have finished"
+      "allProcessesHaveFinished": "All processes have finished",
+      "processing": "Processing {{pending}} of {{finished}}"
     },
     "create-folder": {
       "status": {
@@ -283,9 +612,9 @@
     },
     "upload-file": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting file",
-        "in-process": "{progress}% Uploading file",
+        "in-process": "{{progress}}% Uploading file",
         "success": "File uploaded",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
@@ -294,9 +623,9 @@
     },
     "upload-folder": {
       "status": {
-        "pending": "Pending to upload",
+        "pending": "Waiting to upload",
         "encrypting": "Encrypting files",
-        "in-process": "{progress}% Uploading folder",
+        "in-process": "{{progress}}% Uploading folder",
         "success": "Folder uploaded",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
@@ -307,7 +636,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting file",
-        "in-process": "{progress}% Downloading file",
+        "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -316,7 +645,7 @@
     },
     "download-photos": {
       "status": {
-        "pending": "Downloading {progress}%",
+        "pending": "Downloading {{progress}}%",
         "success": "Downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -327,7 +656,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting backup",
-        "in-process": "{progress}% Downloading backup",
+        "in-process": "{{progress}}% Downloading backup",
         "success": "Backup downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -338,7 +667,7 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
-        "in-process": "{progress}% Downloading folder",
+        "in-process": "{{progress}}% Downloading folder",
         "success": "Folder downloaded",
         "error": "Error during download",
         "cancelled": "Download cancelled"
@@ -392,9 +721,9 @@
   },
   "success": {
     "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {email}",
-    "referralInvitationSent": "Invitation email sent to {email}",
-    "deletedTeamMember": "The {resource} has been successfully deleted",
+    "teamInvitationSent": "Invitation email sent to {{email}}",
+    "referralInvitationSent": "Invitation email sent to {{email}}",
+    "deletedTeamMember": "The {{resource}} has been successfully deleted",
     "accountDeactivationEmailSent": "Deactivation email sent!",
     "claimEmailSent": "Claim email sent!",
     "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
@@ -403,36 +732,81 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {email}",
-    "subscribeToNewsletter": "{email} successfully subscribed to newsletter"
+    "inviteAFriend": "An invitation has been sent to {{email}}",
+    "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
+  },
+  "shareItemDialog": {
+    "title": "Link settings",
+    "access": "Access",
+    "protect": "Protect with password",
+    "addSecurePassword": "Secure this link by setting up a password",
+    "password": "Password",
+    "views": "Views",
+    "noViewsYet": "No views yet",
+    "dateCreated": "Date created",
+    "buttons": {
+      "copyLink": "Copy link",
+      "linkCopied": "Link copied",
+      "cancel": "Cancel",
+      "save": "Save"
+    }
+  },
+  "notificationMessages": {
+    "copyLink": "Shared link copied to clipboard",
+    "linkUpdated": "Link updated",
+    "itemsMovedToTrash": "{{item}} moved to trash",
+    "restoreItems": "{{itemsToRecover}} restored",
+    "itemDeleted": "{{itemsToDelete}} deleted",
+    "itemsDeleted": "Files deleted",
+    "emailNotEmpty": "Email must not be empty",
+    "verificationEmail": "Verification email has been sent",
+    "successCancelSubscription": "Your subscription has been cancelled",
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
   },
   "actions": {
+    "undo": "Undo",
     "upload": {
       "new": "New",
-      "folder": "Folder",
+      "folder": "New folder",
       "uploadFiles": "Upload files",
       "uploadFolder": "Upload folder"
     },
+    "change": "Change",
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
     "view": "View",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now",
+    "purchasePlan": "Upgrade now",
     "upgrade": "Upgrade",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
     "buy": "Buy",
     "cancel": "Cancel",
+    "create": "Create",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
     "moreInfo": "More info",
-    "dismiss": "Dismiss"
+    "dismiss": "Dismiss",
+    "save": "Save",
+    "back": "Back",
+    "edit": "Edit",
+    "submit": "Submit",
+    "access": "Access",
+    "next": "Next",
+    "disable": "Disable",
+    "move": "Move",
+    "moving": "Moving...",
+    "navigating": "Navigating...",
+    "restoreHere": "Restore here",
+    "rename": "Rename",
+    "restore": "Restore"
   },
   "drive": {
     "usage": "Usage",
     "currentPlan": "Current plan",
-    "loadingFile": "Loading file...",
+    "loadingFile": "Loading preview",
     "list": {
       "columns": {
         "type": "Type",
@@ -441,6 +815,18 @@
         "size": "Size",
         "actions": "Actions"
       }
+    },
+    "dropdown": {
+      "getLink": "Get link",
+      "rename": "Rename",
+      "download": "Download",
+      "moveToTrash": "Move to trash",
+      "copyLink": "Copy link",
+      "linkSettings": "Link settings",
+      "deleteLink": "Delete link",
+      "restore": "Restore",
+      "deletePermanently": "Delete permanently",
+      "move": "Move"
     },
     "deleteItems": {
       "title": "Delete permanently?",
@@ -475,7 +861,7 @@
       "internxt_tier3": "Team members: 10",
       "internxt_tier4": "Team members: 25",
       "internxt_tier5": "Team members: 100",
-      "unlimited": "Team members: {total}"
+      "unlimited": "Team members: {{total}}"
     },
     "plans": {
       "advice": "You will be redirected to your AppSumo account"
@@ -483,8 +869,10 @@
   },
   "inviteAFriend": {
     "title": "Invite a friend",
-    "descriptionWidget": "Get up to {N}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Spread the word, get 1GB per friend invited for free. You can get up to {N}GB in total.",
+    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
+    "label": "Friend email address",
+    "placeholder": "Enter friend email",
     "actions": {
       "sendInvitation": "Send invitation",
       "seeInvitations": "See all invitations"
@@ -506,14 +894,14 @@
       "share-file": "Share a file via link",
       "subscribe-to-newsletter": "Subscribe to newsletter",
       "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {completedSteps}/{steps} friends",
-      "invite-2-friends": "Invite {completedSteps}/{steps} friends",
+      "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
+      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
       "complete-survey": "Complete survey"
     },
     "rewards": {
-      "title": "Get {creditSum} for free",
-      "progress": "Unlocked {currentCredit}",
-      "limit": "out of {creditSum}"
+      "title": "Get {{creditSum}} for free",
+      "progress": "Unlocked {{currentCredit}}",
+      "limit": "out of {{creditSum}}"
     }
   }
 }

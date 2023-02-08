@@ -25,6 +25,7 @@ import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -36,6 +37,7 @@ export interface SignUpProps {
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
+  const { translate } = useTranslationContext();
   const qs = queryString.parse(navigationService.history.location.search);
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
@@ -188,7 +190,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
   //   grecaptcha.ready(() => {
   //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-  //       // Can't wait or token will expire
+  //       // Can'translate wait or token will expire
   //       formValues.token = token;
   //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
   //     });
@@ -198,13 +200,13 @@ function SignUp(props: SignUpProps): JSX.Element {
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <span className="text-2xl font-medium">Create account</span>
+        <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>Email</span>
+            <span>{translate('auth.email')}</span>
             <TextInput
-              placeholder="Email"
+              placeholder={translate('auth.email') as string}
               label="email"
               type="email"
               disabled={hasEmailParam}
@@ -216,10 +218,10 @@ function SignUp(props: SignUpProps): JSX.Element {
           </label>
 
           <label className="space-y-0.5">
-            <span>Password</span>
+            <span>{translate('auth.password')}</span>
             <PasswordInput
               className={passwordState ? passwordState.tag : ''}
-              placeholder="Password"
+              placeholder={translate('auth.password')}
               label="password"
               maxLength={MAX_PASSWORD_LENGTH}
               register={register}
@@ -242,7 +244,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
           <Button
             disabled={isLoading}
-            text="Create account"
+            text={translate('auth.signup.title')}
             disabledText={isValid ? 'Encrypting...' : 'Create account'}
             loading={isLoading}
             style="button-primary"
@@ -251,20 +253,20 @@ function SignUp(props: SignUpProps): JSX.Element {
         </div>
       </form>
       <span className="mt-2 w-full text-xs text-gray-50">
-        By creating an account you accept the{' '}
+        {translate('auth.terms1')}{' '}
         <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-          terms and conditions
+          {translate('auth.terms2')}
         </a>
       </span>
 
       <div className="mt-4 flex w-full items-center justify-center">
         <span className="select-none text-sm text-gray-80">
-          Already have an account?{' '}
+          {translate('auth.signup.haveAccount')}{' '}
           <Link
             to="/login"
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            Log in
+            {translate('auth.signup.login')}
           </Link>
         </span>
       </div>

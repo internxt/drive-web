@@ -12,6 +12,7 @@ import {
   ClockCounterClockwise,
   Link,
   PencilSimple,
+  CaretDown,
 } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -34,11 +35,11 @@ import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/Cre
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
+import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import BaseButton from '../../../shared/components/forms/BaseButton';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import i18n from '../../../i18n/services/i18n.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -57,8 +58,11 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
-const PAGINATION_LIMIT = 60;
+const PAGINATION_LIMIT = 100;
+const UPLOAD_ITEMS_LIMIT = 1000;
 
 interface DriveExplorerProps {
   title: JSX.Element | string;
@@ -91,8 +95,6 @@ interface DriveExplorerProps {
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
-  const dispatch = useAppDispatch();
-
   const {
     selectedItems,
     isLoading,
@@ -109,7 +111,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onFileUploaded,
     onItemsMoved,
   } = props;
-
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -126,6 +129,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     deviceService.redirectForMobile();
   }, []);
 
+  useEffect(() => {
+    setHasMoreItems(true);
+    setFakePaginationLimit(PAGINATION_LIMIT);
+  }, [currentFolderId]);
+
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
   };
@@ -141,7 +149,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
 
-    if (files.length < 1000) {
+    if (files.length < UPLOAD_ITEMS_LIMIT) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(Array.from(files), items, dispatch) as File[];
       dispatch(
         storageThunks.uploadItemsThunk({
@@ -180,7 +188,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onBulkDeleteButtonClicked = () => {
-    moveItemsToTrash(selectedItems);
+    moveItemsToTrash(selectedItems, translate as TFunction);
   };
 
   const onDeletePermanentlyButtonClicked = () => {
@@ -218,9 +226,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     const existsMoreItems = items.length > fakePaginationLimit;
 
     setHasMoreItems(existsMoreItems);
-    setTimeout(() => {
-      if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-    }, 1000);
+    if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
   };
 
   const getLimitedItems = () => items.slice(0, fakePaginationLimit);
@@ -245,8 +251,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
-  const isRecents = title === 'Recents';
-  const isTrash = title === 'Trash';
+
+  const isRecents = title === translate('views.recents.head');
+  const isTrash = title === translate('trash.trash');
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
   const itemsList = getLimitedItems();
 
@@ -259,7 +266,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
-  const separatorH = <div className="my-0.5 mx-3 border-t border-gray-10" />;
+  const separatorH = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
@@ -285,6 +292,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <NameCollisionContainer />
       <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
+      <EditFolderNameDialog />
       <UploadItemsFailsDialog />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
@@ -301,31 +309,30 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
                   }
                   openDirection={'right'}
-                  classMenuItems={
-                    'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow mt-6'
-                  }
+                  classMenuItems={'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 mt-1'}
                   menuItems={[
                     <MenuItem onClick={onCreateFolderButtonClicked}>
                       <FolderSimplePlus size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.folder')}</p>
+                      <p className="ml-3">{translate('actions.upload.folder')}</p>
                     </MenuItem>,
                     separatorH,
                     <MenuItem onClick={onUploadFileButtonClicked}>
                       <FileArrowUp size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFiles')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
                     </MenuItem>,
                     <MenuItem onClick={onUploadFolderButtonClicked}>
                       <UploadSimple size={20} />
-                      <p className="ml-3">{i18n.get('actions.upload.uploadFolder')}</p>
+                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
                     </MenuItem>,
                   ]}
                 >
-                  <>
-                    <div className="flex flex-row items-center space-x-2.5">
-                      <span className="font-medium">{i18n.get('actions.upload.new')}</span>
+                  <div className="flex flex-row items-center space-x-2.5">
+                    <span className="font-medium">{translate('actions.upload.new')}</span>
+                    <div className="flex items-center space-x-0.5">
                       <Plus weight="bold" className="h-4 w-4" />
+                      <CaretDown weight="fill" className="h-3 w-3" />
                     </div>
-                  </>
+                  </div>
                 </Dropdown>
                 {hasAnyItemSelected && (
                   <>
@@ -376,6 +383,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
+                  folderId={currentFolderId}
                   items={itemsList}
                   isLoading={isLoading}
                   onEndOfScroll={getMoreItems}
@@ -392,36 +400,36 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="There are no results for this search"
-                    subtitle="Drag and drop here or click on upload button"
+                    title={translate('views.recents.empty.noResults')}
+                    subtitle={translate('views.recents.empty.dragNDrop')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
                 ) : isRecents ? (
                   <Empty
                     icon={filesEmptyImage}
-                    title="No recents files to show"
-                    subtitle="Recent uploads or files you recently interacted with will show up here automatically"
+                    title={translate('views.recents.empty.title')}
+                    subtitle={translate('views.recents.empty.description')}
                   />
                 ) : isTrash ? (
                   <Empty
                     icon={<EmptyTrash />}
-                    title={i18n.get('trash.empty-state.title')}
-                    subtitle={i18n.get('trash.empty-state.subtitle')}
+                    title={translate('trash.empty-state.title')}
+                    subtitle={translate('trash.empty-state.subtitle')}
                   />
                 ) : (
                   <Empty
                     icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-                    title="This folder is empty"
-                    subtitle="Drag and drop files or click to select files and upload"
+                    title={translate('views.recents.empty.folderEmpty')}
+                    subtitle={translate('views.recents.empty.folderEmptySubtitle')}
                     action={{
                       icon: UploadSimple,
                       style: 'elevated',
-                      text: 'Upload files',
+                      text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
                   />
@@ -496,7 +504,7 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
   const { dispatch, currentFolderId, onDragAndDropEnd, items } = props;
   const countTotalItemsToUpload: number = files.length + countTotalItemsInIRoot(rootList);
 
-  if (countTotalItemsToUpload < 1000) {
+  if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly

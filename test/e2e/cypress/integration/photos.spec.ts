@@ -41,7 +41,9 @@ describe('Photos panel', () => {
     cy.visit('/app/photos');
 
     const photoId = photos_data.PHOTO1.photoId;
-    cy.get('[data-test=photos-item-' + photoId + ']').find('img').click({ force: true });
+    cy.get('[data-test=photos-item-' + photoId + ']')
+      .find('img')
+      .click({ force: true });
     cy.get('[data-test=photos-preview]').find('img').should('be.visible');
   });
 
@@ -53,11 +55,13 @@ describe('Photos panel', () => {
     cy.get('[data-test=photos-item-selector-' + photo1.photoId + ']').click({ force: true });
 
     cy.get('[data-test=photos-download-selected]').should('be.visible');
-    cy.get('[data-test=photos-download-selected]').click({ force: true }).then(() => {
-      cy.readFile(join(downloadsFolder, photo1.photoName), 'binary', { timeout: 15000 });
-      // TODO not only check if the photo had been downloaded (it should be compared with the desired photo)
-      // i've tried to compare files but it runs out of memory
-    });
+    cy.get('[data-test=photos-download-selected]')
+      .click({ force: true })
+      .then(() => {
+        cy.readFile(join(downloadsFolder, photo1.photoName), 'binary', { timeout: 15000 });
+        // TODO not only check if the photo had been downloaded (it should be compared with the desired photo)
+        // i've tried to compare files but it runs out of memory
+      });
   });
 
   it('CY-06_Should download multiple photos', () => {
@@ -72,10 +76,12 @@ describe('Photos panel', () => {
     }
 
     cy.get('[data-test=photos-download-selected]').should('be.visible');
-    cy.get('[data-test=photos-download-selected]').click({ force: true }).then(() => {
-      cy.readFile(join(downloadsFolder, resultZipName), 'binary', { timeout: 15000 });
-      // TODO not only check if the zip had been downloaded (it should be compared with the desired zip)
-      // i've tried to compare files but it runs out of memory
-    });
+    cy.get('[data-test=photos-download-selected]')
+      .click({ force: true })
+      .then(() => {
+        cy.readFile(join(downloadsFolder, resultZipName), 'binary', { timeout: 15000 });
+        // TODO not only check if the zip had been downloaded (it should be compared with the desired zip)
+        // i've tried to compare files but it runs out of memory
+      });
   });
 });
