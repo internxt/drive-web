@@ -4,8 +4,37 @@ import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useCallback } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
+
+const observerConfig = {
+  // How much of the page needs to be visible to consider page visible
+  threshold: 0,
+};
+
+function PageWithObserver({ pageNumber, setPageVisibility, ...otherProps }) {
+  const [page, setPage] = useState<Element>();
+
+  const onIntersectionChange = useCallback(
+    ([entry]) => {
+      setPageVisibility(pageNumber, entry.isIntersecting);
+    },
+    [pageNumber, setPageVisibility],
+  );
+
+  new IntersectionObserver(onIntersectionChange, observerConfig).observe(page);
+  return (
+    <Page
+      canvasRef={(entry: Element) => {
+        if (entry) {
+          setPage(entry as Element);
+        }
+      }}
+      pageNumber={pageNumber}
+      {...otherProps}
+    />
+  );
+}
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const fileUrl = URL.createObjectURL(props.blob);
@@ -46,6 +75,12 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     setNumPages(numPages);
   }
 
+  const setPageVisibility = useCallback((pageNumber, isIntersecting) => {
+    if (isIntersecting) {
+      setPageNumber(pageNumber + 1);
+    }
+  }, []);
+
   return (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
@@ -53,8 +88,9 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
           <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
             <div className="flex flex-col items-center space-y-3">
               {Array.from(new Array(numPages), (el, index) => (
-                <Page
+                <PageWithObserver
                   height={window.innerHeight * zoomRange[zoom]}
+                  setPageVisibility={setPageVisibility}
                   loading=""
                   key={`page_${index + 1}`}
                   pageNumber={index + 1}
