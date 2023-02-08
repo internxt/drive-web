@@ -2,8 +2,7 @@
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
-    "en": "English (US)",
-    "deviceLang": "device lang: {{lang}}"
+    "en": "English (US)"
   },
   "auth": {
     "email": "Email",
@@ -543,6 +542,7 @@
   },
   "shared-links": {
     "shared-links": "Shared links",
+    "view": "views",
     "list": {
       "link-content": "Link content",
       "shared": "Shared",

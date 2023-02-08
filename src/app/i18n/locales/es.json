@@ -1,9 +1,8 @@
 {
   "lang": {
-    "title": "Lenguaje",
+    "title": "Idioma",
     "es": "Español (ES)",
-    "en": "Inglés (US)",
-    "deviceLang": "Lenguaje del dispositivo: {{lang}}"
+    "en": "Inglés (US)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -543,6 +542,7 @@
   },
   "shared-links": {
     "shared-links": "Enlaces compartidos",
+    "view": "visitas",
     "list": {
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
