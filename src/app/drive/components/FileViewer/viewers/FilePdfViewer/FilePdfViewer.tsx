@@ -9,7 +9,7 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 const observerConfig = {
   // How much of the page needs to be visible to consider page visible
-  threshold: 0,
+  threshold: 0.5,
 };
 
 function PageWithObserver({ pageNumber, setPageVisibility, ...otherProps }) {
