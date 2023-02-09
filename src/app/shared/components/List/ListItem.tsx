@@ -34,19 +34,82 @@ export default function ListItem<T extends { id: string }>({
 }: ItemProps<T>): JSX.Element {
   const menuButtonRef = useRef<HTMLButtonElement | undefined>();
   const rootWrapperRef = useRef<HTMLDivElement | null>(null);
+  const menuItemsRef = useRef<HTMLDivElement | null>(null);
+
   const [openedFromRightClick, setOpenedFromRightClick] = useState(false);
   const [posX, setPosX] = useState(0);
   const [posY, setPosY] = useState(0);
 
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (
+      menuItemsRef.current &&
+      (menuItemsRef.current.offsetHeight !== dimensions.height ||
+        menuItemsRef.current?.offsetWidth !== dimensions.width)
+    )
+      setDimensions({
+        width: menuItemsRef.current.offsetWidth,
+        height: menuItemsRef.current.offsetHeight,
+      });
+  }, []);
+
   const handleContextMenuClick = (event) => {
     event.preventDefault();
-
+    const childWidth = menuItemsRef?.current?.offsetWidth || 180;
+    const childHeight = menuItemsRef?.current?.offsetHeight || 300;
     const wrapperRect = rootWrapperRef?.current?.getBoundingClientRect();
-    setPosX(event.clientX - (wrapperRect?.left || 0));
-    setPosY(event.clientY - (wrapperRect?.top || 0));
+    const { innerWidth, innerHeight } = window;
+    let x = event.clientX - (wrapperRect?.left || 0);
+    let y = event.clientY - (wrapperRect?.top || 0);
+
+    if (event.clientX + childWidth > innerWidth) {
+      x = x - childWidth;
+    }
+
+    if (event.clientY + childHeight > innerHeight) {
+      y = y - childHeight;
+    }
+    setPosX(x);
+    setPosY(y);
     setOpenedFromRightClick(true);
     menuButtonRef.current?.click();
   };
+
+  // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
+  // As the size of the list is not fixed we need to create an item equal to the list to be rendered
+  // at the same time as the view to get the size and make the necessary positional adjustments.
+  const MenuItemList = () => (
+    <div
+      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+      style={{
+        minWidth: '180px',
+        position: 'fixed',
+        top: -9999,
+        left: -9999,
+      }}
+      ref={menuItemsRef}
+    >
+      {menu?.map((option, i) => (
+        <div key={i}>
+          {option.separator ? (
+            <div className="my-0.5 flex w-full flex-row px-4">
+              <div className="h-px w-full bg-gray-10" />
+            </div>
+          ) : (
+            <div>
+              <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
+                <div className="flex flex-row items-center space-x-2">
+                  {option.icon && <option.icon size={20} />}
+                  <span>{option.name}</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <div
@@ -58,6 +121,7 @@ export default function ListItem<T extends { id: string }>({
         selected ? 'bg-primary bg-opacity-10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
     >
+      <MenuItemList />
       <div
         className={`absolute left-5 top-0 flex h-full w-0 flex-row items-center justify-start p-0 opacity-0 focus-within:opacity-100 group-hover:opacity-100 ${
           selected && 'opacity-100'
