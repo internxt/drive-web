@@ -23,7 +23,7 @@ export default function Auth(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const postMessage = (data: Record<string, unknown>) => {
-    window.top?.postMessage(data, 'https://internxt.com');
+    window.top?.postMessage(data, 'http://localhost:3001');
   };
 
   // FILTER MESSAGES
