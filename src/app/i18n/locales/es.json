@@ -1,4 +1,9 @@
 {
+  "valentinesBanner": {
+    "title": "¡Amor sin limites!",
+    "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
+    "cta": "Obtén la oferta"
+  },
   "lang": {
     "title": "Lenguaje",
     "es": "Español (ES)",
