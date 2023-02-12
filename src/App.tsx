@@ -30,7 +30,6 @@ import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 import { t } from 'i18next';
-import ValentinesBanner from 'app/banners/Valentinesbanner';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -150,7 +149,6 @@ class App extends Component<AppProps> {
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-            <ValentinesBanner />
 
             <FileViewerWrapper
               file={fileViewerItem}
