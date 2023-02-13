@@ -48,6 +48,9 @@ export default function LogIn(): JSX.Element {
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const [planId, setPlanId] = useState<string>();
+  const [mode, setMode] = useState<string>();
+  const [coupon, setCoupon] = useState<string>();
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoggingIn(true);
@@ -102,26 +105,57 @@ export default function LogIn(): JSX.Element {
   };
 
   useEffect(() => {
+    const params = new URLSearchParams(navigationService.history.location.search);
+    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
+    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
+    setCoupon(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
+  }, []);
+
+  useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      navigationService.push(AppView.Drive);
+
+      if (planId && mode) {
+        coupon
+          ? window.location.replace(
+              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
+            )
+          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+      } else {
+        navigationService.push(AppView.Drive);
+      }
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
     }
-  }, []);
+  }, [planId, mode]);
 
   useEffect(() => {
     if (isAuthenticated && token && user) {
       const mnemonic = localStorageService.get('xMnemonic');
-
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        navigationService.push(AppView.Drive);
+        if (planId && mode) {
+          coupon
+            ? window.location.replace(
+                `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
+              )
+            : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+        } else {
+          navigationService.push(AppView.Drive);
+        }
       }
     }
-  }, [isAuthenticated, token, user, registerCompleted]);
+  }, [isAuthenticated, token, user, registerCompleted, planId, mode]);
+
+  const getMobileLink = () => {
+    if (planId && mode) {
+      return coupon ? `/new?planId=${planId}&couponCode=${coupon}&mode=${mode}` : `/new?planId=${planId}&mode=${mode}`;
+    } else {
+      return '/new';
+    }
+  };
 
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
@@ -207,7 +241,7 @@ export default function LogIn(): JSX.Element {
         <span>
           {translate('auth.login.dontHaveAccount')}{' '}
           <Link
-            to="/new"
+            to={getMobileLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.login.createAccount')}
