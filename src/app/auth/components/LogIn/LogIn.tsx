@@ -105,15 +105,13 @@ export default function LogIn(): JSX.Element {
   };
 
   useEffect(() => {
-    const params = new URLSearchParams(navigationService.history.location.search);
-    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
-    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
-    setCoupon(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
-  }, []);
-
-  useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
+
+      const params = new URLSearchParams(navigationService.history.location.search);
+      const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
+      const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
+      const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
 
       if (planId && mode) {
         coupon
@@ -128,14 +126,19 @@ export default function LogIn(): JSX.Element {
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
     }
-  }, [planId, mode]);
+  }, []);
 
   useEffect(() => {
     if (isAuthenticated && token && user) {
       const mnemonic = localStorageService.get('xMnemonic');
+
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
+        const params = new URLSearchParams(navigationService.history.location.search);
+        const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
+        const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
+        const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
         if (planId && mode) {
           coupon
             ? window.location.replace(
@@ -147,7 +150,14 @@ export default function LogIn(): JSX.Element {
         }
       }
     }
-  }, [isAuthenticated, token, user, registerCompleted, planId, mode]);
+  }, [isAuthenticated, token, user, registerCompleted]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(navigationService.history.location.search);
+    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
+    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
+    setCoupon(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
+  });
 
   const getMobileLink = () => {
     if (planId && mode) {
