@@ -149,6 +149,14 @@ export default function LogIn(): JSX.Element {
     }
   }, [isAuthenticated, token, user, registerCompleted, planId, mode]);
 
+  const getMobileLink = () => {
+    if (planId && mode) {
+      return coupon ? `/new?planId=${planId}&couponCode=${coupon}&mode=${mode}` : `/new?planId=${planId}&mode=${mode}`;
+    } else {
+      return '/new';
+    }
+  };
+
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
@@ -233,7 +241,7 @@ export default function LogIn(): JSX.Element {
         <span>
           {translate('auth.login.dontHaveAccount')}{' '}
           <Link
-            to="/new"
+            to={getMobileLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.login.createAccount')}
