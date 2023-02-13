@@ -99,6 +99,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
               <Grid
                 selected={photosState.selectedItems}
                 photos={photosState.items}
+                isMorePhotos={photosState.thereIsMore}
                 onUserScrolledToTheEnd={fetchPhotos}
               />
             )}
@@ -161,64 +162,69 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 function Grid({
   photos,
   selected,
+  isMorePhotos,
   onUserScrolledToTheEnd,
 }: {
   photos: SerializablePhoto[];
   selected: PhotoId[];
+  isMorePhotos: boolean;
   onUserScrolledToTheEnd: () => void;
 }) {
   const dispatch = useDispatch();
 
-  const listRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const options = {};
-
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-
-      if (entry.isIntersecting) {
+    const onScroll = (entries) => {
+      const element = entries[0];
+      if (element.isIntersecting) {
         onUserScrolledToTheEnd();
       }
-    }, options);
+    };
 
-    const lastChild = listRef.current?.lastElementChild;
+    const observer = new IntersectionObserver(onScroll, {
+      rootMargin: '200px',
+    });
 
-    if (lastChild) observer.observe(lastChild as Element);
+    elementRef.current && observer.observe(elementRef.current as Element);
 
     return () => observer.disconnect();
   }, [photos]);
 
   return (
-    <div
-      className="grid gap-1 overflow-y-auto px-5"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
-      ref={listRef}
-      data-test="photos-grid"
-    >
-      {photos.map((photo, i) => {
-        const isSelected = selected.some((el) => photo.id === el);
-        const thereAreSelected = selected.length > 0;
-        function onSelect() {
-          dispatch(photosSlice.actions.toggleSelect(photo.id));
-        }
-        return (
-          <PhotoItem
-            onClick={() => {
-              if (thereAreSelected) {
-                onSelect();
-              } else {
-                dispatch(photosSlice.actions.setPreviewIndex(i));
-              }
-            }}
-            onSelect={onSelect}
-            selected={isSelected}
-            photo={photo}
-            key={photo.id}
-            photoId={photo.id}
-          />
-        );
-      })}
+    <div className="overflow-y-auto">
+      <div
+        className="grid gap-1 px-5"
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
+        data-test="photos-grid"
+      >
+        {photos.map((photo, i) => {
+          const isSelected = selected.some((el) => photo.id === el);
+          const thereAreSelected = selected.length > 0;
+          function onSelect() {
+            dispatch(photosSlice.actions.toggleSelect(photo.id));
+          }
+          return (
+            <PhotoItem
+              onClick={() => {
+                if (thereAreSelected) {
+                  onSelect();
+                } else {
+                  dispatch(photosSlice.actions.setPreviewIndex(i));
+                }
+              }}
+              onSelect={onSelect}
+              selected={isSelected}
+              photo={photo}
+              key={photo.id}
+              photoId={photo.id}
+            />
+          );
+        })}
+      </div>
+      <div className="mt-1" ref={elementRef}>
+        {isMorePhotos && <Skeleton />}
+      </div>
     </div>
   );
 }
