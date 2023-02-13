@@ -56,9 +56,8 @@ const ValentinesBanner = () => {
               <button
                 className="focus:outline-none relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
                 onClick={() => {
-                  window.open(
-                    'https://internxt.com/?utm_source=driveweb&utm_medium=banner&utm_campaign=valentines',
-                    '_blank',
+                  window.location.replace(
+                    'https://drive.internxt.com/checkout-plan?planId=plan_FkTXxEg3GZW0pg&couponCode=G8Ti4z1k&mode=subscription',
                   );
                 }}
               >
