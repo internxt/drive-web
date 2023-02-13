@@ -57,7 +57,9 @@ function SignUp(props: SignUpProps): JSX.Element {
     },
   });
   const dispatch = useAppDispatch();
-
+  const [planId, setPlanId] = useState<string>();
+  const [mode, setMode] = useState<string>();
+  const [coupon, setCouponCode] = useState<string>();
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
@@ -82,6 +84,13 @@ function SignUp(props: SignUpProps): JSX.Element {
   useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(navigationService.history.location.search);
+    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
+    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
+    setCouponCode(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
+  }, []);
 
   function onChangeHandler(input: string) {
     if (input.length > MAX_PASSWORD_LENGTH) {
@@ -173,8 +182,15 @@ function SignUp(props: SignUpProps): JSX.Element {
       //   divider: encodeURIComponent('|'),
       //   pagename: encodeURIComponent('New'),
       // });
-
-      navigationService.push(AppView.Drive);
+      if (planId && mode) {
+        coupon
+          ? window.location.replace(
+              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
+            )
+          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+      } else {
+        navigationService.push(AppView.Drive);
+      }
     } catch (err: unknown) {
       console.log(err);
       setIsLoading(false);
@@ -196,6 +212,16 @@ function SignUp(props: SignUpProps): JSX.Element {
   //     });
   //   });
   // }
+
+  const getMobileLink = () => {
+    if (planId && mode) {
+      return coupon
+        ? `/login?planId=${planId}&couponCode=${coupon}&mode=${mode}`
+        : `/login?planId=${planId}&mode=${mode}`;
+    } else {
+      return '/login';
+    }
+  };
 
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
@@ -263,7 +289,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         <span className="select-none text-sm text-gray-80">
           {translate('auth.signup.haveAccount')}{' '}
           <Link
-            to="/login"
+            to={getMobileLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.signup.login')}
