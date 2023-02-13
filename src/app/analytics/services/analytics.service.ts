@@ -7,7 +7,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrack } from '../types';
+import { AnalyticsTrackNames } from '../types';
 import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,8 +23,32 @@ export const PATH_NAMES = {
   '/app': 'App',
 };
 
-export function trackFileDownloadCompleted(properties): void {
-  trackData(properties, 'file_downloaded');
+export function trackFileDownloadStarted(properties: {
+  file_id: number;
+  size: number;
+  extension: string;
+  parent_folder_id: number;
+}): void {
+  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadStarted, properties);
+}
+
+export function trackFileDownloadCompleted(properties: {
+  parent_folder_id: number;
+  file_id: number;
+  size: number;
+  extension: string;
+}): void {
+  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadCompleted, properties);
+}
+
+export function trackFileDownloadError(properties: {
+  parent_folder_id: number;
+  file_id: number;
+  size: number;
+  extension: string;
+  error_message: string;
+}): void {
+  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadError, properties);
 }
 
 function trackData(properties, actionName) {
@@ -94,16 +118,16 @@ export function identifyPlan(newValue: number) {
 }
 
 export function trackSignOut() {
-  /* window.analytics.track(AnalyticsTrack.SignOut);
+  /* window.analytics.track(AnalyticsTrackNames.SignOut);
   window.analytics.reset(); */
 }
 
 export function trackSignIn(payload: { email: string; userId: string }): void {
-  // window.analytics.track(AnalyticsTrack.SignIn, payload);
+  // window.analytics.track(AnalyticsTrackNames.SignIn, payload);
 }
 
 export function signInAttempted(email: string, error: string | Error): void {
-  /* window.analytics.track(AnalyticsTrack.SignInAttempted, {
+  /* window.analytics.track(AnalyticsTrackNames.SignInAttempted, {
     status: 'error',
     msg: error ? error : 'Login error',
     email: email,
@@ -125,12 +149,12 @@ export function trackSignUp(payload: {
   userId: string;
 }): void {
   /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrack.SignUp, payload.properties); */
+  window.analytics.track(AnalyticsTrackNames.SignUp, payload.properties); */
   trackSignUpServer(payload);
 }
 
 export function trackUserEnterPayments(priceId: string): void {
-  //  window.analytics.track(AnalyticsTrack.UserEnterPayments, { price_id: priceId });
+  //  window.analytics.track(AnalyticsTrackNames.UserEnterPayments, { price_id: priceId });
 }
 
 export function trackPlanSubscriptionSelected(payload: {
@@ -140,49 +164,19 @@ export function trackPlanSubscriptionSelected(payload: {
   plan_length: number;
   email: string;
 }): void {
-  // window.analytics.track(AnalyticsTrack.PlanSubscriptionSelected, payload);
+  // window.analytics.track(AnalyticsTrackNames.PlanSubscriptionSelected, payload);
 }
 
 export function trackFolderCreated(payload: { email: string; platform: DevicePlatform }): void {
-  // window.analytics.track(AnalyticsTrack.FolderCreated, payload);
+  // window.analytics.track(AnalyticsTrackNames.FolderCreated, payload);
 }
 
 export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
-  // window.analytics.track(AnalyticsTrack.FolderRename, payload);
+  // window.analytics.track(AnalyticsTrackNames.FolderRename, payload);
 }
 
 export function trackFileRename(payload: { email: string; file_id: number | string; platform: DevicePlatform }): void {
-  // window.analytics.track(AnalyticsTrack.FileRename, payload);
-}
-
-export function trackFileDownloadStart(payload: {
-  file_id: string;
-  file_name: string;
-  file_size: number;
-  file_type: string;
-  email: string;
-  folder_id: number;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileDownloadStart, payload);
-}
-
-export function trackFileDownloadError(payload: {
-  file_id: string;
-  email: string;
-  msg: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileDownloadError, payload);
-}
-
-export function trackFileDownloadFinished(payload: {
-  file_id: string;
-  file_size: number;
-  email: string;
-  platform: DevicePlatform;
-}): void {
-  // window.analytics.track(AnalyticsTrack.FileDownloadFinished, payload);
+  // window.analytics.track(AnalyticsTrackNames.FileRename, payload);
 }
 
 export function trackFileUploadStart(payload: {
@@ -192,7 +186,7 @@ export function trackFileUploadStart(payload: {
   email: string;
   platform: DevicePlatform;
 }): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadStart, payload);
+  // window.analytics.track(AnalyticsTrackNames.FileUploadStart, payload);
 }
 
 export function trackFileUploadError(payload: {
@@ -203,7 +197,7 @@ export function trackFileUploadError(payload: {
   msg: string;
   platform: DevicePlatform;
 }): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadError, payload);
+  // window.analytics.track(AnalyticsTrackNames.FileUploadError, payload);
 }
 
 export function trackFileUploadFinished(payload: {
@@ -212,7 +206,7 @@ export function trackFileUploadFinished(payload: {
   file_size: number;
   email: string;
 }): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadFinished, payload);
+  // window.analytics.track(AnalyticsTrackNames.FileUploadFinished, payload);
 }
 
 export function trackMoveItem(
@@ -230,15 +224,15 @@ export function trackDeleteItem(
 }
 
 export function trackOpenWelcomeFile(): void {
-  // window.analytics.track(AnalyticsTrack.OpenWelcomeFile);
+  // window.analytics.track(AnalyticsTrackNames.OpenWelcomeFile);
 }
 
 export function trackDeleteWelcomeFile(): void {
-  // window.analytics.track(AnalyticsTrack.DeleteWelcomeFile);
+  // window.analytics.track(AnalyticsTrackNames.DeleteWelcomeFile);
 }
 
 export function trackFileShare(): void {
-  // window.analytics.track(AnalyticsTrack.FileShare);
+  // window.analytics.track(AnalyticsTrackNames.FileShare);
 }
 
 export function identify(user: UserSettings, email: string): void {
@@ -252,7 +246,7 @@ export function identify(user: UserSettings, email: string): void {
 }
 
 export function trackUserResetPasswordRequest(): void {
-  // window.analytics.track(AnalyticsTrack.UserResetPasswordRequest);
+  // window.analytics.track(AnalyticsTrackNames.UserResetPasswordRequest);
 }
 
 export function track(email: string, status: 'error' | 'success'): void {
@@ -263,11 +257,11 @@ export function track(email: string, status: 'error' | 'success'): void {
 }
 
 export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {
-  // window.analytics.track(AnalyticsTrack.FileUploadBucketIdUndefined, payload);
+  // window.analytics.track(AnalyticsTrackNames.FileUploadBucketIdUndefined, payload);
 }
 
 export function trackShareLinkBucketIdUndefined(payload: { email: string }): void {
-  // window.analytics.track(AnalyticsTrack.ShareLinkBucketIdUndefined, payload);
+  // window.analytics.track(AnalyticsTrackNames.ShareLinkBucketIdUndefined, payload);
 }
 
 export async function trackPaymentConversion() {
@@ -295,7 +289,7 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
-    window.rudderanalytics.track(AnalyticsTrack.PaymentConversionEvent, {
+    window.rudderanalytics.track(AnalyticsTrackNames.PaymentConversionEvent, {
       price_id: metadata.priceId,
       product: metadata.product,
       email: username,
@@ -411,9 +405,8 @@ const analyticsService = {
   trackFolderCreated,
   trackFolderRename,
   trackFileRename,
-  trackFileDownloadStart,
+  trackFileDownloadStarted,
   trackFileDownloadError,
-  trackFileDownloadFinished,
   trackFileUploadStart,
   trackFileUploadError,
   trackFileUploadFinished,
