@@ -1,4 +1,9 @@
 {
+  "valentinesBanner": {
+    "title": "Love without limits!",
+    "subtitle": "Get 90% off our 2TB plan with code VDAY",
+    "cta": "Get the deal"
+  },
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
