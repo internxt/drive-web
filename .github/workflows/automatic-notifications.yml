@@ -1,0 +1,34 @@
+name: Test new release send notification to slack
+on:
+  push:
+#    tags:
+#    - '*'
+    branches: ["master"]
+jobs:
+  get-latest-tag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get latest tag
+        id: latest-tag
+        uses: actions/github-script@v4
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const { data: tags } = await github.repos.listTags({
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            });
+            const latestTag = tags[0].name;
+            console.log(latestTag);
+            core.setOutput('latest_tag', latestTag);
+      - name: Slack Notification
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          # This data can be any valid JSON from a previous step in the GitHub Action
+          payload: |
+            {
+              "Version": "${{ steps.latest-tag.outputs.latest_tag }}",
+              "Repository": "${{ github.event.repository.name }}"
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }} #We need this secret to be created, to send to the release channel
