@@ -1,4 +1,3 @@
-import React, { useEffect, useState } from 'react';
 import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from 'phosphor-react';
 import { connect } from 'react-redux';
 
@@ -11,7 +10,6 @@ import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
 import { planSelectors } from 'app/store/slices/plan';
-import screenService from 'app/core/services/screen.service';
 
 import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
@@ -29,25 +27,7 @@ interface SidenavProps {
 }
 
 const Sidenav = (props: SidenavProps) => {
-  const [state, setState] = useState({
-    isLgScreen: screenService.isLg(),
-  });
-
   const { translate } = useTranslationContext();
-
-  useEffect(() => {
-    window.addEventListener('resize', onWindowResized);
-
-    return () => {
-      window.removeEventListener('resize', onWindowResized);
-    };
-  }, []);
-
-  const onWindowResized = () => {
-    setState({
-      isLgScreen: screenService.isLg(),
-    });
-  };
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -75,12 +55,12 @@ const Sidenav = (props: SidenavProps) => {
   return (
     <div className="flex w-64 flex-col">
       <div
-        className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-neutral-30 pl-8"
+        className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8"
         onClick={onLogoClicked}
       >
         <InternxtLogo className="h-auto w-28" />
       </div>
-      <div className="flex flex-grow flex-col border-r border-neutral-30 px-2">
+      <div className="flex flex-grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
           <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
           <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />

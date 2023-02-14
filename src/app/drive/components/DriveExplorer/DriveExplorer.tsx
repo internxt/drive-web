@@ -1,4 +1,4 @@
-import { createRef, ReactNode, forwardRef, useState, RefObject, useEffect } from 'react';
+import { createRef, useState, RefObject, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Trash,
@@ -36,7 +36,7 @@ import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/Delet
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
-import BaseButton from '../../../shared/components/forms/BaseButton';
+import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
@@ -49,7 +49,6 @@ import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
-import Dropdown from 'app/shared/components/Dropdown';
 import { useAppDispatch } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -61,6 +60,7 @@ import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContaine
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
 import ValentinesBanner from 'app/banners/Valentinesbanner';
+import { Menu, Transition } from '@headlessui/react';
 
 const PAGINATION_LIMIT = 100;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -184,15 +184,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     dispatch(storageActions.setViewMode(setViewMode));
   };
 
-  const onCreateFolderButtonClicked = () => {
+  const onCreateFolderButtonClicked = (): void => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const onBulkDeleteButtonClicked = () => {
+  const onBulkDeleteButtonClicked = (): void => {
     moveItemsToTrash(selectedItems, translate as TFunction);
   };
 
-  const onDeletePermanentlyButtonClicked = () => {
+  const onDeletePermanentlyButtonClicked = (): void => {
     if (selectedItems.length > 0) {
       dispatch(storageActions.setItemsToDelete(selectedItems));
       dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
@@ -201,13 +201,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   };
 
-  const onRecoverButtonClicked = () => {
+  const onRecoverButtonClicked = (): void => {
     //Recover selected (you can select all) files or folders from Trash
     dispatch(storageActions.setItemsToMove(selectedItems));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
-  const onSelectedOneItemShare = (e) => {
+  const onSelectedOneItemShare = (e): void => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
       dispatch(
@@ -232,7 +232,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const getLimitedItems = () => items.slice(0, fakePaginationLimit);
 
-  const onSelectedOneItemRename = (e) => {
+  const onSelectedOneItemRename = (e): void => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
@@ -267,18 +267,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
-  const separatorH = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
-    return (
-      <div
-        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
-        onClick={onClick}
-      >
-        {children}
-      </div>
-    );
-  });
 
   const EmptyTrash = () => (
     <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
@@ -306,78 +294,119 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
             {!isTrash && (
               <div className="flex flex-shrink-0 flex-row">
-                <Dropdown
-                  classButton={
-                    'primary base-button flex items-center justify-center rounded-lg py-1.5 text-base transition-all duration-75 ease-in-out'
-                  }
-                  openDirection={'right'}
-                  classMenuItems={'right-0 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 mt-1'}
-                  menuItems={[
-                    <MenuItem onClick={onCreateFolderButtonClicked}>
-                      <FolderSimplePlus size={20} />
-                      <p className="ml-3">{translate('actions.upload.folder')}</p>
-                    </MenuItem>,
-                    separatorH,
-                    <MenuItem onClick={onUploadFileButtonClicked}>
-                      <FileArrowUp size={20} />
-                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-                    </MenuItem>,
-                    <MenuItem onClick={onUploadFolderButtonClicked}>
-                      <UploadSimple size={20} />
-                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
-                    </MenuItem>,
-                  ]}
-                >
-                  <div className="flex flex-row items-center space-x-2.5">
-                    <span className="font-medium">{translate('actions.upload.new')}</span>
-                    <div className="flex items-center space-x-0.5">
-                      <Plus weight="bold" className="h-4 w-4" />
-                      <CaretDown weight="fill" className="h-3 w-3" />
-                    </div>
-                  </div>
-                </Dropdown>
+                <Menu as="div" className="relative">
+                  <Menu.Button>
+                    <Button variant="primary">
+                      <div className="flex items-center space-x-2.5">
+                        <span className="font-medium">{translate('actions.upload.new')}</span>
+                        <div className="flex items-center space-x-0.5">
+                          <Plus weight="bold" className="h-4 w-4" />
+                          <CaretDown weight="fill" className="h-3 w-3" />
+                        </div>
+                      </div>
+                    </Button>
+                  </Menu.Button>
+                  <Transition
+                    className="absolute right-0"
+                    enter="transform transition origin-top-right duration-100 ease-out"
+                    enterFrom="scale-95 opacity-0"
+                    enterTo="scale-100 opacity-100"
+                    leave="transform transition origin-top-right duration-100 ease-out"
+                    leaveFrom="scale-95 opacity-100"
+                    leaveTo="scale-100 opacity-0"
+                  >
+                    <Menu.Items
+                      className={
+                        'outline-none absolute right-0 mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                      }
+                    >
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onCreateFolderButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <FolderSimplePlus size={20} />
+                            <p>{translate('actions.upload.folder')}</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <div className="my-px mx-3 flex border-t border-gray-5" />
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onUploadFileButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <FileArrowUp size={20} />
+                            <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                      <Menu.Item>
+                        {({ active }) => (
+                          <div
+                            onClick={onUploadFolderButtonClicked}
+                            className={`${
+                              active && 'bg-gray-5'
+                            } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                          >
+                            <UploadSimple size={20} />
+                            <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+                          </div>
+                        )}
+                      </Menu.Item>
+                    </Menu.Items>
+                  </Transition>
+                </Menu>
+
                 {hasAnyItemSelected && (
                   <>
                     {separatorV}
-                    <BaseButton className="tertiary square w-8" onClick={onDownloadButtonClicked}>
+                    <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
                       <DownloadSimple className="h-6 w-6" />
-                    </BaseButton>
+                    </Button>
                     {selectedItems.length === 1 && (
                       <>
                         {isSelectedItemShared && (
-                          <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemShare}>
+                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
                             <Link className="h-6 w-6" />
-                          </BaseButton>
+                          </Button>
                         )}
-                        <BaseButton className="tertiary square w-8" onClick={onSelectedOneItemRename}>
+                        <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
                           <PencilSimple className="h-6 w-6" />
-                        </BaseButton>
+                        </Button>
                       </>
                     )}
-                    <BaseButton className="tertiary square w-8" onClick={onBulkDeleteButtonClicked}>
+                    <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
                       <Trash className="h-6 w-6" />
-                    </BaseButton>
+                    </Button>
                   </>
                 )}
                 {separatorV}
-                <BaseButton className="tertiary square w-8" onClick={onViewModeButtonClicked}>
+                <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
                   {viewModesIcons[viewMode]}
-                </BaseButton>
+                </Button>
               </div>
             )}
             {isTrash && hasAnyItemSelected && (
-              <BaseButton className="tertiary square w-8" onClick={onRecoverButtonClicked}>
+              <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
                 <ClockCounterClockwise className="h-6 w-6" />
-              </BaseButton>
+              </Button>
             )}
             {isTrash && (
-              <BaseButton
-                className="tertiary square w-8"
+              <Button
+                variant="tertiary"
+                className="aspect-square"
                 disabled={!hasItems}
                 onClick={onDeletePermanentlyButtonClicked}
               >
                 <Trash className="h-5 w-5" />
-              </BaseButton>
+              </Button>
             )}
           </div>
 

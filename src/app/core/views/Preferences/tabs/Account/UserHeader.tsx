@@ -49,7 +49,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
       <Dropdown
         options={dropdownOptions}
         classMenuItems={
-          '-left-6 mt-22 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'
+          '-left-6 mt-1 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'
         }
         openDirection={'right'}
       >

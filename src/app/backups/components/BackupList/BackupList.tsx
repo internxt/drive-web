@@ -38,8 +38,8 @@ const BackupList = (props: Props): JSX.Element => {
   return (
     <div className="flex h-1 flex-grow flex-col bg-white">
       <div
-        className="files-list \ flex border-b border-neutral-30
-      bg-white py-3 text-sm font-semibold text-neutral-500"
+        className="files-list \ flex border-b border-gray-5
+      bg-white py-3 text-sm font-semibold"
       >
         <div className="box-content flex w-0.5/12 items-center justify-start pl-3"></div>
         <div className="flex flex-grow items-center px-3">{translate('backups.backups-list.columns.name')}</div>
