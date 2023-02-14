@@ -3,6 +3,7 @@ import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
 import errorService from 'app/core/services/error.service';
 
+import Analytics from '../Analytics';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
@@ -11,6 +12,8 @@ import { AnalyticsTrackNames } from '../types';
 import { getCookie, setCookie } from '../utils';
 import queryString from 'query-string';
 import { v4 as uuidv4 } from 'uuid';
+
+const analytics: Analytics = Analytics.getInstance();
 
 export const PATH_NAMES = {
   '/new': 'Register',
@@ -29,7 +32,7 @@ export function trackFileDownloadStarted(properties: {
   extension: string;
   parent_folder_id: number;
 }): void {
-  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadStarted, properties);
+  analytics.track(AnalyticsTrackNames.FileDownloadStarted, properties);
 }
 
 export function trackFileDownloadCompleted(properties: {
@@ -38,7 +41,7 @@ export function trackFileDownloadCompleted(properties: {
   size: number;
   extension: string;
 }): void {
-  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadCompleted, properties);
+  analytics.track(AnalyticsTrackNames.FileDownloadCompleted, properties);
 }
 
 export function trackFileDownloadError(properties: {
@@ -48,7 +51,7 @@ export function trackFileDownloadError(properties: {
   extension: string;
   error_message: string;
 }): void {
-  window.rudderanalytics.track(AnalyticsTrackNames.FileDownloadError, properties);
+  analytics.track(AnalyticsTrackNames.FileDownloadError, properties);
 }
 
 function trackData(properties, actionName) {
