@@ -37,15 +37,25 @@ interface FileViewerProps {
   downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
   progress?: number;
+  setCurrentFile?: (file: DriveFileData) => void;
 }
 
 export interface FormatFileViewerProps {
   blob: Blob;
+  getFile: (direction: number) => void;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: FileViewerProps): JSX.Element => {
+const FileViewer = ({
+  file,
+  onClose,
+  onDownload,
+  downloader,
+  setCurrentFile,
+  show,
+  progress,
+}: FileViewerProps): JSX.Element => {
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const { translate } = useTranslationContext();
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
@@ -65,6 +75,20 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
   const [blob, setBlob] = useState<Blob | null>(null);
+
+  // Get all files in the current folder and find the current file to display the file
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const getAllFiles = currentItemsFolder?.filter((item) => !item.isFolder);
+  console.log('getAllFiles', getAllFiles[getAllFiles.indexOf(file)]);
+  function getFile(direction: 1 | -1) {
+    const fileIndex = getAllFiles?.findIndex((item) => item === file);
+    if (direction === 1) {
+      setCurrentFile?.(getAllFiles[fileIndex + 1]);
+      // console.log('file', getAllFiles[fileIndex + 1]);
+    } else {
+      setCurrentFile?.(getAllFiles[fileIndex - 1]);
+    }
+  }
 
   const dispatch = useAppDispatch();
   const isTeam = useAppSelector(sessionSelectors.isTeam);
@@ -151,7 +175,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
           dateTwo: fileToView?.updatedAt as string,
         });
 
-    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
+    if (fileToView && databaseBlob?.source && isDatabaseBlobOlder) {
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
@@ -166,6 +190,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
         if (file && isOlder) {
+          console.log('file in useEffect', file);
           downloader(abortController)
             .then(async (fileBlob) => {
               setBlob(fileBlob);
@@ -191,7 +216,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
     } else if (!show) {
       setBlob(null);
     }
-  }, [show]);
+  }, [show, file]);
 
   return (
     <Transition
@@ -226,7 +251,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
               <div onClick={(e) => e.stopPropagation()} className="">
                 {blob ? (
                   <Suspense fallback={<div></div>}>
-                    <Viewer blob={blob} />
+                    <Viewer blob={blob} getFile={getFile} />
                   </Suspense>
                 ) : (
                   <>

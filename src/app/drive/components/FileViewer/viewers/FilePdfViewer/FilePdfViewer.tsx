@@ -4,11 +4,11 @@ import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
 import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
-  const fileUrl = URL.createObjectURL(props.blob);
+  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const isFirstPage = pageNumber === 1;
@@ -16,14 +16,16 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const [zoom, setZoom] = useState(0);
   const zoomRange = [0.85, 1, 1.5, 2, 3];
 
+  useEffect(() => {
+    setFileUrl(URL.createObjectURL(props.blob));
+  }, [props.blob]);
+
   function nextPage() {
-    setPageNumber(pageNumber + 1);
-    resetZoom();
+    props.getFile(1);
   }
 
   function previousPage() {
-    setPageNumber(pageNumber - 1);
-    resetZoom();
+    props.getFile(-1);
   }
 
   function increaseZoom() {
@@ -70,7 +72,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
               <div className="flex flex-row items-center justify-center">
                 <button
                   onClick={previousPage}
-                  disabled={isFirstPage}
+                  // disabled={isFirstPage}
                   className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
@@ -88,7 +90,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
                 <button
                   onClick={nextPage}
-                  disabled={isLastPage}
+                  // disabled={isLastPage}
                   className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
