@@ -1,10 +1,5 @@
-import UilArrowLeft from '@iconscout/react-unicons/icons/uil-angle-left-b';
-import UilArrowRight from '@iconscout/react-unicons/icons/uil-angle-right-b';
-import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
-import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
-
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment, useCallback, useRef, useEffect } from 'react';
+import { useState, Fragment, useRef, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from 'phosphor-react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -56,13 +51,14 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
     />
   );
 };
+const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const fileUrl = useRef(URL.createObjectURL(props.blob)).current;
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
@@ -84,7 +80,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
         <div>
-          <Document style={{ backgroundColor: 'red' }} file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
+          <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
             <div className="flex flex-col items-center space-y-3">
               {Array.from(new Array(numPages), (el, index) => (
                 <PageWithObserver
