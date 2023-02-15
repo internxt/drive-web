@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import i18n from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
@@ -11,7 +10,7 @@ import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const CreateFolderDialog = (): JSX.Element => {
+const EditFolderNameDialog = (): JSX.Element => {
   const { translate } = useTranslationContext();
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
@@ -111,4 +110,4 @@ const CreateFolderDialog = (): JSX.Element => {
   );
 };
 
-export default CreateFolderDialog;
+export default EditFolderNameDialog;

@@ -6,12 +6,12 @@ import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import recoverItemsFromTrash from './recover-items-from-trash';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
-import { TFunction } from 'i18next';
+import { t } from 'i18next';
 import errorService from '../../app/core/services/error.service';
 
 const MAX_ITEMS_TO_DELETE = 50;
 
-const moveItemsToTrash = async (itemsToTrash: DriveItemData[], t: TFunction): Promise<void> => {
+const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,

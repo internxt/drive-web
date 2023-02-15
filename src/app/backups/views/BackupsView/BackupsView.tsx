@@ -26,36 +26,51 @@ export default function BackupsView(): JSX.Element {
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
-  const [selectedDevices, setSelectedDevices] = useState<Device | DriveFolderData>();
+  const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
 
-  const onDeviceSelected = (target: Device | DriveFolderData) => {
+  const onDeviceClicked = (target: Device | DriveFolderData) => {
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
     }
   };
+
   const goBack = () => {
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
-  const onOpenDeleteModal = (target: Device | DriveFolderData) => {
-    setSelectedDevices(target);
+  const onOpenDeleteModal = (targets: (Device | DriveFolderData)[]) => {
+    setSelectedDevices((values) => [...values, ...targets]);
     setIsDeleteModalOpen(true);
   };
 
+  const onDevicesSelected = (changes: { device: Device | DriveFolderData; isSelected: boolean }[]) => {
+    let updatedSelectedItems = selectedDevices;
+    for (const change of changes) {
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
+      if (change.isSelected) {
+        updatedSelectedItems = [...updatedSelectedItems, change.device];
+      }
+    }
+    setSelectedDevices(updatedSelectedItems);
+  };
+
   const onConfirmDelete = async () => {
-    if (selectedDevices && 'mac' in selectedDevices) dispatch(backupsThunks.deleteDeviceThunk(selectedDevices));
-    else {
-      await dispatch(deleteItemsThunk([selectedDevices as DriveItemData])).unwrap();
-      await deleteBackupDeviceAsFolder(selectedDevices as DriveWebFolderData);
-      dispatch(backupsThunks.fetchDevicesThunk());
+    for (const selectedDevice of selectedDevices) {
+      if (selectedDevice && 'mac' in selectedDevice) {
+        dispatch(backupsThunks.deleteDeviceThunk(selectedDevice));
+      } else {
+        await dispatch(deleteItemsThunk([selectedDevice as DriveItemData])).unwrap();
+        await deleteBackupDeviceAsFolder(selectedDevice as DriveWebFolderData);
+        dispatch(backupsThunks.fetchDevicesThunk());
+      }
     }
     onCloseDeleteModal();
   };
 
   const onCloseDeleteModal = () => {
     setIsDeleteModalOpen(false);
-    setSelectedDevices(undefined);
+    setSelectedDevices([]);
   };
 
   useEffect(() => {
@@ -116,8 +131,10 @@ export default function BackupsView(): JSX.Element {
       <DeviceList
         isLoading={isLoadingDevices}
         items={devices}
-        onDeviceSelected={onDeviceSelected}
+        onDeviceSelected={onDevicesSelected}
         onDeviceDeleted={onOpenDeleteModal}
+        onDeviceClicked={onDeviceClicked}
+        selectedItems={selectedDevices}
       />
     );
   } else if (currentDevice && 'mac' in currentDevice) {

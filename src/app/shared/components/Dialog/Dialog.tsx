@@ -39,7 +39,7 @@ export default function Dialog({
   }, [isOpen]);
 
   return (
-    <Transition show={isOpen}>
+    <Transition show={isOpen} className="z-50">
       <Transition.Child
         enter="ease-out duration-150"
         enterFrom="opacity-0"

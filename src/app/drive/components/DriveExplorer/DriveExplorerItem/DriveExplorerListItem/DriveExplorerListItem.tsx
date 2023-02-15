@@ -68,24 +68,26 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
     return (
       <Fragment>
-        {!item.deleted && <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
-          <input
-            className="dense no-ring rect select-text border border-white"
-            onClick={(e) => e.stopPropagation()}
-            onDoubleClick={(e) => e.stopPropagation()}
-            ref={nameInputRef}
-            type="text"
-            value={dirtyName}
-            placeholder="Name"
-            onChange={onNameChanged}
-            onBlur={onNameBlurred}
-            onKeyDown={onNameEnterKeyDown}
-            autoFocus
-            name="fileName"
-          />
-          <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
-        </div>}
-        <div className="file-list-item-name flex items-center max-w-full">
+        {!item.deleted && (
+          <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
+            <input
+              className="dense no-ring rect select-text border border-white"
+              onClick={(e) => e.stopPropagation()}
+              onDoubleClick={(e) => e.stopPropagation()}
+              ref={nameInputRef}
+              type="text"
+              value={dirtyName}
+              placeholder="Name"
+              onChange={onNameChanged}
+              onBlur={onNameBlurred}
+              onKeyDown={onNameEnterKeyDown}
+              autoFocus
+              name="fileName"
+            />
+            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+          </div>
+        )}
+        <div className="file-list-item-name flex max-w-full items-center">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
@@ -94,7 +96,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           >
             {items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && !item.deleted && <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />}
+          {!isEditingName && !item.deleted && (
+            <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
+          )}
         </div>
       </Fragment>
     );
@@ -102,29 +106,26 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const itemIsShared = item.shares?.length || 0 > 0;
 
   const template = (
-
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
-      onContextMenu={onItemRightClicked}
+      // onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={!item.deleted || !item.isFolder ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-
       {/* SELECTION */}
-      <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
+      {/* <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
         <input
           onClick={(e) => e.stopPropagation()}
           type="checkbox"
           checked={isItemSelected(item)}
           onChange={onSelectCheckboxChanged}
         />
-      </div>
+      </div> */}
 
       {/* ICON */}
-      <div className="w-1/12 flex items-center px-3 box-content">
-
-        <div className="h-10 w-10 flex justify-center filter drop-shadow-soft">
+      <div className="box-content flex w-1/12 items-center px-3">
+        <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
           <ItemIconComponent className="h-full" />
           {itemIsShared && (
             <Link className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full rounded-full border-2 border-white bg-primary p-0.5 text-white group-active:border-blue-100" />
@@ -136,40 +137,41 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
 
       {/* HOVER ACTIONS */}
-      <div className="pl-3 w-2/12 items-center hidden xl:flex">
-        {!item.deleted && <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
-          <button
-            onClick={onDownloadButtonClicked}
-            className="hover-action mr-3"
-            data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
-          >
-            <DownloadSimple className="h-5 w-5" />
-          </button>
-          {!itemIsShared && (
+      <div className="hidden w-2/12 items-center pl-3 xl:flex">
+        {!item.deleted && (
+          <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
             <button
-              onClick={(e) => {
-                onShareButtonClicked && onShareButtonClicked(e);
-              }}
+              onClick={onDownloadButtonClicked}
               className="hover-action mr-3"
-              data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
+              data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
             >
-              <Link className="h-5 w-5" />
+              <DownloadSimple className="h-5 w-5" />
             </button>
-          )}
-          <button
-            onClick={onDeleteButtonClicked}
-            className="hover-action"
-            data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
-          >
-            <Trash className="h-5 w-5" />
-          </button>
-        </div>}
+            {!itemIsShared && (
+              <button
+                onClick={(e) => {
+                  onShareButtonClicked && onShareButtonClicked(e);
+                }}
+                className="hover-action mr-3"
+                data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
+              >
+                <Link className="h-5 w-5" />
+              </button>
+            )}
+            <button
+              onClick={onDeleteButtonClicked}
+              className="hover-action"
+              data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
+            >
+              <Trash className="h-5 w-5" />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* DROPPABLE ZONE */
-        !item.deleted && connectDropTarget(
-          <div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>,
-        )
+      {
+        /* DROPPABLE ZONE */
+        !item.deleted && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}
@@ -187,7 +189,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {/* ACTIONS BUTTON */}
-      <div className="flex w-1/12 items-center">
+      {/* <div className="flex w-1/12 items-center">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
             <DotsThree className="h-full w-full" />
@@ -213,7 +215,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             />
           </Dropdown.Menu>
         </Dropdown>
-      </div>
+      </div> */}
     </div>
   );
 

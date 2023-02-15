@@ -19,7 +19,9 @@ interface ItemProps<T> {
   onSelectedChanged: (value: boolean) => void;
   onDoubleClick?: () => void;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onClickContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void;
   menu?: ListItemMenu<T>;
+  disableItemCompositionStyles?: boolean;
 }
 
 export default function ListItem<T extends { id: string }>({
@@ -30,6 +32,8 @@ export default function ListItem<T extends { id: string }>({
   onSelectedChanged,
   onDoubleClick,
   onClick,
+  onClickContextMenu,
+  disableItemCompositionStyles,
   menu,
 }: ItemProps<T>): JSX.Element {
   const menuButtonRef = useRef<HTMLButtonElement | undefined>();
@@ -56,6 +60,7 @@ export default function ListItem<T extends { id: string }>({
 
   const handleContextMenuClick = (event) => {
     event.preventDefault();
+    onClickContextMenu?.(event);
     const childWidth = menuItemsRef?.current?.offsetWidth || 180;
     const childHeight = menuItemsRef?.current?.offsetHeight || 300;
     const wrapperRect = rootWrapperRef?.current?.getBoundingClientRect();
@@ -135,16 +140,28 @@ export default function ListItem<T extends { id: string }>({
           checked={selected}
         />
       </div>
-      {new Array(itemComposition.length).fill(0).map((col, i) => (
+      {/* TODO: CHECK THIS BEFORE MERGE */}
+      {disableItemCompositionStyles ? (
         <div
-          key={i}
-          className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
+          key={0}
+          className={`flex-grow-1 relative flex h-full w-full flex-row items-center border-b ${
             selected ? 'border-primary border-opacity-5' : 'border-gray-5'
-          } ${columnsWidth[i]}`}
+          }`}
         >
-          {itemComposition[i](item)}
+          {itemComposition[0](item)}
         </div>
-      ))}
+      ) : (
+        new Array(itemComposition.length).fill(0).map((col, i) => (
+          <div
+            key={i}
+            className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
+              selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+            } ${columnsWidth[i]}`}
+          >
+            {itemComposition[i](item)}
+          </div>
+        ))
+      )}
       <div
         className={`flex h-14 w-12 flex-shrink-0 flex-col items-center justify-center border-b ${
           selected ? 'border-primary border-opacity-5' : 'border-gray-5'
