@@ -6,6 +6,7 @@ import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
 import { Document, Page } from 'react-pdf';
 import { useState, Fragment, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
+import { CaretLeft, CaretRight } from 'phosphor-react';
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
@@ -16,16 +17,19 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const [zoom, setZoom] = useState(0);
   const zoomRange = [0.85, 1, 1.5, 2, 3];
 
+  //useEffect to avoid flickering
   useEffect(() => {
     setFileUrl(URL.createObjectURL(props.blob));
   }, [props.blob]);
 
   function nextPage() {
-    props.getFile(1);
+    setPageNumber(pageNumber + 1);
+    resetZoom();
   }
 
   function previousPage() {
-    props.getFile(-1);
+    setPageNumber(pageNumber - 1);
+    resetZoom();
   }
 
   function increaseZoom() {
@@ -52,9 +56,18 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     <div className="flex max-h-full items-center justify-center">
       <Fragment>
         <div>
-          <Document file={fileUrl} loading={''} onLoadSuccess={onDocumentLoadSuccess}>
-            <Page loading={''} height={window.innerHeight * zoomRange[zoom]} pageNumber={pageNumber} />
-          </Document>
+          <div className="flex w-screen flex-row items-center justify-between px-10">
+            <button className="rounded-full bg-black p-4 text-white" onClick={() => props.getFile(-1)}>
+              <CaretLeft size={24} />
+            </button>
+
+            <Document file={fileUrl} loading={''} onLoadSuccess={onDocumentLoadSuccess}>
+              <Page loading={''} height={window.innerHeight * zoomRange[zoom]} pageNumber={pageNumber} />
+            </Document>
+            <button className="text-white" onClick={() => props.getFile(1)}>
+              <CaretRight size={24} />
+            </button>
+          </div>
 
           {/* Preview controls */}
           <div
@@ -72,7 +85,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
               <div className="flex flex-row items-center justify-center">
                 <button
                   onClick={previousPage}
-                  // disabled={isFirstPage}
+                  disabled={isFirstPage}
                   className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
@@ -90,7 +103,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
                 <button
                   onClick={nextPage}
-                  // disabled={isLastPage}
+                  disabled={isLastPage}
                   className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
