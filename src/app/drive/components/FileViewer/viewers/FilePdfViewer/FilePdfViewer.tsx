@@ -7,6 +7,7 @@ import { Document, Page } from 'react-pdf';
 import { useState, Fragment, useCallback, useRef, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from 'phosphor-react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface PageWithObserverProps {
   pageNumber: number;
@@ -57,6 +58,7 @@ const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, o
 };
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const fileUrl = useRef(URL.createObjectURL(props.blob)).current;
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
@@ -111,7 +113,10 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
             <div className="z-10 flex flex-row items-center justify-center space-x-1.5">
               <div className="flex flex-row items-center justify-center">
                 <span className="z-10 px-2 font-medium">
-                  Page {currentPage} of {numPages}
+                  {translate('drive.pdfPage', {
+                    page: currentPage,
+                    pages: numPages,
+                  })}
                 </span>
               </div>
 

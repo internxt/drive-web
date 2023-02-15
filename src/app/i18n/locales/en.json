@@ -806,6 +806,7 @@
     "usage": "Usage",
     "currentPlan": "Current plan",
     "loadingFile": "Loading preview",
+    "pdfPage": "Page {{page}} of {{pages}}",
     "list": {
       "columns": {
         "type": "Type",
