@@ -27,6 +27,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   useEffect(() => {
     if (isOpen) {
       setError('');
+      setFolderName(translate('modals.newFolderModal.untitled'));
     }
   }, [isOpen]);
 
