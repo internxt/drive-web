@@ -35,28 +35,18 @@ jobs:
       - name: Test
         run: |
           echo ${{ steps.increment_version.outputs.new_version }}
-
-      - name: Update package.json version
-        uses: jossef/action-set-json-field@v2.1
-        with:
-          file: package.json
-          field: version
-          value: ${{ steps.increment_version.outputs.next_version }}
           
       - name: Commit updated package.json
         run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "docs(): update package ${{ steps.latest_version.outputs.next_version }}"
-          git tag ${{ steps.latest_version.outputs.next_version }}
-
-      - name: Push to repository 
-        uses: actions/checkout@v2
-        with: 
-          token: ${{ secrets.CI_USER_GH_TOKEN }} 
-      - name: Push changes to repository 
-        run: git push origin master
+          REPO_URL="https://github.com/internxt/drive-web.git"
+          TOKEN="${{ secrets.CI_USER_GH_TOKEN }}"
+          AUTH_URL="${REPO_URL/https:\/\//https:\/\/${TOKEN}@}"
+          git clone $AUTH_URL
+          cd drive-web
+          sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
+          git add package.json
+          git commit -m "Bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git push origin master
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
