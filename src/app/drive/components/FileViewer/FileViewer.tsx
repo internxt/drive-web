@@ -176,7 +176,6 @@ const FileViewer = ({
   const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
     const fileId = fileToView?.id;
     const databaseBlob = await getDatabaseFileSourceData({ fileId });
-    if (!databaseBlob) setBlob(null);
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
