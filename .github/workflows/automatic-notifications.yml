@@ -36,7 +36,7 @@ jobs:
         with:
           file: package.json
           field: version
-          value: ${{  steps.latest_version.outputs.next_version }}
+          value: ${{ steps.increment_version.outputs.next_version }}
           
       - name: Commit updated package.json
         run: |
