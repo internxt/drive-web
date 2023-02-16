@@ -41,6 +41,8 @@ jobs:
           REPO_URL="https://github.com/internxt/drive-web.git"
           TOKEN="${{ secrets.CI_USER_GH_TOKEN }}"
           AUTH_URL="${REPO_URL/https:\/\//https:\/\/${TOKEN}@}"
+          git config --global user.email "Action@github-internxt.com"
+          git config --global user.name "Action"
           git clone $AUTH_URL
           cd drive-web
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
