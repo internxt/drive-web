@@ -45,7 +45,7 @@ jobs:
           cd drive-web
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
           git add package.json
-          git commit -m "Bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.new_version }}"
           git push origin master
 
       - name: Create GitHub Release
