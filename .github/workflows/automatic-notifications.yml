@@ -20,6 +20,7 @@ jobs:
       - run: echo ${{steps.version.outputs.prop}} 
 
       - name: Increment version number
+        id: increment_version
         run: |
           version="${{steps.version.outputs.prop}}"
           regex='^v([0-9]+)\.([0-9]+)\.([0-99]+)$'
@@ -30,6 +31,10 @@ jobs:
             next_version="v${major}.${minor}.$((patch+1))"
             echo "::set-output name=next_version::$next_version"
           fi
+
+      - name: Test
+        run: |
+          echo ${{ steps.increment_version.outputs.new_version }}
 
       - name: Update package.json version
         uses: jossef/action-set-json-field@v2.1
