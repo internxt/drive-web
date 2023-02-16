@@ -47,7 +47,7 @@ jobs:
         with:
           github_token: ${{ github.token }}
           tags: true
-          branch: main
+          branch: master
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
