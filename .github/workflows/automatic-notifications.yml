@@ -19,17 +19,17 @@ jobs:
             prop_path: 'version'
       - run: echo ${{steps.version.outputs.prop}} 
 
-      - name: Get next version
-        id: latest_version
-        uses: actions/github-script@v4
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const latestTag = ${{steps.version.outputs.prop}} ;
-            const versionParts = latestTag.split('.');
-            const nextVersion = `${versionParts[0]}.${versionParts[1]}.${parseInt(versionParts[2]) + 1}`;
-            console.log(`Latest version: ${latestTag}, Next version: ${nextVersion}`);
-            core.setOutput('next_version', nextVersion)
+      - name: Increment version number
+        run: |
+          version="${{steps.version.outputs.prop}}"
+          regex='^v([0-9]+)\.([0-9]+)\.([0-99]+)$'
+          if [[ $version =~ $regex ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            patch="${BASH_REMATCH[3]}"
+            next_version="v${major}.${minor}.$((patch+1))"
+            echo "::set-output name=next_version::$next_version"
+          fi
 
       - name: Update package.json version
         uses: jossef/action-set-json-field@v2.1
