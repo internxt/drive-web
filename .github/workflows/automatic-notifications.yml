@@ -11,7 +11,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: Get latest version 
+      - name: Get latest version
         id: latest_version
         uses: actions/github-script@v4
         with:
