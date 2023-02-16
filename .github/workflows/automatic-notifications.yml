@@ -45,7 +45,7 @@ jobs:
       - name: Pushing to the protected branch 'protected'
         uses: CasperWA/push-protected@v2
         with:
-          token: ${{ secrets.CI_USER_GH_TOKEN }}
+          token: ${{ secrets.CI_USER_GH_TOKEN_EXTRA }}
           branch: master
 
       - name: Create GitHub Release
