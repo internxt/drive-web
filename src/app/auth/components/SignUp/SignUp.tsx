@@ -26,6 +26,7 @@ import { validateFormat } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import authService from 'app/auth/services/auth.service';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -182,6 +183,13 @@ function SignUp(props: SignUpProps): JSX.Element {
       //   divider: encodeURIComponent('|'),
       //   pagename: encodeURIComponent('New'),
       // });
+
+      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+
+      if (redirectUrl) {
+        window.location.replace(redirectUrl);
+        return;
+      }
       if (planId && mode) {
         coupon
           ? window.location.replace(
@@ -213,14 +221,10 @@ function SignUp(props: SignUpProps): JSX.Element {
   //   });
   // }
 
-  const getMobileLink = () => {
-    if (planId && mode) {
-      return coupon
-        ? `/login?planId=${planId}&couponCode=${coupon}&mode=${mode}`
-        : `/login?planId=${planId}&mode=${mode}`;
-    } else {
-      return '/login';
-    }
+  const getLoginLink = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+
+    return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
 
   return (
@@ -289,7 +293,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         <span className="select-none text-sm text-gray-80">
           {translate('auth.signup.haveAccount')}{' '}
           <Link
-            to={getMobileLink()}
+            to={getLoginLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.signup.login')}

@@ -30,6 +30,8 @@ import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 import { t } from 'i18next';
+import authService from 'app/auth/services/auth.service';
+import localStorageService from 'app/core/services/local-storage.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -48,6 +50,17 @@ class App extends Component<AppProps> {
   }
 
   async componentDidMount(): Promise<void> {
+    const token = localStorageService.get('xToken');
+
+    if (token) {
+      /**
+       * In case we receive a valid redirectUrl param, we return to that URL with the current token
+       */
+      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), token);
+
+      redirectUrl && window.location.replace(redirectUrl);
+    }
+
     const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
       path: navigationService.history.location.pathname,
     });

@@ -9,7 +9,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import { is2FANeeded, doLogin } from '../../services/auth.service';
+import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 // import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
@@ -48,9 +48,6 @@ export default function LogIn(): JSX.Element {
   const [loginError, setLoginError] = useState<string[]>([]);
   const [showErrors, setShowErrors] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-  const [planId, setPlanId] = useState<string>();
-  const [mode, setMode] = useState<string>();
-  const [coupon, setCoupon] = useState<string>();
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
     setIsLoggingIn(true);
@@ -85,6 +82,11 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
+        const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), token);
+
+        if (redirectUrl) {
+          window.location.replace(redirectUrl);
+        }
       } else {
         setShowTwoFactor(true);
       }
@@ -152,19 +154,10 @@ export default function LogIn(): JSX.Element {
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(navigationService.history.location.search);
-    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
-    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
-    setCoupon(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
-  });
+  const getSignupLink = () => {
+    const currentParams = new URLSearchParams(window.location.search);
 
-  const getMobileLink = () => {
-    if (planId && mode) {
-      return coupon ? `/new?planId=${planId}&couponCode=${coupon}&mode=${mode}` : `/new?planId=${planId}&mode=${mode}`;
-    } else {
-      return '/new';
-    }
+    return currentParams.toString() ? '/new?' + currentParams.toString() : '/new';
   };
 
   return (
@@ -251,7 +244,7 @@ export default function LogIn(): JSX.Element {
         <span>
           {translate('auth.login.dontHaveAccount')}{' '}
           <Link
-            to={getMobileLink()}
+            to={getSignupLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.login.createAccount')}

@@ -257,6 +257,23 @@ export async function areCredentialsCorrect(email: string, password: string): Pr
   return authClient.areCredentialsCorrect(email, hashedPassword);
 }
 
+export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
+  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
+  const redirectUrl = urlSearchParams.get('redirectUrl');
+
+  if (!redirectUrl) return null;
+  const allowed = ALLOWED_DOMAINS.some((allowedDomain) => redirectUrl.includes(allowedDomain));
+
+  if (!allowed) return null;
+
+  const url = new URL(redirectUrl);
+  const currentParams = url.searchParams;
+
+  currentParams.set('authToken', token);
+
+  return url.origin + url.pathname + '?' + currentParams.toString();
+};
+
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
@@ -270,6 +287,7 @@ const authService = {
   cancelAccount,
   store2FA,
   getNewToken,
+  getRedirectUrl,
 };
 
 export default authService;
