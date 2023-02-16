@@ -824,6 +824,7 @@
   "drive": {
     "usage": "Uso",
     "currentPlan": "Actual plan",
+    "previewNoAvailable": "No hay vista previa disponible",
     "loadingFile": "Cargando archivo...",
     "pdfPage": "Página {{page}} de {{pages}}",
     "list": {

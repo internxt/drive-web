@@ -78,14 +78,11 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     }
   }
 
-  console.log('blob in FilePdfViewer', props.blob);
-
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
-  console.log('Blob', props.blob);
 
-  return props.blob !== null ? (
+  return (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
         <div>
@@ -97,7 +94,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
                     loading=""
                     onPageVisible={setCurrentPage}
                     key={`page_${index + 1}`}
-                    pageNumber={1}
+                    pageNumber={index + 1}
                     zoom={zoom}
                   />
                 ))}
@@ -154,10 +151,6 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
           </div>
         </div>
       </Fragment>
-    </div>
-  ) : (
-    <div>
-      <p>No se puede cargar el archivo</p>
     </div>
   );
 };

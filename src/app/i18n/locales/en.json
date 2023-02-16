@@ -825,6 +825,7 @@
     "usage": "Usage",
     "currentPlan": "Current plan",
     "loadingFile": "Loading preview",
+    "previewNoAvailable": "No preview available",
     "pdfPage": "Page {{page}} of {{pages}}",
     "list": {
       "columns": {

@@ -82,7 +82,6 @@ const FileViewer = ({
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
   const totalIndex = folderFiles?.length;
   const fileIndex = folderFiles?.findIndex((item) => item === file);
-  console.log(fileIndex, totalIndex);
 
   function changeFile(direction: 'next' | 'prev') {
     if (direction === 'next') {
@@ -97,7 +96,6 @@ const FileViewer = ({
       } else {
         setCurrentFile?.(folderFiles[fileIndex - 1]);
       }
-      console.log('prev', folderFiles[fileIndex - 1]?.name);
     }
   }
 
@@ -179,7 +177,6 @@ const FileViewer = ({
     const fileId = fileToView?.id;
     const databaseBlob = await getDatabaseFileSourceData({ fileId });
     if (!databaseBlob) setBlob(null);
-    console.log('databaseBlob', databaseBlob);
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
@@ -189,7 +186,6 @@ const FileViewer = ({
         });
 
     if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
-      console.log('databaseBlob.source', databaseBlob.source);
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
@@ -206,7 +202,6 @@ const FileViewer = ({
         if (file && isOlder) {
           downloader(abortController)
             .then(async (fileBlob) => {
-              console.log('fileBlob', fileBlob);
               setBlob(fileBlob);
               await updateDatabaseFileSourceData({
                 folderId: file?.folderId,
@@ -291,16 +286,7 @@ const FileViewer = ({
                   <Suspense fallback={<div></div>}>
                     <Viewer blob={blob} changeFile={changeFile} />
                   </Suspense>
-                ) : !blob ? (
-                  <div
-                    className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
-                      rounded-xl font-medium"
-                  >
-                    <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                    <p>No preview available</p>
-                    <DownoladButton background="bg-primary" />
-                  </div>
-                ) : (
+                ) : progress ? (
                   <>
                     <div
                       tabIndex={0}
@@ -311,7 +297,7 @@ const FileViewer = ({
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
-                      <span className="text-white">{translate('drive.loadingFile')}</span>
+                      <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
                       <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                         <div
                           className="h-1.5 rounded-full bg-white"
@@ -320,6 +306,16 @@ const FileViewer = ({
                       </div>
                     </div>
                   </>
+                ) : (
+                  <div
+                    className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium"
+                  >
+                    <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                    <span className="text-lg">{filename}</span>
+                    <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
+                    <DownoladButton background="bg-primary" />
+                  </div>
                 )}
                 <button
                   className="absolute top-1/2 right-10 rounded-full bg-black p-4 text-white"
