@@ -48,6 +48,7 @@ jobs:
           github_token: ${{ secrets.CI_USER_GH_TOKEN }}
           tags: true
           branch: master
+          force: true
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
