@@ -1,7 +1,7 @@
-name: Test new release send notification to slack
+name: Notify Releases
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 jobs:
   change-package-json-and-release:
@@ -34,7 +34,7 @@ jobs:
           field: version
           value: ${{  steps.latest_version.outputs.next_version }}
           
-      - name: Commit files
+      - name: Commit updated package.json
         run: |
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
@@ -95,7 +95,7 @@ jobs:
         id: read-file-contents
         run: echo "::set-output name=file-features::$(cat new-file-feature.txt)"
 
-      - name: Slack Notification
+      - name: Notify Release via Slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
           payload: |
