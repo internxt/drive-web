@@ -257,13 +257,15 @@ const FileViewer = ({
                   <>
                     <div
                       tabIndex={0}
-                      className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
-                      rounded-xl font-medium"
+                      className={`${
+                        progress === 1 ? 'hidden' : 'flex'
+                      } outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium`}
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
                       <span className="text-white">{translate('drive.loadingFile')}</span>
-                      <div className="h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                      <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                         <div
                           className="h-1.5 rounded-full bg-white"
                           style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
@@ -286,7 +288,7 @@ const FileViewer = ({
 
           {/* Background */}
           <div
-            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-cool-gray-100
+            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black
                           blur-2xl filter"
           />
 
@@ -296,7 +298,7 @@ const FileViewer = ({
                           items-start justify-between px-4 text-lg font-medium"
           >
             {/* Close and title */}
-            <div className="z-10 mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
+            <div className="mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
                 className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full
