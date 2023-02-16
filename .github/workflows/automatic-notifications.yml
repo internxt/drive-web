@@ -63,7 +63,7 @@ jobs:
       - name: Pull request
         uses: devops-infra/action-pull-request@v0.5.5
         with:
-          github_token: ${{ secrets.CI_USER_GH_TOKEN }}
+          github_token: ${{ github.token }}
           source_branch: actual_version
           target_branch: master
           title: Version Pull Request
