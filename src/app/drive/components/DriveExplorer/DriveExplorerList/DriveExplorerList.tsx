@@ -1,4 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useEffect, useState, RefObject } from 'react';
 import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
 import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { connect } from 'react-redux';
@@ -40,6 +40,7 @@ interface DriveExplorerListProps {
   onEndOfScroll(): void;
   hasMoreItems: boolean;
   isTrash?: boolean;
+  onHoverListItems?: (areHover: boolean) => void;
 }
 
 //TODO: move this function to utils or other
@@ -63,8 +64,6 @@ const compareArrays = (array1, array2) => {
 };
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
-  const { translate } = useTranslationContext();
-
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
 
   useEffect(() => {
@@ -166,9 +165,17 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     return <IconComponent className="ml-2" />;
   };
 
+  function handleMouseEnter() {
+    props.onHoverListItems?.(true);
+  }
+
+  function handleMouseLeave() {
+    props.onHoverListItems?.(false);
+  }
+
   return (
     //TODO: REMEMBER TO REMOVE ALL COMMENTED CODE! -----------------------------------------
-    <div className="flex h-full flex-grow flex-col bg-white">
+    <div className="flex h-full flex-grow flex-col">
       {/* <div className="files-list flex border-b border-neutral-30 bg-white py-3 text-sm font-semibold text-neutral-500">
         <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
           <input
@@ -238,9 +245,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 ]}
                 items={props.items}
                 isLoading={isLoading}
-                itemComposition={[
-                  (item) => <DriveExplorerListItem item={item} isTrash={props.isTrash}></DriveExplorerListItem>,
-                ]}
+                itemComposition={[(item) => <DriveExplorerListItem item={item} isTrash={props.isTrash} />]}
+                onMouseEnter={handleMouseEnter}
+                onMouseLeave={handleMouseLeave}
                 skinSkeleton={loadingSkeleton()}
                 emptyState={<div></div>}
                 onNextPage={onEndOfScroll}

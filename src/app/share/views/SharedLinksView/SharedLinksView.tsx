@@ -195,7 +195,12 @@ export default function SharedLinksView(): JSX.Element {
   };
 
   return (
-    <div className="flex w-full flex-shrink-0 flex-col">
+    <div
+      className="flex w-full flex-shrink-0 flex-col"
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>

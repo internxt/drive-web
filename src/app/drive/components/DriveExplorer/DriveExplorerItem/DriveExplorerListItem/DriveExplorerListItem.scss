@@ -1,9 +1,8 @@
 @layer components {
   .file-list-item {
-
     @apply relative flex flex-grow w-full flex-row items-center text-base;
-    
-    /* TODO: REVISAR ESTILOS AÑADIDOS POR ALVARO*/
+
+    /* TODO: REVISAR ESTILOS AÑADIDOS POR ALVARO */
     // @apply relative flex h-16 w-full flex-row items-center border-b border-gray-5 text-base;
 
     &:hover {

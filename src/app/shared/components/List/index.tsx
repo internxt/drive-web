@@ -31,6 +31,8 @@ interface ListProps<T, F> {
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | 'multiselect' | Array<'delete' & (() => void)>>;
   disableKeyboardShortcuts?: boolean;
   disableItemCompositionStyles?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 /**
@@ -69,6 +71,8 @@ export default function List<T extends { id: any }, F extends keyof T>({
   menu,
   className,
   disableItemCompositionStyles,
+  onMouseEnter,
+  onMouseLeave,
 }: // keyboardShortcuts,
 // disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
@@ -221,6 +225,8 @@ ListProps<T, F>): JSX.Element {
                   menu={menu}
                   onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
                   disableItemCompositionStyles={disableItemCompositionStyles}
+                  onMouseEnter={onMouseEnter}
+                  onMouseLeave={onMouseLeave}
                 />
               ))}
             </InfiniteScroll>

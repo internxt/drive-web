@@ -149,7 +149,12 @@ export default function BackupsView(): JSX.Element {
   }
 
   return (
-    <div className="mb-5 flex flex-grow flex-col px-8 pt-6">
+    <div
+      className="mb-5 flex flex-grow flex-col px-8 pt-6"
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
       <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}

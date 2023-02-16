@@ -22,6 +22,8 @@ interface ItemProps<T> {
   onClickContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void;
   menu?: ListItemMenu<T>;
   disableItemCompositionStyles?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }
 
 export default function ListItem<T extends { id: string }>({
@@ -35,6 +37,8 @@ export default function ListItem<T extends { id: string }>({
   onClickContextMenu,
   disableItemCompositionStyles,
   menu,
+  onMouseEnter,
+  onMouseLeave,
 }: ItemProps<T>): JSX.Element {
   const menuButtonRef = useRef<HTMLButtonElement | undefined>();
   const rootWrapperRef = useRef<HTMLDivElement | null>(null);
@@ -125,6 +129,8 @@ export default function ListItem<T extends { id: string }>({
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
         selected ? 'bg-primary bg-opacity-10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
     >
       <MenuItemList />
       <div
