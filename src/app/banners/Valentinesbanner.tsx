@@ -13,11 +13,14 @@ const ValentinesBanner = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setShowLifetimeBanner(true);
-    }, 5000);
+    if (localStorage.getItem('showLifetimeBanner') === 'false') {
+      setShowLifetimeBanner(false);
+    } else {
+      setTimeout(() => {
+        setShowLifetimeBanner(true);
+      }, 5000);
+    }
 
-    localStorage.getItem('showLifetimeBanner') === 'false' && setShowLifetimeBanner(false);
     window.addEventListener('unload', function (e) {
       e.preventDefault();
       localStorage.removeItem('showLifetimeBanner');
