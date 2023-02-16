@@ -1,4 +1,9 @@
 {
+  "valentinesBanner": {
+    "title": "¡Amor sin limites!",
+    "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
+    "cta": "Obtén la oferta"
+  },
   "lang": {
     "title": "Lenguaje",
     "es": "Español (ES)",
@@ -510,7 +515,8 @@
     "renamingItem": "Error al renombrar ítem/s",
     "linkExpired": "Este enlace seguro ha caducado",
     "teamInvitation": "No se ha podido enviar el correo electrónico de invitación",
-    "noSpaceAvailable": "Tu Internxt Drive está lleno. Consigue más espacio cambiando de plan",
+    "storageIsFull": "Tu almacenamiento está lleno",
+    "noSpaceAvailable": "Has alcanzado el límite y la sincronización se ha pausado. Mejora tu plan para mantener tus archivos sincronizados y seguros.",
     "sharedFolderTooBig": "Internxt Drive no admite compartir carpetas de más de 1 GB",
     "titleSharedFolderTooBig": "Acción no compatible",
     "workingOnIt": "Estamos trabajando para ofrecerte una mejor experiencia",
@@ -791,6 +797,7 @@
     "upgradeNow": "Comprar espacio",
     "purchasePlan": "Comprar plan",
     "upgrade": "Ampliar",
+    "buyStorage": "Comprar espacio",
     "deleteAccount": "Eliminar permanentemente la cuenta",
     "changePassword": "Cambiar contraseña",
     "buy": "Comprar",

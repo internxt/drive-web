@@ -2,7 +2,8 @@ import { IconWeight, X } from 'phosphor-react';
 
 interface BaseDialogProps {
   isOpen: boolean;
-  title: string;
+  title?: string;
+  hideCloseButton?: boolean;
   subTitle?: string;
   dialogRounded?: boolean;
   children: JSX.Element | JSX.Element[];
@@ -30,6 +31,7 @@ const BaseDialog = ({
   weightIcon,
   bgColor,
   dataTest,
+  hideCloseButton,
 }: BaseDialogProps): JSX.Element => {
   return (
     <div
@@ -45,18 +47,22 @@ const BaseDialog = ({
         } text-neutral-900 ${bgColor || 'bg-white'}`}
       >
         <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start`}>
-          <div className="relative flex max-w-full flex-1 flex-col truncate">
-            <span className={`${titleClasses || ''} truncate text-xl`} title={title}>
-              {title}
-            </span>
-            <span className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</span>
-          </div>
-          <div
-            className={`relative ml-auto cursor-pointer
+          {title ? (
+            <div className="relative flex max-w-full flex-1 flex-col truncate">
+              <span className={`${titleClasses || ''} truncate text-xl`} title={title}>
+                {title}
+              </span>
+              <span className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</span>
+            </div>
+          ) : null}
+          {hideCloseButton ? null : (
+            <div
+              className={`relative ml-auto cursor-pointer
            transition duration-200 ease-in-out ${closeClass || 'text-blue-60 hover:text-blue-70'} `}
-          >
-            <X onClick={onClose} size={28} weight={weightIcon} />
-          </div>
+            >
+              <X onClick={onClose} size={28} weight={weightIcon} />
+            </div>
+          )}
         </div>
         {children}
       </div>
