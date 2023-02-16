@@ -11,22 +11,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
         
-      - name: Get latest version
+      - name: get package version
+          id: version
+          uses: notiz-dev/github-action-json-property@release
+          with: 
+              path: 'package.json'
+              prop_path: 'version'
+      - run: echo ${{steps.version.outputs.prop}} 
+
+      - name: Get next version
         id: latest_version
         uses: actions/github-script@v4
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const { data: tags } = await github.repos.listTags({
-              owner: context.repo.owner,
-              repo: context.repo.repo
-            });
-            const latestTag = tags[0].name;
+            const latestTag = ${{steps.version.outputs.prop}} ;
             const versionParts = latestTag.split('.');
             const nextVersion = `${versionParts[0]}.${versionParts[1]}.${parseInt(versionParts[2]) + 1}`;
             console.log(`Latest version: ${latestTag}, Next version: ${nextVersion}`);
             core.setOutput('next_version', nextVersion)
-  
+
       - name: Update package.json version
         uses: jossef/action-set-json-field@v2.1
         with:
@@ -42,12 +46,12 @@ jobs:
           git commit -m "docs(): update package ${{ steps.latest_version.outputs.next_version }}"
           git tag ${{ steps.latest_version.outputs.next_version }}
 
-      - name: Push changes
-        uses: ad-m/github-push-action@v0.6.0
-        with:
-          github_token: ${{ github.token }}
-          tags: true
-          branch: version-branch-${{  steps.latest_version.outputs.next_version }}
+      - name: Push to repository 
+        uses: actions/checkout@v2
+        with: 
+          token: ${{ secrets.CI_USER_GH_TOKEN }} 
+      - name: Push changes to repository 
+        run: git push origin master
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -59,15 +63,6 @@ jobs:
           body_path: ./last_release.txt
           draft: false
           prerelease: false
-
-      - name: Pull request
-        uses: devops-infra/action-pull-request@v0.5.5
-        with:
-          github_token: ${{ github.token }}
-          source_branch: version-branch-${{  steps.latest_version.outputs.next_version }}
-          target_branch: master
-          title: Version Pull Request
-          body: "**Automated pull request**"
           
   get-latest-tag:
     runs-on: ubuntu-latest
