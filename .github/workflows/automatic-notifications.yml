@@ -47,6 +47,7 @@ jobs:
         with:
           token: ${{ secrets.CI_USER_GH_TOKEN_EXTRA }}
           branch: master
+          unprotect_reviews: true
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
