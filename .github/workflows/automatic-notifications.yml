@@ -42,12 +42,12 @@ jobs:
           git commit -m "docs(): update package ${{ steps.latest_version.outputs.next_version }}"
           git tag ${{ steps.latest_version.outputs.next_version }}
 
-      - name: Pushing to the protected branch 'protected'
-        uses: CasperWA/push-protected@v2
-        with:
-          token: ${{ secrets.CI_USER_GH_TOKEN_EXTRA }}
-          branch: master
-          unprotect_reviews: true
+      # - name: Pushing to the protected branch 'protected'
+      #   uses: CasperWA/push-protected@v2
+      #   with:
+      #     token: ${{ secrets.CI_USER_GH_TOKEN }}
+      #     branch: master
+      #     unprotect_reviews: true
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
@@ -58,8 +58,27 @@ jobs:
           release_name: ${{ steps.latest_version.outputs.next_version }}
           body_path: ./last_release.txt
           draft: false
-          prerelease: false            
+          prerelease: false
 
+      - name: Pull request
+        uses: devops-infra/action-pull-request@v0.5.5
+        with:
+          github_token: ${{ secrets.CI_USER_GH_TOKEN }}
+          source_branch: development
+          target_branch: master
+          title: My pull request
+          template: .github/PULL_REQUEST_TEMPLATE.md
+          body: "**Automated pull request**"
+          reviewer: octocat
+          assignee: octocat
+          label: enhancement
+          milestone: My milestone
+          draft: true
+          old_string: "<!-- Add your description here -->"
+          new_string: "** Automatic pull request**"
+          get_diff: true
+          ignore_users: "dependabot"
+          allow_no_diff: false
           
   get-latest-tag:
     runs-on: ubuntu-latest
