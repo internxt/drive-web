@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface FileViewerWrapperProps {
   file: DriveFileData | null;
@@ -20,9 +20,9 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<DriveFileData>();
 
-  if (file && !currentFile) {
-    setCurrentFile(file);
-  }
+  useEffect(() => {
+    file && setCurrentFile(file);
+  }, [file]);
 
   const downloader = currentFile
     ? (abortController: AbortController) =>

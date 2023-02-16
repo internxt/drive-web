@@ -1,4 +1,4 @@
-import { Suspense, Fragment, useState, useEffect } from 'react';
+import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
@@ -29,6 +29,7 @@ import {
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CaretLeft, CaretRight } from 'phosphor-react';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -42,7 +43,7 @@ interface FileViewerProps {
 
 export interface FormatFileViewerProps {
   blob: Blob;
-  getFile: (direction: number) => void;
+  changeFile: (direction: string) => void;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
@@ -56,8 +57,8 @@ const FileViewer = ({
   show,
   progress,
 }: FileViewerProps): JSX.Element => {
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const { translate } = useTranslationContext();
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -78,15 +79,25 @@ const FileViewer = ({
 
   // Get all files in the current folder and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
-  const getAllFiles = currentItemsFolder?.filter((item) => !item.isFolder);
-  console.log('getAllFiles', getAllFiles[getAllFiles.indexOf(file)]);
-  function getFile(direction: 1 | -1) {
-    const fileIndex = getAllFiles?.findIndex((item) => item === file);
-    if (direction === 1) {
-      setCurrentFile?.(getAllFiles[fileIndex + 1]);
-      // console.log('file', getAllFiles[fileIndex + 1]);
+  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
+  const totalIndex = folderFiles?.length;
+  const fileIndex = folderFiles?.findIndex((item) => item === file);
+  console.log(fileIndex, totalIndex);
+
+  function changeFile(direction: 'next' | 'prev') {
+    if (direction === 'next') {
+      if (fileIndex === totalIndex - 1) {
+        setCurrentFile?.(folderFiles[0]);
+      } else {
+        setCurrentFile?.(folderFiles[fileIndex + 1]);
+      }
     } else {
-      setCurrentFile?.(getAllFiles[fileIndex - 1]);
+      if (fileIndex === 0) {
+        setCurrentFile?.(folderFiles[totalIndex.length - 1]);
+      } else {
+        setCurrentFile?.(folderFiles[fileIndex - 1]);
+      }
+      console.log('prev', folderFiles[fileIndex - 1]?.name);
     }
   }
 
@@ -167,6 +178,8 @@ const FileViewer = ({
   const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
     const fileId = fileToView?.id;
     const databaseBlob = await getDatabaseFileSourceData({ fileId });
+    if (!databaseBlob) setBlob(null);
+    console.log('databaseBlob', databaseBlob);
 
     const isDatabaseBlobOlder = !databaseBlob?.updatedAt
       ? true
@@ -175,7 +188,8 @@ const FileViewer = ({
           dateTwo: fileToView?.updatedAt as string,
         });
 
-    if (fileToView && databaseBlob?.source && isDatabaseBlobOlder) {
+    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
+      console.log('databaseBlob.source', databaseBlob.source);
       setBlob(databaseBlob.source as Blob);
       await handleFileThumbnail(fileToView, databaseBlob.source as File);
 
@@ -190,9 +204,9 @@ const FileViewer = ({
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
         if (file && isOlder) {
-          console.log('file in useEffect', file);
           downloader(abortController)
             .then(async (fileBlob) => {
+              console.log('fileBlob', fileBlob);
               setBlob(fileBlob);
               await updateDatabaseFileSourceData({
                 folderId: file?.folderId,
@@ -217,6 +231,24 @@ const FileViewer = ({
       setBlob(null);
     }
   }, [show, file]);
+
+  const DownoladButton = ({ background }: { background?: string }) => (
+    <div
+      className={`${
+        background && background
+      } z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
+    >
+      <button
+        onClick={onDownload}
+        className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
+                          bg-opacity-0 px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+      >
+        <UilImport height="20" width="20" />
+        <span className="font-medium">{translate('actions.download')}</span>
+      </button>
+    </div>
+  );
 
   return (
     <Transition
@@ -249,17 +281,32 @@ const FileViewer = ({
               className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
             >
               <div onClick={(e) => e.stopPropagation()} className="">
+                <button
+                  className="absolute top-1/2 left-10 rounded-full bg-black p-4 text-white"
+                  onClick={() => changeFile('prev')}
+                >
+                  <CaretLeft size={24} />
+                </button>
                 {blob ? (
                   <Suspense fallback={<div></div>}>
-                    <Viewer blob={blob} getFile={getFile} />
+                    <Viewer blob={blob} changeFile={changeFile} />
                   </Suspense>
+                ) : !blob ? (
+                  <div
+                    className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium"
+                  >
+                    <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                    <p>No preview available</p>
+                    <DownoladButton background="bg-primary" />
+                  </div>
                 ) : (
                   <>
                     <div
                       tabIndex={0}
                       className={`${
                         progress === 1 ? 'hidden' : 'flex'
-                      } outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
                       rounded-xl font-medium`}
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
@@ -274,6 +321,12 @@ const FileViewer = ({
                     </div>
                   </>
                 )}
+                <button
+                  className="absolute top-1/2 right-10 rounded-full bg-black p-4 text-white"
+                  onClick={() => changeFile('next')}
+                >
+                  <CaretRight size={24} />
+                </button>
               </div>
             </div>
           ) : (
@@ -315,17 +368,7 @@ const FileViewer = ({
             </div>
 
             {/* Download button */}
-            <div className="z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4">
-              <button
-                onClick={onDownload}
-                className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
-                          bg-opacity-0 px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-              >
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{translate('actions.download')}</span>
-              </button>
-            </div>
+            <DownoladButton />
           </div>
         </div>
       </Dialog>

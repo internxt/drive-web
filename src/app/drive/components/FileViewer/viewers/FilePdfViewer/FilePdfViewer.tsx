@@ -56,29 +56,15 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl, setFileUrl] = useRef(useState(URL.createObjectURL(props.blob))).current;
+  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageNumber, setPageNumber] = useState(1);
-  const isFirstPage = pageNumber === 1;
-  const isLastPage = pageNumber === numPages;
-  const [zoom, setZoom] = useState(0);
-  const zoomRange = [0.85, 1, 1.5, 2, 3];
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 
   //useEffect to avoid flickering
   useEffect(() => {
     setFileUrl(URL.createObjectURL(props.blob));
   }, [props.blob]);
-
-  function nextPage() {
-    setPageNumber(pageNumber + 1);
-    resetZoom();
-  }
-
-  function previousPage() {
-    setPageNumber(pageNumber - 1);
-    resetZoom();
-  }
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
@@ -92,39 +78,31 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     }
   }
 
-  function resetZoom() {
-    setZoom(0);
-  }
+  console.log('blob in FilePdfViewer', props.blob);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
+  console.log('Blob', props.blob);
 
-  return (
+  return props.blob !== null ? (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
         <div>
-          <div className="flex w-screen flex-row items-center justify-between px-10">
-            <button className="rounded-full bg-black p-4 text-white" onClick={() => props.getFile(-1)}>
-              <CaretLeft size={24} />
-            </button>
-
-            <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
+          <div className="flex items-center justify-center">
+            <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
               <div className="flex flex-col items-center space-y-3">
                 {Array.from(new Array(numPages), (el, index) => (
                   <PageWithObserver
                     loading=""
                     onPageVisible={setCurrentPage}
                     key={`page_${index + 1}`}
-                    pageNumber={index + 1}
+                    pageNumber={1}
                     zoom={zoom}
                   />
                 ))}
               </div>
             </Document>
-            <button className="text-white" onClick={() => props.getFile(1)}>
-              <CaretRight size={24} />
-            </button>
           </div>
 
           {/* Preview controls */}
@@ -176,6 +154,10 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
           </div>
         </div>
       </Fragment>
+    </div>
+  ) : (
+    <div>
+      <p>No se puede cargar el archivo</p>
     </div>
   );
 };
