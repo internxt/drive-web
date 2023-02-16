@@ -41,15 +41,14 @@ jobs:
           git add -A
           git commit -m "docs(): update package ${{ steps.latest_version.outputs.next_version }}"
           git tag ${{ steps.latest_version.outputs.next_version }}
-          git push
 
-      # - name: Push changes
-      #   uses: ad-m/github-push-action@v0.6.0
-      #   with:
-      #     github_token: ${{ secrets.CI_USER_GH_TOKEN }}
-      #     tags: true
-      #     branch: master
-      #     force: true
+      - name: Push changes
+        uses: ad-m/github-push-action@v0.6.0
+        with:
+          github_token: ${{ secrets.CI_USER_GH_TOKEN }}
+          tags: true
+          branch: master
+          force: true
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
