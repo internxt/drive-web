@@ -12,11 +12,11 @@ jobs:
         uses: actions/checkout@v2
         
       - name: get package version
-          id: version
-          uses: notiz-dev/github-action-json-property@release
-          with: 
-              path: 'package.json'
-              prop_path: 'version'
+        id: version
+        uses: notiz-dev/github-action-json-property@release
+        with: 
+            path: 'package.json'
+            prop_path: 'version'
       - run: echo ${{steps.version.outputs.prop}} 
 
       - name: Get next version
