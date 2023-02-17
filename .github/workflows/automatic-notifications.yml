@@ -41,7 +41,7 @@ jobs:
           git config --global user.email "${{ secrets.CI_USER_GH_EXTRA }}"
           git config --global user.name "${{ secrets.CI_USERNAME_GH_EXTRA }}"
           git config --global user.password "${{ secrets.CI_PASSWORD_GH_EXTRA }}"
-          git remote add origin https://${{ secrets.CI_USERNAME_GH_EXTRA }}:${{ secrets.CI_PASSWORD_GH_EXTRA }}@github.com/${{ secrets.CI_USERNAME_GH_EXTRA }}/internxt/drive-web.git
+          git remote set-url origin https://${{ secrets.CI_USERNAME_GH_EXTRA }}:${{ secrets.CI_PASSWORD_GH_EXTRA }}@github.com/${{ secrets.CI_USERNAME_GH_EXTRA }}/internxt/drive-web.git
           git clone https://github.com/internxt/drive-web.git
           cd drive-web
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
