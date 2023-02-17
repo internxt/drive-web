@@ -45,7 +45,7 @@ jobs:
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
           git add package.json
           git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push https://inxtci:${{ secret.CI_USER_GH_TOKEN }}@github.com/internxt/drive-web.git
+          git push https://inxtci:${{ secrets.CI_USER_GH_TOKEN }}@github.com/internxt/drive-web.git
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
