@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
@@ -26,6 +26,7 @@ import { validateFormat } from 'app/crypto/services/keys.service';
 import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import authService from 'app/auth/services/auth.service';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -39,21 +40,37 @@ export interface SignUpProps {
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
   const qs = queryString.parse(navigationService.history.location.search);
+  const autoSubmit = useMemo(
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    [],
+  );
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
     qs.register === 'activate' ? 'activate' : 'appsumo',
     hasReferrer ? String(qs.ref) : undefined,
   );
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
+
+  const getInitialEmailValue = () => {
+    if (hasEmailParam) {
+      return qs.email as string;
+    }
+
+    if (autoSubmit.enabled && autoSubmit.credentials?.email) {
+      return autoSubmit.credentials.email;
+    }
+  };
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     control,
+    getValues,
   } = useForm<IFormValues>({
     mode: 'onChange',
     defaultValues: {
-      email: hasEmailParam ? (qs.email as string) : '',
+      email: getInitialEmailValue(),
+      password: autoSubmit.enabled && autoSubmit.credentials ? autoSubmit.credentials.password : '',
     },
   });
   const dispatch = useAppDispatch();
@@ -80,6 +97,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   } else if (showError && signupError) {
     bottomInfoError = signupError.toString();
   }
+
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
 
   useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
@@ -182,6 +205,13 @@ function SignUp(props: SignUpProps): JSX.Element {
       //   divider: encodeURIComponent('|'),
       //   pagename: encodeURIComponent('New'),
       // });
+
+      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+
+      if (redirectUrl) {
+        window.location.replace(redirectUrl);
+        return;
+      }
       if (planId && mode) {
         coupon
           ? window.location.replace(
@@ -213,14 +243,10 @@ function SignUp(props: SignUpProps): JSX.Element {
   //   });
   // }
 
-  const getMobileLink = () => {
-    if (planId && mode) {
-      return coupon
-        ? `/login?planId=${planId}&couponCode=${coupon}&mode=${mode}`
-        : `/login?planId=${planId}&mode=${mode}`;
-    } else {
-      return '/login';
-    }
+  const getLoginLink = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+
+    return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
 
   return (
@@ -289,7 +315,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         <span className="select-none text-sm text-gray-80">
           {translate('auth.signup.haveAccount')}{' '}
           <Link
-            to={getMobileLink()}
+            to={getLoginLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
             {translate('auth.signup.login')}

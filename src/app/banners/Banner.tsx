@@ -4,7 +4,7 @@ import Hearts from 'assets/images/banner/hearts.png';
 import NeonBlur from 'assets/images/banner/neonBlur.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const ValentinesBanner = () => {
+const Banner = () => {
   const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(false);
   const { translate } = useTranslationContext();
   const onClose = () => {
@@ -13,11 +13,14 @@ const ValentinesBanner = () => {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      setShowLifetimeBanner(true);
-    }, 5000);
+    if (localStorage.getItem('showLifetimeBanner') === 'false') {
+      setShowLifetimeBanner(false);
+    } else {
+      setTimeout(() => {
+        setShowLifetimeBanner(true);
+      }, 5000);
+    }
 
-    localStorage.getItem('showLifetimeBanner') === 'false' && setShowLifetimeBanner(false);
     window.addEventListener('unload', function (e) {
       e.preventDefault();
       localStorage.removeItem('showLifetimeBanner');
@@ -76,4 +79,4 @@ const ValentinesBanner = () => {
   );
 };
 
-export default ValentinesBanner;
+export default Banner;

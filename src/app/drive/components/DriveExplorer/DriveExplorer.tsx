@@ -59,7 +59,6 @@ import {
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ValentinesBanner from 'app/banners/Valentinesbanner';
 import { Menu, Transition } from '@headlessui/react';
 
 const PAGINATION_LIMIT = 100;
@@ -373,7 +372,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
-      <ValentinesBanner />
       <MenuItemToGetSize />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">

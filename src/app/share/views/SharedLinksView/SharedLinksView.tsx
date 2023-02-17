@@ -281,9 +281,9 @@ export default function SharedLinksView(): JSX.Element {
               );
             },
             (props) => (
-              <span
-                className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
-              >{`${props.views} views`}</span>
+              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>{`${
+                props.views
+              } ${translate('shared-links.view')}`}</span>
             ),
             (props) => (
               <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>

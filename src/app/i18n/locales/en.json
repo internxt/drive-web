@@ -7,14 +7,13 @@
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
-    "en": "English (US)",
-    "deviceLang": "device lang: {{lang}}"
+    "en": "English (US)"
   },
   "auth": {
     "email": "Email",
     "password": "Password",
     "terms1": "By creating an account, ",
-    "terms2": "you accept the terms and conditions",
+    "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
       "title": "Log in",
@@ -561,6 +560,7 @@
   },
   "shared-links": {
     "shared-links": "Shared links",
+    "view": "views",
     "list": {
       "link-content": "Link content",
       "shared": "Shared",
@@ -825,6 +825,8 @@
     "usage": "Usage",
     "currentPlan": "Current plan",
     "loadingFile": "Loading preview",
+    "previewNoAvailable": "No preview available",
+    "pdfPage": "Page {{page}} of {{pages}}",
     "list": {
       "columns": {
         "type": "Type",

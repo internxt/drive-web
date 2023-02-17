@@ -5,10 +5,9 @@
     "cta": "Obtén la oferta"
   },
   "lang": {
-    "title": "Lenguaje",
+    "title": "Idioma",
     "es": "Español (ES)",
-    "en": "Inglés (US)",
-    "deviceLang": "Lenguaje del dispositivo: {{lang}}"
+    "en": "Inglés (US)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -382,7 +381,7 @@
       }
     },
     "redirectToApp": {
-      "message": "Grácias!",
+      "message": "Gracias!",
       "goToApp": "Volver a la aplicación"
     }
   },
@@ -561,6 +560,7 @@
   },
   "shared-links": {
     "shared-links": "Enlaces compartidos",
+    "view": "visitas",
     "list": {
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
@@ -824,7 +824,9 @@
   "drive": {
     "usage": "Uso",
     "currentPlan": "Actual plan",
+    "previewNoAvailable": "No hay vista previa disponible",
     "loadingFile": "Cargando archivo...",
+    "pdfPage": "Página {{page}} de {{pages}}",
     "list": {
       "columns": {
         "type": "Tipo",
