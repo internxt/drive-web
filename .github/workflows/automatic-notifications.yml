@@ -52,8 +52,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: ${{ steps.latest_version.outputs.next_version }}
-          release_name: ${{ steps.latest_version.outputs.next_version }}
+          tag_name: ${{ steps.increment_version.outputs.next_version }}
+          release_name: ${{ steps.increment_version.outputs.next_version }}
           body_path: ./last_release.txt
           draft: false
           prerelease: false
