@@ -38,16 +38,14 @@ jobs:
           
       - name: Commit updated package.json
         run: |
-          git config --global user.email "${{ secrets.CI_USER_GH_EXTRA }}"
-          git config --global user.name "${{ secrets.CI_USERNAME_GH_EXTRA }}"
-          git config --global user.password "${{ secrets.CI_PASSWORD_GH_EXTRA }}"
-          git remote set-url origin https://${{ secrets.CI_USERNAME_GH_EXTRA }}:${{ secrets.CI_PASSWORD_GH_EXTRA }}@github.com/${{ secrets.CI_USERNAME_GH_EXTRA }}/internxt/drive-web.git
           git clone https://github.com/internxt/drive-web.git
           cd drive-web
+          git config --global user.email "inxtci@internxt.com"
+          git config --global user.name "inxtci"
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
           git add package.json
           git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.new_version }}"
-          git push
+          git push https://inxtci:${{ secret.CI_USER_GH_TOKEN }}@github.com/internxt/drive-web.git
 
       - name: Create GitHub Release
         uses: actions/create-release@v1
