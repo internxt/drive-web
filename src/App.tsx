@@ -52,13 +52,19 @@ class App extends Component<AppProps> {
   async componentDidMount(): Promise<void> {
     const token = localStorageService.get('xToken');
 
-    if (token) {
+    if (token && navigationService.history.location.pathname !== '/new') {
       /**
        * In case we receive a valid redirectUrl param, we return to that URL with the current token
        */
-      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), token);
+      const redirectUrl = authService.getRedirectUrl(
+        new URLSearchParams(navigationService.history.location.search),
+        token,
+      );
 
-      redirectUrl && window.location.replace(redirectUrl);
+      if (redirectUrl) {
+        window.location.replace(redirectUrl);
+        return;
+      }
     }
 
     const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({

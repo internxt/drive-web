@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
@@ -27,12 +27,25 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const autoSubmit = useMemo(
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    [],
+  );
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     control,
-  } = useForm<IFormValues>({ mode: 'onChange' });
+    getValues,
+  } = useForm<IFormValues>({
+    mode: 'onChange',
+    defaultValues: autoSubmit.enabled
+      ? {
+          email: autoSubmit.credentials?.email,
+          password: autoSubmit.credentials?.password,
+        }
+      : undefined,
+  });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const twoFactorCode = useWatch({
     control,
@@ -49,7 +62,14 @@ export default function LogIn(): JSX.Element {
   const [showErrors, setShowErrors] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
+
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     setIsLoggingIn(true);
     const { email, password } = formData;
 

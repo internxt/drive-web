@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
@@ -40,21 +40,37 @@ export interface SignUpProps {
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
   const qs = queryString.parse(navigationService.history.location.search);
+  const autoSubmit = useMemo(
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    [],
+  );
   const hasReferrer = !!qs.ref;
   const { updateInfo, doRegister } = useSignUp(
     qs.register === 'activate' ? 'activate' : 'appsumo',
     hasReferrer ? String(qs.ref) : undefined,
   );
   const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
+
+  const getInitialEmailValue = () => {
+    if (hasEmailParam) {
+      return qs.email as string;
+    }
+
+    if (autoSubmit.enabled && autoSubmit.credentials?.email) {
+      return autoSubmit.credentials.email;
+    }
+  };
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     control,
+    getValues,
   } = useForm<IFormValues>({
     mode: 'onChange',
     defaultValues: {
-      email: hasEmailParam ? (qs.email as string) : '',
+      email: getInitialEmailValue(),
+      password: autoSubmit.enabled && autoSubmit.credentials ? autoSubmit.credentials.password : '',
     },
   });
   const dispatch = useAppDispatch();
@@ -81,6 +97,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   } else if (showError && signupError) {
     bottomInfoError = signupError.toString();
   }
+
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
 
   useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
