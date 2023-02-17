@@ -39,10 +39,10 @@ jobs:
       - name: Commit updated package.json
         run: |
           REPO_URL="https://github.com/internxt/drive-web.git"
-          TOKEN="${{ secrets.CI_USER_GH_TOKEN }}"
-          AUTH_URL="https://inxtci:${TOKEN}@github.com/internxt/drive-web"
-          git config --global user.email "inxtci@internxt.com"
-          git config --global user.name "inxtci"
+          TOKEN="${{ secrets.CI_USER_GH_TOKEN_EXTRA }}"
+          AUTH_URL="https://AlbertoCopyPaste:${TOKEN}@github.com/internxt/drive-web"
+          git config --global user.email "${{ secrets.CI_USER_GH_EXTRA }}"
+          git config --global user.name "${{ secrets.CI_USERNAME_GH_EXTRA }}"
           git clone $AUTH_URL
           cd drive-web
           sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
