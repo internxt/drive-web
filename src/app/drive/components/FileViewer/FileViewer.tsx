@@ -1,4 +1,4 @@
-import { Suspense, Fragment, useState, useEffect } from 'react';
+import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
@@ -29,6 +29,7 @@ import {
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CaretLeft, CaretRight } from 'phosphor-react';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -37,17 +38,27 @@ interface FileViewerProps {
   downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
   progress?: number;
+  setCurrentFile?: (file: DriveFileData) => void;
 }
 
 export interface FormatFileViewerProps {
   blob: Blob;
+  changeFile: (direction: string) => void;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: FileViewerProps): JSX.Element => {
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
+const FileViewer = ({
+  file,
+  onClose,
+  onDownload,
+  downloader,
+  setCurrentFile,
+  show,
+  progress,
+}: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   let isTypeAllowed = false;
@@ -65,6 +76,29 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
   const [blob, setBlob] = useState<Blob | null>(null);
+
+  // Get all files in the current folder and find the current file to display the file
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
+  const totalIndex = folderFiles?.length;
+  const fileIndex = folderFiles?.findIndex((item) => item === file);
+
+  function changeFile(direction: 'next' | 'prev') {
+    setBlob(null);
+    if (direction === 'next') {
+      if (fileIndex === totalIndex - 1) {
+        setCurrentFile?.(folderFiles[0]);
+      } else {
+        setCurrentFile?.(folderFiles[fileIndex + 1]);
+      }
+    } else {
+      if (fileIndex === 0) {
+        setCurrentFile?.(folderFiles[totalIndex - 1]);
+      } else {
+        setCurrentFile?.(folderFiles[fileIndex - 1]);
+      }
+    }
+  }
 
   const dispatch = useAppDispatch();
   const isTeam = useAppSelector(sessionSelectors.isTeam);
@@ -191,7 +225,23 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
     } else if (!show) {
       setBlob(null);
     }
-  }, [show]);
+  }, [show, file]);
+
+  const DownloadButton = ({ background }: { background?: string }) => (
+    <div
+      className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
+    >
+      <button
+        onClick={onDownload}
+        className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
+                          bg-opacity-0 px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+      >
+        <UilImport height="20" width="20" />
+        <span className="font-medium">{translate('actions.download')}</span>
+      </button>
+    </div>
+  );
 
   return (
     <Transition
@@ -218,48 +268,72 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
           />
 
           {/* Content */}
-          {isTypeAllowed ? (
-            <div
-              tabIndex={0}
-              className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+          <>
+            <button
+              className="absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+              onClick={() => changeFile('prev')}
             >
-              <div onClick={(e) => e.stopPropagation()} className="">
-                {blob ? (
-                  <Suspense fallback={<div></div>}>
-                    <Viewer blob={blob} />
-                  </Suspense>
-                ) : (
-                  <>
-                    <div
-                      tabIndex={0}
-                      className={`${
-                        progress === 1 ? 'hidden' : 'flex'
-                      } outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+              <CaretLeft size={24} />
+            </button>
+            {isTypeAllowed ? (
+              <div
+                tabIndex={0}
+                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+              >
+                <div onClick={(e) => e.stopPropagation()} className="">
+                  {blob ? (
+                    <Suspense fallback={<div></div>}>
+                      <Viewer blob={blob} changeFile={changeFile} />
+                    </Suspense>
+                  ) : progress !== undefined ? (
+                    <>
+                      <div
+                        tabIndex={0}
+                        className={`${
+                          progress === 1 ? 'hidden' : 'flex'
+                        } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
                       rounded-xl font-medium`}
+                      >
+                        <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                        <span className="text-lg">{filename}</span>
+                        <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
+                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                          <div
+                            className="h-1.5 rounded-full bg-white"
+                            style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium"
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
-                      <span className="text-white">{translate('drive.loadingFile')}</span>
-                      <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
-                        <div
-                          className="h-1.5 rounded-full bg-white"
-                          style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                        />
-                      </div>
+                      <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
+                      <DownloadButton background="bg-primary" />
                     </div>
-                  </>
-                )}
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div
-              tabIndex={0}
-              className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
+            ) : (
+              <div
+                tabIndex={0}
+                className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
+              >
+                <span>{translate('error.noFilePreview')}</span>
+              </div>
+            )}
+            <button
+              className="absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+              onClick={() => changeFile('next')}
             >
-              <span>{translate('error.noFilePreview')}</span>
-            </div>
-          )}
+              <CaretRight size={24} />
+            </button>
+          </>
 
           {/* Background */}
           <div
@@ -290,17 +364,7 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show, progress }: F
             </div>
 
             {/* Download button */}
-            <div className="z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4">
-              <button
-                onClick={onDownload}
-                className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
-                          bg-opacity-0 px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-              >
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{translate('actions.download')}</span>
-              </button>
-            </div>
+            <DownloadButton />
           </div>
         </div>
       </Dialog>

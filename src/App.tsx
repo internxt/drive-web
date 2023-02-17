@@ -169,11 +169,13 @@ class App extends Component<AppProps> {
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
-            <FileViewerWrapper
-              file={fileViewerItem}
-              onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
-              showPreview={isFileViewerOpen}
-            />
+            {isFileViewerOpen && (
+              <FileViewerWrapper
+                file={fileViewerItem}
+                onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+                showPreview={isFileViewerOpen}
+              />
+            )}
           </Router>
         </DndProvider>
       );

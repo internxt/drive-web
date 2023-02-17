@@ -3,6 +3,7 @@ import { useState, Fragment, useRef, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from 'phosphor-react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CaretLeft, CaretRight } from 'phosphor-react';
 
 interface PageWithObserverProps {
   pageNumber: number;
@@ -55,10 +56,15 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const fileUrl = useRef(URL.createObjectURL(props.blob)).current;
+  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+
+  //useEffect to avoid flickering
+  useEffect(() => {
+    setFileUrl(URL.createObjectURL(props.blob));
+  }, [props.blob]);
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
@@ -80,19 +86,21 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
         <div>
-          <Document file={fileUrl} onLoadSuccess={onDocumentLoadSuccess}>
-            <div className="flex flex-col items-center space-y-3">
-              {Array.from(new Array(numPages), (el, index) => (
-                <PageWithObserver
-                  loading=""
-                  onPageVisible={setCurrentPage}
-                  key={`page_${index + 1}`}
-                  pageNumber={index + 1}
-                  zoom={zoom}
-                />
-              ))}
-            </div>
-          </Document>
+          <div className="flex items-center justify-center">
+            <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
+              <div className="flex flex-col items-center space-y-3">
+                {Array.from(new Array(numPages), (el, index) => (
+                  <PageWithObserver
+                    loading=""
+                    onPageVisible={setCurrentPage}
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    zoom={zoom}
+                  />
+                ))}
+              </div>
+            </Document>
+          </div>
 
           {/* Preview controls */}
           <div
