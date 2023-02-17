@@ -227,7 +227,7 @@ const FileViewer = ({
     }
   }, [show, file]);
 
-  const DownoladButton = ({ background }: { background?: string }) => (
+  const DownloadButton = ({ background }: { background?: string }) => (
     <div
       className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
     >
@@ -313,7 +313,7 @@ const FileViewer = ({
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
                       <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
-                      <DownoladButton background="bg-primary" />
+                      <DownloadButton background="bg-primary" />
                     </div>
                   )}
                 </div>
@@ -364,7 +364,7 @@ const FileViewer = ({
             </div>
 
             {/* Download button */}
-            <DownoladButton />
+            <DownloadButton />
           </div>
         </div>
       </Dialog>
