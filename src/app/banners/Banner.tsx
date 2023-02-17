@@ -4,7 +4,7 @@ import Hearts from 'assets/images/banner/hearts.png';
 import NeonBlur from 'assets/images/banner/neonBlur.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const ValentinesBanner = () => {
+const Banner = () => {
   const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(false);
   const { translate } = useTranslationContext();
   const onClose = () => {
@@ -79,4 +79,4 @@ const ValentinesBanner = () => {
   );
 };
 
-export default ValentinesBanner;
+export default Banner;
