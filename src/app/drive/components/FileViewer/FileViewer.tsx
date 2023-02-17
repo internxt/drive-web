@@ -84,6 +84,7 @@ const FileViewer = ({
   const fileIndex = folderFiles?.findIndex((item) => item === file);
 
   function changeFile(direction: 'next' | 'prev') {
+    setBlob(null);
     if (direction === 'next') {
       if (fileIndex === totalIndex - 1) {
         setCurrentFile?.(folderFiles[0]);
@@ -92,7 +93,7 @@ const FileViewer = ({
       }
     } else {
       if (fileIndex === 0) {
-        setCurrentFile?.(folderFiles[totalIndex.length - 1]);
+        setCurrentFile?.(folderFiles[totalIndex - 1]);
       } else {
         setCurrentFile?.(folderFiles[fileIndex - 1]);
       }
@@ -228,9 +229,7 @@ const FileViewer = ({
 
   const DownoladButton = ({ background }: { background?: string }) => (
     <div
-      className={`${
-        background && background
-      } z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
+      className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
     >
       <button
         onClick={onDownload}
@@ -269,70 +268,72 @@ const FileViewer = ({
           />
 
           {/* Content */}
-          {isTypeAllowed ? (
-            <div
-              tabIndex={0}
-              className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+          <>
+            <button
+              className="absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+              onClick={() => changeFile('prev')}
             >
-              <div onClick={(e) => e.stopPropagation()} className="">
-                <button
-                  className="absolute top-1/2 left-10 rounded-full bg-black p-4 text-white"
-                  onClick={() => changeFile('prev')}
-                >
-                  <CaretLeft size={24} />
-                </button>
-                {blob ? (
-                  <Suspense fallback={<div></div>}>
-                    <Viewer blob={blob} changeFile={changeFile} />
-                  </Suspense>
-                ) : progress ? (
-                  <>
-                    <div
-                      tabIndex={0}
-                      className={`${
-                        progress === 1 ? 'hidden' : 'flex'
-                      } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
+              <CaretLeft size={24} />
+            </button>
+            {isTypeAllowed ? (
+              <div
+                tabIndex={0}
+                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+              >
+                <div onClick={(e) => e.stopPropagation()} className="">
+                  {blob ? (
+                    <Suspense fallback={<div></div>}>
+                      <Viewer blob={blob} changeFile={changeFile} />
+                    </Suspense>
+                  ) : progress !== undefined ? (
+                    <>
+                      <div
+                        tabIndex={0}
+                        className={`${
+                          progress === 1 ? 'hidden' : 'flex'
+                        } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
                       rounded-xl font-medium`}
+                      >
+                        <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                        <span className="text-lg">{filename}</span>
+                        <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
+                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                          <div
+                            className="h-1.5 rounded-full bg-white"
+                            style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      rounded-xl font-medium"
                     >
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
-                      <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
-                      <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
-                        <div
-                          className="h-1.5 rounded-full bg-white"
-                          style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                        />
-                      </div>
+                      <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
+                      <DownoladButton background="bg-primary" />
                     </div>
-                  </>
-                ) : (
-                  <div
-                    className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
-                      rounded-xl font-medium"
-                  >
-                    <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                    <span className="text-lg">{filename}</span>
-                    <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
-                    <DownoladButton background="bg-primary" />
-                  </div>
-                )}
-                <button
-                  className="absolute top-1/2 right-10 rounded-full bg-black p-4 text-white"
-                  onClick={() => changeFile('next')}
-                >
-                  <CaretRight size={24} />
-                </button>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div
-              tabIndex={0}
-              className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
+            ) : (
+              <div
+                tabIndex={0}
+                className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
                           space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
+              >
+                <span>{translate('error.noFilePreview')}</span>
+              </div>
+            )}
+            <button
+              className="absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+              onClick={() => changeFile('next')}
             >
-              <span>{translate('error.noFilePreview')}</span>
-            </div>
-          )}
+              <CaretRight size={24} />
+            </button>
+          </>
 
           {/* Background */}
           <div
