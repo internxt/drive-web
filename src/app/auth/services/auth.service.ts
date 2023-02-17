@@ -270,7 +270,7 @@ export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string):
   const url = new URL(redirectUrl);
   const currentParams = url.searchParams;
 
-  if (!currentParams.get('auth')) {
+  if (currentParams.get('auth') !== 'true') {
     return url.origin + url.pathname + '?' + currentParams.toString();
   }
   currentParams.set('authToken', token);
@@ -295,7 +295,7 @@ const extractOneUseCredentialsForAutoSubmit = (
   credentials?: { email: string; password: string };
 } => {
   // Auto submit is not enabled;
-  if (!searchParams.get('autoSubmit')) {
+  if (searchParams.get('autoSubmit') !== 'true') {
     return { enabled: false };
   }
 
