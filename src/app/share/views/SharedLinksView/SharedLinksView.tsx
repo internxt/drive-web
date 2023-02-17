@@ -31,6 +31,7 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
+import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -51,6 +52,7 @@ export default function SharedLinksView(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
   const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
 
@@ -201,6 +203,15 @@ export default function SharedLinksView(): JSX.Element {
         e.preventDefault();
       }}
     >
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          onClose={() => {
+            setEditNameItem(null);
+            fetchItems(0, orderBy, 'substitute');
+          }}
+        />
+      )}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
@@ -330,13 +341,11 @@ export default function SharedLinksView(): JSX.Element {
                   openLinkSettings,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: (shareLink) => {
-                    //TODO: falta revisar el rename
                     const itemToRename = {
                       ...((shareLink as ListShareLinksItem).item as DriveItemData),
                       isFolder: shareLink.isFolder,
                     };
-                    dispatch(uiActions.setCurrentEditingNameDirty(itemToRename.name));
-                    dispatch(uiActions.setCurrentEditingNameDriveItem(itemToRename));
+                    setEditNameItem(itemToRename);
                   },
                   moveItem: (shareLink) => {
                     const itemToMove = {
