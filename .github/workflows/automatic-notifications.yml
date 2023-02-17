@@ -34,7 +34,7 @@ jobs:
 
       - name: Test
         run: |
-          echo ${{ steps.increment_version.outputs.new_version }}
+          echo ${{ steps.increment_version.outputs.next_version }}
           
       - name: Commit updated package.json
         run: |
@@ -42,9 +42,9 @@ jobs:
           cd drive-web
           git config --global user.email "inxtci@internxt.com"
           git config --global user.name "inxtci"
-          jq '.version = "${{ steps.increment_version.outputs.new_version }}"' <<<"$jsonStr"
+          jq '.version = "${{ steps.increment_version.outputs.next_version }}"' <<<"$jsonStr"
           git add package.json
-          git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.new_version }}"
+          git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.next_version }}"
           git push https://inxtci:${{ secrets.CI_USER_GH_TOKEN }}@github.com/internxt/drive-web.git
 
       - name: Create GitHub Release
