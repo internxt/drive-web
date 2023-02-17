@@ -59,7 +59,6 @@ import {
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
-import ValentinesBanner from 'app/banners/Valentinesbanner';
 import { Menu, Transition } from '@headlessui/react';
 
 const PAGINATION_LIMIT = 100;
@@ -283,7 +282,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
-      <ValentinesBanner />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col pt-6">
