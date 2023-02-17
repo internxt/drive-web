@@ -40,7 +40,7 @@ jobs:
         run: |
           REPO_URL="https://github.com/internxt/drive-web.git"
           TOKEN="${{ secrets.CI_USER_GH_TOKEN }}"
-          AUTH_URL="https://inxtci:${TOKEN}@github.com/internxt/drive"
+          AUTH_URL="https://inxtci:${TOKEN}@github.com/internxt/drive-web"
           git config --global user.email "inxtci@internxt.com"
           git config --global user.name "inxtci"
           git clone $AUTH_URL
