@@ -42,7 +42,7 @@ jobs:
           cd drive-web
           git config --global user.email "inxtci@internxt.com"
           git config --global user.name "inxtci"
-          sed -i '0,/"version":/s/"version": "[^"]*"/"version": "${{ steps.increment_version.outputs.new_version }}"/' package.json
+          jq '.version = "${{ steps.increment_version.outputs.new_version }}"' <<<"$jsonStr"
           git add package.json
           git commit -m "[skip ci] Bump version to ${{ steps.increment_version.outputs.new_version }}"
           git push https://inxtci:${{ secrets.CI_USER_GH_TOKEN }}@github.com/internxt/drive-web.git
