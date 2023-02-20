@@ -88,7 +88,6 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
       if (currentPage + 15 <= numPages) {
         setRenderPages(currentPage + 15);
       } else {
-        console.log('rendering all pages');
         setRenderPages(currentPage + (numPages - currentPage));
       }
     } else {
