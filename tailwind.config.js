@@ -485,7 +485,7 @@ module.exports = {
     verticalAlign: ['responsive', 'group-hover'],
     visibility: ['responsive', 'group-hover'],
     whitespace: ['responsive', 'group-hover'],
-    width: ['responsive', 'group-hover', 'focus-visible'],
+    width: ['responsive', 'group-hover', 'focus-visible', 'focus'],
     wordBreak: ['responsive', 'group-hover', 'focus-visible'],
     zIndex: ['responsive', 'focus-within', 'focus', 'group-hover', 'focus-visible'],
   },
