@@ -41,21 +41,21 @@ const DeviceList = (props: Props): JSX.Element => {
         <List<Device | (DriveFolderData & { size: number }), 'name' | 'updatedAt' | 'size'>
           header={[
             {
-              label: 'Name',
+              label: translate('drive.list.columns.name'),
               width: 'flex flex-grow cursor-pointer items-center pl-6',
               name: 'name',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: 'Modified',
+              label: translate('drive.list.columns.modified'),
               width: 'hidden w-3/12 lg:flex pl-4',
               name: 'updatedAt',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: 'Size',
+              label: translate('drive.list.columns.size'),
               width: 'flex w-2/12 cursor-pointer items-center',
               name: 'size',
               orderable: true,
@@ -90,10 +90,6 @@ const DeviceList = (props: Props): JSX.Element => {
               }}
             />
           }
-          onNextPage={() => {
-            // TODO: REVISAR ESTO!
-          }}
-          hasMoreItems={false}
           menu={contextMenuBackupItems({
             onDeviceDeleted,
             selectedDevices: selectedItems as Device[],

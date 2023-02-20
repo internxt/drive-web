@@ -14,6 +14,7 @@ import {
   PencilSimple,
   CaretDown,
   TrashSimple,
+  ArrowFatUp,
 } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -425,17 +426,36 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                               }
                             >
                               <Menu.Item>
-                                {({ active }) => (
-                                  <div
-                                    onClick={onCreateFolderButtonClicked}
-                                    className={`${
-                                      active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                  >
-                                    <FolderSimplePlus size={20} />
-                                    <p>{translate('actions.upload.folder')}</p>
-                                  </div>
-                                )}
+                                {({ active, close }) => {
+                                  useEffect(() => {
+                                    function handleKeyDown(event: KeyboardEvent) {
+                                      if (event.shiftKey && event.key === 'F') {
+                                        onCreateFolderButtonClicked();
+                                        close();
+                                      }
+                                    }
+
+                                    document.addEventListener('keydown', handleKeyDown);
+
+                                    return () => {
+                                      document.removeEventListener('keydown', handleKeyDown);
+                                    };
+                                  }, []);
+                                  return (
+                                    <div
+                                      onClick={onCreateFolderButtonClicked}
+                                      className={`${
+                                        active && 'bg-gray-5'
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    >
+                                      <FolderSimplePlus size={20} />
+                                      <p>{translate('actions.upload.folder')}</p>
+                                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                        <ArrowFatUp size={14} /> F
+                                      </span>
+                                    </div>
+                                  );
+                                }}
                               </Menu.Item>
                               <div className="my-px mx-3 flex border-t border-gray-5" />
                               <Menu.Item>

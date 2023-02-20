@@ -1,26 +1,19 @@
-import React, { memo, useEffect, useState, RefObject } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
 import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { connect } from 'react-redux';
 
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
-import storage, { storageActions } from '../../../../store/slices/storage';
-import { DriveFileData, DriveItemData } from '../../../types';
+import { storageActions } from '../../../../store/slices/storage';
+import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
-import InfiniteScroll from 'react-infinite-scroll-component';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import List from '../../../../shared/components/List';
-import iconService from '../../../services/icon.service';
-import { Copy, Download, Gear, Link, LinkBreak, Pencil, Trash } from 'phosphor-react';
-import dateService from '../../../../core/services/date.service';
-import sizeService from '../../../services/size.service';
-import useDriveItemActions from '../DriveExplorerItem/hooks/useDriveItemActions';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import { TFunction } from 'i18next';
 import { uiActions } from '../../../../store/slices/ui';
 import {
   contextMenuDriveNotSharedLink,
@@ -43,28 +36,33 @@ interface DriveExplorerListProps {
   onHoverListItems?: (areHover: boolean) => void;
 }
 
-//TODO: move this function to utils or other
-const compareArrays = (array1, array2) => {
-  const result: any[] = [];
-  const map = new Map();
+type ObjectWithId = { id: string | number };
+
+function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] {
+  const result: T[] = [];
+  const map = new Map<string, T>();
 
   for (const item of array1) {
-    map.set(item.id, item);
+    map.set(item.id.toString(), item);
   }
 
   for (const item of array2) {
-    if (!map.has(item.id)) {
+    if (!map.has(item.id.toString())) {
       result.push(item);
     } else {
-      map.delete(item.id);
+      map.delete(item.id.toString());
     }
   }
 
   return [...result, ...Array.from(map.values())];
-};
+}
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
+  const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
+  const isSelectedSharedItem = props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0;
+
+  const { translate } = useTranslationContext();
 
   useEffect(() => {
     setIsAllSelectedEnabled(false);
@@ -143,7 +141,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       }
     }
     //  const deselecteditems = props.selectedItems.filter((selectedItem) => updatedSelectedItems.map().includes())
-    const deselecteditems = compareArrays(updatedSelectedItems, props.selectedItems);
+    const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
     dispatch(storageActions.deselectItems(deselecteditems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
@@ -174,38 +172,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   }
 
   return (
-    //TODO: REMEMBER TO REMOVE ALL COMMENTED CODE! -----------------------------------------
     <div className="flex h-full flex-grow flex-col">
-      {/* <div className="files-list flex border-b border-neutral-30 bg-white py-3 text-sm font-semibold text-neutral-500">
-        <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
-          <input
-            disabled={!hasItems}
-            readOnly
-            checked={isAllSelected()}
-            onClick={onSelectAllButtonClicked}
-            type="checkbox"
-            className="pointer-events-auto"
-          />
-        </div>
-        <div className="box-content flex w-1/12 cursor-pointer items-center px-3" onClick={() => sortBy('type')}>
-          {translate('drive.list.columns.type')}
-          {order.by === 'type' && sortButtonFactory()}
-        </div>
-        <div className="flex flex-grow cursor-pointer items-center" onClick={() => sortBy('name')}>
-          {translate('drive.list.columns.name')}
-          {order.by === 'name' && sortButtonFactory()}
-        </div>
-        <div className="hidden w-2/12 items-center xl:flex"></div>
-        <div className="hidden w-3/12 cursor-pointer items-center lg:flex" onClick={() => sortBy('updatedAt')}>
-          {translate('drive.list.columns.modified')}
-          {order.by === 'updatedAt' && sortButtonFactory()}
-        </div>
-        <div className="flex w-1/12 cursor-pointer items-center" onClick={() => sortBy('size')}>
-          {translate('drive.list.columns.size')}
-          {order.by === 'size' && sortButtonFactory()}
-        </div>
-        <div className="flex w-1/12 items-center rounded-tr-4px">{translate('drive.list.columns.actions')}</div>
-      </div> */}
       <div className="h-full overflow-y-auto">
         {isLoading ? (
           loadingSkeleton()
@@ -215,28 +182,28 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
                 header={[
                   {
-                    label: 'Type',
+                    label: translate('drive.list.columns.type'),
                     width: 'flex w-1/12 cursor-pointer items-center px-3',
                     name: 'type',
                     orderable: true,
                     defaultDirection: 'ASC',
                   },
                   {
-                    label: 'Name',
+                    label: translate('drive.list.columns.name'),
                     width: 'flex flex-grow cursor-pointer items-center pl-6',
                     name: 'name',
                     orderable: true,
                     defaultDirection: 'ASC',
                   },
                   {
-                    label: 'Modified',
+                    label: translate('drive.list.columns.modified'),
                     width: 'hidden w-3/12 lg:flex pl-4',
                     name: 'updatedAt',
                     orderable: true,
                     defaultDirection: 'ASC',
                   },
                   {
-                    label: 'Size',
+                    label: translate('drive.list.columns.size'),
                     width: 'flex w-1/12 cursor-pointer items-center',
                     name: 'size',
                     orderable: true,
@@ -249,11 +216,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
                 skinSkeleton={loadingSkeleton()}
-                emptyState={<div></div>}
+                emptyState={<></>}
                 onNextPage={onEndOfScroll}
+                onDoubleClick={(driveItem) => {
+                  dispatch(uiActions.setIsFileViewerOpen(true));
+                  dispatch(uiActions.setFileViewerItem(driveItem));
+                }}
                 hasMoreItems={hasMoreItems}
                 menu={
-                  props.selectedItems.length > 1 && !props.isTrash //extraer esta condicion a variable
+                  isSelectedMultipleItemsAndNotTrash
                     ? contextMenuSelectedItems({
                         selectedItems: props.selectedItems,
                         moveItems: () => {
@@ -293,7 +264,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                             dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
                           },
                         })
-                    : props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0 //extraer esta condicion a variable
+                    : isSelectedSharedItem
                     ? contextMenuDriveItemShared({
                         openPreview: (item) => {
                           dispatch(uiActions.setIsFileViewerOpen(true));

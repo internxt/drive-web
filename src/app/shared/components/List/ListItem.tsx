@@ -7,9 +7,17 @@ export type ListItemMenu<T> = Array<{
   separator?: boolean;
   name: string;
   icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+  keyboardShortcutOptions?: {
+    keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+    keyboardShortcutText?: string;
+    keyboardShortcutKey: string;
+    keyboardKeys?: ['shiftKey' | 'metaKey' | 'ctrlKey' | 'altKey'];
+  };
   action: (target: T) => void;
   disabled?: (target: T) => boolean;
 }>;
+
+const SPECIAL_KEYS = ['shiftKey' as const, 'metaKey' as const, 'ctrlKey' as const, 'altKey' as const];
 
 interface ItemProps<T> {
   item: T;
@@ -65,7 +73,7 @@ export default function ListItem<T extends { id: string }>({
   const handleContextMenuClick = (event) => {
     event.preventDefault();
     onClickContextMenu?.(event);
-    const childWidth = menuItemsRef?.current?.offsetWidth || 180;
+    const childWidth = menuItemsRef?.current?.offsetWidth || 200;
     const childHeight = menuItemsRef?.current?.offsetHeight || 300;
     const wrapperRect = rootWrapperRef?.current?.getBoundingClientRect();
     const { innerWidth, innerHeight } = window;
@@ -146,7 +154,6 @@ export default function ListItem<T extends { id: string }>({
           checked={selected}
         />
       </div>
-      {/* TODO: CHECK THIS BEFORE MERGE */}
       {disableItemCompositionStyles ? (
         <div
           key={0}
@@ -190,6 +197,7 @@ export default function ListItem<T extends { id: string }>({
                   className={`outline-none focus-visible:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
                     selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
                   }`}
+                  onKeyDown={() => undefined}
                 >
                   <DotsThree size={24} weight="bold" />
                 </Menu.Button>
@@ -215,26 +223,62 @@ export default function ListItem<T extends { id: string }>({
                             </div>
                           ) : (
                             <Menu.Item disabled={option.disabled?.(item)}>
-                              {({ active, disabled }) => (
-                                <div
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    option.action?.(item);
-                                  }}
-                                  className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
-                                    active
-                                      ? 'bg-gray-5 text-gray-100'
-                                      : disabled
-                                      ? 'pointer-events-none text-gray-40'
-                                      : 'text-gray-80'
-                                  }`}
-                                >
-                                  <div className="flex flex-row items-center space-x-2">
-                                    {option.icon && <option.icon size={20} />}
-                                    <span>{option.name}</span>
+                              {({ active, disabled, close }) => {
+                                useEffect(() => {
+                                  function handleKeyDown(event: KeyboardEvent) {
+                                    let eventKeys = true;
+                                    console.log({ event });
+                                    SPECIAL_KEYS.forEach((specialKey) => {
+                                      if (option.keyboardShortcutOptions?.keyboardKeys?.includes(specialKey)) {
+                                        console.log({ specialKey });
+                                        eventKeys = eventKeys && event[specialKey];
+                                      }
+                                    });
+
+                                    if (
+                                      eventKeys &&
+                                      event.key === option.keyboardShortcutOptions?.keyboardShortcutKey
+                                    ) {
+                                      option.action?.(item);
+                                      close();
+                                    }
+                                  }
+
+                                  document.addEventListener('keydown', handleKeyDown);
+
+                                  return () => {
+                                    document.removeEventListener('keydown', handleKeyDown);
+                                  };
+                                }, []);
+
+                                return (
+                                  <div
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      option.action?.(item);
+                                    }}
+                                    className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
+                                      active
+                                        ? 'bg-gray-5 text-gray-100'
+                                        : disabled
+                                        ? 'pointer-events-none text-gray-40'
+                                        : 'text-gray-80'
+                                    }`}
+                                  >
+                                    <div className="flex flex-row items-center space-x-2">
+                                      {option.icon && <option.icon size={20} />}
+                                      <span>{option.name}</span>
+                                    </div>
+                                    <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                      {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                                        <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                                      )}
+                                      {option.keyboardShortcutOptions?.keyboardShortcutText &&
+                                        option.keyboardShortcutOptions?.keyboardShortcutText}
+                                    </span>
                                   </div>
-                                </div>
-                              )}
+                                );
+                              }}
                             </Menu.Item>
                           )}
                         </div>

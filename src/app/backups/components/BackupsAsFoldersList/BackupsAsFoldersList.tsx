@@ -15,6 +15,7 @@ import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.servi
 import { deleteFile } from '../../../drive/services/file.service';
 import List from '../../../shared/components/List';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -26,6 +27,7 @@ export default function BackupsAsFoldersList({
   onFolderPush: (folder: DriveFolderData) => void;
 }): JSX.Element {
   const dispatch = useDispatch();
+  const { translate } = useTranslationContext();
 
   const [isLoading, setIsloading] = useState(true);
   const [currentItems, setCurrentItems] = useState<DriveItemData[]>([]);
@@ -91,21 +93,21 @@ export default function BackupsAsFoldersList({
         <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
           header={[
             {
-              label: 'Name',
+              label: translate('drive.list.columns.name'),
               width: 'flex flex-grow cursor-pointer items-center pl-6',
               name: 'name',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: 'Modified',
+              label: translate('drive.list.columns.modified'),
               width: 'hidden w-3/12 lg:flex pl-4',
               name: 'updatedAt',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: 'Size',
+              label: translate('drive.list.columns.size'),
               width: 'flex w-2/12 cursor-pointer items-center',
               name: 'size',
               orderable: true,
@@ -131,10 +133,6 @@ export default function BackupsAsFoldersList({
               subtitle="Use Internxt Desktop to upload your data"
             />
           }
-          onNextPage={() => {
-            //TODO: REVISAR ESTO!
-          }}
-          hasMoreItems={false} //TODO: REVISAR ESTO!
           menu={contextMenuSelectedBackupItems({
             onDownloadSelectedItems,
             onDeleteSelectedItems,

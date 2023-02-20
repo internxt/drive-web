@@ -22,7 +22,7 @@ interface ListProps<T, F> {
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: ReactNode;
-  onNextPage: () => void;
+  onNextPage?: () => void;
   onOrderByChanged?: (value: { field: F; direction: 'ASC' | 'DESC' }) => void;
   orderBy?: { field: F; direction: 'ASC' | 'DESC' };
   hasMoreItems?: boolean;
@@ -95,13 +95,21 @@ ListProps<T, F>): JSX.Element {
     if (!node || isLoading) return;
 
     if (!isScrollable && hasMoreItems) {
-      onNextPage();
+      onNextPage?.();
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
     onSelectedItemsChanged(changesToMake);
+  }
+
+  function executeClickOnSelectedItem() {
+    const oneItemSelected = selectedItems.length === 1;
+    if (oneItemSelected) {
+      const selectedItem = selectedItems[0];
+      onDoubleClick?.(selectedItem);
+    }
   }
 
   function unselectAllItemsAndSelectOne(props: T) {
@@ -146,6 +154,8 @@ ListProps<T, F>): JSX.Element {
   );
 
   useHotkeys('esc', unselectAllItems, [selectedItems]);
+
+  useHotkeys('enter', executeClickOnSelectedItem, [selectedItems]);
 
   function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
@@ -205,7 +215,7 @@ ListProps<T, F>): JSX.Element {
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={onNextPage}
+              next={onNextPage ? onNextPage : () => ({})}
               hasMore={hasMoreItems ?? false}
               loader={loader}
               scrollableTarget="scrollableList"

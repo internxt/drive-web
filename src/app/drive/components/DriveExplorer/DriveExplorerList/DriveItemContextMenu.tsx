@@ -2,6 +2,7 @@ import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import { t } from 'i18next';
 import {
   ArrowsOutCardinal,
+  Backspace,
   ClockCounterClockwise,
   Copy,
   Download,
@@ -56,6 +57,10 @@ const contextMenuSelectedItems = ({
     name: t('drive.dropdown.moveToTrash'),
     icon: Trash,
     action: moveToTrash,
+    keyboardShortcutOptions: {
+      keyboardShortcutIcon: Backspace,
+      keyboardShortcutKey: 'Backspace',
+    },
     disabled: () => {
       return false;
     },
@@ -98,6 +103,10 @@ const contextMenuDriveNotSharedLink = ({
     name: t('drive.dropdown.rename'),
     icon: Pencil,
     action: renameItem,
+    keyboardShortcutOptions: {
+      keyboardShortcutKey: 'r',
+      keyboardShortcutText: 'R',
+    },
     disabled: () => {
       return false;
     },
@@ -123,6 +132,10 @@ const contextMenuDriveNotSharedLink = ({
     name: t('drive.dropdown.moveToTrash'),
     icon: Trash,
     action: moveToTrash,
+    keyboardShortcutOptions: {
+      keyboardShortcutIcon: Backspace,
+      keyboardShortcutKey: 'Backspace',
+    },
     disabled: () => {
       return false;
     },
@@ -153,7 +166,6 @@ const contextMenuDriveItemShared = ({
     icon: Eye,
     action: openPreview,
     disabled: (item) => {
-      console.log({ item });
       return item?.isFolder;
     },
   },
@@ -186,6 +198,10 @@ const contextMenuDriveItemShared = ({
     name: t('drive.dropdown.rename'),
     icon: Pencil,
     action: renameItem,
+    keyboardShortcutOptions: {
+      keyboardShortcutKey: 'r',
+      keyboardShortcutText: 'R',
+    },
     disabled: () => {
       return false;
     },
@@ -212,6 +228,10 @@ const contextMenuDriveItemShared = ({
     name: t('drive.dropdown.moveToTrash'),
     icon: Trash,
     action: moveToTrash,
+    keyboardShortcutOptions: {
+      keyboardShortcutIcon: Backspace,
+      keyboardShortcutKey: 'Backspace',
+    },
     disabled: () => {
       return false;
     },
@@ -248,6 +268,10 @@ const contextMenuMultipleSharedView = ({
     name: t('drive.dropdown.moveToTrash'),
     icon: Trash,
     action: moveToTrash,
+    keyboardShortcutOptions: {
+      keyboardShortcutIcon: Backspace,
+      keyboardShortcutKey: 'Backspace',
+    },
     disabled: () => {
       return false;
     },
