@@ -137,8 +137,6 @@ export default function BackupsView(): JSX.Element {
         selectedItems={selectedDevices}
       />
     );
-  } else if (currentDevice && 'mac' in currentDevice) {
-    body = <BackupsList isLoading={isLoadingDeviceBackups} items={currentDeviceBackups} />;
   } else if (backupsAsFoldersPath.length) {
     body = (
       <BackupsAsFoldersList

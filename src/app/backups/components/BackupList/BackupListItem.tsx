@@ -9,7 +9,6 @@ import { useAppDispatch } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import BackupDropdownActions from '../BackupDropdownActions/BackupDropdownActions';
 
-// TODO: PREGUNTAR DONDE SE UTILIZA ESTO
 export default function BackupsListItem({
   backup,
   onDownloadBackupClicked,
@@ -24,7 +23,6 @@ export default function BackupsListItem({
   const onDownload = () => isUploaded && onDownloadBackupClicked(backup);
   const onDeleteButtonClicked = () => onDeleteBackupClicked(backup);
 
-  //PREGUNTAR SOBRE ESTO
   const onInfoButtonClicked = (e: React.MouseEvent) => {
     const infoMenuFeatures = [
       {
@@ -74,7 +72,7 @@ export default function BackupsListItem({
         {backup.lastBackupAt ? dateService.format(backup.lastBackupAt, 'DD MMMM YYYY. HH:mm') : 'Not uploaded yet'}
       </div>
       <div className="flex w-2/12 items-center">{backup.size ? sizeService.bytesToString(backup.size, false) : ''}</div>
-      {/* <div className="flex w-1/12 items-center rounded-tr-4px">
+      <div className="flex w-1/12 items-center rounded-tr-4px">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
             <UilEllipsisH className="h-full w-full" />
@@ -87,7 +85,7 @@ export default function BackupsListItem({
             />
           </Dropdown.Menu>
         </Dropdown>
-      </div> */}
+      </div>
     </div>
   );
 }
