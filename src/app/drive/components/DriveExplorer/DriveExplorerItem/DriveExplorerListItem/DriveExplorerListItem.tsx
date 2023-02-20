@@ -1,16 +1,10 @@
-import React, { Fragment, useEffect } from 'react';
-import { Dropdown } from 'react-bootstrap';
-import { PencilSimple, Link, Trash, DownloadSimple, DotsThree } from 'phosphor-react';
+import { Fragment, useEffect } from 'react';
+import { PencilSimple, Link, Trash, DownloadSimple } from 'phosphor-react';
 import { items } from '@internxt/lib';
-
-import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import sizeService from '../../../../../drive/services/size.service';
-
 import dateService from '../../../../../core/services/date.service';
-import { storageActions } from '../../../../../store/slices/storage';
 import iconService from '../../../../services/icon.service';
-import { DriveExplorerItemProps, DriveItemAction } from '..';
-import { useAppDispatch } from '../../../../../store/hooks';
+import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
@@ -18,7 +12,6 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
-  const dispatch = useAppDispatch();
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
   const {
     nameInputRef,
@@ -28,17 +21,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     onEditNameButtonClicked,
     onNameEnterKeyDown,
     onDownloadButtonClicked,
-    onRenameButtonClicked,
-    onInfoButtonClicked,
     onDeleteButtonClicked,
-    onDeletePermanentlyButtonClicked,
-    onRecoverButtonClicked,
     onShareButtonClicked,
-    onShareCopyButtonClicked,
-    onShareSettingsButtonClicked,
-    onShareDeleteButtonClicked,
     onItemClicked,
-    onItemRightClicked,
     onItemDoubleClicked,
   } = useDriveItemActions(item);
 
@@ -48,9 +33,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
-  const onSelectCheckboxChanged = (e: React.ChangeEvent<HTMLInputElement>): void => {
-    e.target.checked ? dispatch(storageActions.selectItems([item])) : dispatch(storageActions.deselectItems([item]));
-  };
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -108,21 +90,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const template = (
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
-      // onContextMenu={onItemRightClicked}
       onClick={onItemClicked}
       onDoubleClick={!item.deleted || !item.isFolder ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      {/* SELECTION */}
-      {/* <div className="box-content flex w-0.5/12 items-center justify-start pl-3">
-        <input
-          onClick={(e) => e.stopPropagation()}
-          type="checkbox"
-          checked={isItemSelected(item)}
-          onChange={onSelectCheckboxChanged}
-        />
-      </div> */}
-
       {/* ICON */}
       <div className="box-content flex w-1/12 items-center px-3">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
@@ -187,35 +158,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           sizeService.bytesToString(item.size, false)
         )}
       </div>
-
-      {/* ACTIONS BUTTON */}
-      {/* <div className="flex w-1/12 items-center">
-        <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
-            <DotsThree className="h-full w-full" />
-          </Dropdown.Toggle>
-          <Dropdown.Menu>
-            <DriveItemDropdownActions
-              hiddenActions={
-                item?.shares?.length || 0 > 0
-                  ? [DriveItemAction.ShareGetLink]
-                  : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
-              }
-              onRenameButtonClicked={onRenameButtonClicked}
-              onDownloadButtonClicked={onDownloadButtonClicked}
-              onShareButtonClicked={onShareButtonClicked}
-              onShareCopyButtonClicked={onShareCopyButtonClicked}
-              onShareSettingsButtonClicked={onShareSettingsButtonClicked}
-              onShareDeleteButtonClicked={onShareDeleteButtonClicked}
-              onInfoButtonClicked={onInfoButtonClicked}
-              onDeleteButtonClicked={onDeleteButtonClicked}
-              onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
-              onRecoverButtonClicked={onRecoverButtonClicked}
-              isTrash={item.deleted}
-            />
-          </Dropdown.Menu>
-        </Dropdown>
-      </div> */}
     </div>
   );
 

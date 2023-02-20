@@ -47,7 +47,6 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
           const errorMessage = e?.message?.includes('already exists') && translate('error.creatingFolder');
           setError(errorMessage);
           setIsLoading(false);
-          return e;
         });
     } else {
       setError(translate('error.folderCannotBeEmpty') as string);

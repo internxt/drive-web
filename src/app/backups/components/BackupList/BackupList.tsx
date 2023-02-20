@@ -20,11 +20,11 @@ const BackupList = (props: Props): JSX.Element => {
 
   const [selectedBackups, setSelectedBackups] = useState<DeviceBackup[]>([]);
 
-  const onDownloadBackupClicked = async () => {
-    selectedBackups.forEach(async (backup) => dispatch(backupsThunks.downloadBackupThunk(backup)));
+  const onDownloadBackupClicked = () => {
+    selectedBackups.forEach((backup) => dispatch(backupsThunks.downloadBackupThunk(backup)));
   };
-  const onDeleteBackupClicked = async () => {
-    selectedBackups.forEach(async (backup) => dispatch(backupsThunks.deleteBackupThunk(backup)));
+  const onDeleteBackupClicked = () => {
+    selectedBackups.forEach((backup) => dispatch(backupsThunks.deleteBackupThunk(backup)));
   };
 
   const onBackupSelected = (changes: { device: DeviceBackup; isSelected: boolean }[]) => {
