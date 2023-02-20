@@ -1,3 +1,6 @@
+import { sendAnalyticsError } from './utils';
+import errorService from '../core/services/error.service';
+
 export default class Analytics {
   private static instance: Analytics;
 
@@ -11,7 +14,7 @@ export default class Analytics {
       Analytics.instance = new Analytics();
       if (typeof Analytics.instance === 'undefined') {
         // Analytics library have not loaded properly
-        throw new Error('Analytics library not loaded');
+        sendAnalyticsError('Analytics library not loaded');
       }
     }
     return Analytics.instance;
@@ -21,7 +24,8 @@ export default class Analytics {
     try {
       Analytics.instance.track(eventName, properties);
     } catch (err) {
-      //NO OP
+      const castedError = errorService.castError(err);
+      sendAnalyticsError(castedError.message);
     }
   }
 }
