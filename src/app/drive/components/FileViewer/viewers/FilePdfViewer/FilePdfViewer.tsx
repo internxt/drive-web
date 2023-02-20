@@ -57,9 +57,10 @@ const DEFAULT_ZOOM = 1;
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const [renderPages, setRenderPages] = useState<number>();
 
   //useEffect to avoid flickering
   useEffect(() => {
@@ -82,6 +83,18 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     setNumPages(numPages);
   }
 
+  useEffect(() => {
+    if (numPages > 75) {
+      if (currentPage + 15 <= numPages) {
+        setRenderPages(currentPage + 15);
+      } else {
+        setRenderPages(currentPage + (numPages - currentPage));
+      }
+    } else {
+      setRenderPages(numPages);
+    }
+  }, [currentPage, numPages]);
+
   return (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
@@ -89,7 +102,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
           <div className="flex items-center justify-center">
             <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
               <div className="flex flex-col items-center space-y-3">
-                {Array.from(new Array(numPages), (el, index) => (
+                {Array.from(new Array(renderPages), (el, index) => (
                   <PageWithObserver
                     loading=""
                     onPageVisible={setCurrentPage}
