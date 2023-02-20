@@ -28,14 +28,14 @@ export async function uploadFile(
   abortController?: AbortController,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
-
+  const trackingUploadId = analyticsService.getUploadId();
   try {
-    analyticsService.trackFileUploadStart({
+    analyticsService.trackFileUploadStarted({
+      file_upload_id: trackingUploadId,
       file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      platform: DevicePlatform.Web,
+      file_extension: file.type,
+      parent_folder_id: file.parentFolderId,
+      file_name: file.name,
     });
 
     if (!bucketId) {
@@ -92,26 +92,36 @@ export async function uploadFile(
       }
     }
 
-    analyticsService.trackFileUploadFinished({
+    analyticsService.trackFileUploadCompleted({
+      file_upload_id: trackingUploadId,
       file_size: file.size,
       file_id: response.id,
-      file_type: file.type,
-      email: userEmail,
+      file_extension: file.type,
+      parent_folder_id: file.parentFolderId,
+      bucket_id: parseInt(bucketId),
+      file_name: file.name,
     });
 
     return response;
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
+    const reportUploadError = {
+      file_upload_id: trackingUploadId,
+      file_name: file.name,
+      file_size: file.size,
+      file_extension: file.type,
+      parent_folder_id: file.parentFolderId,
+      bucket_id: parseInt(bucketId),
+    };
+
     if (!abortController?.signal.aborted) {
       analyticsService.trackFileUploadError({
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: file.parentFolderId,
-        email: userEmail,
-        msg: castedError.message,
-        platform: DevicePlatform.Web,
+        ...reportUploadError,
+        error_message: castedError.message,
       });
+    } else {
+      analyticsService.trackFileUploadAborted(reportUploadError);
     }
 
     throw err;

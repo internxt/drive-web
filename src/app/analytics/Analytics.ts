@@ -9,6 +9,10 @@ export default class Analytics {
   public static getInstance(): Analytics {
     if (!Analytics.instance) {
       Analytics.instance = new Analytics();
+      if (typeof Analytics.instance === 'undefined') {
+        // Analytics library have not loaded properly
+        throw new Error('Analytics library not loaded');
+      }
     }
     return Analytics.instance;
   }

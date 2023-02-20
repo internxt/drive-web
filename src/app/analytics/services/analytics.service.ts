@@ -15,6 +15,10 @@ import { v4 as uuidv4 } from 'uuid';
 
 const analytics: Analytics = Analytics.getInstance();
 
+export function getUploadId() {
+  return uuidv4();
+}
+
 export const PATH_NAMES = {
   '/new': 'Register',
   '/appsumo': 'Register',
@@ -182,34 +186,49 @@ export function trackFileRename(payload: { email: string; file_id: number | stri
   // window.analytics.track(AnalyticsTrackNames.FileRename, payload);
 }
 
-export function trackFileUploadStart(payload: {
+export function trackFileUploadStarted(properties: {
+  file_upload_id: string;
   file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  platform: DevicePlatform;
+  file_extension: string;
+  parent_folder_id: number;
+  file_name: string;
 }): void {
-  // window.analytics.track(AnalyticsTrackNames.FileUploadStart, payload);
+  analytics.track(AnalyticsTrackNames.FileUploadStart, properties);
 }
 
-export function trackFileUploadError(payload: {
+export function trackFileUploadError(properties: {
+  file_upload_id: string;
+  file_name: string;
   file_size: number;
-  file_type: string;
-  folder_id: number;
-  email: string;
-  msg: string;
-  platform: DevicePlatform;
+  file_extension: string;
+  parent_folder_id: number;
+  error_message: string;
+  bucket_id: number;
 }): void {
-  // window.analytics.track(AnalyticsTrackNames.FileUploadError, payload);
+  analytics.track(AnalyticsTrackNames.FileUploadError, properties);
 }
 
-export function trackFileUploadFinished(payload: {
-  file_type: string;
+export function trackFileUploadAborted(properties: {
+  file_upload_id: string;
+  file_name: string;
+  file_size: number;
+  file_extension: string;
+  parent_folder_id: number;
+  bucket_id: number;
+}): void {
+  analytics.track(AnalyticsTrackNames.FileUploadAborted, properties);
+}
+
+export function trackFileUploadCompleted(properties: {
+  file_upload_id: string;
+  file_size: number;
+  file_extension: string;
+  parent_folder_id: number;
+  bucket_id: number;
   file_id: number;
-  file_size: number;
-  email: string;
+  file_name: string;
 }): void {
-  // window.analytics.track(AnalyticsTrackNames.FileUploadFinished, payload);
+  analytics.track(AnalyticsTrackNames.FileUploadCompleted, properties);
 }
 
 export function trackMoveItem(
@@ -410,9 +429,9 @@ const analyticsService = {
   trackFileRename,
   trackFileDownloadStarted,
   trackFileDownloadError,
-  trackFileUploadStart,
+  trackFileUploadStarted,
   trackFileUploadError,
-  trackFileUploadFinished,
+  trackFileUploadCompleted,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
@@ -424,6 +443,8 @@ const analyticsService = {
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,
   trackPaymentConversion,
+  trackFileUploadAborted,
+  getUploadId,
 };
 
 export default analyticsService;
