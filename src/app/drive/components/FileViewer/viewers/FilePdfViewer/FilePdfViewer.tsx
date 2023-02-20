@@ -57,7 +57,7 @@ const DEFAULT_ZOOM = 1;
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [renderPages, setRenderPages] = useState<number>();
@@ -84,12 +84,17 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   }
 
   useEffect(() => {
-    if (currentPage === currentPage + 15) {
-      setRenderPages(currentPage + 30);
+    if (numPages > 75) {
+      if (currentPage + 15 <= numPages) {
+        setRenderPages(currentPage + 15);
+      } else {
+        console.log('rendering all pages');
+        setRenderPages(currentPage + (numPages - currentPage));
+      }
     } else {
-      setRenderPages(currentPage + 15);
+      setRenderPages(numPages);
     }
-  }, [currentPage]);
+  }, [currentPage, numPages]);
 
   return (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
