@@ -8,6 +8,7 @@ import { photosSlice, PhotosState } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
 import * as Sentry from '@sentry/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function Preview({
   onDownloadClick,
@@ -20,6 +21,7 @@ export default function Preview({
   onDeleteClick?: () => void;
   onClose: () => void;
 }): JSX.Element {
+  const { translate } = useTranslationContext();
   const MS_TO_BE_IDLE = 5000;
   const isIdle = useIdle(MS_TO_BE_IDLE);
 
@@ -163,7 +165,7 @@ export default function Preview({
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
-              <p className="ml-3">Loading...</p>
+              <p className="ml-3">{translate('general,loading.default')}</p>
             </div>
           </div>
         )}

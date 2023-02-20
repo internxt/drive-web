@@ -1,30 +1,70 @@
-import UilArrowLeft from '@iconscout/react-unicons/icons/uil-angle-left-b';
-import UilArrowRight from '@iconscout/react-unicons/icons/uil-angle-right-b';
-import UilMinus from '@iconscout/react-unicons/icons/uil-minus';
-import UilPlus from '@iconscout/react-unicons/icons/uil-plus';
-
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useRef, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
+import { MagnifyingGlassMinus, MagnifyingGlassPlus } from 'phosphor-react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CaretLeft, CaretRight } from 'phosphor-react';
+
+interface PageWithObserverProps {
+  pageNumber: number;
+  onPageVisible: (page: number) => void;
+  loading: string;
+  zoom: number;
+}
+
+const observerConfig = {
+  // How much of the page needs to be visible to consider page visible
+  threshold: 0.5,
+};
+
+const zoomRange = [0.85, 1, 1.5, 2, 3];
+
+const PageWithObserver: React.FC<PageWithObserverProps> = ({ pageNumber, zoom, onPageVisible, ...otherProps }) => {
+  const [observerReady, setObserverReady] = useState(false);
+
+  useEffect(() => {
+    // If the zoom changes, we need to re-observe the page
+    setObserverReady(false);
+  }, [zoom]);
+
+  const prepareObserver = (entry: Element) => {
+    const observer = new IntersectionObserver((entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting) {
+        onPageVisible(pageNumber);
+      }
+    }, observerConfig);
+
+    observer.observe(entry);
+  };
+
+  return (
+    <Page
+      canvasRef={(entry: Element) => {
+        if (entry && !observerReady) {
+          prepareObserver(entry);
+          setObserverReady(true);
+        }
+      }}
+      pageNumber={pageNumber}
+      height={window.innerHeight * zoomRange[zoom]}
+      {...otherProps}
+    />
+  );
+};
+const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
-  const fileUrl = URL.createObjectURL(props.blob);
+  const { translate } = useTranslationContext();
+  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
-  const isFirstPage = pageNumber === 1;
-  const isLastPage = pageNumber === numPages;
-  const [zoom, setZoom] = useState(0);
-  const zoomRange = [0.85, 1, 1.5, 2, 3];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
 
-  function nextPage() {
-    setPageNumber(pageNumber + 1);
-    resetZoom();
-  }
-
-  function previousPage() {
-    setPageNumber(pageNumber - 1);
-    resetZoom();
-  }
+  //useEffect to avoid flickering
+  useEffect(() => {
+    setFileUrl(URL.createObjectURL(props.blob));
+  }, [props.blob]);
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
@@ -38,21 +78,29 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     }
   }
 
-  function resetZoom() {
-    setZoom(0);
-  }
-
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
   }
 
   return (
-    <div className="flex max-h-full items-center justify-center">
+    <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
         <div>
-          <Document file={fileUrl} loading={''} onLoadSuccess={onDocumentLoadSuccess}>
-            <Page loading={''} height={window.innerHeight * zoomRange[zoom]} pageNumber={pageNumber} />
-          </Document>
+          <div className="flex items-center justify-center">
+            <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
+              <div className="flex flex-col items-center space-y-3">
+                {Array.from(new Array(numPages), (el, index) => (
+                  <PageWithObserver
+                    loading=""
+                    onPageVisible={setCurrentPage}
+                    key={`page_${index + 1}`}
+                    pageNumber={index + 1}
+                    zoom={zoom}
+                  />
+                ))}
+              </div>
+            </Document>
+          </div>
 
           {/* Preview controls */}
           <div
@@ -68,42 +116,27 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
             <div className="z-10 flex flex-row items-center justify-center space-x-1.5">
               <div className="flex flex-row items-center justify-center">
-                <button
-                  onClick={previousPage}
-                  disabled={isFirstPage}
-                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <UilArrowLeft
-                    height="24"
-                    width="24"
-                    className={`${isFirstPage ? 'opacity-50' : ''} pointer-events-none`}
-                  />
-                </button>
-
                 <span className="z-10 px-2 font-medium">
-                  {pageNumber} of {numPages}
+                  {translate('drive.pdfPage', {
+                    page: currentPage,
+                    pages: numPages,
+                  })}
                 </span>
-
-                <button
-                  onClick={nextPage}
-                  disabled={isLastPage}
-                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <UilArrowRight
-                    height="24"
-                    width="24"
-                    className={`${isLastPage ? 'opacity-50' : ''} pointer-events-none`}
-                  />
-                </button>
               </div>
 
               <div className="h-8 w-px bg-white bg-opacity-10" />
 
               <div className="flex flex-row items-center justify-center">
+                <button
+                  onClick={decreaseZoom}
+                  disabled={zoom === 0}
+                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
+                                bg-white bg-opacity-0 transition duration-50 ease-in-out
+                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
+                >
+                  <MagnifyingGlassMinus height="24" width="24" className="pointer-events-none" />
+                </button>
+                <span>{zoomRange[zoom] * 100}%</span>
                 <button
                   onClick={increaseZoom}
                   disabled={zoom === zoomRange.length - 1}
@@ -111,19 +144,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
                 >
-                  <UilPlus height="24" width="24" className="pointer-events-none" />
-                </button>
-
-                <button
-                  onClick={() => {
-                    decreaseZoom();
-                  }}
-                  disabled={zoom === 0}
-                  className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
-                >
-                  <UilMinus height="24" width="24" className="pointer-events-none" />
+                  <MagnifyingGlassPlus height="24" width="24" className="pointer-events-none" />
                 </button>
               </div>
             </div>

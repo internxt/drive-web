@@ -28,6 +28,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
+import { getCookie, setCookie } from 'app/analytics/utils';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -257,9 +258,65 @@ export async function areCredentialsCorrect(email: string, password: string): Pr
   return authClient.areCredentialsCorrect(email, hashedPassword);
 }
 
+export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
+  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
+  const redirectUrl = urlSearchParams.get('redirectUrl');
+
+  if (!redirectUrl) return null;
+  const allowed = ALLOWED_DOMAINS.some((allowedDomain) => redirectUrl.includes(allowedDomain));
+
+  if (!allowed) return null;
+
+  const url = new URL(redirectUrl);
+  const currentParams = url.searchParams;
+
+  if (currentParams.get('auth') !== 'true') {
+    return url.origin + url.pathname + '?' + currentParams.toString();
+  }
+  currentParams.set('authToken', token);
+
+  return url.origin + url.pathname + '?' + currentParams.toString();
+};
+
 const store2FA = async (code: string, twoFactorCode: string): Promise<void> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   return authClient.storeTwoFactorAuthKey(code, twoFactorCode);
+};
+
+/**
+ * Obtains the credentials from a cookie for one use only
+ * @param searchParams Url search params to enable the autosubmit mode
+ * @returns The credentials and the submit mode enabled or not
+ */
+const extractOneUseCredentialsForAutoSubmit = (
+  searchParams: URLSearchParams,
+): {
+  enabled: boolean;
+  credentials?: { email: string; password: string };
+} => {
+  // Auto submit is not enabled;
+  if (searchParams.get('autoSubmit') !== 'true') {
+    return { enabled: false };
+  }
+
+  try {
+    const cookie = getCookie('cr');
+    const credentials = JSON.parse(atob(cookie));
+
+    // Delete the cookie
+    setCookie('cr', '', -999);
+    return {
+      enabled: true,
+      credentials: {
+        email: credentials.email,
+        password: credentials.password,
+      },
+    };
+  } catch (error) {
+    return {
+      enabled: true,
+    };
+  }
 };
 
 const authService = {
@@ -269,7 +326,9 @@ const authService = {
   readReferalCookie,
   cancelAccount,
   store2FA,
+  extractOneUseCredentialsForAutoSubmit,
   getNewToken,
+  getRedirectUrl,
 };
 
 export default authService;

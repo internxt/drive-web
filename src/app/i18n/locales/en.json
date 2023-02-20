@@ -7,14 +7,13 @@
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
-    "en": "English (US)",
-    "deviceLang": "device lang: {{lang}}"
+    "en": "English (US)"
   },
   "auth": {
     "email": "Email",
     "password": "Password",
     "terms1": "By creating an account, ",
-    "terms2": "you accept the terms and conditions",
+    "terms2": "you accept the terms & conditions",
     "decrypting": "Decrypting...",
     "login": {
       "title": "Log in",
@@ -515,7 +514,8 @@
     "renamingItem": "Error when renaming item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
-    "noSpaceAvailable": "Your Internxt Drive is full. Get more space upgrading your account.",
+    "storageIsFull": "Your storage is full",
+    "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
     "titleSharedFolderTooBig": "Unsupported Action",
     "workingOnIt": "We are working to bring you a better experience.",
@@ -560,6 +560,7 @@
   },
   "shared-links": {
     "shared-links": "Shared links",
+    "view": "views",
     "list": {
       "link-content": "Link content",
       "shared": "Shared",
@@ -796,6 +797,7 @@
     "upgradeNow": "Upgrade now",
     "purchasePlan": "Upgrade now",
     "upgrade": "Upgrade",
+    "buyStorage": "Upgrade now",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
     "buy": "Buy",
@@ -823,6 +825,8 @@
     "usage": "Usage",
     "currentPlan": "Current plan",
     "loadingFile": "Loading preview",
+    "previewNoAvailable": "No preview available",
+    "pdfPage": "Page {{page}} of {{pages}}",
     "list": {
       "columns": {
         "type": "Type",

@@ -41,6 +41,14 @@ code {
   min-width: fit-content;
 }
 
+.aspect-auto {
+  aspect-ratio: auto;
+}
+
+.aspect-square {
+  aspect-ratio: 1 / 1;
+}
+
 /* TEXT */
 @font-face {
   font-family: 'NeueEinstellung';

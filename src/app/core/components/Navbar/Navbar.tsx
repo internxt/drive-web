@@ -54,7 +54,7 @@ const Navbar = (props: NavbarProps) => {
   const [query, setQuery] = useState('');
 
   return (
-    <div className="flex h-14 w-full items-center justify-between border-b border-neutral-30 text-gray-40">
+    <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40">
       {hideSearch ? (
         <div />
       ) : (
