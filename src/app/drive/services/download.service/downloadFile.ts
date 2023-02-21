@@ -107,7 +107,7 @@ export default async function downloadFile(
 
   const trackingDownloadProperties: TrackingPlan.DownloadProperties = {
     file_download_id: analyticsService.getTrackingActionId(),
-    file_id: parseInt(fileId),
+    file_id: typeof fileId === 'string' ? parseInt(fileId) : fileId,
     file_size: itemData.size,
     file_extension: itemData.type,
     file_name: completeFilename,
