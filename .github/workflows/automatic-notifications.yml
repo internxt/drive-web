@@ -1,7 +1,7 @@
 name: Notify Releases
 on:
-  push:
-    branches: [master]
+  pull_request:
+    types: [ closed ]
 
 jobs:
   change-package-json-and-release:
@@ -87,8 +87,10 @@ jobs:
         with:
           tag: '${{ steps.latest-tag.outputs.latest_tag }}'
       - run: |
-          echo '${{ steps.latest_release.outputs.body }}' >  new-file-feature.txt
+          echo '${{ steps.latest_release.outputs.body }}' >  new-file-feature-1.txt
+          sed -e 's/^/"/' -e ':a;N;$!ba;s/\n/\\n/g' -e 's/"\\n/\\n"/g' -e 's/\n$//;s/\r//g' -e 's/$/"/' new-file-feature-1.txt > new-file-feature.txt
           cat new-file-feature.txt
+          
       - name: Read file contents
         id: read-file-contents
         run: echo "::set-output name=file-features::$(cat new-file-feature.txt)"
