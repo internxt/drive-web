@@ -1,8 +1,10 @@
 name: Notify Releases
 on:
-  pull_request:
-    types: [ closed ]
-
+  pull_request_target:
+    types: [closed]
+    branches:
+      - master
+    
 jobs:
   change-package-json-and-release:
     if: github.event.pull_request.merged == true
