@@ -68,7 +68,7 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
       title={translate('shareItemDialog.title')}
       subTitle={itemFullName}
       dialogRounded={true}
-      panelClasses="w-screen max-w-lg"
+      panelClasses="w-screen max-w-lg z-50"
       titleClasses="text-black font-medium text-left"
       closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
       onClose={onClose}

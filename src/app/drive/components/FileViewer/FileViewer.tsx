@@ -1,5 +1,5 @@
 import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
-import { Dialog, Transition, Menu } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
 
@@ -29,24 +29,8 @@ import {
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import {
-  ArrowsOutCardinal,
-  CaretLeft,
-  CaretRight,
-  Copy,
-  DotsThree,
-  DownloadSimple,
-  Gear,
-  Link,
-  LinkBreak,
-  PencilSimple,
-  Trash,
-} from 'phosphor-react';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { storageActions } from 'app/store/slices/storage';
-import { uiActions } from 'app/store/slices/ui';
-import { TFunction } from 'i18next';
+import { CaretLeft, CaretRight } from 'phosphor-react';
+import TopBarActions from './components/TopBarActions';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -65,208 +49,6 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const TopBarButtons = ({
-  background,
-  onDownload,
-  file,
-}: {
-  background?: string;
-  onDownload: () => void;
-  file: DriveItemData;
-}) => {
-  const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
-
-  const onMoveToTrashButtonClicked = async () => {
-    await moveItemsToTrash([file], translate as TFunction);
-  };
-
-  const onCreateLinkButtonClicked = () => {
-    const item = file;
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
-  };
-
-  const onCopyLinkButtonClicked = () => {
-    const item = file;
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
-  };
-
-  const onDeleteLinkButtonClicked = () => {
-    dispatch(sharedThunks.deleteLinkThunk({ linkId: file?.shares?.[0]?.id as string, item: file }));
-  };
-
-  const onLinkSettingsButtonClicked = () => {
-    const item = file;
-    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
-  };
-
-  const onMoveButtonClicked = () => {
-    dispatch(storageActions.setItemsToMove(file ? [file] : []));
-    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-  };
-
-  const onEditButtonClicked = () => {
-    dispatch(uiActions.setIsEditFolderNameDialog(true));
-  };
-
-  return (
-    <div
-      className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
-    >
-      <button
-        onClick={onDownload}
-        className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
-                          bg-opacity-0 p-3 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-      >
-        <UilImport height="20" width="20" />
-      </button>
-      {file ? (
-        <Menu as="div" className="relative">
-          <Menu.Button
-            className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
-                          bg-opacity-0 p-3 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-          >
-            <DotsThree height="20" width="20" />
-          </Menu.Button>
-          <Transition
-            className={'flex'}
-            enter="transform transition origin-top-left duration-100 ease-out"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="transform transition origin-right duration-100 ease-out"
-            leaveFrom="scale-95 opacity-100"
-            leaveTo="scale-100 opacity-0"
-          >
-            <Menu.Items
-              className={
-                'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
-              }
-            >
-              <>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                {!file?.shares ? (
-                  <Menu.Item>
-                    {({ active }) => (
-                      <div
-                        onClick={onCreateLinkButtonClicked}
-                        className={`${
-                          active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                      >
-                        <Link size={20} />
-                        <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
-                      </div>
-                    )}
-                  </Menu.Item>
-                ) : (
-                  <>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onCopyLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Copy size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onLinkSettingsButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Gear size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onDeleteLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <LinkBreak size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                  </>
-                )}
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onEditButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <PencilSimple size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.rename')}</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onMoveButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <ArrowsOutCardinal size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.move')}</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onDownload}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <DownloadSimple size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.download')}</p>
-                    </div>
-                  )}
-                </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
-                <Menu.Item>
-                  {({ active }) => (
-                    <div
-                      onClick={onMoveToTrashButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <Trash size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
-                    </div>
-                  )}
-                </Menu.Item>
-              </>
-            </Menu.Items>
-          </Transition>
-        </Menu>
-      ) : null}
-    </div>
-  );
-};
-
 const FileViewer = ({
   file,
   onClose,
@@ -279,6 +61,8 @@ const FileViewer = ({
   const { translate } = useTranslationContext();
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
+  const [disableRightButton, setDisableRightButton] = useState(false);
+  const [disableLeftButton, setDisableLeftButton] = useState(false);
 
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
@@ -296,28 +80,46 @@ const FileViewer = ({
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
-  // Get all files in the current folder and find the current file to display the file
+  // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
-  const totalIndex = folderFiles?.length;
-  const fileIndex = folderFiles?.findIndex((item) => item === file);
+  const sortFolderFiles = useMemo(() => {
+    if (folderFiles) {
+      return folderFiles.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    return [];
+  }, [folderFiles]);
+  const totalIndex = sortFolderFiles?.length;
+  const fileIndex = sortFolderFiles?.findIndex((item) => item === file);
 
+  //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
     setBlob(null);
     if (direction === 'next') {
-      if (fileIndex === totalIndex - 1) {
-        setCurrentFile?.(folderFiles[0]);
-      } else {
-        setCurrentFile?.(folderFiles[fileIndex + 1]);
-      }
+      setDisableLeftButton(false);
+      setCurrentFile?.(folderFiles[fileIndex + 1]);
     } else {
-      if (fileIndex === 0) {
-        setCurrentFile?.(folderFiles[totalIndex - 1]);
-      } else {
-        setCurrentFile?.(folderFiles[fileIndex - 1]);
-      }
+      setDisableRightButton(false);
+      setCurrentFile?.(folderFiles[fileIndex - 1]);
     }
   }
+
+  //Detect if the file is the first or the last in the folder to disable the buttons
+  useEffect(() => {
+    if (fileIndex === totalIndex - 1) {
+      setDisableRightButton(true);
+    } else if (fileIndex === 0) {
+      setDisableLeftButton(true);
+    }
+  }, [fileIndex]);
 
   const dispatch = useAppDispatch();
   const isTeam = useAppSelector(sessionSelectors.isTeam);
@@ -470,12 +272,15 @@ const FileViewer = ({
 
           {/* Content */}
           <>
-            <button
-              className="absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
-              onClick={() => changeFile('prev')}
-            >
-              <CaretLeft size={24} />
-            </button>
+            {disableLeftButton ? null : (
+              <button
+                className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+                onClick={() => changeFile('prev')}
+              >
+                <CaretLeft size={24} />
+              </button>
+            )}
+
             {isTypeAllowed ? (
               <div
                 tabIndex={0}
@@ -541,12 +346,14 @@ const FileViewer = ({
                 <span>{translate('error.noFilePreview')}</span>
               </div>
             )}
-            <button
-              className="absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
-              onClick={() => changeFile('next')}
-            >
-              <CaretRight size={24} />
-            </button>
+            {disableRightButton ? null : (
+              <button
+                className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+                onClick={() => changeFile('next')}
+              >
+                <CaretRight size={24} />
+              </button>
+            )}
           </>
 
           {/* Background */}
@@ -578,7 +385,7 @@ const FileViewer = ({
             </div>
 
             {/* Top bar buttons */}
-            <TopBarButtons onDownload={onDownload} file={file as DriveItemData} />
+            <TopBarActions onDownload={onDownload} file={file as DriveItemData} />
           </div>
         </div>
       </Dialog>

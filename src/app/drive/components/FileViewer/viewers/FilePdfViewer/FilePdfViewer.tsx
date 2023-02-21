@@ -139,7 +139,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
               <div className="h-8 w-px bg-white bg-opacity-10" />
 
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center space-x-2">
                 <button
                   onClick={decreaseZoom}
                   disabled={zoom === 0}
