@@ -124,7 +124,7 @@ export default async function downloadFile(
   await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
-    if (errMessage.includes('user aborted')) {
+    if (!abortController?.signal.aborted) {
       analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
     } else {
       analyticsService.trackFileDownloadError({
