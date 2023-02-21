@@ -18,9 +18,8 @@ export function getCookie(cookieName: string): string {
 }
 
 export function sendAnalyticsError(message: string) {
-  console.log(process.env.REACT_APP_ANALYTICS_ERROR_REPORTING_WRITE_KEY);
   httpService.post(
-    'https://cdp.internxt.com/v1/track',
+    `${process.env.REACT_APP_CDP_DATA_PLANE}/v1/track`,
     {
       anonymousId: uuidv4(),
       event: 'Analytics Error',
