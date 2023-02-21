@@ -1,6 +1,7 @@
 import streamSaver from 'streamsaver';
 
 import analyticsService from 'app/analytics/services/analytics.service';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
@@ -82,7 +83,6 @@ export default async function downloadFile(
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
 ): Promise<void> {
-  const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
@@ -105,12 +105,16 @@ export default async function downloadFile(
     support = DownloadSupport.PatchedStreamApi;
   }
 
-  analyticsService.trackFileDownloadStarted({
+  const trackingDownloadProperties: TrackingPlan.DownloadProperties = {
+    file_download_id: analyticsService.getTrackingActionId(),
     file_id: parseInt(fileId),
-    size: itemData.size,
-    extension: itemData.type,
+    file_size: itemData.size,
+    file_extension: itemData.type,
+    file_name: completeFilename,
     parent_folder_id: itemData.folderId,
-  });
+    file_download_method_supported: support,
+  };
+  analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
   const fileStreamPromise = fetchFileStream(
     { ...itemData, bucketId: itemData.bucket },
@@ -120,23 +124,19 @@ export default async function downloadFile(
   await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
-    analyticsService.trackFileDownloadError({
-      file_id: parseInt(fileId),
-      size: itemData.size,
-      extension: itemData.type,
-      parent_folder_id: itemData.folderId,
-      error_message: errMessage,
-    });
+    if (errMessage.includes('user aborted')) {
+      analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
+    } else {
+      analyticsService.trackFileDownloadError({
+        ...trackingDownloadProperties,
+        error_message: errMessage,
+      });
+    }
 
     throw new Error(errMessage);
   });
 
-  analyticsService.trackFileDownloadCompleted({
-    size: itemData.size,
-    extension: itemData.type,
-    file_id: parseInt(fileId),
-    parent_folder_id: itemData.folderId,
-  });
+  analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }
 
 async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {
