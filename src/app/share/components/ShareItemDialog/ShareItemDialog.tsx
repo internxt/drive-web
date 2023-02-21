@@ -22,6 +22,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 interface ShareItemDialogProps {
   share?: ShareLink;
   item: DriveItemData;
+  isPreviewView?: boolean;
 }
 
 function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
@@ -30,7 +31,7 @@ function copyShareLink(type: string, code: string, token: string, translate: TFu
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
-const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => {
+const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const isSavedAlreadyWithPassword = !!share?.hashed_password;
   const dispatch = useAppDispatch();
@@ -38,7 +39,9 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   const [passwordInputVirgin, setPasswordInputVirgin] = useState(true);
   const [isPasswordProtected, setIsPasswordProtected] = useState(isSavedAlreadyWithPassword);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const isOpen = isPreviewView
+    ? useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView)
+    : useAppSelector((state) => state.ui.isShareItemDialogOpen);
   const dateShareLink = share?.createdAt;
 
   const onClose = (): void => {
@@ -46,7 +49,9 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   };
 
   const close = () => {
-    dispatch(uiActions.setIsShareItemDialogOpen(false));
+    isPreviewView
+      ? dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(false))
+      : dispatch(uiActions.setIsShareItemDialogOpen(false));
     dispatch(storageActions.setItemToShare(null));
   };
 

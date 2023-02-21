@@ -21,6 +21,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 const TopBarActions = ({
   background,
   onDownload,
@@ -54,7 +55,7 @@ const TopBarActions = ({
   const onLinkSettingsButtonClicked = () => {
     const item = file;
     dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
+    dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(true));
   };
 
   const onMoveButtonClicked = () => {

@@ -2,7 +2,6 @@ import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
@@ -31,6 +30,8 @@ import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from 'phosphor-react';
 import TopBarActions from './components/TopBarActions';
+import { useHotkeys } from 'react-hotkeys-hook';
+import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -49,6 +50,21 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
+const DownloadFile = ({ onDownload }) => (
+  <div
+    className={'z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
+  >
+    <button
+      onClick={onDownload}
+      className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
+                          bg-opacity-0 p-3 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+    >
+      <UilImport height="20" width="20" />
+    </button>
+  </div>
+);
+
 const FileViewer = ({
   file,
   onClose,
@@ -61,24 +77,6 @@ const FileViewer = ({
   const { translate } = useTranslationContext();
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
-  const [disableRightButton, setDisableRightButton] = useState(false);
-  const [disableLeftButton, setDisableLeftButton] = useState(false);
-
-  let isTypeAllowed = false;
-  let fileExtensionGroup: number | null = null;
-
-  for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file && file.type ? String(file.type).toLowerCase() : '');
-
-    if (isTypeAllowed) {
-      fileExtensionGroup = FileExtensionGroup[groupKey];
-      break;
-    }
-  }
-
-  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
-
-  const [blob, setBlob] = useState<Blob | null>(null);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
@@ -97,29 +95,53 @@ const FileViewer = ({
     }
     return [];
   }, [folderFiles]);
-  const totalIndex = sortFolderFiles?.length;
+  const totalFolderIndex = sortFolderFiles?.length;
   const fileIndex = sortFolderFiles?.findIndex((item) => item === file);
+
+  let isTypeAllowed = false;
+  let fileExtensionGroup: number | null = null;
+
+  for (const [groupKey, extensions] of Object.entries(extensionsList)) {
+    isTypeAllowed = extensions.includes(file && file.type ? String(file.type).toLowerCase() : '');
+
+    if (isTypeAllowed) {
+      fileExtensionGroup = FileExtensionGroup[groupKey];
+      break;
+    }
+  }
+
+  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
+
+  const [blob, setBlob] = useState<Blob | null>(null);
 
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
     setBlob(null);
     if (direction === 'next') {
-      setDisableLeftButton(false);
-      setCurrentFile?.(folderFiles[fileIndex + 1]);
+      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
     } else {
-      setDisableRightButton(false);
-      setCurrentFile?.(folderFiles[fileIndex - 1]);
+      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
     }
   }
 
-  //Detect if the file is the first or the last in the folder to disable the buttons
-  useEffect(() => {
-    if (fileIndex === totalIndex - 1) {
-      setDisableRightButton(true);
-    } else if (fileIndex === 0) {
-      setDisableLeftButton(true);
-    }
-  }, [fileIndex]);
+  //UseHotKeys for switch between files with the keyboard (left and right arrows)
+  useHotkeys(
+    'right',
+    () => changeFile('next'),
+    {
+      enabled: fileIndex !== totalFolderIndex - 1,
+    },
+    [fileIndex, totalFolderIndex],
+  );
+
+  useHotkeys(
+    'left',
+    () => changeFile('prev'),
+    {
+      enabled: fileIndex !== 0,
+    },
+    [fileIndex],
+  );
 
   const dispatch = useAppDispatch();
   const isTeam = useAppSelector(sessionSelectors.isTeam);
@@ -272,7 +294,8 @@ const FileViewer = ({
 
           {/* Content */}
           <>
-            {disableLeftButton ? null : (
+            {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
+            {fileIndex === 0 ? null : (
               <button
                 className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('prev')}
@@ -319,20 +342,7 @@ const FileViewer = ({
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
                       <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
-                      <div
-                        className={
-                          'z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'
-                        }
-                      >
-                        <button
-                          onClick={onDownload}
-                          className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
-                          bg-opacity-0 p-3 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-                        >
-                          <UilImport height="20" width="20" />
-                        </button>
-                      </div>
+                      <DownloadFile onDownload={onDownload} />
                     </div>
                   )}
                 </div>
@@ -346,7 +356,7 @@ const FileViewer = ({
                 <span>{translate('error.noFilePreview')}</span>
               </div>
             )}
-            {disableRightButton ? null : (
+            {fileIndex === totalFolderIndex - 1 ? null : (
               <button
                 className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('next')}
