@@ -28,6 +28,7 @@ interface ItemProps<T> {
   onDoubleClick?: () => void;
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   onClickContextMenu?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onThreeDotsButtonPressed?: (item: T) => void;
   menu?: ListItemMenu<T>;
   disableItemCompositionStyles?: boolean;
   onMouseEnter?: () => void;
@@ -43,6 +44,7 @@ export default function ListItem<T extends { id: string }>({
   onDoubleClick,
   onClick,
   onClickContextMenu,
+  onThreeDotsButtonPressed,
   disableItemCompositionStyles,
   menu,
   onMouseEnter,
@@ -72,8 +74,9 @@ export default function ListItem<T extends { id: string }>({
 
   const handleContextMenuClick = (event) => {
     event.preventDefault();
+
     onClickContextMenu?.(event);
-    const childWidth = menuItemsRef?.current?.offsetWidth || 200;
+    const childWidth = menuItemsRef?.current?.offsetWidth || 240;
     const childHeight = menuItemsRef?.current?.offsetHeight || 300;
     const wrapperRect = rootWrapperRef?.current?.getBoundingClientRect();
     const { innerWidth, innerHeight } = window;
@@ -120,6 +123,13 @@ export default function ListItem<T extends { id: string }>({
                   {option.icon && <option.icon size={20} />}
                   <span>{option.name}</span>
                 </div>
+                <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                  {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                    <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                  )}
+                  {option.keyboardShortcutOptions?.keyboardShortcutText &&
+                    option.keyboardShortcutOptions?.keyboardShortcutText}
+                </span>
               </div>
             </div>
           )}
@@ -197,6 +207,7 @@ export default function ListItem<T extends { id: string }>({
                   className={`outline-none focus-visible:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
                     selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
                   }`}
+                  onClick={() => onThreeDotsButtonPressed?.(item)}
                   onKeyDown={() => undefined}
                 >
                   <DotsThree size={24} weight="bold" />
@@ -239,8 +250,8 @@ export default function ListItem<T extends { id: string }>({
                                       eventKeys &&
                                       event.key === option.keyboardShortcutOptions?.keyboardShortcutKey
                                     ) {
-                                      option.action?.(item);
                                       close();
+                                      option.action?.(item);
                                     }
                                   }
 

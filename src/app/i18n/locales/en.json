@@ -385,6 +385,9 @@
       "goToApp": "Go back to app"
     }
   },
+  "contextMenu": {
+    "itemsSelected": "items selected"
+  },
   "modals": {
     "renameItemDialog": {
       "title": "Rename",

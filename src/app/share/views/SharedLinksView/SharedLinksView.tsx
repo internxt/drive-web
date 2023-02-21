@@ -24,6 +24,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { t } from 'i18next';
 import {
+  contextMenuDriveFolderShared,
   contextMenuDriveItemShared,
   contextMenuMultipleSharedView,
 } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
@@ -329,6 +330,42 @@ export default function SharedLinksView(): JSX.Element {
                       isFolder: selectedShareLink.isFolder,
                     }));
                     await moveItemsToTrash(itemsToTrash);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+              : selectedItems[0]?.isFolder
+              ? contextMenuDriveFolderShared({
+                  copyLink,
+                  openLinkSettings,
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  renameItem: (shareLink) => {
+                    const itemToRename = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    setEditNameItem(itemToRename);
+                  },
+                  moveItem: (shareLink) => {
+                    const itemToMove = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageActions.setItemsToMove([itemToMove]));
+                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                  },
+                  downloadItem: (shareLink) => {
+                    const itemToDownload = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+                  },
+                  moveToTrash: async (shareLink) => {
+                    const itemToTrash = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    await moveItemsToTrash([itemToTrash]);
                     fetchItems(page, orderBy, 'substitute');
                   },
                 })

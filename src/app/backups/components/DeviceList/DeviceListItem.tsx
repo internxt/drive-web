@@ -10,9 +10,11 @@ import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 export default function DeviceListItem({
   device,
   onClick,
+  onDoubleClick,
 }: {
   device: Device | (DriveFolderData & { size: number });
   onClick: (clickedDevice: typeof device) => void;
+  onDoubleClick: (clickedDevice: typeof device) => void;
 }): JSX.Element {
   let Icon;
 
@@ -35,7 +37,11 @@ export default function DeviceListItem({
   const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
 
   return (
-    <div className="flex flex-grow items-center py-3.5" onDoubleClick={() => onClick(device)}>
+    <div
+      className="flex flex-grow items-center py-3.5"
+      onClick={() => onClick(device)}
+      onDoubleClick={() => onDoubleClick(device)}
+    >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <Icon className="h-8 w-8" />
       </div>

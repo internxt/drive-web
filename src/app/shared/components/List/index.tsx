@@ -18,6 +18,7 @@ interface ListProps<T, F> {
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
   onDoubleClick?: (props: T) => void;
+  onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
@@ -60,6 +61,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   itemComposition,
   selectedItems,
   onDoubleClick,
+  onEnterPressed,
   onSelectedItemsChanged,
   isLoading,
   skinSkeleton,
@@ -108,7 +110,7 @@ ListProps<T, F>): JSX.Element {
     const oneItemSelected = selectedItems.length === 1;
     if (oneItemSelected) {
       const selectedItem = selectedItems[0];
-      onDoubleClick?.(selectedItem);
+      onEnterPressed?.(selectedItem);
     }
   }
 
@@ -209,7 +211,7 @@ ListProps<T, F>): JSX.Element {
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 ? (
+        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (
           <>
@@ -231,6 +233,9 @@ ListProps<T, F>): JSX.Element {
                   onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
                   onClick={(e) => onItemClick(item, e)}
                   onClickContextMenu={(e) => onRightItemClick(item, e)}
+                  onThreeDotsButtonPressed={(item) => {
+                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                  }}
                   columnsWidth={header.map((column) => column.width)}
                   menu={menu}
                   onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}

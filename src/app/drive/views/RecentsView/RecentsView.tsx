@@ -38,7 +38,6 @@ const RecentsView = (props: RecentsViewProps) => {
   return (
     <DriveExplorer
       title={translate('views.recents.head') as string}
-      titleClassName="px-3"
       isLoading={isLoadingRecents}
       items={items}
       onFolderCreated={redirectToDrive}

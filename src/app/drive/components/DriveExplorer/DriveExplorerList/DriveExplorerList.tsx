@@ -21,6 +21,9 @@ import {
   contextMenuSelectedItems,
   contextMenuTrashItems,
   contextMenuMultipleSelectedTrashItems,
+  contextMenuTrashFolder,
+  contextMenuDriveFolderShared,
+  contextMenuDriveFolderNotSharedLink,
 } from './DriveItemContextMenu';
 
 interface DriveExplorerListProps {
@@ -218,9 +221,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 skinSkeleton={loadingSkeleton()}
                 emptyState={<></>}
                 onNextPage={onEndOfScroll}
-                onDoubleClick={(driveItem) => {
-                  dispatch(uiActions.setIsFileViewerOpen(true));
-                  dispatch(uiActions.setFileViewerItem(driveItem));
+                onEnterPressed={(driveItem) => {
+                  if (driveItem.isFolder) {
+                    dispatch(storageThunks.goToFolderThunk({ name: driveItem.name, id: driveItem.id }));
+                  } else {
+                    dispatch(uiActions.setIsFileViewerOpen(true));
+                    dispatch(uiActions.setFileViewerItem(driveItem));
+                  }
                 }}
                 hasMoreItems={hasMoreItems}
                 menu={
@@ -250,6 +257,17 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                             dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
                           },
                         })
+                      : props.selectedItems[0]?.isFolder
+                      ? contextMenuTrashFolder({
+                          restoreItem: (item: DriveItemData) => {
+                            dispatch(storageActions.setItemsToMove([item]));
+                            dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                          },
+                          deletePermanently: (item: DriveItemData) => {
+                            dispatch(storageActions.setItemsToDelete([item]));
+                            dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+                          },
+                        })
                       : contextMenuTrashItems({
                           openPreview: (item: DriveItemData) => {
                             dispatch(uiActions.setIsFileViewerOpen(true));
@@ -265,44 +283,101 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                           },
                         })
                     : isSelectedSharedItem
-                    ? contextMenuDriveItemShared({
-                        openPreview: (item) => {
-                          dispatch(uiActions.setIsFileViewerOpen(true));
-                          dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+                    ? props.selectedItems[0]?.isFolder
+                      ? contextMenuDriveFolderShared({
+                          copyLink: (item) => {
+                            dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+                          },
+                          openLinkSettings: (item) => {
+                            dispatch(
+                              storageActions.setItemToShare({
+                                share: (item as DriveItemData)?.shares?.[0],
+                                item: item as DriveItemData,
+                              }),
+                            );
+                            dispatch(uiActions.setIsShareItemDialogOpen(true));
+                          },
+                          deleteLink: (item) => {
+                            dispatch(
+                              sharedThunks.deleteLinkThunk({
+                                linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
+                                item: item as DriveItemData,
+                              }),
+                            );
+                          },
+                          renameItem: (item) => {
+                            dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
+                            dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
+                          },
+                          moveItem: (item) => {
+                            dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+                            dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                          },
+                          downloadItem: (item) => {
+                            dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+                          },
+                          moveToTrash: (item) => {
+                            moveItemsToTrash([item as DriveItemData]);
+                          },
+                        })
+                      : contextMenuDriveItemShared({
+                          openPreview: (item) => {
+                            dispatch(uiActions.setIsFileViewerOpen(true));
+                            dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+                          },
+                          copyLink: (item) => {
+                            dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+                          },
+                          openLinkSettings: (item) => {
+                            dispatch(
+                              storageActions.setItemToShare({
+                                share: (item as DriveItemData)?.shares?.[0],
+                                item: item as DriveItemData,
+                              }),
+                            );
+                            dispatch(uiActions.setIsShareItemDialogOpen(true));
+                          },
+                          deleteLink: (item) => {
+                            dispatch(
+                              sharedThunks.deleteLinkThunk({
+                                linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
+                                item: item as DriveItemData,
+                              }),
+                            );
+                          },
+                          renameItem: (item) => {
+                            dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
+                            dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
+                          },
+                          moveItem: (item) => {
+                            dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+                            dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                          },
+                          downloadItem: (item) => {
+                            dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+                          },
+                          moveToTrash: (item) => {
+                            moveItemsToTrash([item as DriveItemData]);
+                          },
+                        })
+                    : props.selectedItems[0]?.isFolder
+                    ? contextMenuDriveFolderNotSharedLink({
+                        getLink: (item: DriveItemData) => {
+                          dispatch(sharedThunks.getSharedLinkThunk({ item }));
                         },
-                        copyLink: (item) => {
-                          dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+                        renameItem: (item: DriveItemData) => {
+                          dispatch(uiActions.setCurrentEditingNameDirty(item.name));
+                          dispatch(uiActions.setCurrentEditingNameDriveItem(item));
                         },
-                        openLinkSettings: (item) => {
-                          dispatch(
-                            storageActions.setItemToShare({
-                              share: (item as DriveItemData)?.shares?.[0],
-                              item: item as DriveItemData,
-                            }),
-                          );
-                          dispatch(uiActions.setIsShareItemDialogOpen(true));
-                        },
-                        deleteLink: (item) => {
-                          dispatch(
-                            sharedThunks.deleteLinkThunk({
-                              linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                              item: item as DriveItemData,
-                            }),
-                          );
-                        },
-                        renameItem: (item) => {
-                          dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
-                          dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
-                        },
-                        moveItem: (item) => {
-                          dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+                        moveItem: (item: DriveItemData) => {
+                          dispatch(storageActions.setItemsToMove([item]));
                           dispatch(uiActions.setIsMoveItemsDialogOpen(true));
                         },
-                        downloadItem: (item) => {
-                          dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+                        downloadItem: (item: DriveItemData) => {
+                          dispatch(storageThunks.downloadItemsThunk([item]));
                         },
-                        moveToTrash: (item) => {
-                          moveItemsToTrash([item as DriveItemData]);
+                        moveToTrash: (item: DriveItemData) => {
+                          moveItemsToTrash([item]);
                         },
                       })
                     : contextMenuDriveNotSharedLink({

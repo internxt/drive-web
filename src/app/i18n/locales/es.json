@@ -385,6 +385,9 @@
       "goToApp": "Volver a la aplicación"
     }
   },
+  "contextMenu": {
+    "itemsSelected": "archivos seleccionados"
+  },
   "modals": {
     "renameItemDialog": {
       "title": "Renombrar",

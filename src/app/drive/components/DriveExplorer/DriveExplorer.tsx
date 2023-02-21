@@ -13,7 +13,6 @@ import {
   Link,
   PencilSimple,
   CaretDown,
-  TrashSimple,
   ArrowFatUp,
 } from 'phosphor-react';
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -311,6 +310,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (event.clientY + childHeight > innerHeight) {
       y = y - childHeight;
     }
+
     setPosX(x);
     setPosY(y);
     setOpenedWithRightClick(true);
@@ -362,7 +362,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const driveExplorer = (
     <div
-      className="flex h-full flex-grow flex-col px-8"
+      className="flex h-full flex-grow flex-col"
       data-test="drag-and-drop-area"
       onContextMenu={isListElementsHovered ? () => null : handleContextMenuClick}
     >
@@ -376,14 +376,158 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <MenuItemToGetSize />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
-        <div className="flex w-1 flex-grow flex-col pt-6">
-          <div className="z-10 flex max-w-full justify-between pb-4">
+        <div className="flex w-1 flex-grow flex-col">
+          <div className="z-10 flex h-14 max-w-full justify-between px-5">
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
 
             {!isTrash && (
               <div className="flex flex-shrink-0 flex-row">
+                <div className="flex items-center justify-center">
+                  <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
+                    {({ open }) => {
+                      useEffect(() => {
+                        if (!open) {
+                          setOpenedWithRightClick(false);
+                          setPosX(0);
+                          setPosY(0);
+                        }
+                      }, [open]);
+
+                      return (
+                        <>
+                          <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
+                            <Button variant="primary">
+                              <div className="flex items-center justify-center space-x-2.5">
+                                <span className="font-medium">{translate('actions.upload.new')}</span>
+                                <div className="flex items-center space-x-0.5">
+                                  <Plus weight="bold" className="h-4 w-4" />
+                                  <CaretDown weight="fill" className="h-3 w-3" />
+                                </div>
+                              </div>
+                            </Button>
+                          </Menu.Button>
+                          <Transition
+                            className="absolute"
+                            enter="transform transition origin-top-right duration-100 ease-out"
+                            enterFrom="scale-95 opacity-0"
+                            enterTo="scale-100 opacity-100"
+                            leave="transform transition origin-top-right duration-100 ease-out"
+                            leaveFrom="scale-95 opacity-100"
+                            leaveTo="scale-100 opacity-0"
+                            style={
+                              openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }
+                            }
+                          >
+                            {open && (
+                              <Menu.Items
+                                className={
+                                  'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                }
+                              >
+                                <Menu.Item>
+                                  {({ active, close }) => {
+                                    useEffect(() => {
+                                      function handleKeyDown(event: KeyboardEvent) {
+                                        if (event.shiftKey && event.key === 'F') {
+                                          onCreateFolderButtonClicked();
+                                          close();
+                                        }
+                                      }
+
+                                      document.addEventListener('keydown', handleKeyDown);
+
+                                      return () => {
+                                        document.removeEventListener('keydown', handleKeyDown);
+                                      };
+                                    }, []);
+                                    return (
+                                      <div
+                                        onClick={onCreateFolderButtonClicked}
+                                        className={`${
+                                          active && 'bg-gray-5'
+                                        } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                      >
+                                        <FolderSimplePlus size={20} />
+                                        <p>{translate('actions.upload.folder')}</p>
+                                        <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                          <ArrowFatUp size={14} /> F
+                                        </span>
+                                      </div>
+                                    );
+                                  }}
+                                </Menu.Item>
+                                <div className="my-px mx-3 flex border-t border-gray-5" />
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <div
+                                      onClick={onUploadFileButtonClicked}
+                                      className={`${
+                                        active && 'bg-gray-5'
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    >
+                                      <FileArrowUp size={20} />
+                                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
+                                    </div>
+                                  )}
+                                </Menu.Item>
+                                <Menu.Item>
+                                  {({ active }) => (
+                                    <div
+                                      onClick={onUploadFolderButtonClicked}
+                                      className={`${
+                                        active && 'bg-gray-5'
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    >
+                                      <UploadSimple size={20} />
+                                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+                                    </div>
+                                  )}
+                                </Menu.Item>
+                              </Menu.Items>
+                            )}
+                          </Transition>
+                        </>
+                      );
+                    }}
+                  </Menu>
+                </div>
+                {hasAnyItemSelected && (
+                  <>
+                    {separatorV}
+                    <div className="flex items-center justify-center">
+                      <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+                        <DownloadSimple className="h-6 w-6" />
+                      </Button>
+                      {selectedItems.length === 1 && (
+                        <>
+                          {isSelectedItemShared && (
+                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                              <Link className="h-6 w-6" />
+                            </Button>
+                          )}
+                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
+                            <PencilSimple className="h-6 w-6" />
+                          </Button>
+                        </>
+                      )}
+                      <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
+                        <Trash className="h-6 w-6" />
+                      </Button>
+                    </div>
+                  </>
+                )}
+                {separatorV}
+                <div className="flex items-center justify-center">
+                  <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
+                    {viewModesIcons[viewMode]}
+                  </Button>
+                </div>
+              </div>
+            )}
+            {isTrash && (
+              <div className="flex items-center justify-center">
                 <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
                   {({ open }) => {
                     useEffect(() => {
@@ -396,17 +540,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
                     return (
                       <>
-                        <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
-                          <Button variant="primary">
-                            <div className="flex items-center space-x-2.5">
-                              <span className="font-medium">{translate('actions.upload.new')}</span>
-                              <div className="flex items-center space-x-0.5">
-                                <Plus weight="bold" className="h-4 w-4" />
-                                <CaretDown weight="fill" className="h-3 w-3" />
-                              </div>
-                            </div>
-                          </Button>
-                        </Menu.Button>
+                        <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
                         <Transition
                           className="absolute"
                           enter="transform transition origin-top-right duration-100 ease-out"
@@ -426,61 +560,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                               }
                             >
                               <Menu.Item>
-                                {({ active, close }) => {
-                                  useEffect(() => {
-                                    function handleKeyDown(event: KeyboardEvent) {
-                                      if (event.shiftKey && event.key === 'F') {
-                                        onCreateFolderButtonClicked();
-                                        close();
-                                      }
-                                    }
-
-                                    document.addEventListener('keydown', handleKeyDown);
-
-                                    return () => {
-                                      document.removeEventListener('keydown', handleKeyDown);
-                                    };
-                                  }, []);
-                                  return (
-                                    <div
-                                      onClick={onCreateFolderButtonClicked}
-                                      className={`${
-                                        active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                    >
-                                      <FolderSimplePlus size={20} />
-                                      <p>{translate('actions.upload.folder')}</p>
-                                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
-                                        <ArrowFatUp size={14} /> F
-                                      </span>
-                                    </div>
-                                  );
-                                }}
-                              </Menu.Item>
-                              <div className="my-px mx-3 flex border-t border-gray-5" />
-                              <Menu.Item>
                                 {({ active }) => (
                                   <div
-                                    onClick={onUploadFileButtonClicked}
+                                    onClick={onDeletePermanentlyButtonClicked}
                                     className={`${
                                       active && 'bg-gray-5'
                                     } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
                                   >
-                                    <FileArrowUp size={20} />
-                                    <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-                                  </div>
-                                )}
-                              </Menu.Item>
-                              <Menu.Item>
-                                {({ active }) => (
-                                  <div
-                                    onClick={onUploadFolderButtonClicked}
-                                    className={`${
-                                      active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                  >
-                                    <UploadSimple size={20} />
-                                    <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+                                    <Trash size={20} />
+                                    <p>{translate('drive.clearTrash.accept')}</p>
                                   </div>
                                 )}
                               </Menu.Item>
@@ -491,101 +579,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     );
                   }}
                 </Menu>
-
-                {hasAnyItemSelected && (
-                  <>
-                    {separatorV}
-                    <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
-                      <DownloadSimple className="h-6 w-6" />
-                    </Button>
-                    {selectedItems.length === 1 && (
-                      <>
-                        {isSelectedItemShared && (
-                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
-                            <Link className="h-6 w-6" />
-                          </Button>
-                        )}
-                        <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
-                          <PencilSimple className="h-6 w-6" />
-                        </Button>
-                      </>
-                    )}
-                    <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
-                      <Trash className="h-6 w-6" />
-                    </Button>
-                  </>
-                )}
-                {separatorV}
-                <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
-                  {viewModesIcons[viewMode]}
+              </div>
+            )}
+            {isTrash && hasAnyItemSelected && (
+              <div className="flex items-center justify-center">
+                <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
+                  <ClockCounterClockwise className="h-6 w-6" />
                 </Button>
               </div>
             )}
             {isTrash && (
-              <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
-                {({ open }) => {
-                  useEffect(() => {
-                    if (!open) {
-                      setOpenedWithRightClick(false);
-                      setPosX(0);
-                      setPosY(0);
-                    }
-                  }, [open]);
-
-                  return (
-                    <>
-                      <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
-                      <Transition
-                        className="absolute"
-                        enter="transform transition origin-top-right duration-100 ease-out"
-                        enterFrom="scale-95 opacity-0"
-                        enterTo="scale-100 opacity-100"
-                        leave="transform transition origin-top-right duration-100 ease-out"
-                        leaveFrom="scale-95 opacity-100"
-                        leaveTo="scale-100 opacity-0"
-                        style={openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }}
-                      >
-                        {open && (
-                          <Menu.Items
-                            className={
-                              'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
-                            }
-                          >
-                            <Menu.Item>
-                              {({ active }) => (
-                                <div
-                                  onClick={onDeletePermanentlyButtonClicked}
-                                  className={`${
-                                    active && 'bg-gray-5'
-                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                >
-                                  <TrashSimple size={20} />
-                                  <p>{translate('drive.clearTrash.accept')}</p>
-                                </div>
-                              )}
-                            </Menu.Item>
-                          </Menu.Items>
-                        )}
-                      </Transition>
-                    </>
-                  );
-                }}
-              </Menu>
-            )}
-            {isTrash && hasAnyItemSelected && (
-              <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
-                <ClockCounterClockwise className="h-6 w-6" />
-              </Button>
-            )}
-            {isTrash && (
-              <Button
-                variant="tertiary"
-                className="aspect-square"
-                disabled={!hasItems}
-                onClick={onDeletePermanentlyButtonClicked}
-              >
-                <Trash className="h-5 w-5" />
-              </Button>
+              <div className="flex items-center justify-center">
+                <Button
+                  variant="tertiary"
+                  className="aspect-square"
+                  disabled={!hasItems}
+                  onClick={onDeletePermanentlyButtonClicked}
+                >
+                  <Trash className="h-5 w-5" />
+                </Button>
+              </div>
             )}
           </div>
 

@@ -5,9 +5,11 @@ import sizeService from '../../../drive/services/size.service';
 
 export default function BackupsAsFoldersListItem({
   item,
+  onClick,
   onDoubleClick,
 }: {
   item: DriveItemData;
+  onClick: (target: typeof item) => void;
   onDoubleClick: (target: typeof item) => void;
 }): JSX.Element {
   const Icon = iconService.getItemIcon(item.isFolder, item.type);
@@ -15,7 +17,11 @@ export default function BackupsAsFoldersListItem({
   const displayName = item.type ? `${item.name}.${item.type}` : item.name;
 
   return (
-    <div className={'flex flex-grow items-center'} onDoubleClick={() => onDoubleClick(item)}>
+    <div
+      className={'flex flex-grow items-center'}
+      onClick={() => onClick(item)}
+      onDoubleClick={() => onDoubleClick(item)}
+    >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <Icon className={'h-8 w-8'} />
       </div>

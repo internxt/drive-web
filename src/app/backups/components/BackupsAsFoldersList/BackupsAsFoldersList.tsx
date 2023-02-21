@@ -69,8 +69,9 @@ export default function BackupsAsFoldersList({
   }
 
   const onDoubleClick = (item: DriveItemData) => {
-    if (item.isFolder) onFolderPush(item as DriveFolderData);
-    else {
+    if (item.isFolder) {
+      onFolderPush(item as DriveFolderData);
+    } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));
     }
@@ -121,6 +122,12 @@ export default function BackupsAsFoldersList({
               <BackupsAsFoldersListItem
                 key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
                 item={item}
+                onClick={(item) => {
+                  const unselectedDevices = selectedItems.map((deviceSelected) => {
+                    return { device: deviceSelected, isSelected: false };
+                  });
+                  onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
+                }}
                 onDoubleClick={onDoubleClick}
               />
             ),

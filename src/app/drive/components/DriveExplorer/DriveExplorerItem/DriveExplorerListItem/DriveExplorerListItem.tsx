@@ -108,37 +108,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
 
       {/* HOVER ACTIONS */}
-      <div className="hidden w-2/12 items-center pl-3 xl:flex">
-        {!item.deleted && (
-          <div className={`${isSomeItemSelected ? 'invisible' : ''} flex`}>
-            <button
-              onClick={onDownloadButtonClicked}
-              className="hover-action mr-3"
-              data-test={`download-${item.isFolder ? 'folder' : 'file'}-button`}
-            >
-              <DownloadSimple className="h-5 w-5" />
-            </button>
-            {!itemIsShared && (
-              <button
-                onClick={(e) => {
-                  onShareButtonClicked && onShareButtonClicked(e);
-                }}
-                className="hover-action mr-3"
-                data-test={`share-${item.isFolder ? 'folder' : 'file'}-button`}
-              >
-                <Link className="h-5 w-5" />
-              </button>
-            )}
-            <button
-              onClick={onDeleteButtonClicked}
-              className="hover-action"
-              data-test={`delete-${item.isFolder ? 'folder' : 'file'}-button`}
-            >
-              <Trash className="h-5 w-5" />
-            </button>
-          </div>
-        )}
-      </div>
+      <div className="hidden w-2/12 items-center pl-3 xl:flex"></div>
 
       {
         /* DROPPABLE ZONE */

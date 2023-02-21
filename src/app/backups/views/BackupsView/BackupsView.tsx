@@ -3,7 +3,6 @@ import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
 
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
-import BackupsList from '../../components/BackupList/BackupList';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -20,9 +19,7 @@ export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isLoadingDevices = useAppSelector((state) => state.backups.isLoadingDevices);
-  const isLoadingDeviceBackups = useAppSelector((state) => state.backups.isLoadingDeviceBackups);
   const devices = useAppSelector((state) => state.backups.devices);
-  const currentDeviceBackups = useAppSelector((state) => state.backups.backups);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -148,7 +145,7 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div
-      className="mb-5 flex flex-grow flex-col px-8 pt-6"
+      className="mb-5 flex flex-grow flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
@@ -165,8 +162,8 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
-      <div className="flex items-baseline pb-4">
-        {currentDevice ? backupsBreadcrumbs : <p className="px-3 py-1 text-lg"> {translate('backups.your-devices')}</p>}
+      <div className="flex h-14 items-center px-5">
+        {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
       </div>
       {body}
     </div>

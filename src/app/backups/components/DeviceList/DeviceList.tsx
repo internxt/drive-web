@@ -63,8 +63,22 @@ const DeviceList = (props: Props): JSX.Element => {
             },
           ]}
           items={props.items as Device[] | (DriveFolderData & { size: number })[]}
-          isLoading={isLoading || !!props.items.length}
-          itemComposition={[(props) => <DeviceListItem device={props} onClick={(device) => onDeviceClicked(device)} />]}
+          isLoading={isLoading}
+          itemComposition={[
+            (props) => (
+              <DeviceListItem
+                device={props}
+                onClick={(device) => {
+                  const unselectedDevices = selectedItems.map((deviceSelected) => {
+                    return { device: deviceSelected, isSelected: false };
+                  });
+
+                  onDeviceSelected([...unselectedDevices, { device, isSelected: true }]);
+                }}
+                onDoubleClick={(device) => onDeviceClicked(device)}
+              />
+            ),
+          ]}
           skinSkeleton={getLoadingSkeleton()}
           emptyState={
             <Empty
