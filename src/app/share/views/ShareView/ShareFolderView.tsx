@@ -109,7 +109,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setInfo(sharedFolderInfo);
         setIsLoaded(true);
         setRequiresPassword(false);
-        return loadSize((sharedFolderInfo as unknown as { id: number }).id, sharedFolderInfo.item.id);
+        // TODO: Commented until apply some fixes to the endpoint
+        // return loadSize((sharedFolderInfo as unknown as { id: number }).id, sharedFolderInfo.item.id);
+        return Promise.resolve(0);
       })
       .then((folderSize) => {
         setSize(folderSize);
