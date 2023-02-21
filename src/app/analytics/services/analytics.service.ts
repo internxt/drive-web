@@ -9,13 +9,13 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrackNames } from '../types';
-import { getCookie, setCookie } from '../utils';
-import queryString from 'query-string';
+import { TrackingPlan } from '../TrackingPlan';
+
 import { v4 as uuidv4 } from 'uuid';
 
 const analytics: Analytics = Analytics.getInstance();
 
-export function getUploadId() {
+export function getTrackingActionId() {
   return uuidv4();
 }
 
@@ -30,32 +30,20 @@ export const PATH_NAMES = {
   '/app': 'App',
 };
 
-export function trackFileDownloadStarted(properties: {
-  file_id: number;
-  size: number;
-  extension: string;
-  parent_folder_id: number;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileDownloadStarted, properties);
+export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileDownloadStarted, properties);
 }
 
-export function trackFileDownloadCompleted(properties: {
-  parent_folder_id: number;
-  file_id: number;
-  size: number;
-  extension: string;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileDownloadCompleted, properties);
+export function trackFileDownloadCompleted(properties: TrackingPlan.DownloadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileDownloadCompleted, properties);
 }
 
-export function trackFileDownloadError(properties: {
-  parent_folder_id: number;
-  file_id: number;
-  size: number;
-  extension: string;
-  error_message: string;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileDownloadError, properties);
+export function trackFileDownloadError(properties: TrackingPlan.DownloadErrorProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileDownloadError, properties);
+}
+
+export function trackFileDownloadAborted(properties: TrackingPlan.DownloadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileDownloadAborted, properties);
 }
 
 function trackData(properties, actionName) {
@@ -193,42 +181,19 @@ export function trackFileUploadStarted(properties: {
   parent_folder_id: number;
   file_name: string;
 }): void {
-  analytics.track(AnalyticsTrackNames.FileUploadStart, properties);
+  analytics.track(TrackingPlan.EventNames.FileUploadStart, properties);
 }
 
-export function trackFileUploadError(properties: {
-  file_upload_id: string;
-  file_name: string;
-  file_size: number;
-  file_extension: string;
-  parent_folder_id: number;
-  error_message: string;
-  bucket_id: number;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileUploadError, properties);
+export function trackFileUploadError(properties: TrackingPlan.UploadErrorProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadError, properties);
 }
 
-export function trackFileUploadAborted(properties: {
-  file_upload_id: string;
-  file_name: string;
-  file_size: number;
-  file_extension: string;
-  parent_folder_id: number;
-  bucket_id: number;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileUploadAborted, properties);
+export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
 }
 
-export function trackFileUploadCompleted(properties: {
-  file_upload_id: string;
-  file_size: number;
-  file_extension: string;
-  parent_folder_id: number;
-  bucket_id: number;
-  file_id: number;
-  file_name: string;
-}): void {
-  analytics.track(AnalyticsTrackNames.FileUploadCompleted, properties);
+export function trackFileUploadCompleted(properties: TrackingPlan.UploadCompletedProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadCompleted, properties);
 }
 
 export function trackMoveItem(
@@ -442,9 +407,10 @@ const analyticsService = {
   track,
   trackFileUploadBucketIdUndefined,
   trackFileDownloadCompleted,
+  trackFileDownloadAborted,
   trackPaymentConversion,
   trackFileUploadAborted,
-  getUploadId,
+  getTrackingActionId,
 };
 
 export default analyticsService;
