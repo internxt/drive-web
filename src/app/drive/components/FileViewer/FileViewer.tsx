@@ -1,5 +1,5 @@
 import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
-import { Dialog, Transition } from '@headlessui/react';
+import { Dialog, Transition, Menu } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
 
@@ -29,7 +29,24 @@ import {
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretLeft, CaretRight } from 'phosphor-react';
+import {
+  ArrowsOutCardinal,
+  CaretLeft,
+  CaretRight,
+  Copy,
+  DotsThree,
+  DownloadSimple,
+  Gear,
+  Link,
+  LinkBreak,
+  PencilSimple,
+  Trash,
+} from 'phosphor-react';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { storageActions } from 'app/store/slices/storage';
+import { uiActions } from 'app/store/slices/ui';
+import { TFunction } from 'i18next';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -47,6 +64,208 @@ export interface FormatFileViewerProps {
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
+
+const TopBarButtons = ({
+  background,
+  onDownload,
+  file,
+}: {
+  background?: string;
+  onDownload: () => void;
+  file: DriveItemData;
+}) => {
+  const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
+
+  const onMoveToTrashButtonClicked = async () => {
+    await moveItemsToTrash([file], translate as TFunction);
+  };
+
+  const onCreateLinkButtonClicked = () => {
+    const item = file;
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
+
+  const onCopyLinkButtonClicked = () => {
+    const item = file;
+    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  };
+
+  const onDeleteLinkButtonClicked = () => {
+    dispatch(sharedThunks.deleteLinkThunk({ linkId: file?.shares?.[0]?.id as string, item: file }));
+  };
+
+  const onLinkSettingsButtonClicked = () => {
+    const item = file;
+    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
+  };
+
+  const onMoveButtonClicked = () => {
+    dispatch(storageActions.setItemsToMove(file ? [file] : []));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  };
+
+  const onEditButtonClicked = () => {
+    dispatch(uiActions.setIsEditFolderNameDialog(true));
+  };
+
+  return (
+    <div
+      className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
+    >
+      <button
+        onClick={onDownload}
+        className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
+                          bg-opacity-0 p-3 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+      >
+        <UilImport height="20" width="20" />
+      </button>
+      {file ? (
+        <Menu as="div" className="relative">
+          <Menu.Button
+            className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
+                          bg-opacity-0 p-3 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+          >
+            <DotsThree height="20" width="20" />
+          </Menu.Button>
+          <Transition
+            className={'flex'}
+            enter="transform transition origin-top-left duration-100 ease-out"
+            enterFrom="opacity-0"
+            enterTo="opacity-100"
+            leave="transform transition origin-right duration-100 ease-out"
+            leaveFrom="scale-95 opacity-100"
+            leaveTo="scale-100 opacity-0"
+          >
+            <Menu.Items
+              className={
+                'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+              }
+            >
+              <>
+                <div className="my-0.5 mx-3 border-t border-gray-10" />
+                {!file?.shares ? (
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onCreateLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Link size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                ) : (
+                  <>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          onClick={onCopyLinkButtonClicked}
+                          className={`${
+                            active && 'bg-gray-5'
+                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        >
+                          <Copy size={20} />
+                          <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          onClick={onLinkSettingsButtonClicked}
+                          className={`${
+                            active && 'bg-gray-5'
+                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        >
+                          <Gear size={20} />
+                          <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
+                        </div>
+                      )}
+                    </Menu.Item>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          onClick={onDeleteLinkButtonClicked}
+                          className={`${
+                            active && 'bg-gray-5'
+                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        >
+                          <LinkBreak size={20} />
+                          <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
+                        </div>
+                      )}
+                    </Menu.Item>
+                  </>
+                )}
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={onEditButtonClicked}
+                      className={`${
+                        active && 'bg-gray-5'
+                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                    >
+                      <PencilSimple size={20} />
+                      <p className="ml-3">{translate('drive.dropdown.rename')}</p>
+                    </div>
+                  )}
+                </Menu.Item>
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={onMoveButtonClicked}
+                      className={`${
+                        active && 'bg-gray-5'
+                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                    >
+                      <ArrowsOutCardinal size={20} />
+                      <p className="ml-3">{translate('drive.dropdown.move')}</p>
+                    </div>
+                  )}
+                </Menu.Item>
+                <div className="my-0.5 mx-3 border-t border-gray-10" />
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={onDownload}
+                      className={`${
+                        active && 'bg-gray-5'
+                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                    >
+                      <DownloadSimple size={20} />
+                      <p className="ml-3">{translate('drive.dropdown.download')}</p>
+                    </div>
+                  )}
+                </Menu.Item>
+                <div className="my-0.5 mx-3 border-t border-gray-10" />
+                <Menu.Item>
+                  {({ active }) => (
+                    <div
+                      onClick={onMoveToTrashButtonClicked}
+                      className={`${
+                        active && 'bg-gray-5'
+                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                    >
+                      <Trash size={20} />
+                      <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
+                    </div>
+                  )}
+                </Menu.Item>
+              </>
+            </Menu.Items>
+          </Transition>
+        </Menu>
+      ) : null}
+    </div>
+  );
+};
 
 const FileViewer = ({
   file,
@@ -199,7 +418,7 @@ const FileViewer = ({
       const abortController = new AbortController();
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
-        if (file && isOlder) {
+        if (isOlder) {
           downloader(abortController)
             .then(async (fileBlob) => {
               setBlob(fileBlob);
@@ -210,9 +429,7 @@ const FileViewer = ({
                 updatedAt: file?.updatedAt,
               });
 
-              if (file) {
-                await handleFileThumbnail(file, fileBlob as File);
-              }
+              await handleFileThumbnail(file, fileBlob as File);
             })
             .catch(() => {
               if (abortController.signal.aborted) {
@@ -226,22 +443,6 @@ const FileViewer = ({
       setBlob(null);
     }
   }, [show, file]);
-
-  const DownloadButton = ({ background }: { background?: string }) => (
-    <div
-      className={`${background} z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4 rounded-lg`}
-    >
-      <button
-        onClick={onDownload}
-        className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
-                          bg-opacity-0 px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-      >
-        <UilImport height="20" width="20" />
-        <span className="font-medium">{translate('actions.download')}</span>
-      </button>
-    </div>
-  );
 
   return (
     <Transition
@@ -313,7 +514,20 @@ const FileViewer = ({
                       <ItemIconComponent className="mr-3 flex" width={60} height={80} />
                       <span className="text-lg">{filename}</span>
                       <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
-                      <DownloadButton background="bg-primary" />
+                      <div
+                        className={
+                          'z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'
+                        }
+                      >
+                        <button
+                          onClick={onDownload}
+                          className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
+                          bg-opacity-0 p-3 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+                        >
+                          <UilImport height="20" width="20" />
+                        </button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -363,8 +577,8 @@ const FileViewer = ({
               </Dialog.Title>
             </div>
 
-            {/* Download button */}
-            <DownloadButton />
+            {/* Top bar buttons */}
+            <TopBarButtons onDownload={onDownload} file={file as DriveItemData} />
           </div>
         </div>
       </Dialog>

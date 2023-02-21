@@ -84,7 +84,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   }
 
   useEffect(() => {
-    if (numPages > 75) {
+    if (numPages > 50) {
       if (currentPage + 15 <= numPages) {
         setRenderPages(currentPage + 15);
       } else {
