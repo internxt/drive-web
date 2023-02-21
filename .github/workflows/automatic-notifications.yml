@@ -56,7 +56,7 @@ jobs:
         with:
           tag_name: ${{ steps.increment_version.outputs.next_version }}
           release_name: ${{ steps.increment_version.outputs.next_version }}
-          body_path: ./last_release.txt
+          body: ${{ github.event.pull_request.body }}
           draft: false
           prerelease: false
           
@@ -87,8 +87,7 @@ jobs:
         with:
           tag: '${{ steps.latest-tag.outputs.latest_tag }}'
       - run: |
-          echo '${{ steps.latest_release.outputs.body }}' >  new-file-feature-1.txt
-          sed -e ':a' -e 'N' -e '$!ba' -e 's/\n/\\n/g' -e 's/^/"/' -e 's/$/"/' new-file-feature-1.txt > new-file-feature.txt
+          echo '${{ steps.latest_release.outputs.body }}' >  new-file-feature.txt
           cat new-file-feature.txt
       - name: Read file contents
         id: read-file-contents
