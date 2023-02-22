@@ -406,6 +406,16 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 }
                 selectedItems={props.selectedItems}
                 keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+                keyBoardShortcutActions={{
+                  onBackspaceKeyPressed: () => moveItemsToTrash(props.selectedItems),
+                  onRKeyPressed: () => {
+                    if (props.selectedItems.length === 1) {
+                      const selectedItem = props.selectedItems[0];
+                      dispatch(uiActions.setCurrentEditingNameDirty(selectedItem.name));
+                      dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItem));
+                    }
+                  },
+                }}
                 onOrderByChanged={sortBy}
                 orderBy={{
                   field: props.order.by as 'type' | 'name' | 'updatedAt' | 'size',

@@ -409,6 +409,26 @@ export default function SharedLinksView(): JSX.Element {
                   },
                 })
           }
+          keyBoardShortcutActions={{
+            onBackspaceKeyPressed: async () => {
+              const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+                ...(selectedShareLink.item as DriveItemData),
+                isFolder: selectedShareLink.isFolder,
+              }));
+              await moveItemsToTrash(itemsToTrash);
+              fetchItems(page, orderBy, 'substitute');
+            },
+            onRKeyPressed: () => {
+              if (selectedItems.length === 1) {
+                const selectedItem = selectedItems[0];
+                const itemToRename = {
+                  ...((selectedItem as ListShareLinksItem).item as DriveItemData),
+                  isFolder: selectedItem.isFolder,
+                };
+                setEditNameItem(itemToRename);
+              }
+            },
+          }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={isUpdateLinkModalOpen}

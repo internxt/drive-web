@@ -60,6 +60,7 @@ import {
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const PAGINATION_LIMIT = 100;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -386,7 +387,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               <div className="flex flex-shrink-0 flex-row">
                 <div className="flex items-center justify-center">
                   <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
-                    {({ open }) => {
+                    {({ open, close }) => {
                       useEffect(() => {
                         if (!open) {
                           setOpenedWithRightClick(false);
@@ -427,21 +428,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                 }
                               >
                                 <Menu.Item>
-                                  {({ active, close }) => {
-                                    useEffect(() => {
-                                      function handleKeyDown(event: KeyboardEvent) {
-                                        if (event.shiftKey && event.key === 'F') {
-                                          onCreateFolderButtonClicked();
-                                          close();
-                                        }
+                                  {({ active }) => {
+                                    useHotkeys('shift+F', () => {
+                                      if (open) {
+                                        close();
+                                        onCreateFolderButtonClicked();
                                       }
+                                    });
 
-                                      document.addEventListener('keydown', handleKeyDown);
-
-                                      return () => {
-                                        document.removeEventListener('keydown', handleKeyDown);
-                                      };
-                                    }, []);
                                     return (
                                       <div
                                         onClick={onCreateFolderButtonClicked}

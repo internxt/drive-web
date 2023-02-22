@@ -22,7 +22,9 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setNewItemName(item.name);
+    setTimeout(() => {
+      setNewItemName(item.name);
+    }, 0);
   }, [item]);
 
   const handleOnClose = (): void => {

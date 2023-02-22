@@ -34,6 +34,11 @@ interface ListProps<T, F> {
   disableItemCompositionStyles?: boolean;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  keyBoardShortcutActions?: {
+    onShiftFKeysPressed?: () => void;
+    onRKeyPressed?: () => void;
+    onBackspaceKeyPressed?: () => void;
+  };
 }
 
 /**
@@ -75,6 +80,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   disableItemCompositionStyles,
   onMouseEnter,
   onMouseLeave,
+  keyBoardShortcutActions,
 }: // keyboardShortcuts,
 // disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
@@ -158,6 +164,18 @@ ListProps<T, F>): JSX.Element {
   useHotkeys('esc', unselectAllItems, [selectedItems]);
 
   useHotkeys('enter', executeClickOnSelectedItem, [selectedItems]);
+
+  const handleRKeyPressed = () => {
+    keyBoardShortcutActions?.onRKeyPressed?.();
+  };
+
+  useHotkeys('r', handleRKeyPressed, [selectedItems]);
+
+  const handleBackspaceKeyPressed = () => {
+    keyBoardShortcutActions?.onBackspaceKeyPressed?.();
+  };
+
+  useHotkeys('backspace', handleBackspaceKeyPressed, [selectedItems]);
 
   function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {

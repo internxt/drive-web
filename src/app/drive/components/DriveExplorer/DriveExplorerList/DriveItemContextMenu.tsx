@@ -59,7 +59,6 @@ const contextMenuSelectedItems = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;
@@ -104,7 +103,6 @@ const contextMenuDriveNotSharedLink = ({
     icon: PencilSimple,
     action: renameItem,
     keyboardShortcutOptions: {
-      keyboardShortcutKey: 'r',
       keyboardShortcutText: 'R',
     },
     disabled: () => {
@@ -134,7 +132,6 @@ const contextMenuDriveNotSharedLink = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;
@@ -169,7 +166,6 @@ const contextMenuDriveFolderNotSharedLink = ({
     icon: PencilSimple,
     action: renameItem,
     keyboardShortcutOptions: {
-      keyboardShortcutKey: 'r',
       keyboardShortcutText: 'R',
     },
     disabled: () => {
@@ -199,7 +195,6 @@ const contextMenuDriveFolderNotSharedLink = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;
@@ -264,7 +259,6 @@ const contextMenuDriveItemShared = ({
     icon: PencilSimple,
     action: renameItem,
     keyboardShortcutOptions: {
-      keyboardShortcutKey: 'r',
       keyboardShortcutText: 'R',
     },
     disabled: () => {
@@ -295,7 +289,6 @@ const contextMenuDriveItemShared = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;
@@ -350,7 +343,6 @@ const contextMenuDriveFolderShared = ({
     icon: PencilSimple,
     action: renameItem,
     keyboardShortcutOptions: {
-      keyboardShortcutKey: 'r',
       keyboardShortcutText: 'R',
     },
     disabled: () => {
@@ -381,7 +373,6 @@ const contextMenuDriveFolderShared = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;
@@ -421,7 +412,6 @@ const contextMenuMultipleSharedView = ({
     action: moveToTrash,
     keyboardShortcutOptions: {
       keyboardShortcutIcon: Backspace,
-      keyboardShortcutKey: 'Backspace',
     },
     disabled: () => {
       return false;

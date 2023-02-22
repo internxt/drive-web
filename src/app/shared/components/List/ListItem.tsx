@@ -2,6 +2,7 @@ import { LegacyRef, useEffect, useRef, useState } from 'react';
 import { Menu } from '@headlessui/react';
 import { DotsThree } from 'phosphor-react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 export type ListItemMenu<T> = Array<{
   separator?: boolean;
@@ -10,14 +11,10 @@ export type ListItemMenu<T> = Array<{
   keyboardShortcutOptions?: {
     keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
     keyboardShortcutText?: string;
-    keyboardShortcutKey: string;
-    keyboardKeys?: ['shiftKey' | 'metaKey' | 'ctrlKey' | 'altKey'];
   };
   action: (target: T) => void;
   disabled?: (target: T) => boolean;
 }>;
-
-const SPECIAL_KEYS = ['shiftKey' as const, 'metaKey' as const, 'ctrlKey' as const, 'altKey' as const];
 
 interface ItemProps<T> {
   item: T;
@@ -191,7 +188,7 @@ export default function ListItem<T extends { id: string }>({
         }`}
       >
         <Menu as="div" className={openedFromRightClick ? '' : 'relative'}>
-          {({ open }) => {
+          {({ open, close }) => {
             useEffect(() => {
               if (!open) {
                 setOpenedFromRightClick(false);
@@ -199,6 +196,12 @@ export default function ListItem<T extends { id: string }>({
                 setPosY(0);
               }
             }, [open]);
+
+            const handleRPress = () => {
+              close();
+            };
+
+            useHotkeys('r', handleRPress);
 
             return (
               <>
@@ -208,7 +211,6 @@ export default function ListItem<T extends { id: string }>({
                     selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
                   }`}
                   onClick={() => onThreeDotsButtonPressed?.(item)}
-                  onKeyDown={() => undefined}
                 >
                   <DotsThree size={24} weight="bold" />
                 </Menu.Button>
@@ -234,34 +236,7 @@ export default function ListItem<T extends { id: string }>({
                             </div>
                           ) : (
                             <Menu.Item disabled={option.disabled?.(item)}>
-                              {({ active, disabled, close }) => {
-                                useEffect(() => {
-                                  function handleKeyDown(event: KeyboardEvent) {
-                                    let eventKeys = true;
-                                    console.log({ event });
-                                    SPECIAL_KEYS.forEach((specialKey) => {
-                                      if (option.keyboardShortcutOptions?.keyboardKeys?.includes(specialKey)) {
-                                        console.log({ specialKey });
-                                        eventKeys = eventKeys && event[specialKey];
-                                      }
-                                    });
-
-                                    if (
-                                      eventKeys &&
-                                      event.key === option.keyboardShortcutOptions?.keyboardShortcutKey
-                                    ) {
-                                      close();
-                                      option.action?.(item);
-                                    }
-                                  }
-
-                                  document.addEventListener('keydown', handleKeyDown);
-
-                                  return () => {
-                                    document.removeEventListener('keydown', handleKeyDown);
-                                  };
-                                }, []);
-
+                              {({ active, disabled }) => {
                                 return (
                                   <div
                                     onClick={(e) => {
