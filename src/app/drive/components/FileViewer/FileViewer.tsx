@@ -32,6 +32,8 @@ import { CaretLeft, CaretRight } from 'phosphor-react';
 import TopBarActions from './components/TopBarActions';
 import { useHotkeys } from 'react-hotkeys-hook';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
+import { RootState } from 'app/store';
+import { uiActions } from 'app/store/slices/ui';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -77,6 +79,7 @@ const FileViewer = ({
   const { translate } = useTranslationContext();
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
+  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
@@ -96,7 +99,15 @@ const FileViewer = ({
     return [];
   }, [folderFiles]);
   const totalFolderIndex = sortFolderFiles?.length;
-  const fileIndex = sortFolderFiles?.findIndex((item) => item === file);
+  const fileIndex = sortFolderFiles?.findIndex((item) => item.id === file?.id);
+
+  useEffect(() => {
+    if (dirtyName) {
+      setBlob(null);
+      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+    }
+    dispatch(uiActions.setCurrentEditingNameDirty(''));
+  }, [dirtyName, file]);
 
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
