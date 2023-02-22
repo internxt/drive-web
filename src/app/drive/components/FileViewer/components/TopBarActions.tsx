@@ -64,6 +64,7 @@ const TopBarActions = ({
   };
 
   const onEditButtonClicked = () => {
+    dispatch(storageActions.setItemToRename(file));
     dispatch(uiActions.setIsEditFolderNameDialog(true));
   };
 

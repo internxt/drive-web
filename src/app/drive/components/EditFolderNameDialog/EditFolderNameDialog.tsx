@@ -10,14 +10,17 @@ import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useSelector } from 'react-redux';
+import { storageActions } from 'app/store/slices/storage';
 
-const CreateFolderDialog = (): JSX.Element => {
+const EditFolderNameDialog = (): JSX.Element => {
   const { translate } = useTranslationContext();
+  const itemToRename = useSelector((state: RootState) => state.storage.itemToRename);
   const allItems = useAppSelector((state) => state.storage.levels);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const currentBreadcrumb = namePath.slice(-1);
 
-  const [folderName, setFolderName] = useState('');
+  const [itemName, setItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -26,37 +29,42 @@ const CreateFolderDialog = (): JSX.Element => {
   const findCurrentFolder = (currentBreadcrumb) => {
     const foldersList: DriveItemData[] = [];
 
-    for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find((item) => item.id === currentBreadcrumb[0].id);
-      if (selectedFolder) foldersList.push(selectedFolder as DriveItemData);
+    for (const itemsInAllItems in allItems) {
+      const selectedFolder = allItems[itemsInAllItems].find((item) => item.id === currentBreadcrumb[0].id);
+      if (selectedFolder) foldersList.push(selectedFolder);
     }
     return foldersList;
   };
 
-  const currentFolder = findCurrentFolder(currentBreadcrumb);
+  const currentItem = itemToRename ? itemToRename : findCurrentFolder(currentBreadcrumb);
 
   useEffect(() => {
-    setFolderName(currentBreadcrumb[0]?.name);
-  }, [namePath]);
+    setItemName(itemToRename ? itemToRename?.name : currentBreadcrumb[0]?.name);
+  }, [namePath, itemToRename]);
 
   const onClose = (): void => {
     setIsLoading(false);
+    dispatch(storageActions.setItemToRename(null));
     dispatch(uiActions.setIsEditFolderNameDialog(false));
   };
 
-  const renameFolder = async () => {
-    const item = currentFolder[0];
-    const metadata: DriveFolderMetadataPayload = { itemName: folderName };
+  const renameItem = async () => {
+    const item = currentItem[0]?.isFolder ? currentItem[0] : currentItem;
+    const metadata: DriveFolderMetadataPayload = { itemName: itemName };
 
-    if (folderName === item?.name) {
+    if (itemName === item?.name) {
       onClose();
-    } else if (folderName && folderName.trim().length > 0) {
+    } else if (itemName && itemName.trim().length > 0) {
       setIsLoading(true);
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }))
         .unwrap()
         .then(() => {
           setIsLoading(false);
-          dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(folderName));
+          dispatch(
+            itemToRename
+              ? uiActions.setCurrentEditingNameDirty(itemName)
+              : uiActions.setCurrentEditingBreadcrumbNameDirty(itemName),
+          );
           onClose();
         })
         .catch((e) => {
@@ -66,7 +74,7 @@ const CreateFolderDialog = (): JSX.Element => {
           return e;
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty') as string);
+      setError(translate('error.folderCannotBeEmpty'));
     }
   };
 
@@ -74,7 +82,7 @@ const CreateFolderDialog = (): JSX.Element => {
     e.preventDefault();
     if (!isLoading) {
       setError('');
-      renameFolder();
+      renameItem();
     }
   };
 
@@ -86,11 +94,11 @@ const CreateFolderDialog = (): JSX.Element => {
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label={translate('modals.renameItemDialog.label') as string}
-          value={folderName}
-          placeholder={folderName}
+          label={translate('modals.renameItemDialog.label')}
+          value={itemName}
+          placeholder={itemName}
           onChange={(name) => {
-            setFolderName(name);
+            setItemName(name);
             setError('');
           }}
           accent={error ? 'error' : undefined}
@@ -111,4 +119,4 @@ const CreateFolderDialog = (): JSX.Element => {
   );
 };
 
-export default CreateFolderDialog;
+export default EditFolderNameDialog;
