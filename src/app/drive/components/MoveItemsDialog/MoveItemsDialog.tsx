@@ -141,9 +141,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const setDriveBreadcrumb = () => {
     const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
     dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
-    driveBreadcrumbPath.forEach((item) => {
-      dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-    });
+    itemsToMove[0].isFolder &&
+      driveBreadcrumbPath.forEach((item) => {
+        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
+      });
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {

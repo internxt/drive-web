@@ -39,9 +39,10 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
   const [passwordInputVirgin, setPasswordInputVirgin] = useState(true);
   const [isPasswordProtected, setIsPasswordProtected] = useState(isSavedAlreadyWithPassword);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const isOpen = isPreviewView
-    ? useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView)
-    : useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const isOpen = useAppSelector(
+    isPreviewView ? (state) => state.ui.isShareItemDialogOpenInPreviewView : (state) => state.ui.isShareItemDialogOpen,
+  );
+
   const dateShareLink = share?.createdAt;
 
   const onClose = (): void => {
@@ -49,9 +50,11 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
   };
 
   const close = () => {
-    isPreviewView
-      ? dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(false))
-      : dispatch(uiActions.setIsShareItemDialogOpen(false));
+    dispatch(
+      isPreviewView
+        ? uiActions.setIsShareItemDialogOpenInPreviewView(false)
+        : uiActions.setIsShareItemDialogOpen(false),
+    );
     dispatch(storageActions.setItemToShare(null));
   };
 
