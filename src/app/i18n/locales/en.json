@@ -772,7 +772,7 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} restored",
+    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
     "itemDeleted": "{{itemsToDelete}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
