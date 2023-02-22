@@ -32,6 +32,8 @@ interface ItemProps<T> {
   onMouseLeave?: () => void;
 }
 
+const MENU_BUTTON_HEIGHT = 40;
+
 export default function ListItem<T extends { id: string }>({
   item,
   itemComposition,
@@ -189,7 +191,22 @@ export default function ListItem<T extends { id: string }>({
       >
         <Menu as="div" className={openedFromRightClick ? '' : 'relative'}>
           {({ open, close }) => {
+            const [isHalfwayDown, setIsHalfwayDown] = useState(false);
+
+            function handleOpenPosition() {
+              const element = menuButtonRef.current;
+              if (!element) return;
+
+              const { bottom } = element.getBoundingClientRect();
+              const windowHeight = window.innerHeight;
+
+              const isHalfway = bottom > windowHeight / 2;
+              setIsHalfwayDown(isHalfway);
+            }
+
             useEffect(() => {
+              if (!openedFromRightClick) handleOpenPosition();
+
               if (!open) {
                 setOpenedFromRightClick(false);
                 setPosX(0);
@@ -219,7 +236,12 @@ export default function ListItem<T extends { id: string }>({
                     style={
                       openedFromRightClick
                         ? { position: 'absolute', left: posX, top: posY, zIndex: 99 }
-                        : { position: 'absolute', right: 0, zIndex: 99 }
+                        : {
+                            position: 'absolute',
+                            right: 0,
+                            [isHalfwayDown ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
+                            zIndex: 99,
+                          }
                     }
                   >
                     <div
@@ -247,7 +269,7 @@ export default function ListItem<T extends { id: string }>({
                                       active
                                         ? 'bg-gray-5 text-gray-100'
                                         : disabled
-                                        ? 'pointer-events-none text-gray-40'
+                                        ? 'pointer-events-none font-medium text-gray-100'
                                         : 'text-gray-80'
                                     }`}
                                   >

@@ -17,6 +17,7 @@ interface ListProps<T, F> {
   items: T[];
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
+  onClick?: (props: T) => void;
   onDoubleClick?: (props: T) => void;
   onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
@@ -65,6 +66,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   items,
   itemComposition,
   selectedItems,
+  onClick,
   onDoubleClick,
   onEnterPressed,
   onSelectedItemsChanged,
@@ -177,9 +179,11 @@ ListProps<T, F>): JSX.Element {
 
   useHotkeys('backspace', handleBackspaceKeyPressed, [selectedItems]);
 
-  function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+  function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
-      onSelectedItemsChanged([{ props, value: !isItemSelected(props) }]);
+      onSelectedItemsChanged([{ props: itemClicked, value: !isItemSelected(itemClicked) }]);
+    } else if (!isItemSelected(itemClicked)) {
+      onClick?.(itemClicked);
     }
   }
 

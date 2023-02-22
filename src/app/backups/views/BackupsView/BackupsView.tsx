@@ -145,7 +145,7 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div
-      className="mb-5 flex flex-grow flex-col"
+      className="flex flex-grow flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
@@ -162,7 +162,7 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
-      <div className="flex h-14 items-center px-5">
+      <div className="flex h-14 flex-shrink-0 items-center  px-5">
         {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
       </div>
       {body}

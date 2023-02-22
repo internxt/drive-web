@@ -378,7 +378,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
-          <div className="z-10 flex h-14 max-w-full justify-between px-5">
+          <div className="z-10 flex h-14 max-w-full flex-shrink-0 justify-between px-5">
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
@@ -596,7 +596,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             )}
           </div>
 
-          <div className="z-0 mb-5 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+          <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent

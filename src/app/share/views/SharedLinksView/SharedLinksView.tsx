@@ -264,6 +264,10 @@ export default function SharedLinksView(): JSX.Element {
           ]}
           items={shareLinks}
           isLoading={isLoading}
+          onClick={(item) => {
+            const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
+            onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
+          }}
           itemComposition={[
             (props) => {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
