@@ -17,6 +17,121 @@ import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../types';
 
+const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
+  name: t('drive.dropdown.openPreview'),
+  icon: Eye,
+  action: openPreview,
+  disabled: (item) => {
+    return item.isFolder;
+  },
+});
+
+const getGetLinkMenuItem = (getLink: (target) => void) => ({
+  name: t('drive.dropdown.getLink'),
+  icon: Link,
+  action: getLink,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getRenameMenuItem = (renameItem: (target) => void) => ({
+  name: t('drive.dropdown.rename'),
+  icon: PencilSimple,
+  action: renameItem,
+  keyboardShortcutOptions: {
+    keyboardShortcutText: 'R',
+  },
+  disabled: () => {
+    return false;
+  },
+});
+
+const getDownloadMenuItem = (downloadItems: (target?) => void) => ({
+  name: t('drive.dropdown.download'),
+  icon: DownloadSimple,
+  action: downloadItems,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getMoveToTrashMenuItem = (moveToTrash: (target?) => void) => ({
+  name: t('drive.dropdown.moveToTrash'),
+  icon: Trash,
+  action: moveToTrash,
+  keyboardShortcutOptions: {
+    keyboardShortcutIcon: Backspace,
+  },
+  disabled: () => {
+    return false;
+  },
+});
+
+const getMoveItemMenuItem = (moveItem: (target?) => void) => ({
+  name: t('drive.dropdown.move'),
+  icon: ArrowsOutCardinal,
+  action: moveItem,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getDeleteLinkMenuItem = (deleteLink: (target?) => void) => ({
+  name: t('drive.dropdown.deleteLink'),
+  icon: LinkBreak,
+  action: deleteLink,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getRestoreMenuItem = (restoreItem: (target?) => void) => ({
+  name: t('drive.dropdown.restore'),
+  icon: ClockCounterClockwise,
+  action: restoreItem,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getDeletePermanentlyMenuItem = (deletePermanently: (target?) => void) => ({
+  name: t('drive.dropdown.deletePermanently'),
+  icon: Trash,
+  action: deletePermanently,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getSharedLinkMenuItems = ({
+  copyLink,
+  openLinkSettings,
+  deleteLink,
+}: {
+  copyLink: (target?) => void;
+  openLinkSettings: (target?) => void;
+  deleteLink: (target?) => void;
+}) => [
+  {
+    name: t('drive.dropdown.copyLink'),
+    icon: Copy,
+    action: copyLink,
+    disabled: () => {
+      return false;
+    },
+  },
+  {
+    name: t('drive.dropdown.linkSettings'),
+    icon: Gear,
+    action: openLinkSettings,
+    disabled: () => {
+      return false;
+    },
+  },
+  getDeleteLinkMenuItem(deleteLink),
+];
+
 const contextMenuSelectedItems = ({
   selectedItems,
   moveItems,
@@ -36,34 +151,10 @@ const contextMenuSelectedItems = ({
     },
   },
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.move'),
-    icon: ArrowsOutCardinal,
-    action: moveItems,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItems,
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveItemMenuItem(moveItems),
+  getDownloadMenuItem(downloadItems),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuDriveNotSharedLink = ({
@@ -81,62 +172,14 @@ const contextMenuDriveNotSharedLink = ({
   downloadItem: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('drive.dropdown.openPreview'),
-    icon: Eye,
-    action: openPreview,
-    disabled: (item) => {
-      return item.isFolder;
-    },
-  },
-  {
-    name: t('drive.dropdown.getLink'),
-    icon: Link,
-    action: getLink,
-    disabled: () => {
-      return false;
-    },
-  },
+  getOpenPreviewMenuItem(openPreview),
+  getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.rename'),
-    icon: PencilSimple,
-    action: renameItem,
-    keyboardShortcutOptions: {
-      keyboardShortcutText: 'R',
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.move'),
-    icon: ArrowsOutCardinal,
-    action: moveItem,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuDriveFolderNotSharedLink = ({
@@ -152,54 +195,13 @@ const contextMenuDriveFolderNotSharedLink = ({
   downloadItem: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('drive.dropdown.getLink'),
-    icon: Link,
-    action: getLink,
-    disabled: () => {
-      return false;
-    },
-  },
+  getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.rename'),
-    icon: PencilSimple,
-    action: renameItem,
-    keyboardShortcutOptions: {
-      keyboardShortcutText: 'R',
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.move'),
-    icon: ArrowsOutCardinal,
-    action: moveItem,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuDriveItemShared = ({
@@ -221,79 +223,14 @@ const contextMenuDriveItemShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  {
-    name: t('drive.dropdown.openPreview'),
-    icon: Eye,
-    action: openPreview,
-    disabled: (item) => {
-      return item?.isFolder;
-    },
-  },
-  {
-    name: t('drive.dropdown.copyLink'),
-    icon: Copy,
-    action: copyLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.linkSettings'),
-    icon: Gear,
-    action: openLinkSettings,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.deleteLink'),
-    icon: LinkBreak,
-    action: deleteLink,
-    disabled: () => {
-      return false;
-    },
-  },
+  getOpenPreviewMenuItem(openPreview),
+  ...getSharedLinkMenuItems({ copyLink, openLinkSettings, deleteLink }),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.rename'),
-    icon: PencilSimple,
-    action: renameItem,
-    keyboardShortcutOptions: {
-      keyboardShortcutText: 'R',
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-
-  {
-    name: t('drive.dropdown.move'),
-    icon: ArrowsOutCardinal,
-    action: moveItem,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuDriveFolderShared = ({
@@ -313,71 +250,13 @@ const contextMenuDriveFolderShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  {
-    name: t('drive.dropdown.copyLink'),
-    icon: Copy,
-    action: copyLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.linkSettings'),
-    icon: Gear,
-    action: openLinkSettings,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.deleteLink'),
-    icon: LinkBreak,
-    action: deleteLink,
-    disabled: () => {
-      return false;
-    },
-  },
+  ...getSharedLinkMenuItems({ copyLink, openLinkSettings, deleteLink }),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.rename'),
-    icon: PencilSimple,
-    action: renameItem,
-    keyboardShortcutOptions: {
-      keyboardShortcutText: 'R',
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-
-  {
-    name: t('drive.dropdown.move'),
-    icon: ArrowsOutCardinal,
-    action: moveItem,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuMultipleSharedView = ({
@@ -389,34 +268,10 @@ const contextMenuMultipleSharedView = ({
   downloadItem: (item: ListShareLinksItem) => void;
   moveToTrash: (item: ListShareLinksItem) => void;
 }): ListItemMenu<ListShareLinksItem> => [
-  {
-    name: t('drive.dropdown.deleteLink'),
-    icon: LinkBreak,
-    action: deleteLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: downloadItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getDeleteLinkMenuItem(deleteLink),
+  getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.moveToTrash'),
-    icon: Trash,
-    action: moveToTrash,
-    keyboardShortcutOptions: {
-      keyboardShortcutIcon: Backspace,
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuTrashItems = ({
@@ -428,31 +283,10 @@ const contextMenuTrashItems = ({
   restoreItem: (item: DriveItemData) => void;
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('drive.dropdown.openPreview'),
-    icon: Eye,
-    action: openPreview,
-    disabled: (item: DriveItemData) => {
-      return item?.isFolder;
-    },
-  },
-  {
-    name: t('drive.dropdown.restore'),
-    icon: ClockCounterClockwise,
-    action: restoreItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getOpenPreviewMenuItem(openPreview),
+  getRestoreMenuItem(restoreItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.deletePermanently'),
-    icon: Trash,
-    action: deletePermanently,
-    disabled: () => {
-      return false;
-    },
-  },
+  getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
 const contextMenuTrashFolder = ({
@@ -462,23 +296,9 @@ const contextMenuTrashFolder = ({
   restoreItem: (item: DriveItemData) => void;
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('drive.dropdown.restore'),
-    icon: ClockCounterClockwise,
-    action: restoreItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRestoreMenuItem(restoreItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.deletePermanently'),
-    icon: Trash,
-    action: deletePermanently,
-    disabled: () => {
-      return false;
-    },
-  },
+  getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
 const contextMenuMultipleSelectedTrashItems = ({
@@ -488,23 +308,9 @@ const contextMenuMultipleSelectedTrashItems = ({
   restoreItem: (item: DriveItemData) => void;
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('drive.dropdown.restore'),
-    icon: ClockCounterClockwise,
-    action: restoreItem,
-    disabled: () => {
-      return false;
-    },
-  },
+  getRestoreMenuItem(restoreItem),
   { name: '', action: () => false, separator: true },
-  {
-    name: t('drive.dropdown.deletePermanently'),
-    icon: Trash,
-    action: deletePermanently,
-    disabled: () => {
-      return false;
-    },
-  },
+  getDeletePermanentlyMenuItem(deletePermanently),
 ];
 
 const contextMenuBackupItems = ({
@@ -533,16 +339,7 @@ const contextMenuSelectedBackupItems = ({
   onDownloadSelectedItems: () => void;
   onDeleteSelectedItems: () => void;
 }): ListItemMenu<unknown> => [
-  {
-    name: t('drive.dropdown.download'),
-    icon: DownloadSimple,
-    action: () => {
-      onDownloadSelectedItems();
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  getDownloadMenuItem(onDownloadSelectedItems),
   { name: '', action: () => false, separator: true },
   {
     name: t('drive.dropdown.delete'),
@@ -565,36 +362,7 @@ const contextMenuDriveItemSharedsView = ({
   openLinkSettings: (item) => void;
   deleteLink: (open: boolean) => void;
 }): ListItemMenu<DriveItemData> => [
-  {
-    name: t('shared-links.item-menu.copy-link'),
-    icon: Copy,
-    action: (item) => {
-      copyShareLink(item);
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('shared-links.item-menu.link-settings'),
-    icon: Gear,
-    action: (item) => {
-      openLinkSettings(item);
-    },
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('shared-links.item-menu.delete-link'),
-    icon: LinkBreak,
-    action: () => {
-      deleteLink(true);
-    },
-    disabled: () => {
-      return false;
-    },
-  },
+  ...getSharedLinkMenuItems({ copyLink: copyShareLink, openLinkSettings, deleteLink: () => deleteLink(true) }),
 ];
 
 export {
