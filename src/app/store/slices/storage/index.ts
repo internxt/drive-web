@@ -24,6 +24,8 @@ const initialState: StorageState = {
   itemsToDelete: [],
   itemsToMove: [],
   itemsOnTrash: [],
+  folderOnTrashLength: 0,
+  filesOnTrashLength: 0,
   viewMode: FileViewMode.List,
   namePath: [],
   filesToRename: [],
@@ -55,6 +57,21 @@ export const storageSlice = createSlice({
     },
     setItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsOnTrash = action.payload;
+    },
+    addItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
+      state.itemsOnTrash = state.itemsOnTrash.concat(action.payload);
+    },
+    setFoldersOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
+      state.folderOnTrashLength = action.payload;
+    },
+    setFilesOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
+      state.filesOnTrashLength = action.payload;
+    },
+    addFoldersOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
+      state.folderOnTrashLength += action.payload;
+    },
+    addFilesOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
+      state.filesOnTrashLength += action.payload;
     },
     setFilesToRename: (state: StorageState, action: PayloadAction<(File | DriveItemData)[]>) => {
       state.filesToRename = action.payload;

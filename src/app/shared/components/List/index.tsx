@@ -109,6 +109,10 @@ ListProps<T, F>): JSX.Element {
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 
+  const handleNexstPage = () => {
+    onNextPage?.();
+  };
+
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
     onSelectedItemsChanged(changesToMake);
@@ -239,9 +243,10 @@ ListProps<T, F>): JSX.Element {
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={onNextPage ? onNextPage : () => ({})}
-              hasMore={hasMoreItems ?? false}
+              next={handleNexstPage}
+              hasMore={!!hasMoreItems}
               loader={loader}
+              scrollThreshold={0.7}
               scrollableTarget="scrollableList"
               className="h-full"
               style={{ overflow: 'visible' }}

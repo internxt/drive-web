@@ -61,8 +61,10 @@ import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContaine
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
 
-const PAGINATION_LIMIT = 100;
+const PAGINATION_LIMIT = 50;
+const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
 interface DriveExplorerProps {
@@ -93,6 +95,8 @@ interface DriveExplorerProps {
   planUsage: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
+  folderOnTrashLength: number;
+  filesOnTrashLength: number;
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -111,6 +115,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     currentFolderId,
     onFileUploaded,
     onItemsMoved,
+    folderOnTrashLength,
+    filesOnTrashLength,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -118,8 +124,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
+
   const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
+  const [paginatedTrashItems, setPaginatedTrashItems] = useState<DriveItemData[]>([]);
+  const [timesCalled, setTimesCalled] = useState<number>(0);
+
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -133,6 +144,44 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
   const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+
+  useEffect(() => {
+    if (isTrash && paginatedTrashItems.length < items.length) {
+      setPaginatedTrashItems(items);
+    }
+  }, [items.length]);
+
+  useEffect(() => {
+    const isTrashAndNotHasItems = isTrash && items.length === 0;
+    if (isTrashAndNotHasItems) {
+      getMoreTrashItems();
+    }
+  }, []);
+
+  useEffect(() => {
+    const thereIsNotMoreFoldersAndFewerItems = !hasMoreTrashFolders && folderOnTrashLength < 50 && items.length < 50;
+
+    if (thereIsNotMoreFoldersAndFewerItems) {
+      getMoreTrashItems();
+    }
+  }, [items]);
+
+  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
+  const getMoreTrashItems = async () => {
+    setTimesCalled(timesCalled + 1);
+
+    if (hasMoreTrashFolders && !timesCalled) {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+
+      const existsMoreFolders = !result.finished;
+      setHasMoreTrashFolders(existsMoreFolders);
+    } else {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+
+      const existsMoreItems = !result.finished;
+      setHasMoreItems(existsMoreItems);
+    }
+  };
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -370,7 +419,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <NameCollisionContainer />
-      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
@@ -601,9 +650,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
                   folderId={currentFolderId}
-                  items={itemsList}
+                  items={isTrash ? paginatedTrashItems : itemsList}
                   isLoading={isLoading}
-                  onEndOfScroll={getMoreItems}
+                  onEndOfScroll={isTrash ? getMoreTrashItems : getMoreItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
@@ -808,5 +857,7 @@ export default connect((state: RootState) => {
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
+    folderOnTrashLength: state.storage.folderOnTrashLength,
+    filesOnTrashLength: state.storage.filesOnTrashLength,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
