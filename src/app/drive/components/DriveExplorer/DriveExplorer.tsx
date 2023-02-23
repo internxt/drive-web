@@ -159,7 +159,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    const thereIsNotMoreFoldersAndFewerItems = !hasMoreTrashFolders && folderOnTrashLength < 50 && items.length < 50;
+    const thereIsNotMoreFoldersAndFewerItems =
+      !hasMoreTrashFolders && folderOnTrashLength < TRASH_PAGINATION_OFFSET && items.length < TRASH_PAGINATION_OFFSET;
 
     if (thereIsNotMoreFoldersAndFewerItems) {
       getMoreTrashItems();
