@@ -47,6 +47,7 @@ export default function CheckoutPlanView(): JSX.Element {
             }))
           : (response = await paymentService.createCheckoutSession({
               price_id: planId,
+              trial_days: 14,
               success_url: `${window.location.origin}/checkout/success`,
               cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
               customer_email: user.email,
