@@ -385,6 +385,9 @@
       "goToApp": "Go back to app"
     }
   },
+  "contextMenu": {
+    "itemsSelected": "items selected"
+  },
   "modals": {
     "renameItemDialog": {
       "title": "Rename",
@@ -837,6 +840,7 @@
       }
     },
     "dropdown": {
+      "openPreview": "Open preview",
       "getLink": "Get link",
       "rename": "Rename",
       "download": "Download",
@@ -846,7 +850,8 @@
       "deleteLink": "Delete link",
       "restore": "Restore",
       "deletePermanently": "Delete permanently",
-      "move": "Move"
+      "move": "Move",
+      "delete": "Delete"
     },
     "deleteItems": {
       "title": "Delete permanently?",

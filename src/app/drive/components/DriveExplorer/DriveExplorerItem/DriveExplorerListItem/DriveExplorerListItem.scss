@@ -1,15 +1,9 @@
 @layer components {
   .file-list-item {
-    background-color: white;
-
-    @apply relative flex h-16 w-full flex-row items-center border-b border-gray-5 text-base;
-
-    &:hover {
-      @apply bg-neutral-10;
-    }
+    @apply relative flex flex-grow w-full flex-row items-center text-base;
 
     &.selected {
-      @apply border-blue-20 border-opacity-65 bg-blue-10;
+      @apply border-blue-20 border-opacity-65;
     }
 
     &.is-dragging {

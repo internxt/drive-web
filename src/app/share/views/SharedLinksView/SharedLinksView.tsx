@@ -1,6 +1,6 @@
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, LinkBreak, Gear, Copy } from 'phosphor-react';
+import { Trash, Link } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -14,7 +14,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import { DriveFileData } from '../../../drive/types';
+import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
@@ -22,12 +22,23 @@ import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { t } from 'i18next';
+import {
+  contextMenuDriveFolderShared,
+  contextMenuDriveItemShared,
+  contextMenuMultipleSharedView,
+} from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
+import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
+import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
-function copyShareLink(type: string, code: string, token: string, t: any) {
+function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
@@ -42,6 +53,7 @@ export default function SharedLinksView(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
   const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
 
@@ -173,8 +185,34 @@ export default function SharedLinksView(): JSX.Element {
     setIsUpdateLinkModalOpen(true);
   }
 
+  const copyLink = (item) => {
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const encryptedCode = item.code || item.encryptedCode;
+    const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
+    copyShareLink(itemType, plainCode, item.token);
+  };
+
+  const openLinkSettings = (item) => {
+    dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
+  };
+
   return (
-    <div className="flex w-full flex-shrink-0 flex-col">
+    <div
+      className="flex w-full flex-shrink-0 flex-col"
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          onClose={() => {
+            setEditNameItem(null);
+            fetchItems(0, orderBy, 'substitute');
+          }}
+        />
+      )}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
@@ -226,6 +264,10 @@ export default function SharedLinksView(): JSX.Element {
           ]}
           items={shareLinks}
           isLoading={isLoading}
+          onClick={(item) => {
+            const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
+            onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
+          }}
           itemComposition={[
             (props) => {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
@@ -275,42 +317,122 @@ export default function SharedLinksView(): JSX.Element {
           emptyState={emptyState}
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
-          menu={[
-            {
-              name: translate('shared-links.item-menu.copy-link'),
-              icon: Copy,
-              action: (props: any) => {
-                const itemType = props.isFolder ? 'folder' : 'file';
-                const encryptedCode = props.code || props.encryptedCode;
-                const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
-                copyShareLink(itemType, plainCode, props.token, translate);
-              },
-              disabled: () => {
-                return false;
-              },
+          menu={
+            selectedItems.length > 1
+              ? contextMenuMultipleSharedView({
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  downloadItem: () => {
+                    const itemsToDownload = selectedItems.map((selectedShareLink) => ({
+                      ...(selectedShareLink.item as DriveItemData),
+                      isFolder: selectedShareLink.isFolder,
+                    }));
+                    dispatch(storageThunks.downloadItemsThunk(itemsToDownload));
+                  },
+                  moveToTrash: async () => {
+                    const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+                      ...(selectedShareLink.item as DriveItemData),
+                      isFolder: selectedShareLink.isFolder,
+                    }));
+                    await moveItemsToTrash(itemsToTrash);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+              : selectedItems[0]?.isFolder
+              ? contextMenuDriveFolderShared({
+                  copyLink,
+                  openLinkSettings,
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  renameItem: (shareLink) => {
+                    const itemToRename = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    setEditNameItem(itemToRename);
+                  },
+                  moveItem: (shareLink) => {
+                    const itemToMove = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageActions.setItemsToMove([itemToMove]));
+                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                  },
+                  downloadItem: (shareLink) => {
+                    const itemToDownload = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+                  },
+                  moveToTrash: async (shareLink) => {
+                    const itemToTrash = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    await moveItemsToTrash([itemToTrash]);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+              : contextMenuDriveItemShared({
+                  openPreview: (shareLink) => {
+                    dispatch(uiActions.setIsFileViewerOpen(true));
+                    dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
+                  },
+                  copyLink,
+                  openLinkSettings,
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  renameItem: (shareLink) => {
+                    const itemToRename = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    setEditNameItem(itemToRename);
+                  },
+                  moveItem: (shareLink) => {
+                    const itemToMove = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageActions.setItemsToMove([itemToMove]));
+                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                  },
+                  downloadItem: (shareLink) => {
+                    const itemToDownload = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+                  },
+                  moveToTrash: async (shareLink) => {
+                    const itemToTrash = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    await moveItemsToTrash([itemToTrash]);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+          }
+          keyBoardShortcutActions={{
+            onBackspaceKeyPressed: async () => {
+              const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+                ...(selectedShareLink.item as DriveItemData),
+                isFolder: selectedShareLink.isFolder,
+              }));
+              await moveItemsToTrash(itemsToTrash);
+              fetchItems(page, orderBy, 'substitute');
             },
-            {
-              name: translate('shared-links.item-menu.link-settings'),
-              icon: Gear,
-              action: (props: any) => {
-                dispatch(storageActions.setItemToShare({ share: props, item: props.item }));
-                dispatch(uiActions.setIsShareItemDialogOpen(true));
-              },
-              disabled: () => {
-                return false; // If item is selected and link is active
-              },
+            onRKeyPressed: () => {
+              if (selectedItems.length === 1) {
+                const selectedItem = selectedItems[0];
+                const itemToRename = {
+                  ...((selectedItem as ListShareLinksItem).item as DriveItemData),
+                  isFolder: selectedItem.isFolder,
+                };
+                setEditNameItem(itemToRename);
+              }
             },
-            {
-              name: translate('shared-links.item-menu.delete-link'),
-              icon: LinkBreak,
-              action: (props) => {
-                setIsDeleteDialogModalOpen(true);
-              },
-              disabled: () => {
-                return false; // If item is selected and link is active
-              },
-            },
-          ]}
+          }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={isUpdateLinkModalOpen}
@@ -319,7 +441,11 @@ export default function SharedLinksView(): JSX.Element {
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
-
+      <MoveItemsDialog
+        items={shareLinks.map((shareLink) => ({ ...(shareLink.item as DriveItemData), isFolder: shareLink.isFolder }))}
+        isTrash={false}
+      />
+      <EditFolderNameDialog />
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}

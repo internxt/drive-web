@@ -23,14 +23,7 @@ const TrashView = (props: TrashViewProps) => {
   }, []);
 
   const { items, isLoadingItemsOnTrash } = props;
-  return (
-    <DriveExplorer
-      title={translate('trash.trash') as string}
-      titleClassName="px-3"
-      isLoading={isLoadingItemsOnTrash}
-      items={items}
-    />
-  );
+  return <DriveExplorer title={translate('trash.trash') as string} isLoading={isLoadingItemsOnTrash} items={items} />;
 };
 
 export default connect((state: RootState) => {

@@ -385,6 +385,9 @@
       "goToApp": "Volver a la aplicación"
     }
   },
+  "contextMenu": {
+    "itemsSelected": "archivos seleccionados"
+  },
   "modals": {
     "renameItemDialog": {
       "title": "Renombrar",
@@ -837,6 +840,7 @@
       }
     },
     "dropdown": {
+      "openPreview": "Abrir previsualización",
       "getLink": "Copiar enlace",
       "rename": "Renombrar",
       "download": "Descargar",
@@ -846,7 +850,8 @@
       "deleteLink": "Eliminar enlace",
       "restore": "Restaurar",
       "deletePermanently": "Eliminar permanentemente",
-      "move": "Mover"
+      "move": "Mover",
+      "delete": "Eliminar"
     },
     "deleteItems": {
       "title": "¿Eliminar permanentemente?",

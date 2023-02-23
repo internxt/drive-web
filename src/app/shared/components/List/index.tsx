@@ -17,12 +17,14 @@ interface ListProps<T, F> {
   items: T[];
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
+  onClick?: (props: T) => void;
   onDoubleClick?: (props: T) => void;
+  onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: ReactNode;
-  onNextPage: () => void;
+  onNextPage?: () => void;
   onOrderByChanged?: (value: { field: F; direction: 'ASC' | 'DESC' }) => void;
   orderBy?: { field: F; direction: 'ASC' | 'DESC' };
   hasMoreItems?: boolean;
@@ -30,6 +32,14 @@ interface ListProps<T, F> {
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | 'multiselect' | Array<'delete' & (() => void)>>;
   disableKeyboardShortcuts?: boolean;
+  disableItemCompositionStyles?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  keyBoardShortcutActions?: {
+    onShiftFKeysPressed?: () => void;
+    onRKeyPressed?: () => void;
+    onBackspaceKeyPressed?: () => void;
+  };
 }
 
 /**
@@ -51,12 +61,14 @@ interface ListProps<T, F> {
  *
  * This component has no state in it. The state must be kept by an smarter component (higher in the herarchy)
  */
-export default function List<T extends { id: string }, F extends keyof T>({
+export default function List<T extends { id: any }, F extends keyof T>({
   header,
   items,
   itemComposition,
   selectedItems,
+  onClick,
   onDoubleClick,
+  onEnterPressed,
   onSelectedItemsChanged,
   isLoading,
   skinSkeleton,
@@ -67,6 +79,10 @@ export default function List<T extends { id: string }, F extends keyof T>({
   hasMoreItems,
   menu,
   className,
+  disableItemCompositionStyles,
+  onMouseEnter,
+  onMouseLeave,
+  keyBoardShortcutActions,
 }: // keyboardShortcuts,
 // disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
@@ -89,13 +105,21 @@ ListProps<T, F>): JSX.Element {
     if (!node || isLoading) return;
 
     if (!isScrollable && hasMoreItems) {
-      onNextPage();
+      onNextPage?.();
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
     onSelectedItemsChanged(changesToMake);
+  }
+
+  function executeClickOnSelectedItem() {
+    const oneItemSelected = selectedItems.length === 1;
+    if (oneItemSelected) {
+      const selectedItem = selectedItems[0];
+      onEnterPressed?.(selectedItem);
+    }
   }
 
   function unselectAllItemsAndSelectOne(props: T) {
@@ -141,24 +165,34 @@ ListProps<T, F>): JSX.Element {
 
   useHotkeys('esc', unselectAllItems, [selectedItems]);
 
-  function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+  useHotkeys('enter', executeClickOnSelectedItem, [selectedItems]);
+
+  const handleRKeyPressed = () => {
+    keyBoardShortcutActions?.onRKeyPressed?.();
+  };
+
+  useHotkeys('r', handleRKeyPressed, [selectedItems]);
+
+  const handleBackspaceKeyPressed = () => {
+    keyBoardShortcutActions?.onBackspaceKeyPressed?.();
+  };
+
+  useHotkeys('backspace', handleBackspaceKeyPressed, [selectedItems]);
+
+  function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
-      onSelectedItemsChanged([{ props, value: !isItemSelected(props) }]);
-    } else {
-      unselectAllItemsAndSelectOne(props);
+      onSelectedItemsChanged([{ props: itemClicked, value: !isItemSelected(itemClicked) }]);
+    } else if (!isItemSelected(itemClicked)) {
+      onClick?.(itemClicked);
     }
   }
 
-  useEffect(() => {
-    const cb = (e: MouseEvent) => {
-      if (!(e.target as Element | null)?.closest('#generic-list-component')) {
-        unselectAllItems();
-      }
-    };
-    document.addEventListener('click', cb);
-
-    return () => document.removeEventListener('click', cb);
-  }, [selectedItems]);
+  function onRightItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault();
+    if (!isItemSelected(props)) {
+      unselectAllItemsAndSelectOne(props);
+    }
+  }
 
   return (
     <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
@@ -199,13 +233,13 @@ ListProps<T, F>): JSX.Element {
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 ? (
+        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={onNextPage}
+              next={onNextPage ? onNextPage : () => ({})}
               hasMore={hasMoreItems ?? false}
               loader={loader}
               scrollableTarget="scrollableList"
@@ -220,9 +254,16 @@ ListProps<T, F>): JSX.Element {
                   selected={isItemSelected(item)}
                   onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
                   onClick={(e) => onItemClick(item, e)}
+                  onClickContextMenu={(e) => onRightItemClick(item, e)}
+                  onThreeDotsButtonPressed={(item) => {
+                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                  }}
                   columnsWidth={header.map((column) => column.width)}
                   menu={menu}
                   onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                  disableItemCompositionStyles={disableItemCompositionStyles}
+                  onMouseEnter={onMouseEnter}
+                  onMouseLeave={onMouseLeave}
                 />
               ))}
             </InfiniteScroll>
