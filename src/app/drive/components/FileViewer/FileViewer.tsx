@@ -54,15 +54,13 @@ const extensionsList = fileExtensionService.computeExtensionsLists(fileExtension
 
 const DownloadFile = ({ onDownload }) => (
   <div
-    className={'z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
+    className={'z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
   >
     <button
       onClick={onDownload}
-      className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
-                          bg-opacity-0 p-3 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+      className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
     >
-      <UilImport height="20" width="20" />
+      <UilImport size={20} />
     </button>
   </div>
 );
