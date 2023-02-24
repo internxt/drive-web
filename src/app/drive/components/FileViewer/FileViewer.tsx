@@ -52,15 +52,19 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const DownloadFile = ({ onDownload }) => (
+const DownloadFile = ({ onDownload, translate }) => (
   <div
     className={'z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
   >
     <button
+      title={translate('actions.download')}
       onClick={onDownload}
-      className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+      className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
+                          bg-opacity-0 px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
     >
-      <UilImport size={20} />
+      <UilImport height="20" width="20" />
+      <span className="font-medium">{translate('actions.download')}</span>
     </button>
   </div>
 );
@@ -306,6 +310,7 @@ const FileViewer = ({
             {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
             {fileIndex === 0 ? null : (
               <button
+                title={translate('actions.previous')}
                 className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('prev')}
               >
@@ -323,7 +328,7 @@ const FileViewer = ({
                     <Suspense fallback={<div></div>}>
                       <Viewer blob={blob} changeFile={changeFile} />
                     </Suspense>
-                  ) : progress !== undefined ? (
+                  ) : (
                     <>
                       <div
                         tabIndex={0}
@@ -343,30 +348,28 @@ const FileViewer = ({
                         </div>
                       </div>
                     </>
-                  ) : (
-                    <div
-                      className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
-                      rounded-xl font-medium"
-                    >
-                      <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                      <span className="text-lg">{filename}</span>
-                      <span className="text-white text-opacity-50">{translate('drive.previewNoAvailable')}</span>
-                      <DownloadFile onDownload={onDownload} />
-                    </div>
                   )}
                 </div>
               </div>
             ) : (
               <div
                 tabIndex={0}
-                className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
-                          space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
+                className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                      space-y-6 rounded-xl font-medium"
               >
-                <span>{translate('error.noFilePreview')}</span>
+                <div className="flex flex-col items-center justify-center">
+                  <ItemIconComponent className="flex" width={80} height={80} />
+                  <span className="pt-2 text-lg">{filename}</span>
+                  <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
+                </div>
+                <div>
+                  <DownloadFile onDownload={onDownload} translate={translate} />
+                </div>
               </div>
             )}
             {fileIndex === totalFolderIndex - 1 ? null : (
               <button
+                title={translate('actions.next')}
                 className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('next')}
               >

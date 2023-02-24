@@ -74,6 +74,7 @@ const TopBarActions = ({
     >
       <button
         onClick={onDownload}
+        title={translate('actions.download')}
         className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
       >
         <UilImport size={20} />
