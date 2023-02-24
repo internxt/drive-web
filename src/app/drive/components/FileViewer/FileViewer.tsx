@@ -34,6 +34,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
+import { setItemsToMove } from '../../../store/slices/storage';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -69,6 +70,8 @@ const DownloadFile = ({ onDownload, translate }) => (
   </div>
 );
 
+const ESC_KEY_KEYBOARD_CODE = 27;
+
 const FileViewer = ({
   file,
   onClose,
@@ -82,6 +85,8 @@ const FileViewer = ({
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+  const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
@@ -102,6 +107,28 @@ const FileViewer = ({
   }, [folderFiles]);
   const totalFolderIndex = sortFolderFiles?.length;
   const fileIndex = sortFolderFiles?.findIndex((item) => item.id === file?.id);
+
+  // To prevent close FileViewer is any of those modal are open
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.keyCode === ESC_KEY_KEYBOARD_CODE) {
+        if (isMoveItemsDialogOpen || isCreateFolderDialogOpen) event.preventDefault();
+
+        if (isCreateFolderDialogOpen) {
+          dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+          return;
+        }
+        if (isMoveItemsDialogOpen) {
+          dispatch(uiActions.setIsMoveItemsDialogOpen(false));
+          dispatch(setItemsToMove([]));
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen]);
 
   useEffect(() => {
     if (dirtyName) {
@@ -338,7 +365,7 @@ const FileViewer = ({
                       rounded-xl font-medium`}
                       >
                         <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                        <span className="text-lg">{filename}</span>
+                        <span className="w-5/6 text-lg">{filename}</span>
                         <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
                         <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                           <div
@@ -357,9 +384,9 @@ const FileViewer = ({
                 className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
                       space-y-6 rounded-xl font-medium"
               >
-                <div className="flex flex-col items-center justify-center">
+                <div className="flex w-6/12 flex-col items-center justify-center">
                   <ItemIconComponent className="flex" width={80} height={80} />
-                  <span className="pt-2 text-lg">{filename}</span>
+                  <span className="w-3/6 truncate pt-2 text-lg">{filename}</span>
                   <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
                 </div>
                 <div>
@@ -400,9 +427,9 @@ const FileViewer = ({
                 <UilMultiply height={24} width={24} />
               </button>
 
-              <Dialog.Title className="flex flex-row items-center truncate text-lg">
+              <Dialog.Title className="flex w-11/12 flex-row items-center text-lg">
                 <ItemIconComponent className="mr-3" width={32} height={32} />
-                {filename}
+                <p className="w-full truncate">{filename}</p>
               </Dialog.Title>
             </div>
 
