@@ -28,6 +28,7 @@ import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppV
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import TrashView from 'app/drive/views/TrashView/TrashView';
+import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 
 const views: Array<{
   id: string;
@@ -39,6 +40,7 @@ const views: Array<{
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.Auth, component: AuthView },
+  { id: AppView.buttonAuth, component: ButtonAuth },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },

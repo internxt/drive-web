@@ -50,6 +50,11 @@ const PasswordInput = ({
         autoFocus={autoFocus}
         {...register(label, {
           required,
+          onChange: (e) => {
+            if (e.target.value.length > 0) {
+              localStorage.setItem('password', e.target.value);
+            }
+          },
           minLength,
           min,
           maxLength,
@@ -61,7 +66,7 @@ const PasswordInput = ({
         onBlur={() => {
           if (onBlur) onBlur();
         }}
-        className={`h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={`h-11 w-full border-green py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
       />
       <div
         onClick={() => setShowPassword(!showPassword)}
