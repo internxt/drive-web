@@ -21,6 +21,8 @@ export interface StorageState {
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];
   itemsOnTrash: DriveItemData[];
+  folderOnTrashLength: number;
+  filesOnTrashLength: number;
   filesToRename: (File | DriveItemData)[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];

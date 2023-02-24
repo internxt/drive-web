@@ -1,4 +1,4 @@
-import { Component, ReactNode, useMemo } from 'react';
+import { Component, ReactNode } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';

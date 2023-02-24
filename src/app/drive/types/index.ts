@@ -16,6 +16,7 @@ export interface DriveFolderData {
   isFolder: boolean;
   name: string;
   plain_name: string;
+  plainName?: string | null;
   parentId: number;
   parent_id: number | null;
   updatedAt: string;
@@ -43,6 +44,7 @@ export interface DriveFileData {
   id: number;
   name: string;
   plain_name: string | null;
+  plainName?: string | null;
   size: number;
   type: string;
   updatedAt: string;
