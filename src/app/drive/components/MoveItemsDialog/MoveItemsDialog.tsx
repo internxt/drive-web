@@ -9,7 +9,6 @@ import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData, FolderPathDialog } from '../../types';
-import i18n from 'app/i18n/services/i18n.service';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
@@ -26,6 +25,7 @@ interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
   items: DriveItemData[];
+  parentFolderId?: number;
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
@@ -70,7 +70,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     if (isOpen) {
       setCurrentNamePaths([]);
 
-      onShowFolderContentClicked(rootFolderID, 'Drive');
+      onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
     }
   }, [isOpen]);
 

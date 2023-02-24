@@ -12,8 +12,6 @@ export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
-  folderOnTrashLength: number;
-  filesOnTrashLength: number;
 }
 
 const TrashView = (props: TrashViewProps) => {
@@ -22,8 +20,8 @@ const TrashView = (props: TrashViewProps) => {
   useEffect(() => {
     const { dispatch } = props;
 
-    dispatch(storageActions.clearSelectedItems());
     dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageActions.clearSelectedItems());
   }, []);
 
   const { items, isLoadingItemsOnTrash } = props;

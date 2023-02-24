@@ -146,43 +146,45 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
 
   useEffect(() => {
-    if (isTrash && paginatedTrashItems.length < items.length) {
+    if (isTrash && paginatedTrashItems.length !== items.length) {
       setPaginatedTrashItems(items);
     }
-  }, [items.length]);
+  }, [items]);
 
   useEffect(() => {
-    const isTrashAndNotHasItems = isTrash && items.length === 0;
+    const isTrashAndNotHasItems = isTrash;
     if (isTrashAndNotHasItems) {
-      getMoreTrashItems();
+      getMoreTrashFolders();
     }
   }, []);
 
   useEffect(() => {
     const thereIsNotMoreFoldersAndFewerItems =
-      !hasMoreTrashFolders && folderOnTrashLength < TRASH_PAGINATION_OFFSET && items.length < TRASH_PAGINATION_OFFSET;
+      !hasMoreTrashFolders && folderOnTrashLength < TRASH_PAGINATION_OFFSET && timesCalled === 1;
 
     if (thereIsNotMoreFoldersAndFewerItems) {
-      getMoreTrashItems();
+      getMoreTrashFiles();
     }
-  }, [items]);
+  }, [timesCalled]);
 
   //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
-  const getMoreTrashItems = async () => {
+  const getMoreTrashFolders = async () => {
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+    const existsMoreFolders = !result.finished;
+
+    setHasMoreTrashFolders(existsMoreFolders);
     setTimesCalled(timesCalled + 1);
-
-    if (hasMoreTrashFolders && !timesCalled) {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-
-      const existsMoreFolders = !result.finished;
-      setHasMoreTrashFolders(existsMoreFolders);
-    } else {
-      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-
-      const existsMoreItems = !result.finished;
-      setHasMoreItems(existsMoreItems);
-    }
   };
+
+  const getMoreTrashFiles = async () => {
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+
+    const existsMoreItems = !result.finished;
+    setHasMoreItems(existsMoreItems);
+    setTimesCalled(timesCalled + 1);
+  };
+
+  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   useEffect(() => {
     deviceService.redirectForMobile();

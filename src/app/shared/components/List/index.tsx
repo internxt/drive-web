@@ -101,11 +101,13 @@ ListProps<T, F>): JSX.Element {
       />
     ));
 
+  // Check if this is necessary, commented because it calls twice onNextPage
+  // because InfiniteScroll already manage this case
   useEffect(() => {
     if (!node || isLoading) return;
 
     if (!isScrollable && hasMoreItems) {
-      onNextPage?.();
+      // onNextPage?.();
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 

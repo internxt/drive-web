@@ -67,6 +67,11 @@ export const storageSlice = createSlice({
     setFilesOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
       state.filesOnTrashLength = action.payload;
     },
+    resetTrash: (state: StorageState) => {
+      state.filesOnTrashLength = 0;
+      state.folderOnTrashLength = 0;
+      state.itemsOnTrash = [];
+    },
     addFoldersOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
       state.folderOnTrashLength += action.payload;
     },

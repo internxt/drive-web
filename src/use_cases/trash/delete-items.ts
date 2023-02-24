@@ -20,6 +20,19 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   await deleteDatabaseItems(itemsToDelete);
 
   store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
+
+  let foldersRemovedNumber = 0;
+  let filesRemovedNumber = 0;
+
+  itemsToDelete.forEach((item) => {
+    if (item.isFolder) {
+      foldersRemovedNumber = foldersRemovedNumber + 1;
+    } else {
+      filesRemovedNumber = filesRemovedNumber + 1;
+    }
+  });
+  store.dispatch(storageActions.addFoldersOnTrashLength(-foldersRemovedNumber));
+  store.dispatch(storageActions.addFilesOnTrashLength(-filesRemovedNumber));
   store.dispatch(storageActions.clearSelectedItems());
 
   notificationsService.show({
