@@ -66,7 +66,7 @@ const PasswordInput = ({
         onBlur={() => {
           if (onBlur) onBlur();
         }}
-        className={`h-11 w-full border-green py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={`h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
       />
       <div
         onClick={() => setShowPassword(!showPassword)}
