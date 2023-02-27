@@ -1,15 +1,7 @@
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import errorService from 'app/core/services/error.service';
-import localStorageService from 'app/core/services/local-storage.service';
 import { useAppDispatch } from 'app/store/hooks';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
-import { userActions, userThunks } from 'app/store/slices/user';
-import React, { useEffect, useState } from 'react';
-
-const INXT_URL = 'https://internxt.com';
-const DRIVE_WEB_URL = 'https://drive.internxt.com';
+import React, { useState } from 'react';
+import signup from './signup';
 
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();
@@ -17,54 +9,21 @@ export default function ButtonAuth() {
   const { doRegister } = useSignUp('activate');
 
   //!TO-DO: Change URL to PCComponents URL
-  const signup = async (data) => {
-    if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
-      window.top?.postMessage({ action: 'autoScroll' }, INXT_URL);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-
-    try {
-      const { email, password, token } = data;
-      const res = await doRegister(email, password, token);
-      const xUser = res.xUser;
-      const xToken = res.xToken;
-      const mnemonic = res.mnemonic;
-
-      localStorageService.set('xToken', xToken);
-      dispatch(userActions.setUser(xUser));
-      localStorageService.set('xMnemonic', mnemonic);
-      dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
-      dispatch(referralsThunks.initializeThunk());
-      await dispatch(userThunks.initializeUserThunk());
-
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email: xUser.email });
-
-      setLoading(false);
-      localStorage.removeItem('email');
-      localStorage.removeItem('password');
-      window.open(
-        `${DRIVE_WEB_URL}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
-        '_parent',
-        'noopener',
-      );
-    } catch (err: unknown) {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="w-full">
       <button
         // type="submit"
         onClick={() => {
-          signup({
-            email: localStorage.getItem('email'),
-            password: localStorage.getItem('password'),
-          });
+          signup(
+            {
+              email: localStorage.getItem('email'),
+              password: localStorage.getItem('password'),
+            },
+            dispatch,
+            doRegister,
+            setLoading,
+          );
         }}
         disabled={loading}
         className={

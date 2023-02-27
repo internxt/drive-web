@@ -22,9 +22,9 @@ import { WarningCircle } from 'phosphor-react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
+import signup from './signup';
 
 const INXT_URL = 'https://internxt.com';
-const DRIVE_WEB_URL = 'https://drive.internxt.com';
 
 export default function Auth(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -39,13 +39,13 @@ export default function Auth(): JSX.Element {
 
   // FILTER MESSAGES
 
-  const permitedDomains = [
-    INXT_URL,
-    'https://drive.internxt.com',
-    'https://internxt.com',
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ];
+  // const permitedDomains = [
+  //   INXT_URL,
+  //   'https://drive.internxt.com',
+  //   'https://internxt.com',
+  //   'http://localhost:3000',
+  //   'http://localhost:3001',
+  // ];
 
   // useEffect(() => {
   //   const onRecieveMessage = (e) => {
@@ -84,46 +84,6 @@ export default function Auth(): JSX.Element {
   //     });
   //   });
   // }
-
-  const signup = async (data) => {
-    if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
-      postMessage({ action: 'autoScroll' });
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-
-    try {
-      const { email, password, token } = data;
-      const res = await doRegister(email, password, token);
-      const xUser = res.xUser;
-      const xToken = res.xToken;
-      const mnemonic = res.mnemonic;
-
-      localStorageService.set('xToken', xToken);
-      dispatch(userActions.setUser(xUser));
-      localStorageService.set('xMnemonic', mnemonic);
-      dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
-      dispatch(referralsThunks.initializeThunk());
-      await dispatch(userThunks.initializeUserThunk());
-
-      window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email: xUser.email });
-
-      setLoading(false);
-      localStorage.removeItem('email');
-      localStorage.removeItem('password');
-      window.open(
-        `${DRIVE_WEB_URL}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
-        '_parent',
-        'noopener',
-      );
-    } catch (err: unknown) {
-      setError(errorService.castError(err).message);
-      setLoading(false);
-    }
-  };
 
   // LOG IN
 
@@ -276,10 +236,16 @@ export default function Auth(): JSX.Element {
             type="submit"
             disabled={loading}
             onClick={() => {
-              signup({
-                email: localStorage.getItem('email'),
-                password: localStorage.getItem('password'),
-              });
+              signup(
+                {
+                  email: localStorage.getItem('email'),
+                  password: localStorage.getItem('password'),
+                },
+                dispatch,
+                doRegister,
+                setLoading,
+                setError,
+              );
             }}
             className={
               'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-primary px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
