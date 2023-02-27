@@ -40,7 +40,7 @@ const views: Array<{
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.Auth, component: AuthView },
-  { id: AppView.buttonAuth, component: ButtonAuth },
+  { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },

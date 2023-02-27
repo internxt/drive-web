@@ -8,8 +8,6 @@ export default function ButtonAuth() {
   const [loading, setLoading] = useState(false);
   const { doRegister } = useSignUp('activate');
 
-  //!TO-DO: Change URL to PCComponents URL
-
   return (
     <div className="w-full">
       <button
