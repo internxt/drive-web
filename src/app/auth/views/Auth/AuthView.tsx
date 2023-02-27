@@ -23,8 +23,7 @@ import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
 import signup from './signup';
-
-const PCCOMPONENTES_URL = ' https://www.pccomponentes.com';
+import { CampaignLinks } from 'app/core/types';
 
 export default function Auth(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -34,7 +33,7 @@ export default function Auth(): JSX.Element {
 
   //!TO-DO: Change URL to PCComponents URL
   const postMessage = (data: Record<string, unknown>) => {
-    window.top?.postMessage(data, PCCOMPONENTES_URL);
+    window.top?.postMessage(data, CampaignLinks.PcComponentes);
   };
 
   // FILTER MESSAGES
