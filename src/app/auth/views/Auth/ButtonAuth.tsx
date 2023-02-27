@@ -11,14 +11,12 @@ import React, { useEffect, useState } from 'react';
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
   const { doRegister } = useSignUp('activate');
 
+  //!TO-DO: Change URL to PCComponents URL
   const signup = async (data) => {
-    const { inline } = data;
-
     if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
-      window.top?.postMessage({ action: 'autoScroll' }, 'https://aa00-178-237-229-10.eu.ngrok.io');
+      window.top?.postMessage({ action: 'autoScroll' }, 'https://internxt.com');
       setLoading(false);
       return;
     }
@@ -47,29 +45,19 @@ export default function ButtonAuth() {
       localStorage.removeItem('email');
       localStorage.removeItem('password');
       window.open(
-        'https://modern-sloths-learn-178-237-229-10.loca.lt/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription',
+        'https://drive.internxt.com/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription',
         '_parent',
       );
     } catch (err: unknown) {
-      if (inline === true) {
-        setError(errorService.castError(err).message);
-      } else {
-        postMessage({ action: 'error', msg: errorService.castError(err).message });
-      }
+      setLoading(false);
     }
   };
-
-  useEffect(() => {
-    console.log('render');
-    console.log(window.document.getElementById('email'));
-  }, []);
 
   return (
     <div className="w-full">
       <button
         // type="submit"
         onClick={() => {
-          console.log(localStorage.getItem('email'));
           signup({
             email: localStorage.getItem('email'),
             password: localStorage.getItem('password'),
