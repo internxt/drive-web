@@ -34,7 +34,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
-import { setItemsToMove } from '../../../store/slices/storage';
+import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -87,10 +87,13 @@ const FileViewer = ({
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+  const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
+  const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
+
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
@@ -108,11 +111,24 @@ const FileViewer = ({
   const totalFolderIndex = sortFolderFiles?.length;
   const fileIndex = sortFolderFiles?.findIndex((item) => item.id === file?.id);
 
-  // To prevent close FileViewer is any of those modal are open
+  // To prevent close FileViewer if any of those modal are open
   useEffect(() => {
     function handleKeyDown(event) {
       if (event.keyCode === ESC_KEY_KEYBOARD_CODE) {
-        if (isMoveItemsDialogOpen || isCreateFolderDialogOpen) event.preventDefault();
+        if (isMoveItemsDialogOpen || isCreateFolderDialogOpen || isEditNameDialogOpen || isShareItemSettingsDialogOpen)
+          event.preventDefault();
+
+        if (isShareItemSettingsDialogOpen) {
+          dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(false));
+          dispatch(storageActions.setItemToShare(null));
+          return;
+        }
+
+        if (isEditNameDialogOpen) {
+          dispatch(storageActions.setItemToRename(null));
+          dispatch(uiActions.setIsEditFolderNameDialog(false));
+          return;
+        }
 
         if (isCreateFolderDialogOpen) {
           dispatch(uiActions.setIsCreateFolderDialogOpen(false));
@@ -128,7 +144,7 @@ const FileViewer = ({
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
-  }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen]);
+  }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
   useEffect(() => {
     if (dirtyName) {
