@@ -4,11 +4,10 @@ import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
-
-const PCCOMPONENTES_URL = ' https://www.pccomponentes.com';
+import { CampaignLinks } from 'app/core/types';
 
 const postMessage = (data: Record<string, unknown>) => {
-  window.top?.postMessage(data, PCCOMPONENTES_URL);
+  window.top?.postMessage(data, CampaignLinks.PcComponentes);
 };
 
 const signup = async (data, dispatch, doRegister, setLoading, setError?) => {

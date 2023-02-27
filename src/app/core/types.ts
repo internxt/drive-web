@@ -98,6 +98,10 @@ export enum AppViewLayout {
   Share = 'share',
 }
 
+export enum CampaignLinks {
+  PcComponentes = 'https://www.pccomponentes.com',
+}
+
 export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
