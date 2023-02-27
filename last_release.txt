@@ -1,3 +1,0 @@
-New features:
-- Release notification to Slack
-- Auto version
