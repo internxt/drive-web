@@ -13,7 +13,6 @@ export default function ButtonAuth() {
   return (
     <div className="w-full">
       <button
-        // type="submit"
         onClick={() => {
           signup(
             {
@@ -27,7 +26,7 @@ export default function ButtonAuth() {
         }}
         disabled={loading}
         className={
-          'focus:outline-none shadow-xm relative flex h-11 w-full max-w-sm flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-orange px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
+          'focus:outline-none shadow-xm relative flex h-11 w-full max-w-sm flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-orange px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange active:bg-orange disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
         }
       >
         {loading ? (

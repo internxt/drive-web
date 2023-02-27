@@ -202,7 +202,7 @@ export default function Auth(): JSX.Element {
               );
             }}
             className={
-              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-primary px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
+              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-orange px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
             }
           >
             {loading ? (
@@ -220,19 +220,21 @@ export default function Auth(): JSX.Element {
                 />
               </svg>
             ) : (
-              <div className="flex flex-row items-center space-x-1.5 rounded-lg bg-primary text-white">
-                <span>Get</span>
-                <span className="opacity-50">{'—'}</span>
-                <span className="opacity-50">10GB for free</span>
+              <div className="flex flex-row items-center space-x-1.5 rounded-lg text-white">
+                <span>Obtén la oferta</span>
               </div>
             )}
           </button>
         </div>
 
         <span className="w-full text-xs text-gray-50 sm:text-left">
-          <span>Creating account you accept</span>{' '}
-          <a href="/legal" target="_blank" className="hover:text-gray-60 hover:underline active:text-gray-80">
-            Terms of Service
+          <span>Al crear una cuenta aceptas</span>{' '}
+          <a
+            href="https://internxt.com/legal"
+            target="_blank"
+            className="hover:text-gray-60 hover:underline active:text-gray-80"
+          >
+            los términos de servicio y la política de privacidad.
           </a>
           <span>{'.'}</span>
         </span>
