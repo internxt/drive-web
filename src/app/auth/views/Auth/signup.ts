@@ -40,7 +40,7 @@ const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     window.open(
-      `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
+      `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=fjoMQVJf&freeTrials=30&mode=subscription`,
       '_parent',
       'noopener',
     );
