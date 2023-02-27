@@ -7,7 +7,7 @@
   "lang": {
     "title": "Idioma",
     "es": "Español (ES)",
-    "en": "Inglés (US)"
+    "en": "Inglés (EN)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -759,7 +759,7 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} restablecid{{s}}",
+    "restoreItems": "{{itemsToRecover}} movid{{s}} a {{destination}}",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",
@@ -815,6 +815,7 @@
     "edit": "Editar",
     "submit": "Enviar",
     "access": "Acceder",
+    "previous": "Anterior",
     "next": "Siguiente",
     "disable": "Desactivar",
     "move": "Mover",

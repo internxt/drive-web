@@ -1,7 +1,7 @@
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FolderSimplePlus, CaretRight } from 'phosphor-react';
 import Modal from 'app/shared/components/Modal';
-import { useState, useEffect } from 'react';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import { uiActions } from 'app/store/slices/ui';
@@ -141,9 +141,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const setDriveBreadcrumb = () => {
     const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
     dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
-    driveBreadcrumbPath.forEach((item) => {
-      dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-    });
+    itemsToMove[0].isFolder &&
+      driveBreadcrumbPath.forEach((item) => {
+        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
+      });
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {

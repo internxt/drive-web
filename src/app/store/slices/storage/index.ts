@@ -23,6 +23,7 @@ const initialState: StorageState = {
   itemToShare: null,
   itemsToDelete: [],
   itemsToMove: [],
+  itemToRename: null,
   itemsOnTrash: [],
   folderOnTrashLength: 0,
   filesOnTrashLength: 0,
@@ -132,6 +133,9 @@ export const storageSlice = createSlice({
     },
     setItemsToMove: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.itemsToMove = action.payload;
+    },
+    setItemToRename: (state: StorageState, action: PayloadAction<DriveItemData | null>) => {
+      state.itemToRename = action.payload;
     },
     setViewMode: (state: StorageState, action: PayloadAction<FileViewMode>) => {
       state.viewMode = action.payload;
