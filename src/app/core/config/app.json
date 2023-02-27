@@ -40,6 +40,12 @@
       "exact": true
     },
     {
+      "id": "buttonAuth",
+      "layout": "empty",
+      "path": "/buttonAuth",
+      "exact": true
+    },
+    {
       "id": "recover",
       "layout": "empty",
       "path": "/recover",
