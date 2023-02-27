@@ -152,24 +152,24 @@ export default function Auth(): JSX.Element {
       <div className="flex w-full flex-row space-x-3 pt-1">
         <div className="flex w-full">
           <TextInput
-            placeholder={translate('auth.email')}
+            placeholder={'Correo'}
             label="email"
             type="email"
-            className={'w-full '}
+            className={'w-full'}
             register={register}
-            minLength={{ value: 1, message: 'Email must not be empty' }}
+            minLength={{ value: 1, message: 'El correo no puede estar vacío' }}
             error={errors.email}
           />
         </div>
 
         <div className="flex w-full">
           <PasswordInput
-            placeholder={translate('auth.password')}
+            placeholder={'Contraseña'}
             label="password"
-            className={'w-full '}
+            className={'w-full'}
             register={register}
             required={true}
-            minLength={{ value: 1, message: 'Password must not be empty' }}
+            minLength={{ value: 1, message: 'La contraseña no puede estar vacía' }}
             error={errors.password}
           />
         </div>
