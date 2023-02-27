@@ -15,6 +15,8 @@ import {
   CaretDown,
   ArrowFatUp,
 } from 'phosphor-react';
+import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
+
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -62,6 +64,9 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+
+import './DriveExplorer.scss';
+import TooltipElement from '../../../shared/components/Tooltip/Tooltip';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -413,6 +418,45 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
+  const DriveTopBarItems = (): JSX.Element => (
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-center">
+        <Button variant="primary" onClick={onUploadFileButtonClicked}>
+          <div className="flex items-center justify-center space-x-2.5">
+            <div className="flex items-center space-x-0.5">
+              <UploadSimple weight="fill" size={24} />
+              <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+            </div>
+          </div>
+        </Button>
+      </div>
+      <div
+        className="relative flex items-center justify-center"
+        data-tooltip-id="uploadFolder-tooltip"
+        data-tooltip-content={translate('actions.upload.uploadFolder')}
+        data-tooltip-place="bottom"
+      >
+        <Button variant="tertiary" className="aspect-square" onClick={onUploadFolderButtonClicked}>
+          <div className="h-6 w-6">
+            <img src={FolderSimpleArrowUp} className="h-6 w-6" alt="" />
+          </div>
+        </Button>
+        <TooltipElement id="uploadFolder-tooltip" delayShow={2000} />
+      </div>
+      <div
+        className="flex items-center justify-center"
+        data-tooltip-id="createfolder-tooltip"
+        data-tooltip-content={translate('actions.upload.folder')}
+        data-tooltip-place="bottom"
+      >
+        <Button variant="tertiary" className="aspect-square" onClick={onCreateFolderButtonClicked}>
+          <FolderSimplePlus className="h-6 w-6" />
+        </Button>
+        <TooltipElement id="createfolder-tooltip" delayShow={2000} />
+      </div>
+    </div>
+  );
+
   const driveExplorer = (
     <div
       className="flex h-full flex-grow flex-col"
@@ -451,7 +495,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       return (
                         <>
                           <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
-                            <Button variant="primary">
+                            <Button variant="primary" className="hidden">
                               <div className="flex items-center justify-center space-x-2.5">
                                 <span className="font-medium">{translate('actions.upload.new')}</span>
                                 <div className="flex items-center space-x-0.5">
@@ -539,6 +583,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     }}
                   </Menu>
                 </div>
+                {!isTrash && <DriveTopBarItems />}
                 {hasAnyItemSelected && (
                   <>
                     {separatorV}
