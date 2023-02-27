@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import copy from 'copy-to-clipboard';
 import { DriveItemData } from 'app/drive/types';
@@ -13,7 +13,6 @@ import PasswordInput from './components/PasswordInput';
 import { Check, Copy } from 'phosphor-react';
 import dateService from 'app/core/services/date.service';
 import shareService from 'app/share/services/share.service';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
 import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';

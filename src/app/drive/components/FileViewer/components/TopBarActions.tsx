@@ -1,4 +1,4 @@
-import React from 'react';
+import { FC, useMemo } from 'react';
 import { Transition, Menu } from '@headlessui/react';
 import {
   ArrowsOutCardinal,
@@ -21,8 +21,13 @@ import { useAppDispatch } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-const TopBarActions = ({
+interface TopBarActionsProps {
+  background?: string;
+  onDownload: () => void;
+  file: DriveItemData;
+}
+
+const TopBarActions: FC<TopBarActionsProps> = ({
   background,
   onDownload,
   file,
@@ -33,6 +38,8 @@ const TopBarActions = ({
 }) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+
+  const isFileShared = useMemo(() => file?.shares?.length ?? 0 > 0, [file]);
 
   const onMoveToTrashButtonClicked = async () => {
     await moveItemsToTrash([file], translate as TFunction);
@@ -99,8 +106,7 @@ const TopBarActions = ({
               }
             >
               <>
-                {/* <div className="my-0.5 mx-3 border-t border-gray-10" /> */}
-                {!file?.shares ? (
+                {!isFileShared ? (
                   <Menu.Item>
                     {({ active }) => (
                       <div

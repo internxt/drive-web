@@ -64,7 +64,7 @@ const DownloadFile = ({ onDownload, translate }) => (
                           bg-opacity-0 px-6 font-medium transition duration-50
                           ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
     >
-      <UilImport height="20" width="20" />
+      <UilImport size={20} />
       <span className="font-medium">{translate('actions.download')}</span>
     </button>
   </div>
