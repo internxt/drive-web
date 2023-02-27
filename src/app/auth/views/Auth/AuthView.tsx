@@ -24,7 +24,7 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
 import signup from './signup';
 
-const INXT_URL = 'https://internxt.com';
+const PCCOMPONENTES_URL = ' https://www.pccomponentes.com';
 
 export default function Auth(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -34,56 +34,11 @@ export default function Auth(): JSX.Element {
 
   //!TO-DO: Change URL to PCComponents URL
   const postMessage = (data: Record<string, unknown>) => {
-    window.top?.postMessage(data, INXT_URL);
+    window.top?.postMessage(data, PCCOMPONENTES_URL);
   };
 
   // FILTER MESSAGES
-
-  // const permitedDomains = [
-  //   INXT_URL,
-  //   'https://drive.internxt.com',
-  //   'https://internxt.com',
-  //   'http://localhost:3000',
-  //   'http://localhost:3001',
-  // ];
-
-  // useEffect(() => {
-  //   const onRecieveMessage = (e) => {
-  //     if (permitedDomains.includes(e.origin)) {
-  //       if (e.data.action === 'signup') {
-  //         signup(e.data);
-  //       } else if (e.data.action === 'check_session') {
-  //         checkSession();
-  //       } else if (e.data.action === 'login') {
-  //         login(e.data);
-  //       } else if (e.data.action === 'recover') {
-  //         sendEmail(e.data);
-  //       }
-  //     }
-  //   };
-
-  //   window.addEventListener('message', onRecieveMessage);
-
-  //   return () => {
-  //     window.removeEventListener('message', onRecieveMessage);
-  //   };
-  // });
-
-  // SIGN UP
-
   const { doRegister } = useSignUp('activate');
-
-  // async function signUpWithRecaptcha(data) {
-  //   const grecaptcha = window.grecaptcha;
-
-  //   grecaptcha.ready(() => {
-  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-  //       // Can't wait or token will expire
-  //       data.token = token;
-  //       signup(data);
-  //     });
-  //   });
-  // }
 
   // LOG IN
 

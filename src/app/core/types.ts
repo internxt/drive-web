@@ -103,7 +103,7 @@ export enum AppView {
   AppSumo = 'appsumo',
   Login = 'login',
   Auth = 'auth',
-  buttonAuth = 'buttonAuth',
+  ButtonAuth = 'buttonAuth',
   Recover = 'recover',
   Drive = 'drive',
   Recents = 'recents',

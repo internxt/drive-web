@@ -5,11 +5,10 @@ import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
 
-const INXT_URL = 'https://internxt.com';
-const DRIVE_WEB_URL = 'https://drive.internxt.com';
+const PCCOMPONENTES_URL = ' https://www.pccomponentes.com';
 
 const postMessage = (data: Record<string, unknown>) => {
-  window.top?.postMessage(data, INXT_URL);
+  window.top?.postMessage(data, PCCOMPONENTES_URL);
 };
 
 const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
@@ -42,7 +41,7 @@ const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     window.open(
-      `${DRIVE_WEB_URL}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
+      `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
       '_parent',
       'noopener',
     );
