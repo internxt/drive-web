@@ -15,7 +15,6 @@ import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
-import { TFunction } from 'i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
@@ -42,7 +41,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
   const isFileShared = useMemo(() => file?.shares?.length ?? 0 > 0, [file]);
 
   const onMoveToTrashButtonClicked = async () => {
-    await moveItemsToTrash([file], translate as TFunction);
+    await moveItemsToTrash([file]);
   };
 
   const onCreateLinkButtonClicked = () => {
