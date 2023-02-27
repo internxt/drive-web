@@ -8,6 +8,9 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
 import React, { useEffect, useState } from 'react';
 
+const INXT_URL = 'https://internxt.com';
+const DRIVE_WEB_URL = 'https://drive.internxt.com';
+
 export default function ButtonAuth() {
   const dispatch = useAppDispatch();
   const [loading, setLoading] = useState(false);
@@ -16,12 +19,11 @@ export default function ButtonAuth() {
   //!TO-DO: Change URL to PCComponents URL
   const signup = async (data) => {
     if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
-      window.top?.postMessage({ action: 'autoScroll' }, 'https://internxt.com');
+      window.top?.postMessage({ action: 'autoScroll' }, INXT_URL);
       setLoading(false);
       return;
     }
     setLoading(true);
-    console.log(data);
 
     try {
       const { email, password, token } = data;
@@ -45,8 +47,9 @@ export default function ButtonAuth() {
       localStorage.removeItem('email');
       localStorage.removeItem('password');
       window.open(
-        'https://drive.internxt.com/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription',
+        `${DRIVE_WEB_URL}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=5Zb64ncC&freeTrials=30&mode=subscription`,
         '_parent',
+        'noopener',
       );
     } catch (err: unknown) {
       setLoading(false);
