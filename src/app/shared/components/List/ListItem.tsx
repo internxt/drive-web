@@ -126,8 +126,7 @@ export default function ListItem<T extends { id: string }>({
                   {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                     <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                   )}
-                  {option.keyboardShortcutOptions?.keyboardShortcutText &&
-                    option.keyboardShortcutOptions?.keyboardShortcutText}
+                  {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
                 </span>
               </div>
             </div>
@@ -281,8 +280,7 @@ export default function ListItem<T extends { id: string }>({
                                       {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                                         <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                                       )}
-                                      {option.keyboardShortcutOptions?.keyboardShortcutText &&
-                                        option.keyboardShortcutOptions?.keyboardShortcutText}
+                                      {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
                                     </span>
                                   </div>
                                 );

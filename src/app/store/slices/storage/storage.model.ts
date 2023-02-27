@@ -20,7 +20,10 @@ export interface StorageState {
   itemToShare: { share?: ShareLink; item: DriveItemData } | null;
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];
+  itemToRename: DriveItemData | null;
   itemsOnTrash: DriveItemData[];
+  folderOnTrashLength: number;
+  filesOnTrashLength: number;
   filesToRename: (File | DriveItemData)[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
