@@ -6,10 +6,12 @@ interface TooltipProps {
   delayShow?: number;
 }
 
+export const DELAY_SHOW_MS = 2000;
+
 const TooltipElement: FC<TooltipProps> = ({ id, delayShow = 0 }) => (
   <Tooltip
     id={id}
-    className="absolute top-2 flex w-auto rounded bg-black-75 p-1 text-xs text-white"
+    className="absolute top-2 w-auto rounded bg-black-75 p-1 text-center text-xs text-white"
     delayShow={delayShow}
   />
 );

@@ -840,6 +840,10 @@
         "actions": "Acciones"
       }
     },
+    "viewMode": {
+      "gridMode": "Vista de cuadrícula",
+      "listMode": "Vista de lista"
+    },
     "dropdown": {
       "openPreview": "Abrir previsualización",
       "getLink": "Copiar enlace",

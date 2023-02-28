@@ -33,6 +33,7 @@ import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
+import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -218,7 +219,12 @@ export default function SharedLinksView(): JSX.Element {
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
         </div>
 
-        <div className="flex flex-row items-center">
+        <div
+          className="flex flex-row items-center"
+          data-tooltip-id="delete-link-tooltip"
+          data-tooltip-content={translate('shared-links.item-menu.delete-link')}
+          data-tooltip-place="bottom"
+        >
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
@@ -229,6 +235,7 @@ export default function SharedLinksView(): JSX.Element {
           >
             <Trash size={24} />
           </BaseButton>
+          <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       </div>
 

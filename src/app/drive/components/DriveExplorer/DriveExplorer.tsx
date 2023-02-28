@@ -66,7 +66,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
 
 import './DriveExplorer.scss';
-import TooltipElement from '../../../shared/components/Tooltip/Tooltip';
+import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -310,8 +310,22 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const viewModesIcons = {
-    [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
-    [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
+    [FileViewMode.List]: (
+      <SquaresFour
+        className="h-6 w-6"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.gridMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
+    [FileViewMode.Grid]: (
+      <Rows
+        className="h-6 w-6"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.listMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
   };
   const viewModes = {
     [FileViewMode.List]: DriveExplorerList,
@@ -441,7 +455,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <img src={FolderSimpleArrowUp} className="h-6 w-6" alt="" />
           </div>
         </Button>
-        <TooltipElement id="uploadFolder-tooltip" delayShow={2000} />
+        <TooltipElement id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} />
       </div>
       <div
         className="flex items-center justify-center"
@@ -452,7 +466,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         <Button variant="tertiary" className="aspect-square" onClick={onCreateFolderButtonClicked}>
           <FolderSimplePlus className="h-6 w-6" />
         </Button>
-        <TooltipElement id="createfolder-tooltip" delayShow={2000} />
+        <TooltipElement id="createfolder-tooltip" delayShow={DELAY_SHOW_MS} />
       </div>
     </div>
   );
@@ -588,24 +602,57 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   <>
                     {separatorV}
                     <div className="flex items-center justify-center">
-                      <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
-                        <DownloadSimple className="h-6 w-6" />
-                      </Button>
+                      <div
+                        className="flex items-center justify-center"
+                        data-tooltip-id="download-tooltip"
+                        data-tooltip-content={translate('drive.dropdown.download')}
+                        data-tooltip-place="bottom"
+                      >
+                        <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+                          <DownloadSimple className="h-6 w-6" />
+                        </Button>
+                        <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
+                      </div>
+
                       {selectedItems.length === 1 && (
                         <>
                           {isSelectedItemShared && (
-                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
-                              <Link className="h-6 w-6" />
-                            </Button>
+                            <div
+                              className="flex items-center justify-center"
+                              data-tooltip-id="linkSettings-tooltip"
+                              data-tooltip-content={translate('drive.dropdown.linkSettings')}
+                              data-tooltip-place="bottom"
+                            >
+                              <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                                <Link className="h-6 w-6" />
+                              </Button>
+                              <TooltipElement id="linkSettings-tooltip" delayShow={DELAY_SHOW_MS} />
+                            </div>
                           )}
-                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
-                            <PencilSimple className="h-6 w-6" />
-                          </Button>
+                          <div
+                            className="flex items-center justify-center"
+                            data-tooltip-id="rename-tooltip"
+                            data-tooltip-content={translate('drive.dropdown.rename')}
+                            data-tooltip-place="bottom"
+                          >
+                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
+                              <PencilSimple className="h-6 w-6" />
+                            </Button>
+                            <TooltipElement id="rename-tooltip" delayShow={DELAY_SHOW_MS} />
+                          </div>
                         </>
                       )}
-                      <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
-                        <Trash className="h-6 w-6" />
-                      </Button>
+                      <div
+                        className="flex items-center justify-center"
+                        data-tooltip-id="trash-tooltip"
+                        data-tooltip-content={translate('drive.dropdown.moveToTrash')}
+                        data-tooltip-place="bottom"
+                      >
+                        <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
+                          <Trash className="h-6 w-6" />
+                        </Button>
+                        <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
+                      </div>
                     </div>
                   </>
                 )}
@@ -614,6 +661,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
                     {viewModesIcons[viewMode]}
                   </Button>
+                  <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
                 </div>
               </div>
             )}
@@ -673,14 +721,25 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               </div>
             )}
             {isTrash && hasAnyItemSelected && (
-              <div className="flex items-center justify-center">
+              <div
+                className="flex items-center justify-center"
+                data-tooltip-id="restore-tooltip"
+                data-tooltip-content={translate('trash.item-menu.restore')}
+                data-tooltip-place="bottom"
+              >
                 <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
                   <ClockCounterClockwise className="h-6 w-6" />
                 </Button>
+                <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
             {isTrash && (
-              <div className="flex items-center justify-center">
+              <div
+                className="flex items-center justify-center"
+                data-tooltip-id="delete-permanently-tooltip"
+                data-tooltip-content={translate('trash.item-menu.delete-permanently')}
+                data-tooltip-place="bottom"
+              >
                 <Button
                   variant="tertiary"
                   className="aspect-square"
@@ -689,6 +748,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 >
                   <Trash className="h-5 w-5" />
                 </Button>
+                <TooltipElement id="delete-permanently-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
           </div>
