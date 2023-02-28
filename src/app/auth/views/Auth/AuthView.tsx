@@ -30,8 +30,8 @@ export default function Auth(): JSX.Element {
 
   const SignupAuth = () => {
     return (
-      <div className="flex w-max max-w-lg flex-col items-center space-y-2 pt-10 md:items-start md:pt-0">
-        <div className="flex w-full flex-row space-x-3 pt-1">
+      <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 md:w-max md:items-start md:pt-0">
+        <div className="flex w-full flex-col space-y-3 pt-1 md:flex-row md:space-y-0 md:space-x-3">
           <div className="flex w-full">
             <TextInput
               placeholder={'Correo'}
@@ -66,7 +66,7 @@ export default function Auth(): JSX.Element {
           </div>
         )}
 
-        <div className="flex w-full flex-row items-center space-x-3">
+        <div className="flex w-full flex-col items-center space-y-3 md:flex-row md:space-y-0 md:space-x-3">
           <div className="w-full">
             <button
               type="submit"
@@ -127,11 +127,11 @@ export default function Auth(): JSX.Element {
 
   return (
     <div className="flex items-center justify-center py-16 px-5 md:px-40">
-      <div className="flex w-max flex-col justify-center md:flex-row md:space-x-48">
+      <div className="flex w-full flex-col justify-center space-y-5 px-5 md:flex-row md:space-x-48">
         <div className="flex w-full max-w-md flex-col justify-between space-y-10">
           <div>
             <p
-              className="text-6xl font-bold"
+              className="text-center text-5xl font-bold md:text-left md:text-6xl"
               style={{
                 color: '#13094F',
               }}
