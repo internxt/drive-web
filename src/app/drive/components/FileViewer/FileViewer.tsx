@@ -381,7 +381,7 @@ const FileViewer = ({
                       rounded-xl font-medium`}
                       >
                         <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                        <span className="w-5/6 text-lg">{filename}</span>
+                        <span className="w-96 truncate text-center text-lg">{filename}</span>
                         <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
                         <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                           <div
@@ -400,9 +400,9 @@ const FileViewer = ({
                 className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
                       space-y-6 rounded-xl font-medium"
               >
-                <div className="flex w-6/12 flex-col items-center justify-center">
+                <div className="flex flex-col items-center justify-center">
                   <ItemIconComponent className="flex" width={80} height={80} />
-                  <span className="w-3/6 truncate pt-2 text-lg">{filename}</span>
+                  <span className="w-96 truncate pt-2 text-center text-lg">{filename}</span>
                   <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
                 </div>
                 <div>
