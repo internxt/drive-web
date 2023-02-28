@@ -36,9 +36,9 @@ const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
     window.rudderanalytics.identify(xUser.uuid, { email: xUser.email, uuid: xUser.uuid });
     window.rudderanalytics.track('User Signup', { email: xUser.email });
 
-    setLoading(false);
     localStorage.removeItem('email');
     localStorage.removeItem('password');
+    setLoading(false);
     window.open(
       `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=fjoMQVJf&freeTrials=30&mode=subscription`,
       '_parent',
