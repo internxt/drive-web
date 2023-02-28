@@ -61,7 +61,7 @@ const SignupAuth = () => {
           <div className="flex h-5 flex-row items-center">
             <WarningCircle weight="fill" className="text-red mr-1 h-4" />
           </div>
-          <span className="text-red text-sm">{error}</span>
+          <span className="text-sm text-red-std">{error}</span>
         </div>
       )}
 
@@ -83,8 +83,11 @@ const SignupAuth = () => {
               );
             }}
             className={
-              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-orange px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
+              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
             }
+            style={{
+              backgroundColor: '#F26122',
+            }}
           >
             {loading ? (
               <svg
