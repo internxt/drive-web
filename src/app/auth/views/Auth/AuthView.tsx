@@ -29,8 +29,8 @@ const SignupAuth = () => {
     },
   });
   return (
-    <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 md:w-max md:items-start md:pt-0">
-      <div className="flex w-full flex-col space-y-3 md:flex-row md:space-y-0 md:space-x-3">
+    <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
+      <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
         <div className="flex w-full">
           <TextInput
             placeholder={'Correo'}
@@ -57,7 +57,7 @@ const SignupAuth = () => {
       </div>
 
       {error && (
-        <div className="flex w-full flex-row items-start justify-center md:justify-start">
+        <div className="flex w-full flex-row items-start justify-center lg:justify-start">
           <div className="flex h-5 flex-row items-center">
             <WarningCircle weight="fill" className="text-red mr-1 h-4" />
           </div>
@@ -65,7 +65,7 @@ const SignupAuth = () => {
         </div>
       )}
 
-      <div className="flex w-full flex-col items-center space-y-3 md:flex-row md:space-y-0 md:space-x-3">
+      <div className="flex w-full flex-col items-center space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
         <div className="w-full">
           <button
             type="submit"
@@ -129,12 +129,12 @@ const SignupAuth = () => {
 
 export default function Auth(): JSX.Element {
   return (
-    <div className="flex  flex-col items-center justify-center py-3 px-5 md:py-16 md:px-40">
-      <div className="flex h-full w-full flex-col justify-center space-y-7 px-5 md:flex-row md:space-y-0 md:space-x-48">
-        <div className="flex w-full max-w-md flex-col justify-between space-y-3 md:space-y-10">
+    <div className="flex flex-col items-center justify-center py-3 px-5 lg:py-16 lg:px-40">
+      <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-y-0 lg:space-x-48">
+        <div className="flex w-full max-w-md flex-col justify-between space-y-3 lg:space-y-10">
           <div>
             <p
-              className="text-center text-5xl font-bold md:text-left md:text-6xl"
+              className="text-center text-5xl font-bold lg:text-left lg:text-6xl"
               style={{
                 color: '#13094F',
               }}
@@ -145,7 +145,7 @@ export default function Auth(): JSX.Element {
           <SignupAuth />
         </div>
         <div
-          className="flex h-full flex-col items-center space-y-6 rounded-lg py-9 px-6"
+          className="flex h-full flex-col items-center space-y-6 rounded-lg py-9 px-6 text-center"
           style={{
             backgroundColor: '#13094F',
           }}
