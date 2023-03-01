@@ -1,13 +1,13 @@
 {
   "name": "drive-web",
-  "version": "v1.0.13",
+  "version": "v1.0.23",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^1.4.23",
+    "@internxt/sdk": "^1.4.27",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
     "@sentry/tracing": "^7.1.0",
@@ -55,6 +55,7 @@
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-tooltip": "^5.8.3",
     "redux-thunk": "^2.3.0",
     "socket.io-client": "4.4.1",
     "streamsaver": "^2.0.5",
@@ -146,7 +147,7 @@
     "webpack-bundle-analyzer": "^4.5.0"
   },
   "engines": {
-    "node": "v14.17.0 - v16.18.1"
+    "node": ">=14.17.0 <17"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts}": [

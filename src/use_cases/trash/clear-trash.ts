@@ -8,7 +8,7 @@ const ClearTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
   await trashClient.clearTrash();
 
-  store.dispatch(storageActions.setItemsOnTrash([]));
+  store.dispatch(storageActions.resetTrash());
   store.dispatch(storageActions.clearSelectedItems());
 
   notificationsService.show({

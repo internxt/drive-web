@@ -101,13 +101,19 @@ ListProps<T, F>): JSX.Element {
       />
     ));
 
+  // Check if this is necessary, commented because it calls twice onNextPage
+  // because InfiniteScroll already manage this case
   useEffect(() => {
     if (!node || isLoading) return;
 
     if (!isScrollable && hasMoreItems) {
-      onNextPage?.();
+      // onNextPage?.();
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
+
+  const handleNexstPage = () => {
+    onNextPage?.();
+  };
 
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
@@ -239,9 +245,10 @@ ListProps<T, F>): JSX.Element {
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={onNextPage ? onNextPage : () => ({})}
-              hasMore={hasMoreItems ?? false}
+              next={handleNexstPage}
+              hasMore={!!hasMoreItems}
               loader={loader}
+              scrollThreshold={0.7}
               scrollableTarget="scrollableList"
               className="h-full"
               style={{ overflow: 'visible' }}

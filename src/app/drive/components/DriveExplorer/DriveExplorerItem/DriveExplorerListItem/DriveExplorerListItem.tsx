@@ -73,10 +73,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={items.getItemDisplayName(item)}
+            title={item?.plainName ?? items.getItemDisplayName(item)}
             onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
           >
-            {items.getItemDisplayName(item)}
+            {item?.plainName ?? items.getItemDisplayName(item)}
           </span>
           {!isEditingName && !item.deleted && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />

@@ -11,7 +11,7 @@
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
-    "en": "English (US)"
+    "en": "English (EN)"
   },
   "auth": {
     "email": "Email",
@@ -779,7 +779,7 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} restored",
+    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
     "itemDeleted": "{{itemsToDelete}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
@@ -819,6 +819,7 @@
     "edit": "Edit",
     "submit": "Submit",
     "access": "Access",
+    "previous": "Previous",
     "next": "Next",
     "disable": "Disable",
     "move": "Move",
@@ -842,6 +843,10 @@
         "size": "Size",
         "actions": "Actions"
       }
+    },
+    "viewMode": {
+      "gridMode": "Grid view",
+      "listMode": "List view"
     },
     "dropdown": {
       "openPreview": "Open preview",

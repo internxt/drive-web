@@ -15,6 +15,8 @@ import {
   CaretDown,
   ArrowFatUp,
 } from 'phosphor-react';
+import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
+
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
 
@@ -61,8 +63,13 @@ import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContaine
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
 
-const PAGINATION_LIMIT = 100;
+import './DriveExplorer.scss';
+import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
+
+const PAGINATION_LIMIT = 50;
+const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
 interface DriveExplorerProps {
@@ -93,6 +100,8 @@ interface DriveExplorerProps {
   planUsage: number;
   isOver: boolean;
   connectDropTarget: ConnectDropTarget;
+  folderOnTrashLength: number;
+  filesOnTrashLength: number;
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -111,6 +120,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     currentFolderId,
     onFileUploaded,
     onItemsMoved,
+    folderOnTrashLength,
+    filesOnTrashLength,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -118,8 +129,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
+
   const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
+  const [paginatedTrashItems, setPaginatedTrashItems] = useState<DriveItemData[]>([]);
+  const [timesCalled, setTimesCalled] = useState<number>(0);
+
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
 
   const menuButtonRef = useRef<HTMLButtonElement>(null);
@@ -133,6 +149,47 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
   const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+
+  useEffect(() => {
+    if (isTrash && paginatedTrashItems.length !== items.length) {
+      setPaginatedTrashItems(items);
+    }
+  }, [items]);
+
+  useEffect(() => {
+    const isTrashAndNotHasItems = isTrash;
+    if (isTrashAndNotHasItems) {
+      getMoreTrashFolders();
+    }
+  }, []);
+
+  useEffect(() => {
+    const thereIsNotMoreFoldersAndFewerItems =
+      !hasMoreTrashFolders && folderOnTrashLength < TRASH_PAGINATION_OFFSET && timesCalled === 1;
+
+    if (thereIsNotMoreFoldersAndFewerItems) {
+      getMoreTrashFiles();
+    }
+  }, [timesCalled]);
+
+  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
+  const getMoreTrashFolders = async () => {
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+    const existsMoreFolders = !result.finished;
+
+    setHasMoreTrashFolders(existsMoreFolders);
+    setTimesCalled(timesCalled + 1);
+  };
+
+  const getMoreTrashFiles = async () => {
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+
+    const existsMoreItems = !result.finished;
+    setHasMoreItems(existsMoreItems);
+    setTimesCalled(timesCalled + 1);
+  };
+
+  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   useEffect(() => {
     deviceService.redirectForMobile();
@@ -253,8 +310,22 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const viewModesIcons = {
-    [FileViewMode.List]: <SquaresFour className="h-6 w-6" />,
-    [FileViewMode.Grid]: <Rows className="h-6 w-6" />,
+    [FileViewMode.List]: (
+      <SquaresFour
+        className="h-6 w-6"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.gridMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
+    [FileViewMode.Grid]: (
+      <Rows
+        className="h-6 w-6"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.listMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
   };
   const viewModes = {
     [FileViewMode.List]: DriveExplorerList,
@@ -361,6 +432,45 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
+  const DriveTopBarItems = (): JSX.Element => (
+    <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-center">
+        <Button variant="primary" onClick={onUploadFileButtonClicked}>
+          <div className="flex items-center justify-center space-x-2.5">
+            <div className="flex items-center space-x-0.5">
+              <UploadSimple weight="fill" size={24} />
+              <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+            </div>
+          </div>
+        </Button>
+      </div>
+      <div
+        className="relative flex items-center justify-center"
+        data-tooltip-id="uploadFolder-tooltip"
+        data-tooltip-content={translate('actions.upload.uploadFolder')}
+        data-tooltip-place="bottom"
+      >
+        <Button variant="tertiary" className="aspect-square" onClick={onUploadFolderButtonClicked}>
+          <div className="h-6 w-6">
+            <img src={FolderSimpleArrowUp} className="h-6 w-6" alt="" />
+          </div>
+        </Button>
+        <TooltipElement id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} />
+      </div>
+      <div
+        className="flex items-center justify-center"
+        data-tooltip-id="createfolder-tooltip"
+        data-tooltip-content={translate('actions.upload.folder')}
+        data-tooltip-place="bottom"
+      >
+        <Button variant="tertiary" className="aspect-square" onClick={onCreateFolderButtonClicked}>
+          <FolderSimplePlus className="h-6 w-6" />
+        </Button>
+        <TooltipElement id="createfolder-tooltip" delayShow={DELAY_SHOW_MS} />
+      </div>
+    </div>
+  );
+
   const driveExplorer = (
     <div
       className="flex h-full flex-grow flex-col"
@@ -370,7 +480,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
       <NameCollisionContainer />
-      <MoveItemsDialog items={items} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
@@ -399,7 +509,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       return (
                         <>
                           <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
-                            <Button variant="primary">
+                            <Button variant="primary" className="hidden">
                               <div className="flex items-center justify-center space-x-2.5">
                                 <span className="font-medium">{translate('actions.upload.new')}</span>
                                 <div className="flex items-center space-x-0.5">
@@ -487,28 +597,62 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     }}
                   </Menu>
                 </div>
+                {!isTrash && <DriveTopBarItems />}
                 {hasAnyItemSelected && (
                   <>
                     {separatorV}
                     <div className="flex items-center justify-center">
-                      <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
-                        <DownloadSimple className="h-6 w-6" />
-                      </Button>
+                      <div
+                        className="flex items-center justify-center"
+                        data-tooltip-id="download-tooltip"
+                        data-tooltip-content={translate('drive.dropdown.download')}
+                        data-tooltip-place="bottom"
+                      >
+                        <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+                          <DownloadSimple className="h-6 w-6" />
+                        </Button>
+                        <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
+                      </div>
+
                       {selectedItems.length === 1 && (
                         <>
                           {isSelectedItemShared && (
-                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
-                              <Link className="h-6 w-6" />
-                            </Button>
+                            <div
+                              className="flex items-center justify-center"
+                              data-tooltip-id="linkSettings-tooltip"
+                              data-tooltip-content={translate('drive.dropdown.linkSettings')}
+                              data-tooltip-place="bottom"
+                            >
+                              <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                                <Link className="h-6 w-6" />
+                              </Button>
+                              <TooltipElement id="linkSettings-tooltip" delayShow={DELAY_SHOW_MS} />
+                            </div>
                           )}
-                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
-                            <PencilSimple className="h-6 w-6" />
-                          </Button>
+                          <div
+                            className="flex items-center justify-center"
+                            data-tooltip-id="rename-tooltip"
+                            data-tooltip-content={translate('drive.dropdown.rename')}
+                            data-tooltip-place="bottom"
+                          >
+                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
+                              <PencilSimple className="h-6 w-6" />
+                            </Button>
+                            <TooltipElement id="rename-tooltip" delayShow={DELAY_SHOW_MS} />
+                          </div>
                         </>
                       )}
-                      <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
-                        <Trash className="h-6 w-6" />
-                      </Button>
+                      <div
+                        className="flex items-center justify-center"
+                        data-tooltip-id="trash-tooltip"
+                        data-tooltip-content={translate('drive.dropdown.moveToTrash')}
+                        data-tooltip-place="bottom"
+                      >
+                        <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
+                          <Trash className="h-6 w-6" />
+                        </Button>
+                        <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
+                      </div>
                     </div>
                   </>
                 )}
@@ -517,6 +661,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
                     {viewModesIcons[viewMode]}
                   </Button>
+                  <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
                 </div>
               </div>
             )}
@@ -576,14 +721,25 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               </div>
             )}
             {isTrash && hasAnyItemSelected && (
-              <div className="flex items-center justify-center">
+              <div
+                className="flex items-center justify-center"
+                data-tooltip-id="restore-tooltip"
+                data-tooltip-content={translate('trash.item-menu.restore')}
+                data-tooltip-place="bottom"
+              >
                 <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
                   <ClockCounterClockwise className="h-6 w-6" />
                 </Button>
+                <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
             {isTrash && (
-              <div className="flex items-center justify-center">
+              <div
+                className="flex items-center justify-center"
+                data-tooltip-id="delete-permanently-tooltip"
+                data-tooltip-content={translate('trash.item-menu.delete-permanently')}
+                data-tooltip-place="bottom"
+              >
                 <Button
                   variant="tertiary"
                   className="aspect-square"
@@ -592,6 +748,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 >
                   <Trash className="h-5 w-5" />
                 </Button>
+                <TooltipElement id="delete-permanently-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
           </div>
@@ -601,9 +758,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
                   folderId={currentFolderId}
-                  items={itemsList}
+                  items={isTrash ? paginatedTrashItems : itemsList}
                   isLoading={isLoading}
-                  onEndOfScroll={getMoreItems}
+                  onEndOfScroll={isTrash ? getMoreTrashItems : getMoreItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
@@ -808,5 +965,7 @@ export default connect((state: RootState) => {
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
     planUsage: state.plan.planUsage,
+    folderOnTrashLength: state.storage.folderOnTrashLength,
+    filesOnTrashLength: state.storage.filesOnTrashLength,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

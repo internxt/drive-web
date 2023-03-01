@@ -100,7 +100,7 @@ async function afterMoving(
     store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
     store.dispatch(storageActions.clearSelectedItems());
 
-    const toastText = itemsToRecover[0].deleted
+    const toastText = !itemsToRecover[0].deleted
       ? t('notificationMessages.restoreItems', {
           itemsToRecover:
             itemsToRecover.length > 1
@@ -109,6 +109,7 @@ async function afterMoving(
               ? t('general.folder')
               : t('general.file'),
           s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
+          destination: destinationLevelDatabaseContent?.[0].name,
         })
       : t('notificationMessages.itemsMovedToTrash', {
           item:
@@ -117,7 +118,7 @@ async function afterMoving(
               : itemsToRecover[0].isFolder
               ? t('general.folder')
               : t('general.file'),
-          s: itemsToRecover.length > 1 ? 's' : '',
+          s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
         });
     notificationsService.show({
       type: ToastType.Success,

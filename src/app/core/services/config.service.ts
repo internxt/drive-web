@@ -4,6 +4,16 @@ import { AppConfig, AppViewConfig, AppViewLayout } from '../types';
 import { DownloadFolderMethod } from '../../drive/types';
 
 export function getAppConfig(): AppConfig {
+  const getPath = (pathId: string, path) => {
+    if (pathId == 'auth') {
+      return `/${process.env.REACT_APP_AUTH_URL}`;
+    } else if (pathId == 'buttonAuth') {
+      return `/${process.env.REACT_APP_BUTTON_AUTH_URL}`;
+    } else {
+      return path;
+    }
+  };
+
   const config: AppConfig = {
     ...APP_CONFIG,
     ...{
@@ -17,7 +27,11 @@ export function getAppConfig(): AppConfig {
           },
         },
       },
-      views: APP_CONFIG.views.map((v) => ({ ...v, layout: v.layout as AppViewLayout })),
+      views: APP_CONFIG.views.map((v) => ({
+        ...v,
+        layout: v.layout as AppViewLayout,
+        path: getPath(v.id, v.path),
+      })),
       database: { ...APP_CONFIG.database, provider: APP_CONFIG.database.provider as DatabaseProvider },
     },
   };

@@ -165,7 +165,7 @@ export default function Preview({
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
-              <p className="ml-3">{translate('general,loading.default')}</p>
+              <p className="ml-3">{translate('general.loading.default')}</p>
             </div>
           </div>
         )}

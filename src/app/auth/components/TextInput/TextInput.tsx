@@ -40,11 +40,15 @@ export default function TextInput({
         type={type}
         disabled={disabled}
         placeholder={placeholder}
+        id={label}
         min={0}
         required={true}
         autoFocus={autoFocus}
         {...register(label, {
           required,
+          onChange: (e) => {
+            if (e.target.value.length > 0) localStorage.setItem('email', e.target.value);
+          },
           minLength,
           min,
           maxLength,

@@ -18,6 +18,7 @@ interface UISliceState {
   isReachedPlanLimitDialogOpen: boolean;
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
+  isShareItemDialogOpenInPreviewView: boolean;
   isInviteMemberDialogOpen: boolean;
   isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
@@ -47,6 +48,7 @@ const initialState: UISliceState = {
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
+  isShareItemDialogOpenInPreviewView: false,
   isInviteMemberDialogOpen: false,
   isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
@@ -108,6 +110,9 @@ export const uiSlice = createSlice({
     },
     setIsShareItemDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpen = action.payload;
+    },
+    setIsShareItemDialogOpenInPreviewView: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareItemDialogOpenInPreviewView = action.payload;
     },
     setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isInviteMemberDialogOpen = action.payload;

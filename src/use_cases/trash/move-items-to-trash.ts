@@ -4,12 +4,43 @@ import { store } from '../../app/store';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
+import { Trash } from '@internxt/sdk/dist/drive';
 import recoverItemsFromTrash from './recover-items-from-trash';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 import { t } from 'i18next';
 import errorService from '../../app/core/services/error.service';
 
-const MAX_ITEMS_TO_DELETE = 50;
+const MAX_ITEMS_TO_DELETE = 10;
+const MAX_CONCURRENT_REQUESTS = 3;
+
+async function sendItemsToTrashConcurrent({
+  items,
+  maxItemsToDelete,
+  maxConcurrentRequests,
+  trashClient,
+}: {
+  items: { id: number | string; type: string }[];
+  maxItemsToDelete: number;
+  maxConcurrentRequests: number;
+  trashClient: Trash;
+}) {
+  const promises: Promise<unknown>[] = [];
+
+  for (let i = 0; i < items.length; i += maxItemsToDelete) {
+    const itemsToDelete = items.slice(i, i + maxItemsToDelete);
+    const promise = trashClient.addItemsToTrash({ items: itemsToDelete } as AddItemsToTrashPayload);
+    promises.push(promise);
+
+    if (promises.length === maxConcurrentRequests) {
+      await Promise.all(promises);
+      promises.length = 0;
+    }
+  }
+
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+}
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
@@ -27,10 +58,12 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
 
     const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
 
-    for (let i = 0; i < items.length; i += MAX_ITEMS_TO_DELETE) {
-      const itemsToDelete = items.slice(i, i + MAX_ITEMS_TO_DELETE);
-      await trashClient.addItemsToTrash({ items: itemsToDelete } as AddItemsToTrashPayload);
-    }
+    await sendItemsToTrashConcurrent({
+      items,
+      maxItemsToDelete: MAX_ITEMS_TO_DELETE,
+      maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+      trashClient,
+    });
 
     const id = notificationsService.show({
       type: ToastType.Success,

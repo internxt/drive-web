@@ -27,16 +27,27 @@ export default function CheckoutPlanView(): JSX.Element {
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
-      checkout(planId, coupon, mode);
+      const freeTrials = Number(params.get('freeTrials'));
+      checkout(planId, coupon, mode, freeTrials);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, coupon?: string, mode?: string) {
+  async function checkout(planId: string, coupon?: string, mode?: string, freeTrials?: number) {
     let response;
 
     if (subscription?.type !== 'subscription') {
       try {
-        coupon !== 'null'
+        coupon !== 'null' && freeTrials !== undefined
+          ? (response = await paymentService.createCheckoutSession({
+              price_id: planId,
+              coupon_code: coupon,
+              trial_days: freeTrials,
+              success_url: `${window.location.origin}/checkout/success`,
+              cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+              customer_email: user.email,
+              mode: mode,
+            }))
+          : coupon !== 'null'
           ? (response = await paymentService.createCheckoutSession({
               price_id: planId,
               coupon_code: coupon,
