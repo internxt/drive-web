@@ -6,7 +6,7 @@ on:
       - master
     
 jobs:  
-  update-release-and-notify:
+  update-json-release-and-notify:
     if: github.event.pull_request.merged == true
     uses: internxt/automation/.github/workflows/release-notify.yml@master
     with:
