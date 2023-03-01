@@ -840,6 +840,10 @@
         "actions": "Actions"
       }
     },
+    "viewMode": {
+      "gridMode": "Grid view",
+      "listMode": "List view"
+    },
     "dropdown": {
       "openPreview": "Open preview",
       "getLink": "Get link",
