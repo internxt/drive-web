@@ -1,139 +1,22 @@
-import localStorageService from 'app/core/services/local-storage.service';
-import { RootState } from 'app/store';
-import { useSelector } from 'react-redux';
-// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
-import navigationService from 'app/core/services/navigation.service';
-import userService from '../../services/user.service';
-
 import { useAppDispatch } from 'app/store/hooks';
-import { userActions, userThunks, initializeUserThunk } from 'app/store/slices/user';
-import { planThunks } from 'app/store/slices/plan';
-import { productsThunks } from 'app/store/slices/products';
-import { referralsThunks } from 'app/store/slices/referrals';
 import { useSignUp } from '../../components/SignUp/useSignUp';
-import { is2FANeeded, doLogin } from '../../services/auth.service';
-import errorService from 'app/core/services/error.service';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { AppView, IFormValues } from 'app/core/types';
+import { IFormValues } from 'app/core/types';
 import { WarningCircle } from 'phosphor-react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
 import signup from './signup';
-import { CampaignLinks } from 'app/core/types';
 
-export default function Auth(): JSX.Element {
-  const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
+const SignupAuth = () => {
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const dispatch = useAppDispatch();
 
-  //!TO-DO: Change URL to PCComponents URL
-  const postMessage = (data: Record<string, unknown>) => {
-    window.top?.postMessage(data, CampaignLinks.PcComponentes);
-  };
+  const [error, setError] = useState('');
 
   // FILTER MESSAGES
   const { doRegister } = useSignUp('activate');
-
-  // LOG IN
-
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const token = useState(localStorageService.get('xToken'));
-  const [email, setEmail] = useState<string>('');
-  const mnemonic = useState(localStorageService.get('xMnemonic'));
-  const [registerCompleted, setRegisterCompleted] = useState<boolean>(true);
-  const [isLoggingIn, setIsLoggingIn] = useState<boolean>(false);
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-
-  const login = async (data) => {
-    const { email, password, tfa } = data;
-    setEmail(email);
-    setIsLoggingIn(true);
-
-    try {
-      const isTfaEnabled = await is2FANeeded(email);
-
-      if (!isTfaEnabled || tfa) {
-        const { user } = await doLogin(email, password, tfa);
-        dispatch(userActions.setUser(user));
-
-        window.rudderanalytics.identify(user.uuid, { email: user.email });
-        window.rudderanalytics.track('User Signin', { email: user.email });
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
-
-        try {
-          dispatch(productsThunks.initializeThunk());
-          dispatch(planThunks.initializeThunk());
-          dispatch(referralsThunks.initializeThunk());
-          await dispatch(initializeUserThunk()).unwrap();
-        } catch (e: unknown) {
-          // PASS
-        }
-
-        setIsAuthenticated(true);
-        setRegisterCompleted(user.registerCompleted);
-        userActions.setUser(user);
-      } else {
-        postMessage({ action: '2fa' });
-        setIsLoggingIn(false);
-      }
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      if (castedError.message.includes('not activated')) {
-        navigationService.history.push(`/activate/${email}`);
-      } else {
-        // analyticsService.signInAttempted(email, castedError);
-      }
-
-      postMessage({ action: 'error', msg: errorService.castError(err).message });
-      setIsLoggingIn(false);
-    }
-  };
-
-  const checkSession = () => {
-    if (token && user && !registerCompleted) {
-      navigationService.history.push('/appsumo/' + email);
-    } else if (token && user && mnemonic) {
-      if (isLoggingIn && isAuthenticated) {
-        postMessage({ action: 'redirect' });
-      } else {
-        postMessage({ action: 'session', session: true });
-      }
-    } else {
-      postMessage({ action: 'session', session: false });
-    }
-  };
-
-  useEffect(() => {
-    checkSession();
-  }, [mnemonic, isAuthenticated, token, user, registerCompleted, isLoggingIn]);
-
-  useEffect(() => {
-    checkSession();
-  });
-
-  // RECOVER ACCOUNT
-
-  const sendEmail = async (data) => {
-    const { email } = data;
-
-    try {
-      await userService.sendDeactivationEmail(email);
-      postMessage({ action: 'recover_email_sent' });
-    } catch (err: unknown) {
-      postMessage({ action: 'error', msg: translate('error.deactivatingAccount') });
-    }
-  };
 
   const {
     register,
@@ -145,11 +28,9 @@ export default function Auth(): JSX.Element {
       password: '',
     },
   });
-
   return (
-    // <form onSubmit={handleSubmit(signup)}>
-    <div className="flex w-full max-w-lg flex-col items-center space-y-2 p-1 pt-10 md:items-start md:pt-0">
-      <div className="flex w-full flex-row space-x-3 pt-1">
+    <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
+      <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
         <div className="flex w-full">
           <TextInput
             placeholder={'Correo'}
@@ -176,15 +57,15 @@ export default function Auth(): JSX.Element {
       </div>
 
       {error && (
-        <div className="flex w-full flex-row items-start justify-center md:justify-start">
+        <div className="flex w-full flex-row items-start justify-center lg:justify-start">
           <div className="flex h-5 flex-row items-center">
             <WarningCircle weight="fill" className="text-red mr-1 h-4" />
           </div>
-          <span className="text-red text-sm">{error}</span>
+          <span className="text-sm text-red-std">{error}</span>
         </div>
       )}
 
-      <div className="flex w-full flex-row items-center space-x-3">
+      <div className="flex w-full flex-col items-center space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
         <div className="w-full">
           <button
             type="submit"
@@ -202,8 +83,11 @@ export default function Auth(): JSX.Element {
               );
             }}
             className={
-              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg bg-orange px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
+              'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
             }
+            style={{
+              backgroundColor: '#F26122',
+            }}
           >
             {loading ? (
               <svg
@@ -240,6 +124,57 @@ export default function Auth(): JSX.Element {
         </span>
       </div>
     </div>
-    // </form>
+  );
+};
+
+export default function Auth(): JSX.Element {
+  return (
+    <div className="flex flex-col items-center justify-center py-3 px-5 lg:py-16 lg:px-40">
+      <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-y-0 lg:space-x-48">
+        <div className="flex w-full max-w-md flex-col justify-between space-y-3 lg:space-y-10">
+          <div>
+            <p
+              className="text-center text-5xl font-bold lg:text-left lg:text-6xl"
+              style={{
+                color: '#13094F',
+              }}
+            >
+              Almacena tus archivos con total privacidad
+            </p>
+          </div>
+          <SignupAuth />
+        </div>
+        <div
+          className="flex h-full flex-col items-center space-y-6 rounded-lg py-9 px-6 text-center"
+          style={{
+            backgroundColor: '#13094F',
+          }}
+        >
+          <div
+            className="flex rounded-full p-1 px-3"
+            style={{
+              backgroundColor: '#F26122',
+            }}
+          >
+            <p className="text-lg font-bold text-white">Plan de 2TB</p>
+          </div>
+          <div className="items-center">
+            <p className="text-lg font-bold text-white">Gratis durante los primeros 30 días</p>
+          </div>
+          <div
+            className="flex flex-row"
+            style={{
+              color: '#F26122',
+            }}
+          >
+            <span className="text-8xl font-bold">0.00</span>
+            <sup className={'mt-6 text-3xl font-bold'}>€</sup>
+          </div>
+          <div className="text-center text-white">
+            <p className="text-sm font-bold">50% de descuento si decides renovar</p>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
