@@ -42,29 +42,29 @@ const Mobile = (props: MobileProps): JSX.Element => {
       <header className="flex flex-col items-center bg-gray-1 pt-8 pb-4">
         <InternxtLogo className="h-auto w-28" />
         <div className="flex w-full flex-row items-center justify-between px-4 pt-8">
-          <div className="flex flex-row">
+          <div className="... mr-2 flex flex-row truncate">
             <Avatar
               className="mr-2.5 flex-shrink-0"
               diameter={48}
               fullName={fullName}
               src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
             />
-            <div>
-              <p className="text-base font-medium text-gray-100">{fullName}</p>
-              <p className="text-base text-gray-50">{props.user?.username}</p>
+            <div className="... flex flex-col truncate">
+              <p className="... truncate text-base font-medium text-gray-100">{fullName}</p>
+              <p className="... truncate text-base text-gray-50">{props.user?.username}</p>
             </div>
           </div>
           <button
             onClick={onLogOutClicked}
-            className="cursor-pointer rounded-lg border border-gray-10 bg-white py-2.5 px-5 font-medium drop-shadow"
+            className="min-w-min cursor-pointer whitespace-nowrap rounded-lg border border-gray-10 bg-white py-2.5 px-5 font-medium drop-shadow"
           >
             {translate('mobileView.logOut')}
           </button>
         </div>
       </header>
-      <section className="mt-8 flex flex-col items-center">
+      <section className="mt-10 mb-4 flex flex-col items-center">
         <img className="w-64" src={devices} alt="Mobile and descktop view" />
-        <h2 className="m-6 text-2xl font-medium text-gray-100">{translate('mobileView.title')}</h2>
+        <h2 className="m-6 text-center text-2xl font-medium text-gray-100">{translate('mobileView.title')}</h2>
         <div>
           {osMobile === 'iphone' ? (
             <a href="https://apps.apple.com/es/app/internxt/id1465869889" target="_blank">
