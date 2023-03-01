@@ -1,6 +1,7 @@
 {
   "mobileView": {
-    "title": "Manage your files, account and subscription on the app"
+    "title": "Manage your files, account and subscription on the app",
+    "logOut": "Log Out"
   },
   "valentinesBanner": {
     "title": "Love without limits!",

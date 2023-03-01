@@ -25,15 +25,17 @@ const Mobile = (props: MobileProps): JSX.Element => {
     getDatabaseProfileAvatar().then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null));
   }, [props.user?.avatar]);
 
+  useEffect(() => {
+    if (navigator.userAgent.match(/iPhone/i)) {
+      setOsMobile('iphone');
+    } else if (navigator.userAgent.match(/Android/i)) {
+      setOsMobile('android');
+    }
+  });
+
   const onLogOutClicked = () => {
     dispatch(userThunks.logoutThunk());
   };
-
-  if (navigator.userAgent.match(/iPhone/i)) {
-    setOsMobile('iphone');
-  } else if (navigator.userAgent.match(/Android/i)) {
-    setOsMobile('android');
-  }
 
   return (
     <div>
@@ -56,11 +58,11 @@ const Mobile = (props: MobileProps): JSX.Element => {
             onClick={onLogOutClicked}
             className="cursor-pointer rounded-lg border border-gray-10 bg-white py-2.5 px-5 font-medium drop-shadow"
           >
-            Log out
+            {translate('mobileView.logOut')}
           </button>
         </div>
       </header>
-      <section className="mt-36 flex flex-col items-center">
+      <section className="mt-8 flex flex-col items-center">
         <img className="w-64" src={devices} alt="Mobile and descktop view" />
         <h2 className="m-6 text-2xl font-medium text-gray-100">{translate('mobileView.title')}</h2>
         <div>
