@@ -48,6 +48,7 @@ const PasswordInput = ({
         min={0}
         required={true}
         autoFocus={autoFocus}
+        autoComplete="new-password"
         {...register(label, {
           required,
           onChange: (e) => {

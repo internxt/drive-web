@@ -40,6 +40,7 @@ export default function TextInput({
         type={type}
         disabled={disabled}
         placeholder={placeholder}
+        autoComplete="off"
         id={label}
         min={0}
         required={true}
