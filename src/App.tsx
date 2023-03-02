@@ -32,6 +32,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import Mobile from 'app/drive/views/MobileView/MobileView';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -129,6 +130,11 @@ class App extends Component<AppProps> {
     } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
+    let isMobile = false;
+
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+      isMobile = true;
+    }
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
@@ -161,7 +167,13 @@ class App extends Component<AppProps> {
               <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/account" to="/preferences" />
-              {this.routes}
+              {isMobile && isAuthenticated ? (
+                <Route path="*">
+                  <Mobile user={this.props.user} />
+                </Route>
+              ) : (
+                this.routes
+              )}
             </Switch>
 
             <Toaster position="bottom-center" />

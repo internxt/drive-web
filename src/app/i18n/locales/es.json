@@ -1,4 +1,8 @@
 {
+  "mobileView": {
+    "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
+    "logOut": "Cerrar sesión"
+  },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
