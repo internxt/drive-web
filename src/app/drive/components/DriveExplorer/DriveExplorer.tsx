@@ -52,7 +52,7 @@ import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
@@ -64,9 +64,12 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-
 import './DriveExplorer.scss';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
+import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
+import { userSelectors } from '../../../store/slices/user';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -144,6 +147,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [posY, setPosY] = useState(0);
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  const showTutorial =
+    useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
+  const stepTwoTutorialRef = useRef(null);
+  const signupSteps = getSignUpSteps(() => {
+    onUploadFileButtonClicked();
+    localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+  }, stepTwoTutorialRef);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -434,7 +445,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const DriveTopBarItems = (): JSX.Element => (
     <div className="flex items-center space-x-2">
-      <div className="flex items-center justify-center">
+      <div ref={stepTwoTutorialRef} className="flex items-center justify-center">
         <Button variant="primary" onClick={onUploadFileButtonClicked}>
           <div className="flex items-center justify-center space-x-2.5">
             <div className="flex items-center space-x-0.5">
@@ -851,7 +862,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  return !isTrash ? connectDropTarget(driveExplorer) || driveExplorer : driveExplorer;
+  return !isTrash ? (
+    <Tutorial show={showTutorial} steps={signupSteps}>
+      {connectDropTarget(driveExplorer) || driveExplorer}
+    </Tutorial>
+  ) : (
+    driveExplorer
+  );
 };
 
 declare module 'react' {

@@ -11,6 +11,7 @@ export default function Button({
   size = 'default',
   loading,
   dataTest,
+  autofocus,
 }: {
   variant?: 'primary' | 'accent' | 'secondary' | 'tertiary';
   type?: 'button' | 'submit';
@@ -21,6 +22,7 @@ export default function Button({
   size?: 'medium' | 'default';
   loading?: boolean;
   dataTest?: string;
+  autofocus?: boolean;
 }): JSX.Element {
   let styles = '';
 
@@ -48,6 +50,7 @@ export default function Button({
       disabled={disabled || loading}
       type={type}
       data-test={dataTest}
+      autoFocus={autofocus}
       className={`${
         size === 'default' ? 'h-10 px-5' : 'h-8 px-3.5'
       } outline-none relative flex select-none flex-row items-center justify-center rounded-lg text-base font-medium ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out focus-visible:ring-opacity-50 ${styles} ${className}`}

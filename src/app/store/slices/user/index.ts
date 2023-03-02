@@ -20,6 +20,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import RealtimeService from 'app/core/services/socket.service';
 import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { extractAvatarURLID } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import dayjs from 'dayjs';
 
 interface UserState {
   isInitializing: boolean;
@@ -217,6 +218,10 @@ export const userSelectors = {
       : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
 
     return nameLetters.toUpperCase();
+  },
+  hasSignedToday: (state: RootState): boolean => {
+    const { user } = state.user;
+    return dayjs(user?.createdAt).isSame(new Date(), 'day');
   },
   isFromAppSumo: (state: RootState): boolean => !!state.user.user?.appSumoDetails,
   hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,

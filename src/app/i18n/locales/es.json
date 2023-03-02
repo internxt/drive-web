@@ -933,5 +933,20 @@
       "progress": "{{currentCredit}}",
       "limit": "de {{creditSum}} desbloqueados"
     }
+  },
+  "errors": {
+    "downloadingDesktopApp": "Algo ha ido mal al descargar la aplicación de escritorio"
+  },
+  "tutorial": {
+    "signUpTutorial": {
+      "stepOne": {
+        "title": "Saca el máximo partido a Interxnt Drive",
+        "description": "Descarga la aplicación de escritorio para sincronizar y hacer copias de seguridad de todas tus carpetas y archivos"
+      },
+      "stepTwo": {
+        "title": "Empecemos...",
+        "description": "Haga clic en el botón Cargar para cargar su primer archivo."
+      }
+    }
   }
 }

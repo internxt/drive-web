@@ -933,5 +933,20 @@
       "progress": "Unlocked {{currentCredit}}",
       "limit": "out of {{creditSum}}"
     }
+  },
+  "errors": {
+    "downloadingDesktopApp": "Something went wrong while downloading the desktop app"
+  },
+  "tutorial": {
+    "signUpTutorial": {
+      "stepOne": {
+        "title": "Get the most out of Interxnt Drive",
+        "description": "Download desktop app to sync and backup all your folders and files"
+      },
+      "stepTwo": {
+        "title": "Let's get started...",
+        "description": "Click Upload button to upload your first file."
+      }
+    }
   }
 }
