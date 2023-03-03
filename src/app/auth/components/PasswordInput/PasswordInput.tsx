@@ -21,6 +21,7 @@ interface InputProps {
   className?: string;
   autoFocus?: boolean;
   value?: string;
+  autoComplete?: string;
 }
 const PasswordInput = ({
   label,
@@ -37,6 +38,7 @@ const PasswordInput = ({
   onBlur,
   className,
   autoFocus,
+  autoComplete,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -48,13 +50,9 @@ const PasswordInput = ({
         min={0}
         required={true}
         autoFocus={autoFocus}
+        autoComplete={autoComplete}
         {...register(label, {
           required,
-          onChange: (e) => {
-            if (e.target.value.length > 0) {
-              localStorage.setItem('password', e.target.value);
-            }
-          },
           minLength,
           min,
           maxLength,
