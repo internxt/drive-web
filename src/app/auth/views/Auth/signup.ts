@@ -10,7 +10,7 @@ const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);
 };
 
-const signup = async (data, dispatch, doRegister?, setLoading?, setError?) => {
+const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
   if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
     postMessage({ action: 'autoScroll' });
     setLoading(false);

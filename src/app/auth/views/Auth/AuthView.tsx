@@ -30,20 +30,7 @@ const SignupAuth = () => {
     },
   });
   return (
-    <form
-      onSubmit={handleSubmit(() =>
-        signup(
-          {
-            email: localStorage.getItem('email'),
-            password: localStorage.getItem('password'),
-          },
-          dispatch,
-          doRegister,
-          setLoading,
-          setError,
-        ),
-      )}
-    >
+    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, setError))}>
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
         <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
           <div className="flex w-full">
@@ -53,6 +40,7 @@ const SignupAuth = () => {
               type="email"
               className={'w-full'}
               register={register}
+              autoComplete="off"
               minLength={{ value: 1, message: 'El correo no puede estar vacío' }}
               error={errors.email}
             />
@@ -64,6 +52,7 @@ const SignupAuth = () => {
               label="password"
               className={'w-full'}
               register={register}
+              autoComplete="new-password"
               required={true}
               minLength={{ value: 1, message: 'La contraseña no puede estar vacía' }}
               error={errors.password}
