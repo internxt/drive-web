@@ -53,11 +53,6 @@ const PasswordInput = ({
         autoComplete={autoComplete}
         {...register(label, {
           required,
-          onChange: (e) => {
-            if (e.target.value.length > 0) {
-              localStorage.setItem('password', e.target.value);
-            }
-          },
           minLength,
           min,
           maxLength,
