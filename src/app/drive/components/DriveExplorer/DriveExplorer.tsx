@@ -152,7 +152,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
   const stepTwoTutorialRef = useRef(null);
   const signupSteps = getSignUpSteps(() => {
-    onUploadFileButtonClicked();
+    setTimeout(() => {
+      onUploadFileButtonClicked();
+    }, 0);
     localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
   }, stepTwoTutorialRef);
 
