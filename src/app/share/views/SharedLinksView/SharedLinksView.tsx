@@ -37,7 +37,7 @@ import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Toolti
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+const REACT_APP_SHARE_LINKS_DOMAIN = window.location.origin;
 
 function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
