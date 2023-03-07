@@ -5,7 +5,7 @@ import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
+const REACT_APP_SHARE_LINKS_DOMAIN = window.location.origin;
 interface CreateShareResponse {
   created: boolean;
   token: string;
