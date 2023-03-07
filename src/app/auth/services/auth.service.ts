@@ -202,7 +202,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
     })
-    .then(() => {
+    .then((res) => {
+      const { token, newToken } = res as any;
+      if (token) localStorageService.set('xToken', token);
+      if (newToken) localStorageService.set('xNewToken', newToken);
       analyticsService.track(email, 'success');
     })
     .catch((error) => {
