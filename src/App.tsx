@@ -61,7 +61,6 @@ class App extends Component<AppProps> {
         new URLSearchParams(navigationService.history.location.search),
         token,
       );
-
       if (redirectUrl) {
         window.location.replace(redirectUrl);
         return;
@@ -167,7 +166,7 @@ class App extends Component<AppProps> {
               <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/account" to="/preferences" />
-              {isMobile && isAuthenticated ? (
+              {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
                 <Route path="*">
                   <Mobile user={this.props.user} />
                 </Route>
