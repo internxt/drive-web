@@ -15,7 +15,7 @@ import databaseService, { DatabaseCollection } from 'app/database/services/datab
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -68,9 +68,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoading(true);
       setCurrentNamePaths([]);
-
       onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
+      setIsLoading(false);
     }
   }, [isOpen]);
 
@@ -81,10 +82,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   }, [newFolderIsOpen]);
 
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
-    dispatch(fetchFolderContentThunk(folderId))
+    dispatch(fetchDialogContentThunk(folderId))
       .unwrap()
       .then(() => {
-        setIsLoading(true);
         databaseService.get(DatabaseCollection.Levels, folderId).then((items) => {
           setCurrentFolderId(folderId);
           setCurrentFolderName(name);
@@ -118,7 +118,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             setCurrentFolderId(folderId);
             setCurrentFolderName(name);
           }
-          setIsLoading(false);
         });
       });
   };
@@ -247,13 +246,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
               }
             >
-              {isLoading
-                ? !props.isTrash
-                  ? translate('actions.moving')
-                  : translate('actions.navigating')
-                : !props.isTrash
-                ? translate('actions.move')
-                : translate('actions.restoreHere')}
+              {!props.isTrash ? translate('actions.move') : translate('actions.restoreHere')}
             </Button>
           </div>
         </div>
