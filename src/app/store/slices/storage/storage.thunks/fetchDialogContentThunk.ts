@@ -46,7 +46,6 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
 
 export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder.addCase(fetchDialogContentThunk.rejected, (state, action) => {
-    state.loadingFolders[action.meta.arg] = false;
     notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
   });
 };

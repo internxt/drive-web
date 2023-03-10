@@ -68,9 +68,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   useEffect(() => {
     if (isOpen) {
+      setIsLoading(true);
       setCurrentNamePaths([]);
-
       onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
+      setIsLoading(false);
     }
   }, [isOpen]);
 
