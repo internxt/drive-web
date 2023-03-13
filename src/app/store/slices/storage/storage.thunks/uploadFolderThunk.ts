@@ -90,52 +90,25 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const concurrency = 6;
-          const concurrentBytesLimit = 20 * 1024 * 1024;
+          await dispatch(
+            uploadItemsParallelThunk({
+              files: level.childrenFiles,
+              parentFolderId: createdFolder.id,
+              options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+            }),
+          )
+            .unwrap()
+            .then(() => {
+              alreadyUploaded += level.childrenFiles.length;
 
-          const uploadPacks: File[][] = [[]];
-          let accumulatedBytes = 0;
-          let currentPackFiles = 0;
-
-          for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached =
-              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
-            const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
-
-            if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
-              uploadPacks[j].push(level.childrenFiles[i]);
-            } else {
-              accumulatedBytes = 0;
-              currentPackFiles = 0;
-
-              uploadPacks[++j] = [];
-              uploadPacks[j].push(level.childrenFiles[i]);
-            }
-            currentPackFiles += 1;
-            accumulatedBytes += level.childrenFiles[i].size;
-          }
-
-          for (const pack of uploadPacks) {
-            await dispatch(
-              uploadItemsParallelThunk({
-                files: pack,
-                parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
-              }),
-            )
-              .unwrap()
-              .then(() => {
-                alreadyUploaded += pack.length;
-
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                },
               });
-          }
+            });
         }
 
         const childrenFolders = [] as IRoot[];
@@ -257,52 +230,25 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const concurrency = 6;
-          const concurrentBytesLimit = 20 * 1024 * 1024;
+          await dispatch(
+            uploadItemsParallelThunkNoCheck({
+              files: level.childrenFiles,
+              parentFolderId: createdFolder.id,
+              options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+            }),
+          )
+            .unwrap()
+            .then(() => {
+              alreadyUploaded += level.childrenFiles.length;
 
-          const uploadPacks: File[][] = [[]];
-          let accumulatedBytes = 0;
-          let currentPackFiles = 0;
-
-          for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached =
-              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
-            const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
-
-            if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
-              uploadPacks[j].push(level.childrenFiles[i]);
-            } else {
-              accumulatedBytes = 0;
-              currentPackFiles = 0;
-
-              uploadPacks[++j] = [];
-              uploadPacks[j].push(level.childrenFiles[i]);
-            }
-            currentPackFiles += 1;
-            accumulatedBytes += level.childrenFiles[i].size;
-          }
-
-          for (const pack of uploadPacks) {
-            await dispatch(
-              uploadItemsParallelThunkNoCheck({
-                files: pack,
-                parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
-              }),
-            )
-              .unwrap()
-              .then(() => {
-                alreadyUploaded += pack.length;
-
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                },
               });
-          }
+            });
         }
 
         const childrenFolders = [] as IRoot[];

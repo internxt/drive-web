@@ -2,7 +2,7 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { DriveFileData } from 'app/drive/types';
 import analyticsService from '../../../analytics/services/analytics.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { AppView, DevicePlatform } from '../../../core/types';
+import { AppView } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { getEnvironmentConfig } from '../network.service';
