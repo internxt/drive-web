@@ -37,7 +37,10 @@ export const OnboardingModal = (): JSX.Element => {
 
   const logoSrc = getSOLogo();
 
-  const DevicesImg = useMemo(() => <img src={DevicesSVG} onLoad={onImageLoad} />, [DevicesSVG]);
+  const DevicesImg = useMemo(
+    () => <img src={DevicesSVG} className="aspect-video h-80 w-72" onLoad={onImageLoad} />,
+    [DevicesSVG],
+  );
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -64,15 +67,17 @@ export const OnboardingModal = (): JSX.Element => {
           <div className="hidden">{DevicesImg}</div>
         </div>
       ) : (
-        <div className="flex h-auto w-auto flex-row rounded-2xl bg-white">
+        <div className="flex h-auto w-auto min-w-max flex-row rounded-2xl bg-white">
           <div className="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full ">
             <img src={XSVG} />
             <div className="absolute inset-0 h-7 w-7 rounded-full bg-black opacity-5"></div>
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>
-              <p className="text-3xl text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
-              <p className="mt-2 text-base text-cool-gray-80">{t('tutorial.signUpTutorial.stepOne.description')}</p>
+              <p className="text-3xl leading-9 text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="mt-2 text-base leading-5 text-cool-gray-80	">
+                {t('tutorial.signUpTutorial.stepOne.description')}
+              </p>
             </div>
             <div className="mt-6">
               <div className="flex h-24 rounded-xl border border-gray-10 bg-gray-1">
@@ -88,7 +93,7 @@ export const OnboardingModal = (): JSX.Element => {
               </div>
             </div>
           </div>
-          <div className="flex">{DevicesImg}</div>
+          <div className="flex items-end">{DevicesImg}</div>
         </div>
       )}
     </>
