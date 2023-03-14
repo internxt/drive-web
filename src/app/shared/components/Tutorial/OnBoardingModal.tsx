@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import desktopService from '../../../core/services/desktop.service';
 import operatingSystemService from '../../../core/services/operating-system.service';
 import { t } from 'i18next';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import Spinner from '../Spinner/Spinner';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
@@ -37,7 +37,7 @@ export const OnboardingModal = (): JSX.Element => {
 
   const logoSrc = getSOLogo();
 
-  const DevicesImg = () => <img src={DevicesSVG} onLoad={onImageLoad} />;
+  const DevicesImg = useMemo(() => <img src={DevicesSVG} onLoad={onImageLoad} />, [DevicesSVG]);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -61,9 +61,7 @@ export const OnboardingModal = (): JSX.Element => {
       {isImageLoading ? (
         <div className="flex w-72 items-center justify-center">
           <Spinner className="h-6 w-6" />
-          <div className="hidden">
-            <DevicesImg />
-          </div>
+          <div className="hidden">{DevicesImg}</div>
         </div>
       ) : (
         <div className="flex h-auto w-auto flex-row rounded-2xl bg-white">
@@ -90,9 +88,7 @@ export const OnboardingModal = (): JSX.Element => {
               </div>
             </div>
           </div>
-          <div className="flex">
-            <DevicesImg />
-          </div>
+          <div className="flex">{DevicesImg}</div>
         </div>
       )}
     </>
