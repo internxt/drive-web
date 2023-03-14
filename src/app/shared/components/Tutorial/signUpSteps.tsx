@@ -18,7 +18,7 @@ export const getSignUpSteps = (
     {
       content: (
         <div>
-          <div className="cursor-pointer">
+          <div onClick={stepOneOptions.onNextStepClicked} className="cursor-pointer">
             <Button variant="primary" className="ml-auto rounded-lg border-4 border-cool-gray-5 border-opacity-75">
               <div className="flex items-center justify-center space-x-2.5">
                 <div className="flex items-center space-x-0.5">
@@ -39,11 +39,9 @@ export const getSignUpSteps = (
       ref: stepOneOptions.stepOneTutorialRef,
       offset: { x: 0, y: -40 },
       disableClickNextStepOutOfContent: true,
-      onNextStepClicked: stepOneOptions.onNextStepClicked,
     },
     {
-      content: <OnboardingModal />,
+      content: <OnboardingModal onCloseModalPressed={stepTwoOptions.onNextStepClicked} />,
       disableClickNextStepOutOfContent: true,
-      onNextStepClicked: stepTwoOptions.onNextStepClicked,
     },
   ] as Step[];

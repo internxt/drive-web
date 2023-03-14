@@ -148,6 +148,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
+  const passToNextStep = () => {
+    setCurrentTutorialStep(currentTutorialStep + 1);
+  };
+
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
   const stepOneTutorialRef = useRef(null);
@@ -157,10 +162,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         setTimeout(() => {
           onUploadFileButtonClicked();
         }, 0);
+        passToNextStep();
       },
       stepOneTutorialRef,
     },
-    { onNextStepClicked: () => localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true') },
+    {
+      onNextStepClicked: () => {
+        passToNextStep();
+        localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+      },
+    },
   );
 
   const hasItems = items.length > 0;
@@ -870,7 +881,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   return !isTrash ? (
-    <Tutorial show={showTutorial} steps={signupSteps}>
+    <Tutorial show={showTutorial} steps={signupSteps} currentStep={currentTutorialStep}>
       {connectDropTarget(driveExplorer) || driveExplorer}
     </Tutorial>
   ) : (
