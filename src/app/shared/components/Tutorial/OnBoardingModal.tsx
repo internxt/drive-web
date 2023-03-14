@@ -9,6 +9,8 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import desktopService from '../../../core/services/desktop.service';
 import operatingSystemService from '../../../core/services/operating-system.service';
 import { t } from 'i18next';
+import { useMemo, useState } from 'react';
+import Spinner from '../Spinner/Spinner';
 
 const separatorV = <div className=" my-2 border-r border-gray-10" />;
 
@@ -26,8 +28,16 @@ const getSOLogo = () => {
 };
 
 export const OnboardingModal = (): JSX.Element => {
+  const [isImageLoading, setIsImageLoading] = useState(true);
   const { translate } = useTranslationContext();
+
+  const onImageLoad = (): void => {
+    setIsImageLoading(false);
+  };
+
   const logoSrc = getSOLogo();
+
+  const DevicesImg = useMemo(() => <img src={DevicesSVG} onLoad={onImageLoad} />, [DevicesSVG]);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -47,33 +57,40 @@ export const OnboardingModal = (): JSX.Element => {
   };
 
   return (
-    <div className="flex h-auto w-auto flex-row rounded-2xl bg-white">
-      <div className="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full ">
-        <img src={XSVG} />
-        <div className="absolute inset-0 h-7 w-7 rounded-full bg-black opacity-5"></div>
-      </div>
-      <div className="flex w-96 flex-col p-10">
-        <div>
-          <p className="text-3xl text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
-          <p className="mt-2 text-base text-cool-gray-80">{t('tutorial.signUpTutorial.stepOne.description')}</p>
+    <>
+      {isImageLoading ? (
+        <div className="flex w-72 items-center justify-center">
+          <Spinner className="h-6 w-6" />
+          <div className="hidden">{DevicesImg}</div>
         </div>
-        <div className="mt-6">
-          <div className="flex h-24 rounded-xl border border-gray-10 bg-gray-1">
-            <div className="flex items-center justify-center p-5 ">
-              <img src={logoSrc} />
+      ) : (
+        <div className="flex h-auto w-auto flex-row rounded-2xl bg-white">
+          <div className="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full ">
+            <img src={XSVG} />
+            <div className="absolute inset-0 h-7 w-7 rounded-full bg-black opacity-5"></div>
+          </div>
+          <div className="flex w-96 flex-col p-10">
+            <div>
+              <p className="text-3xl text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="mt-2 text-base text-cool-gray-80">{t('tutorial.signUpTutorial.stepOne.description')}</p>
             </div>
-            {separatorV}
-            <div className="flex flex-grow items-center justify-center">
-              <Button variant="primary" onClick={onDownloadAppButtonClicked} autofocus>
-                <span>{translate('views.account.popover.downloadApp')}</span>
-              </Button>
+            <div className="mt-6">
+              <div className="flex h-24 rounded-xl border border-gray-10 bg-gray-1">
+                <div className="flex items-center justify-center p-5 ">
+                  <img src={logoSrc} />
+                </div>
+                {separatorV}
+                <div className="flex flex-grow items-center justify-center">
+                  <Button variant="primary" onClick={onDownloadAppButtonClicked} autofocus>
+                    <span>{translate('views.account.popover.downloadApp')}</span>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
+          <div className="flex">{DevicesImg}</div>
         </div>
-      </div>
-      <div className="flex">
-        <img src={DevicesSVG} />
-      </div>
-    </div>
+      )}
+    </>
   );
 };

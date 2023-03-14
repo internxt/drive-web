@@ -6,14 +6,15 @@ import { OnboardingModal } from './OnBoardingModal';
 import { Step } from './Tutorial';
 
 export const getSignUpSteps = (
-  onNextStepClicked: () => void,
-  stepTwoTutorialRef: MutableRefObject<Element | null>,
+  stepOneOptions: {
+    onNextStepClicked: () => void;
+    stepOneTutorialRef: MutableRefObject<Element | null>;
+  },
+  stepTwoOptions: {
+    onNextStepClicked: () => void;
+  },
 ): Step[] =>
   [
-    {
-      content: <OnboardingModal />,
-      disableClickNextStepOutOfContent: true,
-    },
     {
       content: (
         <div>
@@ -35,9 +36,14 @@ export const getSignUpSteps = (
         </div>
       ),
       placement: 'bottom-end' as const,
-      ref: stepTwoTutorialRef,
+      ref: stepOneOptions.stepOneTutorialRef,
       offset: { x: 0, y: -40 },
       disableClickNextStepOutOfContent: true,
-      onNextStepClicked,
+      onNextStepClicked: stepOneOptions.onNextStepClicked,
+    },
+    {
+      content: <OnboardingModal />,
+      disableClickNextStepOutOfContent: true,
+      onNextStepClicked: stepTwoOptions.onNextStepClicked,
     },
   ] as Step[];

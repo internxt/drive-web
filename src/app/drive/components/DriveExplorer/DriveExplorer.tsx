@@ -150,13 +150,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
-  const stepTwoTutorialRef = useRef(null);
-  const signupSteps = getSignUpSteps(() => {
-    setTimeout(() => {
-      onUploadFileButtonClicked();
-    }, 0);
-    localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
-  }, stepTwoTutorialRef);
+  const stepOneTutorialRef = useRef(null);
+  const signupSteps = getSignUpSteps(
+    {
+      onNextStepClicked: () => {
+        setTimeout(() => {
+          onUploadFileButtonClicked();
+        }, 0);
+      },
+      stepOneTutorialRef,
+    },
+    { onNextStepClicked: () => localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true') },
+  );
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -447,7 +452,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const DriveTopBarItems = (): JSX.Element => (
     <div className="flex items-center space-x-2">
-      <div ref={stepTwoTutorialRef} className="flex items-center justify-center">
+      <div ref={stepOneTutorialRef} className="flex items-center justify-center">
         <Button variant="primary" onClick={onUploadFileButtonClicked}>
           <div className="flex items-center justify-center space-x-2.5">
             <div className="flex items-center space-x-0.5">
