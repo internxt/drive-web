@@ -5,7 +5,7 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { WarningCircle } from 'phosphor-react';
 
-import localStorageService from 'app/core/services/local-storage.service';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 // import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
@@ -152,6 +152,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       const { xUser, xToken, mnemonic } = isNewUser
         ? await doRegister(email, password, token)
         : await updateInfo(email, password);
+
+      localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
