@@ -5,8 +5,8 @@ import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 
-const HUNDRED_MEGABYTES = 100 * 1024 * 1024;
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
+const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
 enum FileSizeType {
   Big = 'big',
@@ -23,7 +23,7 @@ type UploadManagerFileParams = {
   onFinishUploadFile?: (driveItemData: DriveFileData) => void;
 };
 
-export const uploadFileWithManager = async (
+export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
   abortController?: AbortController,
   options?: Options,
@@ -43,13 +43,13 @@ class UploadManager {
   > = {
     [FileSizeType.Big]: {
       upperBound: Infinity,
-      lowerBound: HUNDRED_MEGABYTES,
+      lowerBound: USE_MULTIPART_THRESHOLD_BYTES,
       concurrency: 1,
     },
     [FileSizeType.Medium]: {
-      upperBound: HUNDRED_MEGABYTES - 1,
+      upperBound: USE_MULTIPART_THRESHOLD_BYTES - 1,
       lowerBound: TWENTY_MEGABYTES,
-      concurrency: 3,
+      concurrency: 6,
     },
     [FileSizeType.Small]: {
       upperBound: TWENTY_MEGABYTES - 1,
@@ -81,8 +81,6 @@ class UploadManager {
 
       uploadFile(
         fileData.userEmail,
-        Object.assign(
-          {},
           {
             name: file.name,
             size: file.size,
@@ -90,7 +88,6 @@ class UploadManager {
             content: file.content,
             parentFolderId: file.parentFolderId,
           },
-        ),
         false,
         (uploadProgress) => {
           this.uploadsProgress[uploadId] = uploadProgress;
@@ -117,8 +114,7 @@ class UploadManager {
 
           fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
 
-          const fileObject = Object.assign({}, driveFileDataWithNameParsed);
-          next(null, fileObject);
+          next(null, driveFileDataWithNameParsed);
         })
         .catch((err) => {
           if (task?.status !== TaskStatus.Cancelled) {
