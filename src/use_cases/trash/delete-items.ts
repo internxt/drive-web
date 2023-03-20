@@ -6,6 +6,39 @@ import { DriveItemData } from '../../app/drive/types';
 import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 import { t } from 'i18next';
+import { Trash } from '@internxt/sdk/dist/drive';
+
+const MAX_ITEMS_TO_DELETE = 20;
+const MAX_CONCURRENT_REQUESTS = 2;
+
+async function deleteItemsPermanently({
+  items,
+  maxItemsToDelete,
+  maxConcurrentRequests,
+  trashClient,
+}: {
+  items: { id: number | string; type: string }[];
+  maxItemsToDelete: number;
+  maxConcurrentRequests: number;
+  trashClient: Trash;
+}) {
+  const promises: Promise<unknown>[] = [];
+
+  for (let i = 0; i < items.length; i += maxItemsToDelete) {
+    const itemsToDelete = items.slice(i, i + maxItemsToDelete);
+    const promise = trashClient.deleteItemsPermanently({ items: itemsToDelete } as DeleteItemsPermanentlyPayload);
+    promises.push(promise);
+
+    if (promises.length === maxConcurrentRequests) {
+      await Promise.all(promises);
+      promises.length = 0;
+    }
+  }
+
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  }
+}
 
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToDelete.map((item) => {
@@ -14,8 +47,15 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
       type: item.isFolder ? 'folder' : 'file',
     };
   });
+
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
-  await trashClient.deleteItemsPermanently({ items } as DeleteItemsPermanentlyPayload);
+
+  await deleteItemsPermanently({
+    items,
+    maxItemsToDelete: MAX_ITEMS_TO_DELETE,
+    maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+    trashClient,
+  });
 
   await deleteDatabaseItems(itemsToDelete);
 

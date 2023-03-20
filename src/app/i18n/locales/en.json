@@ -44,7 +44,7 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search in this folder",
+    "searchBar": "Search this folder",
 
     "stage": {
       "development": "Development",
@@ -119,10 +119,10 @@
     "recents": {
       "head": "Recents",
       "empty": {
-        "title": "No recents files to show",
-        "description": "Recent uploads or files you recently interacted with will show up here automatically",
+        "title": "No recent files available",
+        "description": "New uploads and recently opened files will appear here automatically",
         "folderEmpty": "This folder is empty",
-        "folderEmptySubtitle": "Drag and drop files or click to select files and upload",
+        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
         "uploadFiles": "Upload files",
         "noResults": "There are no results for this search",
         "dragNDrop": "Drag and drop here or click on upload button"
@@ -130,8 +130,8 @@
     },
     "photos": {
       "empty": {
-        "title": "Your gallery is empty",
-        "description": "Start using Internxt mobile app to sync all your photos"
+        "title": "Your photo gallery is empty",
+        "description": "Use the Internxt mobile app to sync all your photos from your device"
       }
     },
     "account": {
@@ -198,7 +198,7 @@
           },
           "deleteAccount": {
             "head": "Delete account",
-            "description": "If you delete your account, your data will be gone forever. This action cannot be undone.",
+            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
             "isSubscribed": "Please, cancel your subscription first",
             "confirmationEmail": "Confirmation email has been sent"
           }
@@ -311,14 +311,14 @@
           },
           "changePassword": {
             "title": "Change password",
-            "description": "Remember that if you forget the password, you will lose access to all your files. We recommend using a password manager.",
+            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
             "button": "Change password"
           },
           "2FA": {
-            "title": "Two Factor Authentication (2FA)",
+            "title": "Two-factor authentication (2FA)",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security, requiring an extra verification when you log in. In addition to your password, you'll also need a generated code.",
-            "button": "Enable",
+            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
+            "button": "Enable 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -357,7 +357,7 @@
           },
           "backupKey": {
             "title": "Backup key",
-            "description": "In case you forget your password, you can use your backup key to recover your account. Never share this code with anyone.",
+            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
             "button": "Export backup key",
             "success": "Backup key downloaded successfully",
             "error": "We could not generate your backup key"
@@ -365,20 +365,20 @@
           "faq": {
             "title": "Did you miss anything?",
             "faq1": {
-              "title": "Why do I lose all my files if I lose my password?",
-              "description": "Your password is the only way to access your account, the Internxt team cannot access your account or change your password. This is to prevent anyone from accessing your account or stealing your information. <br/><br/>Among other things, your password is used to encrypt your encryption key so not even Internxt has access to it. Every time you log in, you need your password to decrypt this encryption key, that way we ensure you are the only one holding the encryption keys."
+              "title": "Why do I lose all my files if I forget my password?",
+              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
             },
             "faq2": {
-              "title": "How can I keep safe my credentials?",
-              "description": "We recommend you use a password manager to store your credentials safely, not just for accessing the Internxt platform, but to keep yourself safe and productive while browsing."
+              "title": "How can I keep my credentials safe?",
+              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
             },
             "faq3": {
-              "title": "Can I recover my account with the backup key?",
-              "description": "If you keep your encryption key somewhere safe, recover your data following the steps outlined in the email you will receive when clicking “forgot password”."
+              "title": "Can I recover my account with a backup key?",
+              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
             },
             "faq4": {
               "title": "Do I lose all my files if I change my password?",
-              "description": "No, since you are already logged in, you can change your password without losing anything. Make sure you have chosen a strong password which is not found in any data breach."
+              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
             }
           }
         }
@@ -541,8 +541,8 @@
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
     "empty": {
-      "title": "You don't have backups yet",
-      "subtitle": "Set up your backups on the desktop app",
+      "title": "No backups available",
+      "subtitle": "Set up and manage your backups on the Internxt desktop app",
       "downloadApp": "Download desktop app"
     },
     "devices-list": {
@@ -944,8 +944,8 @@
   "tutorial": {
     "signUpTutorial": {
       "stepOne": {
-        "title": "Get the most out of Interxnt Drive",
-        "description": "Download desktop app to sync and backup all your folders and files"
+        "title": "Get the most out of Internxt Drive",
+        "description": "Download desktop app to sync and backup all your folders and files."
       },
       "stepTwo": {
         "title": "Let's get started...",

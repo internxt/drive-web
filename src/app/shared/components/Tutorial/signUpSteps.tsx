@@ -6,18 +6,19 @@ import { OnboardingModal } from './OnBoardingModal';
 import { Step } from './Tutorial';
 
 export const getSignUpSteps = (
-  onNextStepClicked: () => void,
-  stepTwoTutorialRef: MutableRefObject<Element | null>,
+  stepOneOptions: {
+    onNextStepClicked: () => void;
+    stepOneTutorialRef: MutableRefObject<Element | null>;
+  },
+  stepTwoOptions: {
+    onNextStepClicked: () => void;
+  },
 ): Step[] =>
   [
     {
-      content: <OnboardingModal />,
-      disableClickNextStepOutOfContent: true,
-    },
-    {
       content: (
         <div>
-          <div className="cursor-pointer">
+          <div onClick={stepOneOptions.onNextStepClicked} className="cursor-pointer">
             <Button variant="primary" className="ml-auto rounded-lg border-4 border-cool-gray-5 border-opacity-75">
               <div className="flex items-center justify-center space-x-2.5">
                 <div className="flex items-center space-x-0.5">
@@ -35,9 +36,12 @@ export const getSignUpSteps = (
         </div>
       ),
       placement: 'bottom-end' as const,
-      ref: stepTwoTutorialRef,
+      ref: stepOneOptions.stepOneTutorialRef,
       offset: { x: 0, y: -40 },
       disableClickNextStepOutOfContent: true,
-      onNextStepClicked,
+    },
+    {
+      content: <OnboardingModal onCloseModalPressed={stepTwoOptions.onNextStepClicked} />,
+      disableClickNextStepOutOfContent: true,
     },
   ] as Step[];

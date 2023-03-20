@@ -148,15 +148,31 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
+  const passToNextStep = () => {
+    setCurrentTutorialStep(currentTutorialStep + 1);
+  };
+
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
-  const stepTwoTutorialRef = useRef(null);
-  const signupSteps = getSignUpSteps(() => {
-    setTimeout(() => {
-      onUploadFileButtonClicked();
-    }, 0);
-    localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
-  }, stepTwoTutorialRef);
+  const stepOneTutorialRef = useRef(null);
+  const signupSteps = getSignUpSteps(
+    {
+      onNextStepClicked: () => {
+        setTimeout(() => {
+          onUploadFileButtonClicked();
+        }, 0);
+        passToNextStep();
+      },
+      stepOneTutorialRef,
+    },
+    {
+      onNextStepClicked: () => {
+        passToNextStep();
+        localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+      },
+    },
+  );
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -447,7 +463,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const DriveTopBarItems = (): JSX.Element => (
     <div className="flex items-center space-x-2">
-      <div ref={stepTwoTutorialRef} className="flex items-center justify-center">
+      <div ref={stepOneTutorialRef} className="flex items-center justify-center">
         <Button variant="primary" onClick={onUploadFileButtonClicked}>
           <div className="flex items-center justify-center space-x-2.5">
             <div className="flex items-center space-x-0.5">
@@ -865,7 +881,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   );
 
   return !isTrash ? (
-    <Tutorial show={showTutorial} steps={signupSteps}>
+    <Tutorial show={showTutorial} steps={signupSteps} currentStep={currentTutorialStep}>
       {connectDropTarget(driveExplorer) || driveExplorer}
     </Tutorial>
   ) : (

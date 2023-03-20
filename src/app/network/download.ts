@@ -204,7 +204,7 @@ async function _downloadFile(params: IDownloadParams): Promise<ReadableStream<Ui
   }
 
   const { mirrors, fileMeta } = metadata;
-  const downloadUrls: string[] = mirrors.map((m) => process.env.REACT_APP_PROXY + '/' + m.url);
+  const downloadUrls: string[] = mirrors.map((m) => m.url);
 
   const index = Buffer.from(fileMeta.index, 'hex');
   const iv = index.slice(0, 16);

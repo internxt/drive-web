@@ -1,10 +1,12 @@
-import React, { CSSProperties, FC, useRef, useState } from 'react';
+import React, { CSSProperties, FC, useRef } from 'react';
 import { Placement } from '@popperjs/core';
 import { usePopper } from 'react-popper';
 
 interface TutorialProps {
   show?: boolean;
   steps: Step[];
+  currentStep: number;
+  passToNextStep?: () => void;
 }
 
 export type Step = {
@@ -16,13 +18,11 @@ export type Step = {
     y: number;
   };
   disableClickNextStepOutOfContent?: boolean;
-  onNextStepClicked?: () => void;
 };
 
 const centeredStyle: CSSProperties = { position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)' };
 
-export const Tutorial: FC<TutorialProps> = ({ show, steps, children }) => {
-  const [currentStep, setCurrentStep] = useState(0);
+export const Tutorial: FC<TutorialProps> = ({ show, steps, children, currentStep, passToNextStep }) => {
   const popperRef = useRef(null);
 
   const existsRef = !!steps[currentStep]?.ref;
@@ -35,7 +35,6 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children }) => {
     content = undefined,
     placement = undefined,
     disableClickNextStepOutOfContent = undefined,
-    onNextStepClicked = undefined,
   }: Step = step;
 
   const { styles, attributes } = usePopper(ref?.current, popperRef.current, {
@@ -50,15 +49,8 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children }) => {
     ],
   });
 
-  const passToNextStep = () => setCurrentStep(currentStep + 1);
-
   const handleNextStep = () => {
-    if (!disableClickNextStepOutOfContent) passToNextStep();
-  };
-
-  const handleOnNextStepClicked = () => {
-    onNextStepClicked?.();
-    passToNextStep();
+    if (!disableClickNextStepOutOfContent) passToNextStep?.();
   };
 
   if (isTutorialFinished || !show) {
@@ -70,7 +62,7 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children }) => {
       <div className="fixed inset-0 z-10 flex bg-black opacity-40" />
       {children}
       <div ref={popperRef} className="z-50" style={existsRef ? styles.popper : centeredStyle} {...attributes.popper}>
-        <div onClick={handleOnNextStepClicked}>{content}</div>
+        <div>{content}</div>
       </div>
     </div>
   );

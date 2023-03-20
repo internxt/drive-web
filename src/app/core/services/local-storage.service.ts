@@ -51,6 +51,7 @@ function clear(): void {
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
+  localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 }
 
 const localStorageService = {
