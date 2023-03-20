@@ -827,7 +827,8 @@
     "navigating": "Restaurando...",
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "copyLink": "Copiar enlace"
   },
   "drive": {
     "usage": "Uso",

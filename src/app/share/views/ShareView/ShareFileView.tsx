@@ -20,7 +20,7 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
-import errorService from 'app/core/services/error.service';
+
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
@@ -332,6 +332,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
         downloader={getBlob}
+        isAuthenticated={isAuthenticated}
+        isShareView
       />
       {body}
     </>
