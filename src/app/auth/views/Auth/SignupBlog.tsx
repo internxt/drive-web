@@ -31,7 +31,7 @@ const SignupAuth = () => {
   });
 
   return (
-    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, setError))}>
+    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, true, setError))}>
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
         <div className="flex w-full flex-col space-y-3 md:flex-row lg:space-y-0 lg:space-x-3">
           <div className="flex w-full">

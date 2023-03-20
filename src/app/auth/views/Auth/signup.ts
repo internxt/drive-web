@@ -41,7 +41,7 @@ const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setE
     localStorage.removeItem('password');
     setLoading(false);
     appRedirect
-      ? window.open('https://drive.internxt.com/app', '_parent', 'noopener')
+      ? window.open(`${process.env.REACT_APP_HOSTNAME}/app`, '_parent', 'noopener')
       : window.open(
           `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=g3S2TZFZ&freeTrials=30&mode=subscription`,
           '_parent',
