@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { FILE_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Drag and drop', () => {
   const filename = 'example.txt';
@@ -23,7 +23,7 @@ describe('Drag and drop', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(10000);
     cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+    cy.contains(MENU_ITEM_SELECTOR, 'Download')
       .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {

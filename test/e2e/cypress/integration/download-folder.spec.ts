@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Download Folder', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
@@ -11,7 +12,7 @@ describe('Download Folder', () => {
 
   it('Should download a single Folder', () => {
     cy.get('[data-test=file-list-folder]').contains('Family').rightclick({ force: true });
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+    cy.contains(MENU_ITEM_SELECTOR, 'Download')
       .click({ force: true })
       .then(() => {
         cy.readFile(downloadedFolderFullPath);

@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { join } from 'path';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Security account tab', () => {
   const filename = 'example.txt';
@@ -9,7 +10,6 @@ describe('Security account tab', () => {
   const downloadedFileFullPath = join(downloadsFolder, filename);
   const userFilename = 'test-user.json';
   const second_password = `Pw4${randomBytes(4).toString('hex')}-nla`;
-  const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
 
   beforeEach(() => {
     Cypress.on('uncaught:exception', () => {
@@ -66,8 +66,8 @@ describe('Security account tab', () => {
       });
 
       // Download file
-      cy.contains(DATA_TEST_FILE_LIST_FILE, 'example').rightclick({ force: true });
-      cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+      cy.contains(FILE_ITEM_SELECTOR, 'example').rightclick({ force: true });
+      cy.contains(MENU_ITEM_SELECTOR, 'Download')
         .click({ force: true })
         .then(() => {
           // Check content

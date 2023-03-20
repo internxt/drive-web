@@ -1,11 +1,10 @@
 import * as path from 'path';
-import { menuItemsButtonsSelector } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Download shared file', () => {
   const filename = 'example.txt';
   const downloadsFolder = Cypress.config('downloadsFolder');
   const fixturesFolder = Cypress.config('fixturesFolder');
-  const { containerSelector, textToFind } = menuItemsButtonsSelector.renameButton;
 
   beforeEach(() => {
     cy.clearLocalStorage();
@@ -23,17 +22,13 @@ describe('Download shared file', () => {
   });
 
   it('Should share a and download single file', () => {
-    // cy.get('[data-test=file-list-file] [data-test=share-file-button]').eq(0).click({ force: true });
+    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
 
-    cy.get('[data-test=file-list-file]').contains('example.txt').rightclick({ force: true });
-    // cy.contains(containerSelector, 'Get link | Copy link').click({ force: true });
-    cy.get(containerSelector).then((container) => {
+    cy.get(MENU_ITEM_SELECTOR).then((container) => {
       if (container.text().includes('Get link')) {
-        cy.contains(containerSelector, 'Get link').click({ force: true });
+        cy.contains(MENU_ITEM_SELECTOR, 'Get link').click({ force: true });
       } else if (container.text().includes('Copy link')) {
-        cy.contains(containerSelector, 'Copy link').click({ force: true });
-      } else {
-        // Si no se encuentra ninguno de los textos, se puede hacer otra acción aquí.
+        cy.contains(MENU_ITEM_SELECTOR, 'Copy link').click({ force: true });
       }
     });
     const WAIT_SECONDS = 5000;

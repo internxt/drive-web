@@ -26,7 +26,7 @@
 
 import 'cypress-file-upload';
 import * as path from 'path';
-import { EXAMPLE_FILENAME } from '../constans';
+import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../constans';
 
 Cypress.Commands.add('login', () => {
   const fixturesFolder = Cypress.config('fixturesFolder');
@@ -52,6 +52,6 @@ Cypress.Commands.add('login', () => {
 
 Cypress.Commands.add('removeExampleFile', () => {
   cy.contains(EXAMPLE_FILENAME).rightclick({ force: true });
-  cy.contains('div[id*="headlessui-menu-item"] div', 'Move to trash').click({ force: true });
+  cy.contains(MENU_ITEM_SELECTOR, 'Move to trash').click({ force: true });
   cy.contains(EXAMPLE_FILENAME).should('not.exist');
 });

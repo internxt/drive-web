@@ -1,13 +1,11 @@
-import { EXAMPLE_FILENAME, menuItemsButtonsSelector } from '../constans';
+import { EXAMPLE_FILENAME, FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Rename item', () => {
   const newFolderName = 'new-folder';
   const newFileName = 'new-file';
+  const renameText = 'Rename';
 
   const DATA_TEST_FILE_LIST_FOLDER = '[data-test=file-list-folder]';
-  const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
-
-  const { containerSelector, textToFind } = menuItemsButtonsSelector.renameButton;
 
   beforeEach(() => {
     cy.clearLocalStorage();
@@ -25,29 +23,29 @@ describe('Rename item', () => {
 
   it('Should rename a folder item', () => {
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains('Family').rightclick({ force: true });
-    cy.contains(containerSelector, textToFind).click({ force: true });
+    cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type(`${newFolderName}{enter}`);
 
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName).should('exist');
 
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName).rightclick({ force: true });
-    cy.contains(containerSelector, textToFind).click({ force: true });
+    cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type('Family{enter}');
 
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains('Family').should('exist');
   });
 
   it('Should rename a file item', () => {
-    cy.get(DATA_TEST_FILE_LIST_FILE).contains('example.txt').rightclick({ force: true });
-    cy.contains(containerSelector, textToFind).click({ force: true });
+    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
+    cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type(`${newFileName}{enter}`);
 
-    cy.get(DATA_TEST_FILE_LIST_FILE).contains(newFileName).should('exist');
+    cy.get(FILE_ITEM_SELECTOR).contains(newFileName).should('exist');
 
-    cy.get(DATA_TEST_FILE_LIST_FILE).contains(newFileName).rightclick({ force: true });
-    cy.contains(containerSelector, textToFind).click({ force: true });
+    cy.get(FILE_ITEM_SELECTOR).contains(newFileName).rightclick({ force: true });
+    cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type('example{enter}');
 
-    cy.get(DATA_TEST_FILE_LIST_FILE).contains('example.txt').should('exist');
+    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').should('exist');
   });
 });

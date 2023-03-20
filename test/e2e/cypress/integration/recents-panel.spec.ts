@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { EXAMPLE_FILENAME } from '../constans';
+import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Recents panel', () => {
   const filenameRenamed = 'example2';
@@ -41,14 +41,14 @@ describe('Recents panel', () => {
     cy.get('#list-item-menu-button').click();
     cy.contains('div[id*="headlessui-menu-item"] span', 'Get link').click();
     cy.get('#list-item-menu-button').click();
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Delete link').click();
+    cy.contains(MENU_ITEM_SELECTOR, 'Delete link').click();
     cy.get('#list-item-menu-button').click();
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Delete link').should('not.exist');
+    cy.contains(MENU_ITEM_SELECTOR, 'Delete link').should('not.exist');
   });
 
   it('Should download a single file', () => {
     cy.get('#list-item-menu-button').click();
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+    cy.contains(MENU_ITEM_SELECTOR, 'Download')
       .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, EXAMPLE_FILENAME)).then((originalFile) => {
@@ -63,7 +63,7 @@ describe('Recents panel', () => {
 
   it('Should rename file', () => {
     cy.get('#list-item-menu-button').click();
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Rename').click();
+    cy.contains(MENU_ITEM_SELECTOR, 'Rename').click();
     cy.get('input[name=fileName]').clear().type(filenameRenamed).type('{enter}');
     cy.contains(filenameRenamed);
   });
@@ -71,7 +71,7 @@ describe('Recents panel', () => {
   after(() => {
     //RENAME AGAIN THE FILE
     cy.get('#list-item-menu-button').click();
-    cy.contains('div[id*="headlessui-menu-item"] div', 'Rename').click();
+    cy.contains(MENU_ITEM_SELECTOR, 'Rename').click();
     cy.get('input[name=fileName]').clear().type('example').type('{enter}');
   });
 });
