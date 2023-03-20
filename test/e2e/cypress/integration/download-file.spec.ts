@@ -9,10 +9,22 @@ describe('Download file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
+
+    // Upload file
+    cy.get('.infinite-scroll-component').then((element) => {
+      if (element.text().includes(filename)) {
+        // do nothing
+      } else {
+        cy.get('input[type=file]').attachFile(filename);
+        cy.get('[data-test=file-name]').should('have.text', filename);
+      }
+    });
   });
 
   it('Should download a single file', () => {
-    cy.get('[data-test=download-file-button]').click({ force: true })
+    cy.contains('[data-test="file-list-file"]', 'example').rightclick({ force: true });
+    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+      .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {
           cy.readFile(downloadedFileFullPath).should('eq', originalFile);
@@ -23,5 +35,4 @@ describe('Download file', () => {
   after(() => {
     cy.task('removeFile', downloadedFileFullPath);
   });
-
 });

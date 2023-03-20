@@ -26,6 +26,7 @@
 
 import 'cypress-file-upload';
 import * as path from 'path';
+import { EXAMPLE_FILENAME } from '../constans';
 
 Cypress.Commands.add('login', () => {
   const fixturesFolder = Cypress.config('fixturesFolder');
@@ -40,6 +41,17 @@ Cypress.Commands.add('login', () => {
       cy.get('button[type=submit]').click();
 
       cy.url().should('include', '/app');
+
+      // To not show the after signup onboarding
+      cy.window().then((win) => {
+        win.localStorage.setItem('signUpTutorialCompleted', 'true');
+      });
     },
   );
+});
+
+Cypress.Commands.add('removeExampleFile', () => {
+  cy.contains(EXAMPLE_FILENAME).rightclick({ force: true });
+  cy.contains('div[id*="headlessui-menu-item"] div', 'Move to trash').click({ force: true });
+  cy.contains(EXAMPLE_FILENAME).should('not.exist');
 });

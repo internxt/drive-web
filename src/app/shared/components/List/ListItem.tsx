@@ -222,6 +222,7 @@ export default function ListItem<T extends { id: string }>({
             return (
               <>
                 <Menu.Button
+                  id={'list-item-menu-button'}
                   ref={menuButtonRef as LegacyRef<HTMLButtonElement>}
                   className={`outline-none focus-visible:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
                     selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'

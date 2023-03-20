@@ -1,9 +1,8 @@
 import { join } from 'path';
-import { RENAMED_FOLDER_NAME } from '../constans';
 
 describe('Download Folder', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
-  const downloadedFolderFullPath = join(downloadsFolder, `${RENAMED_FOLDER_NAME}.zip`);
+  const downloadedFolderFullPath = join(downloadsFolder, 'family.zip');
 
   beforeEach(() => {
     cy.clearLocalStorage();
@@ -11,10 +10,8 @@ describe('Download Folder', () => {
   });
 
   it('Should download a single Folder', () => {
-    cy.get('[data-test=file-list-folder]')
-      .contains(RENAMED_FOLDER_NAME)
-      .parents('[data-test=file-list-folder]')
-      .find('[data-test=download-folder-button]', { includeShadowDom: true })
+    cy.get('[data-test=file-list-folder]').contains('Family').rightclick({ force: true });
+    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
       .click({ force: true })
       .then(() => {
         cy.readFile(downloadedFolderFullPath);

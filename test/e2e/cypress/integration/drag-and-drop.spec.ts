@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { FILE_ITEM_SELECTOR } from '../constans';
 
 describe('Drag and drop', () => {
   const filename = 'example.txt';
@@ -9,12 +10,21 @@ describe('Drag and drop', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
+    cy.get('.infinite-scroll-component').then((element) => {
+      if (element.text().includes(filename)) {
+        cy.removeExampleFile();
+      }
+    });
   });
 
   it('Should upload a single file to the root folder', () => {
     cy.get('[data-test=drag-and-drop-area]').attachFile(filename, { subjectType: 'drag-n-drop' });
 
-    cy.get('[data-test=download-file-button]').click({ force: true })
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(10000);
+    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
+    cy.contains('div[id*="headlessui-menu-item"] div', 'Download')
+      .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {
           cy.readFile(downloadedFileFullPath).should('eq', originalFile);
@@ -25,5 +35,4 @@ describe('Drag and drop', () => {
   after(() => {
     cy.task('removeFile', downloadedFileFullPath);
   });
-
 });
