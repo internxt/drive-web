@@ -9,13 +9,32 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
 import signup from './signup';
 
-const SignupAuth = () => {
+const textContent = {
+  email: 'Correo',
+  password: 'Contraseña',
+  emailEmpty: 'El correo no puede estar vacío',
+  passwordEmpty: 'La contraseña no puede estar vacía',
+  buttonText: 'Obtén la oferta',
+  legal: {
+    line1: 'Al crear una cuenta aceptas',
+    line2: 'los términos de servicio y la política de privacidad',
+  },
+};
+
+export const SignupComponent = ({
+  buttonColor,
+  textContent,
+  appRedirect = false,
+}: {
+  buttonColor?: string;
+  textContent: any;
+  appRedirect?: boolean;
+}) => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
   const [error, setError] = useState('');
 
-  // FILTER MESSAGES
   const { doRegister } = useSignUp('activate');
 
   const {
@@ -29,32 +48,33 @@ const SignupAuth = () => {
       password: '',
     },
   });
+
   return (
-    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, setError))}>
+    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, appRedirect, setError))}>
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
         <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
           <div className="flex w-full">
             <TextInput
-              placeholder={'Correo'}
+              placeholder={textContent.email}
               label="email"
               type="email"
               className={'w-full'}
               register={register}
               autoComplete="off"
-              minLength={{ value: 1, message: 'El correo no puede estar vacío' }}
+              minLength={{ value: 1, message: textContent.emailEmpty }}
               error={errors.email}
             />
           </div>
 
           <div className="flex w-full">
             <PasswordInput
-              placeholder={'Contraseña'}
+              placeholder={textContent.password}
               label="password"
               className={'w-full'}
               register={register}
               autoComplete="new-password"
               required={true}
-              minLength={{ value: 1, message: 'La contraseña no puede estar vacía' }}
+              minLength={{ value: 1, message: textContent.passwordEmpty }}
               error={errors.password}
             />
           </div>
@@ -74,12 +94,9 @@ const SignupAuth = () => {
             <button
               type="submit"
               disabled={loading}
-              className={
-                'focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg px-0 py-2.5 text-lg text-white transition duration-100 focus-visible:bg-orange-dark active:bg-orange-dark disabled:cursor-not-allowed disabled:text-white/75 sm:text-base'
-              }
-              style={{
-                backgroundColor: '#F26122',
-              }}
+              className={`focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg ${
+                buttonColor || 'bg-pcComponentes-orange focus-visible:bg-orange-dark active:bg-orange-dark'
+              }  px-0 py-2.5 text-lg text-white transition duration-100  disabled:cursor-not-allowed disabled:text-white/75 sm:text-base`}
             >
               {loading ? (
                 <svg
@@ -97,20 +114,20 @@ const SignupAuth = () => {
                 </svg>
               ) : (
                 <div className="flex flex-row items-center space-x-1.5 rounded-lg text-white">
-                  <span>Obtén la oferta</span>
+                  <span>{textContent.buttonText}</span>
                 </div>
               )}
             </button>
           </div>
 
           <span className="w-full text-xs text-gray-50 sm:text-left">
-            <span>Al crear una cuenta aceptas</span>{' '}
+            <span>{textContent.legal.line1}</span>{' '}
             <a
               href="https://internxt.com/legal"
               target="_blank"
               className="hover:text-gray-60 hover:underline active:text-gray-80"
             >
-              los términos de servicio y la política de privacidad.
+              {textContent.legal.line2}
             </a>
             <span>{'.'}</span>
           </span>
@@ -135,7 +152,7 @@ export default function Auth(): JSX.Element {
               Almacena tus archivos con total privacidad
             </p>
           </div>
-          <SignupAuth />
+          <SignupComponent textContent={textContent} />
         </div>
         <div
           className="flex h-full flex-col items-center space-y-6 rounded-lg py-9 px-6 text-center"
