@@ -1,3 +1,4 @@
+import { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
 import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/money.service';
@@ -46,6 +47,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       await paymentService.cancelSubscription();
       await dispatch(planThunks.initializeThunk()).unwrap();
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
+      trackCanceledSubscription({ feedback });
     } catch (err) {
       console.error(err);
       notificationsService.show({

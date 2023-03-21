@@ -41,6 +41,10 @@ export namespace TrackingPlan {
     bucket_id: number;
   }
 
+  export interface CanceledSubscriptionProperties {
+    feedback: string;
+  }
+
   export enum EventNames {
     FileUploadStart = 'File Upload Started',
     FileUploadError = 'File Upload Error',
@@ -50,5 +54,6 @@ export namespace TrackingPlan {
     FileDownloadError = 'File Download Error',
     FileDownloadStarted = 'File Download Started',
     FileDownloadAborted = 'File Download Aborted',
+    CanceledSubscription = 'Subscription Canceled',
   }
 }
