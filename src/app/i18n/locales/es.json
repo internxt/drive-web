@@ -45,7 +45,6 @@
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
     "searchBar": "Buscar en esta carpeta",
-
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -182,7 +181,6 @@
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
-
               "email": "Correo electrónico",
               "resendEmail": "Reenviar correo de verificación"
             },
@@ -207,7 +205,31 @@
           "label": "Facturación",
           "currentPlan": "Plan actual",
           "subsRenew": "La suscripción se renueva en {{daysUntilRenewal}} días",
-          "cancelSubscription": "Cancelar suscripción",
+          "cancelSubscriptionModal": {
+            "title": "Cancelar suscripción",
+            "description": "Está a punto de cancelar su plan Internxt de {{currentPlanName}}. Al cancelar su plan, será degradado al plan gratuito Internxt {{freePlanName}}. Confirme su elección para continuar, por favor.",
+            "keepSubscription": "Mantener suscripción",
+            "continue": "Continuar",
+            "cancelSubscription": "Cancelar suscripción",
+            "infoBox": {
+              "titleCurrent": "Actual",
+              "titleNew": "Nuevo",
+              "year": "año",
+              "month": "mes",
+              "free": "Gratis",
+              "reachedFreeLimit": "Has superado el límite de {{freePlanName}}",
+              "reachedFreeLimitDescription": "Como actualmente estás usando {{currentUsage}} de espacio, Internxt Drive dejará de sincronizar tus ficheros, y tampoco serás capaz de añadir nuevos"
+            },
+            "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
+            "feedback": {
+              "placeholder": "Denos su opinión",
+              "tooExpensive": "Demasiado caro",
+              "lackOfFeatures": "Falta de funcionalidades",
+              "wantTryAnother": "Quiero probar otro proveedor de almacenamiento",
+              "justTrying": "Solo estaba probando Internxt Drive",
+              "other": "Otro"
+            }
+          },
           "billed": "Facturación {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Método de pago",
@@ -248,7 +270,6 @@
             "business": "Cambiar a Planes para Empresas"
           },
           "viewAllFeatures": "View all features",
-
           "card": {
             "annually": "{{amount}}€ facturado al año",
             "monthly": "{{amount}} €/mes",
