@@ -49,6 +49,7 @@ export default function UsageDetails({
   };
 
   const totalUsedInBytes = products.reduce((prev, current) => prev + current.usageInBytes, 0);
+  const maxBytesLimit = Math.max(totalUsedInBytes, planLimitInBytes);
   const percentageUsed = Math.round((totalUsedInBytes / planLimitInBytes) * 100);
 
   products.sort((a, b) => b.usageInBytes - a.usageInBytes);
@@ -76,13 +77,13 @@ export default function UsageDetails({
             popsFrom="top"
           >
             <div
-              style={{ width: `${Math.max((product.usageInBytes / planLimitInBytes) * barWidth, 12)}px` }}
+              style={{ width: `${Math.max((product.usageInBytes / maxBytesLimit) * barWidth, 12)}px` }}
               className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
             />
           </Tooltip>
         ))}
       </div>
-      <div className="mt-2 flex space-x-4 ">
+      <div className="mt-2 flex space-x-4">
         {products.map((product) => (
           <div key={product.name} className="flex items-center">
             <div className={`${colorMapping[product.color]} h-2.5 w-2.5 rounded-full`} />
