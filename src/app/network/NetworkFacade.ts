@@ -184,7 +184,7 @@ export class NetworkFacade {
 
         return {
           hash: fileHash,
-          parts: fileParts,
+          parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
         };
       },
       options.parts,
