@@ -28,7 +28,7 @@ export function uploadFileBlob(
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
   },
-): Promise<void> {
+): Promise<XMLHttpRequest> {
   const uploadRequest = new XMLHttpRequest();
 
   opts.abortController?.signal.addEventListener(
@@ -46,14 +46,14 @@ export function uploadFileBlob(
   uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
   uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
 
-  const uploadFinishedPromise = new Promise<void>((resolve, reject) => {
+  const uploadFinishedPromise = new Promise<XMLHttpRequest>((resolve, reject) => {
     uploadRequest.onload = () => {
       if (uploadRequest.status !== 200) {
         return reject(
           new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
         );
       }
-      resolve();
+      resolve(uploadRequest);
     };
     uploadRequest.onerror = reject;
     uploadRequest.onabort = () => reject(new Error('Upload aborted'));
@@ -81,7 +81,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     pass: params.creds.pass,
   });
 
-  return new NetworkFacade(
+  const facade = new NetworkFacade(
     Network.client(
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
@@ -93,12 +93,34 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
         userId: auth.password,
       },
     ),
-  ).upload(bucketId, params.mnemonic, file, {
+  );
+
+  let uploadPromise: Promise<string>;
+
+  const minimumMultipartThreshold = 50 * 1024 * 1024;
+  const useMultipart = params.filesize > minimumMultipartThreshold;
+  const partSize = 15 * 1024 * 1024;
+
+  console.time('multipart-upload');
+
+  if (useMultipart) {
+    uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
     uploadingCallback: params.progressCallback,
     abortController: params.abortController,
-  }).catch((err: ErrorWithContext) => {
+      parts: Math.ceil(params.filesize / partSize),
+    });
+  } else {
+    uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: params.abortController,
+    });
+  }
+
+  return uploadPromise.catch((err: ErrorWithContext) => {
     Sentry.captureException(err, { extra: err.context });
 
     throw err;
+  }).finally(() => {
+    console.timeEnd('multipart-upload');
   });
 }
