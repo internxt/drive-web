@@ -80,7 +80,7 @@ const Step1 = ({
 }): JSX.Element => {
   const { translate } = useTranslationContext();
 
-  const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage < currentPlanLimit;
+  const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage >= currentPlanLimit;
 
   return (
     <>
