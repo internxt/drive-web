@@ -2,17 +2,22 @@ import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { validateMnemonic } from 'bip39';
-import { uploadFile } from '@internxt/sdk/dist/network/upload';
+import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 
-import { getEncryptedFile } from './crypto';
+import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
+import { queue, QueueObject } from 'async';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
+}
+
+interface UploadMultipartOptions extends UploadOptions {
+  parts: number;
 }
 
 interface DownloadOptions {
@@ -85,6 +90,107 @@ export class NetworkFacade {
       }
     );
   }
+
+  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
+    let fileReadable: ReadableStream<Uint8Array>;
+
+    const partsUploadedBytes: Record<number, number> = {};
+
+    function notifyProgress(partId: number, uploadedBytes: number) {
+      partsUploadedBytes[partId] = uploadedBytes;
+
+      options.uploadingCallback(
+        file.size, 
+        Object.values(partsUploadedBytes).reduce((a,p) => a+p, 0)
+      );
+    }
+
+    const limitConcurrency = 6;
+
+    interface UploadTask {
+      contentToUpload: Blob;
+      urlToUpload: string;
+      index: number;
+    }
+
+    const fileParts: { PartNumber: number; ETag: string }[] = [];
+
+    const worker = async (upload: UploadTask) => {
+      console.log(
+        'Uploading chunk of %s bytes to url %s, part %s', 
+        upload.contentToUpload.size, 
+        upload.urlToUpload, 
+        upload.index
+      );
+
+      const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+        progressCallback: (_, uploadedBytes) => {
+          notifyProgress(upload.index, uploadedBytes);
+        },
+        abortController: options.abortController,
+      });
+
+      const ETag = response.getResponseHeader('etag');
+
+      if (!ETag) {
+        throw new Error('ETag header was not returned');
+      }
+      fileParts.push({
+        ETag,
+        PartNumber: upload.index + 1,
+      });
+    };
+
+    const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(worker, limitConcurrency);
+
+    let currentConcurrency = 0;
+
+    return uploadMultipartFile(
+      this.network,
+      this.cryptoLib,
+      bucketId,
+      mnemonic,
+      file.size,
+      async (algorithm, key, iv) => {
+        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
+        fileReadable = encryptStreamInParts(file, cipher, options.parts);
+      },
+      async (urls: string[]) => {
+        let partIndex = 0;
+
+        const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
+          while (currentConcurrency == limitConcurrency) {
+            await new Promise(r => setTimeout(r, 300));
+          }
+          currentConcurrency++;
+
+          uploadQueue.push({
+            contentToUpload: blob,
+            urlToUpload: urls[partIndex],
+            index: partIndex++,
+          }, (err) => {
+            if (err) {
+              console.error('Error uploading file part', err);
+            }
+            currentConcurrency--;
+          });  
+          
+          blob = new Blob([]);
+        });
+
+        while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
+          await uploadQueue.drain();
+        }
+
+        return {
+          hash: fileHash,
+          parts: fileParts,
+        };
+      },
+      options.parts,
+    );
+  }
+
 
   async download(
     bucketId: string,
