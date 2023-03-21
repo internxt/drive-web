@@ -44,6 +44,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
     options = Object.assign({ withNotification: true }, options || {});
+    const uploadFolderAbortController = new AbortController();
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
@@ -58,6 +59,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       showNotification: !!options.withNotification,
       cancellable: true,
       stop: async () => {
+        uploadFolderAbortController.abort();
         const relatedTasks = tasksService.getTasks({ relatedTaskId: requestId });
         const promises: Promise<void>[] = [];
 
@@ -90,52 +92,31 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const concurrency = 6;
-          const concurrentBytesLimit = 20 * 1024 * 1024;
+          await dispatch(
+            uploadItemsParallelThunk({
+              files: level.childrenFiles,
+              parentFolderId: createdFolder.id,
+              options: {
+                relatedTaskId: taskId,
+                showNotifications: false,
+                showErrors: false,
+                abortController: uploadFolderAbortController,
+              },
+              filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
+            }),
+          )
+            .unwrap()
+            .then(() => {
+              alreadyUploaded += level.childrenFiles.length;
 
-          const uploadPacks: File[][] = [[]];
-          let accumulatedBytes = 0;
-          let currentPackFiles = 0;
-
-          for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            const concurrencyBytesLimitNotReached =
-              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
-            const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
-
-            if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
-              uploadPacks[j].push(level.childrenFiles[i]);
-            } else {
-              accumulatedBytes = 0;
-              currentPackFiles = 0;
-
-              uploadPacks[++j] = [];
-              uploadPacks[j].push(level.childrenFiles[i]);
-            }
-            currentPackFiles += 1;
-            accumulatedBytes += level.childrenFiles[i].size;
-          }
-
-          for (const pack of uploadPacks) {
-            await dispatch(
-              uploadItemsParallelThunk({
-                files: pack,
-                parentFolderId: createdFolder.id,
-                options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
-              }),
-            )
-              .unwrap()
-              .then(() => {
-                alreadyUploaded += pack.length;
-
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
+                },
               });
-          }
+            });
         }
 
         const childrenFolders = [] as IRoot[];
@@ -248,6 +229,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       root.folderId = currentFolderId;
 
       while (levels.length > 0) {
+        if (uploadFolderAbortController.signal.aborted) return;
+
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
@@ -260,61 +243,32 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
-          const concurrency = 6;
-          const concurrentBytesLimit = 20 * 1024 * 1024;
-
-          const uploadPacks: File[][] = [[]];
-          let accumulatedBytes = 0;
-          let currentPackFiles = 0;
-
-          for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-            if (uploadFolderAbortController.signal.aborted) return;
-            const concurrencyBytesLimitNotReached =
-              accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
-            const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
-
-            if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
-              uploadPacks[j].push(level.childrenFiles[i]);
-            } else {
-              accumulatedBytes = 0;
-              currentPackFiles = 0;
-
-              uploadPacks[++j] = [];
-              uploadPacks[j].push(level.childrenFiles[i]);
-            }
-            currentPackFiles += 1;
-            accumulatedBytes += level.childrenFiles[i].size;
-          }
-
-          for (const pack of uploadPacks) {
-            if (uploadFolderAbortController.signal.aborted) return;
-            await dispatch(
-              uploadItemsParallelThunkNoCheck({
-                files: pack,
-                parentFolderId: createdFolder.id,
-                options: {
-                  relatedTaskId: taskId,
-                  showNotifications: false,
-                  showErrors: false,
-                  abortController: uploadFolderAbortController,
+          if (uploadFolderAbortController.signal.aborted) return;
+          await dispatch(
+            uploadItemsParallelThunkNoCheck({
+              files: level.childrenFiles,
+              parentFolderId: createdFolder.id,
+              options: {
+                relatedTaskId: taskId,
+                showNotifications: false,
+                showErrors: false,
+                abortController: uploadFolderAbortController,
+              },
+              filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
+            }),
+          )
+            .unwrap()
+            .then(() => {
+              alreadyUploaded += level.childrenFiles.length;
+              if (uploadFolderAbortController.signal.aborted) return;
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: alreadyUploaded / itemsUnderRoot,
                 },
-              }),
-            )
-              .unwrap()
-              .then(() => {
-                alreadyUploaded += pack.length;
-                // Could be possible that we stopped the folder upload while an item was finishing
-                // we prevent updating the task with this
-                if (uploadFolderAbortController.signal.aborted) return;
-                tasksService.updateTask({
-                  taskId: taskId,
-                  merge: {
-                    status: TaskStatus.InProcess,
-                    progress: alreadyUploaded / itemsUnderRoot,
-                  },
-                });
               });
-          }
+            });
         }
 
         const childrenFolders = [] as IRoot[];
