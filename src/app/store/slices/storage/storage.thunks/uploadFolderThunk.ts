@@ -267,58 +267,6 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
                 },
-                // =======
-                //           const uploadPacks: File[][] = [[]];
-                //           let accumulatedBytes = 0;
-                //           let currentPackFiles = 0;
-
-                //           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
-                //             if (uploadFolderAbortController.signal.aborted) return;
-                //             const concurrencyBytesLimitNotReached =
-                //               accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
-                //             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
-
-                //             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
-                //               uploadPacks[j].push(level.childrenFiles[i]);
-                //             } else {
-                //               accumulatedBytes = 0;
-                //               currentPackFiles = 0;
-
-                //               uploadPacks[++j] = [];
-                //               uploadPacks[j].push(level.childrenFiles[i]);
-                //             }
-                //             currentPackFiles += 1;
-                //             accumulatedBytes += level.childrenFiles[i].size;
-                //           }
-
-                //           for (const pack of uploadPacks) {
-                //             if (uploadFolderAbortController.signal.aborted) return;
-                //             await dispatch(
-                //               uploadItemsParallelThunkNoCheck({
-                //                 files: pack,
-                //                 parentFolderId: createdFolder.id,
-                //                 options: {
-                //                   relatedTaskId: taskId,
-                //                   showNotifications: false,
-                //                   showErrors: false,
-                //                   abortController: uploadFolderAbortController,
-                //                 },
-                //               }),
-                //             )
-                //               .unwrap()
-                //               .then(() => {
-                //                 alreadyUploaded += pack.length;
-                //                 // Could be possible that we stopped the folder upload while an item was finishing
-                //                 // we prevent updating the task with this
-                //                 if (uploadFolderAbortController.signal.aborted) return;
-                //                 tasksService.updateTask({
-                //                   taskId: taskId,
-                //                   merge: {
-                //                     status: TaskStatus.InProcess,
-                //                     progress: alreadyUploaded / itemsUnderRoot,
-                //                   },
-                //                 });
-                // >>>>>>> master
               });
             });
         }
