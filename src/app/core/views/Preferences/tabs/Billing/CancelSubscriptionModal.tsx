@@ -1,10 +1,10 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { FreeStoragePlan } from 'app/drive/types';
 import { ArrowRight } from 'phosphor-react';
-import sizeService from 'app/drive/services/size.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import Button from '../../../../../shared/components/Button/Button';
+import Modal from '../../../../../shared/components/Modal';
+import { FreeStoragePlan } from '../../../../../drive/types';
+import sizeService from '../../../../../drive/services/size.service';
 
 const CancelSubscriptionModal = ({
   isOpen,

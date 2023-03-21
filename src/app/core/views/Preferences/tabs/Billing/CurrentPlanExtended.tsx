@@ -1,4 +1,7 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import moneyService from '../../../../../payment/services/money.service';
+import { RenewalPeriod } from '../../../../../payment/types';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -10,6 +13,7 @@ import { useAppDispatch } from '../../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
+import CancelSubscriptionModal from './CancelSubscriptionModal';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);

@@ -1,5 +1,5 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { useContext } from 'react';
 import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
