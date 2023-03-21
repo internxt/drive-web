@@ -95,6 +95,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               files: level.childrenFiles,
               parentFolderId: createdFolder.id,
               options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),
           )
             .unwrap()
@@ -235,6 +236,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               files: level.childrenFiles,
               parentFolderId: createdFolder.id,
               options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),
           )
             .unwrap()

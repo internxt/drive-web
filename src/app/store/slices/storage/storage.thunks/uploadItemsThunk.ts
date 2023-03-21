@@ -26,6 +26,7 @@ interface UploadItemsPayload {
   files: File[];
   parentFolderId: number;
   options?: Partial<UploadItemsThunkOptions>;
+  filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
 }
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
@@ -220,7 +221,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
  */
 export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+  async ({ files, parentFolderId, options, filesProgress }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
@@ -281,7 +282,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       parentFolderId,
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController, options);
+    await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
 
     options.onSuccess?.();
 
@@ -299,7 +300,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
 export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+  async ({ files, parentFolderId, options, filesProgress }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
@@ -353,7 +354,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       parentFolderId,
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController, options);
+    await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
 
     options.showNotifications = true;
     options.onSuccess?.();

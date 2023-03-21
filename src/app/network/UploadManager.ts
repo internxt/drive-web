@@ -27,8 +27,9 @@ export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
   abortController?: AbortController,
   options?: Options,
+  relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
 ): Promise<DriveFileData[]> => {
-  const uploadManager = new UploadManager(files, abortController, options);
+  const uploadManager = new UploadManager(files, abortController, options, relatedTaskProgress);
   return uploadManager.run();
 };
 
@@ -81,13 +82,13 @@ class UploadManager {
 
       uploadFile(
         fileData.userEmail,
-          {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            content: file.content,
-            parentFolderId: file.parentFolderId,
-          },
+        {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          content: file.content,
+          parentFolderId: file.parentFolderId,
+        },
         false,
         (uploadProgress) => {
           this.uploadsProgress[uploadId] = uploadProgress;
@@ -106,6 +107,18 @@ class UploadManager {
       )
         .then((driveFileData) => {
           const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
+
+          if (this.relatedTaskProgress && this.options?.relatedTaskId) {
+            this.relatedTaskProgress.filesUploaded += 1;
+
+            tasksService.updateTask({
+              taskId: this.options?.relatedTaskId,
+              merge: {
+                status: TaskStatus.InProcess,
+                progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
+              },
+            });
+          }
 
           tasksService.updateTask({
             taskId: taskId,
@@ -145,13 +158,19 @@ class UploadManager {
 
   private abortController?: AbortController;
   private items: UploadManagerFileParams[];
-
   private options?: Options;
+  private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
 
-  constructor(items: UploadManagerFileParams[], abortController?: AbortController, options?: Options) {
+  constructor(
+    items: UploadManagerFileParams[],
+    abortController?: AbortController,
+    options?: Options,
+    relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
+  ) {
     this.items = items;
     this.abortController = abortController;
     this.options = options;
+    this.relatedTaskProgress = relatedTaskProgress;
   }
 
   private classifyFilesBySize(
