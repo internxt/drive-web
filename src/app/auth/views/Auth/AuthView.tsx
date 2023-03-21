@@ -11,9 +11,9 @@ import signup from './signup';
 
 const textContent = {
   email: 'Correo',
-  password: 'Contraseña',
+  passwordLabel: 'Contraseña',
   emailEmpty: 'El correo no puede estar vacío',
-  passwordEmpty: 'La contraseña no puede estar vacía',
+  passwordLabelEmpty: 'La contraseña no puede estar vacía',
   buttonText: 'Obtén la oferta',
   legal: {
     line1: 'Al crear una cuenta aceptas',
@@ -68,13 +68,13 @@ export const SignupComponent = ({
 
           <div className="flex w-full">
             <PasswordInput
-              placeholder={textContent.password}
+              placeholder={textContent.passwordLabel}
               label="password"
               className={'w-full'}
               register={register}
               autoComplete="new-password"
               required={true}
-              minLength={{ value: 1, message: textContent.passwordEmpty }}
+              minLength={{ value: 1, message: textContent.passwordLabelEmpty }}
               error={errors.password}
             />
           </div>

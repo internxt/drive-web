@@ -2,9 +2,9 @@ import { SignupComponent } from './AuthView';
 
 const textContent = {
   email: 'Email',
-  password: 'Password',
+  passwordLabel: 'Password',
   emailEmpty: 'Email cannot be empty',
-  passwordEmpty: 'Password cannot be empty',
+  passwordLabelEmpty: 'Password cannot be empty',
   buttonText: 'Get up to 10GB - For free',
   legal: {
     line1: 'By creating an account you accept the',
