@@ -13,6 +13,9 @@ import Section from '../../components/Section';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState(false);
+  const [cancellingSubscription, setCancellingSubscription] = useState(false);
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
   const userSubscription = plan.subscription;
@@ -33,11 +36,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     subscriptionExtension = { daysUntilRenewal, interval, renewDate };
   }
 
-  const [cancellingSubscription, setCancellingSubscription] = useState(false);
-
-  const dispatch = useAppDispatch();
-
-  async function cancelSubscription() {
+  async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
@@ -53,6 +52,40 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       setCancellingSubscription(false);
     }
   }
+
+  const getPlanName = (storagePlan: StoragePlan | null) => {
+    return storagePlan?.simpleName || FreeStoragePlan.simpleName;
+  };
+
+  const getPlanLimit = (storagePlan: StoragePlan | null) => {
+    return storagePlan?.storageLimit || FreeStoragePlan.storageLimit;
+  };
+
+  const getPlanInfo = (storagePlan: StoragePlan | null) => {
+    if (storagePlan) {
+      if (storagePlan.paymentInterval === RenewalPeriod.Annually) {
+        return (
+          moneyService.getCurrencySymbol(storagePlan.currency) +
+          storagePlan.price +
+          '/' +
+          translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.year')
+        );
+      } else {
+        return (
+          moneyService.getCurrencySymbol(storagePlan.currency) +
+          storagePlan.monthlyPrice +
+          '/' +
+          translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.month')
+        );
+      }
+    } else {
+      return translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.free');
+    }
+  };
+
+  const getCurrentUsage = () => {
+    return plan.usageDetails?.total || -1;
+  };
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
@@ -78,11 +111,25 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                 </p>
                 <button
                   disabled={cancellingSubscription}
-                  onClick={cancelSubscription}
+                  onClick={() => {
+                    setIsCancelSubscriptionModalOpen(true);
+                  }}
                   className="mt-2 text-xs text-gray-60"
                 >
-                  {translate('views.account.tabs.billing.cancelSubscription')}
+                  {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
                 </button>
+                <CancelSubscriptionModal
+                  isOpen={isCancelSubscriptionModalOpen}
+                  onClose={() => {
+                    setIsCancelSubscriptionModalOpen(false);
+                  }}
+                  cancellingSubscription={cancellingSubscription}
+                  cancelSubscription={cancelSubscription}
+                  currentPlanName={getPlanName(plan.individualPlan || plan.teamPlan)}
+                  currentPlanInfo={getPlanInfo(plan.individualPlan || plan.teamPlan)}
+                  currentPlanLimit={getPlanLimit(plan.individualPlan || plan.teamPlan)}
+                  currentUsage={getCurrentUsage()}
+                />
               </div>
             )}
           </>
