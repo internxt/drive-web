@@ -64,10 +64,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     return storagePlan?.simpleName || FreeStoragePlan.simpleName;
   };
 
-  const getPlanLimit = (storagePlan: StoragePlan | null) => {
-    return storagePlan?.storageLimit || FreeStoragePlan.storageLimit;
-  };
-
   const getPlanInfo = (storagePlan: StoragePlan | null) => {
     if (storagePlan) {
       if (storagePlan.paymentInterval === RenewalPeriod.Annually) {
@@ -134,7 +130,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   cancelSubscription={cancelSubscription}
                   currentPlanName={getPlanName(plan.individualPlan || plan.teamPlan)}
                   currentPlanInfo={getPlanInfo(plan.individualPlan || plan.teamPlan)}
-                  currentPlanLimit={getPlanLimit(plan.individualPlan || plan.teamPlan)}
                   currentUsage={getCurrentUsage()}
                 />
               </div>

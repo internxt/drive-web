@@ -11,7 +11,6 @@ const CancelSubscriptionModal = ({
   onClose,
   currentPlanName,
   currentPlanInfo,
-  currentPlanLimit,
   currentUsage,
   cancellingSubscription,
   cancelSubscription,
@@ -20,7 +19,6 @@ const CancelSubscriptionModal = ({
   onClose: () => void;
   currentPlanName: string;
   currentPlanInfo: string;
-  currentPlanLimit: number;
   currentUsage: number;
   cancellingSubscription: boolean;
   cancelSubscription: (feedback: string) => void;
@@ -34,8 +32,6 @@ const CancelSubscriptionModal = ({
     }
   }, [isOpen]);
 
-  console.log({ currentUsage });
-
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h1 className="text-2xl font-medium text-gray-80">
@@ -48,7 +44,6 @@ const CancelSubscriptionModal = ({
           onClose={onClose}
           setStep={setStep}
           currentPlanInfo={currentPlanInfo}
-          currentPlanLimit={currentPlanLimit}
           currentUsage={currentUsage}
         />
       ) : (
@@ -66,21 +61,19 @@ const CancelSubscriptionModal = ({
 const Step1 = ({
   currentPlanName,
   currentPlanInfo,
-  currentPlanLimit,
   currentUsage,
   setStep,
   onClose,
 }: {
   currentPlanName: string;
   currentPlanInfo: string;
-  currentPlanLimit: number;
   currentUsage: number;
   setStep: Dispatch<SetStateAction<2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
 
-  const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage >= currentPlanLimit;
+  const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage >= FreeStoragePlan.storageLimit;
 
   return (
     <>
