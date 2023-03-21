@@ -19,6 +19,7 @@ interface UploadItemsThunkOptions {
   relatedTaskId: string;
   showNotifications: boolean;
   showErrors: boolean;
+  abortController?: AbortController;
   onSuccess: () => void;
 }
 
@@ -102,8 +103,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
-    const abortController = new AbortController();
-
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
       userEmail: user.email,
@@ -117,9 +116,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
           }),
         );
       },
+      abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController);
+    await uploadFileWithManager(filesToUploadData);
 
     options.onSuccess?.();
 
@@ -142,7 +142,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
-    const abortController = new AbortController();
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
@@ -198,9 +197,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
           }),
         );
       },
+      abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController);
+    await uploadFileWithManager(filesToUploadData);
 
     options.onSuccess?.();
     dispatch(planThunks.fetchUsageThunk());
@@ -274,7 +274,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
-    const abortController = new AbortController();
+    const abortController = options?.abortController || new AbortController();
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
@@ -305,7 +305,8 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
-    const abortController = new AbortController();
+
+    const abortController = options?.abortController || new AbortController();
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 

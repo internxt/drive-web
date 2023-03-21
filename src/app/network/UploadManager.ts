@@ -21,6 +21,7 @@ type UploadManagerFileParams = {
   userEmail: string;
   parentFolderId: number;
   onFinishUploadFile?: (driveItemData: DriveFileData) => void;
+  abortController?: AbortController;
 };
 
 export const uploadFileWithManager = (
@@ -63,6 +64,8 @@ class UploadManager {
   private uploadsProgress: Record<string, number> = {};
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
+      if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) return;
+
       const uploadId = randomBytes(10).toString('hex');
       const taskId = fileData.taskId;
       this.uploadsProgress[uploadId] = 0;
@@ -75,7 +78,8 @@ class UploadManager {
         merge: {
           status: TaskStatus.Encrypting,
           stop: async () => {
-            this.abortController?.abort();
+            if (this.abortController) this.abortController?.abort();
+            else fileData?.abortController?.abort();
           },
         },
       });
@@ -103,9 +107,12 @@ class UploadManager {
             });
           }
         },
-        this.abortController,
+        this.abortController ?? fileData.abortController,
       )
         .then((driveFileData) => {
+          if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
+            throw Error('Task cancelled');
+
           const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
 
           if (this.relatedTaskProgress && this.options?.relatedTaskId) {
@@ -141,7 +148,7 @@ class UploadManager {
             this.uploadQueue.kill();
           }
 
-          if (this.abortController?.signal.aborted) {
+          if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
             return tasksService.updateTask({
               taskId: taskId,
               merge: { status: TaskStatus.Cancelled },
@@ -205,7 +212,8 @@ class UploadManager {
           showNotification: this.options?.showNotifications ?? true,
           cancellable: true,
           stop: async () => {
-            this.abortController?.abort();
+            if (this.abortController) this.abortController?.abort();
+            else file?.abortController?.abort();
           },
         });
 
@@ -216,7 +224,7 @@ class UploadManager {
       const filesReferences: DriveFileData[] = [];
 
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
-        if (this.abortController?.signal.aborted) return;
+        if (this.abortController?.signal.aborted) return [];
 
         if (this.options?.relatedTaskId)
           tasksService.updateTask({

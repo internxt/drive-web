@@ -40,6 +40,12 @@
       "exact": true
     },
     {
+      "id": "signup-blog",
+      "layout": "empty",
+      "path": "/signup-blog",
+      "exact": true
+    },
+    {
       "id": "buttonAuth",
       "layout": "empty",
       "path": "/buttonAuth",
@@ -87,6 +93,7 @@
       "auth": true,
       "hideSearch": true
     },
+
     {
       "id": "trash",
       "layout": "header-and-sidenav",

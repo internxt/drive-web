@@ -44,6 +44,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
     options = Object.assign({ withNotification: true }, options || {});
+    const uploadFolderAbortController = new AbortController();
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
@@ -58,6 +59,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       showNotification: !!options.withNotification,
       cancellable: true,
       stop: async () => {
+        uploadFolderAbortController.abort();
         const relatedTasks = tasksService.getTasks({ relatedTaskId: requestId });
         const promises: Promise<void>[] = [];
 
@@ -94,7 +96,12 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
             uploadItemsParallelThunk({
               files: level.childrenFiles,
               parentFolderId: createdFolder.id,
-              options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              options: {
+                relatedTaskId: taskId,
+                showNotifications: false,
+                showErrors: false,
+                abortController: uploadFolderAbortController,
+              },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),
           )
@@ -185,9 +192,10 @@ function getNextNewName(filename: string, i: number): string {
 
 export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
+  async ({ root, currentFolderId, options }, { dispatch }) => {
     options = Object.assign({ withNotification: true }, options || {});
 
+    const uploadFolderAbortController = new AbortController();
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
     const levels = [root];
@@ -198,7 +206,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       showNotification: !!options.withNotification,
       cancellable: true,
       stop: async () => {
-        const relatedTasks = tasksService.getTasks({ relatedTaskId: requestId });
+        uploadFolderAbortController.abort();
+        const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
         const promises: Promise<void>[] = [];
 
         // Cancels related tasks
@@ -209,8 +218,9 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         // Deletes the root folder
         if (rootFolderItem) {
           promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+          const storageClient = SdkFactory.getInstance().createStorageClient();
+          promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
         }
-
         await Promise.all(promises);
       },
     });
@@ -219,6 +229,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       root.folderId = currentFolderId;
 
       while (levels.length > 0) {
+        if (uploadFolderAbortController.signal.aborted) return;
+
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
@@ -231,24 +243,82 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         rootFolderItem = createdFolder;
 
         if (level.childrenFiles) {
+          if (uploadFolderAbortController.signal.aborted) return;
           await dispatch(
             uploadItemsParallelThunkNoCheck({
               files: level.childrenFiles,
               parentFolderId: createdFolder.id,
-              options: { relatedTaskId: taskId, showNotifications: false, showErrors: false },
+              options: {
+                relatedTaskId: taskId,
+                showNotifications: false,
+                showErrors: false,
+                abortController: uploadFolderAbortController,
+              },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),
           )
             .unwrap()
             .then(() => {
               alreadyUploaded += level.childrenFiles.length;
-
+              if (uploadFolderAbortController.signal.aborted) return;
               tasksService.updateTask({
                 taskId: taskId,
                 merge: {
                   status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
                 },
+                // =======
+                //           const uploadPacks: File[][] = [[]];
+                //           let accumulatedBytes = 0;
+                //           let currentPackFiles = 0;
+
+                //           for (let i = 0, j = 0; i < level.childrenFiles.length; i++) {
+                //             if (uploadFolderAbortController.signal.aborted) return;
+                //             const concurrencyBytesLimitNotReached =
+                //               accumulatedBytes + level.childrenFiles[i].size <= concurrentBytesLimit;
+                //             const concurrencyLimitNotReached = currentPackFiles + 1 <= concurrency;
+
+                //             if (concurrencyBytesLimitNotReached && concurrencyLimitNotReached) {
+                //               uploadPacks[j].push(level.childrenFiles[i]);
+                //             } else {
+                //               accumulatedBytes = 0;
+                //               currentPackFiles = 0;
+
+                //               uploadPacks[++j] = [];
+                //               uploadPacks[j].push(level.childrenFiles[i]);
+                //             }
+                //             currentPackFiles += 1;
+                //             accumulatedBytes += level.childrenFiles[i].size;
+                //           }
+
+                //           for (const pack of uploadPacks) {
+                //             if (uploadFolderAbortController.signal.aborted) return;
+                //             await dispatch(
+                //               uploadItemsParallelThunkNoCheck({
+                //                 files: pack,
+                //                 parentFolderId: createdFolder.id,
+                //                 options: {
+                //                   relatedTaskId: taskId,
+                //                   showNotifications: false,
+                //                   showErrors: false,
+                //                   abortController: uploadFolderAbortController,
+                //                 },
+                //               }),
+                //             )
+                //               .unwrap()
+                //               .then(() => {
+                //                 alreadyUploaded += pack.length;
+                //                 // Could be possible that we stopped the folder upload while an item was finishing
+                //                 // we prevent updating the task with this
+                //                 if (uploadFolderAbortController.signal.aborted) return;
+                //                 tasksService.updateTask({
+                //                   taskId: taskId,
+                //                   merge: {
+                //                     status: TaskStatus.InProcess,
+                //                     progress: alreadyUploaded / itemsUnderRoot,
+                //                   },
+                //                 });
+                // >>>>>>> master
               });
             });
         }
