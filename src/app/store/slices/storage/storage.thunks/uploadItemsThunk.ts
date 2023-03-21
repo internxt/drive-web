@@ -23,6 +23,7 @@ interface UploadItemsThunkOptions {
   relatedTaskId: string;
   showNotifications: boolean;
   showErrors: boolean;
+  abortController?: AbortController;
   onSuccess: () => void;
 }
 
@@ -604,7 +605,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const tasksIds: string[] = [];
-    const abortController = new AbortController();
+    const abortController = options?.abortController || new AbortController();
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
