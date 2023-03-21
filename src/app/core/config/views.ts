@@ -29,6 +29,7 @@ import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
 import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
+import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 
 const views: Array<{
   id: string;
@@ -39,6 +40,7 @@ const views: Array<{
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
+  { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.Recover, component: RecoverView },
