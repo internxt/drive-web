@@ -47,6 +47,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       await paymentService.cancelSubscription();
       await dispatch(planThunks.initializeThunk()).unwrap();
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
+      setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
     } catch (err) {
       console.error(err);
