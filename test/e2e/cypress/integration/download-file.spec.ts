@@ -10,16 +10,7 @@ describe('Download file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-
-    // Upload file
-    cy.get('.infinite-scroll-component').then((element) => {
-      if (element.text().includes(filename)) {
-        // do nothing
-      } else {
-        cy.get('input[type=file]').attachFile(filename);
-        cy.get('[data-test=file-name]').should('have.text', filename);
-      }
-    });
+    cy.uploadExampleFile();
   });
 
   it('Should download a single file', () => {

@@ -20,15 +20,7 @@ describe('Security account tab', () => {
     });
     cy.clearLocalStorage();
     cy.login();
-    // Upload file
-    cy.get('.infinite-scroll-component').then((element) => {
-      if (element.text().includes(filename)) {
-        // do nothing
-      } else {
-        cy.get('input[type=file]').attachFile(filename);
-        cy.get('[data-test=file-name]').should('have.text', filename);
-      }
-    });
+    cy.uploadExampleFile();
   });
 
   it('Should have valid files after changing password', () => {

@@ -10,6 +10,8 @@
     "unauthorized.spec.ts",
     "upload-file.spec.ts",
     "recents-panel.spec.ts",
+    "account-panel.spec.ts",
+    "backups.spec.ts",
     "download-file.spec.ts",
     "share-links.spec.ts",
     "rename-file.spec.ts",

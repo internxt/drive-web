@@ -10,17 +10,7 @@ describe('Recents panel', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-
-    // Upload file
-    cy.get('.infinite-scroll-component').then((element) => {
-      if (element.text().includes(EXAMPLE_FILENAME)) {
-        // do nothing
-      } else {
-        cy.get('input[type=file]').attachFile(EXAMPLE_FILENAME);
-        cy.get('[data-test=file-name]').should('have.text', EXAMPLE_FILENAME);
-      }
-    });
-
+    cy.uploadExampleFile();
     cy.visit('/app/recents');
   });
 

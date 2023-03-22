@@ -1,4 +1,4 @@
-import { EXAMPLE_FILENAME, FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Rename item', () => {
   const newFolderName = 'new-folder';
@@ -10,15 +10,7 @@ describe('Rename item', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-    // Upload file
-    cy.get('.infinite-scroll-component').then((element) => {
-      if (element.text().includes(EXAMPLE_FILENAME)) {
-        // do nothing
-      } else {
-        cy.get('input[type=file]').attachFile(EXAMPLE_FILENAME);
-        cy.get('[data-test=file-name]').should('have.text', EXAMPLE_FILENAME);
-      }
-    });
+    cy.uploadExampleFile();
   });
 
   it('Should rename a folder item', () => {
