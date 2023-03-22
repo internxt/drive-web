@@ -6,6 +6,9 @@ import { CaretDown } from 'phosphor-react';
 import { Menu, Transition } from '@headlessui/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import es from 'dayjs/locale/es';
+import fr from 'dayjs/locale/fr';
+import dayjs from 'dayjs';
 
 function getLanguage(): string {
   const deviceLanguage = localStorageService.get('language') as string;
@@ -28,7 +31,7 @@ export default function Language(): JSX.Element {
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
       <div
-        className="flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+        className={'flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
         onClick={onClick}
       >
         {children}
@@ -55,7 +58,7 @@ export default function Language(): JSX.Element {
             {menuItems && (
               <div className="border-translate w-full border-gray-10">
                 {menuItems?.map((item, index) => (
-                  <div className="pt-2" key={'menuitem-' + index}>
+                  <div className={'pt-2'} key={'menuitem-' + index}>
                     <Menu.Item>{item}</Menu.Item>
                   </div>
                 ))}
@@ -83,6 +86,7 @@ export default function Language(): JSX.Element {
                 setLang('en');
                 i18next.changeLanguage('en');
                 setCurrentLangText(translate('lang.en') as string);
+                dayjs.locale('en');
               }}
             >
               <p>{translate('lang.en')}</p>
@@ -92,9 +96,20 @@ export default function Language(): JSX.Element {
                 setLang('es');
                 i18next.changeLanguage('es');
                 setCurrentLangText(translate('lang.es') as string);
+                dayjs.locale(es);
               }}
             >
               <p>{translate('lang.es')}</p>
+            </MenuItem>,
+            <MenuItem
+              onClick={() => {
+                setLang('fr');
+                i18next.changeLanguage('fr');
+                setCurrentLangText(translate('lang.fr') as string);
+                dayjs.locale(fr);
+              }}
+            >
+              <p>{translate('lang.fr')}</p>
             </MenuItem>,
           ]}
         />

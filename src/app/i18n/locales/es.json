@@ -11,7 +11,8 @@
   "lang": {
     "title": "Idioma",
     "es": "Español (ES)",
-    "en": "Inglés (EN)"
+    "en": "Inglés (EN)",
+    "fr": "Francés (FR)"
   },
   "auth": {
     "email": "Correo electrónico",
