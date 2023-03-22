@@ -19,6 +19,9 @@ i18next
       es: {
         translation: require('../locales/es.json'),
       },
+      fr: {
+        translation: require('../locales/fr.json'),
+      },
     },
     debug: !envService.isProduction(),
     fallbackLng: 'en',
