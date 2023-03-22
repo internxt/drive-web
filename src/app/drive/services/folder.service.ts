@@ -306,7 +306,7 @@ async function downloadFolderAsZip(
         folderToDownload.name,
         async (file) => {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager?.get(file.id.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.id.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           if (cachedFile?.source && !isCachedFileOlder) {

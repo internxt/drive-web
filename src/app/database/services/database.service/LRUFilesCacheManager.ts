@@ -41,11 +41,8 @@ const MB_450_IN_BYTES = 471859200;
 export class LRUFilesCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
 
-  public static async getInstance(): Promise<LRUCache<DriveItemBlobData> | null> {
+  public static async getInstance(): Promise<LRUCache<DriveItemBlobData>> {
     if (!LRUFilesCacheManager.instance) {
-      const dbIsAvailable = await databaseService.isAvailable();
-
-      if (!dbIsAvailable) return null;
       const levelsBlobsCache = new LevelsBlobsCache();
 
       const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobs);

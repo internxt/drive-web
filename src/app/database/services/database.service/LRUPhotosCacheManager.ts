@@ -41,10 +41,8 @@ const MB_400_IN_BYTES = 419430400;
 export class LRUPhotosCacheManager {
   private static instance: LRUCache<PhotosData>;
 
-  public static async getInstance(): Promise<LRUCache<PhotosData> | null> {
+  public static async getInstance(): Promise<LRUCache<PhotosData>> {
     if (!LRUPhotosCacheManager.instance) {
-      const dbIsAvailable = await databaseService.isAvailable();
-      if (!dbIsAvailable) return null;
       const photosCache = new PhotosCache();
 
       const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosSource);
