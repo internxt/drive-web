@@ -556,6 +556,7 @@
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
+    "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
   },
   "backups": {
@@ -801,7 +802,7 @@
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
-    "itemDeleted": "{{itemsToDelete}} deleted",
+    "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
@@ -900,7 +901,9 @@
       "title": "Maximum file upload",
       "advice": "The maximum is 1000 files per upload.",
       "close": "Close"
-    }
+    },
+    "movingToTrash": "Moving items to trash",
+    "deletingItems": "Deleting items from trash"
   },
   "appSumo": {
     "tiers": {

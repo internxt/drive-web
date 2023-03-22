@@ -7,6 +7,7 @@ import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/ty
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 import { t } from 'i18next';
 import { Trash } from '@internxt/sdk/dist/drive';
+import errorService from '../../app/core/services/error.service';
 
 const MAX_ITEMS_TO_DELETE = 20;
 const MAX_CONCURRENT_REQUESTS = 2;
@@ -48,42 +49,53 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
     };
   });
 
-  const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+  try {
+    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+    await deleteItemsPermanently({
+      items,
+      maxItemsToDelete: MAX_ITEMS_TO_DELETE,
+      maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
+      trashClient,
+    });
 
-  await deleteItemsPermanently({
-    items,
-    maxItemsToDelete: MAX_ITEMS_TO_DELETE,
-    maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
-    trashClient,
-  });
+    await deleteDatabaseItems(itemsToDelete);
 
-  await deleteDatabaseItems(itemsToDelete);
+    store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
 
-  store.dispatch(storageActions.popItemsToDelete(itemsToDelete));
+    let foldersRemovedNumber = 0;
+    let filesRemovedNumber = 0;
 
-  let foldersRemovedNumber = 0;
-  let filesRemovedNumber = 0;
+    itemsToDelete.forEach((item) => {
+      if (item.isFolder) {
+        foldersRemovedNumber = foldersRemovedNumber + 1;
+      } else {
+        filesRemovedNumber = filesRemovedNumber + 1;
+      }
+    });
+    store.dispatch(storageActions.addFoldersOnTrashLength(-foldersRemovedNumber));
+    store.dispatch(storageActions.addFilesOnTrashLength(-filesRemovedNumber));
+    store.dispatch(storageActions.clearSelectedItems());
 
-  itemsToDelete.forEach((item) => {
-    if (item.isFolder) {
-      foldersRemovedNumber = foldersRemovedNumber + 1;
-    } else {
-      filesRemovedNumber = filesRemovedNumber + 1;
-    }
-  });
-  store.dispatch(storageActions.addFoldersOnTrashLength(-foldersRemovedNumber));
-  store.dispatch(storageActions.addFilesOnTrashLength(-filesRemovedNumber));
-  store.dispatch(storageActions.clearSelectedItems());
-
-  notificationsService.show({
-    type: ToastType.Success,
-    text:
-      items.length > 1
-        ? t('notificationMessages.itemsDeleted')
-        : t('notificationMessages.itemDeleted', {
-            item: itemsToDelete[0].isFolder === true ? t('general.folder') : t('general.file'),
-          }),
-  });
+    notificationsService.show({
+      type: ToastType.Success,
+      text:
+        items.length > 1
+          ? t('notificationMessages.itemsDeleted')
+          : t('notificationMessages.itemDeleted', {
+              item: itemsToDelete[0].isFolder ? t('general.folder') : t('general.file'),
+            }),
+    });
+  } catch (error) {
+    notificationsService.show({
+      text: t('error.errorDeletingFromTrash'),
+      type: ToastType.Error,
+    });
+    errorService.reportError(error, {
+      extra: {
+        items,
+      },
+    });
+  }
 };
 
 export default DeleteItems;

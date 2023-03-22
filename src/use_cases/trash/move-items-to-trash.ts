@@ -49,14 +49,17 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       type: item.isFolder ? 'folder' : 'file',
     };
   });
+  let movingItemsToastId;
 
   try {
-    await deleteDatabaseItems(itemsToTrash);
-
-    store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
-    store.dispatch(storageActions.clearSelectedItems());
-
     const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+
+    movingItemsToastId = notificationsService.show({
+      type: ToastType.Loading,
+      text: t('drive.movingToTrash'),
+      duration: 100000,
+      closable: false,
+    });
 
     await sendItemsToTrashConcurrent({
       items,
@@ -64,6 +67,13 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       maxConcurrentRequests: MAX_CONCURRENT_REQUESTS,
       trashClient,
     });
+
+    await deleteDatabaseItems(itemsToTrash);
+
+    store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
+    store.dispatch(storageActions.clearSelectedItems());
+
+    notificationsService.dismiss(movingItemsToastId);
 
     const id = notificationsService.show({
       type: ToastType.Success,
@@ -94,6 +104,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
       },
     });
   } catch (error) {
+    notificationsService.dismiss(movingItemsToastId);
     notificationsService.show({
       text: t('error.errorMovingToTrash'),
       type: ToastType.Error,

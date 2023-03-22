@@ -555,6 +555,7 @@
     "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
+    "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos."
   },
   "backups": {
@@ -900,7 +901,9 @@
       "title": "Maximum file upload",
       "advice": "The maximum is 1000 files per upload.",
       "close": "Cerrar"
-    }
+    },
+    "movingToTrash": "Moviendo elementos a la papelera",
+    "deletingItems": "Eliminando elementos de la papelera"
   },
   "appSumo": {
     "tiers": {
