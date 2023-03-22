@@ -274,7 +274,7 @@ export async function getPhotoPreview(
 
     blob = await binaryStreamToBlob(readable);
     try {
-      updateDatabasePhotosPrewiewData({ photoId: photo.id, preview: blob });
+      await updateDatabasePhotosPrewiewData({ photoId: photo.id, preview: blob });
     } catch (err) {
       errorService.reportError(err);
     }
