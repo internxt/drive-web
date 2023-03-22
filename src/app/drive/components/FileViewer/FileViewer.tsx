@@ -44,6 +44,8 @@ interface FileViewerProps {
   show: boolean;
   progress?: number;
   setCurrentFile?: (file: DriveFileData) => void;
+  isAuthenticated: boolean;
+  isShareView?: boolean;
 }
 
 export interface FormatFileViewerProps {
@@ -80,6 +82,8 @@ const FileViewer = ({
   setCurrentFile,
   show,
   progress,
+  isAuthenticated,
+  isShareView,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
@@ -235,13 +239,16 @@ const FileViewer = ({
       };
       const abortController = new AbortController();
 
-      const thumbnailUploaded = await uploadThumbnail(
-        userEmail,
-        thumbnailToUpload,
-        isTeam,
-        updateProgressCallback,
-        abortController,
-      );
+      let thumbnailUploaded;
+
+      if (userEmail)
+        thumbnailUploaded = await uploadThumbnail(
+          userEmail,
+          thumbnailToUpload,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+        );
 
       if (thumbnailUploaded && thumbnailGenerated.file) {
         setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
@@ -397,7 +404,7 @@ const FileViewer = ({
             ) : (
               <div
                 tabIndex={0}
-                className="outline-none pointer-events-none z-10 flex select-none flex-col items-center justify-center
+                className="outline-none z-10 flex select-none flex-col items-center justify-center
                       space-y-6 rounded-xl font-medium"
               >
                 <div className="flex flex-col items-center justify-center">
@@ -450,7 +457,12 @@ const FileViewer = ({
             </div>
 
             {/* Top bar buttons */}
-            <TopBarActions onDownload={onDownload} file={file as DriveItemData} />
+            <TopBarActions
+              onDownload={onDownload}
+              file={file as DriveItemData}
+              isAuthenticated={isAuthenticated}
+              isShareView={isShareView}
+            />
           </div>
         </div>
       </Dialog>

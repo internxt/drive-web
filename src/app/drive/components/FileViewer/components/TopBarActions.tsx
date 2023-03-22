@@ -19,22 +19,25 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import Button from '../../../../shared/components/Button/Button';
+import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 interface TopBarActionsProps {
   background?: string;
   onDownload: () => void;
   file: DriveItemData;
+  isAuthenticated: boolean;
+  isShareView?: boolean;
 }
 
 const TopBarActions: FC<TopBarActionsProps> = ({
   background,
   onDownload,
   file,
-}: {
-  background?: string;
-  onDownload: () => void;
-  file: DriveItemData;
-}) => {
+  isAuthenticated,
+  isShareView,
+}: TopBarActionsProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
 
@@ -74,18 +77,34 @@ const TopBarActions: FC<TopBarActionsProps> = ({
     dispatch(uiActions.setIsEditFolderNameDialog(true));
   };
 
+  const copyNavigatorLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    notificationsService.show({ text: translate('success.linkCopied'), type: ToastType.Success });
+  };
+
   return (
     <div
       className={`${background} z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
-      <button
-        onClick={onDownload}
-        title={translate('actions.download')}
-        className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
-      >
-        <UilImport size={20} />
-      </button>
-      {file ? (
+      <div className="flex flex-row items-center justify-center space-x-2 px-5">
+        {!isAuthenticated && isShareView && (
+          <button
+            onClick={copyNavigatorLink}
+            title={translate('actions.copyLink')}
+            className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+          >
+            <Link size={20} />
+          </button>
+        )}
+        <button
+          onClick={onDownload}
+          title={translate('actions.download')}
+          className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+        >
+          <UilImport size={20} />
+        </button>
+      </div>
+      {file && isAuthenticated && (
         <Menu as="div" className="relative inline-block text-left">
           <Menu.Button className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5">
             <DotsThree weight="bold" size={20} />
@@ -220,7 +239,19 @@ const TopBarActions: FC<TopBarActionsProps> = ({
             </Menu.Items>
           </Transition>
         </Menu>
-      ) : null}
+      )}
+      {!isAuthenticated && (
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={() => {
+            window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
+          }}
+          className="px-5"
+        >
+          {t('auth.login.title')}
+        </Button>
+      )}
     </div>
   );
 };

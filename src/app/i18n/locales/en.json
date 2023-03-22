@@ -848,7 +848,8 @@
     "navigating": "Navigating...",
     "restoreHere": "Restore here",
     "rename": "Rename",
-    "restore": "Restore"
+    "restore": "Restore",
+    "copyLink": "Copy link"
   },
   "drive": {
     "usage": "Usage",
