@@ -1,4 +1,4 @@
-import browserService, { Browser } from 'app/core/services/browser.service';
+import browserService, { Browser } from '../../../core/services/browser.service';
 import * as idb from 'idb';
 import { AppDatabase, DatabaseService } from '.';
 
