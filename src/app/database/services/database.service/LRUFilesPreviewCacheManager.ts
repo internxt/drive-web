@@ -41,20 +41,21 @@ const MB_50_IN_BYTES = 52428800;
 export class LRUFilesPreviewCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
 
-  public static getInstance(): LRUCache<DriveItemBlobData> {
+  public static async getInstance(): Promise<LRUCache<DriveItemBlobData> | null> {
     if (!LRUFilesPreviewCacheManager.instance) {
+      const dbIsAvailable = await databaseService.isAvailable();
+      if (!dbIsAvailable) return null;
       const levelsBlobsCache = new LevelsBlobsPreviewsCache();
 
-      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobsPreview).then((lruCacheState) => {
-        if (lruCacheState) {
-          LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES, {
-            lruKeyList: lruCacheState.lruKeyList,
-            itemsListSize: lruCacheState.itemsListSize,
-          });
-        } else {
-          LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES);
-        }
-      });
+      const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobsPreview);
+      if (lruCacheState) {
+        LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES, {
+          lruKeyList: lruCacheState.lruKeyList,
+          itemsListSize: lruCacheState.itemsListSize,
+        });
+      } else {
+        LRUFilesPreviewCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_50_IN_BYTES);
+      }
     }
     return LRUFilesPreviewCacheManager.instance;
   }

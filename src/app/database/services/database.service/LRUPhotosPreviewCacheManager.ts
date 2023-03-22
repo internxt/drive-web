@@ -41,20 +41,21 @@ const MB_100_IN_BYTES = 104857600;
 export class LRUPhotosPreviewsCacheManager {
   private static instance: LRUCache<PhotosData>;
 
-  public static getInstance(): LRUCache<PhotosData> {
+  public static async getInstance(): Promise<LRUCache<PhotosData> | null> {
     if (!LRUPhotosPreviewsCacheManager.instance) {
+      const dbIsAvailable = await databaseService.isAvailable();
+      if (!dbIsAvailable) return null;
       const photosPreviewCache = new PhotosPreviewsCache();
 
-      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosPreview).then((lruCacheState) => {
-        if (lruCacheState) {
-          LRUPhotosPreviewsCacheManager.instance = new LRUCache<PhotosData>(photosPreviewCache, MB_100_IN_BYTES, {
-            lruKeyList: lruCacheState.lruKeyList,
-            itemsListSize: lruCacheState.itemsListSize,
-          });
-        } else {
-          LRUPhotosPreviewsCacheManager.instance = new LRUCache<PhotosData>(photosPreviewCache, MB_100_IN_BYTES);
-        }
-      });
+      const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosPreview);
+      if (lruCacheState) {
+        LRUPhotosPreviewsCacheManager.instance = new LRUCache<PhotosData>(photosPreviewCache, MB_100_IN_BYTES, {
+          lruKeyList: lruCacheState.lruKeyList,
+          itemsListSize: lruCacheState.itemsListSize,
+        });
+      } else {
+        LRUPhotosPreviewsCacheManager.instance = new LRUCache<PhotosData>(photosPreviewCache, MB_100_IN_BYTES);
+      }
     }
     return LRUPhotosPreviewsCacheManager.instance;
   }

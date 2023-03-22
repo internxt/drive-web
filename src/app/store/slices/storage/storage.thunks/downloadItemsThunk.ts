@@ -156,7 +156,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], {
           downloadProgress[index] = 1;
         } else {
           let fileStream: ReadableStream<Uint8Array> | null = null;
-          const cachedFile = await lruFilesCacheManager.get(driveItem.id.toString());
+          const cachedFile = await lruFilesCacheManager?.get(driveItem.id.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
           if (cachedFile?.source && !isCachedFileOlder) {
