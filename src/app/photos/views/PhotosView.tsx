@@ -151,6 +151,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         photos={photosState.selectedItems}
       />
       <ShareDialog
+        zIndex={20}
         onClose={() => setSharePending(null)}
         isOpen={sharePending === 'preview'}
         photos={photosState.previewIndex !== null ? [photosState.items[photosState.previewIndex].id] : []}
