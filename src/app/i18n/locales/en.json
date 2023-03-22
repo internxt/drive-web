@@ -45,7 +45,6 @@
     "terms": "Terms and conditions",
     "help": "Need help?",
     "searchBar": "Search this folder",
-
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -207,7 +206,31 @@
           "label": "Billing",
           "currentPlan": "Current plan",
           "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
-          "cancelSubscription": "Cancel subscription",
+          "cancelSubscriptionModal": {
+            "title": "Cancel subscription",
+            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+            "keepSubscription": "Keep subscription",
+            "continue": "Continue",
+            "cancelSubscription": "Cancel subscription",
+            "infoBox": {
+              "titleCurrent": "Current",
+              "titleNew": "New",
+              "year": "year",
+              "month": "month",
+              "free": "Free",
+              "reachedFreeLimit": "You are over {{freePlanName}}",
+              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+            },
+            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "feedback": {
+              "placeholder": "Give us some feedback",
+              "tooExpensive": "Too expensive",
+              "lackOfFeatures": "Lack of features",
+              "wantTryAnother": "Want to try another storage provider",
+              "justTrying": "Was just trying out Internxt Drive",
+              "other": "Other"
+            }
+          },
           "billed": "Billed {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Payment method",
@@ -248,7 +271,6 @@
             "business": "Change to Plans for Business"
           },
           "viewAllFeatures": "View all features",
-
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
@@ -601,7 +623,6 @@
       "links-deleted": "Link(s) deleted"
     }
   },
-
   "trash": {
     "trash": "Trash",
     "clearTrash": "Trash has been cleared",

@@ -46,6 +46,10 @@ export function trackFileDownloadAborted(properties: TrackingPlan.DownloadProper
   analytics.track(TrackingPlan.EventNames.FileDownloadAborted, properties);
 }
 
+export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubscriptionProperties): void {
+  analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {

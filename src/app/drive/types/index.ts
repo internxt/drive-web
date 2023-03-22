@@ -145,3 +145,8 @@ export enum DownloadFolderMethod {
   FileSystemAccessAPI = 'file-system-access-api',
   StreamSaver = 'stream-saver',
 }
+
+export enum FreeStoragePlan {
+  simpleName = '2GB',
+  storageLimit = 2147483648,
+}
