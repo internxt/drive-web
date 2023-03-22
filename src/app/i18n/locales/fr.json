@@ -9,10 +9,10 @@
     "cta": "Obtenir l'offre"
   },
   "lang": {
-    "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)"
+    "title": "Langue",
+    "es": "Espagnol (ES)",
+    "en": "Anglais (EN)",
+    "fr": "Français (FR)"
   },
   "auth": {
     "email": "Adresse électronique",

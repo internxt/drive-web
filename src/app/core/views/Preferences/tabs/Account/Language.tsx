@@ -28,9 +28,7 @@ export default function Language(): JSX.Element {
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
     return (
       <div
-        className={`flex ${
-          currentLangText === children ? 'bg-gray-10' : 'bg-primary'
-        } h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10`}
+        className={'flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
         onClick={onClick}
       >
         {children}
