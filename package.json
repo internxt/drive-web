@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.41",
+  "version": "v1.0.42",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
