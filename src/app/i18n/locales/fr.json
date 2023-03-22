@@ -114,7 +114,7 @@
     "sharedLinks": "Liens partagés",
     "recents": "Récent",
     "trash": "Corbeille",
-    "desktop": "Application de bureau"
+    "desktop": "App de bureau"
   },
   "views": {
     "recents": {
@@ -148,10 +148,10 @@
         "underLimitSize": "Veuillez choisir une image dont la taille est inférieure à 10MB"
       },
       "popover": {
-        "downloadApp": "Télécharger l'application",
+        "downloadApp": "Télécharger l'app",
         "settings": "Paramètres",
         "logout": "Déconnexion",
-        "spaceUsed": "{{space}}% de l'espace utilisé"
+        "spaceUsed": "{{space}}% d'espace utilisé"
       },
       "tabs": {
         "account": {
@@ -188,9 +188,9 @@
               "resendEmail": "Renvoyer courriel de vérification"
             },
             "verify": {
-              "verify": "Vérifier votre e-mail",
+              "verify": "Vérifier email",
               "verified": "Verified email",
-              "description": "Vérifiez votre boîte de réception"
+              "description": "Consultez votre email"
             },
             "editProfile": {
               "name": "Prénom",
@@ -271,8 +271,8 @@
                 "point3": "Confidentialité à connaissance zéro."
               },
               "section3": {
-                "title": "Accès et synchronisation illimités",
-                "point1": "Accédez à vos fichiers, photos et sauvegardes depuis tous vos appareils.",
+                "title": "Accès et sync illimités",
+                "point1": "Accédez à vos fichiers, depuis tous vos appareils.",
                 "point2": "Synchronisation illimitée de la bande passante.",
                 "point3": "Sauvegardez n'importe quel dossier sur votre ordinateur."
               }
@@ -804,7 +804,7 @@
     "accessFile": "Fichier d'accès",
     "upgradeNow": "Acheter de l'espace",
     "purchasePlan": "Acheter de l'espace",
-    "upgrade": "Acheter de l'espace",
+    "upgrade": "Acheter",
     "buyStorage": "Acheter de l'espace",
     "deleteAccount": "PermaSupprimer définitivement le compte",
     "changePassword": "Modifier le mot de passe",
@@ -831,7 +831,7 @@
     "restore": "Restaurer"
   },
   "drive": {
-    "usage": "Utilisation",
+    "usage": "Usage",
     "currentPlan": "Plan actuel",
     "loadingFile": "Aperçu du chargement",
     "previewNoAvailable": "Aucun aperçu disponible",
@@ -904,8 +904,8 @@
   },
   "inviteAFriend": {
     "title": "Inviter un ami",
-    "descriptionWidget": "Obtenez {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Obtenez 1GB pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}}GB au total.",
+    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "description": "Obtenez 1GB pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
     "label": "Inviter à",
     "placeholder": "Entrez l'email de votre ami",
     "actions": {
@@ -925,10 +925,10 @@
   "referrals": {
     "items": {
       "create-account": "Créer un compte",
-      "install-mobile-app": "Installer l'application mobile et télécharger un fichier",
+      "install-mobile-app": "Installer l'app mobile et télécharger un fichier",
       "share-file": "Partager un fichier via un lien",
       "subscribe-to-newsletter": "S'abonner à la lettre d'information",
-      "install-desktop-app": "Installer l'application de bureau et télécharger un fichier",
+      "install-desktop-app": "Installer l'app de bureau et télécharger un fichier",
       "invite-friends": "Inviter {{completedSteps}}/{{steps}} amis",
       "invite-2-friends": "Inviter {{completedSteps}}/{{steps}} amis",
       "complete-survey": "Répondre à une enquête"
