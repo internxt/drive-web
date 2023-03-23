@@ -90,7 +90,6 @@ export default function ShareDialog({
     }
   }
 
-  console.log('IS OPEN', isOpen);
   return (
     <Transition show={isOpen}>
       <Transition.Child
