@@ -10,6 +10,7 @@ import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
+import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -25,6 +26,12 @@ interface DownloadOptions {
   token?: string;
   abortController?: AbortController;
   downloadingCallback?: DownloadProgressCallback;
+}
+
+interface UploadTask {
+  contentToUpload: Blob;
+  urlToUpload: string;
+  index: number;
 }
 
 /**
@@ -92,28 +99,30 @@ export class NetworkFacade {
   }
 
   uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
-    let fileReadable: ReadableStream<Uint8Array>;
-
     const partsUploadedBytes: Record<number, number> = {};
 
     function notifyProgress(partId: number, uploadedBytes: number) {
       partsUploadedBytes[partId] = uploadedBytes;
 
-      options.uploadingCallback(
-        file.size, 
-        Object.values(partsUploadedBytes).reduce((a,p) => a+p, 0)
-      );
+      options.uploadingCallback(file.size, Object.values(partsUploadedBytes).reduce((a,p) => a+p, 0));
     }
 
-    const limitConcurrency = 6;
+    const uploadsAbortController = new AbortController();
+    options.abortController?.signal.addEventListener('abort', () => uploadsAbortController.abort());
 
-    interface UploadTask {
-      contentToUpload: Blob;
-      urlToUpload: string;
-      index: number;
-    }
-
+    let realError: Error | null = null;
+    let fileReadable: ReadableStream<Uint8Array>;
     const fileParts: { PartNumber: number; ETag: string }[] = [];
+
+    const encryptFile: EncryptFileFunction = async (algorithm, key, iv) => {
+      const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
+      fileReadable = encryptStreamInParts(file, cipher, options.parts);
+    };
+
+    const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
+      let partIndex = 0;
+      const limitConcurrency = 6;
+      let currentConcurrency = 0;
 
     const worker = async (upload: UploadTask) => {
       console.log(
@@ -127,7 +136,7 @@ export class NetworkFacade {
         progressCallback: (_, uploadedBytes) => {
           notifyProgress(upload.index, uploadedBytes);
         },
-        abortController: options.abortController,
+          abortController: uploadsAbortController,
       });
 
       const ETag = response.getResponseHeader('etag');
@@ -143,26 +152,18 @@ export class NetworkFacade {
 
     const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(worker, limitConcurrency);
 
-    let currentConcurrency = 0;
-
-    return uploadMultipartFile(
-      this.network,
-      this.cryptoLib,
-      bucketId,
-      mnemonic,
-      file.size,
-      async (algorithm, key, iv) => {
-        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
-        fileReadable = encryptStreamInParts(file, cipher, options.parts);
-      },
-      async (urls: string[]) => {
-        let partIndex = 0;
-
         const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
-          while (currentConcurrency == limitConcurrency) {
+        console.log('Waiting for upload queue to be unsaturated... Tasks %s', uploadQueue.length());
+        while (currentConcurrency === limitConcurrency) {
+          console.log('Upload queue is saturated, waiting to upload task %s...', partIndex);
             await new Promise(r => setTimeout(r, 150));
           }
+        console.log('Upload queue is saturated, waiting... done');
           currentConcurrency++;
+
+        if (uploadsAbortController.signal.aborted) {
+          if (realError) throw realError; else return;
+          }
 
           uploadQueue.push({
             contentToUpload: blob,
@@ -170,11 +171,20 @@ export class NetworkFacade {
             index: partIndex++,
           }, (err) => {
             if (err) {
-              console.error('Error uploading file part', err);
+            uploadQueue.kill();
+            if (!uploadsAbortController?.signal.aborted) {
+              // Failed due to other reason, so abort requests
+              uploadsAbortController.abort();
+              // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
+              // https://github.com/node-fetch/node-fetch/issues/1462
+              realError = err;
             }
+            } else {
             currentConcurrency--;
+            }
           });  
           
+        // TODO: Remove
           blob = new Blob([]);
         });
 
@@ -186,7 +196,16 @@ export class NetworkFacade {
           hash: fileHash,
           parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
         };
-      },
+    };
+
+    return uploadMultipartFile(
+      this.network,
+      this.cryptoLib,
+      bucketId,
+      mnemonic,
+      file.size,
+      encryptFile,
+      uploadFileMultipart,
       options.parts,
     );
   }
