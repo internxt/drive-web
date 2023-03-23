@@ -125,13 +125,6 @@ export class NetworkFacade {
       let currentConcurrency = 0;
 
     const worker = async (upload: UploadTask) => {
-      console.log(
-        'Uploading chunk of %s bytes to url %s, part %s', 
-        upload.contentToUpload.size, 
-        upload.urlToUpload, 
-        upload.index
-      );
-
       const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
         progressCallback: (_, uploadedBytes) => {
           notifyProgress(upload.index, uploadedBytes);
@@ -153,12 +146,9 @@ export class NetworkFacade {
     const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(worker, limitConcurrency);
 
         const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
-        console.log('Waiting for upload queue to be unsaturated... Tasks %s', uploadQueue.length());
         while (currentConcurrency === limitConcurrency) {
-          console.log('Upload queue is saturated, waiting to upload task %s...', partIndex);
             await new Promise(r => setTimeout(r, 150));
           }
-        console.log('Upload queue is saturated, waiting... done');
           currentConcurrency++;
 
         if (uploadsAbortController.signal.aborted) {
