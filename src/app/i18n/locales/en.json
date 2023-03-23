@@ -276,6 +276,29 @@
                 "point3": "Backup any folder on your computer."
               }
             }
+          },
+          "dialog": {
+            "title": "Change plan",
+            "subtitle1": "You are about to change your Internxt plan from ",
+            "subtitle2": " to ",
+            "subtitle3": ". Confirm your choice to proceed, please.",
+            "plan": {
+              "current": "Current",
+              "new": "New",
+              "interval": "month"
+            },
+            "alert": {
+              "title": "You are over ",
+              "text1": "Because you are using ",
+              "text2": ", your Internxt Drive will stop syncing your files and you won’t be able to add new files"
+            },
+            "message": {
+              "text": "You'll be charged now and for each payment period until further change."
+            },
+            "button": {
+              "back": "Keep current plan",
+              "continue": "Change plan"
+            }
           }
         },
         "password": {

@@ -276,6 +276,29 @@
                 "point3": "Copia de seguridad de cualquier carpeta en tu ordenador"
               }
             }
+          },
+          "dialog": {
+            "title": "Cambiar plan",
+            "subtitle1": "Estás a punto de cambiar tu plan Internxt de ",
+            "subtitle2": " a ",
+            "subtitle3": ". Confirma tu elección para continuar, por favor.",
+            "plan": {
+              "current": "Actual",
+              "new": "Nuevo",
+              "interval": "mes"
+            },
+            "alert": {
+              "title": "Estás por encima de ",
+              "text1": "Porque estás utilizando ",
+              "text2": ", tu Internxt Drive dejará de sincronizar tus archivos y no podrás añadir nuevos archivos"
+            },
+            "message": {
+              "text": "Se te cobrará ahora y en cada periodo de pago hasta que se produzcan nuevos cambios."
+            },
+            "button": {
+              "back": "Mantener plan actual",
+              "continue": "Cambiar de plan"
+            }
           }
         },
         "password": {
