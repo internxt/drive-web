@@ -7,7 +7,7 @@ import { TeamsSettings } from '../../../teams/types';
 import { uploadFile } from 'app/network/upload';
 import { Abortable } from 'app/network/Abortable';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 10 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 interface IUploadParams {
