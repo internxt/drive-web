@@ -234,7 +234,7 @@ const ChangePlanDialog = ({
   onPlanClick,
   priceIdSelected,
 }: {
-  prices;
+  prices: DisplayPrice[];
   isDialgOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string) => void;
@@ -244,11 +244,11 @@ const ChangePlanDialog = ({
   const { translate } = useTranslationContext();
 
   const { planLimit, planUsage, subscription } = plan;
-  const selectedPlan = prices.filter((plan) => plan.id === priceIdSelected);
-  const selectedPlanSize = selectedPlan[0]?.bytes;
+  const selectedPlan: any = prices.find((plan) => plan.id === priceIdSelected);
+  const selectedPlanSize = selectedPlan?.bytes;
   const selectedPlanSizeString = bytesToString(selectedPlanSize);
-  const selectedPlanAmount = selectedPlan[0]?.amount;
-  const selectedPlanInterval = selectedPlan[0]?.interval;
+  const selectedPlanAmount = selectedPlan?.amount;
+  const selectedPlanInterval = selectedPlan?.interval;
   const currentPlanSizeString = bytesToString(planLimit);
 
   let amountMonthly: number | null = null;
