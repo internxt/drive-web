@@ -31,9 +31,9 @@ interface DownloadOptions {
  * The entry point for interacting with the network 
  */
 export class NetworkFacade {
-  private cryptoLib: NetworkModule.Crypto;
+  private readonly cryptoLib: NetworkModule.Crypto;
 
-  constructor(private network: NetworkModule.Network) {
+  constructor(private readonly network: NetworkModule.Network) {
     this.cryptoLib = {
       algorithm: NetworkModule.ALGORITHMS.AES256CTR,
       validateMnemonic: (mnemonic) => {
@@ -160,7 +160,7 @@ export class NetworkFacade {
 
         const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
           while (currentConcurrency == limitConcurrency) {
-            await new Promise(r => setTimeout(r, 300));
+            await new Promise(r => setTimeout(r, 150));
           }
           currentConcurrency++;
 
