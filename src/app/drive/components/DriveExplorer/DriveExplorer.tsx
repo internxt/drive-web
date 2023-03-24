@@ -70,6 +70,7 @@ import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
+import RealtimeService from '../../../core/services/socket.service';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -227,6 +228,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     setHasMoreItems(true);
     setFakePaginationLimit(PAGINATION_LIMIT);
+    RealtimeService.getInstance().onEvent((data) => {
+      console.log({ data });
+      if (data.event === 'FILE_CREATED') {
+        const folderId = data.payload.folderId;
+        if (folderId === currentFolderId) {
+          dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
+        }
+      }
+    });
   }, [currentFolderId]);
 
   const onUploadFileButtonClicked = (): void => {
