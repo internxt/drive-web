@@ -98,7 +98,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   let uploadPromise: Promise<string>;
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = false;
+  const useMultipart = params.filesize > minimumMultipartThreshold;;
   const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
