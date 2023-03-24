@@ -122,45 +122,49 @@ export class NetworkFacade {
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
-      let currentConcurrency = 0;
 
-    const worker = async (upload: UploadTask) => {
-      const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
-        progressCallback: (_, uploadedBytes) => {
-          notifyProgress(upload.index, uploadedBytes);
-        },
-          abortController: uploadsAbortController,
-      });
+      const worker = async (upload: UploadTask) => {
+        const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+          progressCallback: (_, uploadedBytes) => {
+            notifyProgress(upload.index, uploadedBytes);
+          },
+            abortController: uploadsAbortController,
+        });
 
-      const ETag = response.getResponseHeader('etag');
+        const ETag = response.getResponseHeader('etag');
 
-      if (!ETag) {
-        throw new Error('ETag header was not returned');
-      }
-      fileParts.push({
-        ETag,
-        PartNumber: upload.index + 1,
-      });
-    };
+        if (!ETag) {
+          throw new Error('ETag header was not returned');
+        }
+        fileParts.push({
+          ETag,
+          PartNumber: upload.index + 1,
+        });
+      };
 
-    const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(worker, limitConcurrency);
+      const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
+        worker(task).then(() => {
+          callback();
+        }).catch(e => {
+          callback(e);
+        });
+      }, limitConcurrency);
 
-        const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
-        while (currentConcurrency === limitConcurrency) {
-            await new Promise(r => setTimeout(r, 150));
-          }
-          currentConcurrency++;
+      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
+        if (uploadQueue.running() === limitConcurrency) {
+          await uploadQueue.unsaturated();
+        }
 
         if (uploadsAbortController.signal.aborted) {
           if (realError) throw realError; else return;
-          }
+        }
 
-          uploadQueue.push({
-            contentToUpload: blob,
-            urlToUpload: urls[partIndex],
-            index: partIndex++,
-          }, (err) => {
-            if (err) {
+        uploadQueue.pushAsync({
+          contentToUpload: blob,
+          urlToUpload: urls[partIndex],
+          index: partIndex++,
+        }).catch((err) => {
+          if (err) {
             uploadQueue.kill();
             if (!uploadsAbortController?.signal.aborted) {
               // Failed due to other reason, so abort requests
@@ -169,23 +173,21 @@ export class NetworkFacade {
               // https://github.com/node-fetch/node-fetch/issues/1462
               realError = err;
             }
-            } else {
-            currentConcurrency--;
-            }
-          });  
-          
+          }
+        });  
+        
         // TODO: Remove
-          blob = new Blob([]);
-        });
+        blob = new Blob([]);
+      });
 
-        while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
-          await uploadQueue.drain();
-        }
+      while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
+        await uploadQueue.drain();
+      }
 
-        return {
-          hash: fileHash,
-          parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
-        };
+      return {
+        hash: fileHash,
+        parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
+      };
     };
 
     return uploadMultipartFile(
