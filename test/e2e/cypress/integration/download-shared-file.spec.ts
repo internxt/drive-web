@@ -1,4 +1,5 @@
 import * as path from 'path';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Download shared file', () => {
   const filename = 'example.txt';
@@ -8,11 +9,19 @@ describe('Download shared file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
+    cy.uploadExampleFile();
   });
 
   it('Should share a and download single file', () => {
-    cy.get('[data-test=file-list-file] [data-test=share-file-button]').eq(0).click({ force: true });
+    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
 
+    cy.get(MENU_ITEM_SELECTOR).then((container) => {
+      if (container.text().includes('Get link')) {
+        cy.contains(MENU_ITEM_SELECTOR, 'Get link').click({ force: true });
+      } else if (container.text().includes('Copy link')) {
+        cy.contains(MENU_ITEM_SELECTOR, 'Copy link').click({ force: true });
+      }
+    });
     const WAIT_SECONDS = 5000;
 
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -23,7 +32,11 @@ describe('Download shared file', () => {
       .then((text) => {
         cy.origin(text.toString(), () => {
           cy.visit('');
-          cy.contains('Download').click();
+          cy.window().then((win) => {
+            win.addEventListener('load', () => {
+              cy.contains('Download').click({ force: true });
+            });
+          });
         });
       });
 

@@ -42,6 +42,9 @@ export const mockPhotos = (typeMock: MOCK): void => {
   }
 };
 
+const GET_PHOTOS_PATH =
+  '/photos/sorted?includeDownloadLinks=true&limit=60&skip=0&sortBy=takenAt&sortType=DESC&status=EXISTS';
+
 const mockDefaultApis = () => {
   cy.intercept('GET', URL_PHOTOS + '/photos/usage', {
     statusCode: 200,
@@ -53,14 +56,14 @@ const mockDefaultApis = () => {
 };
 
 const mockResultsEmpty = () => {
-  cy.intercept('GET', URL_PHOTOS + '/photos/?includeDownloadLinks=true&limit=60&skip=0&status=EXISTS', {
+  cy.intercept('GET', URL_PHOTOS + GET_PHOTOS_PATH, {
     statusCode: 500,
     body: '',
   });
 };
 
 const mockResults1 = () => {
-  cy.intercept('GET', URL_PHOTOS + '/photos/?includeDownloadLinks=true&limit=60&skip=0&status=EXISTS', {
+  cy.intercept('GET', URL_PHOTOS + GET_PHOTOS_PATH, {
     //get 1 photo
     statusCode: 200,
     fixture: 'photos/common/mock-results-1.json',
@@ -71,7 +74,7 @@ const mockResults1 = () => {
 };
 
 const mockResultsMultiple = () => {
-  cy.intercept('GET', URL_PHOTOS + '/photos/?includeDownloadLinks=true&limit=60&skip=0&status=EXISTS', {
+  cy.intercept('GET', URL_PHOTOS + GET_PHOTOS_PATH, {
     //get all photos
     statusCode: 200,
     fixture: 'photos/common/mock-results-multiple.json',

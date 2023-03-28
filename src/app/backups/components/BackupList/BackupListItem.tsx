@@ -13,10 +13,12 @@ export default function BackupsListItem({
   backup,
   onDownloadBackupClicked,
   onDeleteBackupClicked,
+  dataTest,
 }: {
   backup: DeviceBackup;
   onDownloadBackupClicked: (backup: DeviceBackup) => void;
   onDeleteBackupClicked: (backup: DeviceBackup) => void;
+  dataTest?: string;
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const isUploaded = !!backup.fileId;
@@ -62,6 +64,7 @@ export default function BackupsListItem({
         isUploaded ? '' : 'text-gray-40'
       }`}
       onDoubleClick={onDownload}
+      data-test={dataTest}
     >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <BackupIcon className={`h-8 w-8 ${isUploaded ? '' : 'opacity-40 grayscale filter'}`} />
