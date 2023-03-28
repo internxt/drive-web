@@ -12,6 +12,7 @@ const postMessage = (data: Record<string, unknown>) => {
 };
 
 const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setError?) => {
+  data?.preventDefault();
   if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
     postMessage({ action: 'autoScroll' });
     setLoading(false);

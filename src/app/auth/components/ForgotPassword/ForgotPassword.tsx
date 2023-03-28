@@ -42,7 +42,8 @@ function ForgotPassword(): JSX.Element {
     }
   };
 
-  const onSubmit: SubmitHandler<IFormValues> = (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = (formData, event) => {
+    event?.preventDefault();
     sendEmail(formData.email);
     setEmail(formData.email);
   };
