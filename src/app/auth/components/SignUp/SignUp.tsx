@@ -39,6 +39,8 @@ export interface SignUpProps {
 
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
+  const [isValidPassword, setIsValidPassword] = useState(false);
+
   const qs = queryString.parse(navigationService.history.location.search);
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
@@ -116,12 +118,15 @@ function SignUp(props: SignUpProps): JSX.Element {
   }, []);
 
   function onChangeHandler(input: string) {
+    setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
       setPasswordState({ tag: 'error', label: 'Password is too long' });
       return;
     }
 
     const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
+
+    setIsValidPassword(result.valid);
     if (!result.valid) {
       setPasswordState({
         tag: 'error',
@@ -143,7 +148,8 @@ function SignUp(props: SignUpProps): JSX.Element {
     return Buffer.from(privkeyDecrypted).toString('base64');
   }
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     setIsLoading(true);
 
     try {
@@ -297,9 +303,9 @@ function SignUp(props: SignUpProps): JSX.Element {
           </label>
 
           <Button
-            disabled={isLoading}
+            disabled={isLoading || !isValidPassword}
             text={translate('auth.signup.title')}
-            disabledText={isValid ? 'Encrypting...' : 'Create account'}
+            disabledText={isValid && isValidPassword ? 'Encrypting...' : 'Create account'}
             loading={isLoading}
             style="button-primary"
             className="w-full"

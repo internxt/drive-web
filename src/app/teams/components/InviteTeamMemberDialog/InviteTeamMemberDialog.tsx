@@ -43,7 +43,8 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
     dispatch(uiActions.setIsInviteMemberDialogOpen(false));
   };
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     try {
       if (team && team.isAdmin) {
         await sendEmailTeamsMember(formData.email);
