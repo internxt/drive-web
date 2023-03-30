@@ -1,4 +1,5 @@
 import { join } from 'path';
+import { MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Download file', () => {
   const filename = 'example.txt';
@@ -9,10 +10,13 @@ describe('Download file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
+    cy.uploadExampleFile();
   });
 
   it('Should download a single file', () => {
-    cy.get('[data-test=download-file-button]').click({ force: true })
+    cy.contains('[data-test="file-list-file"]', 'example').rightclick({ force: true });
+    cy.contains(MENU_ITEM_SELECTOR, 'Download')
+      .click({ force: true })
       .then(() => {
         cy.readFile(join(fixturesFolder as string, filename)).then((originalFile) => {
           cy.readFile(downloadedFileFullPath).should('eq', originalFile);
@@ -23,5 +27,4 @@ describe('Download file', () => {
   after(() => {
     cy.task('removeFile', downloadedFileFullPath);
   });
-
 });
