@@ -50,6 +50,14 @@ export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubsc
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
 }
 
+export function trackStartCancelSubscription(): void {
+  analytics.track(TrackingPlan.EventNames.CancelSubscriptionStart, undefined);
+}
+
+export function trackUpdateSubscription(properties: TrackingPlan.UpdatedSubscriptionProperties): void {
+  analytics.track(TrackingPlan.EventNames.SubscriptionUpdated, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {

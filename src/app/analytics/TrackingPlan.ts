@@ -45,6 +45,10 @@ export namespace TrackingPlan {
     feedback: string;
   }
 
+  export interface UpdatedSubscriptionProperties {
+    coupon: string;
+  }
+
   export enum EventNames {
     FileUploadStart = 'File Upload Started',
     FileUploadError = 'File Upload Error',
@@ -54,6 +58,8 @@ export namespace TrackingPlan {
     FileDownloadError = 'File Download Error',
     FileDownloadStarted = 'File Download Started',
     FileDownloadAborted = 'File Download Aborted',
+    CancelSubscriptionStart = 'Subscription Cancel Start',
+    SubscriptionUpdated = 'Subscription Updated',
     CanceledSubscription = 'Subscription Canceled',
   }
 }

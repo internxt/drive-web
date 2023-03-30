@@ -230,6 +230,14 @@
               "wantTryAnother": "Want to try another storage provider",
               "justTrying": "Was just trying out Internxt Drive",
               "other": "Other"
+            },
+            "freeCouponStep": {
+              "threeMonths": "3 MONTHS",
+              "free": "FREE",
+              "descriptionPartOne": "By keeping your ",
+              "descriptionPartTwo": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "cancelSubscription": "Cancel subscription",
+              "getThreeMonthsFree": "Get 3 months FREE"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",

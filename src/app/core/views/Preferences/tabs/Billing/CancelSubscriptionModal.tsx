@@ -1,10 +1,32 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ArrowRight } from 'phosphor-react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Button from '../../../../../shared/components/Button/Button';
 import Modal from '../../../../../shared/components/Modal';
 import { FreeStoragePlan } from '../../../../../drive/types';
 import sizeService from '../../../../../drive/services/size.service';
+
+type StepProps = {
+  currentPlanName: string;
+  currentPlanInfo?: string;
+  currentUsage?: number;
+  cancellingSubscription?: boolean;
+  cancelSubscription: (feedback: string) => void;
+  onClose: () => void;
+  renoveWithCoupon?: () => void;
+};
+
+type CancelSubscriptionModalProps = {
+  isOpen: boolean;
+  onClose: () => void;
+  currentPlanName: string;
+  currentPlanInfo: string;
+  currentUsage: number;
+  cancellingSubscription: boolean;
+  cancelSubscription: (feedback: string) => void;
+  renoveWithCoupon: () => void;
+  alreadyUsedCoupon: boolean;
+};
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -14,63 +36,121 @@ const CancelSubscriptionModal = ({
   currentUsage,
   cancellingSubscription,
   cancelSubscription,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  currentPlanName: string;
-  currentPlanInfo: string;
-  currentUsage: number;
-  cancellingSubscription: boolean;
-  cancelSubscription: (feedback: string) => void;
-}): JSX.Element => {
+  renoveWithCoupon,
+  alreadyUsedCoupon,
+}: CancelSubscriptionModalProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [cancellationComments, setCancellationComments] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
       setStep(1);
+      setCancellationComments('');
     }
   }, [isOpen]);
 
+  const modalConfig = {
+    1: {
+      component: Step1,
+      props: {
+        currentPlanName: currentPlanName,
+        onClose: onClose,
+        cancelSubscription: () => setStep(2),
+        currentPlanInfo: currentPlanInfo,
+        currentUsage: currentUsage,
+      },
+    },
+    2: {
+      component: Step2,
+      props: {
+        currentPlanName: currentPlanName,
+        onClose: onClose,
+        cancellingSubscription: cancellingSubscription,
+        cancelSubscription: (feedback: string) => {
+          if (alreadyUsedCoupon) {
+            cancelSubscription(feedback);
+          } else {
+            setCancellationComments(feedback);
+            setStep(3);
+          }
+        },
+      },
+    },
+    3: {
+      component: CouponElement,
+      props: {
+        currentPlanName: currentPlanName,
+        onClose: onClose,
+        cancellingSubscription: cancellingSubscription,
+        cancelSubscription: () => cancelSubscription(cancellationComments),
+        renoveWithCoupon: renoveWithCoupon,
+      },
+    },
+  };
+
+  const CurrentStepElements = modalConfig[step].component;
+  const stepProps = modalConfig[step].props;
+
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">
-        {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
-      </h1>
-      <h2 className="text-base font-light text-gray-50">{step} of 2</h2>
-      {step === 1 ? (
-        <Step1
-          currentPlanName={currentPlanName}
-          onClose={onClose}
-          setStep={setStep}
-          currentPlanInfo={currentPlanInfo}
-          currentUsage={currentUsage}
-        />
-      ) : (
-        <Step2
-          currentPlanName={currentPlanName}
-          onClose={onClose}
-          cancellingSubscription={cancellingSubscription}
-          cancelSubscription={cancelSubscription}
-        />
+      {step !== 3 && (
+        <>
+          <h1 className="text-2xl font-medium text-gray-80">
+            {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
+          </h1>
+          <h2 className="text-base font-light text-gray-50">{step} of 2</h2>
+        </>
       )}
+      <CurrentStepElements {...stepProps} />
     </Modal>
+  );
+};
+
+const CouponElement = ({
+  currentPlanName,
+  cancellingSubscription,
+  cancelSubscription,
+  renoveWithCoupon,
+}: StepProps): JSX.Element => {
+  const { translate } = useTranslationContext();
+  const translationPath = 'views.account.tabs.billing.cancelSubscriptionModal.freeCouponStep.';
+
+  return (
+    <>
+      <div className="flex flex-col items-center justify-center p-5">
+        <p className="text-3xl text-gray-100">{translate(`${translationPath}threeMonths`)}</p>
+        <p className="text-7xl text-primary">{translate(`${translationPath}free`)}</p>
+      </div>
+      <p className="my-5 text-gray-100">
+        {translate(`${translationPath}descriptionPartOne`)} <span className="font-bold">{currentPlanName} </span>
+        {translate(`${translationPath}descriptionPartTwo`)}
+      </p>
+
+      <div className="flex justify-end">
+        <Button
+          className={'shadow-subtle-hard'}
+          variant="secondary"
+          onClick={cancelSubscription}
+          loading={cancellingSubscription}
+        >
+          {translate(`${translationPath}cancelSubscription`)}
+        </Button>
+        <Button className="ml-2 shadow-subtle-hard" onClick={renoveWithCoupon} disabled={cancellingSubscription}>
+          {translate(`${translationPath}getThreeMonthsFree`)}
+        </Button>
+      </div>
+    </>
   );
 };
 
 const Step1 = ({
   currentPlanName,
   currentPlanInfo,
-  currentUsage,
-  setStep,
+  currentUsage = 0,
+  cancelSubscription,
   onClose,
-}: {
-  currentPlanName: string;
-  currentPlanInfo: string;
-  currentUsage: number;
-  setStep: Dispatch<SetStateAction<2 | 1>>;
-  onClose: () => void;
-}): JSX.Element => {
+}: StepProps): JSX.Element => {
   const { translate } = useTranslationContext();
 
   const isCurrentUsageGreaterThanFreePlan = currentUsage !== -1 && currentUsage >= FreeStoragePlan.storageLimit;
@@ -135,20 +215,14 @@ const Step1 = ({
           <div className="flex items-center justify-center p-3">
             <span className="font-medium text-red-std">
               {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.reachedFreeLimitDescription', {
-                currentUsage: sizeService.bytesToString(currentUsage),
+                currentUsage: sizeService.bytesToString(currentUsage ?? 0),
               })}
             </span>
           </div>
         </div>
       )}
       <div className="mt-5 flex justify-end">
-        <Button
-          className={'shadow-subtle-hard'}
-          variant="secondary"
-          onClick={() => {
-            setStep(2);
-          }}
-        >
+        <Button className={'shadow-subtle-hard'} variant="secondary" onClick={cancelSubscription}>
           {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
         </Button>
         <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
@@ -159,17 +233,7 @@ const Step1 = ({
   );
 };
 
-const Step2 = ({
-  currentPlanName,
-  onClose,
-  cancellingSubscription,
-  cancelSubscription,
-}: {
-  currentPlanName: string;
-  onClose: () => void;
-  cancellingSubscription: boolean;
-  cancelSubscription: (feedback: string) => void;
-}): JSX.Element => {
+const Step2 = ({ currentPlanName, onClose, cancellingSubscription, cancelSubscription }: StepProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [feedbackSelected, setFeedbackSelected] = useState<string>('');
   const [otherFeedback, setOtherFeedback] = useState<string>('');

@@ -1,4 +1,8 @@
-import { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
+import {
+  trackCanceledSubscription,
+  trackStartCancelSubscription,
+  trackUpdateSubscription,
+} from '../../../../../analytics/services/analytics.service';
 import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/money.service';
@@ -90,6 +94,20 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     return plan.usageDetails?.total || -1;
   };
 
+  // TODO: ADAPT THIS BEFORE OPEN PR
+  // NEED TO ADD THE CORRECT COUPON CODE
+  const TWO_TB_PLAN_TESTID = 'plan_F7ptyrVRmyL8Gn';
+  const openRenoveWithCouponURL = () => {
+    trackUpdateSubscription({ coupon: 'g3S2TZFZ&' });
+    window.open(
+      `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=${
+        TWO_TB_PLAN_TESTID ?? plan.individualPlan?.planId
+      }&couponCode=g3S2TZFZ&freeTrials=90&mode=subscription`,
+      '_parent',
+      'noopener',
+    );
+  };
+
   return (
     <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
       <Card>
@@ -116,6 +134,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   disabled={cancellingSubscription}
                   onClick={() => {
                     setIsCancelSubscriptionModalOpen(true);
+                    trackStartCancelSubscription();
                   }}
                   className="mt-2 text-xs text-gray-60"
                 >
@@ -131,6 +150,9 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   currentPlanName={getPlanName(plan.individualPlan || plan.teamPlan)}
                   currentPlanInfo={getPlanInfo(plan.individualPlan || plan.teamPlan)}
                   currentUsage={getCurrentUsage()}
+                  renoveWithCoupon={openRenoveWithCouponURL}
+                  // TODO: ADAPT THIS BEFORE FINISH TASK, NOW IT IS MOCKED
+                  alreadyUsedCoupon={false}
                 />
               </div>
             )}

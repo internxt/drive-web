@@ -12,8 +12,6 @@ import { useEffect } from 'react';
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
 
-  console.log('CHECKOUT VISITED');
-
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   if (user === undefined) {
