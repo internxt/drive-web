@@ -16,9 +16,9 @@ export const useRetryDownload = (notification: TaskNotification): RetryDownload 
 
   const retryDownload = useCallback(() => {
     const { item, taskId } = notification;
-    const isZipAndMultipleItmes = item && 'items' in item && item?.items && item?.type === 'zip';
+    const isZipAndMultipleItems = item && 'items' in item && item?.items && item?.type === 'zip';
 
-    if (isZipAndMultipleItmes) {
+    if (isZipAndMultipleItems) {
       dispatch(downloadItemsAsZipThunk({ items: item.items as DriveItemData[], existingTaskId: taskId }));
     } else if (item && taskId) {
       dispatch(downloadItemsThunk([{ ...(item as DriveItemData), taskId }]));
