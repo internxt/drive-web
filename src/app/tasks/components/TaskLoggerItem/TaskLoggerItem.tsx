@@ -9,6 +9,12 @@ interface TaskLoggerItemProps {
   notification: TaskNotification;
 }
 
+const taskStatusTextColors = {
+  [TaskStatus.Error]: 'text-red-50',
+  [TaskStatus.Success]: 'text-gray-50',
+  [TaskStatus.Cancelled]: 'text-gray-50',
+};
+
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const DOWNLOAD_CANCELLED_TRANSLATION = t('tasks.download-file.status.cancelled');
   const DOWNLOAD_ERROR_TRANSLATION = t('tasks.download-file.status.error');
@@ -24,11 +30,8 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
       notification.subtitle.includes(DOWNLOAD_ERROR_TRANSLATION) ||
       notification.subtitle.includes(DOWNLOAD_FOLDER_CANCELLED_TRANSLATION) ||
       notification.subtitle.includes(DOWNLOAD_FOLDER_ERROR_TRANSLATION));
-  const messageClassName = [TaskStatus.Error].includes(notification.status)
-    ? 'text-red-50'
-    : [TaskStatus.Success, TaskStatus.Cancelled].includes(notification.status)
-    ? 'text-gray-50'
-    : 'text-primary';
+
+  const messageClassName = taskStatusTextColors[notification.status] ?? 'text-primary';
 
   const onCancelButtonClicked = () => {
     tasksService.cancelTask(notification.taskId);

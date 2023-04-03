@@ -34,7 +34,17 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
     // * 1. Creates tasks
     for (const item of items) {
-      if (item?.taskId === undefined) {
+      const isRetryDownload = !!item.taskId;
+
+      if (isRetryDownload) {
+        tasksIds.push(item.taskId as string);
+        tasksService.updateTask({
+          taskId: item.taskId as string,
+          merge: {
+            status: TaskStatus.Decrypting,
+          },
+        });
+      } else {
         if (item.isFolder) {
           const taskId = tasksService.create<DownloadFolderTask>({
             action: TaskType.DownloadFolder,
@@ -57,14 +67,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
           tasksIds.push(taskId);
         }
-      } else {
-        tasksIds.push(item?.taskId);
-        tasksService.updateTask({
-          taskId: item?.taskId,
-          merge: {
-            status: TaskStatus.Pending,
-          },
-        });
       }
     }
 
@@ -132,6 +134,10 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       taskId,
       merge: {
         status: TaskStatus.InProcess,
+        stop: async () => {
+          abortController.abort();
+          folder.abort();
+        },
       },
     });
 
