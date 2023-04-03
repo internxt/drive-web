@@ -663,7 +663,7 @@
         "decrypting": "Décryptage du fichier",
         "in-process": "{{progress}}% Téléchargement du fichier",
         "success": "Fichier téléchargé",
-        "error": "Erreur pendant le téléchargement",
+        "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"
       },
       "errors": {}
@@ -694,7 +694,7 @@
         "decrypting": "Décryptage des fichiers",
         "in-process": "{{progress}}% Téléchargement du dossier",
         "success": "Dossier téléchargé",
-        "error": "Erreur pendant le téléchargement",
+        "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"
       },
       "errors": {}

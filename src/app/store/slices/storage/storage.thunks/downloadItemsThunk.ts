@@ -19,11 +19,13 @@ import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
 import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
-export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
+type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
+
+export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
-  async (items: DriveItemData[], { dispatch, requestId, rejectWithValue }) => {
+  async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
     if (items.length > 1) {
-      await dispatch(downloadItemsAsZipThunk(items));
+      await dispatch(downloadItemsAsZipThunk({ items }));
       return;
     }
     const errors: unknown[] = [];
@@ -32,27 +34,37 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
 
     // * 1. Creates tasks
     for (const item of items) {
-      if (item.isFolder) {
-        const taskId = tasksService.create<DownloadFolderTask>({
-          action: TaskType.DownloadFolder,
-          relatedTaskId: taskGroupId,
-          folder: item,
-          compressionFormat: 'zip',
-          showNotification: true,
-          cancellable: true,
-        });
+      if (item?.taskId === undefined) {
+        if (item.isFolder) {
+          const taskId = tasksService.create<DownloadFolderTask>({
+            action: TaskType.DownloadFolder,
+            relatedTaskId: taskGroupId,
+            folder: item,
+            compressionFormat: 'zip',
+            showNotification: true,
+            cancellable: true,
+          });
 
-        tasksIds.push(taskId);
+          tasksIds.push(taskId);
+        } else {
+          const taskId = tasksService.create<DownloadFileTask>({
+            action: TaskType.DownloadFile,
+            file: item,
+            showNotification: true,
+            cancellable: true,
+            relatedTaskId: taskGroupId,
+          });
+
+          tasksIds.push(taskId);
+        }
       } else {
-        const taskId = tasksService.create<DownloadFileTask>({
-          action: TaskType.DownloadFile,
-          file: item,
-          showNotification: true,
-          cancellable: true,
-          relatedTaskId: taskGroupId,
+        tasksIds.push(item?.taskId);
+        tasksService.updateTask({
+          taskId: item?.taskId,
+          merge: {
+            status: TaskStatus.Pending,
+          },
         });
-
-        tasksIds.push(taskId);
       }
     }
 
@@ -83,9 +95,11 @@ export const downloadItemsThunk = createAsyncThunk<void, DriveItemData[], { stat
   },
 );
 
-export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
+type DownloadItemsAsZipThunkType = { items: DriveItemData[]; existingTaskId?: string };
+
+export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async (items: DriveItemData[], { rejectWithValue }) => {
+  async ({ items, existingTaskId }, { rejectWithValue }) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -97,21 +111,22 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DriveItemData[], {
     const user = localStorageService.getUser();
     if (!user) throw new Error('User not found');
 
-    const taskId = tasksService.create<DownloadFileTask>({
-      action: TaskType.DownloadFile,
-
-      showNotification: true,
-      stop: async () => {
-        abortController.abort();
-        folder.abort();
-      },
-      cancellable: true,
-
-      file: {
-        name: folderName,
-        type: 'zip',
-      },
-    });
+    const taskId =
+      existingTaskId ||
+      tasksService.create<DownloadFileTask>({
+        action: TaskType.DownloadFile,
+        showNotification: true,
+        stop: async () => {
+          abortController.abort();
+          folder.abort();
+        },
+        cancellable: true,
+        file: {
+          name: folderName,
+          type: 'zip',
+          items: items,
+        },
+      });
 
     tasksService.updateTask({
       taskId,
