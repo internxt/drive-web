@@ -708,7 +708,7 @@
         "decrypting": "Descifrando archivo",
         "in-process": "{{progress}}% Descargando archivo",
         "success": "Archivo descargado",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}
@@ -739,7 +739,7 @@
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% carpeta descargada",
         "success": "Carpeta descargada",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}

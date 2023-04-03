@@ -1,5 +1,5 @@
 import { FunctionComponent, SVGProps } from 'react';
-import { DriveFileData, DriveFolderData } from '../drive/types';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../drive/types';
 
 export enum TaskStatus {
   Pending = 'pending',
@@ -59,7 +59,7 @@ export interface CreateFolderTask extends BaseTask {
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
   cancellable: true;
-  file: { name: string; type: string };
+  file: { name: string; type: string; items?: DriveItemData[] };
 }
 
 export interface DownloadFolderTask extends BaseTask {
@@ -123,7 +123,7 @@ export interface RenameFolderTask extends BaseTask {
   destinationFolderId?: number;
 }
 
-export type TaskData =
+export type TaskData = (
   | CreateFolderTask
   | DownloadFileTask
   | DownloadFolderTask
@@ -134,12 +134,16 @@ export type TaskData =
   | MoveFolderTask
   | DownloadPhotosTask
   | RenameFileTask
-  | RenameFolderTask;
+  | RenameFolderTask
+) & { file?: DriveFileData | { name: string; type: string; items?: DriveItemData[] } } & {
+  folder?: { id: number; name: string };
+};
 
 export interface TaskNotification {
   taskId: string;
   status: TaskStatus;
   title: string;
+  item?: DriveItemData | { name: string; type: string; items?: DriveItemData[] } | { id: number; name: string };
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;

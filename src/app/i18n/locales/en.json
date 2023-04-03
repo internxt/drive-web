@@ -708,7 +708,7 @@
         "decrypting": "Decrypting file",
         "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -739,7 +739,7 @@
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% Downloading folder",
         "success": "Folder downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}

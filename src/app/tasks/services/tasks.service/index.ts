@@ -83,6 +83,7 @@ class TaskManagerService {
     return {
       taskId: task.id,
       status: task.status,
+      item: task.file || task.folder,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
