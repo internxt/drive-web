@@ -194,7 +194,9 @@
             "editProfile": {
               "name": "Name",
               "lastname": "Lastname"
-            }
+            },
+            "updateProfile": "Profile updated successfully",
+            "errorUpdatingProfile": "We could not update your profile"
           },
           "deleteAccount": {
             "head": "Delete account",

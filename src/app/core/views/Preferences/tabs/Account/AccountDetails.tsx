@@ -144,11 +144,17 @@ function AccountDetailsModal({
       try {
         setStatus({ tag: 'loading' });
         await dispatch(updateUserProfileThunk({ name: nameValue, lastname: lastnameValue })).unwrap();
-        notificationsService.show({ text: 'Profile updated successfully', type: ToastType.Success });
+        notificationsService.show({
+          text: translate('views.account.tabs.account.accountDetails.updateProfile'),
+          type: ToastType.Success,
+        });
         onClose();
       } catch {
         setStatus({ tag: 'error', type: 'UNKNOWN' });
-        notificationsService.show({ text: 'We could not update your profile', type: ToastType.Error });
+        notificationsService.show({
+          text: translate('views.account.tabs.account.accountDetails.errorUpdatingProfile'),
+          type: ToastType.Error,
+        });
       }
     }
   }
