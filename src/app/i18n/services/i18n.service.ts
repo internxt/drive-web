@@ -3,12 +3,6 @@ import i18next from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 import envService from 'app/core/services/env.service';
 
-export const currentLang = {
-  es: 'es',
-  fr: 'fr',
-  en: 'en',
-};
-
 const deviceLang = localStorageService.get('language') || navigator.language.split('-')[0];
 
 i18next

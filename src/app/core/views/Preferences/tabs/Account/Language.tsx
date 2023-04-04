@@ -16,21 +16,21 @@ const currentLang = {
   en: 'English (EN)',
 };
 
+const localStorageLanguage = localStorageService.get('language');
+
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
   const [lang, setLang] = React.useState<string>();
   const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>();
 
   useEffect(() => {
-    if (localStorageService.get('language')) {
-      setCurrentLangText(currentLang[localStorageService.get('language') as string]);
-      setLang(localStorageService.get('language') as string);
+    if (localStorageLanguage) {
+      setCurrentLangText(currentLang[localStorageLanguage as string]);
+      setLang(localStorageLanguage as string);
     } else {
       setCurrentLangText(currentLang[i18next.language]);
       setLang(i18next.language);
     }
-    localStorageService.set('language', lang as string);
-    console.log('currentLang', currentLangText, 'deviceLang', i18next.language);
   }, []);
 
   useEffect(() => {
