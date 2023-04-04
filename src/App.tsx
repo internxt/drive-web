@@ -33,7 +33,6 @@ import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import Mobile from 'app/drive/views/MobileView/MobileView';
-import { currentLang } from 'app/i18n/services/i18n.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -67,15 +66,6 @@ class App extends Component<AppProps> {
         return;
       }
     }
-
-    // let deviceLang;
-
-    // if (localStorageService.get('language')) {
-    //   deviceLang = localStorageService.get('language') as string;
-    // } else {
-    //   deviceLang = navigator.language.split('-')[0];
-    //   localStorageService.set('language', currentLang[deviceLang] || currentLang.en);
-    // }
 
     const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
       path: navigationService.history.location.pathname,
