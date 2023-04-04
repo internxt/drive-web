@@ -3,11 +3,13 @@ import i18next from 'i18next';
 import localStorageService from 'app/core/services/local-storage.service';
 import envService from 'app/core/services/env.service';
 
-let deviceLang = navigator.language.split('-')[0];
+export const currentLang = {
+  es: 'es',
+  fr: 'fr',
+  en: 'en',
+};
 
-if (localStorageService.get('language')) {
-  deviceLang = localStorageService.get('language') as string;
-}
+const deviceLang = localStorageService.get('language') || navigator.language.split('-')[0];
 
 i18next
   .use(initReactI18next) // passes i18n down to react-i18next
