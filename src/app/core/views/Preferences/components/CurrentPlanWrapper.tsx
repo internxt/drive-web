@@ -1,6 +1,6 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
 
@@ -52,23 +52,21 @@ export default function CurrentPlanWrapper({
 
   let planSubtitle: Parameters<typeof CurrentPlan>[0]['planSubtitle'];
 
-  useEffect(() => {
-    if (userSubscription.type === 'subscription') {
-      const currencySymbol =
-        CURRENCY_SYMBOLS[userSubscription.currency.toUpperCase()] ?? userSubscription.currency.toUpperCase();
-      const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${
-        userSubscription.interval === 'year'
-          ? translate('views.account.tabs.account.view.subscription.yearly')
-          : translate('views.account.tabs.account.view.subscription.monthly')
-      }`;
+  if (userSubscription.type === 'subscription') {
+    const currencySymbol =
+      CURRENCY_SYMBOLS[userSubscription.currency.toUpperCase()] ?? userSubscription.currency.toUpperCase();
+    const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${
+      userSubscription.interval === 'year'
+        ? translate('views.account.tabs.account.view.subscription.yearly')
+        : translate('views.account.tabs.account.view.subscription.monthly')
+    }`;
 
-      const beforeMainLabelCrossed = userSubscription.amountAfterCoupon
-        ? `${userSubscription.amountAfterCoupon / 100} ${currencySymbol}`
-        : undefined;
+    const beforeMainLabelCrossed = userSubscription.amountAfterCoupon
+      ? `${userSubscription.amountAfterCoupon / 100} ${currencySymbol}`
+      : undefined;
 
-      planSubtitle = { mainLabel, beforeMainLabelCrossed };
-    }
-  });
+    planSubtitle = { mainLabel, beforeMainLabelCrossed };
+  }
 
   const tabContext = useContext(TabContext);
 
