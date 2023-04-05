@@ -151,8 +151,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoading(true);
-    console.log({ formData });
-    console.log({ event });
+
     try {
       const { isNewUser } = props;
       const { email, password, token } = formData;
