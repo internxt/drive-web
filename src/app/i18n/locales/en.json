@@ -226,12 +226,7 @@
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
-              "placeholder": "Give us some feedback",
-              "tooExpensive": "Too expensive",
-              "lackOfFeatures": "Lack of features",
-              "wantTryAnother": "Want to try another storage provider",
-              "justTrying": "Was just trying out Internxt Drive",
-              "other": "Other"
+              "placeholder": "Give us some feedback"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",

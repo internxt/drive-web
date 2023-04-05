@@ -225,12 +225,7 @@
             },
             "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
             "feedback": {
-              "placeholder": "Denos su opinión",
-              "tooExpensive": "Demasiado caro",
-              "lackOfFeatures": "Falta de funcionalidades",
-              "wantTryAnother": "Quiero probar otro proveedor de almacenamiento",
-              "justTrying": "Solo estaba probando Internxt Drive",
-              "other": "Otro"
+              "placeholder": "Denos su opinión"
             }
           },
           "billed": "Facturación {{interval}} {{renewDate}}",
