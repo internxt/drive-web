@@ -10,22 +10,31 @@ import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
 import dayjs from 'dayjs';
 
-function getLanguage(): string {
-  const deviceLanguage = localStorageService.get('language') as string;
-  return deviceLanguage;
-}
+const currentLang = {
+  es: 'Español (ES)',
+  fr: 'Français (FR)',
+  en: 'English (EN)',
+};
 
-const deviceLang = getLanguage();
+const localStorageLanguage = localStorageService.get('language');
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [lang, setLang] = React.useState<string>(deviceLang === 'es' ? 'es' : 'en');
-  const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>(
-    deviceLang === 'es' ? 'Español (ES)' : 'English (US)',
-  );
+  const [lang, setLang] = React.useState<string>();
+  const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>();
 
   useEffect(() => {
-    localStorageService.set('language', lang);
+    if (localStorageLanguage) {
+      setCurrentLangText(currentLang[localStorageLanguage as string]);
+      setLang(localStorageLanguage as string);
+    } else {
+      setCurrentLangText(currentLang[i18next.language]);
+      setLang(i18next.language);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorageService.set('language', lang as string);
   }, [lang]);
 
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {

@@ -22,7 +22,7 @@
     "decrypting": "Décryptage...",
     "login": {
       "title": "Connexion",
-      "forgotPwd": "Vous avez oublié votre mot de passe ?",
+      "forgotPwd": "Mot de passe oublié ?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
@@ -195,7 +195,9 @@
             "editProfile": {
               "name": "Prénom",
               "lastname": "Nom"
-            }
+            },
+            "updateProfile": "Profil mis à jour avec succès",
+            "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -534,7 +536,7 @@
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
-    "errorMovingToTrash": "An error occurred while moving the items to trash.",
+    "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
   },
   "backups": {
@@ -879,7 +881,9 @@
       "title": "Chargement maximum de fichiers",
       "advice": "Le maximum est de 1000 fichiers par téléchargement",
       "close": "Fermer"
-    }
+    },
+    "movingToTrash": "Déplacement d'éléments vers la corbeille",
+    "deletingItems": "Deleting items from trash"
   },
   "appSumo": {
     "tiers": {
@@ -904,8 +908,8 @@
   },
   "inviteAFriend": {
     "title": "Inviter un ami",
-    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Obtenez 1GB pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
+    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1 Go par utilisateur enregistré via votre invitation)",
+    "description": "Obtenez 1 Go pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
     "label": "Inviter à",
     "placeholder": "Entrez l'email de votre ami",
     "actions": {
