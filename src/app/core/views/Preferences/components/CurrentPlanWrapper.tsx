@@ -68,7 +68,7 @@ export default function CurrentPlanWrapper({
 
       planSubtitle = { mainLabel, beforeMainLabelCrossed };
     }
-  }, [userSubscription]);
+  });
 
   const tabContext = useContext(TabContext);
 
