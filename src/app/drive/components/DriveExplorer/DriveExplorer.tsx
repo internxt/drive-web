@@ -70,6 +70,7 @@ import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
+import Banner from 'app/banners/Banner';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -514,6 +515,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
+      <Banner />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

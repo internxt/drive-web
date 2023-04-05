@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
 import { X } from 'phosphor-react';
-import Hearts from 'assets/images/banner/hearts.png';
-import NeonBlur from 'assets/images/banner/neonBlur.png';
+import NeonBlur from 'assets/images/banner/infinity.svg';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const Banner = () => {
-  const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(false);
+  const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(true);
   const { translate } = useTranslationContext();
   const onClose = () => {
     setShowLifetimeBanner(false);
@@ -20,15 +19,6 @@ const Banner = () => {
         setShowLifetimeBanner(true);
       }, 5000);
     }
-
-    window.addEventListener('unload', function (e) {
-      e.preventDefault();
-      localStorage.removeItem('showLifetimeBanner');
-    });
-    return () => {
-      // eslint-disable-next-line @typescript-eslint/no-empty-function
-      window.removeEventListener('unload', () => {});
-    };
   }, []);
 
   return (
@@ -38,39 +28,70 @@ const Banner = () => {
     >
       <div
         className={`absolute top-1/2 left-1/2 flex h-auto max-w-4xl -translate-y-1/2 -translate-x-1/2
-        transform flex-col overflow-hidden rounded-2xl  text-neutral-900`}
+        transform flex-col overflow-hidden rounded-2xl bg-primary-dark  text-neutral-900`}
         style={{
           backgroundImage: `url(${NeonBlur})`,
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          backgroundSize: 'cover',
+          backgroundSize: '1100px 611px',
         }}
       >
         <button className="absolute right-0 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="ml-14 flex flex-row py-10">
-          <div className="flex w-full flex-col space-y-9">
-            <div className="flex max-w-xs flex-col items-start">
-              <p className="text-5xl font-bold text-white ">{translate('valentinesBanner.title')}</p>
-              <p className=" pt-4 text-2xl font-medium text-white lg:w-80">{translate('valentinesBanner.subtitle')}</p>
+        <div className="flex flex-col py-10 px-40">
+          <div className="flex w-full flex-col items-center space-y-9">
+            <div className="flex flex-col text-center">
+              <p className="text-5xl font-bold text-white ">{translate('lifetimeBanner.title')}</p>
+              <p className=" pt-4 text-2xl font-medium text-white">{translate('lifetimeBanner.description')}</p>
+            </div>
+            <div className="flex flex-row space-x-6">
+              <div className="flex flex-col items-center space-y-1 rounded-xl bg-white py-3 px-4">
+                <div className="flex items-center justify-center rounded-full bg-gray-5 px-3 py-1 text-base font-semibold text-primary">
+                  <p>{translate('lifetimeBanner.cards.1.space')}</p>
+                </div>
+                <div className="flex">
+                  <p className={' flex flex-row items-start space-x-0.5 whitespace-nowrap font-medium text-gray-80'}>
+                    <span className={'text-semibold text-2xl'}>€</span>
+                    <span className="price text-5xl font-bold">{translate('lifetimeBanner.cards.1.price')}</span>
+                  </p>
+                </div>
+              </div>
+              <div className="-mb-3 flex flex-col items-center justify-center space-y-1 rounded-xl bg-white px-4">
+                <div className="flex items-center justify-center rounded-full bg-gray-5 px-3 py-1 text-base font-semibold text-primary">
+                  <p>{translate('lifetimeBanner.cards.2.space')}</p>
+                </div>
+                <div className="flex">
+                  <p className={' flex flex-row items-start space-x-0.5 whitespace-nowrap font-medium text-gray-80'}>
+                    <span className={'text-semibold text-2xl'}>€</span>
+                    <span className="price text-5xl font-bold">{translate('lifetimeBanner.cards.2.price')}</span>
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-col items-center justify-center space-y-1 rounded-xl bg-white py-3 px-4">
+                <div className="flex items-center justify-center rounded-full bg-gray-5 px-3 py-1 text-base font-semibold text-primary">
+                  <p>{translate('lifetimeBanner.cards.3.space')}</p>
+                </div>
+                <div className="flex">
+                  <p className={' flex flex-row items-start space-x-0.5 whitespace-nowrap font-medium text-gray-80'}>
+                    <span className={'text-semibold text-2xl'}>€</span>
+                    <span className="price text-5xl font-bold">{translate('lifetimeBanner.cards.3.price')}</span>
+                  </p>
+                </div>
+              </div>
             </div>
             <div className="flex">
               <button
                 className="focus:outline-none relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
                 onClick={() => {
-                  window.location.replace(
-                    'https://drive.internxt.com/checkout-plan?planId=plan_FkTXxEg3GZW0pg&couponCode=G8Ti4z1k&mode=subscription',
+                  window.open(
+                    'https://internxt.com/pricing?utm_source=drive&utm_medium=banner&utm_campaign=lifetimeapril',
+                    '_blank',
                   );
                 }}
               >
-                {translate('valentinesBanner.cta')}
+                {translate('lifetimeBanner.cta')}
               </button>
-            </div>
-          </div>
-          <div className=" hidden w-full pl-10 lg:flex">
-            <div className="flex object-cover">
-              <img src={Hearts} alt="hero" loading="lazy" />
             </div>
           </div>
         </div>
