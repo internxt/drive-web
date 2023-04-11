@@ -63,6 +63,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         });
       } finally {
         setLoadingPlanAction(null);
+        setIsDialogOpen(false);
       }
     } else {
       try {
@@ -77,6 +78,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         });
       } finally {
         setLoadingPlanAction(null);
+        setIsDialogOpen(false);
       }
     }
   }
