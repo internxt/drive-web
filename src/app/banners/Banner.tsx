@@ -82,7 +82,7 @@ const Banner = () => {
             </div>
             <div className="flex">
               <button
-                className="focus:outline-none relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
+                className="focus:outline-none relative flex flex-row items-center justify-center space-x-4 rounded-lg bg-white px-7 py-3 text-base font-medium text-primary transition duration-100 focus-visible:bg-gray-1 active:bg-gray-1 sm:text-lg"
                 onClick={() => {
                   window.open(
                     'https://internxt.com/pricing?utm_source=drive&utm_medium=banner&utm_campaign=lifetimeapril',
