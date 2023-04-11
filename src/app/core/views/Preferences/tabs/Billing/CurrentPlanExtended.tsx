@@ -3,7 +3,7 @@ import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/money.service';
 import { RenewalPeriod } from '../../../../../payment/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -89,6 +89,10 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   const getCurrentUsage = () => {
     return plan.usageDetails?.total || -1;
   };
+
+  useEffect(() => {
+    dispatch(planThunks.initializeThunk()).unwrap();
+  }, [userSubscription]);
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
