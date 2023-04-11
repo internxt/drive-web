@@ -74,16 +74,41 @@ export default function CheckoutPlanView(): JSX.Element {
         });
       }
     } else {
-      try {
-        const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
-        navigationService.push(AppView.Preferences);
-        dispatch(planActions.setSubscription(updatedSubscription));
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: 'Something went wrong while updating your subscription',
-          type: ToastType.Error,
+      if (mode === 'payment') {
+        await paymentService.cancelSubscription();
+        response = await paymentService.createCheckoutSession({
+          price_id: planId,
+          success_url: `${window.location.origin}/checkout/success`,
+          cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+          customer_email: user.email,
+          mode: mode,
         });
+        localStorage.setItem('sessionId', response.sessionId);
+        await paymentService.redirectToCheckout(response).then((result) => {
+          if (result.error) {
+            notificationsService.show({
+              type: ToastType.Error,
+              text: result.error.message as string,
+            });
+          } else {
+            notificationsService.show({
+              type: ToastType.Success,
+              text: 'Payment successful',
+            });
+          }
+        });
+      } else {
+        try {
+          const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
+          dispatch(planActions.setSubscription(updatedSubscription));
+          navigationService.push(AppView.Preferences);
+        } catch (err) {
+          console.error(err);
+          notificationsService.show({
+            text: 'Something went wrong while updating your subscription',
+            type: ToastType.Error,
+          });
+        }
       }
     }
   }
