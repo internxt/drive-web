@@ -72,7 +72,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import Banner from 'app/banners/Banner';
+import BannerWrapper from 'app/banners/BannerWrapper';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -535,7 +535,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      {plan.subscription?.type === 'free' && !localStorageService.get('showLifetimeBanner') && <Banner />}
+      {plan.subscription?.type === 'free' && !localStorageService.get('showLifetimeBanner') && <BannerWrapper />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

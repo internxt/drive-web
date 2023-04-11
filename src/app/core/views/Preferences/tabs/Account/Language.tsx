@@ -23,20 +23,22 @@ export default function Language(): JSX.Element {
   const [lang, setLang] = React.useState<string>();
   const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>();
 
+  function changeLang(lang: string = localStorageLanguage || i18next.language) {
+    setCurrentLangText(lang);
+    setLang(lang);
+  }
+
   useEffect(() => {
     if (localStorageLanguage) {
-      setCurrentLangText(currentLang[localStorageLanguage]);
-      setLang(localStorageLanguage);
+      changeLang(localStorageLanguage);
     } else {
-      setCurrentLangText(currentLang[i18next.language]);
-      setLang(i18next.language);
+      changeLang(i18next.language);
     }
   }, []);
 
   useEffect(() => {
     localStorageService.set('language', lang as string);
-    setCurrentLangText(currentLang[i18next.language]);
-    setLang(i18next.language);
+    changeLang(i18next.language);
   }, [lang]);
 
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, _ref) => {

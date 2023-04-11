@@ -3,27 +3,12 @@ import { X } from 'phosphor-react';
 import NeonBlur from 'assets/images/banner/infinity.svg';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const Banner = () => {
-  const [showLifetimeBanner, setShowLifetimeBanner] = React.useState(true);
+const Banner = ({ showBanner, onClose }) => {
   const { translate } = useTranslationContext();
-  const onClose = () => {
-    setShowLifetimeBanner(false);
-    localStorage.setItem('showLifetimeBanner', 'false');
-  };
-
-  useEffect(() => {
-    if (localStorage.getItem('showLifetimeBanner') === 'false') {
-      setShowLifetimeBanner(false);
-    } else {
-      setTimeout(() => {
-        setShowLifetimeBanner(true);
-      }, 5000);
-    }
-  }, []);
 
   return (
     <div
-      className={`${showLifetimeBanner ? 'flex' : 'hidden'} 
+      className={`${showBanner ? 'flex' : 'hidden'} 
          absolute top-0 left-0 right-0 bottom-0 z-10 bg-black bg-opacity-40`}
     >
       <div
