@@ -67,11 +67,10 @@ import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
 import './DriveExplorer.scss';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
-import user, { userActions, userSelectors, userSlice } from '../../../store/slices/user';
+import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import Banner from 'app/banners/Banner';
-import userService from 'app/auth/services/user.service';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
