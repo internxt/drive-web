@@ -8,6 +8,7 @@
   "testFiles": [
     "signup.spec.ts",
     "signup-password-requirements.spec.ts",
+    "signup-onboarding.spec.ts",
     "unauthorized.spec.ts",
     "upload-file.spec.ts",
     "recents-panel.spec.ts",

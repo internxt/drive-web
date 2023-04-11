@@ -28,7 +28,7 @@ import 'cypress-file-upload';
 import * as path from 'path';
 import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../constans';
 
-Cypress.Commands.add('login', () => {
+Cypress.Commands.add('login', (enableOnboarding?: boolean) => {
   const fixturesFolder = Cypress.config('fixturesFolder');
   const userFilename = 'test-user.json';
 
@@ -43,9 +43,10 @@ Cypress.Commands.add('login', () => {
       cy.url().should('include', '/app');
 
       // To not show the after signup onboarding
-      cy.window().then((win) => {
-        win.localStorage.setItem('signUpTutorialCompleted', 'true');
-      });
+      if (!enableOnboarding)
+        cy.window().then((win) => {
+          win.localStorage.setItem('signUpTutorialCompleted', 'true');
+        });
     },
   );
 });
