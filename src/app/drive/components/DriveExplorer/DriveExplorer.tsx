@@ -1,5 +1,5 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   Trash,
   DownloadSimple,
@@ -41,7 +41,7 @@ import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDi
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors } from '../../../store/slices/plan';
+import { planSelectors, PlanState } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
@@ -72,6 +72,7 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
+import BannerWrapper from 'app/banners/BannerWrapper';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -161,6 +162,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   });
 
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
+
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
@@ -532,6 +535,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
+      {plan.subscription?.type === 'free' && !localStorageService.get('showLifetimeBanner') && <BannerWrapper />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

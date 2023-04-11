@@ -8,6 +8,25 @@
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
+  "lifetimeBanner": {
+    "title": "Oferta lifetime",
+    "description": "¡Privacidad en la nube para siempre!",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Obtén la oferta"
+  },
   "lang": {
     "title": "Idioma",
     "es": "Español (ES)",
