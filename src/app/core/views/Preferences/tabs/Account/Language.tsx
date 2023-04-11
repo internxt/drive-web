@@ -24,7 +24,7 @@ export default function Language(): JSX.Element {
   const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>();
 
   function changeLang(lang: string = localStorageLanguage || i18next.language) {
-    setCurrentLangText(lang);
+    setCurrentLangText(currentLang[lang]);
     setLang(lang);
   }
 
