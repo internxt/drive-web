@@ -87,6 +87,7 @@ const Banner = () => {
                   window.open(
                     'https://internxt.com/pricing?utm_source=drive&utm_medium=banner&utm_campaign=lifetimeapril',
                     '_blank',
+                    'noopener,noreferrer',
                   );
                 }}
               >
