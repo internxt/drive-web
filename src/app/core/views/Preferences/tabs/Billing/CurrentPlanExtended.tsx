@@ -45,7 +45,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
-      await dispatch(planThunks.initializeThunk()).unwrap();
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
@@ -57,6 +56,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       });
     } finally {
       setCancellingSubscription(false);
+      dispatch(planThunks.initializeThunk()).unwrap();
     }
   }
 
@@ -89,10 +89,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   const getCurrentUsage = () => {
     return plan.usageDetails?.total || -1;
   };
-
-  useEffect(() => {
-    dispatch(planThunks.initializeThunk()).unwrap();
-  }, [cancellingSubscription]);
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
