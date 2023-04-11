@@ -4,6 +4,7 @@ import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadF
 import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
+import errorService from '../core/services/error.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -111,7 +112,7 @@ class UploadManager {
       )
         .then((driveFileData) => {
           if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
-            throw Error('Task cancelled');
+            throw Error('Upload task cancelled');
 
           const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
 
@@ -141,6 +142,14 @@ class UploadManager {
             tasksService.updateTask({
               taskId: taskId,
               merge: { status: TaskStatus.Error },
+            });
+            errorService.reportError(err, {
+              extra: {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                parentFolderId: file.parentFolderId,
+              },
             });
           }
 
@@ -253,7 +262,7 @@ class UploadManager {
 
       return filesReferences;
     } catch (error) {
-      console.log(error);
+      errorService.reportError(error);
       return [];
     }
   }
