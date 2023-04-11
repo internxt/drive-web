@@ -41,7 +41,7 @@ import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDi
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { PlanState, planSelectors } from '../../../store/slices/plan';
+import { planSelectors, PlanState } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
@@ -70,6 +70,8 @@ import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
+import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
+import { TaskStatus } from '../../../tasks/types';
 import Banner from 'app/banners/Banner';
 
 const PAGINATION_LIMIT = 50;
@@ -154,10 +156,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setCurrentTutorialStep(currentTutorialStep + 1);
   };
 
+  const isSignUpTutorialCompleted = localStorageService.getIsSignUpTutorialCompleted();
+  const successNotifications = useTaskManagerGetNotifications({
+    status: [TaskStatus.Success],
+  });
+
+  const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
+
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
+  useEffect(() => {
+    if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
+      setShowSecondTutorialStep(true);
+    }
+  }, [successNotifications]);
+
   const showTutorial =
-    useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
+    useAppSelector(userSelectors.hasSignedToday) &&
+    !isSignUpTutorialCompleted &&
+    (showSecondTutorialStep || currentTutorialStep === 0);
+
   const stepOneTutorialRef = useRef(null);
   const signupSteps = getSignUpSteps(
     {
