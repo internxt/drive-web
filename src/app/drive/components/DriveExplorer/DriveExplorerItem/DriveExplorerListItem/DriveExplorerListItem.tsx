@@ -13,7 +13,7 @@ import './DriveExplorerListItem.scss';
 import { DriveItemData } from '../../../../types';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
-  const plainName = item?.plainName || item?.plainName;
+  const plainName = item?.plainName || item?.plain_name;
   const type = item.type;
 
   if (!plainName || !type) return;
