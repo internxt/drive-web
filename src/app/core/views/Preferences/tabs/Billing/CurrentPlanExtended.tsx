@@ -45,9 +45,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
-      await setTimeout(() => {
-        dispatch(planThunks.initializeThunk()).unwrap();
-      }, 1000);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
@@ -59,6 +56,9 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       });
     } finally {
       setCancellingSubscription(false);
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
     }
   }
 
