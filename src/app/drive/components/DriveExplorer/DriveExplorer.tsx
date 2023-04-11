@@ -1,5 +1,5 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   Trash,
   DownloadSimple,
@@ -41,7 +41,7 @@ import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDi
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors } from '../../../store/slices/plan';
+import { PlanState, planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
@@ -67,10 +67,11 @@ import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
 import './DriveExplorer.scss';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
-import { userSelectors } from '../../../store/slices/user';
+import user, { userActions, userSelectors, userSlice } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import Banner from 'app/banners/Banner';
+import userService from 'app/auth/services/user.service';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -153,6 +154,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const passToNextStep = () => {
     setCurrentTutorialStep(currentTutorialStep + 1);
   };
+
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) && !localStorageService.getIsSignUpTutorialCompleted();
@@ -515,7 +518,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <Banner />
+      {plan.subscription?.type === 'free' && !localStorageService.get('showLifetimeBanner') && <Banner />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
