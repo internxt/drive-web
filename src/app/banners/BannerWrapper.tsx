@@ -12,10 +12,6 @@ const BannerWrapper = () => {
   useEffect(() => {
     if (localStorage.getItem('showLifetimeBanner') === 'false') {
       setShowBanner(false);
-    } else {
-      setTimeout(() => {
-        setShowBanner(true);
-      }, 5000);
     }
   }, []);
 
