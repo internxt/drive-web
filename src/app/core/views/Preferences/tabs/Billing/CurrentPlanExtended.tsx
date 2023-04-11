@@ -92,7 +92,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
 
   useEffect(() => {
     dispatch(planThunks.initializeThunk()).unwrap();
-  }, [userSubscription]);
+  }, [cancellingSubscription]);
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.currentPlan')}>
