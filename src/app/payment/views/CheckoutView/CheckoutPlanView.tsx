@@ -75,28 +75,36 @@ export default function CheckoutPlanView(): JSX.Element {
       }
     } else {
       if (mode === 'payment') {
-        await paymentService.cancelSubscription();
-        response = await paymentService.createCheckoutSession({
-          price_id: planId,
-          success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
-          customer_email: user.email,
-          mode: mode,
-        });
-        localStorage.setItem('sessionId', response.sessionId);
-        await paymentService.redirectToCheckout(response).then((result) => {
-          if (result.error) {
-            notificationsService.show({
-              type: ToastType.Error,
-              text: result.error.message as string,
-            });
-          } else {
-            notificationsService.show({
-              type: ToastType.Success,
-              text: 'Payment successful',
-            });
-          }
-        });
+        try {
+          response = await paymentService.createCheckoutSession({
+            price_id: planId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+            customer_email: user.email,
+            mode: mode,
+          });
+          localStorage.setItem('sessionId', response.sessionId);
+          await paymentService.redirectToCheckout(response).then(async (result) => {
+            await paymentService.cancelSubscription();
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              notificationsService.show({
+                type: ToastType.Success,
+                text: 'Payment successful',
+              });
+            }
+          });
+        } catch (error) {
+          console.error(error);
+          notificationsService.show({
+            text: 'Something went wrong while updating your subscription',
+            type: ToastType.Error,
+          });
+        }
       } else {
         try {
           const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);

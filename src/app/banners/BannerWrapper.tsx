@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import Banner from './Banner';
 
 const BannerWrapper = () => {
-  const [showBanner, setShowBanner] = useState(true);
+  const [showBanner, setShowBanner] = useState(false);
 
   const onClose = () => {
     setShowBanner(false);
@@ -10,7 +10,11 @@ const BannerWrapper = () => {
   };
 
   useEffect(() => {
-    if (localStorage.getItem('showLifetimeBanner') === 'false') {
+    if (!localStorage.getItem('showLifetimeBanner')) {
+      setTimeout(() => {
+        setShowBanner(true);
+      }, 30000);
+    } else if (localStorage.getItem('showLifetimeBanner') === 'false') {
       setShowBanner(false);
     }
   }, []);

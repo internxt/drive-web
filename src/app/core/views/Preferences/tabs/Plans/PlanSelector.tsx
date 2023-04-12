@@ -65,6 +65,38 @@ export default function PlanSelector({ className = '' }: { className?: string })
         setLoadingPlanAction(null);
       }
     } else {
+      if (interval === 'lifetime') {
+        try {
+          const response = await paymentService.createCheckoutSession({
+            price_id: priceId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+            customer_email: user.email,
+            mode: 'payment',
+          });
+          localStorage.setItem('sessionId', response.sessionId);
+          await paymentService.redirectToCheckout(response).then(async (result) => {
+            await paymentService.cancelSubscription();
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              notificationsService.show({
+                type: ToastType.Success,
+                text: 'Payment successful',
+              });
+            }
+          });
+        } catch (error) {
+          console.error(error);
+          notificationsService.show({
+            text: 'Something went wrong while updating your subscription',
+            type: ToastType.Error,
+          });
+        }
+      }
       try {
         const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
         dispatch(planActions.setSubscription(updatedSubscription));
