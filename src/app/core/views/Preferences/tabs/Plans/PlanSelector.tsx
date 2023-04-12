@@ -58,7 +58,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       } catch (err) {
         console.error(err);
         notificationsService.show({
-          text: 'Something went wrong while creating your subscription',
+          text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
       } finally {
@@ -93,7 +93,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         } catch (error) {
           console.error(error);
           notificationsService.show({
-            text: 'Something went wrong while updating your subscription',
+            text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
           });
         }
@@ -105,7 +105,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         } catch (err) {
           console.error(err);
           notificationsService.show({
-            text: 'Something went wrong while updating your subscription',
+            text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
           });
         } finally {

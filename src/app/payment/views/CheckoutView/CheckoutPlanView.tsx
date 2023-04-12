@@ -8,9 +8,11 @@ import { planActions, PlanState } from 'app/store/slices/plan';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
 
   console.log('CHECKOUT VISITED');
 
@@ -69,7 +71,7 @@ export default function CheckoutPlanView(): JSX.Element {
       } catch (err) {
         console.error(err);
         notificationsService.show({
-          text: 'Something went wrong while creating your subscription',
+          text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
       }
@@ -101,7 +103,7 @@ export default function CheckoutPlanView(): JSX.Element {
         } catch (error) {
           console.error(error);
           notificationsService.show({
-            text: 'Something went wrong while updating your subscription',
+            text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
           });
         }
@@ -113,7 +115,7 @@ export default function CheckoutPlanView(): JSX.Element {
         } catch (err) {
           console.error(err);
           notificationsService.show({
-            text: 'Something went wrong while updating your subscription',
+            text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
           });
         }
