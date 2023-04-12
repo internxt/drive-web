@@ -63,6 +63,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         });
       } finally {
         setLoadingPlanAction(null);
+        setIsDialogOpen(false);
       }
     } else {
       if (interval === 'lifetime') {
@@ -109,6 +110,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           });
         } finally {
           setLoadingPlanAction(null);
+          setIsDialogOpen(false);
         }
       }
     }

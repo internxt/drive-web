@@ -171,56 +171,9 @@ const Step2 = ({
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [feedbackSelected, setFeedbackSelected] = useState<string>('');
   const [otherFeedback, setOtherFeedback] = useState<string>('');
 
   const MAX_OTHERFEEDBACK_LENGTH = 1000;
-
-  const feedbackOptions = [
-    {
-      id: 'TooExpensive',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.tooExpensive'),
-    },
-    {
-      id: 'LackOfFeatures',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.lackOfFeatures'),
-    },
-    {
-      id: 'WantTryAnother',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.wantTryAnother'),
-    },
-    {
-      id: 'JustTrying',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.justTrying'),
-    },
-    {
-      id: 'Other',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.other'),
-    },
-  ];
-
-  const feedbackList = feedbackOptions.map((feedbackElement) => {
-    return (
-      <div className="mt-2" key={'div-' + feedbackElement.id}>
-        <label
-          className="flex flex-row items-center"
-          onClick={() => {
-            setFeedbackSelected(feedbackElement.id);
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={feedbackSelected === feedbackElement.id}
-            readOnly
-            className="checkbox-rounded"
-          />
-          <p className="ml-2 text-base font-medium">{feedbackElement.title}</p>
-        </label>
-      </div>
-    );
-  });
-
-  const isFeedbackSelectedOther = () => feedbackSelected === 'Other';
 
   return (
     <>
@@ -229,37 +182,30 @@ const Step2 = ({
           currentPlanName,
         })}
       </p>
-      <div className="mt-2">{feedbackList}</div>
-      {isFeedbackSelectedOther() && (
-        <div>
-          <textarea
-            disabled={cancellingSubscription}
-            value={otherFeedback}
-            placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
-            rows={4}
-            className="outline-none mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
-            onChange={(e) => setOtherFeedback(String(e.target.value))}
-          />
-          <div className="flex w-full max-w-lg justify-end">
-            <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red-std') || ''}`}>
-              {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
-            </span>
-          </div>
+      <div>
+        <textarea
+          disabled={cancellingSubscription}
+          value={otherFeedback}
+          placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
+          rows={4}
+          className="outline-none mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+          onChange={(e) => setOtherFeedback(String(e.target.value))}
+        />
+        <div className="flex w-full max-w-lg justify-end">
+          <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red-std') || ''}`}>
+            {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
+          </span>
         </div>
-      )}
+      </div>
 
       <div className="mt-4 flex justify-end">
         <Button
           loading={cancellingSubscription}
-          disabled={isFeedbackSelectedOther() && otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH}
+          disabled={otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH || otherFeedback.length <= 0}
           variant="secondary"
           className="shadow-subtle-hard"
           onClick={() => {
-            if (isFeedbackSelectedOther()) {
-              cancelSubscription(otherFeedback.trim());
-            } else {
-              cancelSubscription(feedbackSelected);
-            }
+            cancelSubscription(otherFeedback.trim());
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}

@@ -3,7 +3,7 @@ import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/money.service';
 import { RenewalPeriod } from '../../../../../payment/types';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -45,7 +45,6 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     setCancellingSubscription(true);
     try {
       await paymentService.cancelSubscription();
-      await dispatch(planThunks.initializeThunk()).unwrap();
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
@@ -57,6 +56,9 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
       });
     } finally {
       setCancellingSubscription(false);
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
     }
   }
 
