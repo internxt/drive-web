@@ -96,19 +96,20 @@ export default function PlanSelector({ className = '' }: { className?: string })
             type: ToastType.Error,
           });
         }
-      }
-      try {
-        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-        dispatch(planActions.setSubscription(updatedSubscription));
-        notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: 'Something went wrong while updating your subscription',
-          type: ToastType.Error,
-        });
-      } finally {
-        setLoadingPlanAction(null);
+      } else {
+        try {
+          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+          dispatch(planActions.setSubscription(updatedSubscription));
+          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+        } catch (err) {
+          console.error(err);
+          notificationsService.show({
+            text: 'Something went wrong while updating your subscription',
+            type: ToastType.Error,
+          });
+        } finally {
+          setLoadingPlanAction(null);
+        }
       }
     }
   }
