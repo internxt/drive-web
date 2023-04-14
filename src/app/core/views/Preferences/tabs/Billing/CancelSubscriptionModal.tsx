@@ -5,6 +5,7 @@ import Button from '../../../../../shared/components/Button/Button';
 import Modal from '../../../../../shared/components/Modal';
 import { FreeStoragePlan } from '../../../../../drive/types';
 import sizeService from '../../../../../drive/services/size.service';
+import paymentService from 'app/payment/services/payment.service';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -24,30 +25,43 @@ const CancelSubscriptionModal = ({
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [couponAvailable, setCouponAvailable] = useState(false);
 
   useEffect(() => {
-    if (isOpen) {
-      setStep(1);
+    paymentService.getCoupon().then((coupon) => setCouponAvailable(coupon.elegible));
+  }, []);
+
+  useEffect(() => {
+    if (!couponAvailable && isOpen) {
+      setStep(2);
     }
-  }, [isOpen]);
+  }, [couponAvailable]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">
-        {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
-      </h1>
-      <h2 className="text-base font-light text-gray-50">{step} of 2</h2>
-      {step === 1 ? (
-        <Step1
+      {(step === 2 || step === 3) && (
+        <>
+          <h1 className="text-2xl font-medium text-gray-80">
+            {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
+          </h1>
+          <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>
+        </>
+      )}
+      {step === 1 && <Step1 currentPlanName={currentPlanName} onClose={onClose} setStep={setStep} />}
+
+      {step === 2 && (
+        <Step2
           currentPlanName={currentPlanName}
           onClose={onClose}
           setStep={setStep}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
         />
-      ) : (
-        <Step2
+      )}
+
+      {step === 3 && (
+        <Step3
           currentPlanName={currentPlanName}
           onClose={onClose}
           cancellingSubscription={cancellingSubscription}
@@ -60,6 +74,48 @@ const CancelSubscriptionModal = ({
 
 const Step1 = ({
   currentPlanName,
+  setStep,
+  onClose,
+}: {
+  currentPlanName: string;
+  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  onClose: () => void;
+}): JSX.Element => {
+  const { translate } = useTranslationContext();
+
+  return (
+    <>
+      <p className="mt-5 text-center text-3xl font-semibold">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.title')}
+      </p>
+      <p className="font-regular mb-10 text-center text-7xl text-primary">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.subtitle')}
+      </p>
+      <p className="font-regular mt-4 text-lg text-gray-100">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.text1')}
+        <span className="font-semibold"> {currentPlanName} </span>
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.text2')}
+      </p>
+      <div className="mt-5 flex justify-end">
+        <Button
+          className={'shadow-subtle-hard'}
+          variant="secondary"
+          onClick={() => {
+            setStep(2);
+          }}
+        >
+          {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
+        </Button>
+        <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
+          {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.continue')}
+        </Button>
+      </div>
+    </>
+  );
+};
+
+const Step2 = ({
+  currentPlanName,
   currentPlanInfo,
   currentUsage,
   setStep,
@@ -68,7 +124,7 @@ const Step1 = ({
   currentPlanName: string;
   currentPlanInfo: string;
   currentUsage: number;
-  setStep: Dispatch<SetStateAction<2 | 1>>;
+  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -146,7 +202,7 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
-            setStep(2);
+            setStep(3);
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
@@ -159,7 +215,7 @@ const Step1 = ({
   );
 };
 
-const Step2 = ({
+const Step3 = ({
   currentPlanName,
   onClose,
   cancellingSubscription,
