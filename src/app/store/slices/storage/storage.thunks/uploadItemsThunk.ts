@@ -61,8 +61,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -148,8 +150,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -232,8 +236,10 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -313,8 +319,10 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
