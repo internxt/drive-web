@@ -15,7 +15,7 @@ const textContent = {
 
 const SignupAuth = () => {
   return (
-    <div className="flex w-full flex-col space-y-2 lg:items-start lg:pt-0">
+    <div className="flex h-52 w-full flex-col space-y-2 lg:items-start lg:pt-0">
       <SignupComponent
         buttonColor="bg-primary focus-visible:bg-primary-dark active:bg-primary-dark"
         textContent={textContent}
@@ -27,22 +27,22 @@ const SignupAuth = () => {
 
 export default function SignupBlog(): JSX.Element {
   return (
-    <div className="flex w-full max-w-7xl flex-col items-center justify-center overflow-hidden py-3 lg:py-16">
-      <div className="flex w-full  flex-row bg-gradient-to-br from-blue-20 to-white">
-        <div className="mt-11 mb-11 ml-11 flex w-full max-w-xs flex-col items-start justify-center">
-          <p className="text-4xl font-semibold">
+    <div className="flex flex-col items-center justify-center overflow-hidden py-3 lg:py-10">
+      <div className="flex w-full flex-row bg-gradient-to-br from-blue-20 to-white">
+        <div className="mt-5 mb-10 ml-11 flex w-full max-w-xs flex-col items-start justify-center">
+          <p className="text-2xl font-semibold">
             Keep those now clean files safe, <span className="text-primary">join Internxt for free</span>
           </p>
-          <div className="flex w-64">
+          <div className="flex w-72">
             <SignupAuth />
           </div>
         </div>
-        <div className="-ml-40 flex items-center">
-          <div className="relative left-56 top-5 flex flex-col overflow-hidden">
+        <div className="-ml-32 flex items-center overflow-hidden">
+          <div className="relative left-56 top-4 flex flex-col overflow-hidden">
             <img
               src={InternxtDevices}
-              width={734}
-              height={540}
+              width={534}
+              height={340}
               // draggable="false"
               about="desktop, laptop and phone with Internxt app"
               loading="eager"
