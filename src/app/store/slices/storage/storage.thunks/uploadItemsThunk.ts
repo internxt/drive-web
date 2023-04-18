@@ -64,7 +64,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
       const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (totalItemsSize >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -153,7 +153,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
       const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (totalItemsSize >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -239,7 +239,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
       const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (totalItemsSize >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -322,7 +322,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
       const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (totalItemsSize >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
