@@ -11,10 +11,10 @@ import authService from '../../../auth/services/auth.service';
 
 export class SdkFactory {
   private static sdk: {
-    dispatch: AppDispatch,
-    localStorage: LocalStorageService,
-    instance: SdkFactory,
-    newApiInstance: SdkFactory,
+    dispatch: AppDispatch;
+    localStorage: LocalStorageService;
+    instance: SdkFactory;
+    newApiInstance: SdkFactory;
   };
   private readonly apiUrl: ApiUrl;
 
@@ -127,7 +127,6 @@ export class SdkFactory {
   private getApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     return {
-      mnemonic: this.getMnemonic(workspace),
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
@@ -138,7 +137,6 @@ export class SdkFactory {
   private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     return {
-      mnemonic: this.getMnemonic(workspace),
       token: this.getNewToken(workspace),
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
