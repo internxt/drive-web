@@ -1,24 +1,26 @@
 import React from 'react';
 import { House, Lifebuoy, Question } from 'phosphor-react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 export default function notFound() {
+  const { translate } = useTranslationContext();
   const cards = [
     {
       icon: House,
-      title: 'Return Home',
-      description: 'Go back to Internxt Drive.',
-      urlRedirect: 'https://drive.internxt.com/app',
+      title: translate('notFound.card1.title'),
+      description: translate('notFound.card1.description'),
+      urlRedirect: translate('notFound.card1.urlRedirect'),
     },
     {
       icon: Question,
-      title: 'Visit Help Center',
-      description: 'Troubleshoot common issues and browse our FAQ.',
-      urlRedirect: 'https://help.internxt.com/en/',
+      title: translate('notFound.card2.title'),
+      description: translate('notFound.card2.description'),
+      urlRedirect: translate('notFound.card2.urlRedirect'),
     },
     {
       icon: Lifebuoy,
-      title: 'Contact Support',
-      description: 'Reach out to our Support Team at hello@internxt.com.',
-      urlRedirect: 'mailto:hello@internxt.com',
+      title: translate('notFound.card3.title'),
+      description: translate('notFound.card3.description'),
+      urlRedirect: translate('notFound.card3.urlRedirect'),
     },
   ];
 
@@ -27,12 +29,12 @@ export default function notFound() {
       <section className="overflow-hidden px-5 py-32">
         <div className="content flex flex-col items-center justify-center space-y-4 lg:pt-10">
           <div className="flex flex-col rounded-lg bg-gray-5 px-4 py-2">
-            <p className="text-xl font-medium text-gray-80">Error 404</p>
+            <p className="text-xl font-medium text-gray-80">{translate('notFound.header')}</p>
           </div>
           <div className="flex flex-col items-center justify-center space-y-24">
             <div className="flex flex-col space-y-2 text-center">
-              <h1 className="text-6xl font-bold text-gray-100">Nothing to see here...</h1>
-              <p className="text-xl text-gray-80">The page you are looking for could not be found.</p>
+              <h1 className="text-6xl font-bold text-gray-100">{translate('notFound.title')}</h1>
+              <p className="text-xl text-gray-80">{translate('notFound.description')}</p>
             </div>
             <div className="flex flex-row flex-wrap items-center justify-center gap-10">
               {cards.map((card, index) => (
