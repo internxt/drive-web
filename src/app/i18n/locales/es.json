@@ -838,7 +838,9 @@
     "emailNotEmpty": "El correo no debe estar vacío",
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
-    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción"
+    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCoupon": "Se han aplicado 3 meses gratis",
+    "errorApplyCoupon": "Se ha producido un error al aplicar el descuento"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

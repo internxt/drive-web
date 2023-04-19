@@ -6,6 +6,7 @@ import Modal from '../../../../../shared/components/Modal';
 import { FreeStoragePlan } from '../../../../../drive/types';
 import sizeService from '../../../../../drive/services/size.service';
 import paymentService from 'app/payment/services/payment.service';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -25,18 +26,33 @@ const CancelSubscriptionModal = ({
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(2);
   const [couponAvailable, setCouponAvailable] = useState(false);
+  const [coupon, setCoupon] = useState('');
 
   useEffect(() => {
     paymentService.getCoupon().then((coupon) => setCouponAvailable(coupon.elegible));
+    paymentService.getCoupon().then((coupon) => setCoupon(coupon.coupon));
   }, []);
 
   useEffect(() => {
-    if (!couponAvailable && isOpen) {
-      setStep(2);
-    }
+    couponAvailable && setStep(1);
   }, [couponAvailable]);
+
+  const applyCoupon = async () => {
+    try {
+      await paymentService.applyCoupon(coupon);
+      notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
+    } catch (error) {
+      console.error(error);
+      notificationsService.show({
+        text: translate('notificationMessages.errorApplyCoupon'),
+        type: ToastType.Error,
+      });
+    } finally {
+      onClose();
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -48,7 +64,7 @@ const CancelSubscriptionModal = ({
           <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>
         </>
       )}
-      {step === 1 && <Step1 currentPlanName={currentPlanName} onClose={onClose} setStep={setStep} />}
+      {step === 1 && <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />}
 
       {step === 2 && (
         <Step2
@@ -75,11 +91,11 @@ const CancelSubscriptionModal = ({
 const Step1 = ({
   currentPlanName,
   setStep,
-  onClose,
+  applyCoupon,
 }: {
   currentPlanName: string;
   setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
-  onClose: () => void;
+  applyCoupon: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
 
@@ -106,7 +122,7 @@ const Step1 = ({
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
+        <Button className="ml-2 shadow-subtle-hard" onClick={applyCoupon}>
           {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.continue')}
         </Button>
       </div>
