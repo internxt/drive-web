@@ -535,7 +535,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      {plan.subscription?.type === 'free' && !localStorageService.get('showLifetimeBanner') && <BannerWrapper />}
+      {plan.subscription?.type === 'free' &&
+        !localStorageService.get('showLifetimeBanner') &&
+        localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) && <BannerWrapper />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
