@@ -45,11 +45,11 @@
     }
   },
   "lang": {
-    "title": "Language",
-    "es": "Spanish (ES)",
+    "title": "Lingua",
+    "es": "Spagnolo (ES)",
     "en": "English (EN)",
-    "fr": "French (FR)",
-    "ita": "Italian (ITA)"
+    "fr": "Francese (FR)",
+    "ita": "Italiano (ITA)"
   },
   "auth": {
     "email": "Email",
@@ -154,15 +154,15 @@
   },
   "views": {
     "recents": {
-      "head": "Recents",
+      "head": "Recenti",
       "empty": {
-        "title": "No recent files available",
-        "description": "New uploads and recently opened files will appear here automatically",
-        "folderEmpty": "This folder is empty",
-        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
-        "uploadFiles": "Upload files",
-        "noResults": "There are no results for this search",
-        "dragNDrop": "Drag and drop here or click on upload button"
+        "title": "Non sono disponibili file recenti",
+        "description": "I nuovi caricamenti e i file aperti di recente appariranno qui automaticamente",
+        "folderEmpty": "Questa cartella è vuota",
+        "folderEmptySubtitle": "Trascinare e rilasciare i file o selezionare i singoli file da caricare",
+        "uploadFiles": "Caricare i file",
+        "noResults": "Non ci sono risultati per questa ricerca",
+        "dragNDrop": "Trascinare e rilasciare qui o fare clic sul pulsante di caricamento"
       }
     },
     "photos": {
@@ -174,77 +174,77 @@
     "account": {
       "title": "Account",
       "avatar": {
-        "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
-        "dragNDrop": "Select or drop a picture",
-        "success": "Avatar has been successfully updated",
-        "error": "Something happened while uploading your avatar",
-        "removed": "Avatar successfully deleted",
-        "underLimitSize": "Please choose an image under 10MB of size"
+        "title": "Carica avatar",
+        "removePhoto": "Elimina foto",
+        "updatePhoto": "Carica nuova immagine",
+        "dragNDrop": "Seleziona o trascina un'immagine",
+        "success": "L'avatar è stato aggiornato correttamente",
+        "error": "È successo qualcosa durante il caricamento del tuo avatar",
+        "removed": "Avatar eliminato con successo",
+        "underLimitSize": "Scegliere un'immagine di dimensioni inferiori a 10 MB"
       },
       "popover": {
-        "downloadApp": "Download app",
-        "settings": "Settings",
-        "logout": "Log out",
-        "spaceUsed": "{{space}}% space used"
+        "downloadApp": "Scarica l'app",
+        "settings": "Impostazioni",
+        "logout": "Disconnettersi",
+        "spaceUsed": "{{space}}% spazio usato"
       },
       "tabs": {
         "account": {
           "label": "Account",
           "title": "Personal",
-          "usage": "Used {{totalUsed}} of {{totalSpace}}",
+          "usage": "Usati {{totalUsed}} di {{totalSpace}}",
           "view": {
             "backups": "Backups",
             "photos": "Photos",
-            "trash": "Trash",
+            "trash": "Cestino",
             "free": {
-              "planName": "Free plan",
-              "button": "Upgrade"
+              "planName": "Piano gratuito",
+              "button": "Acquista spazio"
             },
             "lifetime": {
-              "planName": "Lifetime"
+              "planName": "A vita"
             },
             "subscription": {
-              "planName": "Subscription",
+              "planName": "Abbonamento",
               "button": "change",
-              "yearly": "year",
-              "monthly": "month"
+              "yearly": "anno",
+              "monthly": "mese"
             }
           },
           "accountDetails": {
-            "head": "Account details",
-            "name": "Name",
-            "lastname": "Lastname",
+            "head": "Dettagli account",
+            "name": "Nome",
+            "lastname": "Cognome",
             "card": {
-              "name": "Name",
-              "lastname": "Lastname",
-              "edit": "Edit",
-              "email": "Email",
-              "resendEmail": "Resend verification email"
+              "name": "Nome",
+              "lastname": "Cognome",
+              "edit": "Modifica",
+              "email": "E-mail",
+              "resendEmail": "Invia nuovamente e-mail di verifica"
             },
             "verify": {
-              "verify": "Verify your email",
-              "verified": "Verified email",
-              "description": "Check your inbox"
+              "verify": "Verifica la tua email",
+              "verified": "Email verificata",
+              "description": "Controlla nella tua casella di posta o nello spam"
             },
             "editProfile": {
-              "name": "Name",
-              "lastname": "Lastname"
+              "name": "Nome",
+              "lastname": "Cognome"
             },
-            "updateProfile": "Profile updated successfully",
-            "errorUpdatingProfile": "We could not update your profile"
+            "updateProfile": "Profilo aggiornato con successo",
+            "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
           },
           "deleteAccount": {
-            "head": "Delete account",
-            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
-            "isSubscribed": "Please, cancel your subscription first",
-            "confirmationEmail": "Confirmation email has been sent"
+            "head": "Elimina l'account",
+            "description": "Se elimini il tuo account, i tuoi dati verranno cancellati per sempre. Questa azione non può essere annullata.",
+            "isSubscribed": "Annullare prima l'abbonamento",
+            "confirmationEmail": "L'e-mail di conferma è stata inviata"
           }
         },
         "billing": {
-          "label": "Billing",
-          "currentPlan": "Current plan",
+          "label": "Fatturazione",
+          "currentPlan": "Piano attuale",
           "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
           "cancelSubscriptionModal": {
             "title": "Cancel subscription",
@@ -268,21 +268,21 @@
           },
           "billed": "Billed {{interval}} {{renewDate}}",
           "paymentMethod": {
-            "head": "Payment method",
+            "head": "Metodo di pagamento",
             "empty": {
-              "title": "You are on free plan",
-              "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
+              "title": "Hai un piano gratuito",
+              "subtitle": "Qui appariranno automaticamente i dati della carta di credito quando utilizzi un piano di abbonamento a pagamento."
             },
             "title": "Add new payment method"
           },
           "invoices": {
-            "head": "Invoices",
-            "billingDate": "Billing date",
+            "head": "Fatture",
+            "billingDate": "Data di fatturazione",
             "empty": {
-              "title": "You are in free plan",
-              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
+              "title": "Hai un piano gratuito",
+              "subtitle": "Qui appariranno automaticamente le fatture emesse quando viene effettuato un pagamento."
             },
-            "download": "Download invoice"
+            "download": "Scarica la fattura"
           }
         },
         "info": {
@@ -488,12 +488,12 @@
       "move": "Move"
     },
     "removeSharedLinkModal": {
-      "title": "Delete link",
-      "multiSharedDescription": "Users with the links will lose access to the shared content",
-      "singleSharedDescription": "Users with the link will lose access to the shared content",
-      "cancel": "Cancel",
-      "deleteLinks": "Delete links",
-      "deleteLink": "Delete link"
+      "title": "Elimina link",
+      "multiSharedDescription": "Gli utenti che hanno questo link perderanno l'accesso al contenuto condiviso.",
+      "singleSharedDescription": "Gli utenti che hanno questo link perderanno l'accesso al contenuto condiviso.",
+      "cancel": "Annulla",
+      "deleteLinks": "Elimina i link",
+      "deleteLink": "Elimina link"
     },
     "newFolderModal": {
       "title": "Nuova cartella",
@@ -528,20 +528,20 @@
       }
     },
     "friendsInvitedModal": {
-      "title": "Friends invited",
-      "email": "Email",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "empty": "You have not invited anyone yet",
-      "resend": "Resend invitation",
-      "resentInvitation": "Invitation resent successfully",
-      "resendError": "Error while resending email: {{reason}}"
+      "title": "Amici invitati",
+      "email": "E-mail",
+      "pending": "In attesa",
+      "accepted": "Inviti accettati",
+      "empty": "Non hai ancora invitato nessuno",
+      "resend": "Reinvia l'invito",
+      "resentInvitation": "Invito reinviato con successo",
+      "resendError": "Errore durante il reinvio dell'e-mail: {{reason}}"
     },
     "deleteAccountModal": {
-      "title": "Are you sure?",
-      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
-      "cancel": "Cancel",
-      "confirm": "Confirm"
+      "title": "Sei sicuro?",
+      "subtitle": "Tutti i tuoi file verranno rimossi per sempre e perderai l'accesso al tuo account Internxt.",
+      "cancel": "Annulla",
+      "confirm": "Conferma"
     },
     "changePasswordModal": {
       "title": "Change password",
@@ -619,7 +619,7 @@
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
-    "your-devices": "Your devices",
+    "your-devices": "I vostri dispositivi",
     "back-to-devices": "Go back to devices",
     "empty": {
       "title": "Non hai backup",
@@ -648,51 +648,51 @@
   },
   "shared-links": {
     "shared-links": "Link condivisi",
-    "view": "views",
+    "view": "viste",
     "list": {
-      "link-content": "Link content",
-      "shared": "Shared",
-      "created": "Created",
-      "size": "Size"
+      "link-content": "Contenuto del link",
+      "shared": "Condivisioni",
+      "created": "Creato",
+      "size": "Dimenisone"
     },
     "empty-state": {
-      "title": "Nothing shared yet",
-      "subtitle": "Share a folder or a file to get started"
+      "title": "Niente di condiviso, per ora",
+      "subtitle": "Condividi un file o una cartella, per iniziare"
     },
     "item-menu": {
-      "copy-link": "Copy link",
-      "link-settings": "Share settings",
-      "delete-link": "Delete link",
-      "delete-links": "Delete links"
+      "copy-link": "Copia link",
+      "link-settings": "Condividi le impostazioni",
+      "delete-link": "Elimina il link",
+      "delete-links": "Elimina i link"
     },
     "link-settings": {
-      "share-settings": "Share settings",
-      "views": "Views",
-      "options": "Options",
-      "copy-link": "Copy link",
-      "save": "Save",
-      "saving": "Saving",
-      "save-close": "Save and close",
-      "close": "Close"
+      "share-settings": "Condividi le impostazioni",
+      "views": "Viste",
+      "options": "Opzioni",
+      "copy-link": "Copia link",
+      "save": "Salva",
+      "saving": "Risparmio",
+      "save-close": "Salva e chiudi",
+      "close": "Chiudi"
     },
     "toast": {
-      "copy-to-clipboard": "Link copied to clipboard",
-      "link-updated": "Link settings updated",
+      "copy-to-clipboard": "Link copiato negli appunti",
+      "link-updated": "Impostazioni di collegamento aggiornate",
       "link-deleted": "Link rimosso",
       "links-deleted": "Link(s) rimossi"
     }
   },
   "trash": {
-    "trash": "Trash",
-    "clearTrash": "Trash has been cleared",
+    "trash": "Cestino",
+    "clearTrash": "La spazzatura è stata eliminata",
     "list": {
-      "name": "Name",
-      "size": "Size",
-      "moved-to-trash": "Spostato nel cestino"
+      "name": "Nome",
+      "size": "Dimenisone",
+      "moved-to-trash": "File inviato al cestino"
     },
     "empty-state": {
-      "title": "Drive trash is empty",
-      "subtitle": "Deleted files and folders will appear here"
+      "title": "Il cestino è vuoto",
+      "subtitle": "I file e le cartelle eliminati saranno visualizzati qui"
     },
     "item-menu": {
       "restore": "Restore",
@@ -859,16 +859,16 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
-    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
+    "restoreItems": "{{itemsToRecover}} spostato a {{destination}}",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
-    "verificationEmail": "Verification email has been sent",
+    "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription"
   },
   "actions": {
-    "undo": "Undo",
+    "undo": "Annulla",
     "upload": {
       "new": "Nuovo",
       "folder": "Nuova cartella",
@@ -883,7 +883,7 @@
     "accessFile": "Access File",
     "upgradeNow": "Aggiornare ora",
     "purchasePlan": "Aggiornare ora",
-    "upgrade": "Upgrade",
+    "upgrade": "Acquista spazio",
     "buyStorage": "Aggiornare ora",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
@@ -894,8 +894,8 @@
     "subscribe": "Subscribe",
     "moreInfo": "Maggiori informazioni",
     "dismiss": "Dismiss",
-    "save": "Save",
-    "back": "Back",
+    "save": "Salva",
+    "back": "Annulla",
     "edit": "Edit",
     "submit": "Submit",
     "access": "Access",
@@ -911,7 +911,7 @@
     "copyLink": "Copia link"
   },
   "drive": {
-    "usage": "Usage",
+    "usage": "Utilizzo",
     "currentPlan": "Current plan",
     "loadingFile": "Loading preview",
     "previewNoAvailable": "No preview available",
@@ -985,17 +985,17 @@
     }
   },
   "inviteAFriend": {
-    "title": "Invite a friend",
+    "title": "Invita un amico",
     "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
-    "placeholder": "Enter friend email",
+    "description": "Spargi la voce, ricevi 1GB per ogni amico che inviti in Internxt. Ottieni fino a un massimo di {{N}} GB",
+    "label": "Indirizzo e-mail dell'amico",
+    "placeholder": "Inserisci l'email dell'amico",
     "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
+      "sendInvitation": "Invia invito",
+      "seeInvitations": "Visualizza tutti gli inviti"
     },
     "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
+      "dailyEmailLimit": "Avete raggiunto il limite di 10 inviti/giorno"
     }
   },
   "newsletter": {
