@@ -27,6 +27,23 @@
     },
     "cta": "Get the deal"
   },
+  "notFound": {
+    "header": "Error 404",
+    "title": "Nothing to see here...",
+    "description": "The page you are looking for could not be found.",
+    "card1": {
+      "title": "Return Home",
+      "description": "Go back to Internxt Drive."
+    },
+    "card2": {
+      "title": "Visit Help Center",
+      "description": "Troubleshoot common issues and browse our FAQ."
+    },
+    "card3": {
+      "title": "Contact Support",
+      "description": "Reach out to our Support Team at hello@internxt.com."
+    }
+  },
   "lang": {
     "title": "Language",
     "es": "Spanish (ES)",
