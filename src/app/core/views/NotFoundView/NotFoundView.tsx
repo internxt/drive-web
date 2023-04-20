@@ -3,7 +3,7 @@ import { House, Lifebuoy, Question } from 'phosphor-react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-export default function notFound() {
+export default function NotFound() {
   const { translate } = useTranslationContext();
   const cards = [
     {
