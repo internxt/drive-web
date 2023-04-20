@@ -13,7 +13,7 @@ const BannerWrapper = () => {
     if (!localStorage.getItem('showLifetimeBanner')) {
       setTimeout(() => {
         setShowBanner(true);
-      }, 30000);
+      }, 10000);
     }
   }, []);
 
