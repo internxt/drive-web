@@ -79,7 +79,7 @@
   },
   "general": {
     "new": "new",
-    "of": "of",
+    "of": "di",
     "terms": "Terms and conditions",
     "help": "Need help?",
     "searchBar": "Search this folder",
@@ -88,7 +88,7 @@
       "production": "Production"
     },
     "loading": {
-      "default": "Loading...",
+      "default": "Caricamento...",
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
@@ -117,13 +117,13 @@
     "folder": "Folder"
   },
   "shareLayout": {
-    "title": "WE ARE INTERNXT",
-    "subtitle": "Private and secure cloud storage",
+    "title": "INTERNXT",
+    "subtitle": "Archiviazione cloud sicura",
     "labels": {
-      "privacy": "Privacy by design",
-      "end-to-end": "End-to-end encryption",
-      "military-grade": "Military-grade encryption",
-      "zero-knowledge": "Zero-knowledge technology"
+      "privacy": "Privato by design",
+      "end-to-end": "Crittografia end-to-end",
+      "military-grade": "Crittografia di livello militare",
+      "zero-knowledge": "Zero Knowledge"
     },
     "tryInternxt": "Try out Internxt",
     "topBar": {
@@ -136,21 +136,21 @@
     }
   },
   "shareItemPwdView": {
-    "title": "This link is password protected",
-    "putPwd": "Please enter the password provided",
-    "putPwd1": "by the sender for access.",
+    "title": "Questo link è protetto da password",
+    "putPwd": "Per accedere, inserisci la password",
+    "putPwd1": " fornita dal mittente.",
     "password": "Password",
     "pwdLayout": "password",
-    "access": "Access"
+    "access": "Login"
   },
   "sideNav": {
     "drive": "Drive",
     "photos": "Photos",
-    "backups": "Backups",
-    "sharedLinks": "Shared Links",
-    "recents": "Recents",
-    "trash": "Trash",
-    "desktop": "Desktop"
+    "backups": "Backup",
+    "sharedLinks": "Link Condivisi",
+    "recents": "Recenti",
+    "trash": "Cestino",
+    "desktop": "Applicazione desktop"
   },
   "views": {
     "recents": {
@@ -167,8 +167,8 @@
     },
     "photos": {
       "empty": {
-        "title": "Your photo gallery is empty",
-        "description": "Use the Internxt mobile app to sync all your photos from your device"
+        "title": "La tua galleria è vuota",
+        "description": "Usa l'app mobile Internxt per sincronizzare le tue foto"
       }
     },
     "account": {
@@ -496,35 +496,35 @@
       "deleteLink": "Delete link"
     },
     "newFolderModal": {
-      "title": "New folder",
-      "label": "Name",
+      "title": "Nuova cartella",
+      "label": "Nome",
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
     "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Delete {{item}} selected items?",
-      "singleTitle": "Delete {{item}} selected item?",
-      "subtitle": "You can't undo this action",
+      "multiToolBar": "file selezionati",
+      "singleToolBar": "file selezionati",
+      "multiTitle": "Eliminare i {{item}} file selezionati?",
+      "singleTitle": "Eliminare i {{item}} file selezionati?",
+      "subtitle": "Non è possibile annullare l'azione",
       "buttons": {
-        "cancel": "Cancel",
-        "delete": "Delete"
+        "cancel": "Annulla",
+        "delete": "Elimina"
       }
     },
     "sharePhotosModal": {
-      "singleTitle": "Share {{item}} photo",
-      "multiTitle": "Share {{item}} photos",
-      "options": "Link options",
-      "limit": "Limit number of time users can open this link",
-      "openCount": "Open count limit",
-      "times": "times",
-      "change": "Change",
+      "singleTitle": "Condividi {{item}} foto",
+      "multiTitle": "Condividi {{item}} foto",
+      "options": "Opzioni link",
+      "limit": "Limita il numero di volte che il link può essere aperto",
+      "openCount": "Limite apertura",
+      "times": "volte",
+      "change": "Modifica",
       "buttons": {
-        "cancel": "Cancel",
-        "create": "Create link",
-        "creating": "Creating link...",
-        "copyLink": "Copy link"
+        "cancel": "Annulla",
+        "create": "Creazione collegamento",
+        "creating": "Creare un collegamento...",
+        "copyLink": "Copia link"
       }
     },
     "friendsInvitedModal": {
@@ -571,7 +571,7 @@
     }
   },
   "error": {
-    "wrongPassword": "Wrong password, try again or contact link owner",
+    "wrongPassword": "Password errata, riprova o contatta il proprietario",
     "genericError": "There was an error: {{reason}}",
     "serverError": "Internal server error. Try again later",
     "deleteTeamMember": "Error deleting team member",
@@ -622,9 +622,9 @@
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
     "empty": {
-      "title": "No backups available",
-      "subtitle": "Set up and manage your backups on the Internxt desktop app",
-      "downloadApp": "Download desktop app"
+      "title": "Non hai backup",
+      "subtitle": "Usa l'applicazione desktop per configurare i tuoi backup",
+      "downloadApp": "Scarica l'applicazione desktop"
     },
     "devices-list": {
       "columns": {
@@ -647,7 +647,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "Shared links",
+    "shared-links": "Link condivisi",
     "view": "views",
     "list": {
       "link-content": "Link content",
@@ -678,8 +678,8 @@
     "toast": {
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
-      "link-deleted": "Link deleted",
-      "links-deleted": "Link(s) deleted"
+      "link-deleted": "Link rimosso",
+      "links-deleted": "Link(s) rimossi"
     }
   },
   "trash": {
@@ -688,7 +688,7 @@
     "list": {
       "name": "Name",
       "size": "Size",
-      "moved-to-trash": "Moved to trash"
+      "moved-to-trash": "Spostato nel cestino"
     },
     "empty-state": {
       "title": "Drive trash is empty",
@@ -701,8 +701,8 @@
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "allProcessesHaveFinished": "Tutti i processi sono stati completati",
+      "processing": "Elaborazione {{pending}} di {{finished}}"
     },
     "create-folder": {
       "status": {
@@ -716,10 +716,10 @@
     },
     "upload-file": {
       "status": {
-        "pending": "Waiting to upload",
+        "pending": "In attesa del caricamento",
         "encrypting": "Encrypting file",
-        "in-process": "{{progress}}% Uploading file",
-        "success": "File uploaded",
+        "in-process": "Caricamento file al {{progress}}%",
+        "success": "File caricato",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
       },
@@ -727,10 +727,10 @@
     },
     "upload-folder": {
       "status": {
-        "pending": "Waiting to upload",
+        "pending": "In attesa del caricamento",
         "encrypting": "Encrypting files",
-        "in-process": "{{progress}}% Uploading folder",
-        "success": "Folder uploaded",
+        "in-process": "Caricamento cartella al {{progress}}% ",
+        "success": "Cartella caricata",
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
       },
@@ -740,8 +740,8 @@
       "status": {
         "pending": "Pending to download",
         "decrypting": "Decrypting file",
-        "in-process": "{{progress}}% Downloading file",
-        "success": "File downloaded",
+        "in-process": "{{progress}}% Download del file",
+        "success": "File scaricati",
         "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
@@ -840,25 +840,25 @@
     "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
-    "title": "Link settings",
-    "access": "Access",
-    "protect": "Protect with password",
-    "addSecurePassword": "Secure this link by setting up a password",
+    "title": "Impostazioni link",
+    "access": "Accesso",
+    "protect": "Protezione con password",
+    "addSecurePassword": "Per una maggiore sicurezza, puoi proteggere il link con una password",
     "password": "Password",
-    "views": "Views",
+    "views": "Visualizzazioni",
     "noViewsYet": "No views yet",
-    "dateCreated": "Date created",
+    "dateCreated": "Data di creazione",
     "buttons": {
-      "copyLink": "Copy link",
-      "linkCopied": "Link copied",
-      "cancel": "Cancel",
-      "save": "Save"
+      "copyLink": "Copia link",
+      "linkCopied": "Link copiato",
+      "cancel": "Annulla",
+      "save": "Salva"
     }
   },
   "notificationMessages": {
     "copyLink": "Shared link copied to clipboard",
-    "linkUpdated": "Link updated",
-    "itemsMovedToTrash": "{{item}} moved to trash",
+    "linkUpdated": "Link aggiornato",
+    "itemsMovedToTrash": "{{item}} spostati nel cestino",
     "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
@@ -870,29 +870,29 @@
   "actions": {
     "undo": "Undo",
     "upload": {
-      "new": "New",
-      "folder": "New folder",
-      "uploadFiles": "Upload files",
-      "uploadFolder": "Upload folder"
+      "new": "Nuovo",
+      "folder": "Nuova cartella",
+      "uploadFiles": "Carica file",
+      "uploadFolder": "Carica cartella"
     },
     "change": "Change",
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
-    "view": "View",
+    "view": "Visualizza",
     "accessFile": "Access File",
-    "upgradeNow": "Upgrade now",
-    "purchasePlan": "Upgrade now",
+    "upgradeNow": "Aggiornare ora",
+    "purchasePlan": "Aggiornare ora",
     "upgrade": "Upgrade",
-    "buyStorage": "Upgrade now",
+    "buyStorage": "Aggiornare ora",
     "deleteAccount": "Permanently delete account",
     "changePassword": "Change password",
     "buy": "Buy",
-    "cancel": "Cancel",
-    "create": "Create",
+    "cancel": "Annulla",
+    "create": "Crea",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
-    "moreInfo": "More info",
+    "moreInfo": "Maggiori informazioni",
     "dismiss": "Dismiss",
     "save": "Save",
     "back": "Back",
@@ -908,7 +908,7 @@
     "restoreHere": "Restore here",
     "rename": "Rename",
     "restore": "Restore",
-    "copyLink": "Copy link"
+    "copyLink": "Copia link"
   },
   "drive": {
     "usage": "Usage",
@@ -918,36 +918,36 @@
     "pdfPage": "Page {{page}} of {{pages}}",
     "list": {
       "columns": {
-        "type": "Type",
-        "name": "Name",
-        "modified": "Modified",
-        "size": "Size",
-        "actions": "Actions"
+        "type": "Tipo",
+        "name": "Nome",
+        "modified": "Ultima modifica",
+        "size": "Dimenisone",
+        "actions": "Azioni"
       }
     },
     "viewMode": {
-      "gridMode": "Grid view",
-      "listMode": "List view"
+      "gridMode": "Vista griglia",
+      "listMode": "Vista elenco"
     },
     "dropdown": {
-      "openPreview": "Open preview",
-      "getLink": "Get link",
-      "rename": "Rename",
+      "openPreview": "Anteprima aperta",
+      "getLink": "Ottenere link",
+      "rename": "Rinomina",
       "download": "Download",
-      "moveToTrash": "Move to trash",
-      "copyLink": "Copy link",
-      "linkSettings": "Link settings",
-      "deleteLink": "Delete link",
-      "restore": "Restore",
-      "deletePermanently": "Delete permanently",
-      "move": "Move",
-      "delete": "Delete"
+      "moveToTrash": "Sposta nel cestino",
+      "copyLink": "Copia link",
+      "linkSettings": "Impostazioni link",
+      "deleteLink": "Elimina link",
+      "restore": "Ripristinare",
+      "deletePermanently": "Eliminare definitivamente",
+      "move": "Muoversi",
+      "delete": "Eliminare"
     },
     "deleteItems": {
       "title": "Delete permanently?",
       "advice": "This action cannot be undone.",
       "accept": "Delete",
-      "progress": "Deleting..."
+      "progress": "Eliminazione..."
     },
     "clearTrash": {
       "title": "Empty Drive Trash?",
@@ -1006,19 +1006,19 @@
   },
   "referrals": {
     "items": {
-      "create-account": "Create an account",
-      "install-mobile-app": "Install mobile app and upload a file",
-      "share-file": "Share a file via link",
-      "subscribe-to-newsletter": "Subscribe to newsletter",
-      "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "complete-survey": "Complete survey"
+      "create-account": "Creazione dell’account",
+      "install-mobile-app": "Installa l’app mobile e carica un file",
+      "share-file": "Condividi un file via link",
+      "subscribe-to-newsletter": "Iscriviti alla newsletter",
+      "install-desktop-app": "Installa l’app desktop e carica un file",
+      "invite-friends": "Invita {{completedSteps}}/{{steps}} amici",
+      "invite-2-friends": "Invita {{completedSteps}}/{{steps}} amici",
+      "complete-survey": "Completa il sondaggio"
     },
     "rewards": {
-      "title": "Get {{creditSum}} for free",
-      "progress": "Unlocked {{currentCredit}}",
-      "limit": "out of {{creditSum}}"
+      "title": "Ottieni {{creditSum}} gratis",
+      "progress": "{{currentCredit}} di",
+      "limit": "{{creditSum}} sbloccati"
     }
   },
   "errors": {
