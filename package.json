@@ -1,13 +1,13 @@
 {
   "name": "drive-web",
-  "version": "v1.0.58",
+  "version": "v1.0.64",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^1.4.27",
+    "@internxt/sdk": "^1.4.29",
     "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
