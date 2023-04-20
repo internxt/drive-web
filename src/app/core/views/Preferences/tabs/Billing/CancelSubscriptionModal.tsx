@@ -7,6 +7,8 @@ import { FreeStoragePlan } from '../../../../../drive/types';
 import sizeService from '../../../../../drive/services/size.service';
 import paymentService from 'app/payment/services/payment.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { planThunks } from '../../../../../store/slices/plan';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -28,11 +30,10 @@ const CancelSubscriptionModal = ({
   const { translate } = useTranslationContext();
   const [step, setStep] = useState<1 | 2 | 3>(2);
   const [couponAvailable, setCouponAvailable] = useState(false);
-  const [coupon, setCoupon] = useState('');
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     paymentService.getCoupon().then((coupon) => setCouponAvailable(coupon.elegible));
-    paymentService.getCoupon().then((coupon) => setCoupon(coupon.coupon));
   }, []);
 
   useEffect(() => {
@@ -41,7 +42,7 @@ const CancelSubscriptionModal = ({
 
   const applyCoupon = async () => {
     try {
-      await paymentService.applyCoupon(coupon);
+      await paymentService.applyCoupon();
       notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
     } catch (error) {
       console.error(error);
@@ -51,6 +52,9 @@ const CancelSubscriptionModal = ({
       });
     } finally {
       onClose();
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
     }
   };
 

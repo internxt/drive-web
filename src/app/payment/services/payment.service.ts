@@ -88,9 +88,9 @@ const paymentService = {
     return paymentsClient.getCoupon();
   },
 
-  async applyCoupon(coupon: string): Promise<CouponAvailable> {
+  async applyCoupon(): Promise<CouponAvailable> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.applyCoupon(coupon);
+    return paymentsClient.applyCoupon();
   },
 
   async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {
