@@ -33,18 +33,15 @@
     "description": "The page you are looking for could not be found.",
     "card1": {
       "title": "Return Home",
-      "description": "Go back to Internxt Drive.",
-      "urlRedirect": "https://drive.internxt.com/app"
+      "description": "Go back to Internxt Drive."
     },
     "card2": {
       "title": "Visit Help Center",
-      "description": "Troubleshoot common issues and browse our FAQ.",
-      "urlRedirect": "https://help.internxt.com/en/"
+      "description": "Troubleshoot common issues and browse our FAQ."
     },
     "card3": {
       "title": "Contact Support",
-      "description": "Reach out to our Support Team at hello@internxt.com.",
-      "urlRedirect": "mailto:hello@internxt.com"
+      "description": "Reach out to our Support Team at hello@internxt.com."
     }
   },
   "lang": {

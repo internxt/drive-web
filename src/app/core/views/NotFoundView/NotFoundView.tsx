@@ -1,6 +1,8 @@
 import React from 'react';
 import { House, Lifebuoy, Question } from 'phosphor-react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 export default function notFound() {
   const { translate } = useTranslationContext();
   const cards = [
@@ -8,19 +10,19 @@ export default function notFound() {
       icon: House,
       title: translate('notFound.card1.title'),
       description: translate('notFound.card1.description'),
-      urlRedirect: translate('notFound.card1.urlRedirect'),
+      urlRedirect: () => navigationService.push(AppView.Drive),
     },
     {
       icon: Question,
       title: translate('notFound.card2.title'),
       description: translate('notFound.card2.description'),
-      urlRedirect: translate('notFound.card2.urlRedirect'),
+      urlRedirect: () => (window.location.href = 'https://help.internxt.com/en/'),
     },
     {
       icon: Lifebuoy,
       title: translate('notFound.card3.title'),
       description: translate('notFound.card3.description'),
-      urlRedirect: translate('notFound.card3.urlRedirect'),
+      urlRedirect: () => (window.location.href = 'mailto:hello@internxt.com'),
     },
   ];
 
@@ -41,9 +43,7 @@ export default function notFound() {
                 <div
                   className="flex h-52 cursor-pointer select-none flex-col items-center justify-start space-y-4 rounded-lg bg-gray-1 px-4 py-8 text-center"
                   key={index}
-                  onClick={() => {
-                    window.location.href = card.urlRedirect;
-                  }}
+                  onClick={card.urlRedirect}
                 >
                   <card.icon size={32} className="text-primary" />
                   <p className="text-lg font-medium text-gray-100">{card.title}</p>
