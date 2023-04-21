@@ -247,19 +247,19 @@
           "currentPlan": "Piano attuale",
           "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
-            "title": "Annulla l'iscrizione",
-            "description": "Stai per annullare il tuo {{currentPlanName}} Internxt. Annullando il tuo piano, verrai declassato al piano gratuito Internxt {{freePlanName}}. Confermare la scelta per procedere, grazie.",
+            "title": "Annulla abbonamento",
+            "description": "Stai per cancellare il tuo {{currentPlanName}} Internxt. Annullando il tuo piano, verrai declassato al piano gratuito Internxt {{freePlanName}}. Confermare la scelta per procedere, grazie.",
             "keepSubscription": "Mantieni l'abbonamento",
-            "continue": "Continua",
+            "continua": "Continua",
             "cancelSubscription": "Annulla abbonamento",
             "infoBox": {
-              "titleCurrent": "Attuale",
-              "titleNew": "Nuovo",
+              "titleCurrent": "Current",
+              "titleNew": "New",
               "year": "anno",
               "month": "mese",
-              "free": "Gratuito",
+              "free": "libero",
               "reachedFreeLimit": "Hai superato il {{freePlanName}}",
-              "reachedFreeLimitDescription": "Poiché si sta utilizzando {{currentUsage}}, Internxt Drive smetterà di sincronizzare i file e non sarà possibile aggiungere nuovi file"
+              "reachedFreeLimitDescription": "Poiché si sta utilizzando {{uso corrente}}, Internxt Drive smetterà di sincronizzare i file e non sarà possibile aggiungere nuovi file."
             },
             "giveUsFeedback": "Ci dica perché vuole annullare il suo {{currentPlanName}} Internxt e passare al piano gratuito?",
             "feedback": {
@@ -336,21 +336,21 @@
             }
           },
           "dialog": {
-            "title": "Piano di modifica",
+            "title": "Cambia il tuo piano",
             "subtitle1": "Stai per cambiare il tuo piano Internxt da ",
             "subtitle2": " a ",
-            "subtitle3": ". Confermare la scelta per procedere, per favore.",
+            "subtitle3": ". Confermare la scelta per procedere, per favore",
             "plan": {
-              "current": "Attuale",
+              "current": "Corrente",
               "new": "Nuovo",
               "interval": "mese"
             },
             "alert": {
               "title": "Hai superato ",
               "text1": "Perché stai usando ",
-              "text2": ", il vostro Internxt Drive smetterà di sincronizzare i vostri file e non potrete aggiungere nuovi file"
+              "text2": ", il vostro Internxt Drive smetterà di sincronizzare i vostri file e non sarete in grado di aggiungere nuovi file."
             },
-            "message": {
+            "messagge": {
               "text": "L'addebito avverrà ora e per ogni periodo di pagamento fino a nuove modifiche."
             },
             "button": {
