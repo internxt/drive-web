@@ -73,8 +73,8 @@ import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps'
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
 import BannerWrapper from 'app/banners/BannerWrapper';
+import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 
-const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -108,6 +108,8 @@ interface DriveExplorerProps {
   connectDropTarget: ConnectDropTarget;
   folderOnTrashLength: number;
   filesOnTrashLength: number;
+  hasMoreFolders: boolean;
+  hasMoreFiles: boolean;
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -128,22 +130,36 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onItemsMoved,
     folderOnTrashLength,
     filesOnTrashLength,
+    hasMoreFolders,
+    hasMoreFiles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const { dirtyName } = useDriveItemStoreProps();
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+
+  const hasItems = items.length > 0;
+  const hasFilters = storageFilters.text.length > 0;
+  const hasAnyItemSelected = selectedItems.length > 0;
+  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+
+  const isRecents = title === translate('views.recents.head');
+  const isTrash = title === translate('trash.trash');
+
+  // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
   const [folderInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [folderInputKey, setFolderInputKey] = useState<number>(Date.now());
 
-  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
+  // PAGINATION STATES
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
-  const [paginatedTrashItems, setPaginatedTrashItems] = useState<DriveItemData[]>([]);
-  const [timesCalled, setTimesCalled] = useState<number>(0);
+  const [paginatedItems, setPaginatedItems] = useState<DriveItemData[]>([]);
+  const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
 
+  // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
-
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const menuItemsRef = useRef<HTMLDivElement | null>(null);
   const [posX, setPosX] = useState(0);
@@ -151,32 +167,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
-  const passToNextStep = () => {
-    setCurrentTutorialStep(currentTutorialStep + 1);
-  };
-
+  const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
+  const stepOneTutorialRef = useRef(null);
   const isSignUpTutorialCompleted = localStorageService.getIsSignUpTutorialCompleted();
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
-
-  const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-
-  useEffect(() => {
-    if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
-      setShowSecondTutorialStep(true);
-    }
-  }, [successNotifications]);
-
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
     !isSignUpTutorialCompleted &&
     (showSecondTutorialStep || currentTutorialStep === 0);
-
-  const stepOneTutorialRef = useRef(null);
   const signupSteps = getSignUpSteps(
     {
       onNextStepClicked: () => {
@@ -195,60 +197,87 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
   );
 
-  const hasItems = items.length > 0;
-  const hasFilters = storageFilters.text.length > 0;
-  const hasAnyItemSelected = selectedItems.length > 0;
-  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+  useEffect(() => {
+    if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
+      setShowSecondTutorialStep(true);
+    }
+  }, [successNotifications]);
 
   useEffect(() => {
-    if (isTrash && paginatedTrashItems.length !== items.length) {
-      setPaginatedTrashItems(items);
+    if (paginatedItems.length !== items.length) {
+      setPaginatedItems(items);
     }
   }, [items]);
-
-  useEffect(() => {
-    const isTrashAndNotHasItems = isTrash;
-    if (isTrashAndNotHasItems) {
-      getMoreTrashFolders();
-    }
-  }, []);
-
-  useEffect(() => {
-    const thereIsNotMoreFoldersAndFewerItems =
-      !hasMoreTrashFolders && folderOnTrashLength < TRASH_PAGINATION_OFFSET && timesCalled === 1;
-
-    if (thereIsNotMoreFoldersAndFewerItems) {
-      getMoreTrashFiles();
-    }
-  }, [timesCalled]);
-
-  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
-  const getMoreTrashFolders = async () => {
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-    const existsMoreFolders = !result.finished;
-
-    setHasMoreTrashFolders(existsMoreFolders);
-    setTimesCalled(timesCalled + 1);
-  };
-
-  const getMoreTrashFiles = async () => {
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-
-    const existsMoreItems = !result.finished;
-    setHasMoreItems(existsMoreItems);
-    setTimesCalled(timesCalled + 1);
-  };
-
-  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
 
   useEffect(() => {
-    setHasMoreItems(true);
-    setFakePaginationLimit(PAGINATION_LIMIT);
+    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
+      fetchItems();
+    }
+  }, [hasMoreFolders, hasMoreTrashFolders]);
+
+  useEffect(() => {
+    if (!isTrash && !hasMoreFiles) {
+      setHasMoreItems(false);
+    }
+  }, [hasMoreFiles]);
+
+  useEffect(() => {
+    resetPaginationState();
+    fetchItems();
   }, [currentFolderId]);
+
+  useEffect(() => {
+    if (
+      menuItemsRef.current &&
+      (menuItemsRef.current.offsetHeight !== dimensions.height ||
+        menuItemsRef.current?.offsetWidth !== dimensions.width)
+    ) {
+      setDimensions({
+        width: menuItemsRef?.current?.offsetWidth || 0,
+        height: menuItemsRef?.current?.offsetHeight || 0,
+      });
+    }
+  }, []);
+
+  const resetPaginationState = () => {
+    dispatch(storageActions.resetTrash());
+    setHasMoreItems(true);
+    setHasMoreTrashFolders(true);
+    setPaginatedItems([]);
+    setIsLoadingTrashItems(false);
+  };
+
+  const fetchItems = () =>
+    isTrash ? getMoreTrashItems() : dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
+
+  const passToNextStep = () => {
+    setCurrentTutorialStep(currentTutorialStep + 1);
+  };
+
+  //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
+  const getMoreTrashFolders = async () => {
+    setIsLoadingTrashItems(true);
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+    const existsMoreFolders = !result.finished;
+
+    setHasMoreTrashFolders(existsMoreFolders);
+    setIsLoadingTrashItems(false);
+  };
+
+  const getMoreTrashFiles = async () => {
+    setIsLoadingTrashItems(true);
+    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+
+    const existsMoreItems = !result.finished;
+    setHasMoreItems(existsMoreItems);
+    setIsLoadingTrashItems(false);
+  };
+
+  const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   const onUploadFileButtonClicked = (): void => {
     fileInputRef.current?.click();
@@ -335,18 +364,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   };
 
-  const { dirtyName } = useDriveItemStoreProps();
-
-  // Fake backend pagination - change when pagination in backend has been implemented
-  const getMoreItems = () => {
-    const existsMoreItems = items.length > fakePaginationLimit;
-
-    setHasMoreItems(existsMoreItems);
-    if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-  };
-
-  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
-
   const onSelectedOneItemRename = (e): void => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
@@ -382,11 +399,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     [FileViewMode.Grid]: DriveExplorerGrid,
   };
 
-  const isRecents = title === translate('views.recents.head');
-  const isTrash = title === translate('trash.trash');
-
   const ViewModeComponent = viewModes[isTrash ? FileViewMode.List : viewMode];
-  const itemsList = getLimitedItems();
 
   const FileIcon = iconService.getItemIcon(false);
   const filesEmptyImage = (
@@ -403,19 +416,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <Trash size={80} weight="thin" />
     </div>
   );
-
-  useEffect(() => {
-    if (
-      menuItemsRef.current &&
-      (menuItemsRef.current.offsetHeight !== dimensions.height ||
-        menuItemsRef.current?.offsetWidth !== dimensions.width)
-    ) {
-      setDimensions({
-        width: menuItemsRef?.current?.offsetWidth || 0,
-        height: menuItemsRef?.current?.offsetHeight || 0,
-      });
-    }
-  }, []);
 
   const handleContextMenuClick = (event) => {
     event.preventDefault();
@@ -807,24 +807,23 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           </div>
 
           <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-            {hasItems && (
-              <div className="flex flex-grow flex-col justify-between overflow-hidden">
-                <ViewModeComponent
-                  folderId={currentFolderId}
-                  items={isTrash ? paginatedTrashItems : itemsList}
-                  isLoading={isLoading}
-                  onEndOfScroll={isTrash ? getMoreTrashItems : getMoreItems}
-                  hasMoreItems={hasMoreItems}
-                  isTrash={isTrash}
-                  onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
-                />
-              </div>
-            )}
+            <div className="flex flex-grow flex-col justify-between overflow-hidden">
+              <ViewModeComponent
+                folderId={currentFolderId}
+                items={paginatedItems}
+                isLoading={isTrash ? isLoadingTrashItems : isLoading}
+                onEndOfScroll={fetchItems}
+                hasMoreItems={hasMoreItems}
+                isTrash={isTrash}
+                onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
+              />
+            </div>
 
             {
               /* EMPTY FOLDER */
               !hasItems &&
                 !isLoading &&
+                !isLoadingTrashItems &&
                 (hasFilters ? (
                   <Empty
                     icon={filesEmptyImage}
@@ -1026,5 +1025,7 @@ export default connect((state: RootState) => {
     planUsage: state.plan.planUsage,
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
+    hasMoreFolders: state.storage.hasMoreDriveFolders,
+    hasMoreFiles: state.storage.hasMoreDriveFiles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
