@@ -48,7 +48,8 @@
     "title": "Language",
     "es": "Spanish (ES)",
     "en": "English (EN)",
-    "fr": "French (FR)"
+    "fr": "French (FR)",
+    "ita": "Italian (IT)"
   },
   "auth": {
     "email": "Email",
@@ -277,6 +278,7 @@
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
@@ -529,6 +531,7 @@
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
+      "total": "Total",
       "pending": "Pending",
       "accepted": "Accepted",
       "empty": "You have not invited anyone yet",

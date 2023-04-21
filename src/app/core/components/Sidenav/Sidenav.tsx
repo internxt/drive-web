@@ -63,7 +63,7 @@ const Sidenav = (props: SidenavProps) => {
       <div className="flex flex-grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
           <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
-          <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} showNew />
+          <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
           <SidenavItem label={translate('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
           <SidenavItem label={translate('sideNav.recents')} to="/app/recents" Icon={Clock} />

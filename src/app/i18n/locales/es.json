@@ -31,7 +31,8 @@
     "title": "Idioma",
     "es": "Español (ES)",
     "en": "Inglés (EN)",
-    "fr": "Francés (FR)"
+    "fr": "Francés (FR)",
+    "ita": "Italiano (IT)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -259,6 +260,7 @@
           "invoices": {
             "head": "Facturas",
             "billingDate": "Fecha de facturación",
+            "plan": "Plan",
             "empty": {
               "title": "Estás en el plan gratuito",
               "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."
@@ -512,6 +514,7 @@
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
       "pending": "Pendientes",
+      "total": "Total",
       "accepted": "Aceptadas",
       "empty": "No has invitado a nadie aún",
       "resend": "Reenviar invitación",
