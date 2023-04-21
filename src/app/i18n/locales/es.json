@@ -31,7 +31,8 @@
     "title": "Idioma",
     "es": "Español (ES)",
     "en": "Inglés (EN)",
-    "fr": "Francés (FR)"
+    "fr": "Francés (FR)",
+    "ita": "Italiano (IT)"
   },
   "auth": {
     "email": "Correo electrónico",
