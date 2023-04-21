@@ -259,6 +259,7 @@
           "invoices": {
             "head": "Facturas",
             "billingDate": "Fecha de facturación",
+            "plan": "Plan",
             "empty": {
               "title": "Estás en el plan gratuito",
               "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."

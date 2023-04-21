@@ -92,14 +92,14 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "monthly",
-      "annually": "annually",
-      "lifetime": "Lifetime"
+      "monthly": "mensile",
+      "annually": "annuale",
+      "lifetime": "a vita"
     },
     "renewal": {
-      "monthly": "Monthly",
-      "annually": "Annually",
-      "lifetime": "Lifetime"
+      "monthly": "Mensile",
+      "annually": "Annuale",
+      "lifetime": "A vita"
     },
     "workspaces": {
       "personal": "Individuals",
@@ -207,7 +207,7 @@
             },
             "subscription": {
               "planName": "Abbonamento",
-              "button": "change",
+              "button": "Cambia",
               "yearly": "anno",
               "monthly": "mese"
             }
@@ -245,9 +245,9 @@
         "billing": {
           "label": "Fatturazione",
           "currentPlan": "Piano attuale",
-          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
+          "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
-            "title": "Cancel subscription",
+            "title": "Annulla l'iscrizione",
             "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
             "keepSubscription": "Keep subscription",
             "continue": "Continue",
@@ -273,11 +273,12 @@
               "title": "Hai un piano gratuito",
               "subtitle": "Qui appariranno automaticamente i dati della carta di credito quando utilizzi un piano di abbonamento a pagamento."
             },
-            "title": "Add new payment method"
+            "title": "Aggiungere un nuovo metodo di pagamento"
           },
           "invoices": {
             "head": "Fatture",
-            "billingDate": "Data di fatturazione",
+            "plan": "Piano",
+            "billingDate": "Data Fattura",
             "empty": {
               "title": "Hai un piano gratuito",
               "subtitle": "Qui appariranno automaticamente le fatture emesse quando viene effettuato un pagamento."
@@ -298,39 +299,39 @@
           }
         },
         "plans": {
-          "label": "Plans",
-          "title": "Plans",
-          "description": "Find the different storage and solution options that Internxt offers",
+          "label": "Piani",
+          "title": "Piani",
+          "description": "Scoprite le diverse opzioni di archiviazione e di soluzione offerte da Internxt",
           "changeWorkspace": {
-            "personal": "Change to Plans for Individuals",
+            "personal": "Modifica dei piani per gli individui",
             "business": "Change to Plans for Business"
           },
-          "viewAllFeatures": "View all features",
+          "viewAllFeatures": "Visualizza tutte le caratteristiche",
           "card": {
-            "annually": "€{{amount}} billed annually",
-            "monthly": "€{{amount}} per month",
+            "annually": "€{{amount}} fatturato annualmente",
+            "monthly": "€{{amount}} al mese",
             "lifetime": "€{{amount}}"
           },
           "features": {
-            "title": "Features included in all plans",
+            "title": "Funzionalità incluse in tutti i piani:",
             "sections": {
               "section1": {
-                "title": "Satisfaction guaranteed",
-                "point1": "All subscriptions have 30-day money-back guarantees.",
-                "point2": "Cancel any time, no tricks.",
-                "point3": "Premium support."
+                "title": "Soddisfatti o rimborsati:",
+                "point1": "Tutti i piani hanno una garanzia di rimborso di 30 giorni.",
+                "point2": "Annulla in qualsiasi momento.",
+                "point3": "Assistenza clienti."
               },
               "section2": {
-                "title": "Secure by default",
-                "point1": "Military-grade encryption to ensure your privacy.",
-                "point2": "Encrypted file storage and sharing.",
-                "point3": "Zero-knowledge cloud storage."
+                "title": "Sicurezza by default:",
+                "point1": "Crittografia di livello militare, a garanzia della tua privacy.",
+                "point2": "Archiviazione e condivisione cloud crittografate.",
+                "point3": "Privacy zero-knowledge."
               },
               "section3": {
-                "title": "Unlimited access and sync",
-                "point1": "Access your files, photos, and backups from all your devices.",
-                "point2": "Sync with unlimited bandwidth.",
-                "point3": "Backup any folder on your computer."
+                "title": "Accesso e sincronizzazione illimitati:",
+                "point1": "Accedi ai tuoi file, foto e backup da tutti i tuoi dispositivi.",
+                "point2": "Sincronizzazione con larghezza di banda illimitata.",
+                "point3": "Esegui il backup di qualsiasi cartella del tuo computer."
               }
             }
           },
@@ -362,7 +363,7 @@
           "title": "Password",
           "description": "Change your password",
           "advice1": {
-            "title": "Change password",
+            "title": "Modifica la password",
             "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
           },
           "advice2": {
@@ -379,10 +380,10 @@
           }
         },
         "security": {
-          "label": "Security",
+          "label": "Sicurezza",
           "lock": {
-            "title": "Enter your password to continue",
-            "description": "For security reasons, you must enter your password before being able to make any changes on this page.",
+            "title": "Per proseguire, inserisci la password",
+            "description": "Per motivi di sicurezza, è necessario inserire la password per poter apportare modifiche a questa pagina.",
             "inputLabel": "Password",
             "errors": {
               "incorrect": "Incorrect password, please try again",
@@ -390,39 +391,39 @@
             }
           },
           "changePassword": {
-            "title": "Change password",
-            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
-            "button": "Change password"
+            "title": "Modifica la password",
+            "description": "Ricorda che se dimentichi la password, perderai l'accesso a tutti i tuoi file. Ti consigliamo di utilizzare un gestore di password.",
+            "button": "Modifica la password"
           },
           "2FA": {
-            "title": "Two-factor authentication (2FA)",
-            "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
-            "button": "Enable 2FA",
-            "enabled": "Enabled",
-            "disabled": "Disabled",
+            "title": "Autenticazione a due fattori (2FA)",
+            "titleDisable": "Disattivare l'autenticazione a due fattori",
+            "description": "L'autenticazione a due fattori fornisce un maggiore livello di sicurezza, richiedendo un’ulteriore verifica al momento dell'accesso. Oltre alla tua password, avrai bisogno di inserire un codice usa-e-getta generato al momento.",
+            "button": "Attiva la 2FA",
+            "enabled": "Abilitato",
+            "disabled": "Disabilitato",
             "modal": {
-              "title": "Two Factor Authentication",
-              "stepsLabel": "{{current}} of {{total}}",
-              "button": "Enable 2FA",
-              "2FALabelCode": "Two-Factor Authentication code",
-              "or": "OR",
+              "title": "Autenticazione a due fattori",
+              "stepsLabel": "{{current}} di {{total}}",
+              "button": "Attiva la 2FA",
+              "2FALabelCode": "Codice di Autenticazione in due passaggi",
+              "or": "O",
               "steps": {
                 "download": {
-                  "title": "Download Authy",
-                  "description": "We recommend using Authy, but you can setup the 2FA process with any other 2FA of your choice."
+                  "title": "Scarica Authy",
+                  "description": "Ti consigliamo di utilizzare Authy, ma puoi configurare il processo 2FA anche con un'altra app 2FA a tua scelta."
                 },
                 "qr": {
-                  "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "title": "Scansiona il QR Code con l'app 2FA",
+                  "description": "Oppure, se non riesci a scansionare il QR Code, inserisci questo codice nell'app"
                 },
                 "backup-key": {
-                  "title": "Save backup key",
-                  "description": "Copy this code and keep it secure, you will need it in case you lose your device."
+                  "title": "Salva la Recovery Key",
+                  "description": "Copia questo codice e tienilo al sicuro, ti servirà in caso di smarrimento del dispositivo."
                 },
                 "enable": {
-                  "title": "Confirm 2FA activation",
-                  "description": "Two-factor authentication code"
+                  "title": "Conferma l'attivazione della 2FA",
+                  "description": "Codice di Autenticazione in due passaggi"
                 },
                 "disable": {
                   "title": "Disable Two-Factor Authentication",
@@ -436,29 +437,29 @@
             }
           },
           "backupKey": {
-            "title": "Backup key",
-            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
-            "button": "Export backup key",
-            "success": "Backup key downloaded successfully",
-            "error": "We could not generate your backup key"
+            "title": "Recovery Key",
+            "description": "Se si dimentica la password, è possibile utilizzare una chiave di backup unica per recuperare il proprio account. Non condividete mai questo codice con nessuno.",
+            "button": "Esporta la password",
+            "success": "Recovery key scaricata correttamente",
+            "error": "Non è stato possibile generare la chiave di backup"
           },
           "faq": {
-            "title": "Did you miss anything?",
+            "title": "Hai perso qualcosa?",
             "faq1": {
-              "title": "Why do I lose all my files if I forget my password?",
-              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
+              "title": "Perché se perdo la password, perdo definitivamente tutti i miei file?",
+              "description": "La tua password è l'unico modo per accedere al tuo account, neppure il team di Internxt può accedere al tuo account, o modificare la tua password. Questo per impedire a chiunque di accedere al tuo account o di rubare i tuoi dati. <br/><br/>Tra le altre cose, la tua password viene utilizzata nel processo di crittografia, quindi nemmeno Internxt ha accesso ad essa. Ogni volta che accedi, la password funge da chiave di decodifica per decriptare i tuoi file, per questo noi ci assicuriamo che solo tu abbia quella chiave."
             },
             "faq2": {
-              "title": "How can I keep my credentials safe?",
-              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
+              "title": "Come posso tenere al sicuro le mie credenziali?",
+              "description": "Ti consigliamo di utilizzare un gestore di password per tenere al sicuro le tue credenziali. Non solo per accedere a Internxt, ma anche per proteggerti durante la navigazione."
             },
             "faq3": {
-              "title": "Can I recover my account with a backup key?",
-              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
+              "title": "Posso recuperare il mio account con la Recovery Key?",
+              "description": "Se conservi la tua Recovery Key in un luogo sicuro, puoi recuperare il tuo account seguendo le istruzioni che troverai nell'e-mail che riceverai dopo aver fatto clic su 'Password dimenticata'."
             },
             "faq4": {
-              "title": "Do I lose all my files if I change my password?",
-              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
+              "title": "Se cambio la mia password, perderò i miei file?",
+              "description": "No, visto che quando lo fai sei già loggato, puoi cambiare la password senza perdere alcun file del tuo account. Assicurati di scegliere una password sufficientemente sicura."
             }
           }
         }
@@ -470,22 +471,22 @@
     }
   },
   "contextMenu": {
-    "itemsSelected": "items selected"
+    "itemsSelected": "elementi selezionati"
   },
   "modals": {
     "renameItemDialog": {
-      "title": "Rename",
-      "label": "Name"
+      "title": "Rinominare",
+      "label": "Nome"
     },
     "renameModal": {
-      "title": "Item already exists",
-      "titleMultipleItems": "Multiple items already exist",
-      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
-      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
-      "replaceItem": "Replace current item",
-      "keepBoth": "Keep both",
-      "upload": "Upload",
-      "move": "Move"
+      "title": "L'elemento esiste già",
+      "titleMultipleItems": "Esistono già più elementi",
+      "description": "Il {{itemName}} esiste già in questa posizione. Vuoi sostituirlo o vuoi mantenerli entrambi?",
+      "multipleDescription": "Più di un elemento esiste già in questa posizione. Si desidera sostituirli o si desidera mantenerli tutti",
+      "replaceItem": "Sostituisci l'elemento attuale",
+      "keepBoth": "Mantieni entrambi",
+      "upload": "Carica",
+      "move": "Sposta"
     },
     "removeSharedLinkModal": {
       "title": "Elimina link",
@@ -544,9 +545,9 @@
       "confirm": "Conferma"
     },
     "changePasswordModal": {
-      "title": "Change password",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
+      "title": "Modifica la password",
+      "newPassword": "Nuova password",
+      "confirmPassword": "Conferma la nuova password",
       "strongPassword": "Password is strong",
       "errors": {
         "shortPassword": "Password has to be at least 8 characters long",
@@ -556,10 +557,10 @@
       }
     },
     "deleteBackupModal": {
-      "title": "Are you sure?",
-      "subtitle": "Your backup will be deleted.",
-      "primaryAction": "Confirm",
-      "secondaryAction": "Cancel"
+      "title": "Sei sicuro?",
+      "subtitle": "Il tuo backup verrà eliminato.",
+      "primaryAction": "Conferma",
+      "secondaryAction": "Annulla"
     },
     "2FAAuthenticationModal": {}
   },
@@ -618,9 +619,9 @@
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
   },
   "backups": {
-    "backups-from": "Backups from {{deviceName}}",
+    "backups-from": "Backup da {{deviceName}}",
     "your-devices": "I vostri dispositivi",
-    "back-to-devices": "Go back to devices",
+    "back-to-devices": "Tornare ai dispositivi",
     "empty": {
       "title": "Non hai backup",
       "subtitle": "Usa l'applicazione desktop per configurare i tuoi backup",
@@ -628,22 +629,22 @@
     },
     "devices-list": {
       "columns": {
-        "name": "Name",
-        "last-update": "Last update",
-        "size": "Size"
+        "name": "Nome",
+        "last-update": "Ultima modifica",
+        "size": "Dimenisone"
       }
     },
     "backups-list": {
       "columns": {
-        "name": "Name",
-        "last-update": "Last update",
-        "size": "Size",
-        "actions": "Actions"
+        "name": "Nome",
+        "last-update": "Ultima modifica",
+        "size": "Dimenisone",
+        "actions": "Azioni"
       }
     },
     "dropdown": {
       "download": "Download",
-      "delete": "Delete"
+      "delete": "Elimina"
     }
   },
   "shared-links": {
@@ -695,8 +696,8 @@
       "subtitle": "I file e le cartelle eliminati saranno visualizzati qui"
     },
     "item-menu": {
-      "restore": "Restore",
-      "delete-permanently": "Delete permanently"
+      "restore": "Ripristino",
+      "delete-permanently": "Elimina definitivamente"
     }
   },
   "tasks": {
@@ -717,33 +718,33 @@
     "upload-file": {
       "status": {
         "pending": "In attesa del caricamento",
-        "encrypting": "Encrypting file",
+        "encrypting": "Crittografia del file",
         "in-process": "Caricamento file al {{progress}}%",
         "success": "File caricato",
         "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "cancelled": "Upload annullato"
       },
       "errors": {}
     },
     "upload-folder": {
       "status": {
         "pending": "In attesa del caricamento",
-        "encrypting": "Encrypting files",
+        "encrypting": "Crittografia dei file",
         "in-process": "Caricamento cartella al {{progress}}% ",
         "success": "Cartella caricata",
         "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "cancelled": "Upload annullato"
       },
       "errors": {}
     },
     "download-file": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting file",
+        "pending": "In attesa di download",
+        "decrypting": "File in decriptazione",
         "in-process": "{{progress}}% Download del file",
         "success": "File scaricati",
-        "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
+        "error": "Download fallito, fare clic su ↻ per riprovare",
+        "cancelled": "Download annullato"
       },
       "errors": {}
     },
@@ -752,92 +753,92 @@
         "pending": "Downloading {{progress}}%",
         "success": "Downloaded",
         "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "cancelled": "Download annullato"
       },
       "errors": {}
     },
     "download-backup": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting backup",
-        "in-process": "{{progress}}% Downloading backup",
-        "success": "Backup downloaded",
+        "pending": "In attesa di download",
+        "decrypting": "Decriptazione del backup",
+        "in-process": "{{progress}}% Download del backup",
+        "success": "Backup scaricato",
         "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "cancelled": "Download annullato"
       },
       "errors": {}
     },
     "download-folder": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting files",
-        "in-process": "{{progress}}% Downloading folder",
-        "success": "Folder downloaded",
-        "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
+        "pending": "In attesa di download",
+        "decrypting": "Decriptazione dei file",
+        "in-process": "{{progress}}% Download della cartella",
+        "success": "Cartella scaricata",
+        "error": "Download fallito, fare clic su ↻ per riprovare",
+        "cancelled": "Download annullato"
       },
       "errors": {}
     },
     "move-file": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving file",
-        "success": "File moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "In attesa di trasferimento",
+        "in-process": "Spostamento file",
+        "success": "File spostato",
+        "error": "Errore durante lo spostamento",
+        "cancelled": "Movimento annullato"
       },
       "errors": {
-        "409": "A file with that name already exists in the destination folder"
+        "409": "Un file con questo nome esiste già nella cartella di destinazione."
       }
     },
     "move-folder": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving folder",
-        "success": "Folder moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "In attesa di trasferimento",
+        "in-process": "Spostamento cartella",
+        "success": "Cartella spostata",
+        "error": "Errore durante lo spostamento",
+        "cancelled": "Movimento annullato"
       },
       "errors": {
-        "409": "A folder with that name already exists in the destination folder"
+        "409": "Una cartella con questo nome esiste già nella cartella di destinazione."
       }
     },
     "rename-file": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming file",
-        "success": "File renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "In attesa di essere rinominato",
+        "in-process": "Rinominare file",
+        "success": "File rinominato",
+        "error": "Errore durante la rinominazione",
+        "cancelled": "Rinominato annullato"
       },
       "errors": {}
     },
     "rename-folder": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming folder",
-        "success": "Folder renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "In attesa di essere rinominato",
+        "in-process": "Rinominare cartella",
+        "success": "Cartella rinominata",
+        "error": "Errore durante la rinominazione",
+        "cancelled": "Rinominato annullato"
       },
       "errors": {}
     }
   },
   "success": {
-    "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {{email}}",
-    "referralInvitationSent": "Invitation email sent to {{email}}",
-    "deletedTeamMember": "The {{resource}} has been successfully deleted",
-    "accountDeactivationEmailSent": "Deactivation email sent!",
-    "claimEmailSent": "Claim email sent!",
-    "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
-    "linkCopied": "Link copied!",
-    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
-    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
-    "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {{email}}",
-    "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
+    "passwordChanged": "Password modificata",
+    "teamInvitationSent": "Email di invito inviata a {{email}}",
+    "referralInvitationSent": "Email di invito inviata a {{email}}",
+    "deletedTeamMember": "La {{resource}} è stata cancellata con successo",
+    "accountDeactivationEmailSent": "Email di disattivazione inviata!",
+    "claimEmailSent": "Email di reclamo inviata!",
+    "teamsSubscriptionRedeemed": "La tua squadra è pronta! Effettua nuovamente il login per iniziare a utilizzare Teams",
+    "linkCopied": "Link copiato!",
+    "twoFactorAuthActivated": "L'autenticazione a due fattori è stata attivata!",
+    "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata",
+    "joinedToTheTeam": "Ti sei unito al team con successo",
+    "done": "Fatto",
+    "inviteAFriend": "È stato inviato un invito a {{email}}",
+    "subscribeToNewsletter": "{{email}} si è iscritto con successo alla newsletter"
   },
   "shareItemDialog": {
     "title": "Impostazioni link",
@@ -846,7 +847,7 @@
     "addSecurePassword": "Per una maggiore sicurezza, puoi proteggere il link con una password",
     "password": "Password",
     "views": "Visualizzazioni",
-    "noViewsYet": "No views yet",
+    "noViewsYet": "Non ancora visibile",
     "dateCreated": "Data di creazione",
     "buttons": {
       "copyLink": "Copia link",
@@ -856,16 +857,16 @@
     }
   },
   "notificationMessages": {
-    "copyLink": "Shared link copied to clipboard",
+    "copyLink": "Link condiviso copiato negli appunti",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
     "restoreItems": "{{itemsToRecover}} spostato a {{destination}}",
-    "itemDeleted": "{{item}} deleted",
-    "itemsDeleted": "Files deleted",
-    "emailNotEmpty": "Email must not be empty",
+    "itemDeleted": "{{item}} eliminate",
+    "itemsDeleted": "File eliminati",
+    "emailNotEmpty": "L'e-mail non deve essere vuota",
     "verificationEmail": "L'e-mail di verifica è stata inviata",
-    "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "successCancelSubscription": "L'abbonamento è stato annullato",
+    "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento"
   },
   "actions": {
     "undo": "Annulla",
@@ -875,47 +876,47 @@
       "uploadFiles": "Carica file",
       "uploadFolder": "Carica cartella"
     },
-    "change": "Change",
-    "download": "Download",
+    "change": "Cambia",
+    "download": "Scarica",
     "downloading": "Downloading",
-    "downloaded": "Downloaded",
+    "downloaded": "Scaricato",
     "view": "Visualizza",
-    "accessFile": "Access File",
+    "accessFile": "Accesso al file",
     "upgradeNow": "Aggiornare ora",
     "purchasePlan": "Aggiornare ora",
     "upgrade": "Acquista spazio",
     "buyStorage": "Aggiornare ora",
-    "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
-    "buy": "Buy",
+    "deleteAccount": "Eliminare definitivamente l'account",
+    "changePassword": "Modifica la password",
+    "buy": "Acquista",
     "cancel": "Annulla",
     "create": "Crea",
-    "sendInvitation": "Send invitation",
+    "sendInvitation": "Inviare invito",
     "subscribe": "Subscribe",
     "moreInfo": "Maggiori informazioni",
-    "dismiss": "Dismiss",
+    "dismiss": "Licenziare",
     "save": "Salva",
-    "back": "Annulla",
-    "edit": "Edit",
-    "submit": "Submit",
-    "access": "Access",
-    "previous": "Previous",
-    "next": "Next",
-    "disable": "Disable",
-    "move": "Move",
-    "moving": "Moving...",
-    "navigating": "Navigating...",
-    "restoreHere": "Restore here",
-    "rename": "Rename",
-    "restore": "Restore",
+    "back": "Indietro",
+    "edit": "Modifica",
+    "submit": "Invia",
+    "access": "Accesso",
+    "previous": "Precedente",
+    "next": "Avanti",
+    "disable": "Disabilitare",
+    "move": "Sposta",
+    "moving": "Spostamento...",
+    "navigating": "Navigazione...",
+    "restoreHere": "Ripristina qui",
+    "rename": "Rinominare",
+    "restore": "Ripristinare",
     "copyLink": "Copia link"
   },
   "drive": {
     "usage": "Utilizzo",
-    "currentPlan": "Current plan",
-    "loadingFile": "Loading preview",
-    "previewNoAvailable": "No preview available",
-    "pdfPage": "Page {{page}} of {{pages}}",
+    "currentPlan": "Piano attuale",
+    "loadingFile": "Anteprima di caricamento",
+    "previewNoAvailable": "Nessuna anteprima disponibile",
+    "pdfPage": "Pagina {{page}} di {{pages}}",
     "list": {
       "columns": {
         "type": "Tipo",
@@ -940,28 +941,28 @@
       "deleteLink": "Elimina link",
       "restore": "Ripristinare",
       "deletePermanently": "Eliminare definitivamente",
-      "move": "Muoversi",
-      "delete": "Eliminare"
+      "move": "Sposta",
+      "delete": "Elimina"
     },
     "deleteItems": {
-      "title": "Delete permanently?",
-      "advice": "This action cannot be undone.",
-      "accept": "Delete",
+      "title": "Eliminare definitivamente?",
+      "advice": "Questa azione non può essere annullata.",
+      "accept": "Eliminare",
       "progress": "Eliminazione..."
     },
     "clearTrash": {
-      "title": "Empty Drive Trash?",
-      "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
+      "title": "Svuotare il cestino del Drive?",
+      "advice": "Tutti gli elementi nel Cestino vengono eliminati in modo permanente. Questa azione non può essere annullata.",
       "accept": "Empty Trash",
       "progress": "Emptying Trash..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
-      "close": "Close"
+      "title": "Caricamento massimo dei file",
+      "advice": "Il massimo è di 1000 file per upload.",
+      "close": "Chiudi"
     },
-    "movingToTrash": "Moving items to trash",
-    "deletingItems": "Deleting items from trash"
+    "movingToTrash": "Spostare gli oggetti nella spazzatura",
+    "deletingItems": "Eliminazione di elementi dal cestino"
   },
   "appSumo": {
     "tiers": {
@@ -986,7 +987,7 @@
   },
   "inviteAFriend": {
     "title": "Invita un amico",
-    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "descriptionWidget": "Ottenete fino a {{N}}GB di spazio di archiviazione extra gratuito invitando i vostri amici (1GB per ogni utente registrato tramite il vostro invito)",
     "description": "Spargi la voce, ricevi 1GB per ogni amico che inviti in Internxt. Ottieni fino a un massimo di {{N}} GB",
     "label": "Indirizzo e-mail dell'amico",
     "placeholder": "Inserisci l'email dell'amico",
@@ -1027,12 +1028,12 @@
   "tutorial": {
     "signUpTutorial": {
       "stepOne": {
-        "title": "Get the most out of Internxt Drive",
-        "description": "Download desktop app to sync and backup all your folders and files."
+        "title": "Ottieni il massimo da Internxt Drive",
+        "description": "Scarica l'app desktop per sincronizzare e fare il backup di tutte le cartelle e i file."
       },
       "stepTwo": {
-        "title": "Let's get started...",
-        "description": "Click Upload button to upload your first file."
+        "title": "Iniziamo...",
+        "description": "Fare clic sul pulsante _____ per caricare il primo file."
       }
     }
   }

@@ -278,6 +278,7 @@
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."

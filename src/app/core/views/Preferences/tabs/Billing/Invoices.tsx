@@ -52,7 +52,9 @@ export default function Invoices({ className = '' }: { className?: string }): JS
           ))}
         </div>
         <div className="flex flex-col">
-          <h1 className="mb-0.5 text-xs font-medium text-gray-80">Plan</h1>
+          <h1 className="mb-0.5 text-xs font-medium text-gray-80">
+            {translate('views.account.tabs.billing.invoices.plan')}
+          </h1>
           {invoices.map(({ bytesInPlan, pdf, id }, i) => (
             <div key={id} className={`border-translate border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
               <div className="flex justify-between">
