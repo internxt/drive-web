@@ -15,7 +15,7 @@ const currentLang = {
   es: 'Español (ES)',
   fr: 'Français (FR)',
   en: 'English (EN)',
-  ita: 'Italiano (ITA)',
+  ita: 'Italiano (IT)',
 };
 
 const localStorageLanguage = localStorageService.get('language');
