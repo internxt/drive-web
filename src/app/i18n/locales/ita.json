@@ -248,25 +248,25 @@
           "subsRenew": "L'abbonamento si rinnova tra {{daysUntilRenewal}} giorni",
           "cancelSubscriptionModal": {
             "title": "Annulla l'iscrizione",
-            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
-            "keepSubscription": "Keep subscription",
-            "continue": "Continue",
-            "cancelSubscription": "Cancel subscription",
+            "description": "Stai per annullare il tuo {{currentPlanName}} Internxt. Annullando il tuo piano, verrai declassato al piano gratuito Internxt {{freePlanName}}. Confermare la scelta per procedere, grazie.",
+            "keepSubscription": "Mantieni l'abbonamento",
+            "continue": "Continua",
+            "cancelSubscription": "Annulla abbonamento",
             "infoBox": {
-              "titleCurrent": "Current",
-              "titleNew": "New",
-              "year": "year",
-              "month": "month",
-              "free": "Free",
-              "reachedFreeLimit": "You are over {{freePlanName}}",
-              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+              "titleCurrent": "Attuale",
+              "titleNew": "Nuovo",
+              "year": "anno",
+              "month": "mese",
+              "free": "Gratuito",
+              "reachedFreeLimit": "Hai superato il {{freePlanName}}",
+              "reachedFreeLimitDescription": "Poiché si sta utilizzando {{currentUsage}}, Internxt Drive smetterà di sincronizzare i file e non sarà possibile aggiungere nuovi file"
             },
-            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "giveUsFeedback": "Ci dica perché vuole annullare il suo {{currentPlanName}} Internxt e passare al piano gratuito?",
             "feedback": {
-              "placeholder": "Give us some feedback"
+              "placeholder": "Dacci un feedback"
             }
           },
-          "billed": "Billed {{interval}} {{renewDate}}",
+          "billed": "Fatturato {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Metodo di pagamento",
             "empty": {
