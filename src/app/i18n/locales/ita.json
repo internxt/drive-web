@@ -322,10 +322,10 @@
                 "point3": "Assistenza clienti."
               },
               "section2": {
-                "title": "Sicurezza by default:",
+                "title": "Sicurezza per default:",
                 "point1": "Crittografia di livello militare, a garanzia della tua privacy.",
                 "point2": "Archiviazione e condivisione cloud crittografate.",
-                "point3": "Privacy zero-knowledge."
+                "point3": "Privacy e crittografia totale."
               },
               "section3": {
                 "title": "Accesso e sincronizzazione illimitati:",
@@ -531,6 +531,7 @@
     "friendsInvitedModal": {
       "title": "Amici invitati",
       "email": "E-mail",
+      "total": "Totale",
       "pending": "In attesa",
       "accepted": "Inviti accettati",
       "empty": "Non hai ancora invitato nessuno",
@@ -643,7 +644,7 @@
       }
     },
     "dropdown": {
-      "download": "Download",
+      "download": "Scarica",
       "delete": "Elimina"
     }
   },
@@ -707,11 +708,11 @@
     },
     "create-folder": {
       "status": {
-        "pending": "Pending to create folder",
-        "in-process": "Creating folder",
-        "success": "Folder created",
+        "pending": "In attesa di creare la cartella",
+        "in-process": "Creazione cartella",
+        "success": "Cartella creata",
         "error": "Error during folder creation",
-        "cancelled": "Folder creation cancelled"
+        "cancelled": "Creazione cartella annullata"
       },
       "errors": {}
     },
@@ -750,8 +751,8 @@
     },
     "download-photos": {
       "status": {
-        "pending": "Downloading {{progress}}%",
-        "success": "Downloaded",
+        "pending": "Download di {{progress}}%",
+        "success": "Scaricato",
         "error": "Error during download",
         "cancelled": "Download annullato"
       },
@@ -884,7 +885,7 @@
     "accessFile": "Accesso al file",
     "upgradeNow": "Aggiornare ora",
     "purchasePlan": "Aggiornare ora",
-    "upgrade": "Acquista spazio",
+    "upgrade": "Acquista",
     "buyStorage": "Aggiornare ora",
     "deleteAccount": "Eliminare definitivamente l'account",
     "changePassword": "Modifica la password",
@@ -934,7 +935,7 @@
       "openPreview": "Anteprima aperta",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
-      "download": "Download",
+      "download": "Scarica",
       "moveToTrash": "Sposta nel cestino",
       "copyLink": "Copia link",
       "linkSettings": "Impostazioni link",

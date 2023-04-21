@@ -513,6 +513,7 @@
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
       "pending": "Pendientes",
+      "total": "Total",
       "accepted": "Aceptadas",
       "empty": "No has invitado a nadie aún",
       "resend": "Reenviar invitación",

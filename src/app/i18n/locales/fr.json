@@ -474,6 +474,7 @@
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
+      "total": "Total",
       "pending": "En attente",
       "accepted": "Accepté",
       "empty": "Vous n'avez encore invité personne",

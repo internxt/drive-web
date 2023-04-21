@@ -147,7 +147,9 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               <Info size={20} />
               <p className="ml-2">{translate('modals.friendsInvitedModal.email')}</p>
             </div>
-            <p>Total: {invites.length}</p>
+            <p>
+              {translate('modals.friendsInvitedModal.total')}: {invites.length}
+            </p>
           </div>
           {invites.map((invite) => (
             <div className="group flex h-9 items-center justify-between rounded-md px-3 hover:bg-gray-5">
