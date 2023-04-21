@@ -336,26 +336,26 @@
             }
           },
           "dialog": {
-            "title": "Change plan",
-            "subtitle1": "You are about to change your Internxt plan from ",
-            "subtitle2": " to ",
-            "subtitle3": ". Confirm your choice to proceed, please.",
+            "title": "Piano di modifica",
+            "subtitle1": "Stai per cambiare il tuo piano Internxt da ",
+            "subtitle2": " a ",
+            "subtitle3": ". Confermare la scelta per procedere, per favore.",
             "plan": {
-              "current": "Current",
-              "new": "New",
-              "interval": "month"
+              "current": "Attuale",
+              "new": "Nuovo",
+              "interval": "mese"
             },
             "alert": {
-              "title": "You are over ",
-              "text1": "Because you are using ",
-              "text2": ", your Internxt Drive will stop syncing your files and you won’t be able to add new files"
+              "title": "Hai superato ",
+              "text1": "Perché stai usando ",
+              "text2": ", il vostro Internxt Drive smetterà di sincronizzare i vostri file e non potrete aggiungere nuovi file"
             },
             "message": {
-              "text": "You'll be charged now and for each payment period until further change."
+              "text": "L'addebito avverrà ora e per ogni periodo di pagamento fino a nuove modifiche."
             },
             "button": {
-              "back": "Keep current plan",
-              "continue": "Change plan"
+              "back": "Mantieni il piano attuale",
+              "continue": "Cambia piano"
             }
           }
         },
