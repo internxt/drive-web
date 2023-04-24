@@ -72,7 +72,6 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import BannerWrapper from 'app/banners/BannerWrapper';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
