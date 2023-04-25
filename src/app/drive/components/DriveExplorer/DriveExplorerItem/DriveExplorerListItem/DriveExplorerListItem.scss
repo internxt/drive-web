@@ -1,16 +1,9 @@
-
 @layer components {
   .file-list-item {
-    background-color: white;
-
-    @apply relative flex flex-row items-center h-16 border-b border-neutral-30 text-base w-full;
-
-    &:hover {
-      @apply bg-neutral-10;
-    }
+    @apply relative flex flex-grow w-full flex-row items-center text-base;
 
     &.selected {
-      @apply bg-blue-10 border-blue-20 border-opacity-65;
+      @apply border-blue-20 border-opacity-65;
     }
 
     &.is-dragging {
@@ -19,7 +12,7 @@
   }
 
   .hover-action {
-    @apply transition invisible group-hover:visible text-blue-60;
+    @apply invisible text-primary transition group-hover:visible;
 
     img {
       width: 14px;
@@ -29,7 +22,7 @@
   .file-list-item-edit-name-button {
     min-width: 20px;
 
-    @apply ml-1 h-5 w-5 cursor-pointer opacity-0 text-blue-60;
+    @apply ml-1 h-5 w-5 cursor-pointer text-primary opacity-0;
   }
 
   .file-list-item-name {
@@ -41,10 +34,10 @@
   }
 
   .file-list-item-name-span {
-    @apply flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis text-neutral-900 px-1 cursor-pointer  hover:underline;
+    @apply flex-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-gray-80;
   }
 
   .file-list-item-actions-button {
-    @apply rounded-1/2 w-5 h-5 text-blue-60 bg-neutral-20 font-bold p-0.5;
+    @apply h-5 w-5 rounded-1/2 bg-neutral-20 p-0.5 font-bold text-primary;
   }
 }

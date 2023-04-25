@@ -1,33 +1,35 @@
-import { useSelector } from 'react-redux';
-import { FolderPlus, CaretRight } from 'phosphor-react';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { FolderSimplePlus, CaretRight } from 'phosphor-react';
+import Modal from 'app/shared/components/Modal';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { DriveItemData, FolderPath } from '../../types';
-import i18n from 'app/i18n/services/i18n.service';
+import { DriveItemData, FolderPathDialog } from '../../types';
 import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import { fetchFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
-
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { TFunction } from 'i18next';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
   items: DriveItemData[];
+  parentFolderId?: number;
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const itemsToMove: DriveItemData[] = useSelector((state: RootState) => state.storage.itemsToMove);
   const [isLoading, setIsLoading] = useState(false);
   const [destinationId, setDestinationId] = useState(0);
@@ -35,21 +37,113 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [shownFolders, setShownFolders] = useState(props.items);
   const [currentFolderName, setCurrentFolderName] = useState('');
   const [selectedFolderName, setSelectedFolderName] = useState('');
-  const arrayOfPaths: FolderPath[] = [];
+  const arrayOfPaths: FolderPathDialog[] = [];
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
 
+  const onCreateFolderButtonClicked = () => {
+    dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  };
+
+  const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
+    const items: BreadcrumbItemData[] = [];
+
+    if (currentFolderPaths.length > 0) {
+      currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
+        items.push({
+          id: path.id,
+          label: path.name,
+          icon: null,
+          active: i < namePath.length - 1,
+          dialog: isOpen,
+          onClick: () => onShowFolderContentClicked(path.id, path.name),
+        });
+      });
+    }
+    return items;
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true);
+      setCurrentNamePaths([]);
+      onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
+      setIsLoading(false);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (isOpen && !newFolderIsOpen) {
+      onShowFolderContentClicked(currentFolderId, currentFolderName);
+    }
+  }, [newFolderIsOpen]);
+
+  const onShowFolderContentClicked = (folderId: number, name: string): void => {
+    dispatch(fetchDialogContentThunk(folderId))
+      .unwrap()
+      .then(() => {
+        databaseService.get(DatabaseCollection.Levels, folderId).then((items) => {
+          setCurrentFolderId(folderId);
+          setCurrentFolderName(name);
+          setDestinationId(folderId);
+
+          const files: DriveItemData[] = [];
+          const folders = items?.filter((i) => {
+            if (!i.isFolder) files.push(i);
+            return i.isFolder;
+          });
+
+          let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
+          const currentIndex = auxCurrentPaths.findIndex((i) => {
+            return i.id === folderId;
+          });
+          if (currentIndex > -1) {
+            auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
+            dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
+          } else {
+            auxCurrentPaths.push({ id: folderId, name: name });
+            dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
+          }
+
+          setCurrentNamePaths(auxCurrentPaths);
+          if (folders) {
+            const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
+            setShownFolders(unselectedFolders);
+          } else {
+            setShownFolders([]);
+            setDestinationId(folderId);
+            setCurrentFolderId(folderId);
+            setCurrentFolderName(name);
+          }
+        });
+      });
+  };
+
+  const onFolderClicked = (folderId: number, name?: string): void => {
+    if (destinationId != folderId) {
+      setDestinationId(folderId);
+    } else {
+      setDestinationId(currentFolderId);
+    }
+    name && setSelectedFolderName(name);
+  };
 
   const onClose = (): void => {
     dispatch(uiActions.setIsMoveItemsDialogOpen(false));
+    onShowFolderContentClicked(currentFolderId, currentFolderName);
     dispatch(setItemsToMove([]));
   };
 
-  const onCreateFolderButtonClicked = () => {
-    dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  const setDriveBreadcrumb = () => {
+    const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
+    dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
+    itemsToMove[0].isFolder &&
+      driveBreadcrumbPath.forEach((item) => {
+        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
+      });
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
@@ -63,13 +157,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId);
+        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction);
       }
 
       props.onItemsMoved && props.onItemsMoved();
 
       setIsLoading(false);
       onClose();
+      setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       setIsLoading(false);
@@ -77,138 +172,86 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     }
   };
 
-
-  const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-
-    if (currentFolderPaths.length > 0) {
-      currentFolderPaths.forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
-        items.push({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
-        });
-      });
-    }
-    return items;
-  };
-
-  useEffect(() => {
-    if (isOpen) {
-      setCurrentNamePaths([]);
-
-      onShowFolderContentClicked(rootFolderID, 'Drive');
-    }
-  }, [isOpen]);
-
-  useEffect(() => {
-    if (isOpen && !newFolderIsOpen) {
-      onShowFolderContentClicked(currentFolderId, currentFolderName);
-    }
-  }, [newFolderIsOpen]);
-
-  const onShowFolderContentClicked = (folderId: number, name: string): void => {
-    dispatch(fetchFolderContentThunk(folderId)).unwrap().then(() => {
-      setIsLoading(true);
-      databaseService.get(DatabaseCollection.Levels, folderId).then(
-        (items) => {
-          setCurrentFolderId(folderId);
-          setCurrentFolderName(name);
-          setDestinationId(folderId);
-
-          const folders = items?.filter((i) => { return i.isFolder; });
-
-          let auxCurrentPaths: FolderPath[] = [...currentNamePaths];
-          const currentIndex = auxCurrentPaths.findIndex((i) => { return i.id === folderId; });
-          if (currentIndex > -1) {
-            auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
-            dispatch(storageActions.popNamePathUpTo({ id: folderId, name: name }));
-          } else {
-            auxCurrentPaths.push({ id: folderId, name: name });
-            dispatch(storageActions.pushNamePath({ id: folderId, name: name }));
-          }
-
-          setCurrentNamePaths(auxCurrentPaths);
-          if (folders) {
-            setShownFolders(folders);
-          } else {
-            setShownFolders([]);
-            setDestinationId(folderId);
-            setCurrentFolderId(folderId);
-            setCurrentFolderName(name);
-          }
-          setIsLoading(false);
-        }
-      );
-    });
-  };
-
-  const onFolderClicked = (folderId: number, name?: string): void => {
-    if (destinationId != folderId) {
-      setDestinationId(folderId);
-    } else {
-      setDestinationId(currentFolderId);
-    }
-    name && setSelectedFolderName(name);
-  };
-
-  const title = `${props.isTrash ? 'Restore' : 'Move'} ${itemsToMove.length > 1 ? (itemsToMove.length) + ' items' : ('"' + itemsToMove[0]?.name + '"')}`;
-
   return (
-    <BaseDialog isOpen={isOpen} titleClasses='flex mx-5 text-left font-medium' panelClasses='text-neutral-900 flex flex-col absolute top-1/2 left-1/2 \
-        transform -translate-y-1/2 -translate-x-1/2 w-max max-w-lg text-left justify-left pt-5 rounded-lg overflow-hidden bg-white' title={title}
-      onClose={onClose} closeClass={'hidden'}>
-      <div style={{ width: '512px' }}>
-        <CreateFolderDialog currentFolderId={currentFolderId} />
-      </div>
-      <div className="block text-left justify-left items-center w-fill bg-white py-6">
-        <div className='ml-5'>{isLoading ? <Spinner className="h-5 w-5 mb-3" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+    <Modal isOpen={isOpen} onClose={onClose}>
+      <div className="flex flex-col space-y-5">
+        {/* Title */}
+        <div className="flex text-2xl font-medium text-gray-100">
+          <span className="flex whitespace-nowrap">
+            {`${props.isTrash ? translate('actions.restore') : translate('actions.move')}`} "
+          </span>
+          <span className="max-w-fit flex-1 truncate">{itemsToMove[0]?.name}</span>
+          <span className="flex">"</span>
         </div>
-        <div className="block w-fill h-60 border border-gray-10 rounded-md mx-5 items-center overflow-scroll hide-scroll bg-white">
-          {isLoading ?
-            <div className='flex flex-1 h-full items-center'>
-              <Spinner className="h-5 w-5 flex-1" />
-            </div>
-            :
-            props.isTrash && shownFolders.map((folder) => {
-              return (
-                <div className={`${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''} border border-t-0 border-l-0 border-r-0 border-white`} key={folder.id.toString()}>
-                  <div className={`${destinationId === folder.id ? 'bg-blue-20 border-none text-primary' : ''} flex justify-left align-middle w-fill h-12 border border-t-0 border-r-0 border-l-0 border-gray-10 items-center mx-4 bg-white cursor-pointer`} key={folder.id}>
-                    <div className='flex cursor-pointer w-96 items-center'
+
+        {/* Create folder dialog */}
+        <CreateFolderDialog currentFolderId={currentFolderId} />
+
+        {/* Folder list */}
+        <div className="flex flex-col">
+          <div className="flex h-10 items-center">
+            {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+          </div>
+
+          <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">
+            {isLoading ? (
+              <div className="flex h-full items-center justify-center">
+                <Spinner className="h-5 w-5" />
+              </div>
+            ) : (
+              shownFolders
+                .sort((a, b) => a.name.localeCompare(b.name))
+                .map((folder) => {
+                  return (
+                    <div
+                      className={`cursor-pointer ${
+                        destinationId === folder.id ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-1'
+                      } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
-                      onClick={() => onFolderClicked(folder.id, folder.name)}>
-                      <img className="h-8 w-8" alt="" src={folderImage} />
-                      <span className='inline-block ml-4 text-base text-regular align-baseline mt-1 truncate' style={{ maxWidth: '280px' }} title={folder.name}>
+                      onClick={() => onFolderClicked(folder.id, folder.name)}
+                      key={folder.id}
+                    >
+                      <img className="flex h-8 w-8" alt="Folder icon" src={folderImage} />
+                      <span className="w-full flex-1 truncate text-base" title={folder.name}>
                         {folder.name}
                       </span>
+                      <CaretRight
+                        onClick={() => onShowFolderContentClicked(folder.id, folder.name)}
+                        className="h-6 w-6"
+                      />
                     </div>
-                    <div className='ml-auto cursor-pointer'>
-                      <CaretRight onClick={() => onShowFolderContentClicked(folder.id, folder.name)} className={`h-6 w-6 {${destinationId === folder.id ? 'bg-blue-20 text-primary' : ''}`} />
-                    </div>
-                  </div>
-                </div>);
-            })}
+                  );
+                })
+            )}
+          </div>
         </div>
 
-        <div className="flex ml-auto mt-5">
-          <BaseButton disabled={isLoading} className="tertiary square w-28 h-8 ml-5 mt-1 mr-auto" onClick={onCreateFolderButtonClicked}>
-            <div className='flex text-primary text-base text-medium cursor-pointer items-center'>
-              <FolderPlus className="h-5 w-5 text-primary mr-2" />
-              <span className='text-primary text-base font-medium cursor-pointer'>New folder</span>
+        {/* Actions */}
+        <div className="flex justify-between">
+          <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
+            <div className="flex cursor-pointer items-center text-base font-medium text-primary">
+              <FolderSimplePlus className="mr-2 h-6 w-6" />
+              <span>{translate('actions.upload.folder')}</span>
             </div>
           </BaseButton>
-          <Button disabled={isLoading} variant="secondary" onClick={onClose} className='mr-3'>
-            {i18n.get('actions.cancel')}
-          </Button>
-          <Button disabled={isLoading} variant="primary" className='mr-5'
-            onClick={() => onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)}>
-            {isLoading ? (!props.isTrash ? 'Moving...' : 'Navigating...') : (!props.isTrash ? 'Move' : 'Restore here')}
-          </Button>
+
+          <div className="flex space-x-2">
+            <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+              {translate('actions.cancel')}
+            </Button>
+            <Button
+              disabled={isLoading}
+              variant="primary"
+              onClick={() =>
+                onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
+              }
+            >
+              {!props.isTrash ? translate('actions.move') : translate('actions.restoreHere')}
+            </Button>
+          </div>
         </div>
       </div>
-    </BaseDialog>
+    </Modal>
   );
 };
 

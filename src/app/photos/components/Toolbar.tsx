@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
 
 export default function Toolbar({
@@ -15,12 +16,18 @@ export default function Toolbar({
   onUnselectClick?: () => void;
   numberOfSelectedItems: number;
 }): JSX.Element {
+  const { translate } = useTranslationContext();
+
   return (
     <div className={`${className} flex w-full items-center justify-between space-x-1 px-5 py-2`}>
       <div className={`flex items-center ${numberOfSelectedItems === 0 ? 'opacity-0' : ''}`}>
         <Icon Target={X} onClick={onUnselectClick} dataTest="photos-unselect-all" />
         <p style={{ paddingTop: '1px' }} className="ml-2 font-medium text-gray-80">
-          {`${numberOfSelectedItems} ${numberOfSelectedItems > 1 ? 'Items' : 'Item'} selected`}
+          {`${numberOfSelectedItems} ${
+            numberOfSelectedItems > 1
+              ? translate('modals.deletePhotosModal.multiToolBar')
+              : translate('modals.deletePhotosModal.singleToolBar')
+          }`}
         </p>
       </div>
 
@@ -33,7 +40,15 @@ export default function Toolbar({
   );
 }
 
-function Icon({ Target, onClick, dataTest }: { Target: typeof DownloadSimple; onClick?: () => void; dataTest: string }) {
+function Icon({
+  Target,
+  onClick,
+  dataTest,
+}: {
+  Target: typeof DownloadSimple;
+  onClick?: () => void;
+  dataTest: string;
+}) {
   return (
     <div
       className={`${

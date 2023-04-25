@@ -17,7 +17,8 @@
     "jsx": "react-jsx",
     "noImplicitAny": false,
     "downlevelIteration": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "incremental": true
   },
   "types": ["filesystem", "@types/react"],
   "include": ["src"]

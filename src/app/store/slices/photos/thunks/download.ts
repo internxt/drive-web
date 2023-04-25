@@ -6,10 +6,11 @@ import errorService from '../../../../core/services/error.service';
 import downloadFileFromBlob from '../../../../drive/services/download.service/downloadFileFromBlob';
 import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
-import i18n from '../../../../i18n/services/i18n.service';
 import { SerializablePhoto } from '..';
 import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
 import { FlatFolderZip } from 'app/core/services/stream.service';
+import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state: RootState }>(
   'photos/delete',
@@ -21,6 +22,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     const abortController = new AbortController();
 
     let taskId = '';
+    const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
     try {
       taskId = tasksService.create({
@@ -33,16 +35,16 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
 
       if (payload.length === 1) {
         const [photo] = payload;
+
         const photoBlob = await getPhotoBlob({ photo, bucketId, abortController });
 
         if (!abortController.signal.aborted) {
           await downloadFileFromBlob(photoBlob, `${photo.name}.${photo.type}`);
         }
       } else {
-        const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
-
         if (isBrave) {
-          throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+          notificationsService.show({ text: t('error.braveNotSupportMultiplePhotosDowload'), type: ToastType.Error });
+          throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
 
         const folder = new FlatFolderZip('photos', { abortController });
@@ -69,7 +71,7 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
               generalProgress[photo.id] = progress;
               updateTaskProgress();
             },
-            abortController
+            abortController,
           });
 
           if (photoSource instanceof Blob) {
@@ -88,9 +90,16 @@ export const downloadThunk = createAsyncThunk<void, SerializablePhoto[], { state
     } catch (err) {
       const error = errorService.castError(err);
 
-      if (abortController.signal.aborted)
+      if (!isBrave)
+        errorService.reportError(err, {
+          extra: {
+            payload,
+          },
+        });
+
+      if (abortController.signal.aborted) {
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Cancelled } });
-      else {
+      } else {
         console.error(error);
         tasksService.updateTask({ taskId, merge: { status: TaskStatus.Error } });
       }

@@ -1,9 +1,10 @@
 import { SharedDirectoryFolder } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
-import i18n from 'app/i18n/services/i18n.service';
 import { DownloadableFile, DownloadableFolder, FolderLevel } from '../downloader';
 import { SharedDirectoryFolderIterator, SharedFolderFilesIterator } from '../../../../share/services/folder.service';
 import { Iterator } from 'app/core/collections';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { t } from 'i18next';
 
 interface FolderRef {
   name: string;
@@ -32,11 +33,11 @@ export async function downloadSharedFolderUsingFileSystemAPI(
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   if (isBrave) {
-    throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+    throw new Error(t('error.browserNotSupported', { userAgent: 'Brave' }) as string);
   }
 
   const getTotalDownloadedBytes = () => {
-    return Object.values(downloads).reduce((t, x) => t + x, 0);
+    return Object.values(downloads).reduce((translate, x) => translate + x, 0);
   };
 
   const progressIntervalId = setInterval(() => {

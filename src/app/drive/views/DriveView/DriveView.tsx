@@ -63,14 +63,7 @@ class DriveView extends Component<DriveViewProps> {
   render(): ReactNode {
     const { items, isLoading } = this.props;
 
-    return (
-      <DriveExplorer
-        title={<Breadcrumbs items={this.breadcrumbItems} />}
-        isLoading={isLoading}
-        titleClassName="px-2"
-        items={items}
-      />
-    );
+    return <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />;
   }
 }
 

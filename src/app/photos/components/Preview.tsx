@@ -7,6 +7,8 @@ import { RootState } from '../../store';
 import { photosSlice, PhotosState } from '../../store/slices/photos';
 import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
+import * as Sentry from '@sentry/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function Preview({
   onDownloadClick,
@@ -19,6 +21,7 @@ export default function Preview({
   onDeleteClick?: () => void;
   onClose: () => void;
 }): JSX.Element {
+  const { translate } = useTranslationContext();
   const MS_TO_BE_IDLE = 5000;
   const isIdle = useIdle(MS_TO_BE_IDLE);
 
@@ -30,43 +33,61 @@ export default function Preview({
   const [thumbnailSrc, setThumbnailSrc] = useState<string | null>(null);
 
   useEffect(() => {
-    if (previewIndex !== null && bucketId) {
-      setThumbnailSrc(null);
+    if (previewIndex === null) return;
+    setThumbnailSrc(null);
+    const photo = items[previewIndex];
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (!photoBucketId) return;
 
-      const photo = items[previewIndex];
-      getPhotoPreview({
-        photo,
-        bucketId,
-      }).then(setThumbnailSrc);
-    }
+    getPhotoPreview({
+      photo,
+      bucketId: photoBucketId,
+    })
+      .then(setThumbnailSrc)
+      .catch((err) => {
+        Sentry.captureException(err, {
+          extra: {
+            photoId: photo.id,
+            bucketId: photoBucketId,
+          },
+        });
+      });
   }, [previewIndex, items]);
 
   const [src, setSrc] = useState<string | null>(null);
   const [itemType, setItemType] = useState<PhotosItemType>(PhotosItemType.PHOTO);
 
   useEffect(() => {
-    if (previewIndex !== null && bucketId) {
-      setSrc(null);
+    if (previewIndex === null) return;
 
-      const abortController = new AbortController();
-      const photo = items[previewIndex];
-      getPhotoBlob({ photo, bucketId, abortController })
-        .then((blob) => {
-          setItemType(photo.itemType);
-          return setSrc(URL.createObjectURL(blob));
-        })
-        .catch((err) => {
-          if (abortController.signal.aborted) {
-            return;
-          }
+    setSrc(null);
 
-          console.log(err);
+    const abortController = new AbortController();
+    const photo = items[previewIndex];
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (!photoBucketId) return;
+
+    getPhotoBlob({ photo, bucketId: photoBucketId, abortController })
+      .then((blob) => {
+        setItemType(photo.itemType);
+        return setSrc(URL.createObjectURL(blob));
+      })
+      .catch((err) => {
+        if (abortController.signal.aborted) {
+          return;
+        }
+
+        Sentry.captureException(err, {
+          extra: {
+            photoId: photo.id,
+            bucketId: photoBucketId,
+          },
         });
+      });
 
-      return () => {
-        abortController.abort();
-      };
-    }
+    return () => {
+      abortController.abort();
+    };
   }, [previewIndex, items]);
 
   const canGoRight = previewIndex !== null && previewIndex < photosState.items.length - 1;
@@ -107,7 +128,7 @@ export default function Preview({
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate" data-test="photos-preview">
+      <div className="absolute inset-0 isolate z-10" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"
@@ -144,7 +165,7 @@ export default function Preview({
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
-              <p className="ml-3">Loading...</p>
+              <p className="ml-3">{translate('general.loading.default')}</p>
             </div>
           </div>
         )}

@@ -4,7 +4,6 @@ import { match } from 'react-router';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
-import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
@@ -21,6 +20,7 @@ import JSZip from 'jszip';
 import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface SharePhotosProps {
   match: match<{
@@ -30,6 +30,7 @@ interface SharePhotosProps {
 }
 
 const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
+  const { translate } = useTranslationContext();
   const { token, code } = props.match.params;
 
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -63,7 +64,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
        * TODO: Check that the server returns proper error message instead
        * of assuming that everything means that the link has expired
        */
-      throw new Error(i18n.get('error.linkExpired'));
+      throw new Error(translate('error.linkExpired') as string);
     });
   };
 
@@ -83,8 +84,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
           encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
           token: fileToken,
           options: {
-            notifyProgress: updateProgress
-          }
+            notifyProgress: updateProgress,
+          },
         });
         const fileBlob = await binaryStreamToBlob(await readablePromise);
 
@@ -93,7 +94,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
         const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
         if (isBrave) {
-          throw new Error(i18n.get('error.browserNotSupported', { userAgent: 'Brave' }));
+          throw new Error(translate('error.browserNotSupported', { userAgent: 'Brave' }) as string);
         }
         const canUseReadableStreamMethod =
           'WritableStream' in window &&
@@ -129,13 +130,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
             bucketId: info.bucket,
             fileId: photo.fileId,
             encryptionKey: Buffer.from(photo.decryptionKey, 'hex'),
-            token: fileToken, 
+            token: fileToken,
             options: {
               notifyProgress: (progress) => {
                 generalProgress[photo.fileId] = progress;
                 updateTaskProgress();
-              }
-            }
+              },
+            },
           });
 
           zip.file(photoName, await photoStreamPromise, { compression: 'DEFLATE' });
@@ -186,7 +187,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     downloadButton = (
       <>
         <UilImport height="20" width="20" />
-        <span className="font-medium">{i18n.get('actions.download')}</span>
+        <span className="font-medium">{translate('actions.download')}</span>
       </>
     );
   } else {
@@ -196,13 +197,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
           <div className="mr-1 h-5 w-5 text-white">
             <Spinner />
           </div>
-          <span>{i18n.get('actions.downloading')}</span>
+          <span>{translate('actions.downloading')}</span>
           {<span className="font-normal text-blue-20">{progress}%</span>}
         </>
       ) : (
         <>
           <UilCheck height="24" width="24" />
-          <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+          <span className="font-medium">{translate('actions.downloaded')}</span>
         </>
       );
   }

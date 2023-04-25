@@ -18,6 +18,9 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import RealtimeService from 'app/core/services/socket.service';
+import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import dayjs from 'dayjs';
 
 interface UserState {
   isInitializing: boolean;
@@ -125,6 +128,8 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
     if (!currentUser) throw new Error('User is not defined');
 
     const { avatar } = await userService.updateUserAvatar(payload);
+
+    await saveAvatarToDatabase(avatar, payload.avatar);
     dispatch(userActions.setUser({ ...currentUser, avatar }));
   },
 );
@@ -135,6 +140,7 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
     const currentUser = getState().user.user;
     if (!currentUser) throw new Error('User is not defined');
 
+    await deleteDatabaseProfileAvatar();
     await userService.deleteUserAvatar();
     dispatch(userActions.setUser({ ...currentUser, avatar: null }));
   },
@@ -207,6 +213,10 @@ export const userSelectors = {
       : (user as UserSettings).name[0] + ((user as UserSettings).lastname[0] || '');
 
     return nameLetters.toUpperCase();
+  },
+  hasSignedToday: (state: RootState): boolean => {
+    const { user } = state.user;
+    return dayjs(user?.createdAt).isSame(new Date(), 'day');
   },
   isFromAppSumo: (state: RootState): boolean => !!state.user.user?.appSumoDetails,
   hasReferralsProgram: (state: RootState): boolean => !!state.user.user?.hasReferralsProgram,

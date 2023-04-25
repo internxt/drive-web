@@ -4,13 +4,14 @@ import TaskLoggerItem from '../TaskLoggerItem/TaskLoggerItem';
 import { TaskStatus } from '../../types';
 import { useTaskManagerGetNotifications } from '../../hooks';
 import tasksService from '../../services/tasks.service';
-import i18n from '../../../i18n/services/i18n.service';
 
 import { uiActions } from '../../../store/slices/ui';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { CaretDown, CircleNotch, X } from 'phosphor-react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const TaskLogger = (): JSX.Element => {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
@@ -56,19 +57,24 @@ const TaskLogger = (): JSX.Element => {
 
   return (
     <div
-      className={`absolute bottom-0 right-0 z-50 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
+      className={`absolute bottom-0 right-0 z-40 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
         isMinimized ? 'h-11' : 'h-64'
       } overflow-hidden rounded-lg border border-gray-10 bg-white ${!isOpen ? 'hidden' : ''}`}
     >
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
           {hasFinished ? (
-            <span>{i18n.get('tasks.messages.allProcessesHaveFinished')}</span>
+            <span>{translate('tasks.messages.allProcessesHaveFinished')}</span>
           ) : (
             <Fragment>
               <CircleNotch size={16} className="mr-2 animate-spin text-gray-60" weight="bold" />
 
-              <span>{`Processing ${Object.values(finishedNotifications).length} of ${allNotifications.length}`}</span>
+              <span>
+                {translate('tasks.messages.processing', {
+                  pending: Object.values(finishedNotifications).length,
+                  finished: allNotifications.length,
+                })}
+              </span>
             </Fragment>
           )}
         </div>

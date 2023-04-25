@@ -5,6 +5,7 @@ import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import { FlatFolderZip } from 'app/core/services/stream.service';
 import network from 'app/network';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 /**
  * @description Downloads a folder using File System Access API
@@ -16,43 +17,44 @@ export default function downloadFolderUsingFileSystemAccessAPI({
   folder,
   updateProgressCallback,
   isTeam,
-  abortController
+  abortController,
 }: {
   folder: DriveFolderData;
   updateProgressCallback?: (progress: number) => void;
   isTeam: boolean;
-  abortController?: AbortController
+  abortController?: AbortController;
 }): Promise<void> {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
 
   return downloadFolder(
     folder,
     { bridgeUser, bridgePass, encryptionKey },
-    { abortController, updateProgress: updateProgressCallback }
+    { abortController, updateProgress: updateProgressCallback },
   );
 }
 
 async function downloadFolder(
   folder: DriveFolderData,
-  environment: { bridgeUser: string, bridgePass: string, encryptionKey: string },
+  environment: { bridgeUser: string; bridgePass: string; encryptionKey: string },
   opts: {
-    abortController?: AbortController,
-    updateProgress?: (progress: number) => void
-  }
+    abortController?: AbortController;
+    updateProgress?: (progress: number) => void;
+  },
 ) {
   const { abortController, updateProgress } = opts;
   const { bridgeUser, bridgePass, encryptionKey } = environment;
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
-  const pendingFolders: { path: string, data: FolderTree }[] = [{ path: '', data: tree }];
+  const pendingFolders: { path: string; data: FolderTree }[] = [{ path: '', data: tree }];
 
   const zip = new FlatFolderZip(folder.name, {
     abortController: opts.abortController,
-    progress: (loadedBytes) => updateProgress?.(loadedBytes / size)
+    progress: (loadedBytes) => updateProgress?.(loadedBytes / size),
   });
 
   while (pendingFolders.length > 0 && !abortController?.signal.aborted) {
-    const currentFolder = pendingFolders.shift() as { path: string, data: FolderTree };
-    const folderPath = currentFolder.path + (currentFolder.path === '' ? '' : '/') + folderDecryptedNames[currentFolder.data.id];
+    const currentFolder = pendingFolders.shift() as { path: string; data: FolderTree };
+    const folderPath =
+      currentFolder.path + (currentFolder.path === '' ? '' : '/') + folderDecryptedNames[currentFolder.data.id];
 
     zip.addFolder(folderPath);
 
@@ -73,19 +75,19 @@ async function downloadFolder(
         fileId: file.fileId,
         creds: {
           pass: bridgePass,
-          user: bridgeUser
+          user: bridgeUser,
         },
         mnemonic: encryptionKey,
         options: {
           notifyProgress: () => null,
-          abortController: opts.abortController
-        }
+          abortController: opts.abortController,
+        },
       });
 
       zip.addFile(folderPath + '/' + displayFilename, await fileStreamPromise);
     }
 
-    pendingFolders.push(...folders.map(tree => ({ path: folderPath, data: tree })));
+    pendingFolders.push(...folders.map((tree) => ({ path: folderPath, data: tree })));
   }
 
   if (abortController?.signal.aborted) {

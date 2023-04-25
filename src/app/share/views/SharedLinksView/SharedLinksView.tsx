@@ -1,7 +1,6 @@
-import i18n from 'app/i18n/services/i18n.service';
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, LinkBreak, Gear, Copy } from 'phosphor-react';
+import { Trash, Link } from 'phosphor-react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -15,13 +14,26 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import { DriveFileData } from '../../../drive/types';
+import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
 import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { t } from 'i18next';
+import {
+  contextMenuDriveFolderShared,
+  contextMenuDriveItemShared,
+  contextMenuMultipleSharedView,
+} from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
+import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
+import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
+import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -29,11 +41,12 @@ const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN ||
 
 function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
-  notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
 export default function SharedLinksView(): JSX.Element {
-  const ITEMS_PER_PAGE = 10;
+  const { translate } = useTranslationContext();
+  const ITEMS_PER_PAGE = 50;
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
@@ -41,6 +54,7 @@ export default function SharedLinksView(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
   const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
 
@@ -108,6 +122,7 @@ export default function SharedLinksView(): JSX.Element {
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
+      console.log('selectedItems', selectedItems.length);
 
       const CHUNK_SIZE = 10;
       const chunks = _.chunk(selectedItems, CHUNK_SIZE);
@@ -118,8 +133,8 @@ export default function SharedLinksView(): JSX.Element {
 
       const stringLinksDeleted =
         selectedItems.length > 1
-          ? i18n.get('shared-links.toast.links-deleted')
-          : i18n.get('shared-links.toast.link-deleted');
+          ? translate('shared-links.toast.links-deleted')
+          : translate('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
       await fetchItems(0, orderBy, 'substitute');
       closeConfirmDelete();
@@ -160,8 +175,8 @@ export default function SharedLinksView(): JSX.Element {
           </div>
         </div>
       }
-      title={i18n.get('shared-links.empty-state.title')}
-      subtitle={i18n.get('shared-links.empty-state.subtitle')}
+      title={translate('shared-links.empty-state.title')}
+      subtitle={translate('shared-links.empty-state.subtitle')}
     />
   );
 
@@ -171,14 +186,45 @@ export default function SharedLinksView(): JSX.Element {
     setIsUpdateLinkModalOpen(true);
   }
 
+  const copyLink = (item) => {
+    const itemType = item.isFolder ? 'folder' : 'file';
+    const encryptedCode = item.code || item.encryptedCode;
+    const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
+    copyShareLink(itemType, plainCode, item.token);
+  };
+
+  const openLinkSettings = (item) => {
+    dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
+    dispatch(uiActions.setIsShareItemDialogOpen(true));
+  };
+
   return (
-    <div className="flex w-full flex-shrink-0 flex-col">
+    <div
+      className="flex w-full flex-shrink-0 flex-col"
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}
+    >
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          onClose={() => {
+            setEditNameItem(null);
+            fetchItems(0, orderBy, 'substitute');
+          }}
+        />
+      )}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
-          <p className="text-lg">{i18n.get('shared-links.shared-links')}</p>
+          <p className="text-lg">{translate('shared-links.shared-links')}</p>
         </div>
 
-        <div className="flex flex-row items-center">
+        <div
+          className="flex flex-row items-center"
+          data-tooltip-id="delete-link-tooltip"
+          data-tooltip-content={translate('shared-links.item-menu.delete-link')}
+          data-tooltip-place="bottom"
+        >
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
@@ -189,6 +235,7 @@ export default function SharedLinksView(): JSX.Element {
           >
             <Trash size={24} />
           </BaseButton>
+          <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       </div>
 
@@ -196,27 +243,27 @@ export default function SharedLinksView(): JSX.Element {
         <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
           header={[
             {
-              label: i18n.get('shared-links.list.link-content'),
+              label: translate('shared-links.list.link-content'),
               width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
             {
-              label: i18n.get('shared-links.list.shared'),
+              label: translate('shared-links.list.shared'),
               width: 'w-40', //w-1/12
               name: 'views',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: i18n.get('shared-links.list.created'),
+              label: translate('shared-links.list.created'),
               width: 'w-40', //w-2/12
               name: 'createdAt',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
-              label: 'Size',
+              label: translate('shared-links.list.size'),
               width: 'w-40', //w-1.5/12
               name: 'fileSize',
               orderable: false,
@@ -224,12 +271,16 @@ export default function SharedLinksView(): JSX.Element {
           ]}
           items={shareLinks}
           isLoading={isLoading}
+          onClick={(item) => {
+            const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
+            onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
+          }}
           itemComposition={[
             (props) => {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
-                  <div className="my-5 flex flex-shrink items-center justify-center">
+                  <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
                       <Link size={12} color="white" />
@@ -253,12 +304,12 @@ export default function SharedLinksView(): JSX.Element {
               );
             },
             (props) => (
-              <span
-                className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}
-              >{`${props.views} views`}</span>
+              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>{`${
+                props.views
+              } ${translate('shared-links.view')}`}</span>
             ),
             (props) => (
-              <span className={`${isItemSelected(props) ? 'text-primary' : 'text-gray-60'}`}>
+              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
             ),
@@ -273,42 +324,122 @@ export default function SharedLinksView(): JSX.Element {
           emptyState={emptyState}
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
-          menu={[
-            {
-              name: i18n.get('shared-links.item-menu.copy-link'),
-              icon: Copy,
-              action: (props: any) => {
-                const itemType = props.isFolder ? 'folder' : 'file';
-                const encryptedCode = props.code || props.encryptedCode;
-                const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
-                copyShareLink(itemType, plainCode, props.token);
-              },
-              disabled: () => {
-                return false;
-              },
+          menu={
+            selectedItems.length > 1
+              ? contextMenuMultipleSharedView({
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  downloadItem: () => {
+                    const itemsToDownload = selectedItems.map((selectedShareLink) => ({
+                      ...(selectedShareLink.item as DriveItemData),
+                      isFolder: selectedShareLink.isFolder,
+                    }));
+                    dispatch(storageThunks.downloadItemsThunk(itemsToDownload));
+                  },
+                  moveToTrash: async () => {
+                    const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+                      ...(selectedShareLink.item as DriveItemData),
+                      isFolder: selectedShareLink.isFolder,
+                    }));
+                    await moveItemsToTrash(itemsToTrash);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+              : selectedItems[0]?.isFolder
+              ? contextMenuDriveFolderShared({
+                  copyLink,
+                  openLinkSettings,
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  renameItem: (shareLink) => {
+                    const itemToRename = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    setEditNameItem(itemToRename);
+                  },
+                  moveItem: (shareLink) => {
+                    const itemToMove = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageActions.setItemsToMove([itemToMove]));
+                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                  },
+                  downloadItem: (shareLink) => {
+                    const itemToDownload = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+                  },
+                  moveToTrash: async (shareLink) => {
+                    const itemToTrash = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    await moveItemsToTrash([itemToTrash]);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+              : contextMenuDriveItemShared({
+                  openPreview: (shareLink) => {
+                    dispatch(uiActions.setIsFileViewerOpen(true));
+                    dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
+                  },
+                  copyLink,
+                  openLinkSettings,
+                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  renameItem: (shareLink) => {
+                    const itemToRename = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    setEditNameItem(itemToRename);
+                  },
+                  moveItem: (shareLink) => {
+                    const itemToMove = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageActions.setItemsToMove([itemToMove]));
+                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+                  },
+                  downloadItem: (shareLink) => {
+                    const itemToDownload = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+                  },
+                  moveToTrash: async (shareLink) => {
+                    const itemToTrash = {
+                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+                      isFolder: shareLink.isFolder,
+                    };
+                    await moveItemsToTrash([itemToTrash]);
+                    fetchItems(page, orderBy, 'substitute');
+                  },
+                })
+          }
+          keyBoardShortcutActions={{
+            onBackspaceKeyPressed: async () => {
+              const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+                ...(selectedShareLink.item as DriveItemData),
+                isFolder: selectedShareLink.isFolder,
+              }));
+              await moveItemsToTrash(itemsToTrash);
+              fetchItems(page, orderBy, 'substitute');
             },
-            {
-              name: i18n.get('shared-links.item-menu.link-settings'),
-              icon: Gear,
-              action: (props: any) => {
-                dispatch(storageActions.setItemToShare({ share: props, item: props.item }));
-                dispatch(uiActions.setIsShareItemDialogOpen(true));
-              },
-              disabled: () => {
-                return false; // If item is selected and link is active
-              },
+            onRKeyPressed: () => {
+              if (selectedItems.length === 1) {
+                const selectedItem = selectedItems[0];
+                const itemToRename = {
+                  ...((selectedItem as ListShareLinksItem).item as DriveItemData),
+                  isFolder: selectedItem.isFolder,
+                };
+                setEditNameItem(itemToRename);
+              }
             },
-            {
-              name: i18n.get('shared-links.item-menu.delete-link'),
-              icon: LinkBreak,
-              action: (props) => {
-                setIsDeleteDialogModalOpen(true);
-              },
-              disabled: () => {
-                return false; // If item is selected and link is active
-              },
-            },
-          ]}
+          }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           disableKeyboardShortcuts={isUpdateLinkModalOpen}
@@ -317,20 +448,32 @@ export default function SharedLinksView(): JSX.Element {
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
-
+      <MoveItemsDialog
+        items={shareLinks.map((shareLink) => ({ ...(shareLink.item as DriveItemData), isFolder: shareLink.isFolder }))}
+        isTrash={false}
+      />
+      <EditFolderNameDialog />
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
-        secondaryAction="Cancel"
-        title={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
+        secondaryAction={translate('modals.removeSharedLinkModal.cancel')}
+        title={
+          selectedItems.length > 1
+            ? translate('shared-links.item-menu.delete-links')
+            : translate('shared-links.item-menu.delete-link')
+        }
         subtitle={
           selectedItems.length > 1
-            ? 'Users with the links will lose access to the shared content'
-            : 'Users with the link will lose access to the shared content'
+            ? translate('modals.removeSharedLinkModal.multiSharedDescription')
+            : translate('modals.removeSharedLinkModal.singleSharedDescription')
         }
         onPrimaryAction={onDeleteSelectedItems}
-        primaryAction={selectedItems.length > 1 ? 'Delete links' : 'Delete link'}
+        primaryAction={
+          selectedItems.length > 1
+            ? translate('modals.removeSharedLinkModal.deleteLinks')
+            : translate('modals.removeSharedLinkModal.deleteLink')
+        }
         primaryActionColor="danger"
       />
       {/* <UpdateLinkModal
@@ -354,6 +497,7 @@ function UpdateLinkModal({
   onClose: () => void;
   onShareUpdated: (updatedItem: ListShareLinksItem & { code: string }) => void;
 }) {
+  const { translate } = useTranslationContext();
   const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
 
   const item = linkToUpdate?.item as DriveFileData | undefined;
@@ -371,7 +515,7 @@ function UpdateLinkModal({
     const updatedItem = await shareService.updateShareLink(params);
     onShareUpdated(updatedItem as ShareTypes.ShareLink & { code: string });
     setSavingLinkChanges(false);
-    //notificationsService.show({ text: i18n.get('shared-links.toast.link-updated'), type: ToastType.Success });
+    //notificationsService.show({ text: translate('shared-links.toast.link-updated'), type: ToastType.Success });
   }
 
   function copyLink() {
@@ -379,7 +523,7 @@ function UpdateLinkModal({
     const link = shareService.buildLinkFromShare(mnemonic, linkToUpdate);
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     copy(link);
-    notificationsService.show({ text: i18n.get('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   }
 
   return (
@@ -410,7 +554,7 @@ function UpdateLinkModal({
             >
               <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
-                  <span className="font-medium">{i18n.get('shared-links.link-settings.share-settings')}</span>
+                  <span className="font-medium">{translate('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
                     {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}`) || ''}`}
                   </span>
@@ -418,7 +562,7 @@ function UpdateLinkModal({
 
                 <div className="flex flex-col">
                   <span className="text-lg font-semibold text-gray-80">
-                    {i18n.get('shared-links.link-settings.views')}
+                    {translate('shared-links.link-settings.views')}
                   </span>
                   <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
                 </div>
@@ -429,7 +573,7 @@ function UpdateLinkModal({
                     disabled={false}
                     className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                   >
-                    <span>{i18n.get('shared-links.link-settings.copy-link')}</span>
+                    <span>{translate('shared-links.link-settings.copy-link')}</span>
                     <Link size={24} />
                   </BaseButton>
 
@@ -446,7 +590,7 @@ function UpdateLinkModal({
                       isLoading={savingLinkChanges}
                       className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
                     >
-                      {i18n.get('shared-links.link-settings.close')}
+                      {translate('shared-links.link-settings.close') as string}
                     </BaseButton>
                   </div>
                 </div>

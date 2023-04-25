@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { DeviceBackup } from '../../types';
 import BackupListItem from './BackupListItem';
 import { useAppDispatch } from '../../../store/hooks';
 import { backupsThunks } from '../../../store/slices/backups';
-import i18n from '../../../i18n/services/i18n.service';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
+import List from '../../../shared/components/List';
+import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
 interface Props {
   items: DeviceBackup[];
@@ -12,22 +15,29 @@ interface Props {
 
 const BackupList = (props: Props): JSX.Element => {
   const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const { isLoading } = props;
-  const onDownloadBackupClicked = async (backup: DeviceBackup) => {
-    dispatch(backupsThunks.downloadBackupThunk(backup));
+
+  const [selectedBackups, setSelectedBackups] = useState<DeviceBackup[]>([]);
+
+  const onDownloadBackupClicked = () => {
+    selectedBackups.forEach((backup) => dispatch(backupsThunks.downloadBackupThunk(backup)));
   };
-  const onDeleteBackupClicked = async (backup: DeviceBackup) => {
-    dispatch(backupsThunks.deleteBackupThunk(backup));
+  const onDeleteBackupClicked = () => {
+    selectedBackups.forEach((backup) => dispatch(backupsThunks.deleteBackupThunk(backup)));
   };
-  const getItemsList = () =>
-    props.items.map((item: DeviceBackup) => (
-      <BackupListItem
-        key={item.id}
-        backup={item}
-        onDownloadBackupClicked={onDownloadBackupClicked}
-        onDeleteBackupClicked={onDeleteBackupClicked}
-      />
-    ));
+
+  const onBackupSelected = (changes: { device: DeviceBackup; isSelected: boolean }[]) => {
+    let updatedSelectedItems = selectedBackups;
+    for (const change of changes) {
+      updatedSelectedItems = updatedSelectedItems.filter((item) => item.id !== change.device.id);
+      if (change.isSelected) {
+        updatedSelectedItems = [...updatedSelectedItems, change.device];
+      }
+    }
+    setSelectedBackups(updatedSelectedItems);
+  };
+
   const getLoadingSkeleton = () => {
     return Array(10)
       .fill(0)
@@ -35,21 +45,68 @@ const BackupList = (props: Props): JSX.Element => {
   };
 
   return (
-    <div className="flex flex-col flex-grow bg-white h-1">
-      <div
-        className="files-list font-semibold flex border-b \
-      border-neutral-30 bg-white text-neutral-500 py-3 text-sm"
-      >
-        <div className="w-0.5/12 pl-3 flex items-center justify-start box-content"></div>
-        <div className="flex-grow flex items-center px-3">{i18n.get('backups.backups-list.columns.name')}</div>
-        <div className="w-2/12 hidden items-center xl:flex"></div>
-        <div className="w-3/12 hidden items-center lg:flex">{i18n.get('backups.backups-list.columns.last-update')}</div>
-        <div className="w-2/12 flex items-center">{i18n.get('backups.backups-list.columns.size')}</div>
-        <div className="w-1/12 flex items-center rounded-tr-4px">
-          {i18n.get('backups.backups-list.columns.actions')}
-        </div>
+    <div className="flex h-1 flex-grow flex-col bg-white">
+      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
+        {isLoading ? (
+          getLoadingSkeleton()
+        ) : (
+          <div className="flex h-full w-full flex-col overflow-y-auto">
+            <List<DeviceBackup, 'name' | 'updatedAt' | 'size'>
+              header={[
+                {
+                  label: translate('drive.list.columns.name'),
+                  width: 'flex flex-grow cursor-pointer items-center pl-6',
+                  name: 'name',
+                  orderable: true,
+                  defaultDirection: 'ASC',
+                },
+                {
+                  label: translate('drive.list.columns.modified'),
+                  width: 'hidden w-3/12 lg:flex pl-4',
+                  name: 'updatedAt',
+                  orderable: true,
+                  defaultDirection: 'ASC',
+                },
+                {
+                  label: translate('drive.list.columns.size'),
+                  width: 'flex w-1/12 cursor-pointer items-center',
+                  name: 'size',
+                  orderable: true,
+                  defaultDirection: 'ASC',
+                },
+              ]}
+              items={props.items}
+              isLoading={isLoading}
+              itemComposition={[
+                (props) => (
+                  <BackupListItem
+                    key={props.id}
+                    dataTest="backup-list-item"
+                    backup={props}
+                    onDownloadBackupClicked={onDownloadBackupClicked}
+                    onDeleteBackupClicked={onDeleteBackupClicked}
+                  />
+                ),
+              ]}
+              skinSkeleton={getLoadingSkeleton()}
+              menu={contextMenuSelectedBackupItems({
+                onDeleteSelectedItems: onDeleteBackupClicked,
+                onDownloadSelectedItems: onDownloadBackupClicked,
+              })}
+              selectedItems={selectedBackups}
+              keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+              onSelectedItemsChanged={(changes) => {
+                const selectedDevicesParsed = changes.map((change) => ({
+                  device: change.props,
+                  isSelected: change.value,
+                }));
+                onBackupSelected(selectedDevicesParsed);
+              }}
+              disableItemCompositionStyles={true}
+            />
+          </div>
+        )}
       </div>
-      <div className="h-full overflow-y-auto">{isLoading ? getLoadingSkeleton() : getItemsList()}</div>
     </div>
   );
 };

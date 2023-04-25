@@ -8,7 +8,6 @@ import { AppView } from 'app/core/types';
 import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { userThunks } from '../user';
-import i18n from 'app/i18n/services/i18n.service';
 import { aes } from '@internxt/lib';
 import crypto from 'crypto';
 import { Environment } from '@internxt/inxt-js';
@@ -17,6 +16,7 @@ import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
 import storageThunks from '../storage/storage.thunks';
 import { storageActions, storageSelectors } from '../storage';
+import { t } from 'i18next';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -71,7 +71,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       if (!bucket) {
         trackShareLinkBucketIdUndefined({ email: bridgeUser });
         // close();
-        notificationsService.show({ text: i18n.get('error.shareLinkMissingBucket'), type: ToastType.Error });
+        notificationsService.show({ text: t('error.shareLinkMissingBucket'), type: ToastType.Error });
         dispatch(userThunks.logoutThunk());
 
         return;
@@ -100,7 +100,7 @@ const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { sta
       const share = await shareService.createShare(requestPayload);
       const link = shareService.getLinkFromShare(share, code, mnemonic, requestPayload.type);
       navigator.clipboard.writeText(link);
-      notificationsService.show({ text: 'Share link copied to clipboard', type: ToastType.Success });
+      notificationsService.show({ text: t('notificationMessages.copyLink'), type: ToastType.Success });
 
       const coercedShareLink: unknown = { ...share, isFolder: item.isFolder };
       dispatch(
@@ -150,7 +150,7 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
       }),
     );
 
-    const stringLinksDeleted = i18n.get('shared-links.toast.link-deleted');
+    const stringLinksDeleted = t('shared-links.toast.link-deleted');
     notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
   },
 );

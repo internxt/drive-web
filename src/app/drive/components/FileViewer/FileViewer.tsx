@@ -1,37 +1,162 @@
-import { Suspense, Fragment, useState, useEffect } from 'react';
+import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../types/file-types';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import i18n from '../../../i18n/services/i18n.service';
-
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import spinnerIcon from '../../../../assets/icons/spinner.svg';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { compareThumbnail, getThumbnailFrom, setCurrentThumbnail, setThumbnails, ThumbnailToUpload, uploadThumbnail } from 'app/drive/services/thumbnail.service';
+import {
+  compareThumbnail,
+  getThumbnailFrom,
+  setCurrentThumbnail,
+  setThumbnails,
+  ThumbnailToUpload,
+  uploadThumbnail,
+} from 'app/drive/services/thumbnail.service';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import localStorageService from 'app/core/services/local-storage.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import dateService from '../../../core/services/date.service';
+import {
+  getDatabaseFilePrewiewData,
+  getDatabaseFileSourceData,
+  updateDatabaseFilePrewiewData,
+  updateDatabaseFileSourceData,
+} from '../../services/database.service';
+import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
+import iconService from 'app/drive/services/icon.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CaretLeft, CaretRight } from 'phosphor-react';
+import TopBarActions from './components/TopBarActions';
+import { useHotkeys } from 'react-hotkeys-hook';
+import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
+import { RootState } from 'app/store';
+import { uiActions } from 'app/store/slices/ui';
+import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 
 interface FileViewerProps {
   file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob>
+  downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
+  progress?: number;
+  setCurrentFile?: (file: DriveFileData) => void;
+  isAuthenticated: boolean;
+  isShareView?: boolean;
 }
 
 export interface FormatFileViewerProps {
   blob: Blob;
+  changeFile: (direction: string) => void;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerProps): JSX.Element => {
+const DownloadFile = ({ onDownload, translate }) => (
+  <div
+    className={'z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
+  >
+    <button
+      title={translate('actions.download')}
+      onClick={onDownload}
+      className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
+                          bg-opacity-0 px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+    >
+      <UilImport size={20} />
+      <span className="font-medium">{translate('actions.download')}</span>
+    </button>
+  </div>
+);
+
+const ESC_KEY_KEYBOARD_CODE = 27;
+
+const FileViewer = ({
+  file,
+  onClose,
+  onDownload,
+  downloader,
+  setCurrentFile,
+  show,
+  progress,
+  isAuthenticated,
+  isShareView,
+}: FileViewerProps): JSX.Element => {
+  const { translate } = useTranslationContext();
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
+  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+  const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+  const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
+  const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
+
+  // Get all files in the current folder, sort the files and find the current file to display the file
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
+
+  const sortFolderFiles = useMemo(() => {
+    if (folderFiles) {
+      return folderFiles.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      });
+    }
+    return [];
+  }, [folderFiles]);
+  const totalFolderIndex = sortFolderFiles?.length;
+  const fileIndex = sortFolderFiles?.findIndex((item) => item.id === file?.id);
+
+  // To prevent close FileViewer if any of those modal are open
+  useEffect(() => {
+    function handleKeyDown(event) {
+      if (event.keyCode === ESC_KEY_KEYBOARD_CODE) {
+        if (isMoveItemsDialogOpen || isCreateFolderDialogOpen || isEditNameDialogOpen || isShareItemSettingsDialogOpen)
+          event.preventDefault();
+
+        if (isShareItemSettingsDialogOpen) {
+          dispatch(uiActions.setIsShareItemDialogOpenInPreviewView(false));
+          dispatch(storageActions.setItemToShare(null));
+          return;
+        }
+
+        if (isEditNameDialogOpen) {
+          dispatch(storageActions.setItemToRename(null));
+          dispatch(uiActions.setIsEditFolderNameDialog(false));
+          return;
+        }
+
+        if (isCreateFolderDialogOpen) {
+          dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+          return;
+        }
+        if (isMoveItemsDialogOpen) {
+          dispatch(uiActions.setIsMoveItemsDialogOpen(false));
+          dispatch(setItemsToMove([]));
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
+
+  useEffect(() => {
+    if (dirtyName) {
+      setBlob(null);
+      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+    }
+    dispatch(uiActions.setCurrentEditingNameDirty(''));
+  }, [dirtyName, file]);
 
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
@@ -49,70 +174,162 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
+  //Switch to the next or previous file in the folder
+  function changeFile(direction: 'next' | 'prev') {
+    setBlob(null);
+    if (direction === 'next') {
+      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
+    } else {
+      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
+    }
+  }
+
+  //UseHotKeys for switch between files with the keyboard (left and right arrows)
+  useHotkeys(
+    'right',
+    () => changeFile('next'),
+    {
+      enabled: fileIndex !== totalFolderIndex - 1,
+    },
+    [fileIndex, totalFolderIndex],
+  );
+
+  useHotkeys(
+    'left',
+    () => changeFile('prev'),
+    {
+      enabled: fileIndex !== 0,
+    },
+    [fileIndex],
+  );
+
   const dispatch = useAppDispatch();
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const userEmail: string = localStorageService.getUser()?.email || '';
 
-  useEffect(() => {
-    if (isTypeAllowed && show) {
+  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
+    const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
+    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+
+    const fileObject = new File([file], driveFile.name);
+    const fileUpload: FileToUpload = {
+      name: driveFile.name,
+      size: driveFile.size,
+      type: driveFile.type,
+      content: fileObject,
+      parentFolderId: driveFile.folderId,
+    };
+
+    const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+
+    const isDifferentThumbnailOrNotExists =
+      !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
+
+    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
+      const thumbnailToUpload: ThumbnailToUpload = {
+        fileId: driveFile.id,
+        size: thumbnailGenerated.file.size,
+        max_width: thumbnailGenerated.max_width,
+        max_height: thumbnailGenerated.max_height,
+        type: thumbnailGenerated.type,
+        content: thumbnailGenerated.file,
+      };
+      const updateProgressCallback = () => {
+        return;
+      };
       const abortController = new AbortController();
 
-      downloader(abortController)
-        .then(async (fileBlob) => {
-          setBlob(fileBlob);
-          if (file) {
-            const currentThumbnail = file.thumbnails && file.thumbnails.length > 0 ? file.thumbnails[0] : null;
-            const fileObject = new File([fileBlob], file.name);
-            const fileUpload: FileToUpload = {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              content: fileObject,
-              parentFolderId: file.folderId,
-            };
+      let thumbnailUploaded;
 
-            const thumbnailGenerated = await getThumbnailFrom(fileUpload);
+      if (userEmail)
+        thumbnailUploaded = await uploadThumbnail(
+          userEmail,
+          thumbnailToUpload,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+        );
 
-            if (thumbnailGenerated && thumbnailGenerated.file && thumbnailGenerated.type &&
-              (!currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated))) {
+      if (thumbnailUploaded && thumbnailGenerated.file) {
+        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
-              const thumbnailToUpload: ThumbnailToUpload = {
-                fileId: file.id,
-                size: thumbnailGenerated.file.size,
-                max_width: thumbnailGenerated.max_width,
-                max_height: thumbnailGenerated.max_height,
-                type: thumbnailGenerated.type,
-                content: thumbnailGenerated.file
-              };
-              const updateProgressCallback = () => { return; };
-              const abortController = new AbortController();
-
-              const thumbnailUploaded = await uploadThumbnail(userEmail, thumbnailToUpload, isTeam, updateProgressCallback, abortController);
-
-              if (thumbnailUploaded && thumbnailGenerated.file) {
-                setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, file as DriveItemData, dispatch);
-
-                let newThumbnails: Thumbnail[];
-                if (currentThumbnail) {
-                  //Replace existing thumbnail with the new uploadedThumbnail
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails] : [thumbnailUploaded];
-                  newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-                } else {
-                  newThumbnails = file.thumbnails?.length > 0 ? [...file.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-                }
-                setThumbnails(newThumbnails, file as DriveItemData, dispatch);
-              }
-            }
-          }
-        })
-        .catch(() => {
-          if (abortController.signal.aborted) {
-            return;
-          }
+        let newThumbnails: Thumbnail[];
+        if (currentThumbnail) {
+          //Replace existing thumbnail with the new uploadedThumbnail
+          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
+          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+        } else {
+          newThumbnails =
+            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+        }
+        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+        await updateDatabaseFilePrewiewData({
+          fileId: driveFile.id,
+          folderId: driveFile.folderId,
+          previewBlob: thumbnailToUpload.content,
+          updatedAt: driveFile.updatedAt,
         });
-      return () => abortController.abort();
-    } else if (!show) setBlob(null);
-  }, [show]);
+      }
+    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
+      await updateDatabaseFilePrewiewData({
+        fileId: driveFile.id,
+        folderId: driveFile.folderId,
+        previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
+        updatedAt: driveFile.updatedAt,
+      });
+    }
+  };
+
+  const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
+    const fileId = fileToView?.id;
+    const databaseBlob = await getDatabaseFileSourceData({ fileId });
+
+    const isDatabaseBlobOlder = !databaseBlob?.updatedAt
+      ? true
+      : dateService.isDateOneBefore({
+          dateOne: databaseBlob?.updatedAt as string,
+          dateTwo: fileToView?.updatedAt as string,
+        });
+
+    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
+      setBlob(databaseBlob.source as Blob);
+      await handleFileThumbnail(fileToView, databaseBlob.source as File);
+
+      return false;
+    }
+    return true;
+  };
+
+  useEffect(() => {
+    if (isTypeAllowed && show && file) {
+      const abortController = new AbortController();
+
+      checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
+        if (isOlder) {
+          downloader(abortController)
+            .then(async (fileBlob) => {
+              setBlob(fileBlob);
+              await updateDatabaseFileSourceData({
+                folderId: file?.folderId,
+                sourceBlob: fileBlob,
+                fileId: file?.id,
+                updatedAt: file?.updatedAt,
+              });
+
+              await handleFileThumbnail(file, fileBlob as File);
+            })
+            .catch(() => {
+              if (abortController.signal.aborted) {
+                return;
+              }
+            });
+        }
+        return () => abortController.abort();
+      });
+    } else if (!show) {
+      setBlob(null);
+    }
+  }, [show, file]);
 
   return (
     <Transition
@@ -134,46 +351,86 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
           <Dialog.Overlay
-            className="fixed inset-0 bg-cool-gray-100 bg-opacity-90 backdrop-blur-md
+            className="fixed inset-0 bg-black bg-opacity-85 backdrop-blur-md
                                     backdrop-filter"
           />
 
           {/* Content */}
-          {isTypeAllowed ? (
-            <div
-              tabIndex={0}
-              className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
-            >
-              <div onClick={(e) => e.stopPropagation()} className="">
-                {blob ? (
-                  <Suspense fallback={<div></div>}>
-                    <Viewer blob={blob} />
-                  </Suspense>
-                ) : (
-                  <div
-                    tabIndex={0}
-                    className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
-                      space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
-                  >
-                    <img className="mr-2 animate-spin" src={spinnerIcon} alt="" />
-                    <span>{i18n.get('drive.loadingFile')}</span>
-                  </div>
-                )}
+          <>
+            {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
+            {fileIndex === 0 ? null : (
+              <button
+                title={translate('actions.previous')}
+                className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+                onClick={() => changeFile('prev')}
+              >
+                <CaretLeft size={24} />
+              </button>
+            )}
+
+            {isTypeAllowed ? (
+              <div
+                tabIndex={0}
+                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+              >
+                <div onClick={(e) => e.stopPropagation()} className="">
+                  {blob ? (
+                    <Suspense fallback={<div></div>}>
+                      <Viewer blob={blob} changeFile={changeFile} />
+                    </Suspense>
+                  ) : (
+                    <>
+                      <div
+                        tabIndex={0}
+                        className={`${
+                          progress === 1 ? 'hidden' : 'flex'
+                        } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
+                      rounded-xl font-medium`}
+                      >
+                        <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                        <span className="w-96 truncate text-center text-lg">{filename}</span>
+                        <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
+                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                          <div
+                            className="h-1.5 rounded-full bg-white"
+                            style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          ) : (
-            <div
-              tabIndex={0}
-              className="outline-none pointer-events-none z-10 flex h-12 select-none flex-row items-center justify-center
-                          space-x-2 rounded-xl bg-white bg-opacity-5 px-6 font-medium"
-            >
-              <span>{i18n.get('error.noFilePreview')}</span>
-            </div>
-          )}
+            ) : (
+              <div
+                tabIndex={0}
+                className="outline-none z-10 flex select-none flex-col items-center justify-center
+                      space-y-6 rounded-xl font-medium"
+              >
+                <div className="flex flex-col items-center justify-center">
+                  <ItemIconComponent className="flex" width={80} height={80} />
+                  <span className="w-96 truncate pt-2 text-center text-lg">{filename}</span>
+                  <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
+                </div>
+                <div>
+                  <DownloadFile onDownload={onDownload} translate={translate} />
+                </div>
+              </div>
+            )}
+            {fileIndex === totalFolderIndex - 1 ? null : (
+              <button
+                title={translate('actions.next')}
+                className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+                onClick={() => changeFile('next')}
+              >
+                <CaretRight size={24} />
+              </button>
+            )}
+          </>
 
           {/* Background */}
           <div
-            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-cool-gray-100
+            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black
                           blur-2xl filter"
           />
 
@@ -183,31 +440,29 @@ const FileViewer = ({ file, onClose, onDownload, downloader, show }: FileViewerP
                           items-start justify-between px-4 text-lg font-medium"
           >
             {/* Close and title */}
-            <div className="z-10 mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
+            <div className="mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
                 className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full
                                 bg-white bg-opacity-0 transition duration-50 ease-in-out
                                 hover:bg-opacity-10 focus:bg-opacity-5"
               >
-                <UilMultiply height="20" width="20" />
+                <UilMultiply height={24} width={24} />
               </button>
 
-              <Dialog.Title className="truncate">{filename}</Dialog.Title>
+              <Dialog.Title className="flex w-11/12 flex-row items-center text-lg">
+                <ItemIconComponent className="mr-3" width={32} height={32} />
+                <p className="w-full truncate">{filename}</p>
+              </Dialog.Title>
             </div>
 
-            {/* Download button */}
-            <div className="z-10 mt-3 flex h-10 flex-shrink-0 flex-row items-center justify-end space-x-4">
-              <button
-                onClick={onDownload}
-                className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
-                          bg-opacity-0 px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
-              >
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
-              </button>
-            </div>
+            {/* Top bar buttons */}
+            <TopBarActions
+              onDownload={onDownload}
+              file={file as DriveItemData}
+              isAuthenticated={isAuthenticated}
+              isShareView={isShareView}
+            />
           </div>
         </div>
       </Dialog>

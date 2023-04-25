@@ -5,10 +5,10 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
-import i18n from 'app/i18n/services/i18n.service';
 import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
@@ -17,7 +17,8 @@ interface CreateFolderDialogProps {
 }
 
 const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }: CreateFolderDialogProps) => {
-  const [folderName, setFolderName] = useState('');
+  const { translate } = useTranslationContext();
+  const [folderName, setFolderName] = useState(translate('modals.newFolderModal.untitled'));
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
@@ -25,8 +26,10 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
 
   useEffect(() => {
     if (isOpen) {
-      setFolderName('');
       setError('');
+      setTimeout(() => {
+        setFolderName(translate('modals.newFolderModal.untitled'));
+      }, 0);
     }
   }, [isOpen]);
 
@@ -38,7 +41,12 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   const createFolder = async () => {
     if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
-      await dispatch(storageThunks.createFolderThunk({ folderName, parentFolderId: currentFolderId? currentFolderId : neededFolderId }))
+      await dispatch(
+        storageThunks.createFolderThunk({
+          folderName,
+          parentFolderId: currentFolderId ? currentFolderId : neededFolderId,
+        }),
+      )
         .unwrap()
         .then(() => {
           setIsLoading(false);
@@ -47,14 +55,14 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
         })
         .catch((e) => {
           const errorMessage = e?.message?.includes('already exists')
-            ? i18n.get('error.folderAlreadyExists')
-            : i18n.get('error.creatingFolder');
+            ? translate('error.folderAlreadyExists')
+            : translate('error.creatingFolder');
           setError(errorMessage);
           setIsLoading(false);
           return e;
         });
     } else {
-      setError(i18n.get('error.folderCannotBeEmpty'));
+      setError(translate('error.folderCannotBeEmpty') as string);
     }
   };
 
@@ -69,14 +77,14 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   return (
     <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={onClose}>
       <form className="flex flex-col space-y-5" onSubmit={(e) => onCreateButtonClicked(e)}>
-        <p className="text-2xl font-medium text-gray-100">New folder</p>
+        <p className="text-2xl font-medium text-gray-100">{translate('modals.newFolderModal.title')}</p>
 
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label="Name"
-          value={folderName}
-          placeholder="Folder name"
+          label={translate('modals.newFolderModal.label') as string}
+          value={folderName as string}
+          placeholder={translate('modals.newFolderModal.placeholder') as string}
           onChange={(name) => {
             setFolderName(name);
             setError('');
@@ -88,10 +96,10 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
-            {i18n.get('actions.cancel')}
+            {translate('actions.cancel')}
           </Button>
           <Button type="submit" loading={isLoading} variant="primary">
-            Create
+            {translate('actions.create')}
           </Button>
         </div>
       </form>

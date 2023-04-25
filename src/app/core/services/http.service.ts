@@ -33,12 +33,6 @@ const httpService = {
         : headers.append('Authorization', `Bearer ${localStorageService.get('xToken')}`);
     }
 
-    if (withMnemonic) {
-      isTeam
-        ? headers.append('internxt-mnemonic', `${localStorageService.getTeams()?.bridge_mnemonic}`)
-        : headers.append('internxt-mnemonic', `${localStorageService.get('xMnemonic')}`);
-    }
-
     return headers;
   },
 };

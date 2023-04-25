@@ -16,7 +16,7 @@ import {
   DownloadPhotosTask,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
-import i18n from 'app/i18n/services/i18n.service';
+import { t } from 'i18next';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -83,6 +83,7 @@ class TaskManagerService {
     return {
       taskId: task.id,
       status: task.status,
+      item: task.file || task.folder,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
@@ -180,13 +181,21 @@ class TaskManagerService {
         title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
         break;
       }
+      case TaskType.RenameFile: {
+        title = itemsLib.getItemDisplayName(task.file);
+        break;
+      }
+      case TaskType.RenameFolder: {
+        title = itemsLib.getItemDisplayName(task.folder);
+        break;
+      }
     }
 
     return title;
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
-    return i18n.get(`tasks.${task.action}.status.${task.status}`, {
+    return t(`tasks.${task.action}.status.${task.status}`, {
       progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });
   }
@@ -229,6 +238,14 @@ class TaskManagerService {
       }
       case TaskType.DownloadPhotos: {
         icon = iconService.getItemIcon(false, 'jpeg');
+        break;
+      }
+      case TaskType.RenameFile: {
+        icon = iconService.getItemIcon(false, task.file.type);
+        break;
+      }
+      case TaskType.RenameFolder: {
+        icon = iconService.getItemIcon(true, '');
         break;
       }
     }

@@ -13,8 +13,11 @@ import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
 import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
+import * as Sentry from '@sentry/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
@@ -60,30 +63,29 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 
   const numberOfSelectedItems = photosState.selectedItems.length;
 
-  const toolbarProps = numberOfSelectedItems !== 0 ?
-    {
-      onDeleteClick: () => setDeletePending('selected'),
-      onShareClick: () => setSharePending('selected'),
-      onDownloadClick: () => {
-        const photos = photosState.selectedItems.map(
-          (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
-        );
-        dispatch(photosThunks.downloadThunk(photos));
-        dispatch(photosSlice.actions.unselectAll());
-      },
-      onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
-    } : {};
+  const toolbarProps =
+    numberOfSelectedItems !== 0
+      ? {
+          onDeleteClick: () => setDeletePending('selected'),
+          onShareClick: () => setSharePending('selected'),
+          onDownloadClick: () => {
+            const photos = photosState.selectedItems.map(
+              (id) => photosState.items.find((item) => item.id === id) as SerializablePhoto,
+            );
+            dispatch(photosThunks.downloadThunk(photos));
+            dispatch(photosSlice.actions.unselectAll());
+          },
+          onUnselectClick: () => dispatch(photosSlice.actions.unselectAll()),
+        }
+      : {};
 
   return (
     <>
-      <div
-        className={`${className} flex h-full w-full flex-col overflow-y-hidden`}
-        data-test="photos-gallery"
-      >
+      <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
         {showEmpty ? (
           <Empty
-            title="Your gallery is empty"
-            subtitle="Start using Internxt mobile app to sync all your photos"
+            title={translate('views.photos.empty.title')}
+            subtitle={translate('views.photos.empty.description')}
             icon={
               <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
             }
@@ -97,6 +99,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
               <Grid
                 selected={photosState.selectedItems}
                 photos={photosState.items}
+                isMorePhotos={photosState.thereIsMore}
                 onUserScrolledToTheEnd={fetchPhotos}
               />
             )}
@@ -120,22 +123,30 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'selected'}
-        title={`Delete ${numberOfSelectedItems} selected ${numberOfSelectedItems > 1 ? 'items' : 'item'}?`}
-        subtitle="You can't undo this action"
+        title={
+          numberOfSelectedItems > 1
+            ? translate('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : translate('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+        }
+        subtitle={translate('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
+        primaryAction={translate('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={translate('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <Dialog
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
-        title="Delete this item?"
-        subtitle="You can't undo this action"
+        title={
+          numberOfSelectedItems > 1
+            ? translate('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : translate('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+        }
+        subtitle={translate('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
+        primaryAction={translate('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={translate('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <ShareDialog
@@ -144,6 +155,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         photos={photosState.selectedItems}
       />
       <ShareDialog
+        zIndex={20}
         onClose={() => setSharePending(null)}
         isOpen={sharePending === 'preview'}
         photos={photosState.previewIndex !== null ? [photosState.items[photosState.previewIndex].id] : []}
@@ -155,64 +167,69 @@ export default function PhotosView({ className = '' }: { className?: string }): 
 function Grid({
   photos,
   selected,
+  isMorePhotos,
   onUserScrolledToTheEnd,
 }: {
   photos: SerializablePhoto[];
   selected: PhotoId[];
+  isMorePhotos: boolean;
   onUserScrolledToTheEnd: () => void;
 }) {
   const dispatch = useDispatch();
 
-  const listRef = useRef<HTMLDivElement>(null);
+  const elementRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const options = {};
-
-    const observer = new IntersectionObserver((entries) => {
-      const entry = entries[0];
-
-      if (entry.isIntersecting) {
+    const onScroll = (entries) => {
+      const element = entries[0];
+      if (element.isIntersecting) {
         onUserScrolledToTheEnd();
       }
-    }, options);
+    };
 
-    const lastChild = listRef.current?.lastElementChild;
+    const observer = new IntersectionObserver(onScroll, {
+      rootMargin: '200px',
+    });
 
-    if (lastChild) observer.observe(lastChild as Element);
+    elementRef.current && observer.observe(elementRef.current as Element);
 
     return () => observer.disconnect();
   }, [photos]);
 
   return (
-    <div
-      className="grid gap-1 overflow-y-auto px-5"
-      style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
-      ref={listRef}
-      data-test="photos-grid"
-    >
-      {photos.map((photo, i) => {
-        const isSelected = selected.some((el) => photo.id === el);
-        const thereAreSelected = selected.length > 0;
-        function onSelect() {
-          dispatch(photosSlice.actions.toggleSelect(photo.id));
-        }
-        return (
-          <PhotoItem
-            onClick={() => {
-              if (thereAreSelected) {
-                onSelect();
-              } else {
-                dispatch(photosSlice.actions.setPreviewIndex(i));
-              }
-            }}
-            onSelect={onSelect}
-            selected={isSelected}
-            photo={photo}
-            key={photo.id}
-            photoId={photo.id}
-          />
-        );
-      })}
+    <div className="overflow-y-auto">
+      <div
+        className="grid gap-1 px-5"
+        style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(160px, 1fr))' }}
+        data-test="photos-grid"
+      >
+        {photos.map((photo, i) => {
+          const isSelected = selected.some((el) => photo.id === el);
+          const thereAreSelected = selected.length > 0;
+          function onSelect() {
+            dispatch(photosSlice.actions.toggleSelect(photo.id));
+          }
+          return (
+            <PhotoItem
+              onClick={() => {
+                if (thereAreSelected) {
+                  onSelect();
+                } else {
+                  dispatch(photosSlice.actions.setPreviewIndex(i));
+                }
+              }}
+              onSelect={onSelect}
+              selected={isSelected}
+              photo={photo}
+              key={photo.id}
+              photoId={photo.id}
+            />
+          );
+        })}
+      </div>
+      <div className="mt-1" ref={elementRef}>
+        {isMorePhotos && <Skeleton />}
+      </div>
     </div>
   );
 }
@@ -234,11 +251,21 @@ function PhotoItem({
   const bucketId = useSelector<RootState, string | undefined>((state) => state.photos.bucketId);
 
   useEffect(() => {
-    if (bucketId) {
+    const photoBucketId = photo.networkBucketId ? photo.networkBucketId : bucketId;
+    if (photoBucketId) {
       getPhotoPreview({
         photo,
-        bucketId,
-      }).then(setSrc);
+        bucketId: photoBucketId,
+      })
+        .then(setSrc)
+        .catch((err) => {
+          Sentry.captureException(err, {
+            extra: {
+              photoId: photo.id,
+              bucketId: photoBucketId,
+            },
+          });
+        });
     }
   }, []);
 

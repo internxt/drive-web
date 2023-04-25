@@ -1,12 +1,14 @@
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import BaseButton from 'app/shared/components/forms/BaseButton';
 import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-import i18n from 'app/i18n/services/i18n.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import DriveStorageError from '../../../../assets/images/drive-error.svg';
+import Button from 'app/shared/components/Button/Button';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
+  const { translate } = useTranslationContext();
   const isOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const dispatch = useAppDispatch();
 
@@ -24,19 +26,23 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   };
 
   return (
-    <BaseDialog title="Run out of space" isOpen={isOpen} onClose={onClose}>
-      <span className="text-center block w-full text-base px-8 text-neutral-900 my-6">
-        {i18n.get('error.noSpaceAvailable')}
-      </span>
+    <BaseDialog hideCloseButton isOpen={isOpen} onClose={onClose}>
+      <div className="px-5 pb-5">
+        <img className="mx-auto mb-5" src={DriveStorageError} />
+        <div className="mb-2">
+          <h2 className="text-center text-2xl font-medium leading-8 text-gray-100">
+            {translate('error.storageIsFull')}
+          </h2>
+        </div>
+        <p className="mb-5 text-center leading-tight text-gray-80">{translate('error.noSpaceAvailable')}</p>
 
-      <div className="flex justify-center items-center w-full bg-neutral-20 py-6">
-        <div className="flex w-64 px-8">
-          <BaseButton onClick={() => onClose()} className="transparent w-11/12 mr-2">
-            {i18n.get('actions.cancel')}
-          </BaseButton>
-          <BaseButton className="primary w-11/12 ml-2" onClick={() => onAccept()}>
-            {i18n.get('actions.upgrade')}
-          </BaseButton>
+        <div className="flex flex-row justify-end">
+          <Button variant="secondary" className="mr-2" onClick={() => onClose()}>
+            {translate('actions.cancel') as string}
+          </Button>
+          <Button variant="primary" onClick={() => onAccept()}>
+            {translate('actions.buyStorage') as string}
+          </Button>
         </div>
       </div>
     </BaseDialog>

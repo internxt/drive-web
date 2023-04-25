@@ -2,32 +2,12 @@ import streamSaver from 'streamsaver';
 import { saveAs } from 'file-saver';
 
 import analyticsService from 'app/analytics/services/analytics.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import { DevicePlatform } from 'app/core/types';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
-
-const trackFileDownloadStart = (
-  userEmail: string,
-  file_id: string,
-  file_name: string,
-  file_size: number,
-  file_type: string,
-  folder_id: number,
-) => {
-  const data = { file_id, file_name, file_size, file_type, email: userEmail, folder_id, platform: DevicePlatform.Web };
-
-  analyticsService.trackFileDownloadStart(data);
-};
-
-const trackFileDownloadError = (userEmail: string, file_id: string, msg: string) => {
-  const data = { file_id, email: userEmail, msg, platform: DevicePlatform.Web };
-
-  analyticsService.trackFileDownloadError(data);
-};
 
 interface BlobWritable {
   getWriter: () => {
@@ -103,7 +83,6 @@ export default async function downloadFile(
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
 ): Promise<void> {
-  const userEmail: string = localStorageService.getUser()?.email || '';
   const fileId = itemData.fileId;
   const fileSize = Number(itemData.size);
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
@@ -127,7 +106,16 @@ export default async function downloadFile(
     support = DownloadSupport.PatchedStreamApi;
   }
 
-  trackFileDownloadStart(userEmail, fileId, itemData.name, itemData.size, itemData.type, itemData.folderId);
+  const trackingDownloadProperties: TrackingPlan.DownloadProperties = {
+    file_download_id: analyticsService.getTrackingActionId(),
+    file_id: typeof fileId === 'string' ? parseInt(fileId) : fileId,
+    file_size: itemData.size,
+    file_extension: itemData.type,
+    file_name: completeFilename,
+    parent_folder_id: itemData.folderId,
+    file_download_method_supported: support,
+  };
+  analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
   if (fileSize !== 0) {
     const fileStreamPromise = fetchFileStream(
@@ -138,7 +126,14 @@ export default async function downloadFile(
     await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
       const errMessage = err instanceof Error ? err.message : (err as string);
 
-      trackFileDownloadError(userEmail, fileId, errMessage);
+      if (!abortController?.signal.aborted) {
+        analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
+      } else {
+        analyticsService.trackFileDownloadError({
+          ...trackingDownloadProperties,
+          error_message: errMessage,
+        });
+      }
 
       throw new Error(errMessage);
     });
@@ -146,10 +141,7 @@ export default async function downloadFile(
     saveAs(new Blob(['']), `${itemData.name}.${itemData.type}`);
   }
 
-  analyticsService.trackFileDownloadCompleted({
-    size: itemData.size,
-    extension: itemData.type,
-  });
+  analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }
 
 async function downloadFileAsBlob(filename: string, source: ReadableStream): Promise<void> {

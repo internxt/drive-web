@@ -1,7 +1,8 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { DriveFileData } from 'app/drive/types';
 import analyticsService from '../../../analytics/services/analytics.service';
-import { AppView, DevicePlatform } from '../../../core/types';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { AppView } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { getEnvironmentConfig } from '../network.service';
@@ -29,18 +30,22 @@ export async function uploadFile(
   abortController?: AbortController,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
-
+  const trackingUploadProperties: TrackingPlan.UploadProperties = {
+    file_upload_id: analyticsService.getTrackingActionId(),
+    file_size: file.size,
+    file_extension: file.type,
+    parent_folder_id: file.parentFolderId,
+    file_name: file.name,
+  };
   try {
-    analyticsService.trackFileUploadStart({
-      file_size: file.size,
-      file_type: file.type,
-      folder_id: file.parentFolderId,
-      email: userEmail,
-      platform: DevicePlatform.Web,
-    });
+    analyticsService.trackFileUploadStarted(trackingUploadProperties);
 
     if (!bucketId) {
-      analyticsService.trackFileUploadBucketIdUndefined({ email: userEmail, platform: DevicePlatform.Web });
+      analyticsService.trackFileUploadError({
+        ...trackingUploadProperties,
+        bucket_id: 0,
+        error_message: 'Bucket not found',
+      });
       notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
       localStorageService.clear();
       navigationService.push(AppView.Login);
@@ -48,6 +53,7 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
     let fileId;
+
     if (file.size !== 0) {
       fileId = await uploadToBucket(bucketId, {
         creds: {
@@ -94,11 +100,10 @@ export async function uploadFile(
       }
     }
 
-    analyticsService.trackFileUploadFinished({
-      file_size: file.size,
+    analyticsService.trackFileUploadCompleted({
+      ...trackingUploadProperties,
       file_id: response.id,
-      file_type: file.type,
-      email: userEmail,
+      bucket_id: parseInt(bucketId),
     });
 
     return response;
@@ -107,12 +112,14 @@ export async function uploadFile(
 
     if (!abortController?.signal.aborted) {
       analyticsService.trackFileUploadError({
-        file_size: file.size,
-        file_type: file.type,
-        folder_id: file.parentFolderId,
-        email: userEmail,
-        msg: castedError.message,
-        platform: DevicePlatform.Web,
+        ...trackingUploadProperties,
+        bucket_id: parseInt(bucketId),
+        error_message: castedError.message,
+      });
+    } else {
+      analyticsService.trackFileUploadAborted({
+        ...trackingUploadProperties,
+        bucket_id: parseInt(bucketId),
       });
     }
 

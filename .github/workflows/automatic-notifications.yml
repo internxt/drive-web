@@ -1,0 +1,25 @@
+name: Notify Releases
+on:
+  pull_request_target:
+    types: [closed]
+    branches:
+      - master
+    
+jobs:  
+  update-json-release-and-notify:
+    if: github.event.pull_request.merged == true
+    uses: internxt/automation/.github/workflows/release-notify.yml@master
+    with:
+      github_username: inxtci
+      github_email: inxtci@internxt.com
+      repository: github.com/internxt/drive-web.git
+      folder: drive-web
+      product: "Drive"
+      platform: "Web"
+      supported_platforms: "Chrome, Firefox, Safari and Brave"
+      repository_name: ${{ github.event.repository.name }}
+      request_body: ${{github.event.pull_request.body}}
+      branch: master
+    secrets:
+      gh_token: ${{ secrets.CI_USER_GH_TOKEN }}
+      slack_webhook_url: ${{ secrets.SLACK_WEBHOOK }}

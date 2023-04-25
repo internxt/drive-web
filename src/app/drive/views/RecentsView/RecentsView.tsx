@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { Component, ReactNode, useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
@@ -8,6 +8,7 @@ import { storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -15,36 +16,34 @@ export interface RecentsViewProps {
   dispatch: AppDispatch;
 }
 
-class RecentsView extends Component<RecentsViewProps> {
-  componentDidMount(): void {
-    this.props.dispatch(storageThunks.resetNamePathThunk());
-    this.refreshRecents();
-  }
+const RecentsView = (props: RecentsViewProps) => {
+  const { translate } = useTranslationContext();
+  useEffect(() => {
+    props.dispatch(storageThunks.resetNamePathThunk());
+    refreshRecents();
+  }, []);
 
-  refreshRecents = () => {
-    const { dispatch } = this.props;
+  const refreshRecents = () => {
+    const { dispatch } = props;
 
     dispatch(storageThunks.fetchRecentsThunk());
   };
 
-  redirectToDrive = () => {
+  const redirectToDrive = () => {
     navigationService.push(AppView.Drive);
   };
 
-  render(): ReactNode {
-    const { items, isLoadingRecents } = this.props;
+  const { items, isLoadingRecents } = props;
 
-    return (
-      <DriveExplorer
-        title="Recents"
-        titleClassName="px-3"
-        isLoading={isLoadingRecents}
-        items={items}
-        onFolderCreated={this.redirectToDrive}
-      />
-    );
-  }
-}
+  return (
+    <DriveExplorer
+      title={translate('views.recents.head') as string}
+      isLoading={isLoadingRecents}
+      items={items}
+      onFolderCreated={redirectToDrive}
+    />
+  );
+};
 
 export default connect((state: RootState) => {
   return {

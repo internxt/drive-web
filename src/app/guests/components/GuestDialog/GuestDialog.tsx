@@ -40,7 +40,8 @@ const GuestInviteDialog = () => {
       });
   };
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     try {
       await sendGuestInvitation(formData.email);
       notificationsService.show({ text: 'Invitation created for ' + formData.email, type: ToastType.Success });

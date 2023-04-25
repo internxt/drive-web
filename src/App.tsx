@@ -8,7 +8,6 @@ import { DndProvider } from 'react-dnd';
 import configService from './app/core/services/config.service';
 import errorService from './app/core/services/error.service';
 import envService from './app/core/services/env.service';
-import i18n from './app/i18n/services/i18n.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
 import layouts from './app/core/layouts';
@@ -25,7 +24,15 @@ import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
+import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
+import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+import { t } from 'i18next';
+import authService from 'app/auth/services/auth.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import Mobile from 'app/drive/views/MobileView/MobileView';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -44,6 +51,22 @@ class App extends Component<AppProps> {
   }
 
   async componentDidMount(): Promise<void> {
+    const token = localStorageService.get('xToken');
+    const params = new URLSearchParams(window.location.search);
+    const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
+
+    if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
+      /**
+       * In case we receive a valid redirectUrl param, we return to that URL with the current token
+       */
+      const redirectUrl = authService.getRedirectUrl(params, token);
+
+      if (redirectUrl) {
+        window.location.replace(redirectUrl);
+        return;
+      }
+    }
+
     const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
       path: navigationService.history.location.pathname,
     });
@@ -55,6 +78,11 @@ class App extends Component<AppProps> {
     window.addEventListener('online', () => {
       dispatch(sessionActions.setHasConnection(true));
     });
+
+    await LRUFilesCacheManager.getInstance();
+    await LRUFilesPreviewCacheManager.getInstance();
+    await LRUPhotosCacheManager.getInstance();
+    await LRUPhotosPreviewsCacheManager.getInstance();
 
     try {
       await this.props.dispatch(
@@ -90,10 +118,22 @@ class App extends Component<AppProps> {
 
   render(): JSX.Element {
     const isDev = !envService.isProduction();
-    const { isInitialized, isAuthenticated, isFileViewerOpen, isNewsletterDialogOpen, isSurveyDialogOpen, fileViewerItem, dispatch } =
-      this.props;
+    const {
+      isInitialized,
+      isAuthenticated,
+      isFileViewerOpen,
+      isNewsletterDialogOpen,
+      isSurveyDialogOpen,
+      fileViewerItem,
+      dispatch,
+    } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
+    let isMobile = false;
+
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+      isMobile = true;
+    }
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
@@ -114,7 +154,7 @@ class App extends Component<AppProps> {
                z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white opacity-80 drop-shadow-2xl"
               >
-                {i18n.get('general.stage.development')}
+                {t('general.stage.development')}
               </span>
             )}
 
@@ -126,7 +166,13 @@ class App extends Component<AppProps> {
               <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/account" to="/preferences" />
-              {this.routes}
+              {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+                <Route path="*">
+                  <Mobile user={this.props.user} />
+                </Route>
+              ) : (
+                this.routes
+              )}
             </Switch>
 
             <Toaster position="bottom-center" />
@@ -134,11 +180,13 @@ class App extends Component<AppProps> {
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
-            <FileViewerWrapper
-              file={fileViewerItem}
-              onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
-              showPreview={isFileViewerOpen}
-            />
+            {isFileViewerOpen && (
+              <FileViewerWrapper
+                file={fileViewerItem}
+                onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+                showPreview={isFileViewerOpen}
+              />
+            )}
           </Router>
         </DndProvider>
       );

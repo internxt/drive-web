@@ -15,6 +15,7 @@ import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
+import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -202,8 +203,20 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const downloadAndSetThumbnail = async () => {
     if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
+      const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: item.id });
+      let thumbnailBlob = databaseThumbnail?.preview;
       const newThumbnail = item.thumbnails[0];
-      const thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+
+      if (!thumbnailBlob) {
+        thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+        updateDatabaseFilePrewiewData({
+          fileId: item.id,
+          folderId: item.folderId,
+          previewBlob: thumbnailBlob,
+          updatedAt: item.updatedAt,
+        });
+      }
+
       setCurrentThumbnail(thumbnailBlob, newThumbnail, item, dispatch);
     }
   };

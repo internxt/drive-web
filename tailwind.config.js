@@ -98,6 +98,7 @@ module.exports = {
       minWidth: {
         104: '26rem',
         activity: '296px',
+        breadcrumb: 'min(128px, 2ch)',
       },
       padding: {
         '20px': '20px',
@@ -186,6 +187,7 @@ module.exports = {
       'primary-dark': 'rgb(0,88,219)',
       'red-std': 'rgb(255,13,0)',
       'red-dark': 'rgb(230,11,0)',
+      'pcComponentes-orange': '#F26122',
       orange: 'rgb(255,149,0)',
       'orange-dark': 'rgb(230,134,0)',
       yellow: 'rgb(255,204,0)',

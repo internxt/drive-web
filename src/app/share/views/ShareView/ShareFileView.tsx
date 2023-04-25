@@ -7,7 +7,6 @@ import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
 import network from 'app/network';
-import i18n from 'app/i18n/services/i18n.service';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../../app/store/hooks';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
@@ -21,12 +20,13 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
-import errorService from 'app/core/services/error.service';
+
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -52,6 +52,7 @@ interface ShareViewState {
 }
 
 export default function ShareFileView(props: ShareViewProps): JSX.Element {
+  const { translate } = useTranslationContext();
   const token = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -76,7 +77,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
          * TODO: Check that the server returns proper error message instead
          * of assuming that everything means that the link has expired
          */
-        throw new Error(i18n.get('error.linkExpired'));
+        throw new Error(translate('error.linkExpired') as string);
       }
     });
   }, []);
@@ -285,7 +286,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
             >
               <UilEye height="20" width="20" />
-              <span>{i18n.get('actions.view')}</span>
+              <span>{translate('actions.view')}</span>
             </button>
           )}
 
@@ -298,20 +299,20 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               <>
                 {/* Download completed */}
                 <UilCheck height="24" width="24" />
-                <span className="font-medium">{i18n.get('actions.downloaded')}</span>
+                <span className="font-medium">{translate('actions.downloaded')}</span>
               </>
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
                 <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
-                <span>{i18n.get('actions.downloading')}</span>
+                <span>{translate('actions.downloading')}</span>
                 <span className="font-normal text-blue-20">{progress}%</span>
               </>
             ) : (
               <>
                 {/* Download button */}
                 <UilImport height="20" width="20" />
-                <span className="font-medium">{i18n.get('actions.download')}</span>
+                <span className="font-medium">{translate('actions.download')}</span>
               </>
             )}
           </button>
@@ -331,6 +332,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
         downloader={getBlob}
+        isAuthenticated={isAuthenticated}
+        isShareView
       />
       {body}
     </>

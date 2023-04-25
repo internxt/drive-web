@@ -1,6 +1,7 @@
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { join } from 'path';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Security account tab', () => {
   const filename = 'example.txt';
@@ -9,8 +10,6 @@ describe('Security account tab', () => {
   const downloadedFileFullPath = join(downloadsFolder, filename);
   const userFilename = 'test-user.json';
   const second_password = `Pw4${randomBytes(4).toString('hex')}-nla`;
-  const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
-  const ID_DROPDOWN = 'button[id="dropdown-basic"]';
 
   beforeEach(() => {
     Cypress.on('uncaught:exception', () => {
@@ -21,9 +20,7 @@ describe('Security account tab', () => {
     });
     cy.clearLocalStorage();
     cy.login();
-    // Upload file
-    cy.get('input[type=file]').attachFile(filename);
-    cy.get('[data-test=file-name]').should('have.text', filename);
+    cy.uploadExampleFile();
   });
 
   it('Should have valid files after changing password', () => {
@@ -40,11 +37,14 @@ describe('Security account tab', () => {
       cy.get('[data-test=change-password-button]').click();
       cy.get('[data-test=new-password]').type(second_password);
       cy.get('[data-test=new-password-confirmation]').type(second_password);
-      cy.contains('Next').click();
+      cy.get('[data-test="next-button"]').click();
 
       // Logout
-      cy.get('#headlessui-popover-button-2').click();
+      cy.get('#headlessui-popover-button-1').click();
       cy.get('[data-test=logout]').parent().click();
+
+      // eslint-disable-next-line cypress/no-unnecessary-waiting
+      cy.wait(10000);
 
       // Login
       cy.get('input[name=email]').type(user.username);
@@ -52,11 +52,15 @@ describe('Security account tab', () => {
       cy.get('button[type=submit]').click();
       cy.url().should('include', '/app');
 
-      // Download file
-      cy.get(DATA_TEST_FILE_LIST_FILE).eq(0).find(ID_DROPDOWN).click();
+      // To not show the after signup onboarding
+      cy.window().then((win) => {
+        win.localStorage.setItem('signUpTutorialCompleted', 'true');
+      });
 
-      cy.contains('Download')
-        .click()
+      // Download file
+      cy.contains(FILE_ITEM_SELECTOR, 'example').rightclick({ force: true });
+      cy.contains(MENU_ITEM_SELECTOR, 'Download')
+        .click({ force: true })
         .then(() => {
           // Check content
           cy.readFile(path.join(fixturesFolder as string, filename)).then((originalFile) => {

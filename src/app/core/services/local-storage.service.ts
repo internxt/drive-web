@@ -2,6 +2,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 
+export const STORAGE_KEYS = {
+  SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
+};
+
 function get(key: string): string | null {
   return localStorage.getItem(key);
 }
@@ -34,6 +38,10 @@ function exists(key: string): boolean {
   return !!localStorage.getItem(key);
 }
 
+function getIsSignUpTutorialCompleted(): boolean {
+  return localStorage.getItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) === 'true';
+}
+
 function clear(): void {
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
@@ -42,6 +50,8 @@ function clear(): void {
   localStorage.removeItem('xTeam');
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
+  localStorage.removeItem('language');
+  localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 }
 
 const localStorageService = {
@@ -50,6 +60,7 @@ const localStorageService = {
   getUser,
   getTeams,
   getWorkspace,
+  getIsSignUpTutorialCompleted,
   removeItem,
   exists,
   clear,

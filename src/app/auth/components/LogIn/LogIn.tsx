@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
@@ -9,7 +9,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import { is2FANeeded, doLogin } from '../../services/auth.service';
+import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 // import analyticsService from 'app/analytics/services/analytics.service';
 import { WarningCircle } from 'phosphor-react';
@@ -22,15 +22,30 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function LogIn(): JSX.Element {
+  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const autoSubmit = useMemo(
+    () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
+    [],
+  );
   const {
     register,
     formState: { errors, isValid },
     handleSubmit,
     control,
-  } = useForm<IFormValues>({ mode: 'onChange' });
+    getValues,
+  } = useForm<IFormValues>({
+    mode: 'onChange',
+    defaultValues: autoSubmit.enabled
+      ? {
+          email: autoSubmit.credentials?.email,
+          password: autoSubmit.credentials?.password,
+        }
+      : undefined,
+  });
   const email = useWatch({ control, name: 'email', defaultValue: '' });
   const twoFactorCode = useWatch({
     control,
@@ -47,7 +62,14 @@ export default function LogIn(): JSX.Element {
   const [showErrors, setShowErrors] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
+
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     setIsLoggingIn(true);
     const { email, password } = formData;
 
@@ -80,6 +102,11 @@ export default function LogIn(): JSX.Element {
         setToken(token);
         userActions.setUser(user);
         setRegisterCompleted(user.registerCompleted);
+        const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), token);
+
+        if (redirectUrl) {
+          window.location.replace(redirectUrl);
+        }
       } else {
         setShowTwoFactor(true);
       }
@@ -102,7 +129,21 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-      navigationService.push(AppView.Drive);
+
+      const params = new URLSearchParams(navigationService.history.location.search);
+      const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
+      const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
+      const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
+
+      if (planId && mode) {
+        coupon
+          ? window.location.replace(
+              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
+            )
+          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+      } else {
+        navigationService.push(AppView.Drive);
+      }
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
@@ -116,21 +157,39 @@ export default function LogIn(): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        navigationService.push(AppView.Drive);
+        const params = new URLSearchParams(navigationService.history.location.search);
+        const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
+        const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
+        const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
+        if (planId && mode) {
+          coupon
+            ? window.location.replace(
+                `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
+              )
+            : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+        } else {
+          navigationService.push(AppView.Drive);
+        }
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
 
+  const getSignupLink = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+
+    return currentParams.toString() ? '/new?' + currentParams.toString() : '/new';
+  };
+
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-medium">Log in</h1>
+        <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
 
         <div className="flex flex-col space-y-3">
           <label className="space-y-0.5">
-            <span>Email</span>
+            <span>{translate('auth.email')}</span>
             <TextInput
-              placeholder="Email"
+              placeholder={translate('auth.email')}
               label="email"
               type="email"
               register={register}
@@ -141,7 +200,7 @@ export default function LogIn(): JSX.Element {
 
           <label className="space-y-0.5">
             <div className="flex flex-row items-center justify-between">
-              <span className="font-normal">Password</span>
+              <span className="font-normal">{translate('auth.password')}</span>
               <Link
                 onClick={(): void => {
                   // analyticsService.trackUserResetPasswordRequest();
@@ -149,13 +208,13 @@ export default function LogIn(): JSX.Element {
                 to="/remove"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
-                Forgot your password?
+                {translate('auth.login.forgotPwd')}
               </Link>
             </div>
 
             <PasswordInput
-              placeholder="Password"
-              label={'password'}
+              placeholder={translate('auth.password')}
+              label="password"
               register={register}
               required={true}
               minLength={{ value: 1, message: 'Password must not be empty' }}
@@ -165,11 +224,11 @@ export default function LogIn(): JSX.Element {
 
           {showTwoFactor && (
             <label className="space-y-0.5">
-              <span>Two factor code</span>
+              <span>{translate('auth.login.2FA')}</span>
               <PasswordInput
                 className="mb-3"
                 label="twoFactorCode"
-                placeholder="Two factor authentication code"
+                placeholder={translate('auth.login.twoFactorAuthenticationCode')}
                 error={errors.twoFactorCode}
                 register={register}
                 required={true}
@@ -190,8 +249,10 @@ export default function LogIn(): JSX.Element {
 
           <Button
             disabled={isLoggingIn}
-            text="Log in"
-            disabledText={isValid ? 'Decrypting...' : 'Log in'}
+            text={translate('auth.login.title')}
+            disabledText={
+              isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
+            }
             loading={isLoggingIn}
             style="button-primary"
             className="w-full"
@@ -201,12 +262,12 @@ export default function LogIn(): JSX.Element {
 
       <div className="mt-4 flex w-full justify-center text-sm">
         <span>
-          Don't have an account?{' '}
+          {translate('auth.login.dontHaveAccount')}{' '}
           <Link
-            to="/new"
+            to={getSignupLink()}
             className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
           >
-            Create account
+            {translate('auth.login.createAccount')}
           </Link>
         </span>
       </div>
