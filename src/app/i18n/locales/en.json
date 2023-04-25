@@ -873,7 +873,8 @@
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription",
     "successApplyCoupon": "3 months free of charge applied",
-    "errorApplyCoupon": "An error occurred while applying the discount"
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCouponn": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",

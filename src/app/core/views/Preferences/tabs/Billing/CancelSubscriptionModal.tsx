@@ -44,17 +44,24 @@ const CancelSubscriptionModal = ({
     try {
       await paymentService.applyCoupon();
       notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
-    } catch (error) {
-      console.error(error);
-      notificationsService.show({
-        text: translate('notificationMessages.errorApplyCoupon'),
-        type: ToastType.Error,
-      });
-    } finally {
-      onClose();
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
       }, 1000);
+    } catch (error: any) {
+      const errorMessage = JSON.parse(error.message);
+      if (errorMessage.message === 'User already applied coupon') {
+        notificationsService.show({
+          text: translate('notificationMessages.alreadyAppliedCouponn'),
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorApplyCoupon'),
+          type: ToastType.Error,
+        });
+      }
+    } finally {
+      onClose();
     }
   };
 
