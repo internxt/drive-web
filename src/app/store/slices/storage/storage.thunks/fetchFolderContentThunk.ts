@@ -33,7 +33,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const items = await itemsPromise;
 
     const parsedItems = items.result.map(
-      (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as unknown as DriveItemData),
+      (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
     );
     const itemslength = items.result.length;
     const areLastItems = itemslength < DEFAULT_LIMIT;
