@@ -23,6 +23,8 @@ export default function CheckoutPlanView(): JSX.Element {
   }
   const { subscription } = plan;
 
+  console.log('CHECKOUT VISITED');
+
   useEffect(() => {
     if (subscription) {
       const params = new URLSearchParams(window.location.search);
@@ -78,13 +80,22 @@ export default function CheckoutPlanView(): JSX.Element {
     } else {
       if (mode === 'payment') {
         try {
-          response = await paymentService.createCheckoutSession({
-            price_id: planId,
-            success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
-            customer_email: user.email,
-            mode: mode,
-          });
+          coupon
+            ? (response = await paymentService.createCheckoutSession({
+                price_id: planId,
+                coupon_code: coupon,
+                success_url: `${window.location.origin}/checkout/success`,
+                cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+                customer_email: user.email,
+                mode: mode,
+              }))
+            : (response = await paymentService.createCheckoutSession({
+                price_id: planId,
+                success_url: `${window.location.origin}/checkout/success`,
+                cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+                customer_email: user.email,
+                mode: mode,
+              }));
           localStorage.setItem('sessionId', response.sessionId);
           await paymentService.redirectToCheckout(response).then(async (result) => {
             await paymentService.cancelSubscription();
