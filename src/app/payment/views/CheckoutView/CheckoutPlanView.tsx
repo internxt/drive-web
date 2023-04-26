@@ -14,16 +14,12 @@ export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
-  console.log('CHECKOUT VISITED');
-
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
   const { subscription } = plan;
-
-  console.log('CHECKOUT VISITED');
 
   useEffect(() => {
     if (subscription) {
