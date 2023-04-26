@@ -1,0 +1,1041 @@
+{
+  "mobileView": {
+    "title": "Manage your files, account and subscription on the app",
+    "logOut": "Log Out"
+  },
+  "valentinesBanner": {
+    "title": "Love without limits!",
+    "subtitle": "Get 90% off our 2TB plan with code VDAY",
+    "cta": "Get the deal"
+  },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
+  "notFound": {
+    "header": "Error 404",
+    "title": "Nothing to see here...",
+    "description": "The page you are looking for could not be found.",
+    "card1": {
+      "title": "Return Home",
+      "description": "Go back to Internxt Drive."
+    },
+    "card2": {
+      "title": "Visit Help Center",
+      "description": "Troubleshoot common issues and browse our FAQ."
+    },
+    "card3": {
+      "title": "Contact Support",
+      "description": "Reach out to our Support Team at hello@internxt.com."
+    }
+  },
+  "lang": {
+    "title": "Language",
+    "es": "Spanish (ES)",
+    "en": "English (EN)",
+    "fr": "French (FR)",
+    "ita": "Italian (IT)"
+  },
+  "auth": {
+    "email": "Email",
+    "password": "密码",
+    "terms1": "By creating an account, ",
+    "terms2": "you accept the terms & conditions",
+    "decrypting": "Decrypting...",
+    "login": {
+      "title": "Log in",
+      "forgotPwd": "Forgot your password?",
+      "dontHaveAccount": "Don't have an account?",
+      "createAccount": "Create account",
+      "2FA": "Two factor code",
+      "twoFactorAuthenticationCode": "Two factor authentication code"
+    },
+    "signup": {
+      "title": "Create account",
+      "haveAccount": "already have an account?",
+      "login": "Log in"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
+      "sendInstructions": "Send instructions",
+      "sending": "Sending..."
+    }
+  },
+  "general": {
+    "new": "new",
+    "of": "/",
+    "terms": "Terms and conditions",
+    "help": "Need help?",
+    "searchBar": "Search this folder",
+    "stage": {
+      "development": "Development",
+      "production": "Production"
+    },
+    "loading": {
+      "default": "Loading...",
+      "redirecting": "Redirecting..."
+    },
+    "renewalPeriod": {
+      "monthly": "monthly",
+      "annually": "annually",
+      "lifetime": "Lifetime"
+    },
+    "renewal": {
+      "monthly": "Monthly",
+      "annually": "Annually",
+      "lifetime": "Lifetime"
+    },
+    "workspaces": {
+      "personal": "Individuals",
+      "business": "Business"
+    },
+    "time": {
+      "month": "month"
+    },
+    "billing": {
+      "billedEachPeriod": "{{price}} billed {{period}}",
+      "oneTimePayment": "One-time payment"
+    },
+    "files": "Files",
+    "file": "*文件",
+    "folder": "Folder"
+  },
+  "shareLayout": {
+    "title": "INTERNXT",
+    "subtitle": "安全云存储",
+    "labels": {
+      "privacy": "为隐私而设计",
+      "end-to-end": "端到端加密",
+      "military-grade": "军事级别的加密",
+      "zero-knowledge": "零知识"
+    },
+    "tryInternxt": "Try out Internxt",
+    "topBar": {
+      "drive": "Go to Internxt Drive",
+      "downloadApp": "Download Desktop App",
+      "logout": "Log out",
+      "login": "登录",
+      "createAccount": "Create Account",
+      "getStarted": "Get started"
+    }
+  },
+  "shareItemPwdView": {
+    "title": "此链接受密码保护",
+    "putPwd": "请输入发送人提供的密码以获得访问权限。",
+    "putPwd1": "",
+    "password": "密码",
+    "pwdLayout": "密码",
+    "access": "访问"
+  },
+  "sideNav": {
+    "drive": "云盘",
+    "photos": "照片",
+    "backups": "备份",
+    "sharedLinks": "共享的链接",
+    "recents": "最近",
+    "trash": "垃圾箱",
+    "desktop": "桌面应用程序"
+  },
+  "views": {
+    "recents": {
+      "head": "最近",
+      "empty": {
+        "title": "No recent files available",
+        "description": "New uploads and recently opened files will appear here automatically",
+        "folderEmpty": "This folder is empty",
+        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
+        "uploadFiles": "上传文件",
+        "noResults": "There are no results for this search",
+        "dragNDrop": "Drag and drop here or click on upload button"
+      }
+    },
+    "photos": {
+      "empty": {
+        "title": "您的画廊是空的",
+        "description": "使用Internxt移动应用程序来同步你的照片"
+      }
+    },
+    "account": {
+      "title": "资料",
+      "avatar": {
+        "title": "Upload avatar",
+        "removePhoto": "Delete photo",
+        "updatePhoto": "Upload new photo",
+        "dragNDrop": "Select or drop a picture",
+        "success": "Avatar has been successfully updated",
+        "error": "Something happened while uploading your avatar",
+        "removed": "Avatar successfully deleted",
+        "underLimitSize": "Please choose an image under 10MB of size"
+      },
+      "popover": {
+        "downloadApp": "Download app",
+        "settings": "Settings",
+        "logout": "Log out",
+        "spaceUsed": "已使用储存空间的{{space}}%"
+      },
+      "tabs": {
+        "account": {
+          "label": "Account",
+          "title": "Personal",
+          "usage": "Used {{totalUsed}} of {{totalSpace}}",
+          "view": {
+            "backups": "Backups",
+            "photos": "照片",
+            "trash": "垃圾箱",
+            "free": {
+              "planName": "Free plan",
+              "button": "购买储存空间"
+            },
+            "lifetime": {
+              "planName": "Lifetime"
+            },
+            "subscription": {
+              "planName": "Subscription",
+              "button": "change",
+              "yearly": "year",
+              "monthly": "month"
+            }
+          },
+          "accountDetails": {
+            "head": "Account details",
+            "name": "名称",
+            "lastname": "Lastname",
+            "card": {
+              "name": "名称",
+              "lastname": "Lastname",
+              "edit": "Edit",
+              "email": "Email",
+              "resendEmail": "Resend verification email"
+            },
+            "verify": {
+              "verify": "Verify your email",
+              "verified": "Verified email",
+              "description": "Check your inbox"
+            },
+            "editProfile": {
+              "name": "名称",
+              "lastname": "Lastname"
+            },
+            "updateProfile": "Profile updated successfully",
+            "errorUpdatingProfile": "We could not update your profile"
+          },
+          "deleteAccount": {
+            "head": "Delete account",
+            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
+            "isSubscribed": "Please, cancel your subscription first",
+            "confirmationEmail": "Confirmation email has been sent"
+          }
+        },
+        "billing": {
+          "label": "Billing",
+          "currentPlan": "Current plan",
+          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
+          "cancelSubscriptionModal": {
+            "title": "Cancel subscription",
+            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+            "keepSubscription": "Keep subscription",
+            "continue": "Continue",
+            "cancelSubscription": "Cancel subscription",
+            "infoBox": {
+              "titleCurrent": "Current",
+              "titleNew": "New",
+              "year": "year",
+              "month": "month",
+              "free": "Free",
+              "reachedFreeLimit": "You are over {{freePlanName}}",
+              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+            },
+            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "feedback": {
+              "placeholder": "Give us some feedback"
+            }
+          },
+          "billed": "Billed {{interval}} {{renewDate}}",
+          "paymentMethod": {
+            "head": "Payment method",
+            "empty": {
+              "title": "You are on free plan",
+              "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
+            },
+            "title": "Add new payment method"
+          },
+          "invoices": {
+            "head": "Invoices",
+            "billingDate": "Billing date",
+            "plan": "Plan",
+            "empty": {
+              "title": "You are in free plan",
+              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
+            },
+            "download": "Download invoice"
+          }
+        },
+        "info": {
+          "title": "Personal",
+          "description": "Check your storage user and account details",
+          "advice1": {
+            "title": "What data can be edited?",
+            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+          },
+          "advice2": {
+            "title": "Security account",
+            "description": "Your files are encrypted before leaving your device, so only you can access your files, no tricks, no hidden things, just privacy, that’s Internxt."
+          }
+        },
+        "plans": {
+          "label": "Plans",
+          "title": "Plans",
+          "description": "Find the different storage and solution options that Internxt offers",
+          "changeWorkspace": {
+            "personal": "Change to Plans for Individuals",
+            "business": "Change to Plans for Business"
+          },
+          "viewAllFeatures": "View all features",
+          "card": {
+            "annually": "€{{amount}} billed annually",
+            "monthly": "€{{amount}} per month",
+            "lifetime": "€{{amount}}"
+          },
+          "features": {
+            "title": "Features included in all plans",
+            "sections": {
+              "section1": {
+                "title": "Satisfaction guaranteed",
+                "point1": "All subscriptions have 30-day money-back guarantees.",
+                "point2": "Cancel any time, no tricks.",
+                "point3": "Premium support."
+              },
+              "section2": {
+                "title": "Secure by default",
+                "point1": "Military-grade encryption to ensure your privacy.",
+                "point2": "Encrypted file storage and sharing.",
+                "point3": "Zero-knowledge cloud storage."
+              },
+              "section3": {
+                "title": "Unlimited access and sync",
+                "point1": "Access your files, photos, and backups from all your devices.",
+                "point2": "Sync with unlimited bandwidth.",
+                "point3": "Backup any folder on your computer."
+              }
+            }
+          },
+          "dialog": {
+            "title": "Change plan",
+            "subtitle1": "You are about to change your Internxt plan from ",
+            "subtitle2": " to ",
+            "subtitle3": ". Confirm your choice to proceed, please.",
+            "plan": {
+              "current": "Current",
+              "new": "New",
+              "interval": "month"
+            },
+            "alert": {
+              "title": "You are over ",
+              "text1": "Because you are using ",
+              "text2": ", your Internxt Drive will stop syncing your files and you won’t be able to add new files"
+            },
+            "message": {
+              "text": "You'll be charged now and for each payment period until further change."
+            },
+            "button": {
+              "back": "Keep current plan",
+              "continue": "Change plan"
+            }
+          }
+        },
+        "password": {
+          "title": "密码",
+          "description": "Change your password",
+          "advice1": {
+            "title": "Change password",
+            "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
+          },
+          "advice2": {
+            "title": "What should you keep in mind so that your password is secure?",
+            "description": ""
+          },
+          "advice3": {
+            "title": "New encryption key",
+            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! 此操作不能被撤销"
+          },
+          "advice4": {
+            "title": "What data can be edited?",
+            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+          }
+        },
+        "security": {
+          "label": "Security",
+          "lock": {
+            "title": "Enter your password to continue",
+            "description": "For security reasons, you must enter your password before being able to make any changes on this page.",
+            "inputLabel": "密码",
+            "errors": {
+              "incorrect": "再次输入密码",
+              "notVerified": "We could not verify your password"
+            }
+          },
+          "changePassword": {
+            "title": "Change password",
+            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
+            "button": "Change password"
+          },
+          "2FA": {
+            "title": "Two-factor authentication (2FA)",
+            "titleDisable": "Disable Two-Factor Authentication",
+            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
+            "button": "Enable 2FA",
+            "enabled": "Enabled",
+            "disabled": "Disabled",
+            "modal": {
+              "title": "Two Factor Authentication",
+              "stepsLabel": "{{current}} of {{total}}",
+              "button": "Enable 2FA",
+              "2FALabelCode": "Two-Factor Authentication code",
+              "or": "OR",
+              "steps": {
+                "download": {
+                  "title": "Download Authy",
+                  "description": "We recommend using Authy, but you can setup the 2FA process with any other 2FA of your choice."
+                },
+                "qr": {
+                  "title": "Scan QR with the 2FA app",
+                  "description": "If you are unable to scan he QR, insert this code into the app."
+                },
+                "backup-key": {
+                  "title": "Save backup key",
+                  "description": "Copy this code and keep it secure, you will need it in case you lose your device."
+                },
+                "enable": {
+                  "title": "Confirm 2FA activation",
+                  "description": "Two-factor authentication code"
+                },
+                "disable": {
+                  "title": "Disable Two-Factor Authentication",
+                  "description": "To disable Two-Factor Authentication, type the code generated by the app into the input below."
+                }
+              },
+              "errors": {
+                "incorrect": "The code is not correct, try again",
+                "notVerified": "We could not verify your code"
+              }
+            }
+          },
+          "backupKey": {
+            "title": "Backup key",
+            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
+            "button": "Export backup key",
+            "success": "Backup key downloaded successfully",
+            "error": "We could not generate your backup key"
+          },
+          "faq": {
+            "title": "Did you miss anything?",
+            "faq1": {
+              "title": "Why do I lose all my files if I forget my password?",
+              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
+            },
+            "faq2": {
+              "title": "How can I keep my credentials safe?",
+              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
+            },
+            "faq3": {
+              "title": "Can I recover my account with a backup key?",
+              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
+            },
+            "faq4": {
+              "title": "Do I lose all my files if I change my password?",
+              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
+            }
+          }
+        }
+      }
+    },
+    "redirectToApp": {
+      "message": "Thank you",
+      "goToApp": "Go back to app"
+    }
+  },
+  "contextMenu": {
+    "itemsSelected": "个文件 已选择 "
+  },
+  "modals": {
+    "renameItemDialog": {
+      "title": "重命名",
+      "label": "名称"
+    },
+    "renameModal": {
+      "title": "Item already exists",
+      "titleMultipleItems": "Multiple items already exist",
+      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
+      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
+      "replaceItem": "Replace current item",
+      "keepBoth": "Keep both",
+      "upload": "Upload",
+      "move": "Move"
+    },
+    "removeSharedLinkModal": {
+      "title": "删除链接",
+      "multiSharedDescription": "拥有该链接的用户将失去对共享内容的访问权限。",
+      "singleSharedDescription": "拥有该链接的用户将失去对共享内容的访问权限。",
+      "cancel": "取消",
+      "deleteLinks": "删除链接",
+      "deleteLink": "删除链接"
+    },
+    "newFolderModal": {
+      "title": "新建文件夹",
+      "label": "名称",
+      "placeholder": "Untitled folder",
+      "untitled": "Untitled folder"
+    },
+    "deletePhotosModal": {
+      "multiToolBar": "个文件 已选择 ",
+      "singleToolBar": "个文件 已选择 ",
+      "multiTitle": "要删除 {{item}} 个文件 已选择?",
+      "singleTitle": "要删除 {{item}} 个文件 已选择?",
+      "subtitle": "此操作不能被撤销",
+      "buttons": {
+        "cancel": "取消",
+        "delete": "删除"
+      }
+    },
+    "sharePhotosModal": {
+      "singleTitle": "分享 {{item}} 张照片",
+      "multiTitle": "分享 {{item}} 张照片",
+      "options": "链接选项",
+      "limit": "限制链接的打开次数",
+      "openCount": "限制打开 ",
+      "times": "次",
+      "change": "更改",
+      "buttons": {
+        "cancel": "取消",
+        "create": "创建链接",
+        "creating": "Creating link...",
+        "copyLink": "复制链接"
+      }
+    },
+    "friendsInvitedModal": {
+      "title": "Friends invited",
+      "email": "Email",
+      "total": "Total",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "empty": "You have not invited anyone yet",
+      "resend": "Resend invitation",
+      "resentInvitation": "Invitation resent successfully",
+      "resendError": "Error while resending email: {{reason}}"
+    },
+    "deleteAccountModal": {
+      "title": "Are you sure?",
+      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "cancel": "取消",
+      "confirm": "Confirm"
+    },
+    "changePasswordModal": {
+      "title": "Change password",
+      "newPassword": "New password",
+      "confirmPassword": "Confirm new password",
+      "strongPassword": "Password is strong",
+      "errors": {
+        "shortPassword": "Password has to be at least 8 characters long",
+        "notComplex": "Password is not complex enough",
+        "weakPassword": "Password is weak",
+        "doesntMatch": "Password confirmation does not match the password"
+      }
+    },
+    "deleteBackupModal": {
+      "title": "Are you sure?",
+      "subtitle": "Your backup will be deleted.",
+      "primaryAction": "Confirm",
+      "secondaryAction": "取消"
+    },
+    "2FAAuthenticationModal": {}
+  },
+  "form": {
+    "fields": {
+      "email": {
+        "placeholder": "Email address"
+      }
+    }
+  },
+  "error": {
+    "wrongPassword": "密码不正确，请重试或联系所有者",
+    "genericError": "There was an error: {{reason}}",
+    "serverError": "Internal server error. Try again later",
+    "deleteTeamMember": "Error deleting team member",
+    "changingName": "Error during name change",
+    "fileAlreadyExists": "File with the same name already exists",
+    "folderAlreadyExists": "A folder with the same name already exists",
+    "folderCannotBeEmpty": "Folder name cannot be empty",
+    "creatingFolder": "Error during folder creation",
+    "sendReferralInvitation": "Could not send invitation email",
+    "sendClaimEmail": "Could not send claim email",
+    "anyReferralCredit": "You don\t have any credit on your account",
+    "backupKeyDontMatch": "The backup key inserted does not match your unique backup key",
+    "shareLinkMissingBucket": "Cannot generate share link due to missing bucket",
+    "unavailableLink": "Unavailable link",
+    "invalidActivationCode": "Your activation code is invalid. Maybe you have used this link before and your account is already activated",
+    "redirectToStripe": "Failed to redirect to Stripe. Please contact us. Reason: {{reason}}",
+    "deactivatingAccount": "Error deactivating account. Please contact us.",
+    "fetchingFolderContent": "Error fetching folder content",
+    "uploadingFolder": "Error uploading folder",
+    "uploadingFile": "Error uploading file: {{reason}}",
+    "uploadingItems": "Some of the elements could not be uploaded",
+    "downloadingFile": "Error downloading file: {{message}}",
+    "downloadingFolder": "Error downloading folder: {{message}}",
+    "downloadingItems": "Some of the elements could not be downloaded",
+    "movingItemInsideItself": "You can't move a folder inside itself",
+    "movingItem": "Error when moving item/s",
+    "renamingItem": "Error when renaming item/s",
+    "linkExpired": "This secure link has expired",
+    "teamInvitation": "The invitation email could not be sent",
+    "storageIsFull": "Your storage is full",
+    "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
+    "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
+    "titleSharedFolderTooBig": "Unsupported Action",
+    "workingOnIt": "We are working to bring you a better experience.",
+    "noFilePreview": "No file preview available",
+    "browserNotSupported": "Browser not supported ({{userAgent}})",
+    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
+    "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
+    "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
+    "emptyPassword": "Previous password must not be empty",
+    "errorMovingToTrash": "An error occurred while moving the items to trash.",
+    "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+  },
+  "backups": {
+    "backups-from": "Backups from {{deviceName}}",
+    "your-devices": "你的设备",
+    "back-to-devices": "Go back to devices",
+    "empty": {
+      "title": "你还没有备份",
+      "subtitle": "在桌面应用程序中设置你的备份",
+      "downloadApp": "下载桌面应用程序"
+    },
+    "devices-list": {
+      "columns": {
+        "name": "名称",
+        "last-update": "修改",
+        "size": "大小"
+      }
+    },
+    "backups-list": {
+      "columns": {
+        "name": "名称",
+        "last-update": "修改",
+        "size": "大小",
+        "actions": "操作"
+      }
+    },
+    "dropdown": {
+      "download": "下载",
+      "delete": "删除"
+    }
+  },
+  "shared-links": {
+    "shared-links": "共享的链接",
+    "view": "访问量",
+    "list": {
+      "link-content": "链接内容",
+      "shared": "已共享的",
+      "created": "已创建的",
+      "size": "大小"
+    },
+    "empty-state": {
+      "title": "暂时没有分享的内容",
+      "subtitle": "分享一个文件或文件夹来开始"
+    },
+    "item-menu": {
+      "copy-link": "复制链接",
+      "link-settings": "Share settings",
+      "delete-link": "删除链接",
+      "delete-links": "删除链接"
+    },
+    "link-settings": {
+      "share-settings": "Share settings",
+      "views": "访问量",
+      "options": "Options",
+      "copy-link": "复制链接",
+      "save": "保存",
+      "saving": "Saving",
+      "save-close": "Save and close",
+      "close": "Close"
+    },
+    "toast": {
+      "copy-to-clipboard": "Link copied to clipboard",
+      "link-updated": "Link settings updated",
+      "link-deleted": "链接已删除",
+      "links-deleted": "链接已删除"
+    }
+  },
+  "trash": {
+    "trash": "垃圾箱",
+    "clearTrash": "Trash has been cleared",
+    "list": {
+      "name": "名称",
+      "size": "大小",
+      "moved-to-trash": "被送入垃圾箱"
+    },
+    "empty-state": {
+      "title": "云盘的垃圾箱是空的",
+      "subtitle": "被删除的文件和文件夹将会出现在这里"
+    },
+    "item-menu": {
+      "restore": "Restore",
+      "delete-permanently": "Delete permanently"
+    }
+  },
+  "tasks": {
+    "messages": {
+      "allProcessesHaveFinished": "所有处理都已完成",
+      "processing": "正在处理 {{pending}}/{{finished}}"
+    },
+    "create-folder": {
+      "status": {
+        "pending": "Pending to create folder",
+        "in-process": "Creating folder",
+        "success": "Folder created",
+        "error": "Error during folder creation",
+        "cancelled": "Folder creation cancelled"
+      },
+      "errors": {}
+    },
+    "upload-file": {
+      "status": {
+        "pending": "等待上传",
+        "encrypting": "Encrypting file",
+        "in-process": "正在上传文件 {{progress}}%",
+        "success": "文件已上传",
+        "error": "Error during upload",
+        "cancelled": "Upload cancelled"
+      },
+      "errors": {}
+    },
+    "upload-folder": {
+      "status": {
+        "pending": "等待上传",
+        "encrypting": "Encrypting files",
+        "in-process": "正在上传文件 {{progress}}%",
+        "success": "文件夹已上传",
+        "error": "Error during upload",
+        "cancelled": "Upload cancelled"
+      },
+      "errors": {}
+    },
+    "download-file": {
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Decrypting file",
+        "in-process": "文件已下载 {{progress}}%",
+        "success": "文件已下载",
+        "error": "Download failed, click ↻ to retry",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
+    "download-photos": {
+      "status": {
+        "pending": "Downloading {{progress}}%",
+        "success": "Downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
+    "download-backup": {
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Decrypting backup",
+        "in-process": "{{progress}}% Downloading backup",
+        "success": "Backup downloaded",
+        "error": "Error during download",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
+    "download-folder": {
+      "status": {
+        "pending": "Pending to download",
+        "decrypting": "Decrypting files",
+        "in-process": "{{progress}}% Downloading folder",
+        "success": "Folder downloaded",
+        "error": "Download failed, click ↻ to retry",
+        "cancelled": "Download cancelled"
+      },
+      "errors": {}
+    },
+    "move-file": {
+      "status": {
+        "pending": "Pending to move",
+        "in-process": "Moving file",
+        "success": "File moved",
+        "error": "Error during movement",
+        "cancelled": "Cancelled movement"
+      },
+      "errors": {
+        "409": "A file with that name already exists in the destination folder"
+      }
+    },
+    "move-folder": {
+      "status": {
+        "pending": "Pending to move",
+        "in-process": "Moving folder",
+        "success": "Folder moved",
+        "error": "Error during movement",
+        "cancelled": "Cancelled movement"
+      },
+      "errors": {
+        "409": "A folder with that name already exists in the destination folder"
+      }
+    },
+    "rename-file": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming file",
+        "success": "File renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
+    },
+    "rename-folder": {
+      "status": {
+        "pending": "Pending to rename",
+        "in-process": "Renaming folder",
+        "success": "Folder renamed",
+        "error": "Error during renaming",
+        "cancelled": "Cancelled renaming"
+      },
+      "errors": {}
+    }
+  },
+  "success": {
+    "passwordChanged": "Password changed successfully",
+    "teamInvitationSent": "Invitation email sent to {{email}}",
+    "referralInvitationSent": "Invitation email sent to {{email}}",
+    "deletedTeamMember": "The {{resource}} has been successfully deleted",
+    "accountDeactivationEmailSent": "Deactivation email sent!",
+    "claimEmailSent": "Claim email sent!",
+    "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
+    "linkCopied": "Link copied!",
+    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
+    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
+    "joinedToTheTeam": "You have successfully joined to the team",
+    "done": "Done",
+    "inviteAFriend": "An invitation has been sent to {{email}}",
+    "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
+  },
+  "shareItemDialog": {
+    "title": "链接设置",
+    "access": "访问",
+    "protect": "密码保护",
+    "addSecurePassword": "在链接中添加一个密码以提高安全性",
+    "password": "密码",
+    "views": "访问量",
+    "noViewsYet": "No views yet",
+    "dateCreated": "创建日期",
+    "buttons": {
+      "copyLink": "复制链接",
+      "linkCopied": "Link copied",
+      "cancel": "取消",
+      "save": "保存"
+    }
+  },
+  "notificationMessages": {
+    "copyLink": "复制链接到剪贴板",
+    "linkUpdated": "Link updated",
+    "itemsMovedToTrash": "{{item}} 已被移至垃圾箱",
+    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
+    "itemDeleted": "{{item}} deleted",
+    "itemsDeleted": "Files deleted",
+    "emailNotEmpty": "Email must not be empty",
+    "verificationEmail": "Verification email has been sent",
+    "successCancelSubscription": "Your subscription has been cancelled",
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+  },
+  "actions": {
+    "undo": "撤销",
+    "upload": {
+      "new": "新建",
+      "folder": "新建文件夹",
+      "uploadFiles": "上传文件",
+      "uploadFolder": "上传文件夹"
+    },
+    "change": "更改",
+    "download": "下载",
+    "downloading": "Downloading",
+    "downloaded": "Downloaded",
+    "view": "View",
+    "accessFile": "Access File",
+    "upgradeNow": "购买储存空间",
+    "purchasePlan": "购买储存空间",
+    "upgrade": "购买储存空间",
+    "buyStorage": "购买储存空间",
+    "deleteAccount": "Permanently delete account",
+    "changePassword": "Change password",
+    "buy": "Buy",
+    "cancel": "取消",
+    "create": "创建",
+    "sendInvitation": "Send invitation",
+    "subscribe": "Subscribe",
+    "moreInfo": "更多信息",
+    "dismiss": "Dismiss",
+    "save": "保存",
+    "back": "Back",
+    "edit": "Edit",
+    "submit": "Submit",
+    "access": "访问",
+    "previous": "Previous",
+    "next": "Next",
+    "disable": "Disable",
+    "move": "Move",
+    "moving": "Moving...",
+    "navigating": "Navigating...",
+    "restoreHere": "Restore here",
+    "rename": "重命名",
+    "restore": "Restore",
+    "copyLink": "复制链接"
+  },
+  "drive": {
+    "usage": "Usage",
+    "currentPlan": "Current plan",
+    "loadingFile": "Loading preview",
+    "previewNoAvailable": "No preview available",
+    "pdfPage": "Page {{page}} of {{pages}}",
+    "list": {
+      "columns": {
+        "type": "类型",
+        "name": "名称",
+        "modified": "后一次修改",
+        "size": "大小",
+        "actions": "操作"
+      }
+    },
+    "viewMode": {
+      "gridMode": "Grid view",
+      "listMode": "List view"
+    },
+    "dropdown": {
+      "openPreview": "Open preview",
+      "getLink": "Get link",
+      "rename": "重命名",
+      "download": "下载",
+      "moveToTrash": "Move to trash",
+      "copyLink": "复制链接",
+      "linkSettings": "链接设置",
+      "deleteLink": "删除链接",
+      "restore": "Restore",
+      "deletePermanently": "Delete permanently",
+      "move": "Move",
+      "delete": "删除"
+    },
+    "deleteItems": {
+      "title": "Delete permanently?",
+      "advice": "此操作不能被撤销",
+      "accept": "删除",
+      "progress": "删除..."
+    },
+    "clearTrash": {
+      "title": "Empty Drive Trash?",
+      "advice": "All items in the Drive Trash will be permanently deleted. 此操作不能被撤销",
+      "accept": "Empty Trash",
+      "progress": "Emptying Trash..."
+    },
+    "uploadItems": {
+      "title": "Maximum file upload",
+      "advice": "The maximum is 1000 files per upload.",
+      "close": "Close"
+    },
+    "movingToTrash": "Moving items to trash",
+    "deletingItems": "Deleting items from trash"
+  },
+  "appSumo": {
+    "tiers": {
+      "internxt_tier1": "AppSumo Lifetime Tier 1",
+      "internxt_tier2": "AppSumo Lifetime Tier 2",
+      "internxt_tier3": "AppSumo Lifetime Tier 3",
+      "internxt_tier4": "AppSumo Lifetime Tier 4",
+      "internxt_tier5": "AppSumo Lifetime Tier 5",
+      "unlimited": "Lifetime Infinite Members"
+    },
+    "members": {
+      "internxt_tier1": "Team members: 1",
+      "internxt_tier2": "Team members: 5",
+      "internxt_tier3": "Team members: 10",
+      "internxt_tier4": "Team members: 25",
+      "internxt_tier5": "Team members: 100",
+      "unlimited": "Team members: {{total}}"
+    },
+    "plans": {
+      "advice": "You will be redirected to your AppSumo account"
+    }
+  },
+  "inviteAFriend": {
+    "title": "Invite a friend",
+    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
+    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
+    "label": "Friend email address",
+    "placeholder": "Enter friend email",
+    "actions": {
+      "sendInvitation": "Send invitation",
+      "seeInvitations": "See all invitations"
+    },
+    "errors": {
+      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
+    }
+  },
+  "newsletter": {
+    "dialog": {
+      "title": "Subscribe to our newsletter",
+      "message": "Get the last news and updates right in your mail inbox"
+    }
+  },
+  "referrals": {
+    "items": {
+      "create-account": "创建一个账户",
+      "install-mobile-app": "安装移动应用程序并上传一个文件",
+      "share-file": "通过链接分享一个文件",
+      "subscribe-to-newsletter": "Subscribe to newsletter",
+      "install-desktop-app": "安装桌面应用程序，并上传一个文件",
+      "invite-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
+      "invite-2-friends": "邀请{{completedSteps}}/{{steps}}个朋友 ",
+      "complete-survey": "完成调查"
+    },
+    "rewards": {
+      "title": "免费获得 {{creditSum}}的容量!",
+      "progress": "已解锁 {{currentCredit}}",
+      "limit": "/ {{creditSum}}"
+    }
+  },
+  "errors": {
+    "downloadingDesktopApp": "Something went wrong while downloading the desktop app"
+  },
+  "tutorial": {
+    "signUpTutorial": {
+      "stepOne": {
+        "title": "Get the most out of Internxt Drive",
+        "description": "Download desktop app to sync and backup all your folders and files."
+      },
+      "stepTwo": {
+        "title": "Let's get started...",
+        "description": "Click Upload button to upload your first file."
+      }
+    }
+  }
+}

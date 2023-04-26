@@ -8,14 +8,16 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
-import ita from 'dayjs/locale/it';
+import it from 'dayjs/locale/it';
 import dayjs from 'dayjs';
+import cn from 'dayjs/locale/zh-cn';
 
 const currentLang = {
   es: 'Español (ES)',
   fr: 'Français (FR)',
   en: 'English (EN)',
   ita: 'Italiano (IT)',
+  it: 'Italiano (IT)',
 };
 
 const localStorageLanguage = localStorageService.get('language');
@@ -128,13 +130,23 @@ export default function Language(): JSX.Element {
             </MenuItem>,
             <MenuItem
               onClick={() => {
-                setLang('ita');
-                i18next.changeLanguage('ita');
-                setCurrentLangText(translate('lang.ita') as string);
-                dayjs.locale(ita);
+                setLang('it');
+                i18next.changeLanguage('it');
+                setCurrentLangText(translate('lang.it') as string);
+                dayjs.locale(it);
               }}
             >
               <p>{translate('lang.ita')}</p>
+            </MenuItem>,
+            <MenuItem
+              onClick={() => {
+                setLang('cn');
+                i18next.changeLanguage('cn');
+                setCurrentLangText(translate('lang.cn') as string);
+                dayjs.locale(cn);
+              }}
+            >
+              <p>{translate('lang.cn')}</p>
             </MenuItem>,
           ]}
         />

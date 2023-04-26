@@ -18,8 +18,11 @@ i18next
       fr: {
         translation: require('../locales/fr.json'),
       },
-      ita: {
-        translation: require('../locales/ita.json'),
+      it: {
+        translation: require('../locales/it.json'),
+      },
+      cn: {
+        translation: require('../locales/cn.json'),
       },
     },
     debug: !envService.isProduction(),
