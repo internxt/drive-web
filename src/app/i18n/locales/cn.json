@@ -52,7 +52,7 @@
     "ita": "Italian (IT)"
   },
   "auth": {
-    "email": "Email",
+    "email": "电子邮件",
     "password": "密码",
     "terms1": "By creating an account, ",
     "terms2": "you accept the terms & conditions",
@@ -92,21 +92,21 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "monthly",
-      "annually": "annually",
-      "lifetime": "Lifetime"
+      "monthly": "月度",
+      "annually": "年度",
+      "lifetime": "终身"
     },
     "renewal": {
-      "monthly": "Monthly",
-      "annually": "Annually",
-      "lifetime": "Lifetime"
+      "monthly": "月度",
+      "annually": "年度",
+      "lifetime": "终身"
     },
     "workspaces": {
       "personal": "Individuals",
       "business": "Business"
     },
     "time": {
-      "month": "month"
+      "month": "元/月"
     },
     "billing": {
       "billedEachPeriod": "{{price}} billed {{period}}",
@@ -174,89 +174,89 @@
     "account": {
       "title": "资料",
       "avatar": {
-        "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
-        "dragNDrop": "Select or drop a picture",
+        "title": "上传新图片",
+        "removePhoto": "删除照片",
+        "updatePhoto": "上传图片",
+        "dragNDrop": "选择或拖动一个图片",
         "success": "Avatar has been successfully updated",
         "error": "Something happened while uploading your avatar",
         "removed": "Avatar successfully deleted",
         "underLimitSize": "Please choose an image under 10MB of size"
       },
       "popover": {
-        "downloadApp": "Download app",
-        "settings": "Settings",
-        "logout": "Log out",
+        "downloadApp": "桌面应用程序",
+        "settings": "设置",
+        "logout": "登出",
         "spaceUsed": "已使用储存空间的{{space}}%"
       },
       "tabs": {
         "account": {
-          "label": "Account",
+          "label": "帐户",
           "title": "Personal",
-          "usage": "Used {{totalUsed}} of {{totalSpace}}",
+          "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
-            "backups": "Backups",
+            "backups": "备份",
             "photos": "照片",
             "trash": "垃圾箱",
             "free": {
-              "planName": "Free plan",
+              "planName": "免费计划",
               "button": "购买储存空间"
             },
             "lifetime": {
               "planName": "Lifetime"
             },
             "subscription": {
-              "planName": "Subscription",
-              "button": "change",
+              "planName": "订阅",
+              "button": "更改",
               "yearly": "year",
-              "monthly": "month"
+              "monthly": "元/月"
             }
           },
           "accountDetails": {
-            "head": "Account details",
-            "name": "名称",
-            "lastname": "Lastname",
+            "head": "帐户详情",
+            "name": "名字",
+            "lastname": "姓氏",
             "card": {
-              "name": "名称",
-              "lastname": "Lastname",
-              "edit": "Edit",
-              "email": "Email",
-              "resendEmail": "Resend verification email"
+              "name": "名字",
+              "lastname": "姓氏",
+              "edit": "编辑",
+              "email": "电子邮件",
+              "resendEmail": "重新发送验证邮件"
             },
             "verify": {
-              "verify": "Verify your email",
+              "verify": "验证您的电子邮件",
               "verified": "Verified email",
-              "description": "Check your inbox"
+              "description": "检查你的收件箱"
             },
             "editProfile": {
-              "name": "名称",
-              "lastname": "Lastname"
+              "name": "名字",
+              "lastname": "姓氏"
             },
             "updateProfile": "Profile updated successfully",
             "errorUpdatingProfile": "We could not update your profile"
           },
           "deleteAccount": {
-            "head": "Delete account",
-            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
+            "head": "删除账户",
+            "description": "如果你删除你的帐户，你的数据将被永远删除。这一操作不能被撤销",
             "isSubscribed": "Please, cancel your subscription first",
             "confirmationEmail": "Confirmation email has been sent"
           }
         },
         "billing": {
-          "label": "Billing",
-          "currentPlan": "Current plan",
+          "label": "计费",
+          "currentPlan": "目前的计划",
           "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
           "cancelSubscriptionModal": {
-            "title": "Cancel subscription",
+            "title": "取消订阅",
             "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
             "keepSubscription": "Keep subscription",
             "continue": "Continue",
-            "cancelSubscription": "Cancel subscription",
+            "cancelSubscription": "取消订阅",
             "infoBox": {
               "titleCurrent": "Current",
               "titleNew": "New",
               "year": "year",
-              "month": "month",
+              "month": "元/月",
               "free": "Free",
               "reachedFreeLimit": "You are over {{freePlanName}}",
               "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
@@ -266,22 +266,22 @@
               "placeholder": "Give us some feedback"
             }
           },
-          "billed": "Billed {{interval}} {{renewDate}}",
+          "billed": "帐单 {{interval}} {{renewDate}}",
           "paymentMethod": {
-            "head": "Payment method",
+            "head": "付款方式",
             "empty": {
-              "title": "You are on free plan",
-              "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
+              "title": "您目前在免费计划中",
+              "subtitle": "当你采用付费订阅计划时，信用卡信息将自动出现在这里。"
             },
             "title": "Add new payment method"
           },
           "invoices": {
-            "head": "Invoices",
+            "head": "发票",
             "billingDate": "Billing date",
             "plan": "Plan",
             "empty": {
-              "title": "You are in free plan",
-              "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
+              "title": "您目前在免费计划中",
+              "subtitle": "已发行的发票在付款时将自动出现在这里。"
             },
             "download": "Download invoice"
           }
@@ -299,8 +299,8 @@
           }
         },
         "plans": {
-          "label": "Plans",
-          "title": "Plans",
+          "label": "计划",
+          "title": "计划",
           "description": "Find the different storage and solution options that Internxt offers",
           "changeWorkspace": {
             "personal": "Change to Plans for Individuals",
@@ -313,25 +313,25 @@
             "lifetime": "€{{amount}}"
           },
           "features": {
-            "title": "Features included in all plans",
+            "title": "所有计划中包括的功能",
             "sections": {
               "section1": {
-                "title": "Satisfaction guaranteed",
-                "point1": "All subscriptions have 30-day money-back guarantees.",
-                "point2": "Cancel any time, no tricks.",
-                "point3": "Premium support."
+                "title": "满意度保证",
+                "point1": "所有计划都有30天的退款保证。",
+                "point2": "随时皆可取消",
+                "point3": "高级客户支持"
               },
               "section2": {
-                "title": "Secure by default",
-                "point1": "Military-grade encryption to ensure your privacy.",
-                "point2": "Encrypted file storage and sharing.",
-                "point3": "Zero-knowledge cloud storage."
+                "title": "默认情况下的安全性",
+                "point1": "军事级别的加密以确保你的隐私",
+                "point2": "加密的云存储和共享",
+                "point3": "零知识隐私"
               },
               "section3": {
-                "title": "Unlimited access and sync",
-                "point1": "Access your files, photos, and backups from all your devices.",
-                "point2": "Sync with unlimited bandwidth.",
-                "point3": "Backup any folder on your computer."
+                "title": "无限的访问和同步",
+                "point1": "从你的所有设备访问你的文件、照片和备份",
+                "point2": "无限的带宽同步",
+                "point3": "备份你电脑上的任何文件夹"
               }
             }
           },
@@ -343,7 +343,7 @@
             "plan": {
               "current": "Current",
               "new": "New",
-              "interval": "month"
+              "interval": "元/月"
             },
             "alert": {
               "title": "You are over ",
@@ -363,7 +363,7 @@
           "title": "密码",
           "description": "Change your password",
           "advice1": {
-            "title": "Change password",
+            "title": "修改密码",
             "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
           },
           "advice2": {
@@ -380,10 +380,10 @@
           }
         },
         "security": {
-          "label": "Security",
+          "label": "安全",
           "lock": {
-            "title": "Enter your password to continue",
-            "description": "For security reasons, you must enter your password before being able to make any changes on this page.",
+            "title": "输入你的密码以继续",
+            "description": "出于安全考虑，你必须先输入密码才能对该页面进行修改。",
             "inputLabel": "密码",
             "errors": {
               "incorrect": "再次输入密码",
@@ -391,39 +391,39 @@
             }
           },
           "changePassword": {
-            "title": "Change password",
-            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
-            "button": "Change password"
+            "title": "修改密码",
+            "description": "记住，如果你忘记了你的密码，你将失去对所有文件的访问权限。我们建议使用一个密码管理器。",
+            "button": "修改密码"
           },
           "2FA": {
-            "title": "Two-factor authentication (2FA)",
+            "title": "双因素认证(2FA)",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
-            "button": "Enable 2FA",
+            "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
+            "button": "激活 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
-              "title": "Two Factor Authentication",
-              "stepsLabel": "{{current}} of {{total}}",
-              "button": "Enable 2FA",
+              "title": "两步验证",
+              "stepsLabel": "第 {{current}}/{{total}}步",
+              "button": "激活 2FA",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OR",
               "steps": {
                 "download": {
-                  "title": "Download Authy",
-                  "description": "We recommend using Authy, but you can setup the 2FA process with any other 2FA of your choice."
+                  "title": "下载Authy",
+                  "description": "我们推荐使用Authy，但你也可以用你选择的另一个2FA应用程序设置2FA。"
                 },
                 "qr": {
-                  "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "title": "用2FA应用程序扫描二维码",
+                  "description": "或者，如果你不能扫描二维码，请将此代码输入应用程序中"
                 },
                 "backup-key": {
-                  "title": "Save backup key",
-                  "description": "Copy this code and keep it secure, you will need it in case you lose your device."
+                  "title": "保存恢复密钥",
+                  "description": "复制这个代码并妥善保管，万一你的设备丢失，你将会需要它。"
                 },
                 "enable": {
-                  "title": "Confirm 2FA activation",
-                  "description": "Two-factor authentication code"
+                  "title": "确认2FA的激活情况",
+                  "description": "两步认证代码"
                 },
                 "disable": {
                   "title": "Disable Two-Factor Authentication",
@@ -437,29 +437,29 @@
             }
           },
           "backupKey": {
-            "title": "Backup key",
+            "title": "恢复密钥",
             "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
-            "button": "Export backup key",
+            "button": "导出密码",
             "success": "Backup key downloaded successfully",
             "error": "We could not generate your backup key"
           },
           "faq": {
-            "title": "Did you miss anything?",
+            "title": "你丢失了什么东西吗？",
             "faq1": {
-              "title": "Why do I lose all my files if I forget my password?",
-              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
+              "title": "为什么如果我失去了密码，就会失去我的文件？",
+              "description": "你的密码是访问你的账户的唯一途径，Internxt团队不能访问你的账户或更改你的密码。这是为了防止任何人进入你的账户或窃取你的数据。 <br/><br/>其中，你的密码被用于加密过程，所以甚至连Internxt都没有机会接触到它。每次你登录时，你需要你的密码来解密你的文件，所以我们确保只有你有这个钥匙。"
             },
             "faq2": {
-              "title": "How can I keep my credentials safe?",
-              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
+              "title": "我怎样才能保证我的凭证安全？",
+              "description": "我们建议使用一个密码管理器来保持你的凭证安全，不仅是为了访问Internxt，也是为了在浏览时保护自己。"
             },
             "faq3": {
-              "title": "Can I recover my account with a backup key?",
-              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
+              "title": "我可以用恢复密钥恢复我的账户吗？",
+              "description": "如果你把你的恢复密钥放在一个安全的地方，你可以按照你点击 \"忘记密码 \"后收到的电子邮件中的步骤恢复你的账户。"
             },
             "faq4": {
-              "title": "Do I lose all my files if I change my password?",
-              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
+              "title": "如果我修改密码，会不会丢失我的文件？",
+              "description": "不，由于你已经登录，你可以修改你的密码而不会丢失你账户中的任何文件。请确保你选择了一个强大的密码。"
             }
           }
         }
@@ -529,26 +529,26 @@
       }
     },
     "friendsInvitedModal": {
-      "title": "Friends invited",
-      "email": "Email",
+      "title": "被邀请的朋友",
+      "email": "电子邮件",
       "total": "Total",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "empty": "You have not invited anyone yet",
+      "pending": "待处理",
+      "accepted": "已接受",
+      "empty": "你还没有邀请任何人",
       "resend": "Resend invitation",
       "resentInvitation": "Invitation resent successfully",
       "resendError": "Error while resending email: {{reason}}"
     },
     "deleteAccountModal": {
-      "title": "Are you sure?",
-      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "title": "你确定吗？",
+      "subtitle": "你的所有文件将被永远删除，你将失去对Internxt账户的访问。",
       "cancel": "取消",
-      "confirm": "Confirm"
+      "confirm": "确定"
     },
     "changePasswordModal": {
-      "title": "Change password",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
+      "title": "修改密码",
+      "newPassword": "新 密码",
+      "confirmPassword": "确认新密码",
       "strongPassword": "Password is strong",
       "errors": {
         "shortPassword": "Password has to be at least 8 characters long",
@@ -558,9 +558,9 @@
       }
     },
     "deleteBackupModal": {
-      "title": "Are you sure?",
+      "title": "你确定吗？",
       "subtitle": "Your backup will be deleted.",
-      "primaryAction": "Confirm",
+      "primaryAction": "确定",
       "secondaryAction": "取消"
     },
     "2FAAuthenticationModal": {}
@@ -826,7 +826,7 @@
     }
   },
   "success": {
-    "passwordChanged": "Password changed successfully",
+    "passwordChanged": "密码已修改",
     "teamInvitationSent": "Invitation email sent to {{email}}",
     "referralInvitationSent": "Invitation email sent to {{email}}",
     "deletedTeamMember": "The {{resource}} has been successfully deleted",
@@ -865,7 +865,7 @@
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
-    "verificationEmail": "Verification email has been sent",
+    "verificationEmail": "验证邮件已发送",
     "successCancelSubscription": "Your subscription has been cancelled",
     "errorCancelSubscription": "Something went wrong while cancelling your subscription"
   },
@@ -888,21 +888,21 @@
     "upgrade": "购买储存空间",
     "buyStorage": "购买储存空间",
     "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
+    "changePassword": "修改密码",
     "buy": "Buy",
     "cancel": "取消",
     "create": "创建",
-    "sendInvitation": "Send invitation",
-    "subscribe": "Subscribe",
+    "sendInvitation": "发送邀请",
+    "subscribe": "订阅",
     "moreInfo": "更多信息",
     "dismiss": "Dismiss",
     "save": "保存",
-    "back": "Back",
-    "edit": "Edit",
+    "back": "返回",
+    "edit": "编辑",
     "submit": "Submit",
     "access": "访问",
     "previous": "Previous",
-    "next": "Next",
+    "next": "下一步",
     "disable": "Disable",
     "move": "Move",
     "moving": "Moving...",
@@ -913,8 +913,8 @@
     "copyLink": "复制链接"
   },
   "drive": {
-    "usage": "Usage",
-    "currentPlan": "Current plan",
+    "usage": "使用情况",
+    "currentPlan": "目前的计划",
     "loadingFile": "Loading preview",
     "previewNoAvailable": "No preview available",
     "pdfPage": "Page {{page}} of {{pages}}",
@@ -987,14 +987,14 @@
     }
   },
   "inviteAFriend": {
-    "title": "Invite a friend",
+    "title": "邀请一个朋友",
     "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
+    "description": "传播这条消息，你每邀请一个朋友加入Internxt，你就能获得1GB。总共可获得{{N}}",
+    "label": "邀请至",
     "placeholder": "Enter friend email",
     "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
+      "sendInvitation": "发送邀请",
+      "seeInvitations": "查看所有邀请"
     },
     "errors": {
       "dailyEmailLimit": "You reached the limit of 10 invitations/day"
