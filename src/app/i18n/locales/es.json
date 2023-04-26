@@ -246,6 +246,13 @@
             "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
             "feedback": {
               "placeholder": "Denos su opinión"
+            },
+            "coupon": {
+              "title": "3 MESES",
+              "subtitle": "GRATIS",
+              "text1": "Si mantienes tu suscripción de",
+              "text2": "obtendrás los 3 meses siguientes gratis. Solo se aplicara una vez",
+              "continue": "Obtener 3 meses GRATIS"
             }
           },
           "billed": "Facturación {{interval}} {{renewDate}}",
@@ -834,7 +841,10 @@
     "emailNotEmpty": "El correo no debe estar vacío",
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
-    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción"
+    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCoupon": "Se han aplicado 3 meses gratis",
+    "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
+    "alreadyAppliedCouponn": "El cupón ya se ha aplicado"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

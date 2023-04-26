@@ -264,6 +264,13 @@
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
               "placeholder": "Give us some feedback"
+            },
+            "coupon": {
+              "title": "3 MONTHS",
+              "subtitle": "FREE",
+              "text1": "By keeping your",
+              "text2": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "continue": "Get 3 months FREE"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",
@@ -867,7 +874,10 @@
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successApplyCoupon": "3 months free of charge applied",
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCouponn": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",
