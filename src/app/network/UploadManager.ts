@@ -9,6 +9,8 @@ import errorService from '../core/services/error.service';
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
+const MAX_UPLOAD_ATTEMPS = 2;
+
 enum FileSizeType {
   Big = 'big',
   Medium = 'medium',
@@ -67,6 +69,7 @@ class UploadManager {
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
       if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) return;
 
+      let uploadAttempts = 0;
       const uploadId = randomBytes(10).toString('hex');
       const taskId = fileData.taskId;
       this.uploadsProgress[uploadId] = 0;
@@ -85,89 +88,99 @@ class UploadManager {
         },
       });
 
-      uploadFile(
-        fileData.userEmail,
-        {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          content: file.content,
-          parentFolderId: file.parentFolderId,
-        },
-        false,
-        (uploadProgress) => {
-          this.uploadsProgress[uploadId] = uploadProgress;
+      const upload = () => {
+        uploadAttempts++;
 
-          if (task?.status !== TaskStatus.Cancelled) {
+        uploadFile(
+          fileData.userEmail,
+          {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            content: file.content,
+            parentFolderId: file.parentFolderId,
+          },
+          false,
+          (uploadProgress) => {
+            this.uploadsProgress[uploadId] = uploadProgress;
+
+            if (task?.status !== TaskStatus.Cancelled) {
+              tasksService.updateTask({
+                taskId: taskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: uploadProgress,
+                },
+              });
+            }
+          },
+          this.abortController ?? fileData.abortController,
+        )
+          .then((driveFileData) => {
+            if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
+              throw Error('Upload task cancelled');
+
+            const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
+
+            if (this.relatedTaskProgress && this.options?.relatedTaskId) {
+              this.relatedTaskProgress.filesUploaded += 1;
+
+              tasksService.updateTask({
+                taskId: this.options?.relatedTaskId,
+                merge: {
+                  status: TaskStatus.InProcess,
+                  progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
+                },
+              });
+            }
+
             tasksService.updateTask({
               taskId: taskId,
-              merge: {
-                status: TaskStatus.InProcess,
-                progress: uploadProgress,
-              },
+              merge: { status: TaskStatus.Success },
             });
-          }
-        },
-        this.abortController ?? fileData.abortController,
-      )
-        .then((driveFileData) => {
-          if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
-            throw Error('Upload task cancelled');
 
-          const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
+            fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
 
-          if (this.relatedTaskProgress && this.options?.relatedTaskId) {
-            this.relatedTaskProgress.filesUploaded += 1;
+            next(null, driveFileDataWithNameParsed);
+          })
+          .catch((err) => {
+            if (uploadAttempts <= MAX_UPLOAD_ATTEMPS) {
+              upload();
+            } else {
+              if (task?.status !== TaskStatus.Cancelled) {
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: { status: TaskStatus.Error },
+                });
+                errorService.reportError(err, {
+                  extra: {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    parentFolderId: file.parentFolderId,
+                  },
+                });
+              }
 
-            tasksService.updateTask({
-              taskId: this.options?.relatedTaskId,
-              merge: {
-                status: TaskStatus.InProcess,
-                progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
-              },
-            });
-          }
+              if (!this.errored) {
+                this.uploadQueue.kill();
+              }
 
-          tasksService.updateTask({
-            taskId: taskId,
-            merge: { status: TaskStatus.Success },
+              if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
+                return tasksService.updateTask({
+                  taskId: taskId,
+                  merge: { status: TaskStatus.Cancelled },
+                });
+              }
+
+              this.errored = true;
+
+              next(err);
+            }
           });
+      };
 
-          fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
-
-          next(null, driveFileDataWithNameParsed);
-        })
-        .catch((err) => {
-          if (task?.status !== TaskStatus.Cancelled) {
-            tasksService.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Error },
-            });
-            errorService.reportError(err, {
-              extra: {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                parentFolderId: file.parentFolderId,
-              },
-            });
-          }
-
-          if (!this.errored) {
-            this.uploadQueue.kill();
-          }
-
-          if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
-            return tasksService.updateTask({
-              taskId: taskId,
-              merge: { status: TaskStatus.Cancelled },
-            });
-          }
-
-          this.errored = true;
-
-          next(err);
-        });
+      upload();
     },
     this.filesGroups.small.concurrency,
   );
