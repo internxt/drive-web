@@ -45,11 +45,12 @@
     }
   },
   "lang": {
-    "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)",
-    "ita": "Italian (IT)"
+    "title": "语言",
+    "en": "英语",
+    "es": "西班牙语",
+    "fr": "法语",
+    "ita": "意大利语",
+    "cn": "中国人"
   },
   "auth": {
     "email": "电子邮件",
@@ -112,9 +113,9 @@
       "billedEachPeriod": "{{price}} billed {{period}}",
       "oneTimePayment": "One-time payment"
     },
-    "files": "Files",
+    "files": "*文件",
     "file": "*文件",
-    "folder": "Folder"
+    "folder": "文件夹"
   },
   "shareLayout": {
     "title": "INTERNXT",
@@ -129,7 +130,7 @@
     "topBar": {
       "drive": "Go to Internxt Drive",
       "downloadApp": "Download Desktop App",
-      "logout": "Log out",
+      "logout": "登出",
       "login": "登录",
       "createAccount": "Create Account",
       "getStarted": "Get started"
@@ -203,12 +204,12 @@
               "button": "购买储存空间"
             },
             "lifetime": {
-              "planName": "Lifetime"
+              "planName": "终身"
             },
             "subscription": {
               "planName": "订阅",
               "button": "更改",
-              "yearly": "year",
+              "yearly": "年度",
               "monthly": "元/月"
             }
           },
@@ -245,7 +246,7 @@
         "billing": {
           "label": "计费",
           "currentPlan": "目前的计划",
-          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
+          "subsRenew": "{{daysUntilRenewal}}天后续订",
           "cancelSubscriptionModal": {
             "title": "取消订阅",
             "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
@@ -255,7 +256,7 @@
             "infoBox": {
               "titleCurrent": "Current",
               "titleNew": "New",
-              "year": "year",
+              "year": "年度",
               "month": "元/月",
               "free": "Free",
               "reachedFreeLimit": "You are over {{freePlanName}}",
@@ -277,8 +278,8 @@
           },
           "invoices": {
             "head": "发票",
-            "billingDate": "Billing date",
-            "plan": "Plan",
+            "billingDate": "账单 日期",
+            "plan": "计划",
             "empty": {
               "title": "您目前在免费计划中",
               "subtitle": "已发行的发票在付款时将自动出现在这里。"
