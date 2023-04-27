@@ -255,6 +255,33 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
   // window.analytics.track(AnalyticsTrackNames.ShareLinkBucketIdUndefined, payload);
 }
 
+export async function trackCancelPayment() {
+  try {
+    const checkoutSessionId = localStorage.getItem('sessionId');
+    const {
+      amount_total,
+      id: sessionId,
+      customer_email,
+      metadata,
+    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+      params: {
+        sessionId: checkoutSessionId,
+      },
+      headers: httpService.getHeaders(true, false),
+    });
+
+    const amount = amount_total * 0.01;
+
+    window.rudderanalytics.track(AnalyticsTrackNames.CancelPaymentConversionEvent, {
+      sessionId: sessionId,
+      email: customer_email,
+      price: amount,
+    });
+  } catch (err) {
+    const castedError = errorService.castError(err);
+  }
+}
+
 export async function trackPaymentConversion() {
   try {
     // window.analytics.page('Checkout Success');
@@ -415,6 +442,7 @@ const analyticsService = {
   trackPaymentConversion,
   trackFileUploadAborted,
   getTrackingActionId,
+  trackCancelPayment,
 };
 
 export default analyticsService;

@@ -45,7 +45,7 @@ export default function CheckoutPlanView(): JSX.Element {
               coupon_code: coupon,
               trial_days: freeTrials,
               success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+              cancel_url: `${process.env.REACT_APP_HOSTNAME}/checkout/cancel`,
               customer_email: user.email,
               mode: mode,
             }))
@@ -54,14 +54,14 @@ export default function CheckoutPlanView(): JSX.Element {
               price_id: planId,
               coupon_code: coupon,
               success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+              cancel_url: `${process.env.REACT_APP_HOSTNAME}/checkout/cancel`,
               customer_email: user.email,
               mode: mode,
             }))
           : (response = await paymentService.createCheckoutSession({
               price_id: planId,
               success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+              cancel_url: `${process.env.REACT_APP_HOSTNAME}/checkout/cancel`,
               customer_email: user.email,
               mode: mode,
             }));
@@ -81,7 +81,7 @@ export default function CheckoutPlanView(): JSX.Element {
           response = await paymentService.createCheckoutSession({
             price_id: planId,
             success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+            cancel_url: `${process.env.REACT_APP_HOSTNAME}/checkout/cancel`,
             customer_email: user.email,
             mode: mode,
           });
