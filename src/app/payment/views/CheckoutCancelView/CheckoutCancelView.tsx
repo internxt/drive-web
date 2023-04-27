@@ -1,6 +1,4 @@
-import { useAppDispatch } from 'app/store/hooks';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
-import { userThunks } from 'app/store/slices/user';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import analyticsService from 'app/analytics/services/analytics.service';

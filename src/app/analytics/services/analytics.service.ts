@@ -262,7 +262,6 @@ export async function trackCancelPayment() {
       amount_total,
       id: sessionId,
       customer_email,
-      metadata,
     } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
       params: {
         sessionId: checkoutSessionId,
@@ -279,6 +278,7 @@ export async function trackCancelPayment() {
     });
   } catch (err) {
     const castedError = errorService.castError(err);
+    console.error(castedError);
   }
 }
 
