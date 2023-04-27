@@ -57,7 +57,7 @@ export default function CheckoutPlanView(): JSX.Element {
         if (coupon && freeTrials) {
           checkoutOptions.coupon_code = coupon;
           checkoutOptions.trial_days = freeTrials;
-        } else if (coupon) {
+        } else if (coupon !== 'null') {
           checkoutOptions.coupon_code = coupon;
         }
 
