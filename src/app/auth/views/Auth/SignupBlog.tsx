@@ -43,7 +43,6 @@ export default function SignupBlog(): JSX.Element {
               src={InternxtDevices}
               width={534}
               height={340}
-              // draggable="false"
               about="desktop, laptop and phone with Internxt app"
               loading="eager"
               alt="desktop, laptop and phone with Internxt app"
