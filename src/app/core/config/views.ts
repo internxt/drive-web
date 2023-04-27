@@ -30,6 +30,7 @@ import VerifyEmailView from '../views/VerifyEmailView';
 import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
+import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 
 const views: Array<{
   id: string;
@@ -57,6 +58,7 @@ const views: Array<{
   { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
+  { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.Remove, component: RemoveAccountView },
