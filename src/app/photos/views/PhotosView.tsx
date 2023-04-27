@@ -138,11 +138,15 @@ export default function PhotosView({ className = '' }: { className?: string }): 
         onClose={() => setDeletePending(null)}
         onPrimaryAction={onConfirmDelete}
         isOpen={deletePending === 'preview'}
-        title="Delete this item?"
+        title={
+          numberOfSelectedItems > 1
+            ? translate('modals.deletePhotosModal.multiTitle', { item: numberOfSelectedItems })
+            : translate('modals.deletePhotosModal.singleTitle', { item: numberOfSelectedItems })
+        }
         subtitle={translate('modals.deletePhotosModal.subtitle')}
         onSecondaryAction={() => setDeletePending(null)}
-        primaryAction="Delete"
-        secondaryAction="Cancel"
+        primaryAction={translate('modals.deletePhotosModal.buttons.delete')}
+        secondaryAction={translate('modals.deletePhotosModal.buttons.cancel')}
         primaryActionColor="danger"
       />
       <ShareDialog

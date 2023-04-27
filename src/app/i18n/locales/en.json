@@ -48,7 +48,8 @@
     "title": "Language",
     "es": "Spanish (ES)",
     "en": "English (EN)",
-    "fr": "French (FR)"
+    "fr": "French (FR)",
+    "ita": "Italian (IT)"
   },
   "auth": {
     "email": "Email",
@@ -263,6 +264,13 @@
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
               "placeholder": "Give us some feedback"
+            },
+            "coupon": {
+              "title": "3 MONTHS",
+              "subtitle": "FREE",
+              "text1": "By keeping your",
+              "text2": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "continue": "Get 3 months FREE"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",
@@ -277,6 +285,7 @@
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
@@ -529,6 +538,7 @@
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
+      "total": "Total",
       "pending": "Pending",
       "accepted": "Accepted",
       "empty": "You have not invited anyone yet",
@@ -864,7 +874,10 @@
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successApplyCoupon": "3 months free of charge applied",
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCouponn": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",

@@ -31,7 +31,8 @@
     "title": "Langue",
     "es": "Espagnol (ES)",
     "en": "Anglais (EN)",
-    "fr": "Français (FR)"
+    "fr": "Français (FR)",
+    "ita": "Italien (IT)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -242,6 +243,7 @@
           "invoices": {
             "head": "Factures",
             "billingDate": "Date de facturation",
+            "plan": "Plan",
             "empty": {
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
@@ -472,6 +474,7 @@
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
+      "total": "Total",
       "pending": "En attente",
       "accepted": "Accepté",
       "empty": "Vous n'avez encore invité personne",

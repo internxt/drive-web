@@ -12,6 +12,7 @@ import {
   Invoice,
   PaymentMethod,
   UserSubscription,
+  CouponAvailable,
 } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
@@ -80,6 +81,16 @@ const paymentService = {
   async getPrices(): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getPrices();
+  },
+
+  async getCoupon(): Promise<CouponAvailable> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getCoupon();
+  },
+
+  async applyCoupon(): Promise<CouponAvailable> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.applyCoupon();
   },
 
   async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {

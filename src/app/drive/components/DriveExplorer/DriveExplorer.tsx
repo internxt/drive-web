@@ -72,7 +72,6 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import BannerWrapper from 'app/banners/BannerWrapper';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
@@ -535,9 +534,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      {plan.subscription?.type === 'free' &&
-        !localStorageService.get('showLifetimeBanner') &&
-        localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) && <BannerWrapper />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
