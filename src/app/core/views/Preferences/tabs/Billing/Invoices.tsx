@@ -28,12 +28,6 @@ export default function Invoices({ className = '' }: { className?: string }): JS
     return invoices && i === invoices.length - 1;
   }
 
-  // function displayDate(unixSeconds: number) {
-  //   const date = new Date(unixSeconds * 1000);
-
-  //   return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(date);
-  // }
-
   function displayDate(unixSeconds: number) {
     const date = new Date(unixSeconds * 1000);
 
