@@ -83,14 +83,15 @@
     "of": "/",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search this folder",
+    "searchBar": "搜索此文件夹",
+
     "stage": {
       "development": "Development",
       "production": "Production"
     },
     "loading": {
-      "default": "Loading...",
-      "redirecting": "Redirecting..."
+      "default": "加载中...",
+      "redirecting": "重定向中..."
     },
     "renewalPeriod": {
       "monthly": "月度",
@@ -110,8 +111,8 @@
       "month": "元/月"
     },
     "billing": {
-      "billedEachPeriod": "{{price}} billed {{period}}",
-      "oneTimePayment": "One-time payment"
+      "billedEachPeriod": "{{price}} 已计费的 {{period}}",
+      "oneTimePayment": "一次性支付"
     },
     "files": "*文件",
     "file": "*文件",
@@ -126,14 +127,14 @@
       "military-grade": "军事级别的加密",
       "zero-knowledge": "零知识"
     },
-    "tryInternxt": "Try out Internxt",
+    "tryInternxt": "试用 Internxt",
     "topBar": {
-      "drive": "Go to Internxt Drive",
-      "downloadApp": "Download Desktop App",
+      "drive": "前往 Internxt Drive",
+      "downloadApp": "下载桌面应用程序",
       "logout": "登出",
       "login": "登录",
-      "createAccount": "Create Account",
-      "getStarted": "Get started"
+      "createAccount": "创建账户",
+      "getStarted": "开始吧"
     }
   },
   "shareItemPwdView": {
@@ -157,13 +158,13 @@
     "recents": {
       "head": "最近",
       "empty": {
-        "title": "No recent files available",
-        "description": "New uploads and recently opened files will appear here automatically",
-        "folderEmpty": "This folder is empty",
-        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
+        "title": "没有可用的最新文件",
+        "description": "新上传和最近打开的文件会自动出现在这里",
+        "folderEmpty": "这个文件夹是空的",
+        "folderEmptySubtitle": "拖放文件或选择要上传的单个文件",
         "uploadFiles": "上传文件",
-        "noResults": "There are no results for this search",
-        "dragNDrop": "Drag and drop here or click on upload button"
+        "noResults": "此搜索没有结果",
+        "dragNDrop": "拖放到此处或单击上传按钮"
       }
     },
     "photos": {
@@ -179,10 +180,10 @@
         "removePhoto": "删除照片",
         "updatePhoto": "上传图片",
         "dragNDrop": "选择或拖动一个图片",
-        "success": "Avatar has been successfully updated",
-        "error": "Something happened while uploading your avatar",
-        "removed": "Avatar successfully deleted",
-        "underLimitSize": "Please choose an image under 10MB of size"
+        "success": "头像已成功更新",
+        "error": "上传您的头像时出现问题",
+        "removed": "头像删除成功",
+        "underLimitSize": "请选择10MB以下的图片"
       },
       "popover": {
         "downloadApp": "桌面应用程序",
@@ -193,7 +194,7 @@
       "tabs": {
         "account": {
           "label": "帐户",
-          "title": "Personal",
+          "title": "个人的",
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
             "backups": "备份",
@@ -233,14 +234,14 @@
               "name": "名字",
               "lastname": "姓氏"
             },
-            "updateProfile": "Profile updated successfully",
-            "errorUpdatingProfile": "We could not update your profile"
+            "updateProfile": "个人资料文件更新成功",
+            "errorUpdatingProfile": "我们无法更新您的个人资料"
           },
           "deleteAccount": {
             "head": "删除账户",
             "description": "如果你删除你的帐户，你的数据将被永远删除。这一操作不能被撤销",
-            "isSubscribed": "Please, cancel your subscription first",
-            "confirmationEmail": "Confirmation email has been sent"
+            "isSubscribed": "请先取消订阅",
+            "confirmationEmail": "确认邮件已发送"
           }
         },
         "billing": {
@@ -249,22 +250,22 @@
           "subsRenew": "{{daysUntilRenewal}}天后续订",
           "cancelSubscriptionModal": {
             "title": "取消订阅",
-            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
-            "keepSubscription": "Keep subscription",
-            "continue": "Continue",
+            "description": "您即将取消您的 {{currentPlanName}} Internxt 计划。 通过取消您的计划，您将被降级为免费的 Internxt {{freePlanName}} 计划。 请确认您的选择以继续。",
+            "keepSubscription": "继续订阅",
+            "continue": "继续",
             "cancelSubscription": "取消订阅",
             "infoBox": {
-              "titleCurrent": "Current",
-              "titleNew": "New",
+              "titleCurrent": "当前的",
+              "titleNew": "新建",
               "year": "年度",
               "month": "元/月",
-              "free": "Free",
-              "reachedFreeLimit": "You are over {{freePlanName}}",
-              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+              "free": "免费的",
+              "reachedFreeLimit": "你超过了 {{freePlanName}}",
+              "reachedFreeLimitDescription": "由于您目前正在使用 {{currentUsage}}，您的 Internxt Drive 将停止同步您的文件，您将无法添加新文件"
             },
-            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "giveUsFeedback": "能否告诉我们您为什么要取消您的 {{currentPlanName}} Internxt 计划并降级为免费计划？",
             "feedback": {
-              "placeholder": "Give us some feedback"
+              "placeholder": "给我们一些反馈"
             }
           },
           "billed": "帐单 {{interval}} {{renewDate}}",
@@ -274,7 +275,7 @@
               "title": "您目前在免费计划中",
               "subtitle": "当你采用付费订阅计划时，信用卡信息将自动出现在这里。"
             },
-            "title": "Add new payment method"
+            "title": "添加新的付款方式"
           },
           "invoices": {
             "head": "发票",
@@ -284,34 +285,34 @@
               "title": "您目前在免费计划中",
               "subtitle": "已发行的发票在付款时将自动出现在这里。"
             },
-            "download": "Download invoice"
+            "download": "下载发票"
           }
         },
         "info": {
-          "title": "Personal",
-          "description": "Check your storage user and account details",
+          "title": "个人",
+          "description": "检查您的存储用户和帐户详细信息",
           "advice1": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "title": "可以编辑哪些数据？",
+            "description": "出于严格的安全原因并保护您在 Internxt 的数据，我们不允许修改用户账户的数据，例如电子邮件。"
           },
           "advice2": {
-            "title": "Security account",
-            "description": "Your files are encrypted before leaving your device, so only you can access your files, no tricks, no hidden things, just privacy, that’s Internxt."
+            "title": "安全账户",
+            "description": "您的文件在离开您的设备之前已加密，因此只有您可以访问您的文件，没有诡计，没有隐藏的东西，只有隐私，这就是 Internxt。"
           }
         },
         "plans": {
           "label": "计划",
           "title": "计划",
-          "description": "Find the different storage and solution options that Internxt offers",
+          "description": "查找 Internxt 提供的不同存储和解决方案选项",
           "changeWorkspace": {
-            "personal": "Change to Plans for Individuals",
-            "business": "Change to Plans for Business"
+            "personal": "更改到个人计划",
+            "business": "更改到商业计划"
           },
-          "viewAllFeatures": "View all features",
+          "viewAllFeatures": "查看所有功能",
           "card": {
-            "annually": "€{{amount}} billed annually",
-            "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "annually": "€{{amount}} 每年计费(欧元)",
+            "monthly": "每月(欧元) €{{amount}}",
+            "lifetime": "欧元€{{amount}}"
           },
           "features": {
             "title": "所有计划中包括的功能",
@@ -337,47 +338,47 @@
             }
           },
           "dialog": {
-            "title": "Change plan",
-            "subtitle1": "You are about to change your Internxt plan from ",
-            "subtitle2": " to ",
-            "subtitle3": ". Confirm your choice to proceed, please.",
+            "title": "更改计划",
+            "subtitle1": "您即将更改您的 Internxt 计划 ",
+            "subtitle2": " 至 ",
+            "subtitle3": ". 请确认您的选择以继续。",
             "plan": {
-              "current": "Current",
-              "new": "New",
+              "current": "当前的",
+              "new": "新建",
               "interval": "元/月"
             },
             "alert": {
-              "title": "You are over ",
-              "text1": "Because you are using ",
-              "text2": ", your Internxt Drive will stop syncing your files and you won’t be able to add new files"
+              "title": "你完了 ",
+              "text1": "因为你正在使用 ",
+              "text2": "，您的 Internxt Drive 将停止同步您的文件，您将无法添加新文件"
             },
             "message": {
-              "text": "You'll be charged now and for each payment period until further change."
+              "text": "在进一步更改之前，您现在和每个付款期都需要付费。"
             },
             "button": {
-              "back": "Keep current plan",
-              "continue": "Change plan"
+              "back": "保留当前计划",
+              "continue": "更改计划"
             }
           }
         },
         "password": {
           "title": "密码",
-          "description": "Change your password",
+          "description": "修改您的密码",
           "advice1": {
             "title": "修改密码",
-            "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
+            "description": "更改密码将使您退出所有设备。 再次登录需要输入您更改后的的密码。"
           },
           "advice2": {
-            "title": "What should you keep in mind so that your password is secure?",
+            "title": "为了确保密码安全，您应该牢记什么？",
             "description": ""
           },
           "advice3": {
-            "title": "New encryption key",
-            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! 此操作不能被撤销"
+            "title": "新加密密钥",
+            "description": "通过更改您的密码，您的所有文件都将使用您的旧密码解密，然后使用您的新密码重新加密，因此您不会失去对它们的访问权限！此操作不能被撤销"
           },
           "advice4": {
-            "title": "What data can be edited?",
-            "description": "For strict security reasons and to protect your data at Internxt we do not allow the data of a user account such as email to be modified."
+            "title": "可以编辑哪些数据？",
+            "description": "出于严格的安全原因并保护您在 Internxt 的数据，我们不允许修改用户账户的数据，例如电子邮件。"
           }
         },
         "security": {
@@ -398,7 +399,7 @@
           },
           "2FA": {
             "title": "双因素认证(2FA)",
-            "titleDisable": "Disable Two-Factor Authentication",
+            "titleDisable": "禁用双因素身份验证",
             "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
             "button": "激活 2FA",
             "enabled": "Enabled",
@@ -407,7 +408,7 @@
               "title": "两步验证",
               "stepsLabel": "第 {{current}}/{{total}}步",
               "button": "激活 2FA",
-              "2FALabelCode": "Two-Factor Authentication code",
+              "2FALabelCode": "双因素身份验证代码",
               "or": "OR",
               "steps": {
                 "download": {
@@ -427,8 +428,8 @@
                   "description": "两步认证代码"
                 },
                 "disable": {
-                  "title": "Disable Two-Factor Authentication",
-                  "description": "To disable Two-Factor Authentication, type the code generated by the app into the input below."
+                  "title": "禁用双因素身份验证",
+                  "description": "要禁用双因素身份验证，请在下面输入您的双因素认证应用程序生成的代码。"
                 }
               },
               "errors": {
@@ -439,10 +440,10 @@
           },
           "backupKey": {
             "title": "恢复密钥",
-            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
+            "description": "如果您忘记了密码，您可以使用唯一的备份密钥来恢复您的账户。 请永远不要与任何人分享此代码。",
             "button": "导出密码",
-            "success": "Backup key downloaded successfully",
-            "error": "We could not generate your backup key"
+            "success": "备份密钥下载成功",
+            "error": "我们无法生成您的备份密钥"
           },
           "faq": {
             "title": "你丢失了什么东西吗？",
@@ -480,14 +481,14 @@
       "label": "名称"
     },
     "renameModal": {
-      "title": "Item already exists",
-      "titleMultipleItems": "Multiple items already exist",
-      "description": "{{itemName}} already exists in this location. Do you want to replace it or you want to keep both?",
-      "multipleDescription": "More than one element already exists in this location. Do you want to replace them or you want to keep all",
-      "replaceItem": "Replace current item",
-      "keepBoth": "Keep both",
-      "upload": "Upload",
-      "move": "Move"
+      "title": "项目已经存在",
+      "titleMultipleItems": "多个项目已存在",
+      "description": "{{itemName}} 已存在于此位置。 你想替换它还是保留两者？",
+      "multipleDescription": "此位置已存在多个元素。 你想替换它们还是想保留所有",
+      "replaceItem": "替换当前项目",
+      "keepBoth": "保留两者",
+      "upload": "上传",
+      "move": "移动"
     },
     "removeSharedLinkModal": {
       "title": "删除链接",
@@ -525,14 +526,14 @@
       "buttons": {
         "cancel": "取消",
         "create": "创建链接",
-        "creating": "Creating link...",
+        "creating": "正在创建链接...",
         "copyLink": "复制链接"
       }
     },
     "friendsInvitedModal": {
       "title": "被邀请的朋友",
       "email": "电子邮件",
-      "total": "Total",
+      "total": "共计",
       "pending": "待处理",
       "accepted": "已接受",
       "empty": "你还没有邀请任何人",
@@ -560,7 +561,7 @@
     },
     "deleteBackupModal": {
       "title": "你确定吗？",
-      "subtitle": "Your backup will be deleted.",
+      "subtitle": "您的备份将被删除。",
       "primaryAction": "确定",
       "secondaryAction": "取消"
     },
@@ -621,9 +622,9 @@
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
   },
   "backups": {
-    "backups-from": "Backups from {{deviceName}}",
+    "backups-from": "来自 {{deviceName}} 的备份",
     "your-devices": "你的设备",
-    "back-to-devices": "Go back to devices",
+    "back-to-devices": "返回到设备",
     "empty": {
       "title": "你还没有备份",
       "subtitle": "在桌面应用程序中设置你的备份",
@@ -664,30 +665,30 @@
     },
     "item-menu": {
       "copy-link": "复制链接",
-      "link-settings": "Share settings",
+      "link-settings": "分享设置",
       "delete-link": "删除链接",
       "delete-links": "删除链接"
     },
     "link-settings": {
-      "share-settings": "Share settings",
+      "share-settings": "分享设置",
       "views": "访问量",
-      "options": "Options",
+      "options": "选项",
       "copy-link": "复制链接",
       "save": "保存",
-      "saving": "Saving",
-      "save-close": "Save and close",
-      "close": "Close"
+      "saving": "正在保存",
+      "save-close": "保存并关闭",
+      "close": "关闭"
     },
     "toast": {
-      "copy-to-clipboard": "Link copied to clipboard",
-      "link-updated": "Link settings updated",
+      "copy-to-clipboard": "链接已复制到剪贴板",
+      "link-updated": "链接设置已更新",
       "link-deleted": "链接已删除",
       "links-deleted": "链接已删除"
     }
   },
   "trash": {
     "trash": "垃圾箱",
-    "clearTrash": "Trash has been cleared",
+    "clearTrash": "回收站已清除",
     "list": {
       "name": "名称",
       "size": "大小",
@@ -698,8 +699,8 @@
       "subtitle": "被删除的文件和文件夹将会出现在这里"
     },
     "item-menu": {
-      "restore": "Restore",
-      "delete-permanently": "Delete permanently"
+      "restore": "恢复",
+      "delete-permanently": "永久删除"
     }
   },
   "tasks": {
@@ -709,138 +710,138 @@
     },
     "create-folder": {
       "status": {
-        "pending": "Pending to create folder",
-        "in-process": "Creating folder",
-        "success": "Folder created",
-        "error": "Error during folder creation",
-        "cancelled": "Folder creation cancelled"
+        "pending": "待创建文件夹",
+        "in-process": "正在创建文件夹",
+        "success": "文件夹已创建",
+        "error": "创建文件夹时出错",
+        "cancelled": "已取消创建文件夹"
       },
       "errors": {}
     },
     "upload-file": {
       "status": {
         "pending": "等待上传",
-        "encrypting": "Encrypting file",
+        "encrypting": "正在加密文件",
         "in-process": "正在上传文件 {{progress}}%",
         "success": "文件已上传",
-        "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "error": "上传时出错",
+        "cancelled": "上传已取消"
       },
       "errors": {}
     },
     "upload-folder": {
       "status": {
         "pending": "等待上传",
-        "encrypting": "Encrypting files",
-        "in-process": "正在上传文件 {{progress}}%",
+        "encrypting": "正在加密文件夹",
+        "in-process": "正在上传文件夹 {{progress}}%",
         "success": "文件夹已上传",
-        "error": "Error during upload",
-        "cancelled": "Upload cancelled"
+        "error": "上传时出错",
+        "cancelled": "上传已取消"
       },
       "errors": {}
     },
     "download-file": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting file",
+        "pending": "等待下载",
+        "decrypting": "正在解密文件",
         "in-process": "文件已下载 {{progress}}%",
         "success": "文件已下载",
-        "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
+        "error": "下载失败，点击↻重试",
+        "cancelled": "下载已取消"
       },
       "errors": {}
     },
     "download-photos": {
       "status": {
-        "pending": "Downloading {{progress}}%",
-        "success": "Downloaded",
-        "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "pending": "正在下载 {{progress}}%",
+        "success": "已下载",
+        "error": "下载时出错",
+        "cancelled": "下载已取消"
       },
       "errors": {}
     },
     "download-backup": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting backup",
-        "in-process": "{{progress}}% Downloading backup",
-        "success": "Backup downloaded",
-        "error": "Error during download",
-        "cancelled": "Download cancelled"
+        "pending": "等待下载",
+        "decrypting": "正在解密备份",
+        "in-process": "{{progress}}% 正在下载备份",
+        "success": "备份已下载",
+        "error": "下载时出错",
+        "cancelled": "下载已取消"
       },
       "errors": {}
     },
     "download-folder": {
       "status": {
-        "pending": "Pending to download",
-        "decrypting": "Decrypting files",
-        "in-process": "{{progress}}% Downloading folder",
-        "success": "Folder downloaded",
-        "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
+        "pending": "等待下载",
+        "decrypting": "正在解密文件",
+        "in-process": "{{progress}}% 正在下载文件夹",
+        "success": "文件夹已下载",
+        "error": "下载失败, 请点击 ↻  重试",
+        "cancelled": "下载已取消"
       },
       "errors": {}
     },
     "move-file": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving file",
-        "success": "File moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "等待移动",
+        "in-process": "正在移动文件",
+        "success": "文件已移动",
+        "error": "移动时出错",
+        "cancelled": "已取消移动"
       },
       "errors": {
-        "409": "A file with that name already exists in the destination folder"
+        "409": "目标文件夹中已存在同名文件"
       }
     },
     "move-folder": {
       "status": {
-        "pending": "Pending to move",
-        "in-process": "Moving folder",
-        "success": "Folder moved",
-        "error": "Error during movement",
-        "cancelled": "Cancelled movement"
+        "pending": "等待移动",
+        "in-process": "正在移动文件夹",
+        "success": "文件夹已移动",
+        "error": "移动时出错",
+        "cancelled": "已取消移动"
       },
       "errors": {
-        "409": "A folder with that name already exists in the destination folder"
+        "409": "目标文件夹中已存在同名文件夹"
       }
     },
     "rename-file": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming file",
-        "success": "File renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "等待重命名",
+        "in-process": "正在重命名文件",
+        "success": "文件已重命名",
+        "error": "重命名时出错",
+        "cancelled": "已取消重命名"
       },
       "errors": {}
     },
     "rename-folder": {
       "status": {
-        "pending": "Pending to rename",
-        "in-process": "Renaming folder",
-        "success": "Folder renamed",
-        "error": "Error during renaming",
-        "cancelled": "Cancelled renaming"
+        "pending": "等待重命名",
+        "in-process": "正在重命名文件夹",
+        "success": "文件夹已重命名",
+        "error": "重命名时出错",
+        "cancelled": "已取消重命名"
       },
       "errors": {}
     }
   },
   "success": {
     "passwordChanged": "密码已修改",
-    "teamInvitationSent": "Invitation email sent to {{email}}",
-    "referralInvitationSent": "Invitation email sent to {{email}}",
-    "deletedTeamMember": "The {{resource}} has been successfully deleted",
-    "accountDeactivationEmailSent": "Deactivation email sent!",
-    "claimEmailSent": "Claim email sent!",
-    "teamsSubscriptionRedeemed": "Your team is ready! Log in again to start using Teams",
-    "linkCopied": "Link copied!",
-    "twoFactorAuthActivated": "Your Two-Factor Authentication has been activated!",
-    "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
-    "joinedToTheTeam": "You have successfully joined to the team",
-    "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {{email}}",
-    "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
+    "teamInvitationSent": "邀请邮件已发送至 {{email}}",
+    "referralInvitationSent": "邀请邮件已发送至 {{email}}",
+    "deletedTeamMember": "{{resource}} 已成功删除",
+    "accountDeactivationEmailSent": "已发送停用邮件！",
+    "claimEmailSent": "索赔电子邮件已发送！",
+    "teamsSubscriptionRedeemed": "你的团队准备好了！ 重新登录以开始使用 Teams",
+    "linkCopied": "链接已复制！",
+    "twoFactorAuthActivated": "您的双因素身份验证已激活！",
+    "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
+    "joinedToTheTeam": "您已成功加入团队",
+    "done": "完成",
+    "inviteAFriend": "邀请已发送至 {{email}}",
+    "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
     "title": "链接设置",
@@ -860,15 +861,15 @@
   },
   "notificationMessages": {
     "copyLink": "复制链接到剪贴板",
-    "linkUpdated": "Link updated",
-    "itemsMovedToTrash": "{{item}} 已被移至垃圾箱",
-    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
-    "itemDeleted": "{{item}} deleted",
-    "itemsDeleted": "Files deleted",
-    "emailNotEmpty": "Email must not be empty",
+    "linkUpdated": "链接已更新",
+    "itemsMovedToTrash": "{{item}} 已被移至回收站",
+    "restoreItems": "{{itemsToRecover}} 已移动到 {{destination}}",
+    "itemDeleted": "{{item}} 已删除",
+    "itemsDeleted": "文件已删除",
+    "emailNotEmpty": "电子邮件不能为空",
     "verificationEmail": "验证邮件已发送",
-    "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "successCancelSubscription": "您的订阅已被取消",
+    "errorCancelSubscription": "取消订阅时出了点问题"
   },
   "actions": {
     "undo": "撤销",
@@ -880,15 +881,15 @@
     },
     "change": "更改",
     "download": "下载",
-    "downloading": "Downloading",
-    "downloaded": "Downloaded",
-    "view": "View",
-    "accessFile": "Access File",
+    "downloading": "正在下载",
+    "downloaded": "已下载",
+    "view": "视图",
+    "accessFile": "访问文件",
     "upgradeNow": "购买储存空间",
     "purchasePlan": "购买储存空间",
     "upgrade": "购买储存空间",
     "buyStorage": "购买储存空间",
-    "deleteAccount": "Permanently delete account",
+    "deleteAccount": "永久删除帐户",
     "changePassword": "修改密码",
     "buy": "Buy",
     "cancel": "取消",
@@ -896,29 +897,29 @@
     "sendInvitation": "发送邀请",
     "subscribe": "订阅",
     "moreInfo": "更多信息",
-    "dismiss": "Dismiss",
+    "dismiss": "解散",
     "save": "保存",
     "back": "返回",
     "edit": "编辑",
-    "submit": "Submit",
+    "submit": "提交",
     "access": "访问",
-    "previous": "Previous",
+    "previous": "以前的",
     "next": "下一步",
-    "disable": "Disable",
-    "move": "Move",
-    "moving": "Moving...",
-    "navigating": "Navigating...",
-    "restoreHere": "Restore here",
+    "disable": "禁用",
+    "move": "移动",
+    "moving": "正在移动...",
+    "navigating": "正在导航...",
+    "restoreHere": "在这里恢复",
     "rename": "重命名",
-    "restore": "Restore",
+    "restore": "恢复",
     "copyLink": "复制链接"
   },
   "drive": {
     "usage": "使用情况",
     "currentPlan": "目前的计划",
-    "loadingFile": "Loading preview",
-    "previewNoAvailable": "No preview available",
-    "pdfPage": "Page {{page}} of {{pages}}",
+    "loadingFile": "正在加载预览",
+    "previewNoAvailable": "预览不可用",
+    "pdfPage": "第 {{page}} 页，共 {{pages}} 页",
     "list": {
       "columns": {
         "type": "类型",
@@ -929,42 +930,42 @@
       }
     },
     "viewMode": {
-      "gridMode": "Grid view",
-      "listMode": "List view"
+      "gridMode": "网格视图",
+      "listMode": "列表视图"
     },
     "dropdown": {
-      "openPreview": "Open preview",
-      "getLink": "Get link",
+      "openPreview": "打开预览",
+      "getLink": "获取链接",
+      "moveToTrash": "移到回收站",
+      "restore": "恢复",
+      "deletePermanently": "永久删除",
+      "move": "移动",
       "rename": "重命名",
       "download": "下载",
-      "moveToTrash": "Move to trash",
       "copyLink": "复制链接",
       "linkSettings": "链接设置",
       "deleteLink": "删除链接",
-      "restore": "Restore",
-      "deletePermanently": "Delete permanently",
-      "move": "Move",
       "delete": "删除"
     },
     "deleteItems": {
-      "title": "Delete permanently?",
+      "title": "要永久删除吗？",
       "advice": "此操作不能被撤销",
       "accept": "删除",
       "progress": "删除..."
     },
     "clearTrash": {
-      "title": "Empty Drive Trash?",
-      "advice": "All items in the Drive Trash will be permanently deleted. 此操作不能被撤销",
-      "accept": "Empty Trash",
-      "progress": "Emptying Trash..."
+      "title": "要清空Drive回收站吗？",
+      "advice": "Drive 回收站中的所有项目将被永久删除。此操作不能被撤销",
+      "accept": "清空回收站",
+      "progress": "正在清空回收站..."
     },
     "uploadItems": {
-      "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
-      "close": "Close"
+      "title": "最大文件上传",
+      "advice": "每次上传最多 1000 个文件。",
+      "close": "关闭"
     },
-    "movingToTrash": "Moving items to trash",
-    "deletingItems": "Deleting items from trash"
+    "movingToTrash": "正在将项目移动到回收站",
+    "deletingItems": "正在从回收站中删除项目"
   },
   "appSumo": {
     "tiers": {
@@ -992,13 +993,13 @@
     "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
     "description": "传播这条消息，你每邀请一个朋友加入Internxt，你就能获得1GB。总共可获得{{N}}",
     "label": "邀请至",
-    "placeholder": "Enter friend email",
+    "placeholder": "输入好友的邮箱",
     "actions": {
       "sendInvitation": "发送邀请",
       "seeInvitations": "查看所有邀请"
     },
     "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
+      "dailyEmailLimit": "您已达到每天 10 次邀请的限制"
     }
   },
   "newsletter": {
@@ -1030,12 +1031,12 @@
   "tutorial": {
     "signUpTutorial": {
       "stepOne": {
-        "title": "Get the most out of Internxt Drive",
-        "description": "Download desktop app to sync and backup all your folders and files."
+        "title": "充分利用 Internxt Drive",
+        "description": "下载桌面应用程序以同步和备份您的所有文件夹和文件。"
       },
       "stepTwo": {
-        "title": "Let's get started...",
-        "description": "Click Upload button to upload your first file."
+        "title": "让我们开始吧...",
+        "description": "单击上传按钮上传您的第一个文件。"
       }
     }
   }
