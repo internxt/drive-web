@@ -255,7 +255,7 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
   // window.analytics.track(AnalyticsTrackNames.ShareLinkBucketIdUndefined, payload);
 }
 
-export async function trackCancelPayment() {
+export async function trackCancelPayment(priceId: string) {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
     const {
@@ -275,6 +275,7 @@ export async function trackCancelPayment() {
       sessionId: sessionId,
       email: customer_email,
       price: amount,
+      priceId: priceId,
     });
   } catch (err) {
     const castedError = errorService.castError(err);
@@ -284,7 +285,6 @@ export async function trackCancelPayment() {
 
 export async function trackPaymentConversion() {
   try {
-    // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
