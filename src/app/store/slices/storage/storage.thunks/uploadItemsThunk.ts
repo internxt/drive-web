@@ -125,7 +125,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     options.onSuccess?.();
 
-    dispatch(planThunks.fetchUsageThunk());
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
@@ -207,7 +209,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     await uploadFileWithManager(filesToUploadData);
 
     options.onSuccess?.();
-    dispatch(planThunks.fetchUsageThunk());
+
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
@@ -292,7 +297,9 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     options.onSuccess?.();
 
-    dispatch(planThunks.fetchUsageThunk());
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
@@ -368,7 +375,9 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     options.showNotifications = true;
     options.onSuccess?.();
 
-    dispatch(planThunks.fetchUsageThunk());
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
