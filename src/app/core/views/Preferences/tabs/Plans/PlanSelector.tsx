@@ -49,7 +49,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         const response = await paymentService.createCheckoutSession({
           price_id: priceId,
           success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: window.location.href,
+          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
           customer_email: user.email,
           mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
@@ -71,7 +71,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           const response = await paymentService.createCheckoutSession({
             price_id: priceId,
             success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
             customer_email: user.email,
             mode: 'payment',
           });

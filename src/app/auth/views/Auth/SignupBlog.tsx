@@ -1,4 +1,5 @@
 import { SignupComponent } from './AuthView';
+import InternxtDevices from '../../../../assets/images/banner/Internxt-secure-cloud-storage.webp';
 
 const textContent = {
   email: 'Email',
@@ -14,7 +15,7 @@ const textContent = {
 
 const SignupAuth = () => {
   return (
-    <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
+    <div className="flex h-52 w-full flex-col space-y-2 lg:items-start lg:pt-0">
       <SignupComponent
         buttonColor="bg-primary focus-visible:bg-primary-dark active:bg-primary-dark"
         textContent={textContent}
@@ -26,10 +27,27 @@ const SignupAuth = () => {
 
 export default function SignupBlog(): JSX.Element {
   return (
-    <div className="flex flex-col items-center justify-center py-3 px-5 lg:py-16 lg:px-40">
-      <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-y-0 lg:space-x-48">
-        <div className="flex w-full max-w-md flex-col justify-between space-y-3 lg:space-y-10">
-          <SignupAuth />
+    <div className="hidden flex-col items-center justify-center overflow-hidden py-3 xs:flex lg:py-10">
+      <div className="flex w-full flex-row bg-gradient-to-br from-blue-20 to-white">
+        <div className="mt-5 mb-10 ml-11 flex w-full max-w-xs flex-col items-start justify-center">
+          <p className="text-2xl font-semibold">
+            Keep those now clean files safe, <span className="text-primary">join Internxt for free</span>
+          </p>
+          <div className="flex w-72">
+            <SignupAuth />
+          </div>
+        </div>
+        <div className="-ml-32 flex items-center overflow-hidden">
+          <div className="relative left-56 top-4 flex flex-col overflow-hidden">
+            <img
+              src={InternxtDevices}
+              width={534}
+              height={340}
+              about="desktop, laptop and phone with Internxt app"
+              loading="eager"
+              alt="desktop, laptop and phone with Internxt app"
+            />
+          </div>
         </div>
       </div>
     </div>

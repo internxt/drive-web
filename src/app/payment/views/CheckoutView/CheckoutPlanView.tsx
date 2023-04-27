@@ -47,7 +47,7 @@ export default function CheckoutPlanView(): JSX.Element {
     const checkoutOptions: CheckoutOptions = {
       price_id: planId,
       success_url: `${window.location.origin}/checkout/success`,
-      cancel_url: 'https://drive.internxt.com/preferences?tab=plans',
+      cancel_url: `${window.location.origin}/checkout/cancel`,
       customer_email: user.email,
       mode: mode,
     };
