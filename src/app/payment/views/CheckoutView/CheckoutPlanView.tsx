@@ -10,11 +10,19 @@ import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
+interface CheckoutOptions {
+  price_id: string;
+  coupon_code?: string;
+  trial_days?: number;
+  success_url: string;
+  cancel_url: string;
+  customer_email: string;
+  mode: string | undefined;
+}
+
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-
-  console.log('CHECKOUT VISITED');
 
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
@@ -36,35 +44,24 @@ export default function CheckoutPlanView(): JSX.Element {
 
   async function checkout(planId: string, coupon?: string, mode?: string, freeTrials?: number) {
     let response;
+    const checkoutOptions: CheckoutOptions = {
+      price_id: planId,
+      success_url: `${window.location.origin}/checkout/success`,
+      cancel_url: `${window.location.origin}/checkout/cancel`,
+      customer_email: user.email,
+      mode: mode,
+    };
 
     if (subscription?.type !== 'subscription') {
       try {
-        coupon !== 'null' && freeTrials !== undefined
-          ? (response = await paymentService.createCheckoutSession({
-              price_id: planId,
-              coupon_code: coupon,
-              trial_days: freeTrials,
-              success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: `${window.location.origin}/checkout/cancel`,
-              customer_email: user.email,
-              mode: mode,
-            }))
-          : coupon !== 'null'
-          ? (response = await paymentService.createCheckoutSession({
-              price_id: planId,
-              coupon_code: coupon,
-              success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: `${window.location.origin}/checkout/cancel`,
-              customer_email: user.email,
-              mode: mode,
-            }))
-          : (response = await paymentService.createCheckoutSession({
-              price_id: planId,
-              success_url: `${window.location.origin}/checkout/success`,
-              cancel_url: `${window.location.origin}/checkout/cancel`,
-              customer_email: user.email,
-              mode: mode,
-            }));
+        if (coupon && freeTrials) {
+          checkoutOptions.coupon_code = coupon;
+          checkoutOptions.trial_days = freeTrials;
+        } else if (coupon !== 'null') {
+          checkoutOptions.coupon_code = coupon;
+        }
+
+        response = await paymentService.createCheckoutSession(checkoutOptions);
         localStorage.setItem('sessionId', response.sessionId);
 
         await paymentService.redirectToCheckout(response);
@@ -78,13 +75,10 @@ export default function CheckoutPlanView(): JSX.Element {
     } else {
       if (mode === 'payment') {
         try {
-          response = await paymentService.createCheckoutSession({
-            price_id: planId,
-            success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: `${window.location.origin}/checkout/cancel`,
-            customer_email: user.email,
-            mode: mode,
-          });
+          if (coupon) {
+            checkoutOptions.coupon_code = coupon;
+          }
+          response = await paymentService.createCheckoutSession(checkoutOptions);
           localStorage.setItem('sessionId', response.sessionId);
           await paymentService.redirectToCheckout(response).then(async (result) => {
             await paymentService.cancelSubscription();
