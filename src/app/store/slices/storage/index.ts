@@ -22,7 +22,7 @@ const initialState: StorageState = {
   isLoadingRecents: false,
   isLoadingDeleted: false,
   filters: filtersFactory(),
-  order: orderFactory('updatedAt', OrderDirection.Desc),
+  order: orderFactory('name', OrderDirection.Asc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
