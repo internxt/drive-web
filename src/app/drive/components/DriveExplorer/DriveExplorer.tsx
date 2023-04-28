@@ -154,7 +154,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   // PAGINATION STATES
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
-  const [paginatedItems, setPaginatedItems] = useState<DriveItemData[]>([]);
   const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
 
   // RIGHT CLICK MENU STATES
@@ -203,12 +202,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [successNotifications]);
 
   useEffect(() => {
-    if (paginatedItems.length !== items.length) {
-      setPaginatedItems(items);
-    }
-  }, [items]);
-
-  useEffect(() => {
     deviceService.redirectForMobile();
   }, []);
 
@@ -246,7 +239,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     dispatch(storageActions.resetTrash());
     setHasMoreItems(true);
     setHasMoreTrashFolders(true);
-    setPaginatedItems([]);
     setIsLoadingTrashItems(false);
   };
 
@@ -806,7 +798,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <div className="flex flex-grow flex-col justify-between overflow-hidden">
               <ViewModeComponent
                 folderId={currentFolderId}
-                items={paginatedItems}
+                items={items}
                 isLoading={isTrash ? isLoadingTrashItems : isLoading}
                 onEndOfScroll={fetchItems}
                 hasMoreItems={hasMoreItems}

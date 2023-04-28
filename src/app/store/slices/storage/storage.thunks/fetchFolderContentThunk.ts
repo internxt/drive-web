@@ -21,7 +21,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const foldersOffset = storageState.levelsFoldersLength[folderId];
     const filesOffset = storageState.levelsFilesLength[folderId];
 
-    dispatch(storageActions.resetOrder());
+    if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
 
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
     let itemsPromise;
