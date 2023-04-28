@@ -7,6 +7,7 @@ import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { t } from 'i18next';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -40,7 +41,7 @@ class DriveView extends Component<DriveViewProps> {
 
       items.push({
         id: firstPath.id,
-        label: 'Drive',
+        label: t('sideNav.drive'),
         icon: null, //<UilHdd className="w-4 h-4 mr-1" />
         active: true,
         isFirstPath: true,

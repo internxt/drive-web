@@ -7,6 +7,7 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import Section from '../../components/Section';
+import dateService from '../../../../../core/services/date.service';
 
 export default function Invoices({ className = '' }: { className?: string }): JSX.Element {
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
@@ -30,7 +31,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
   function displayDate(unixSeconds: number) {
     const date = new Date(unixSeconds * 1000);
 
-    return new Intl.DateTimeFormat(undefined, { dateStyle: 'full' }).format(date);
+    return dateService.format(date, 'dddd, DD MMMM YYYY');
   }
 
   const body =
