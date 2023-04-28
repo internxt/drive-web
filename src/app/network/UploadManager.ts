@@ -144,7 +144,7 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            if (uploadAttempts <= MAX_UPLOAD_ATTEMPS) {
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPS) {
               upload();
             } else {
               if (task?.status !== TaskStatus.Cancelled) {
