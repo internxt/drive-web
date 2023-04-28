@@ -177,6 +177,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     props.onHoverListItems?.(false);
   }
 
+  const skinSkeleton = [
+    <div className="flex flex-row items-center space-x-4">
+      <div className="h-8 w-8 rounded-md bg-gray-5" />
+    </div>,
+    <div className="h-4 w-64 rounded bg-gray-5" />,
+    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
+    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
+  ];
+
   return (
     <div className="flex h-full flex-grow flex-col">
       <div className="h-full overflow-y-auto">
@@ -184,7 +193,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           header={[
             {
               label: translate('drive.list.columns.type'),
-              width: 'flex w-1/12 cursor-pointer items-center px-3',
+              width: 'flex w-1/12 cursor-pointer items-center px-6',
               name: 'type',
               orderable: true,
               defaultDirection: 'ASC',
@@ -216,7 +225,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           itemComposition={[(item) => <DriveExplorerListItem item={item} isTrash={props.isTrash} />]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
-          skinSkeleton={loadingSkeleton()}
+          skinSkeleton={skinSkeleton}
           emptyState={<></>}
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
