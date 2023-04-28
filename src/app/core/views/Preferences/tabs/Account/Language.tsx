@@ -16,7 +16,7 @@ const currentLang = {
   es: 'Español (ES)',
   fr: 'Français (FR)',
   en: 'English (EN)',
-  ita: 'Italiano (IT)',
+  it: 'Italiano (IT)',
   cn: '中国人',
 };
 
