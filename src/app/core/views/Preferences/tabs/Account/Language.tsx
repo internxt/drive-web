@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode, useEffect } from 'react';
-import i18next, { DefaultTFuncReturn } from 'i18next';
+import i18next, { DefaultTFuncReturn, t } from 'i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
 import { CaretDown } from 'phosphor-react';
@@ -12,23 +12,13 @@ import it from 'dayjs/locale/it';
 import dayjs from 'dayjs';
 import cn from 'dayjs/locale/zh-cn';
 
-const currentLang = {
-  es: 'Español (ES)',
-  fr: 'Français (FR)',
-  en: 'English (EN)',
-  it: 'Italiano (IT)',
-  cn: '中国人',
-};
-
 const localStorageLanguage = localStorageService.get('language');
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
   const [lang, setLang] = React.useState<string>();
-  const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>();
 
   function changeLang(lang: string = localStorageLanguage || i18next.language) {
-    setCurrentLangText(currentLang[lang]);
     setLang(lang);
   }
 
@@ -93,7 +83,7 @@ export default function Language(): JSX.Element {
         <LangDropdown
           title={
             <div className="flex w-full flex-row justify-between">
-              <p>{currentLangText}</p>
+              <p>{translate(`lang.${lang}`)}</p>
               <CaretDown size={20} />
             </div>
           }
@@ -102,7 +92,6 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang('en');
                 i18next.changeLanguage('en');
-                setCurrentLangText(translate('lang.en') as string);
                 dayjs.locale('en');
               }}
             >
@@ -112,7 +101,6 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang('es');
                 i18next.changeLanguage('es');
-                setCurrentLangText(translate('lang.es') as string);
                 dayjs.locale(es);
               }}
             >
@@ -122,7 +110,6 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang('fr');
                 i18next.changeLanguage('fr');
-                setCurrentLangText(translate('lang.fr') as string);
                 dayjs.locale(fr);
               }}
             >
@@ -132,17 +119,15 @@ export default function Language(): JSX.Element {
               onClick={() => {
                 setLang('it');
                 i18next.changeLanguage('it');
-                setCurrentLangText(translate('lang.it') as string);
                 dayjs.locale(it);
               }}
             >
-              <p>{translate('lang.ita')}</p>
+              <p>{translate('lang.it')}</p>
             </MenuItem>,
             <MenuItem
               onClick={() => {
                 setLang('cn');
                 i18next.changeLanguage('cn');
-                setCurrentLangText(translate('lang.cn') as string);
                 dayjs.locale(cn);
               }}
             >
