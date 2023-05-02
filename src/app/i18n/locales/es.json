@@ -29,11 +29,11 @@
   },
   "lang": {
     "title": "Idioma",
-    "es": "Español (ES)",
-    "en": "Inglés (EN)",
-    "fr": "Francés (FR)",
-    "ita": "Italiano (IT)",
-    "cn": "Chino (CN)"
+    "en": "English (Inglés)",
+    "es": "Español (Español)",
+    "fr": "Français (Francés)",
+    "it": "Italiano (Italiano)",
+    "cn": "中国人 (Chino)"
   },
   "auth": {
     "email": "Correo electrónico",

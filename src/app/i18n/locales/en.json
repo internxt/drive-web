@@ -46,11 +46,11 @@
   },
   "lang": {
     "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)",
-    "ita": "Italian (IT)",
-    "cn": "Chinese (CN)"
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "中国人 (Chinese)"
   },
   "auth": {
     "email": "Email",
