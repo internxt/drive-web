@@ -250,7 +250,7 @@ function Price({
         </p>
       ) : (
         <p className=" text-gray-50">{translate('views.account.tabs.plans.card.oneTimePayment')}</p>
-      )}{' '}
+      )}
       <Button
         loading={loading}
         onClick={onClick}
