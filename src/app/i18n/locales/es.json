@@ -300,7 +300,8 @@
           "card": {
             "annually": "{{amount}}€ facturado al año",
             "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€"
+            "lifetime": "{{amount}}€",
+            "oneTimePayment": "Pago único"
           },
           "features": {
             "title": "Funciones incluidas en todos los planes",
