@@ -164,7 +164,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
               onPlanClick={onPlanClick}
-              priceIdSelected={priceIdSelected}
+              priceID={price.id}
             />
           ))}
         </div>
@@ -202,7 +202,7 @@ function Price({
   disabled,
   loading,
   onPlanClick,
-  priceIdSelected,
+  priceID,
 }: DisplayPrice & {
   button: 'change' | 'current' | 'upgrade';
   onClick?: () => void;
@@ -210,7 +210,7 @@ function Price({
   disabled: boolean;
   loading: boolean;
   onPlanClick: (value: string) => void;
-  priceIdSelected: string;
+  priceID: string;
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
@@ -260,7 +260,7 @@ function Price({
       {plan.subscription?.type === 'free' ? (
         <Button
           loading={loading}
-          onClick={() => onPlanClick(priceIdSelected)}
+          onClick={() => onPlanClick(priceID)}
           disabled={button === 'current' || disabled}
           variant="primary"
           className="mt-5 w-full"
