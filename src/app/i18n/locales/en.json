@@ -318,7 +318,8 @@
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "One-time payment"
           },
           "features": {
             "title": "Features included in all plans",

@@ -277,7 +277,8 @@
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Paiement unique"
           },
           "features": {
             "title": "Caractéristiques incluses dans tous les plans :",

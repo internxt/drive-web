@@ -242,12 +242,14 @@ function Price({
               amount: displayAmount(amountMonthly),
             })}
       </p>
-      {interval !== 'lifetime' && (
+      {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
         </p>
+      ) : (
+        <p className=" text-gray-50">{translate('views.account.tabs.plans.card.oneTimePayment')}</p>
       )}
       <Button
         loading={loading}
