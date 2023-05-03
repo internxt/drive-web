@@ -402,6 +402,7 @@
             "titleDisable": "禁用双因素身份验证",
             "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
             "button": "激活 2FA",
+            "disable": "禁用 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {

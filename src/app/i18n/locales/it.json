@@ -400,6 +400,7 @@
             "titleDisable": "Disattivare l'autenticazione a due fattori",
             "description": "L'autenticazione a due fattori fornisce un maggiore livello di sicurezza, richiedendo un’ulteriore verifica al momento dell'accesso. Oltre alla tua password, avrai bisogno di inserire un codice usa-e-getta generato al momento.",
             "button": "Attiva la 2FA",
+            "disable": "Disabilitare 2FA",
             "enabled": "Abilitato",
             "disabled": "Disabilitato",
             "modal": {
