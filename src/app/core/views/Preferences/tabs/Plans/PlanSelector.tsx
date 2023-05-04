@@ -163,6 +163,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
+              onPlanClick={onPlanClick}
+              priceID={price.id}
             />
           ))}
         </div>
@@ -199,16 +201,21 @@ function Price({
   onClick,
   disabled,
   loading,
+  onPlanClick,
+  priceID,
 }: DisplayPrice & {
   button: 'change' | 'current' | 'upgrade';
   onClick?: () => void;
   className?: string;
   disabled: boolean;
   loading: boolean;
+  onPlanClick: (value: string) => void;
+  priceID: string;
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
   const { translate } = useTranslationContext();
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   if (interval === 'month') {
     amountMonthly = amount;
@@ -251,15 +258,28 @@ function Price({
       ) : (
         <p className=" text-gray-50">{translate('views.account.tabs.plans.card.oneTimePayment')}</p>
       )}
-      <Button
-        loading={loading}
-        onClick={onClick}
-        disabled={button === 'current' || disabled}
-        variant="primary"
-        className="mt-5 w-full"
-      >
-        {displayButtonText}
-      </Button>
+
+      {plan.subscription?.type === 'free' ? (
+        <Button
+          loading={loading}
+          onClick={() => onPlanClick(priceID)}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      ) : (
+        <Button
+          loading={loading}
+          onClick={onClick}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      )}
     </div>
   );
 }
