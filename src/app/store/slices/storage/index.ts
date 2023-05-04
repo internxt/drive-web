@@ -44,7 +44,8 @@ const initialState: StorageState = {
 const removeDuplicates = (list: DriveItemData[]) => {
   const hash = {};
   return list.filter((obj) => {
-    const key = obj.type + obj.id;
+    const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;
+
     if (hash[key]) {
       return false;
     }
