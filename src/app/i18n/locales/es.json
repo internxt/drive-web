@@ -29,11 +29,11 @@
   },
   "lang": {
     "title": "Idioma",
-    "es": "Español (ES)",
-    "en": "Inglés (EN)",
-    "fr": "Francés (FR)",
-    "ita": "Italiano (IT)",
-    "cn": "Chino (CN)"
+    "en": "English (Inglés)",
+    "es": "Español (Español)",
+    "fr": "Français (Francés)",
+    "it": "Italiano (Italiano)",
+    "cn": "简体中文 (Chino)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -300,7 +300,8 @@
           "card": {
             "annually": "{{amount}}€ facturado al año",
             "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€"
+            "lifetime": "{{amount}}€",
+            "oneTimePayment": "Pago único"
           },
           "features": {
             "title": "Funciones incluidas en todos los planes",

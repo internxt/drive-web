@@ -11,6 +11,10 @@ export interface StorageState {
   loadingFolders: Record<number, boolean>;
   isDeletingItems: boolean;
   levels: Record<number, DriveItemData[]>;
+  levelsFoldersLength: Record<number, number>;
+  levelsFilesLength: Record<number, number>;
+  hasMoreDriveFolders: boolean;
+  hasMoreDriveFiles: boolean;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   isLoadingDeleted: boolean;

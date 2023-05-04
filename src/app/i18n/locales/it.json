@@ -46,10 +46,11 @@
   },
   "lang": {
     "title": "Lingua",
-    "es": "Spagnolo (ES)",
-    "en": "Inglese (EN)",
-    "fr": "Francese (FR)",
-    "ita": "Italiano (IT)"
+    "en": "English (Inglese)",
+    "es": "Español (Spagnolo)",
+    "fr": "Français (Francese)",
+    "it": "Italiano (Italiano)",
+    "cn": "简体中文 (Cinese)"
   },
   "auth": {
     "email": "Email",
@@ -310,7 +311,8 @@
           "card": {
             "annually": "€{{amount}} fatturato annualmente",
             "monthly": "€{{amount}} al mese",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Pagamento unico"
           },
           "features": {
             "title": "Funzionalità incluse in tutti i piani:",
@@ -633,14 +635,14 @@
       "columns": {
         "name": "Nome",
         "last-update": "Ultima modifica",
-        "size": "Dimenisone"
+        "size": "Dimensione"
       }
     },
     "backups-list": {
       "columns": {
         "name": "Nome",
         "last-update": "Ultima modifica",
-        "size": "Dimenisone",
+        "size": "Dimensione",
         "actions": "Azioni"
       }
     },
@@ -656,7 +658,7 @@
       "link-content": "Contenuto del link",
       "shared": "Condivisioni",
       "created": "Creato",
-      "size": "Dimenisone"
+      "size": "Dimensione"
     },
     "empty-state": {
       "title": "Niente di condiviso, per ora",
@@ -690,7 +692,7 @@
     "clearTrash": "La spazzatura è stata eliminata",
     "list": {
       "name": "Nome",
-      "size": "Dimenisone",
+      "size": "Dimensione",
       "moved-to-trash": "File inviato al cestino"
     },
     "empty-state": {
@@ -924,7 +926,7 @@
         "type": "Tipo",
         "name": "Nome",
         "modified": "Ultima modifica",
-        "size": "Dimenisone",
+        "size": "Dimensione",
         "actions": "Azioni"
       }
     },

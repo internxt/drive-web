@@ -30,8 +30,8 @@ export default function SignupBlog(): JSX.Element {
     <div className="hidden flex-col items-center justify-center overflow-hidden py-3 xs:flex lg:py-10">
       <div className="flex w-full flex-row bg-gradient-to-br from-blue-20 to-white">
         <div className="mt-5 mb-10 ml-11 flex w-full max-w-xs flex-col items-start justify-center">
-          <p className="text-2xl font-semibold">
-            Keep those now clean files safe, <span className="text-primary">join Internxt for free</span>
+          <p className="text-3xl font-semibold">
+            Make privacy a priority and join<span className="text-primary"> Internxt </span>today
           </p>
           <div className="flex w-72">
             <SignupAuth />

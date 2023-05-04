@@ -10,6 +10,48 @@ import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
 
+const DEFAULT_LIMIT = 50;
+
+export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
+  'storage/fetchFolderContent',
+  async (folderId, { getState, dispatch }) => {
+    const storageState = getState().storage;
+    const hasMoreDriveFolders = storageState.hasMoreDriveFolders;
+    const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
+    const foldersOffset = storageState.levelsFoldersLength[folderId];
+    const filesOffset = storageState.levelsFilesLength[folderId];
+
+    if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
+
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    let itemsPromise;
+
+    if (hasMoreDriveFolders) {
+      [itemsPromise] = await storageClient.getFolderFolders(folderId, foldersOffset);
+    } else if (hasMoreDriveFiles) {
+      [itemsPromise] = await storageClient.getFolderFiles(folderId, filesOffset);
+    }
+
+    const items = await itemsPromise;
+
+    const parsedItems = items.result.map(
+      (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
+    );
+    const itemslength = items.result.length;
+    const areLastItems = itemslength < DEFAULT_LIMIT;
+
+    dispatch(storageActions.addItems({ folderId, items: parsedItems }));
+
+    if (hasMoreDriveFolders) {
+      dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
+      dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
+    } else {
+      dispatch(storageActions.setHasMoreDriveFiles(!areLastItems));
+      dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
+    }
+  },
+);
+
 export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId, { dispatch }) => {
@@ -46,13 +88,13 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
 
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(fetchFolderContentThunk.pending, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.pending, (state, action) => {
       state.loadingFolders[action.meta.arg] = true;
     })
-    .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
     })
-    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
       notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });

@@ -29,11 +29,11 @@
   },
   "lang": {
     "title": "Langue",
-    "es": "Espagnol (ES)",
-    "en": "Anglais (EN)",
-    "fr": "Français (FR)",
-    "ita": "Italien (IT)",
-    "cn": "Chinois (CN)"
+    "en": "English (Anglais)",
+    "es": "Español (Espagnol)",
+    "fr": "Français (Français)",
+    "it": "Italiano (Italien)",
+    "cn": "简体中文 (Chinois)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -277,7 +277,8 @@
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Paiement unique"
           },
           "features": {
             "title": "Caractéristiques incluses dans tous les plans :",

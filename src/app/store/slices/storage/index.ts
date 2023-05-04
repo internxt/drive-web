@@ -14,11 +14,15 @@ const initialState: StorageState = {
   loadingFolders: {},
   isDeletingItems: false,
   levels: {},
+  levelsFoldersLength: {},
+  levelsFilesLength: {},
+  hasMoreDriveFolders: true,
+  hasMoreDriveFiles: true,
   recents: [],
   isLoadingRecents: false,
   isLoadingDeleted: false,
   filters: filtersFactory(),
-  order: orderFactory('updatedAt', OrderDirection.Desc),
+  order: orderFactory('name', OrderDirection.Asc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
@@ -37,6 +41,19 @@ const initialState: StorageState = {
   folderPathDialog: [],
 };
 
+const removeDuplicates = (list: DriveItemData[]) => {
+  const hash = {};
+  return list.filter((obj) => {
+    const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;
+
+    if (hash[key]) {
+      return false;
+    }
+    hash[key] = true;
+    return true;
+  });
+};
+
 export const storageSlice = createSlice({
   name: 'storage',
   initialState,
@@ -53,6 +70,46 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
     },
+    addItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+      const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);
+      const removedDuplicates = removeDuplicates(newFolderContent);
+      state.levels[action.payload.folderId] = removedDuplicates;
+    },
+    setFolderFoldersLength: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+    ) => {
+      state.levelsFoldersLength[action.payload.folderId] = action.payload.foldersLength;
+    },
+    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+      state.levelsFilesLength[action.payload.folderId] = action.payload.filesLength;
+    },
+    addFolderFoldersLength: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+    ) => {
+      const foldersLength = state.levelsFoldersLength[action.payload.folderId] ?? 0;
+      state.levelsFoldersLength[action.payload.folderId] = foldersLength + action.payload.foldersLength;
+    },
+    addFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+      const filesLength = state.levelsFilesLength[action.payload.folderId] ?? 0;
+      state.levelsFilesLength[action.payload.folderId] = filesLength + action.payload.filesLength;
+    },
+    resetLevelsFoldersLength: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
+      state.levelsFoldersLength[action.payload.folderId] = 0;
+      state.levelsFilesLength[action.payload.folderId] = 0;
+      state.levels[action.payload.folderId] = [];
+    },
+    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreDriveFolders = action.payload;
+    },
+    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreDriveFiles = action.payload;
+    },
+    resetDrivePagination: (state: StorageState) => {
+      state.hasMoreDriveFiles = true;
+      state.hasMoreDriveFolders = true;
+    },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
     },
@@ -60,7 +117,9 @@ export const storageSlice = createSlice({
       state.itemsOnTrash = action.payload;
     },
     addItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.itemsOnTrash = state.itemsOnTrash.concat(action.payload);
+      const trashItems = state.itemsOnTrash.concat(action.payload);
+      const trashItemsWithoutDuplicates = removeDuplicates(trashItems);
+      state.itemsOnTrash = trashItemsWithoutDuplicates;
     },
     setFoldersOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
       state.folderOnTrashLength = action.payload;

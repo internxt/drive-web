@@ -59,6 +59,13 @@ export class SdkFactory {
     return Storage.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createNewStorageClient(): Storage {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Storage.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createShareClient(): Share {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();

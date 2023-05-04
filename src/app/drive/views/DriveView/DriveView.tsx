@@ -25,11 +25,15 @@ class DriveView extends Component<DriveViewProps> {
     this.fetchItems();
   }
 
+  componentWillUnmount(): void {
+    const { dispatch } = this.props;
+    dispatch(storageActions.resetDrivePagination());
+  }
+
   fetchItems = (): void => {
-    const { dispatch, currentFolderId } = this.props;
+    const { dispatch } = this.props;
 
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
@@ -68,7 +72,6 @@ class DriveView extends Component<DriveViewProps> {
   }
 }
 
-// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
 const sortFoldersFirst = (items: DriveItemData[]) =>
   items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 

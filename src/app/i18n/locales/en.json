@@ -46,11 +46,11 @@
   },
   "lang": {
     "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)",
-    "ita": "Italian (IT)",
-    "cn": "Chinese (CN)"
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "简体中文 (Chinese)"
   },
   "auth": {
     "email": "Email",
@@ -318,7 +318,8 @@
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "One-time payment"
           },
           "features": {
             "title": "Features included in all plans",
