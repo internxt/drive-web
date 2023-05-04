@@ -12,6 +12,7 @@ import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
+import { planThunks } from '../../plan';
 
 export interface IRoot {
   name: string;
@@ -287,6 +288,10 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       });
 
       options.onSuccess?.();
+
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
