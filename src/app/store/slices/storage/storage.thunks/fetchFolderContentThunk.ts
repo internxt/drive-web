@@ -88,13 +88,13 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
 
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(fetchPaginatedFolderContentThunk.pending, (state, action) => {
+    .addCase(fetchFolderContentThunk.pending, (state, action) => {
       state.loadingFolders[action.meta.arg] = true;
     })
-    .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
+    .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
     })
-    .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
+    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
       notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });

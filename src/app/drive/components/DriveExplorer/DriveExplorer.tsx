@@ -72,8 +72,9 @@ import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-
 import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 
+const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -129,13 +130,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onItemsMoved,
     folderOnTrashLength,
     filesOnTrashLength,
-    hasMoreFolders,
-    hasMoreFiles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -206,21 +204,17 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
-      fetchItems();
+    const isTrashAndNotHasItems = isTrash;
+    if (isTrashAndNotHasItems) {
+      getMoreTrashFolders();
     }
-  }, [hasMoreFolders, hasMoreTrashFolders]);
+  }, []);
 
   useEffect(() => {
-    if (!isTrash && !hasMoreFiles) {
-      setHasMoreItems(false);
+    if (isTrash && !hasMoreTrashFolders) {
+      getMoreTrashItems();
     }
-  }, [hasMoreFiles]);
-
-  useEffect(() => {
-    resetPaginationState();
-    fetchItems();
-  }, [currentFolderId]);
+  }, [hasMoreTrashFolders]);
 
   useEffect(() => {
     if (
@@ -241,9 +235,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
   };
-
-  const fetchItems = () =>
-    isTrash ? getMoreTrashItems() : dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
 
   const passToNextStep = () => {
     setCurrentTutorialStep(currentTutorialStep + 1);
@@ -354,6 +345,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       dispatch(uiActions.setIsShareItemDialogOpen(true));
     }
   };
+
+  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
+
+  useEffect(() => {
+    setHasMoreItems(true);
+    setFakePaginationLimit(PAGINATION_LIMIT);
+  }, [currentFolderId]);
+
+  // Fake backend pagination - change when pagination in backend has been implemented
+  const getMoreItems = () => {
+    const existsMoreItems = items.length > fakePaginationLimit;
+
+    setHasMoreItems(existsMoreItems);
+    if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
+  };
+
+  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
+  const itemsList = getLimitedItems();
 
   const onSelectedOneItemRename = (e): void => {
     e.stopPropagation();
@@ -511,6 +520,52 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       </div>
     </div>
   );
+
+  const skinSkeleton = [
+    <div className="flex flex-row items-center space-x-4">
+      <div className="h-8 w-8 rounded-md bg-gray-5" />
+    </div>,
+    <div className="h-4 w-64 rounded bg-gray-5" />,
+    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
+    <div className="ml-4 h-4 w-20 rounded bg-gray-5" />,
+  ];
+
+  const loader = new Array(25).fill(0).map((col, i) => (
+    <SkinSkeletonItem
+      key={`skinSkeletonRow${i}`}
+      skinSkeleton={skinSkeleton}
+      columns={[
+        {
+          label: translate('drive.list.columns.type'),
+          width: 'flex w-1/12 cursor-pointer items-center px-6',
+          name: 'type',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+        {
+          label: translate('drive.list.columns.name'),
+          width: 'flex flex-grow cursor-pointer items-center pl-6',
+          name: 'name',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+        {
+          label: translate('drive.list.columns.modified'),
+          width: 'hidden w-3/12 lg:flex pl-4',
+          name: 'updatedAt',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+        {
+          label: translate('drive.list.columns.size'),
+          width: 'flex w-1/12 cursor-pointer items-center',
+          name: 'size',
+          orderable: true,
+          defaultDirection: 'ASC',
+        },
+      ].map((column) => column.width)}
+    />
+  ));
 
   const driveExplorer = (
     <div
@@ -795,18 +850,20 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           </div>
 
           <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
-            <div className="flex flex-grow flex-col justify-between overflow-hidden">
-              <ViewModeComponent
-                folderId={currentFolderId}
-                items={items}
-                isLoading={isTrash ? isLoadingTrashItems : isLoading}
-                onEndOfScroll={fetchItems}
-                hasMoreItems={hasMoreItems}
-                isTrash={isTrash}
-                onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
-              />
-            </div>
-
+            {hasItems && (
+              <div className="flex flex-grow flex-col justify-between overflow-hidden">
+                <ViewModeComponent
+                  folderId={currentFolderId}
+                  items={isTrash ? items : itemsList}
+                  isLoading={isLoading}
+                  onEndOfScroll={isTrash ? getMoreTrashItems : getMoreItems}
+                  hasMoreItems={hasMoreItems}
+                  isTrash={isTrash}
+                  onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
+                />
+              </div>
+            )}
+            {!hasItems && isLoading && loader}
             {
               /* EMPTY FOLDER */
               !hasItems &&
