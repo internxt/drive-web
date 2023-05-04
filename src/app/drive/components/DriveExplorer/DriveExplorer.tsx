@@ -207,11 +207,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     const isTrashAndNotHasItems = isTrash;
     if (isTrashAndNotHasItems) {
-      try {
-        getMoreTrashFolders().catch((error) => errorService.reportError(error));
-      } catch (error) {
-        errorService.reportError(error);
-      }
+      getMoreTrashFolders().catch((error) => errorService.reportError(error));
     }
   }, []);
 
