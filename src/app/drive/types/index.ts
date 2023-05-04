@@ -23,6 +23,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  uuid?: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -51,6 +52,7 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
+  uuid?: string;
 }
 
 interface Thumbnail {
