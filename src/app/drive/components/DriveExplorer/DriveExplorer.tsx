@@ -1,5 +1,5 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Trash,
   DownloadSimple,
@@ -41,7 +41,7 @@ import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDi
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors, PlanState } from '../../../store/slices/plan';
+import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
@@ -73,6 +73,7 @@ import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps'
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
 import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
+import errorService from '../../../core/services/error.service';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -206,13 +207,17 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     const isTrashAndNotHasItems = isTrash;
     if (isTrashAndNotHasItems) {
-      getMoreTrashFolders();
+      try {
+        getMoreTrashFolders().catch((error) => errorService.reportError(error));
+      } catch (error) {
+        errorService.reportError(error);
+      }
     }
   }, []);
 
   useEffect(() => {
     if (isTrash && !hasMoreTrashFolders) {
-      getMoreTrashItems();
+      getMoreTrashItems().catch((error) => errorService.reportError(error));
     }
   }, [hasMoreTrashFolders]);
 
