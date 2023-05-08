@@ -33,7 +33,7 @@
     "es": "Español (Espagnol)",
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
-    "cn": "中国人 (Chinois)"
+    "cn": "简体中文 (Chinois)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -345,6 +345,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "L'authentification à deux facteurs offre une sécurité supplémentaire en exigeant une vérification pour la connexion. En plus de votre mot de passe, vous aurez besoin d'un code généré.",
             "button": "Activer 2FA",
+            "disable": "Désactiver 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {

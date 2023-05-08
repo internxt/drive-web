@@ -33,7 +33,7 @@
     "es": "Español (Español)",
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
-    "cn": "中国人 (Chino)"
+    "cn": "简体中文 (Chino)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -391,6 +391,7 @@
             "titleDisable": "Desactivar autenticación en dos pasos",
             "description": "La autenticación en dos pasos proporciona una capa de seguridad adicional, ya que requiere verificación al iniciar sesión. Además de tu contraseña, necesitarás un código generado.",
             "button": "Activar",
+            "disable": "Deshabilitar 2FA",
             "enabled": "Activado",
             "disabled": "Desactivado",
             "modal": {

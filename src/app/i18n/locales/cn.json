@@ -50,7 +50,7 @@
     "es": "Español (西班牙语)",
     "fr": "Français (法语)",
     "it": "Italiano (意大利语)",
-    "cn": "中国人 (中国人)"
+    "cn": "简体中文 (简体中文)"
   },
   "auth": {
     "email": "电子邮件",
@@ -160,7 +160,7 @@
       "empty": {
         "title": "没有可用的最新文件",
         "description": "新上传和最近打开的文件会自动出现在这里",
-        "folderEmpty": "这个文件夹是空的",
+        "folderEmpty": "此文件夹为空",
         "folderEmptySubtitle": "拖放文件或选择要上传的单个文件",
         "uploadFiles": "上传文件",
         "noResults": "此搜索没有结果",
@@ -403,7 +403,8 @@
             "titleDisable": "禁用双因素身份验证",
             "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
             "button": "激活 2FA",
-            "enabled": "Enabled",
+            "disable": "禁用双因素认证",
+            "enabled": "已启用",
             "disabled": "Disabled",
             "modal": {
               "title": "两步验证",
@@ -627,8 +628,8 @@
     "your-devices": "你的设备",
     "back-to-devices": "返回到设备",
     "empty": {
-      "title": "你还没有备份",
-      "subtitle": "在桌面应用程序中设置你的备份",
+      "title": "此文件夹为空",
+      "subtitle": "使用Internxt Desktop来上传您的数据",
       "downloadApp": "下载桌面应用程序"
     },
     "devices-list": {
@@ -925,7 +926,7 @@
       "columns": {
         "type": "类型",
         "name": "名称",
-        "modified": "后一次修改",
+        "modified": "修改日期",
         "size": "大小",
         "actions": "操作"
       }

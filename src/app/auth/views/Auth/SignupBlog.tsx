@@ -6,7 +6,7 @@ const textContent = {
   passwordLabel: 'Password',
   emailEmpty: 'Email cannot be empty',
   passwordLabelEmpty: 'Password cannot be empty',
-  buttonText: 'Get up to 10GB - For free',
+  buttonText: 'Get up to 10GB - For free!',
   legal: {
     line1: 'By creating an account you accept the',
     line2: 'terms of service, and privacy policy',

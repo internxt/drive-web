@@ -50,7 +50,7 @@
     "es": "Español (Spanish)",
     "fr": "Français (French)",
     "it": "Italiano (Italian)",
-    "cn": "中国人 (Chinese)"
+    "cn": "简体中文 (Chinese)"
   },
   "auth": {
     "email": "Email",
@@ -409,6 +409,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
             "button": "Enable 2FA",
+            "disable": "Disable 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
