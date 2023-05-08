@@ -160,7 +160,7 @@
       "empty": {
         "title": "没有可用的最新文件",
         "description": "新上传和最近打开的文件会自动出现在这里",
-        "folderEmpty": "这个文件夹是空的",
+        "folderEmpty": "此文件夹为空",
         "folderEmptySubtitle": "拖放文件或选择要上传的单个文件",
         "uploadFiles": "上传文件",
         "noResults": "此搜索没有结果",
@@ -628,8 +628,8 @@
     "your-devices": "你的设备",
     "back-to-devices": "返回到设备",
     "empty": {
-      "title": "你还没有备份",
-      "subtitle": "在桌面应用程序中设置你的备份",
+      "title": "此文件夹为空",
+      "subtitle": "使用Internxt Desktop来上传您的数据",
       "downloadApp": "下载桌面应用程序"
     },
     "devices-list": {
