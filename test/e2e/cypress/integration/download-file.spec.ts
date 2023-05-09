@@ -10,7 +10,12 @@ describe('Download file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-    cy.uploadExampleFile();
+    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+      delete req.headers['if-none-match'];
+    }).as('getFiles');
+    cy.wait('@getFiles', { timeout: 60000 }).then(() => {
+      cy.uploadExampleFile();
+    });
   });
 
   it('Should download a single file', () => {

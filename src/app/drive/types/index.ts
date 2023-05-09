@@ -84,6 +84,7 @@ export type DriveItemData = DriveFileData & DriveFolderData;
 export interface DriveItemPatch {
   name?: string;
   plain_name?: string;
+  plainName?: string;
   currentThumbnail?: Thumbnail;
   thumbnails?: Thumbnail[];
   shares?: ShareLink[];

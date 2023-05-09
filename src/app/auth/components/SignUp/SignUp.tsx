@@ -25,7 +25,7 @@ import { useSignUp } from './useSignUp';
 import { validateFormat } from 'app/crypto/services/keys.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService from 'app/auth/services/auth.service';
+import authService, { getNewToken } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 
 const MAX_PASSWORD_LENGTH = 20;
@@ -163,6 +163,10 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
+
+      const xNewToken = await getNewToken();
+      localStorageService.set('xNewToken', xNewToken);
+      console.log({ xNewToken });
 
       const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
 

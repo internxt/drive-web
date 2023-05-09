@@ -20,7 +20,12 @@ describe('Security account tab', () => {
     });
     cy.clearLocalStorage();
     cy.login();
-    cy.uploadExampleFile();
+    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+      delete req.headers['if-none-match'];
+    }).as('getFiles');
+    cy.wait('@getFiles', { timeout: 60000 }).then(() => {
+      cy.uploadExampleFile();
+    });
   });
 
   it('Should have valid files after changing password', () => {

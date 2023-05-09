@@ -41,7 +41,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const areLastItems = itemslength < DEFAULT_LIMIT;
 
     dispatch(storageActions.addItems({ folderId, items: parsedItems }));
-
+    databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
     if (hasMoreDriveFolders) {
       dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
       dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));

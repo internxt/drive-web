@@ -3,27 +3,37 @@ import * as bip39 from 'bip39';
 import { Keys, RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import { readReferalCookie } from 'app/auth/services/auth.service';
+import { getNewToken, readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
-type UpdateInfoFunction = (email: string, password: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type UpdateInfoFunction = (
+  email: string,
+  password: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
-type RegisterFunction = (email: string, password: string, captcha: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
 
-export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: string): {
-  updateInfo: UpdateInfoFunction,
-  doRegister: RegisterFunction
+export function useSignUp(
+  registerSource: 'activate' | 'appsumo',
+  referrer?: string,
+): {
+  updateInfo: UpdateInfoFunction;
+  doRegister: RegisterFunction;
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
@@ -97,7 +107,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       keys: keys,
       captcha: captcha,
       referral: readReferalCookie(),
-      referrer: referrer
+      referrer: referrer,
     };
 
     const data = await authClient.register(registerDetails);

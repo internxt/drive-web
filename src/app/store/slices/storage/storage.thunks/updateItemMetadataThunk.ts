@@ -37,6 +37,7 @@ export const updateItemMetadataThunk = createAsyncThunk<
         patch: {
           name: payload.metadata.itemName,
           plain_name: payload.metadata.itemName,
+          plainName: payload.metadata.itemName,
         },
       }),
     );
