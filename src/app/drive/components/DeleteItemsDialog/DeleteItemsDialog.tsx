@@ -39,7 +39,9 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
-      dispatch(planThunks.fetchUsageThunk());
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
