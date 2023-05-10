@@ -9,6 +9,7 @@ import databaseService, { DatabaseCollection } from '../../../../database/servic
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
+import errorService from '../../../../core/services/error.service';
 
 const DEFAULT_LIMIT = 50;
 
@@ -42,10 +43,17 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
 
     dispatch(storageActions.addItems({ folderId, items: parsedItems }));
 
-    if (parsedItems.length > 0) {
-      const itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
-      const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
-      databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
+    let itemsInDatabase;
+    try {
+      if (parsedItems.length > 0) {
+        itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
+        const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
+        databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
+      }
+    } catch (error) {
+      errorService.reportError(error, {
+        extra: { fetchedItems: parsedItems, databaseItems: itemsInDatabase, parentFolderId: folderId },
+      });
     }
 
     if (hasMoreDriveFolders) {
