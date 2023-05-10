@@ -1,12 +1,12 @@
 import { DriveItemData } from '../../../../src/app/drive/types/index';
-import { EXAMPLE_FILENAME } from '../constans';
+import { EXAMPLE_FILENAME, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Drive pagination', () => {
   beforeEach(() => {
-    cy.intercept('GET', /\/folders\/\d+\/folders\/\?offset=\d+&limit=\d+/, (req) => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FOLDERS, (req) => {
       delete req.headers['if-none-match'];
     }).as('getFolders');
-    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
       delete req.headers['if-none-match'];
     }).as('getFiles');
     cy.clearLocalStorage();

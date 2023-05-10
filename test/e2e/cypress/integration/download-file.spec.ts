@@ -1,5 +1,5 @@
 import { join } from 'path';
-import { MENU_ITEM_SELECTOR } from '../constans';
+import { MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Download file', () => {
   const filename = 'example.txt';
@@ -10,7 +10,7 @@ describe('Download file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
       delete req.headers['if-none-match'];
     }).as('getFiles');
     cy.wait('@getFiles', { timeout: 60000 }).then(() => {

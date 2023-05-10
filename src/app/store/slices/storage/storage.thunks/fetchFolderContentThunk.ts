@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-import { storageActions } from '..';
+import { removeDuplicates, storageActions } from '..';
 import { RootState } from '../../..';
 import { StorageState } from '../storage.model';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -41,7 +41,13 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const areLastItems = itemslength < DEFAULT_LIMIT;
 
     dispatch(storageActions.addItems({ folderId, items: parsedItems }));
-    databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
+
+    if (parsedItems.length > 0) {
+      const itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
+      const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
+      databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
+    }
+
     if (hasMoreDriveFolders) {
       dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
       dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));

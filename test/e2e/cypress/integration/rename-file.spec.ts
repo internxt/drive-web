@@ -1,4 +1,4 @@
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Rename item', () => {
   const newFolderName = 'new-folder';
@@ -8,7 +8,7 @@ describe('Rename item', () => {
   const DATA_TEST_FILE_LIST_FOLDER = '[data-test=file-list-folder]';
 
   beforeEach(() => {
-    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
       delete req.headers['if-none-match'];
     }).as('getFiles');
     cy.clearLocalStorage();

@@ -41,7 +41,7 @@ const initialState: StorageState = {
   folderPathDialog: [],
 };
 
-const removeDuplicates = (list: DriveItemData[]) => {
+export const removeDuplicates = (list: DriveItemData[]): DriveItemData[] => {
   const hash = {};
   return list.filter((obj) => {
     const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;

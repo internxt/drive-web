@@ -1,7 +1,7 @@
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { join } from 'path';
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Security account tab', () => {
   const filename = 'example.txt';
@@ -20,7 +20,7 @@ describe('Security account tab', () => {
     });
     cy.clearLocalStorage();
     cy.login();
-    cy.intercept('GET', /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/, (req) => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
       delete req.headers['if-none-match'];
     }).as('getFiles');
     cy.wait('@getFiles', { timeout: 60000 }).then(() => {
