@@ -48,7 +48,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       if (parsedItems.length > 0) {
         itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
         const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
-        databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
+        await databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
       }
     } catch (error) {
       errorService.reportError(error, {

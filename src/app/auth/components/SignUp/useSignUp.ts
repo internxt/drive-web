@@ -3,7 +3,7 @@ import * as bip39 from 'bip39';
 import { Keys, RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import { getNewToken, readReferalCookie } from 'app/auth/services/auth.service';
+import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
