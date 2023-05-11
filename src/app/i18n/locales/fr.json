@@ -563,7 +563,7 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
-    "maxSizeUploadLimitError": "File too large.\nYou can only upload or download files of up to 10GB through the web app"
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
