@@ -33,6 +33,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'selected' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
+  const itemSize = sizeService.bytesToString(item.size, false);
 
   useEffect(() => {
     if (isEditingName(item)) {
@@ -122,11 +123,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {/* SIZE */}
       <div className="flex w-1/12 items-center overflow-ellipsis whitespace-nowrap">
-        {sizeService.bytesToString(item.size, false) === '' ? (
-          <span className="opacity-25">—</span>
-        ) : (
-          sizeService.bytesToString(item.size, false)
-        )}
+        {itemSize === '' && item.isFolder ? <span className="opacity-25">—</span> : itemSize ? itemSize : '0 Bytes'}
       </div>
     </div>
   );

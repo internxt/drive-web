@@ -1,8 +1,8 @@
 import streamSaver from 'streamsaver';
+import { saveAs } from 'file-saver';
 
 import analyticsService from 'app/analytics/services/analytics.service';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import localStorageService from 'app/core/services/local-storage.service';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
@@ -84,6 +84,7 @@ export default async function downloadFile(
   abortController?: AbortController,
 ): Promise<void> {
   const fileId = itemData.fileId;
+  const fileSize = Number(itemData.size);
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
   const isCypress = window['Cypress'] !== undefined;
@@ -116,25 +117,29 @@ export default async function downloadFile(
   };
   analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
-  const fileStreamPromise = fetchFileStream(
-    { ...itemData, bucketId: itemData.bucket },
-    { isTeam, updateProgressCallback, abortController },
-  );
+  if (fileSize !== 0) {
+    const fileStreamPromise = fetchFileStream(
+      { ...itemData, bucketId: itemData.bucket },
+      { isTeam, updateProgressCallback, abortController },
+    );
 
-  await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
-    const errMessage = err instanceof Error ? err.message : (err as string);
+    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
+      const errMessage = err instanceof Error ? err.message : (err as string);
 
-    if (!abortController?.signal.aborted) {
-      analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
-    } else {
-      analyticsService.trackFileDownloadError({
-        ...trackingDownloadProperties,
-        error_message: errMessage,
-      });
-    }
+      if (!abortController?.signal.aborted) {
+        analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
+      } else {
+        analyticsService.trackFileDownloadError({
+          ...trackingDownloadProperties,
+          error_message: errMessage,
+        });
+      }
 
-    throw new Error(errMessage);
-  });
+      throw new Error(errMessage);
+    });
+  } else {
+    saveAs(new Blob(['']), `${itemData.name}.${itemData.type}`);
+  }
 
   analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }

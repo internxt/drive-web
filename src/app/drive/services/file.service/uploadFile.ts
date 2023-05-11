@@ -12,6 +12,7 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import { uploadFile as uploadToBucket } from 'app/network/upload';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
+import * as uuid from 'uuid';
 
 export interface FileToUpload {
   name: string;
@@ -51,26 +52,28 @@ export async function uploadFile(
 
       throw new Error('Bucket not found!');
     }
+    let fileId;
 
-    const fileId = await uploadToBucket(bucketId, {
-      creds: {
-        pass: bridgePass,
-        user: bridgeUser,
-      },
-      filecontent: file.content,
-      filesize: file.size,
-      mnemonic: encryptionKey,
-      progressCallback: (totalBytes, uploadedBytes) => {
-        updateProgressCallback(uploadedBytes / totalBytes);
-      },
-      abortController,
-    });
-
+    if (file.size !== 0) {
+      fileId = await uploadToBucket(bucketId, {
+        creds: {
+          pass: bridgePass,
+          user: bridgeUser,
+        },
+        filecontent: file.content,
+        filesize: file.size,
+        mnemonic: encryptionKey,
+        progressCallback: (totalBytes, uploadedBytes) => {
+          updateProgressCallback(uploadedBytes / totalBytes);
+        },
+        abortController,
+      });
+    }
     const name = encryptFilename(file.name, file.parentFolderId);
 
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const fileEntry: StorageTypes.FileEntry = {
-      id: fileId,
+      id: fileId ? fileId : uuid.v4().substring(0, 20),
       type: file.type,
       size: file.size,
       name: name,

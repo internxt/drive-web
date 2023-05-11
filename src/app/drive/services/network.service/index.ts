@@ -85,18 +85,21 @@ export class Network {
 
     const abortController = new AbortController();
 
-    return [uploadFile(bucketId, {
-      ...params,
-      ...{
-        progressCallback: (totalBytes, uploadedBytes) => {
-          params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
-        }
+    return [
+      uploadFile(bucketId, {
+        ...params,
+        ...{
+          progressCallback: (totalBytes, uploadedBytes) => {
+            params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
+          },
+        },
+        creds: this.creds,
+        mnemonic: this.mnemonic,
+      }),
+      {
+        abort: () => abortController.abort(),
       },
-      creds: this.creds,
-      mnemonic: this.mnemonic,
-    }), {
-      abort: () => abortController.abort()
-    }];
+    ];
   }
 
   /**

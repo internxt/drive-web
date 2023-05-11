@@ -32,17 +32,6 @@ interface UploadItemsPayload {
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
 
-const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
-  if (zeroLengthFilesNumber > 0) {
-    const fileText = zeroLengthFilesNumber === 1 ? 'file' : 'files';
-
-    notificationsService.show({
-      text: `Empty files are not supported.\n${zeroLengthFilesNumber} empty ${fileText} not uploaded.`,
-      type: ToastType.Warning,
-    });
-  }
-};
-
 /**
  * @description
  *  1. Prepare files to upload
@@ -82,12 +71,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     const storageClient = SdkFactory.getInstance().createStorageClient();
 
-    let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
 
@@ -103,7 +87,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         parentFolderId,
       });
     }
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
@@ -171,12 +154,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       return;
     }
 
-    let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const fileContent = renameFile(file, filename);
 
@@ -188,7 +166,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
         parentFolderId,
       });
     }
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
@@ -264,12 +241,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
     const parentFolderContent = await parentFolderContentPromise;
 
-    let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
 
       const [, , finalFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
@@ -283,7 +255,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         parentFolderId,
       });
     }
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const abortController = options?.abortController || new AbortController();
 
@@ -345,12 +316,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       return;
     }
 
-    let zeroLengthFilesNumber = 0;
     for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
       const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
       const fileContent = renameFile(file, filename);
 
@@ -362,7 +328,6 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
         parentFolderId,
       });
     }
-    showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,

@@ -98,15 +98,15 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   let uploadPromise: Promise<string>;
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = params.filesize > minimumMultipartThreshold;;
+  const useMultipart = params.filesize > minimumMultipartThreshold;
   const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
 
   if (useMultipart) {
     uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
-    uploadingCallback: params.progressCallback,
-    abortController: params.abortController,
+      uploadingCallback: params.progressCallback,
+      abortController: params.abortController,
       parts: Math.ceil(params.filesize / partSize),
     });
   } else {
@@ -116,11 +116,13 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     });
   }
 
-  return uploadPromise.catch((err: ErrorWithContext) => {
-    Sentry.captureException(err, { extra: err.context });
+  return uploadPromise
+    .catch((err: ErrorWithContext) => {
+      Sentry.captureException(err, { extra: err.context });
 
-    throw err;
-  }).finally(() => {
-    console.timeEnd('multipart-upload');
-  });
+      throw err;
+    })
+    .finally(() => {
+      console.timeEnd('multipart-upload');
+    });
 }

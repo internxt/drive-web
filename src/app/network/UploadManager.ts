@@ -58,7 +58,7 @@ class UploadManager {
     },
     [FileSizeType.Small]: {
       upperBound: TWENTY_MEGABYTES - 1,
-      lowerBound: 1,
+      lowerBound: 0,
       concurrency: 6,
     },
   };
