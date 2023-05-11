@@ -562,7 +562,8 @@
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",

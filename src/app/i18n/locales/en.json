@@ -627,7 +627,8 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

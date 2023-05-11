@@ -609,7 +609,8 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos."
+    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
