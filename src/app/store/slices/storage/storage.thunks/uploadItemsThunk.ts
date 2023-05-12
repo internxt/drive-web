@@ -297,10 +297,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     options.onSuccess?.();
 
-    setTimeout(() => {
-      dispatch(planThunks.fetchUsageThunk());
-    }, 1000);
-
     if (errors.length > 0) {
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
@@ -374,10 +370,6 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     options.showNotifications = true;
     options.onSuccess?.();
-
-    setTimeout(() => {
-      dispatch(planThunks.fetchUsageThunk());
-    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
