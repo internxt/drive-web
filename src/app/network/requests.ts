@@ -372,3 +372,11 @@ export async function finishUpload(
 
   return bucketEntry.id;
 }
+
+export class ConnectionLostError extends Error {
+  constructor() {
+    super('Connection lost');
+
+    Object.setPrototypeOf(this, ConnectionLostError);
+  }
+}
