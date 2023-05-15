@@ -4,6 +4,8 @@ import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
+import axios, { AxiosError } from 'axios';
+import { ConnectionLostError } from './requests';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -21,49 +23,43 @@ interface IUploadParams {
   abortController?: AbortController;
 }
 
-export function uploadFileBlob(
-  encryptedFile: Blob,
+export async function uploadFileBlob(
+  content: Blob,
   url: string,
   opts: {
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
-  },
-): Promise<XMLHttpRequest> {
-  const uploadRequest = new XMLHttpRequest();
+  }
+): Promise<{ etag: string }> {
+  try {
+    const res = await axios({
+      url,
+      method: 'PUT',
+      data: content,
+      onUploadProgress: (progress: ProgressEvent) => {
+        opts.progressCallback(progress.total, progress.loaded);
+      },
+      cancelToken: new axios.CancelToken((canceler) => {
+        opts.abortController?.signal.addEventListener('abort', () => {
+          canceler();
+        });
+      })
+    });
 
-  opts.abortController?.signal.addEventListener(
-    'abort',
-    () => {
-      console.log('aborting');
-      uploadRequest.abort();
-    },
-    { once: true },
-  );
+    return res.headers.etag;
+  } catch (err) {
+    const error = err as AxiosError<any>;
 
-  uploadRequest.upload.addEventListener('progress', (e) => {
-    opts.progressCallback(e.total, e.loaded);
-  });
-  uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
-  uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
-
-  const uploadFinishedPromise = new Promise<XMLHttpRequest>((resolve, reject) => {
-    uploadRequest.onload = () => {
-      if (uploadRequest.status !== 200) {
-        return reject(
-          new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
-        );
-      }
-      resolve(uploadRequest);
-    };
-    uploadRequest.onerror = reject;
-    uploadRequest.onabort = () => reject(new Error('Upload aborted'));
-    uploadRequest.ontimeout = () => reject(new Error('Request timeout'));
-  });
-
-  uploadRequest.open('PUT', url);
-  uploadRequest.send(encryptedFile);
-
-  return uploadFinishedPromise;
+    if (axios.isCancel(error)) {
+      throw new Error('Upload aborted');
+    } else if (error.response && error.response.status === 403) {
+      throw new Error('Request has expired');
+    } else if (error.message === 'Network Error') {
+      throw error;
+    } else {
+      throw new Error('Unknown error');
+    }
+  }
 }
 
 function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
