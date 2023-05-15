@@ -5,6 +5,7 @@ import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
+import { ConnectionLostError } from './requests';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -147,6 +148,16 @@ class UploadManager {
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS) {
               upload();
             } else {
+              if (err instanceof ConnectionLostError) {
+                return tasksService.updateTask({
+                  taskId,
+                  // TODO: Create new status: Connection lost 
+                  // or add the possibility to add a custom message
+                  // when the taskStatus = Error
+                  merge: { status: TaskStatus.Error }
+                });
+              }
+
               if (task?.status !== TaskStatus.Cancelled) {
                 tasksService.updateTask({
                   taskId: taskId,
