@@ -99,20 +99,46 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   console.time('multipart-upload');
 
+  const uploadAbortController = new AbortController();
+
+  let connectionLost = false;
+  function connectionLostListener() {
+    connectionLost = true;
+    uploadAbortController.abort();
+    window.removeEventListener('offline', connectionLostListener);
+  }
+  window.addEventListener('offline', connectionLostListener);
+
+  function onAbort() {
+    if (!connectionLost) {
+      // propagate abort just if the connection is not lost. 
+
+      uploadAbortController.abort();
+    }
+
+    params.abortController?.signal.removeEventListener('abort', onAbort);
+  }
+
+  params.abortController?.signal.addEventListener('abort', onAbort);
+
   if (useMultipart) {
     uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
-    uploadingCallback: params.progressCallback,
-    abortController: params.abortController,
+      uploadingCallback: params.progressCallback,
+      abortController: uploadAbortController,
       parts: Math.ceil(params.filesize / partSize),
     });
   } else {
     uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
-      abortController: params.abortController,
+      abortController: uploadAbortController,
     });
   }
 
   return uploadPromise.catch((err: ErrorWithContext) => {
+    if (connectionLost) {
+      throw new ConnectionLostError();
+    }
+
     Sentry.captureException(err, { extra: err.context });
 
     throw err;
