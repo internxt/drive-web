@@ -32,7 +32,7 @@ export const uploadFileWithManager = (
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
-): Promise<DriveFileData[]> => {
+): Promise<DriveFileData[] | null> => {
   const uploadManager = new UploadManager(files, abortController, options, relatedTaskProgress);
   return uploadManager.run();
 };
@@ -117,8 +117,8 @@ class UploadManager {
           this.abortController ?? fileData.abortController,
         )
           .then((driveFileData) => {
-            if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
-              throw Error('Upload task cancelled');
+            const isUploadCancelled = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+            if (isUploadCancelled) throw Error('Upload task cancelled');
 
             const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
 
@@ -144,7 +144,10 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPS) {
+            const hasBeenUploadAborted =
+              this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !hasBeenUploadAborted) {
               upload();
             } else {
               if (task?.status !== TaskStatus.Cancelled) {
@@ -166,7 +169,7 @@ class UploadManager {
                 this.uploadQueue.kill();
               }
 
-              if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
+              if (hasBeenUploadAborted) {
                 return tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Cancelled },
@@ -220,7 +223,7 @@ class UploadManager {
     ];
   }
 
-  async run(): Promise<DriveFileData[]> {
+  async run(): Promise<DriveFileData[] | null> {
     try {
       const filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
 
@@ -276,7 +279,7 @@ class UploadManager {
       return filesReferences;
     } catch (error) {
       errorService.reportError(error);
-      return [];
+      return null;
     }
   }
 }
