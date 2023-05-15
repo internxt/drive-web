@@ -104,7 +104,7 @@ export class NetworkFacade {
     function notifyProgress(partId: number, uploadedBytes: number) {
       partsUploadedBytes[partId] = uploadedBytes;
 
-      options.uploadingCallback(file.size, Object.values(partsUploadedBytes).reduce((a,p) => a+p, 0));
+      options.uploadingCallback(file.size, Object.values(partsUploadedBytes).reduce((a, p) => a + p, 0));
     }
 
     const uploadsAbortController = new AbortController();
@@ -124,14 +124,14 @@ export class NetworkFacade {
       const limitConcurrency = 6;
 
       const worker = async (upload: UploadTask) => {
-        const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);
           },
-            abortController: uploadsAbortController,
+          abortController: uploadsAbortController,
         });
 
-        const ETag = response.getResponseHeader('etag');
+        const ETag = etag;
 
         if (!ETag) {
           throw new Error('ETag header was not returned');
@@ -159,11 +159,16 @@ export class NetworkFacade {
           if (realError) throw realError; else return;
         }
 
+        let errorAlreadyThrown = false;
+
         uploadQueue.pushAsync({
           contentToUpload: blob,
           urlToUpload: urls[partIndex],
           index: partIndex++,
         }).catch((err) => {
+          if (errorAlreadyThrown) return;
+
+          errorAlreadyThrown = true;
           if (err) {
             uploadQueue.kill();
             if (!uploadsAbortController?.signal.aborted) {
@@ -174,8 +179,8 @@ export class NetworkFacade {
               realError = err;
             }
           }
-        });  
-        
+        });
+
         // TODO: Remove
         blob = new Blob([]);
       });
@@ -201,7 +206,6 @@ export class NetworkFacade {
       options.parts,
     );
   }
-
 
   async download(
     bucketId: string,
