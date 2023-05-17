@@ -5,7 +5,8 @@ import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
-import { ConnectionLostError } from './requests';
+import { CONNECTION_LOST_ERROR_MESSAGE } from './requests';
+import { t } from 'i18next';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -118,8 +119,10 @@ class UploadManager {
           this.abortController ?? fileData.abortController,
         )
           .then((driveFileData) => {
-            if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
+            const isUploadAborted = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+            if (isUploadAborted) {
               throw Error('Upload task cancelled');
+            }
 
             const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
 
@@ -145,16 +148,24 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPS) {
+            const isUploadAborted = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+            const isLostConnectionError = err.message === CONNECTION_LOST_ERROR_MESSAGE;
+
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
-              if (err instanceof ConnectionLostError) {
+              if (isLostConnectionError) {
+                errorService.reportError(err, {
+                  extra: {
+                    name: file.name,
+                    size: file.size,
+                    type: file.type,
+                    parentFolderId: file.parentFolderId,
+                  },
+                });
                 return tasksService.updateTask({
                   taskId,
-                  // TODO: Create new status: Connection lost 
-                  // or add the possibility to add a custom message
-                  // when the taskStatus = Error
-                  merge: { status: TaskStatus.Error }
+                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
                 });
               }
 
@@ -177,7 +188,7 @@ class UploadManager {
                 this.uploadQueue.kill();
               }
 
-              if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
+              if (isLostConnectionError) {
                 return tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Cancelled },

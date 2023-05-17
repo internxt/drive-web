@@ -29,7 +29,7 @@ export async function uploadFileBlob(
   opts: {
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
-  }
+  },
 ): Promise<{ etag: string }> {
   try {
     const res = await axios({
@@ -43,7 +43,7 @@ export async function uploadFileBlob(
         opts.abortController?.signal.addEventListener('abort', () => {
           canceler();
         });
-      })
+      }),
     });
 
     return res.headers.etag;
@@ -94,7 +94,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   let uploadPromise: Promise<string>;
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = params.filesize > minimumMultipartThreshold;;
+  const useMultipart = params.filesize > minimumMultipartThreshold;
   const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
@@ -111,7 +111,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   function onAbort() {
     if (!connectionLost) {
-      // propagate abort just if the connection is not lost. 
+      // propagate abort just if the connection is not lost.
 
       uploadAbortController.abort();
     }
@@ -134,15 +134,19 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
     });
   }
 
-  return uploadPromise.catch((err: ErrorWithContext) => {
-    if (connectionLost) {
-      throw new ConnectionLostError();
-    }
+  return uploadPromise
+    .catch((err: ErrorWithContext) => {
+      if (connectionLost) {
+        throw new ConnectionLostError();
+      }
 
-    Sentry.captureException(err, { extra: err.context });
+      Sentry.captureException(err, { extra: err.context });
 
-    throw err;
-  }).finally(() => {
-    console.timeEnd('multipart-upload');
-  });
+      Sentry.captureException(err, { extra: err.context });
+
+      throw err;
+    })
+    .finally(() => {
+      console.timeEnd('multipart-upload');
+    });
 }

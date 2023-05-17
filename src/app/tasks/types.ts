@@ -46,6 +46,7 @@ export interface BaseTask {
   progress: number;
   cancellable: boolean;
   showNotification: boolean;
+  subtitle?: string;
   stop?: () => Promise<void>;
 }
 
