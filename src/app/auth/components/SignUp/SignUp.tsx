@@ -166,7 +166,6 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
-      console.log({ xNewToken });
 
       const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
 
@@ -187,37 +186,6 @@ function SignUp(props: SignUpProps): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      // analyticsService.trackPaymentConversion();
-      // analyticsService.trackSignUp({
-      //   userId: xUser.uuid,
-      //   properties: {
-      //     email: xUser.email,
-      //     signup_source: signupCampaignSource(window.location.search),
-      //   },
-      //   traits: {
-      //     email: xUser.email,
-      //     first_name: xUser.name,
-      //     last_name: xUser.lastname,
-      //     usage: 0,
-      //     createdAt: new Date().toISOString(),
-      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
-      //     acquisition_channel: signupCampaignSource(window.location.search),
-      //   },
-      // });
-
-      // adtrack script
-      // window._adftrack = Array.isArray(window._adftrack)
-      //   ? window._adftrack
-      //   : window._adftrack
-      //   ? [window._adftrack]
-      //   : [];
-      // window._adftrack.push({
-      //   HttpHost: 'track.adform.net',
-      //   pm: 2370627,
-      //   divider: encodeURIComponent('|'),
-      //   pagename: encodeURIComponent('New'),
-      // });
-
       const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
 
       if (redirectUrl) {
@@ -234,26 +202,14 @@ function SignUp(props: SignUpProps): JSX.Element {
         navigationService.push(AppView.Drive);
       }
     } catch (err: unknown) {
-      console.log(err);
       setIsLoading(false);
+      errorService.reportError(err);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
     } finally {
       setShowError(true);
     }
   };
-
-  // async function getReCaptcha(formValues: IFormValues) {
-  //   const grecaptcha = window.grecaptcha;
-
-  //   grecaptcha.ready(() => {
-  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-  //       // Can'translate wait or token will expire
-  //       formValues.token = token;
-  //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
-  //     });
-  //   });
-  // }
 
   const getLoginLink = () => {
     const currentParams = new URLSearchParams(window.location.search);
