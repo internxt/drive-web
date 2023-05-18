@@ -154,14 +154,19 @@ class UploadManager {
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
+              const fileInfoToReport = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                parentFolderId: file.parentFolderId,
+                uploadProgress: this.relatedTaskProgress
+                  ? this.relatedTaskProgress?.filesUploaded / this.relatedTaskProgress?.totalFilesToUpload
+                  : 'unknown',
+              };
+
               if (isLostConnectionError) {
                 errorService.reportError(err, {
-                  extra: {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    parentFolderId: file.parentFolderId,
-                  },
+                  extra: fileInfoToReport,
                 });
                 return tasksService.updateTask({
                   taskId,
@@ -175,12 +180,7 @@ class UploadManager {
                   merge: { status: TaskStatus.Error },
                 });
                 errorService.reportError(err, {
-                  extra: {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    parentFolderId: file.parentFolderId,
-                  },
+                  extra: fileInfoToReport,
                 });
               }
 
@@ -188,7 +188,7 @@ class UploadManager {
                 this.uploadQueue.kill();
               }
 
-              if (isLostConnectionError) {
+              if (isUploadAborted) {
                 return tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Cancelled },
