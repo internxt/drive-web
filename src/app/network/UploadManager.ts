@@ -5,7 +5,7 @@ import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
-import { CONNECTION_LOST_ERROR_MESSAGE } from './requests';
+import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
@@ -149,7 +149,7 @@ class UploadManager {
           })
           .catch((err) => {
             const isUploadAborted = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
-            const isLostConnectionError = err.message === CONNECTION_LOST_ERROR_MESSAGE;
+            const isLostConnectionError = err instanceof ConnectionLostError;
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();

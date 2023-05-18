@@ -379,6 +379,6 @@ export class ConnectionLostError extends Error {
   constructor() {
     super(CONNECTION_LOST_ERROR_MESSAGE);
 
-    Object.setPrototypeOf(this, ConnectionLostError);
+    Object.setPrototypeOf(this, ConnectionLostError.prototype);
   }
 }
