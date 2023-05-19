@@ -68,7 +68,7 @@
     },
     "signup": {
       "title": "Create account",
-      "haveAccount": "already have an account?",
+      "haveAccount": "Already have an account?",
       "login": "Log in"
     },
     "forgotPassword": {

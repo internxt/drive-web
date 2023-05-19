@@ -9,6 +9,7 @@ import paymentService from 'app/payment/services/payment.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planThunks } from '../../../../../store/slices/plan';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -33,7 +34,9 @@ const CancelSubscriptionModal = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    paymentService.getCoupon().then((coupon) => setCouponAvailable(coupon.elegible));
+    paymentService.requestPreventCancellation().then((response) => {
+      setCouponAvailable(response.elegible);
+    });
   }, []);
 
   useEffect(() => {
@@ -42,7 +45,7 @@ const CancelSubscriptionModal = ({
 
   const applyCoupon = async () => {
     try {
-      await paymentService.applyCoupon();
+      await paymentService.preventCancellation();
       notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
@@ -111,7 +114,7 @@ const Step1 = ({
   const { translate } = useTranslationContext();
 
   useEffect(() => {
-    analytics.page('Cancelation incentive');
+    analyticsService.page('Cancelation incentive');
   }, []);
 
   return (
@@ -132,7 +135,7 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
-            analytics.page('Cancel Subscription');
+            analyticsService.page('Cancel Subscription');
             setStep(2);
           }}
         >
@@ -141,7 +144,7 @@ const Step1 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            analytics.track('Subscription Cancelation Incentive Accepted');
+            // analyticsService.track('Subscription Cancelation Incentive Accepted');
             applyCoupon();
           }}
         >
@@ -248,7 +251,7 @@ const Step2 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            analytics.track('Keep Subscription Clicked');
+            // analyticsService.track('Keep Subscription Clicked');
             onClose();
           }}
         >

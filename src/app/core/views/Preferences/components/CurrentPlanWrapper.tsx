@@ -34,6 +34,7 @@ export default function CurrentPlanWrapper({
   const { translate } = useTranslationContext();
   let planName = '';
   let button: string | undefined;
+  console.log('User Subscription', userSubscription);
 
   switch (userSubscription.type) {
     case 'free':
