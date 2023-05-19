@@ -51,7 +51,7 @@ const CancelSubscriptionModal = ({
       const errorMessage = JSON.parse(error.message);
       if (errorMessage.message === 'User already applied coupon') {
         notificationsService.show({
-          text: translate('notificationMessages.alreadyAppliedCouponn'),
+          text: translate('notificationMessages.alreadyAppliedCoupon'),
           type: ToastType.Error,
         });
       } else {
@@ -110,6 +110,10 @@ const Step1 = ({
 }): JSX.Element => {
   const { translate } = useTranslationContext();
 
+  useEffect(() => {
+    analytics.page('Cancelation incentive');
+  }, []);
+
   return (
     <>
       <p className="mt-5 text-center text-3xl font-semibold">
@@ -128,12 +132,19 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
+            analytics.page('Cancel Subscription');
             setStep(2);
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={applyCoupon}>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analytics.track('Subscription Cancelation Incentive Accepted');
+            applyCoupon();
+          }}
+        >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.continue')}
         </Button>
       </div>
@@ -234,7 +245,13 @@ const Step2 = ({
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analytics.track('Keep Subscription Clicked');
+            onClose();
+          }}
+        >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>
