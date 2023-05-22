@@ -34,9 +34,18 @@ const CancelSubscriptionModal = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    paymentService.requestPreventCancellation().then((response) => {
-      setCouponAvailable(response.elegible);
-    });
+    paymentService
+      .requestPreventCancellation()
+      .then((response) => {
+        setCouponAvailable(response.elegible);
+      })
+      .catch((error) => {
+        console.error(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorApplyCoupon'),
+          type: ToastType.Error,
+        });
+      });
   }, []);
 
   useEffect(() => {
