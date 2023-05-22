@@ -159,7 +159,8 @@ class UploadManager {
                 size: file.size,
                 type: file.type,
                 parentFolderId: file.parentFolderId,
-                uploadProgress: this.relatedTaskProgress
+                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
+                filesUploaded: this.relatedTaskProgress
                   ? this.relatedTaskProgress?.filesUploaded / this.relatedTaskProgress?.totalFilesToUpload
                   : 'unknown',
               };
