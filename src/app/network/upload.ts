@@ -46,7 +46,7 @@ export async function uploadFileBlob(
       }),
     });
 
-    return res.headers.etag;
+    return { etag: res.headers.etag };
   } catch (err) {
     const error = err as AxiosError<any>;
 

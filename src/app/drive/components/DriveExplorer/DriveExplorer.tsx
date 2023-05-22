@@ -263,10 +263,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
   const onUploadFileButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'File upload button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
     fileInputRef.current?.click();
   };
 
   const onUploadFolderButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'Folder upload button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
     folderInputRef.current?.click();
   };
 
@@ -312,10 +328,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onCreateFolderButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'Create folder button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
   const onBulkDeleteButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'Top bar delete items button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
     moveItemsToTrash(selectedItems);
   };
 
@@ -985,6 +1017,15 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
 
   if (countTotalItemsToUpload < UPLOAD_ITEMS_LIMIT) {
     if (files.length) {
+      errorService.addBreadcrumb({
+        level: 'info',
+        category: 'drag-and-drop',
+        message: 'Dragged file to upload',
+        data: {
+          currentFolderId: currentFolderId,
+          itemsDragged: items,
+        },
+      });
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly
       await dispatch(
@@ -998,6 +1039,15 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       );
     }
     if (rootList.length) {
+      errorService.addBreadcrumb({
+        level: 'info',
+        category: 'drag-and-drop',
+        message: 'Dragged folder to upload',
+        data: {
+          currentFolderId: currentFolderId,
+          itemsDragged: items,
+        },
+      });
       const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
       if (unrepeatedUploadedFolders.length > 0)
         await dispatch(

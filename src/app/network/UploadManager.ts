@@ -145,6 +145,18 @@ class UploadManager {
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
 
+            errorService.addBreadcrumb({
+              level: 'info',
+              category: 'file',
+              message: 'File upload completed',
+              data: {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                parentFolderId: file.parentFolderId,
+                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
+              },
+            });
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
