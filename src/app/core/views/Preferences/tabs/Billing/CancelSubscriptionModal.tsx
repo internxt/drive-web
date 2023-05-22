@@ -144,7 +144,7 @@ const Step1 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            // analyticsService.track('Subscription Cancelation Incentive Accepted');
+            analyticsService.track('Subscription Cancelation Incentive Accepted');
             applyCoupon();
           }}
         >
@@ -251,7 +251,7 @@ const Step2 = ({
         <Button
           className="ml-2 shadow-subtle-hard"
           onClick={() => {
-            // analyticsService.track('Keep Subscription Clicked');
+            analyticsService.track('Keep Subscription Clicked');
             onClose();
           }}
         >
