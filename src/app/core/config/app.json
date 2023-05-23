@@ -103,6 +103,13 @@
       "hideSearch": true
     },
     {
+      "id": "drive-item",
+      "layout": "header-and-sidenav",
+      "path": "/app/:name/:id",
+      "exact": false,
+      "auth": true
+    },
+    {
       "id": "preferences",
       "layout": "header-and-sidenav",
       "path": "/preferences",

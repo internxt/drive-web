@@ -46,6 +46,7 @@ const views: Array<{
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.Recover, component: RecoverView },
   { id: AppView.Drive, component: DriveView },
+  { id: AppView.DriveItem, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },

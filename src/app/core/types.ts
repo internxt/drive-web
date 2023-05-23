@@ -111,6 +111,7 @@ export enum AppView {
   ButtonAuth = 'buttonAuth',
   Recover = 'recover',
   Drive = 'drive',
+  DriveItem = 'drive-item',
   Recents = 'recents',
   Trash = 'trash',
   Backups = 'backups',

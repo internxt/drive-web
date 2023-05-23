@@ -194,6 +194,19 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
   );
 
+  const currentUrl = window.location.pathname;
+
+  useEffect(() => {
+    const splitUrl = currentUrl.split('/');
+    const pathUrl = splitUrl.slice(-2);
+    const isANumber = /^\d+$/;
+    if (isANumber.test(pathUrl[1])) {
+      const folderName = pathUrl[0];
+      const folderId = Number(pathUrl[1]);
+      dispatch(storageThunks.goToFolderThunk({ name: folderName, id: folderId }));
+    }
+  }, [currentUrl]);
+
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
       setShowSecondTutorialStep(true);
