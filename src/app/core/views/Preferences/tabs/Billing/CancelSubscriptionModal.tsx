@@ -49,7 +49,10 @@ const CancelSubscriptionModal = ({
   }, []);
 
   useEffect(() => {
-    couponAvailable && setStep(1);
+    if (couponAvailable) {
+      setStep(1);
+      analyticsService.page('Cancelation incentive');
+    }
   }, [couponAvailable]);
 
   const applyCoupon = async () => {
@@ -121,10 +124,6 @@ const Step1 = ({
   applyCoupon: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-
-  useEffect(() => {
-    analyticsService.page('Cancelation incentive');
-  }, []);
 
   return (
     <>
