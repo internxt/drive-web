@@ -9,6 +9,7 @@ import paymentService from 'app/payment/services/payment.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planThunks } from '../../../../../store/slices/plan';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -33,16 +34,30 @@ const CancelSubscriptionModal = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    paymentService.getCoupon().then((coupon) => setCouponAvailable(coupon.elegible));
+    paymentService
+      .requestPreventCancellation()
+      .then((response) => {
+        setCouponAvailable(response.elegible);
+      })
+      .catch((error) => {
+        console.error(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorApplyCoupon'),
+          type: ToastType.Error,
+        });
+      });
   }, []);
 
   useEffect(() => {
-    couponAvailable && setStep(1);
+    if (couponAvailable) {
+      setStep(1);
+      analyticsService.page('Cancelation incentive');
+    }
   }, [couponAvailable]);
 
   const applyCoupon = async () => {
     try {
-      await paymentService.applyCoupon();
+      await paymentService.preventCancellation();
       notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
       setTimeout(() => {
         dispatch(planThunks.initializeThunk()).unwrap();
@@ -51,7 +66,7 @@ const CancelSubscriptionModal = ({
       const errorMessage = JSON.parse(error.message);
       if (errorMessage.message === 'User already applied coupon') {
         notificationsService.show({
-          text: translate('notificationMessages.alreadyAppliedCouponn'),
+          text: translate('notificationMessages.alreadyAppliedCoupon'),
           type: ToastType.Error,
         });
       } else {
@@ -134,12 +149,19 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
+            analyticsService.page('Cancel Subscription');
             setStep(2);
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={applyCoupon}>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analyticsService.track('Subscription Cancelation Incentive Accepted');
+            applyCoupon();
+          }}
+        >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.continue')}
         </Button>
       </div>
@@ -240,7 +262,13 @@ const Step2 = ({
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analyticsService.track('Keep Subscription Clicked');
+            onClose();
+          }}
+        >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>
