@@ -69,7 +69,7 @@ class UploadManager {
   private uploadsProgress: Record<string, number> = {};
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
-      if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) return;
+      if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
 
       let uploadAttempts = 0;
       const uploadId = randomBytes(10).toString('hex');
@@ -119,7 +119,7 @@ class UploadManager {
           this.abortController ?? fileData.abortController,
         )
           .then((driveFileData) => {
-            const isUploadAborted = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
             if (isUploadAborted) {
               throw Error('Upload task cancelled');
             }
@@ -160,7 +160,7 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            const isUploadAborted = this.abortController?.signal.aborted || fileData.abortController?.signal.aborted;
+            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
             const isLostConnectionError = err instanceof ConnectionLostError;
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {

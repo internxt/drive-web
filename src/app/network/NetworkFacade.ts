@@ -254,7 +254,7 @@ export class NetworkFacade {
           options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
-      (options && options.token && { token: options.token }) || undefined,
+      (options?.token && { token: options.token }) || undefined,
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
