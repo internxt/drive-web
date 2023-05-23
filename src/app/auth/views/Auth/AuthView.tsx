@@ -29,7 +29,7 @@ export const SignupComponent = ({
   buttonColor?: string;
   textContent: any;
   appRedirect?: boolean;
-}) => {
+}): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -124,7 +124,7 @@ export const SignupComponent = ({
             </button>
           </div>
 
-          <span className="w-full text-xs text-gray-50 sm:text-left">
+          <span className="hidden w-full text-xs text-gray-50 sm:text-left md:flex">
             <span>{textContent.legal.line1}</span>{' '}
             <a
               href="https://internxt.com/legal"

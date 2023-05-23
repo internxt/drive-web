@@ -75,11 +75,17 @@ const CancelSubscriptionModal = ({
           <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>
         </>
       )}
-      {step === 1 && <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />}
+      {step === 1 && (
+        <Step1
+          currentPlanName={currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
+          applyCoupon={applyCoupon}
+          setStep={setStep}
+        />
+      )}
 
       {step === 2 && (
         <Step2
-          currentPlanName={currentPlanName}
+          currentPlanName={currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
           onClose={onClose}
           setStep={setStep}
           currentPlanInfo={currentPlanInfo}
@@ -89,7 +95,7 @@ const CancelSubscriptionModal = ({
 
       {step === 3 && (
         <Step3
-          currentPlanName={currentPlanName}
+          currentPlanName={currentPlanName.charAt(0).toUpperCase() + currentPlanName.slice(1)}
           onClose={onClose}
           cancellingSubscription={cancellingSubscription}
           cancelSubscription={cancelSubscription}
