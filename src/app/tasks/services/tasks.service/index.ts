@@ -195,6 +195,10 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
+    if (task.status === TaskStatus.Error && task.subtitle) {
+      return task.subtitle;
+    }
+
     return t(`tasks.${task.action}.status.${task.status}`, {
       progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });

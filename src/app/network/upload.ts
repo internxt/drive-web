@@ -4,6 +4,8 @@ import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 
 import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
+import axios, { AxiosError } from 'axios';
+import { ConnectionLostError } from './requests';
 
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
@@ -21,49 +23,43 @@ interface IUploadParams {
   abortController?: AbortController;
 }
 
-export function uploadFileBlob(
-  encryptedFile: Blob,
+export async function uploadFileBlob(
+  content: Blob,
   url: string,
   opts: {
     progressCallback: UploadProgressCallback;
     abortController?: AbortController;
   },
-): Promise<XMLHttpRequest> {
-  const uploadRequest = new XMLHttpRequest();
+): Promise<{ etag: string }> {
+  try {
+    const res = await axios({
+      url,
+      method: 'PUT',
+      data: content,
+      onUploadProgress: (progress: ProgressEvent) => {
+        opts.progressCallback(progress.total, progress.loaded);
+      },
+      cancelToken: new axios.CancelToken((canceler) => {
+        opts.abortController?.signal.addEventListener('abort', () => {
+          canceler();
+        });
+      }),
+    });
 
-  opts.abortController?.signal.addEventListener(
-    'abort',
-    () => {
-      console.log('aborting');
-      uploadRequest.abort();
-    },
-    { once: true },
-  );
+    return { etag: res.headers.etag };
+  } catch (err) {
+    const error = err as AxiosError<any>;
 
-  uploadRequest.upload.addEventListener('progress', (e) => {
-    opts.progressCallback(e.total, e.loaded);
-  });
-  uploadRequest.upload.addEventListener('loadstart', (e) => opts.progressCallback(e.total, 0));
-  uploadRequest.upload.addEventListener('loadend', (e) => opts.progressCallback(e.total, e.total));
-
-  const uploadFinishedPromise = new Promise<XMLHttpRequest>((resolve, reject) => {
-    uploadRequest.onload = () => {
-      if (uploadRequest.status !== 200) {
-        return reject(
-          new Error('Upload failed with code ' + uploadRequest.status + ' message ' + uploadRequest.response),
-        );
-      }
-      resolve(uploadRequest);
-    };
-    uploadRequest.onerror = reject;
-    uploadRequest.onabort = () => reject(new Error('Upload aborted'));
-    uploadRequest.ontimeout = () => reject(new Error('Request timeout'));
-  });
-
-  uploadRequest.open('PUT', url);
-  uploadRequest.send(encryptedFile);
-
-  return uploadFinishedPromise;
+    if (axios.isCancel(error)) {
+      throw new Error('Upload aborted');
+    } else if (error.response && error.response.status === 403) {
+      throw new Error('Request has expired');
+    } else if (error.message === 'Network Error') {
+      throw error;
+    } else {
+      throw new Error('Unknown error');
+    }
+  }
 }
 
 function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
@@ -98,29 +94,59 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   let uploadPromise: Promise<string>;
 
   const minimumMultipartThreshold = 100 * 1024 * 1024;
-  const useMultipart = params.filesize > minimumMultipartThreshold;;
+  const useMultipart = params.filesize > minimumMultipartThreshold;
   const partSize = 30 * 1024 * 1024;
 
   console.time('multipart-upload');
 
+  const uploadAbortController = new AbortController();
+
+  let connectionLost = false;
+  function connectionLostListener() {
+    connectionLost = true;
+    uploadAbortController.abort();
+    window.removeEventListener('offline', connectionLostListener);
+  }
+  window.addEventListener('offline', connectionLostListener);
+
+  function onAbort() {
+    if (!connectionLost) {
+      // propagate abort just if the connection is not lost.
+
+      uploadAbortController.abort();
+    }
+
+    params.abortController?.signal.removeEventListener('abort', onAbort);
+  }
+
+  params.abortController?.signal.addEventListener('abort', onAbort);
+
   if (useMultipart) {
     uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
-    uploadingCallback: params.progressCallback,
-    abortController: params.abortController,
+      uploadingCallback: params.progressCallback,
+      abortController: uploadAbortController,
       parts: Math.ceil(params.filesize / partSize),
     });
   } else {
     uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
-      abortController: params.abortController,
+      abortController: uploadAbortController,
     });
   }
 
-  return uploadPromise.catch((err: ErrorWithContext) => {
-    Sentry.captureException(err, { extra: err.context });
+  return uploadPromise
+    .catch((err: ErrorWithContext) => {
+      if (connectionLost) {
+        throw new ConnectionLostError();
+      }
 
-    throw err;
-  }).finally(() => {
-    console.timeEnd('multipart-upload');
-  });
+      Sentry.captureException(err, { extra: err.context });
+
+      Sentry.captureException(err, { extra: err.context });
+
+      throw err;
+    })
+    .finally(() => {
+      console.timeEnd('multipart-upload');
+    });
 }

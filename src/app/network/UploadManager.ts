@@ -5,6 +5,8 @@ import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
+import { ConnectionLostError } from './requests';
+import { t } from 'i18next';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -67,7 +69,7 @@ class UploadManager {
   private uploadsProgress: Record<string, number> = {};
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
-      if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) return;
+      if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
 
       let uploadAttempts = 0;
       const uploadId = randomBytes(10).toString('hex');
@@ -117,8 +119,10 @@ class UploadManager {
           this.abortController ?? fileData.abortController,
         )
           .then((driveFileData) => {
-            if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted)
+            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
+            if (isUploadAborted) {
               throw Error('Upload task cancelled');
+            }
 
             const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
 
@@ -141,24 +145,55 @@ class UploadManager {
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
 
+            errorService.addBreadcrumb({
+              level: 'info',
+              category: 'file',
+              message: 'File upload completed',
+              data: {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                parentFolderId: file.parentFolderId,
+                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
+              },
+            });
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            if (uploadAttempts < MAX_UPLOAD_ATTEMPS) {
+            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
+            const isLostConnectionError = err instanceof ConnectionLostError;
+
+            if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();
             } else {
+              const fileInfoToReport = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                parentFolderId: file.parentFolderId,
+                uploadProgress: this.uploadsProgress[uploadId] ?? 0,
+                filesUploaded: this.relatedTaskProgress
+                  ? this.relatedTaskProgress?.filesUploaded / this.relatedTaskProgress?.totalFilesToUpload
+                  : 'unknown',
+              };
+
+              if (isLostConnectionError) {
+                errorService.reportError(err, {
+                  extra: fileInfoToReport,
+                });
+                return tasksService.updateTask({
+                  taskId,
+                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+                });
+              }
+
               if (task?.status !== TaskStatus.Cancelled) {
                 tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Error },
                 });
                 errorService.reportError(err, {
-                  extra: {
-                    name: file.name,
-                    size: file.size,
-                    type: file.type,
-                    parentFolderId: file.parentFolderId,
-                  },
+                  extra: fileInfoToReport,
                 });
               }
 
@@ -166,7 +201,7 @@ class UploadManager {
                 this.uploadQueue.kill();
               }
 
-              if (this.abortController?.signal.aborted || fileData.abortController?.signal.aborted) {
+              if (isUploadAborted) {
                 return tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Cancelled },
