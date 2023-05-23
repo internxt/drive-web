@@ -848,7 +848,7 @@
     "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
     "successApplyCoupon": "Se han aplicado 3 meses gratis",
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
-    "alreadyAppliedCouponn": "El cupón ya se ha aplicado"
+    "alreadyAppliedCoupon": "El cupón ya se ha aplicado"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

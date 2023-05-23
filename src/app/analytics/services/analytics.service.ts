@@ -240,11 +240,8 @@ export function trackUserResetPasswordRequest(): void {
   // window.analytics.track(AnalyticsTrackNames.UserResetPasswordRequest);
 }
 
-export function track(email: string, status: 'error' | 'success'): void {
-  /* window.analytics.track('Password Changed', {
-    status,
-    email,
-  }); */
+export function track(reason: string, status?: 'error' | 'success'): void {
+  window.rudderanalytics.track(reason, { status });
 }
 
 export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {

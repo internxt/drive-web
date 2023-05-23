@@ -1,4 +1,4 @@
-import { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
+import analyticsService, { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
 import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import moneyService from '../../../../../payment/services/money.service';
@@ -117,6 +117,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                 <button
                   disabled={cancellingSubscription}
                   onClick={() => {
+                    analyticsService.page('Cancelation Incentive');
                     setIsCancelSubscriptionModalOpen(true);
                   }}
                   className="mt-2 text-xs text-gray-60"
