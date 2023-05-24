@@ -27,9 +27,9 @@ const SignupAuth = () => {
 
 export default function SignupBlog(): JSX.Element {
   return (
-    <div className="hidden flex-col items-center justify-center overflow-hidden py-3 xs:flex lg:py-10">
-      <div className="flex w-full flex-row bg-gradient-to-br from-blue-20 to-white">
-        <div className="mt-5 mb-10 ml-11 flex w-full max-w-xs flex-col items-start justify-center">
+    <div className="flex flex-col items-center justify-center overflow-hidden py-3 sm:py-10">
+      <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-blue-20 to-white">
+        <div className="mt-5 mb-10 flex w-full flex-col items-center justify-center px-5 text-center sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">
           <p className="text-3xl font-semibold">
             Make privacy a priority and join<span className="text-primary"> Internxt </span>today
           </p>
@@ -38,7 +38,7 @@ export default function SignupBlog(): JSX.Element {
           </div>
         </div>
         <div className="-ml-32 flex items-center overflow-hidden">
-          <div className="relative left-56 top-4 flex flex-col overflow-hidden">
+          <div className="relative left-56 hidden flex-col overflow-hidden sm:flex">
             <img
               src={InternxtDevices}
               width={534}
