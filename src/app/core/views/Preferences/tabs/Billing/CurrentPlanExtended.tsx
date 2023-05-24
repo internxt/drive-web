@@ -131,7 +131,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
                   }}
                   cancellingSubscription={cancellingSubscription}
                   cancelSubscription={cancelSubscription}
-                  currentPlanName={plan.subscription?.type as string}
+                  currentPlanName={getPlanName(plan.individualPlan || plan.teamPlan)}
                   currentPlanInfo={getPlanInfo(plan.individualPlan || plan.teamPlan)}
                   currentUsage={getCurrentUsage()}
                 />
