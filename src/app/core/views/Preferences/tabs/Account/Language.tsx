@@ -9,10 +9,42 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
 import it from 'dayjs/locale/it';
+import ru from 'dayjs/locale/ru';
 import dayjs from 'dayjs';
 import cn from 'dayjs/locale/zh-cn';
 
 const localStorageLanguage = localStorageService.get('language');
+
+function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
+  return (
+    <Menu>
+      <Menu.Button className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out'}>
+        {title}
+      </Menu.Button>
+      <Transition
+        className={'left-0'}
+        enter="transform transition duration-50 ease-out"
+        enterFrom="scale-98 opacity-0"
+        enterTo="scale-100 opacity-100"
+        leave="transform transition duration-50 ease-out"
+        leaveFrom="scale-98 opacity-100"
+        leaveTo="scale-100 opacity-0"
+      >
+        <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
+          {menuItems && (
+            <div className="border-translate w-full border-gray-10">
+              {menuItems?.map((item, index) => (
+                <div className={'pt-2'} key={'menuitem-' + index}>
+                  <Menu.Item>{item}</Menu.Item>
+                </div>
+              ))}
+            </div>
+          )}
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+}
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -46,37 +78,6 @@ export default function Language(): JSX.Element {
     );
   });
 
-  function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
-    return (
-      <Menu>
-        <Menu.Button className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out'}>
-          {title}
-        </Menu.Button>
-        <Transition
-          className={'left-0'}
-          enter="transform transition duration-50 ease-out"
-          enterFrom="scale-98 opacity-0"
-          enterTo="scale-100 opacity-100"
-          leave="transform transition duration-50 ease-out"
-          leaveFrom="scale-98 opacity-100"
-          leaveTo="scale-100 opacity-0"
-        >
-          <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
-            {menuItems && (
-              <div className="border-translate w-full border-gray-10">
-                {menuItems?.map((item, index) => (
-                  <div className={'pt-2'} key={'menuitem-' + index}>
-                    <Menu.Item>{item}</Menu.Item>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Menu.Items>
-        </Transition>
-      </Menu>
-    );
-  }
-
   return (
     <Section className="" title={translate('lang.title')}>
       <Card>
@@ -89,6 +90,7 @@ export default function Language(): JSX.Element {
           }
           menuItems={[
             <MenuItem
+              key={'en'}
               onClick={() => {
                 setLang('en');
                 i18next.changeLanguage('en');
@@ -98,6 +100,7 @@ export default function Language(): JSX.Element {
               <p>{translate('lang.en')}</p>
             </MenuItem>,
             <MenuItem
+              key={'es'}
               onClick={() => {
                 setLang('es');
                 i18next.changeLanguage('es');
@@ -107,6 +110,7 @@ export default function Language(): JSX.Element {
               <p>{translate('lang.es')}</p>
             </MenuItem>,
             <MenuItem
+              key={'fr'}
               onClick={() => {
                 setLang('fr');
                 i18next.changeLanguage('fr');
@@ -116,6 +120,7 @@ export default function Language(): JSX.Element {
               <p>{translate('lang.fr')}</p>
             </MenuItem>,
             <MenuItem
+              key={'it'}
               onClick={() => {
                 setLang('it');
                 i18next.changeLanguage('it');
@@ -125,6 +130,7 @@ export default function Language(): JSX.Element {
               <p>{translate('lang.it')}</p>
             </MenuItem>,
             <MenuItem
+              key={'cn'}
               onClick={() => {
                 setLang('cn');
                 i18next.changeLanguage('cn');
@@ -132,6 +138,16 @@ export default function Language(): JSX.Element {
               }}
             >
               <p>{translate('lang.cn')}</p>
+            </MenuItem>,
+            <MenuItem
+              key={'ru'}
+              onClick={() => {
+                setLang('ru');
+                i18next.changeLanguage('ru');
+                dayjs.locale(ru);
+              }}
+            >
+              <p>{translate('lang.ru')}</p>
             </MenuItem>,
           ]}
         />

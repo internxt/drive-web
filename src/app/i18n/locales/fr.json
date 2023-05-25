@@ -33,7 +33,8 @@
     "es": "Español (Espagnol)",
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
-    "cn": "简体中文 (Chinois)"
+    "cn": "简体中文 (Chinois)",
+    "ru": "Русский (Russe)"
   },
   "auth": {
     "email": "Adresse électronique",
