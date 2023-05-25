@@ -113,7 +113,7 @@
     "tryInternxt": "Попробовать Internxt",
     "topBar": {
       "drive": "Перейти на Internxt Drive",
-      "downloadApp": "Загрузить приложение для рабочего стола",
+      "downloadApp": "Рабочий стол",
       "logout": "Выйти",
       "login": "Войти",
       "createAccount": "Создать аккаунт",
@@ -169,7 +169,7 @@
         "underLimitSize": "Пожалуйста, выберите изображение размером менее 10 МБ."
       },
       "popover": {
-        "downloadApp": "Загрузить приложение",
+        "downloadApp": "Рабочий стол",
         "settings": "Настройки",
         "logout": "Выйти",
         "SpaceUsed": "{{space}}% памяти использовано"
