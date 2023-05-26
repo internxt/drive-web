@@ -29,6 +29,7 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import errorService from '../../core/services/error.service';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -144,6 +145,7 @@ export const doLogin = async (
       if (error instanceof UserAccessError) {
         analyticsService.signInAttempted(email, error.message);
       }
+      errorService.reportError(error);
       throw error;
     });
 };
