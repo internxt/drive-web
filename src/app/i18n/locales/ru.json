@@ -587,7 +587,7 @@
   },
   "shared-links": {
     "shared-links": "Ссылки с общим доступом",
-    "view": "views",
+    "view": "Просмотры",
     "list": {
       "link-content": "Доступные файлы по ссылке",
       "shared": "Общий",
