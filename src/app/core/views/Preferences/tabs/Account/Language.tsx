@@ -1,5 +1,5 @@
 import React, { forwardRef, ReactNode, useEffect } from 'react';
-import i18next, { DefaultTFuncReturn, t } from 'i18next';
+import i18next from 'i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
 import { CaretDown } from 'phosphor-react';
@@ -10,10 +10,12 @@ import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
 import it from 'dayjs/locale/it';
 import ru from 'dayjs/locale/ru';
-import dayjs from 'dayjs';
 import cn from 'dayjs/locale/zh-cn';
+import dayjs from 'dayjs';
 
 const localStorageLanguage = localStorageService.get('language');
+
+const languages = ['en', 'es', 'fr', 'it', 'cn', 'ru'];
 
 function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
   return (
@@ -88,68 +90,18 @@ export default function Language(): JSX.Element {
               <CaretDown size={20} />
             </div>
           }
-          menuItems={[
+          menuItems={languages.map((lang) => (
             <MenuItem
-              key={'en'}
+              key={lang}
               onClick={() => {
-                setLang('en');
-                i18next.changeLanguage('en');
-                dayjs.locale('en');
+                setLang(lang);
+                i18next.changeLanguage(lang);
+                dayjs.locale(lang);
               }}
             >
-              <p>{translate('lang.en')}</p>
-            </MenuItem>,
-            <MenuItem
-              key={'es'}
-              onClick={() => {
-                setLang('es');
-                i18next.changeLanguage('es');
-                dayjs.locale(es);
-              }}
-            >
-              <p>{translate('lang.es')}</p>
-            </MenuItem>,
-            <MenuItem
-              key={'fr'}
-              onClick={() => {
-                setLang('fr');
-                i18next.changeLanguage('fr');
-                dayjs.locale(fr);
-              }}
-            >
-              <p>{translate('lang.fr')}</p>
-            </MenuItem>,
-            <MenuItem
-              key={'it'}
-              onClick={() => {
-                setLang('it');
-                i18next.changeLanguage('it');
-                dayjs.locale(it);
-              }}
-            >
-              <p>{translate('lang.it')}</p>
-            </MenuItem>,
-            <MenuItem
-              key={'cn'}
-              onClick={() => {
-                setLang('cn');
-                i18next.changeLanguage('cn');
-                dayjs.locale(cn);
-              }}
-            >
-              <p>{translate('lang.cn')}</p>
-            </MenuItem>,
-            <MenuItem
-              key={'ru'}
-              onClick={() => {
-                setLang('ru');
-                i18next.changeLanguage('ru');
-                dayjs.locale(ru);
-              }}
-            >
-              <p>{translate('lang.ru')}</p>
-            </MenuItem>,
-          ]}
+              <p>{translate(`lang.${lang}`)}</p>
+            </MenuItem>
+          ))}
         />
       </Card>
     </Section>
