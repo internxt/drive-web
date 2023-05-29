@@ -50,7 +50,8 @@
     "es": "Español (Spagnolo)",
     "fr": "Français (Francese)",
     "it": "Italiano (Italiano)",
-    "cn": "简体中文 (Cinese)"
+    "cn": "简体中文 (Cinese)",
+    "ru": "Русский (Russo)"
   },
   "auth": {
     "email": "Email",
