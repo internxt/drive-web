@@ -206,19 +206,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     localStorage.setItem('showSummerBanner', 'false');
   };
 
-  useEffect(() => {
+  function isBannerOpen() {
     if (isNewAccount) {
       if (userPlan === 'free' && isTutorialCompleted && !localStorageService.get('showSummerBanner')) {
         setShowBanner(true);
-        // console.log('show banner if is new account');
       }
     } else {
       if (userPlan === 'free' && !localStorageService.get('showSummerBanner')) {
         setShowBanner(true);
-        // console.log('show banner if is not new account');
       }
     }
-  }, []);
+  }
+
+  useEffect(() => {
+    isBannerOpen();
+  }, [isTutorialCompleted, localStorageService.get('showSummerBanner'), userPlan, isNewAccount]);
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
