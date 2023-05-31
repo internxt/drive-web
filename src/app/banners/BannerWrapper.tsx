@@ -7,40 +7,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import SummerBanner from './SummerBanner';
 
-const BannerWrapper = () => {
-  const [showBanner, setShowBanner] = useState(false);
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
-  const userPlan = plan.subscription?.type;
-  const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-
-  const showBannerCondition = () => {
-    if (isNewAccount) {
-      if (userPlan === 'free' && isTutorialCompleted && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
-    } else {
-      if (userPlan === 'free' && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
-    }
-  };
-
-  const onClose = () => {
-    setShowBanner(false);
-    localStorage.setItem('showSummerBanner', 'false');
-  };
-
-  useEffect(() => {
-    showBannerCondition();
-    // if (!localStorage.getItem('showSummerBanner')) {
-    //   setTimeout(() => {
-    //     setShowBanner(true);
-    //   }, 5000);
-    // }
-  }, []);
-
-  return <SummerBanner showBanner={showBanner} onClose={onClose} />;
+const BannerWrapper = ({ showBanner, onCloseBanner }) => {
+  return <SummerBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
