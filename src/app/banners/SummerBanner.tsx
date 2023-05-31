@@ -14,7 +14,8 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
 
   useEffect(() => {
     paymentService.getPrices().then((res) => {
-      res.map((price) => {
+      res.forEach((price) => {
+        console.log(price);
         if (bytesToString(price.bytes) === '2TB' && price.interval === 'year') setPriceId(price.id);
       });
     });
