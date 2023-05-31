@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
 import Banner from './Banner';
+import SummerBanner from './SummerBanner';
 
 const BannerWrapper = () => {
   const [showBanner, setShowBanner] = useState(false);
 
   const onClose = () => {
     setShowBanner(false);
-    localStorage.setItem('showLifetimeBanner', 'false');
+    localStorage.setItem('showSummerBanner', 'false');
   };
 
   useEffect(() => {
-    if (!localStorage.getItem('showLifetimeBanner')) {
+    if (!localStorage.getItem('showSummerBanner')) {
       setTimeout(() => {
         setShowBanner(true);
-      }, 10000);
+      }, 5000);
     }
   }, []);
 
-  return <Banner showBanner={showBanner} onClose={onClose} />;
+  return <SummerBanner showBanner={showBanner} onClose={onClose} />;
 };
 
 export default BannerWrapper;
