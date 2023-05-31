@@ -28,7 +28,7 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
     >
       <div
         className={`${showBanner ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex
-        w-auto max-w-4xl -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
+        w-max max-w-4xl -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
         style={{
           backgroundImage: `url(${BackgroundImage})`,
           backgroundPosition: 'center',
@@ -40,7 +40,7 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
           <X size={32} />
         </button>
         <div
-          className="flex cursor-pointer flex-col items-center justify-center px-48 pt-20 pb-16"
+          className="flex cursor-pointer flex-col space-x-20 p-14 py-14 lg:flex-row lg:px-36"
           onClick={async () => {
             const response = await paymentService.createCheckoutSession({
               price_id: priceId,
