@@ -161,6 +161,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 
+      localStorageService.clear();
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
