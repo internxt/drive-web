@@ -143,8 +143,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasAnyItemSelected = selectedItems.length > 0;
   const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
 
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
 
@@ -618,9 +616,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      {plan.subscription?.type === 'free' &&
-        !localStorageService.get('showSummerBanner') &&
-        localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) && <BannerWrapper />}
+      {<BannerWrapper />}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
