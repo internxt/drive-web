@@ -70,7 +70,8 @@
     "signup": {
       "title": "Create account",
       "haveAccount": "Already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "encrypting": "Encrypting"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -787,6 +788,7 @@
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% Downloading folder",
+        "in-process-without-progress": "Downloading folder",
         "success": "Folder downloaded",
         "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"

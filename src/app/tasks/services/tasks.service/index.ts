@@ -199,6 +199,10 @@ class TaskManagerService {
       return task.subtitle;
     }
 
+    const notExistProgress = task.progress && task.progress === Infinity;
+    if (task.action === TaskType.DownloadFolder && task.status === TaskStatus.InProcess && notExistProgress)
+      return t(`tasks.${task.action}.status.in-process-without-progress`);
+
     return t(`tasks.${task.action}.status.${task.status}`, {
       progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });

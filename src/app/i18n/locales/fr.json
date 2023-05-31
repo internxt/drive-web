@@ -53,7 +53,8 @@
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "login": "Connexion"
+      "login": "Connexion",
+      "encrypting": "Cryptage"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
@@ -723,6 +724,7 @@
         "pending": "En attente de téléchargement",
         "decrypting": "Décryptage des fichiers",
         "in-process": "{{progress}}% Téléchargement du dossier",
+        "in-process-without-progress": "Téléchargement du dossier",
         "success": "Dossier téléchargé",
         "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"

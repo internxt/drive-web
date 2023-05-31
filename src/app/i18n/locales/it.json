@@ -70,7 +70,8 @@
     "signup": {
       "title": "Create account",
       "haveAccount": "already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "encrypting": "Crittografia"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -780,6 +781,7 @@
         "pending": "In attesa di download",
         "decrypting": "Decriptazione dei file",
         "in-process": "{{progress}}% Download della cartella",
+        "in-process-without-progress": "Cartella di download",
         "success": "Cartella scaricata",
         "error": "Download fallito, fare clic su ↻ per riprovare",
         "cancelled": "Download annullato"
