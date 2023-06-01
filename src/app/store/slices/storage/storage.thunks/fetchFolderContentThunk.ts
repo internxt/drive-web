@@ -43,19 +43,6 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
 
     dispatch(storageActions.addItems({ folderId, items: parsedItems }));
 
-    // let itemsInDatabase;
-    // try {
-    //   if (parsedItems.length > 0) {
-    //     itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
-    //     const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
-    //     await databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
-    //   }
-    // } catch (error) {
-    //   errorService.reportError(error, {
-    //     extra: { fetchedItems: parsedItems, databaseItems: itemsInDatabase, parentFolderId: folderId },
-    //   });
-    // }
-
     if (hasMoreDriveFolders) {
       dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
       dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
