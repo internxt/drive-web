@@ -28,7 +28,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
   const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
-  const [isDialgOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       {prices && (
         <ChangePlanDialog
           prices={prices}
-          isDialgOpen={isDialgOpen}
+          isDialgOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onPlanClick}
           priceIdSelected={priceIdSelected}
