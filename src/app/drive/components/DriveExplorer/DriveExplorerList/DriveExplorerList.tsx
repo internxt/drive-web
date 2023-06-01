@@ -193,31 +193,27 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           header={[
             {
               label: translate('drive.list.columns.type'),
-              width: 'flex w-1/12 cursor-pointer items-center px-6',
+              width: 'flex w-1/12 items-center px-6',
               name: 'type',
-              orderable: true,
-              defaultDirection: 'ASC',
+              orderable: false,
             },
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow cursor-pointer items-center pl-6',
+              width: 'flex flex-grow items-center pl-6',
               name: 'name',
-              orderable: true,
-              defaultDirection: 'ASC',
+              orderable: false,
             },
             {
               label: translate('drive.list.columns.modified'),
               width: 'hidden w-3/12 lg:flex pl-4',
               name: 'updatedAt',
-              orderable: true,
-              defaultDirection: 'ASC',
+              orderable: false,
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-1/12 cursor-pointer items-center',
+              width: 'flex w-1/12 items-center',
               name: 'size',
-              orderable: true,
-              defaultDirection: 'ASC',
+              orderable: false,
             },
           ]}
           items={props.items}

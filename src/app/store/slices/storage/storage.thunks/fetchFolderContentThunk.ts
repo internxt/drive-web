@@ -1,7 +1,7 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
-import { storageActions } from '..';
+import { removeDuplicates, storageActions } from '..';
 import { RootState } from '../../..';
 import { StorageState } from '../storage.model';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -9,6 +9,7 @@ import databaseService, { DatabaseCollection } from '../../../../database/servic
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
+import errorService from '../../../../core/services/error.service';
 
 const DEFAULT_LIMIT = 50;
 
@@ -41,6 +42,19 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const areLastItems = itemslength < DEFAULT_LIMIT;
 
     dispatch(storageActions.addItems({ folderId, items: parsedItems }));
+
+    // let itemsInDatabase;
+    // try {
+    //   if (parsedItems.length > 0) {
+    //     itemsInDatabase = (await databaseService.get(DatabaseCollection.Levels, folderId)) ?? [];
+    //     const itemsWithoutDuplicatedOnes = removeDuplicates(parsedItems.concat(itemsInDatabase));
+    //     await databaseService.put(DatabaseCollection.Levels, folderId, itemsWithoutDuplicatedOnes);
+    //   }
+    // } catch (error) {
+    //   errorService.reportError(error, {
+    //     extra: { fetchedItems: parsedItems, databaseItems: itemsInDatabase, parentFolderId: folderId },
+    //   });
+    // }
 
     if (hasMoreDriveFolders) {
       dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
@@ -88,13 +102,13 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
 
 export const fetchFolderContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(fetchFolderContentThunk.pending, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.pending, (state, action) => {
       state.loadingFolders[action.meta.arg] = true;
     })
-    .addCase(fetchFolderContentThunk.fulfilled, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.fulfilled, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
     })
-    .addCase(fetchFolderContentThunk.rejected, (state, action) => {
+    .addCase(fetchPaginatedFolderContentThunk.rejected, (state, action) => {
       state.loadingFolders[action.meta.arg] = false;
       notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
     });
