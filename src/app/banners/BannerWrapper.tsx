@@ -13,27 +13,23 @@ const BannerWrapper = () => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
+  const shouldShowBanner = userPlan === 'free' && !localStorageService.get('showSummerBanner');
 
   const onCloseBanner = () => {
     setShowBanner(false);
     localStorage.setItem('showSummerBanner', 'false');
   };
 
-  function isBannerOpen() {
-    if (isNewAccount) {
-      if (userPlan === 'free' && isTutorialCompleted && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
-    } else {
-      if (userPlan === 'free' && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
+  function handleBannerDisplay() {
+    if ((isNewAccount && isTutorialCompleted && shouldShowBanner) || (!isNewAccount && shouldShowBanner)) {
+      setShowBanner(true);
     }
   }
 
   useEffect(() => {
-    isBannerOpen();
-  }, [isTutorialCompleted, localStorageService.get('showSummerBanner'), userPlan, isNewAccount]);
+    handleBannerDisplay();
+  }, [isTutorialCompleted, userPlan, isNewAccount]);
+
   return <SummerBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
