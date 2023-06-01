@@ -53,7 +53,8 @@
     "signup": {
       "title": "Crear una cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
-      "login": "Iniciar sesión"
+      "login": "Iniciar sesión",
+      "encrypting": "Encriptando"
     },
     "forgotPassword": {
       "title": "Contraseña olvidada",
@@ -770,6 +771,7 @@
         "pending": "Descarga pendiente",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% carpeta descargada",
+        "in-process-without-progress": "Descargando carpeta",
         "success": "Carpeta descargada",
         "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"

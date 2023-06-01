@@ -70,7 +70,8 @@
     "signup": {
       "title": "Create account",
       "haveAccount": "already have an account?",
-      "login": "Log in"
+      "login": "Log in",
+      "encrypting": "正在加密文件"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -781,6 +782,7 @@
         "pending": "等待下载",
         "decrypting": "正在解密文件",
         "in-process": "{{progress}}% 正在下载文件夹",
+        "in-process-without-progress": "正在下载文件夹",
         "success": "文件夹已下载",
         "error": "下载失败, 请点击 ↻  重试",
         "cancelled": "下载已取消"

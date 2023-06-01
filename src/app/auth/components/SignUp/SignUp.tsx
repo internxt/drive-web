@@ -319,7 +319,11 @@ function SignUp(props: SignUpProps): JSX.Element {
               <Button
                 disabled={isLoading || !isValidPassword}
                 text={translate('auth.signup.title')}
-                disabledText={isValid && isValidPassword ? 'Encrypting...' : 'Create account'}
+                disabledText={
+                  isValid && isValidPassword
+                    ? `${translate('auth.signup.encrypting')}...`
+                    : translate('auth.signup.title')
+                }
                 loading={isLoading}
                 style="button-primary"
                 className="w-full"
