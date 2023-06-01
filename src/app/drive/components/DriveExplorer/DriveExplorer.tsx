@@ -195,32 +195,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
   );
   //BANNER STATES
-  const [showBanner, setShowBanner] = useState(false);
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
-  const userPlan = plan.subscription?.type;
-  const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-
-  const onCloseBanner = () => {
-    setShowBanner(false);
-    localStorage.setItem('showSummerBanner', 'false');
-  };
-
-  function isBannerOpen() {
-    if (isNewAccount) {
-      if (userPlan === 'free' && isTutorialCompleted && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
-    } else {
-      if (userPlan === 'free' && !localStorageService.get('showSummerBanner')) {
-        setShowBanner(true);
-      }
-    }
-  }
-
-  useEffect(() => {
-    isBannerOpen();
-  }, [isTutorialCompleted, localStorageService.get('showSummerBanner'), userPlan, isNewAccount]);
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
@@ -642,7 +616,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <BannerWrapper showBanner={showBanner} onCloseBanner={onCloseBanner} />
+      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
