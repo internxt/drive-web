@@ -225,6 +225,7 @@ ListProps<T, F>): JSX.Element {
             >
               <span>{column.label}</span>
               {column.name === orderBy?.field &&
+                column.orderable &&
                 (orderBy?.direction === 'ASC' ? (
                   <ArrowUp size={14} weight="bold" />
                 ) : (

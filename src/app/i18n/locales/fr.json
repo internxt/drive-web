@@ -566,7 +566,8 @@
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
-    "connectionLostError": "Connexion Internet perdue"
+    "connectionLostError": "Connexion Internet perdue",
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",

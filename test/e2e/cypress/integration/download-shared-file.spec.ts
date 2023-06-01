@@ -1,5 +1,5 @@
 import * as path from 'path';
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Download shared file', () => {
   const filename = 'example.txt';
@@ -9,7 +9,12 @@ describe('Download shared file', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-    cy.uploadExampleFile();
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
+      delete req.headers['if-none-match'];
+    }).as('getFiles');
+    cy.wait('@getFiles', { timeout: 60000 }).then(() => {
+      cy.uploadExampleFile();
+    });
   });
 
   it('Should share a and download single file', () => {

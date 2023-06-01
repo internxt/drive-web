@@ -74,6 +74,7 @@ import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
 import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
+import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
 
 const PAGINATION_LIMIT = 50;
@@ -132,6 +133,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     onItemsMoved,
     folderOnTrashLength,
     filesOnTrashLength,
+    hasMoreFolders,
+    hasMoreFiles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -213,10 +216,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (isTrash && !hasMoreTrashFolders) {
-      getMoreTrashItems().catch((error) => errorService.reportError(error));
+    if ((!isTrash && !hasMoreFolders) || (isTrash && !hasMoreTrashFolders)) {
+      fetchItems();
     }
-  }, [hasMoreTrashFolders]);
+  }, [hasMoreFolders, hasMoreTrashFolders]);
+
+  useEffect(() => {
+    if (!isTrash && !hasMoreFiles) {
+      setHasMoreItems(false);
+    }
+  }, [hasMoreFiles]);
+
+  useEffect(() => {
+    resetPaginationState();
+    fetchItems();
+  }, [currentFolderId]);
 
   useEffect(() => {
     if (
@@ -237,6 +251,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setHasMoreTrashFolders(true);
     setIsLoadingTrashItems(false);
   };
+
+  const fetchItems = () =>
+    isTrash ? getMoreTrashItems() : dispatch(fetchPaginatedFolderContentThunk(currentFolderId));
 
   const passToNextStep = () => {
     setCurrentTutorialStep(currentTutorialStep + 1);
@@ -379,24 +396,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       dispatch(uiActions.setIsShareItemDialogOpen(true));
     }
   };
-
-  const [fakePaginationLimit, setFakePaginationLimit] = useState<number>(PAGINATION_LIMIT);
-
-  useEffect(() => {
-    setHasMoreItems(true);
-    setFakePaginationLimit(PAGINATION_LIMIT);
-  }, [currentFolderId]);
-
-  // Fake backend pagination - change when pagination in backend has been implemented
-  const getMoreItems = () => {
-    const existsMoreItems = items.length > fakePaginationLimit;
-
-    setHasMoreItems(existsMoreItems);
-    if (existsMoreItems) setFakePaginationLimit(fakePaginationLimit + PAGINATION_LIMIT);
-  };
-
-  const getLimitedItems = () => items.slice(0, fakePaginationLimit);
-  const itemsList = getLimitedItems();
 
   const onSelectedOneItemRename = (e): void => {
     e.stopPropagation();
@@ -889,9 +888,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
                   folderId={currentFolderId}
-                  items={isTrash ? items : itemsList}
-                  isLoading={isLoading}
-                  onEndOfScroll={isTrash ? getMoreTrashItems : getMoreItems}
+                  items={items}
+                  isLoading={isTrash ? isLoadingTrashItems : isLoading}
+                  onEndOfScroll={fetchItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}

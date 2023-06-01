@@ -11,6 +11,18 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 
 import './DriveExplorerListItem.scss';
 
+import { DriveItemData } from '../../../../types';
+
+const getItemPlainNameWithExtension = (item: DriveItemData) => {
+  const plainName = item?.plainName ?? item?.plain_name;
+  const type = item.type;
+
+  if (!plainName || !type) return;
+  else if (type === 'folder') return plainName;
+
+  return plainName + '.' + type;
+};
+
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
   const {
@@ -73,10 +85,10 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={item?.plainName ?? items.getItemDisplayName(item)}
+            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
           >
-            {(item?.plainName || item?.plain_name) ?? items.getItemDisplayName(item)}
+            {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           </span>
           {!isEditingName && !item.deleted && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
