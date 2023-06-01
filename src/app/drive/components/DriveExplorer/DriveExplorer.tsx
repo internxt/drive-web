@@ -1,5 +1,5 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Trash,
   DownloadSimple,
@@ -41,7 +41,7 @@ import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDi
 import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors, PlanState } from '../../../store/slices/plan';
+import { planSelectors } from '../../../store/slices/plan';
 import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
@@ -194,7 +194,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     },
   );
-  //BANNER STATES
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
