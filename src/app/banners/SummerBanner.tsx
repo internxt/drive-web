@@ -17,11 +17,16 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
   const { translate } = useTranslationContext();
 
   useEffect(() => {
-    paymentService.getPrices().then((res) => {
-      res.forEach((price) => {
-        if (bytesToString(price.bytes) === '2TB' && price.interval === 'year') setPriceId(price.id);
+    paymentService
+      .getPrices()
+      .then((res) => {
+        res.forEach((price) => {
+          if (bytesToString(price.bytes) === '2TB' && price.interval === 'year') setPriceId(price.id);
+        });
+      })
+      .catch((error) => {
+        errorService.reportError(error);
       });
-    });
   }, []);
 
   return (
