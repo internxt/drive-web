@@ -888,7 +888,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   folderId={currentFolderId}
                   items={items}
                   isLoading={isTrash ? isLoadingTrashItems : isLoading}
-                  onEndOfScroll={fetchItems} //() => (!isLoading ? fetchItems() : null)}
+                  onEndOfScroll={fetchItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
