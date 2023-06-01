@@ -1,6 +1,5 @@
 import { RootState } from '../..';
 import { DriveItemData } from '../../../drive/types';
-import itemsListService from '../../../drive/services/items-list.service';
 import { sessionSelectors } from '../session/session.selectors';
 
 const rootFolderId = (state: RootState): number => {
