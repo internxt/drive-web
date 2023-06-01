@@ -630,7 +630,8 @@
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
-    "connectionLostError": "Internet connection lost"
+    "connectionLostError": "Internet connection lost",
+    "errorLoadingTrashItems": "Error loading trash items"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

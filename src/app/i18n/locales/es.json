@@ -612,7 +612,8 @@
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
-    "connectionLostError": "Conexión a internet perdida"
+    "connectionLostError": "Conexión a internet perdida",
+    "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",

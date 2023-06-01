@@ -9,6 +9,7 @@ import databaseService, { DatabaseCollection } from '../../../../database/servic
 import { DriveItemData } from '../../../../drive/types';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
+import errorService from '../../../../core/services/error.service';
 
 const DEFAULT_LIMIT = 50;
 
@@ -23,31 +24,36 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
 
     if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
 
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    let itemsPromise;
+    try {
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      let itemsPromise;
 
-    if (hasMoreDriveFolders) {
-      [itemsPromise] = await storageClient.getFolderFolders(folderId, foldersOffset);
-    } else if (hasMoreDriveFiles) {
-      [itemsPromise] = await storageClient.getFolderFiles(folderId, filesOffset);
-    }
+      if (hasMoreDriveFolders) {
+        [itemsPromise] = await storageClient.getFolderFolders(folderId, foldersOffset);
+      } else if (hasMoreDriveFiles) {
+        [itemsPromise] = await storageClient.getFolderFiles(folderId, filesOffset);
+      }
 
-    const items = await itemsPromise;
+      const items = await itemsPromise;
 
-    const parsedItems = items.result.map(
-      (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
-    );
-    const itemslength = items.result.length;
-    const areLastItems = itemslength < DEFAULT_LIMIT;
+      const parsedItems = items.result.map(
+        (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
+      );
+      const itemslength = items.result.length;
+      const areLastItems = itemslength < DEFAULT_LIMIT;
 
-    dispatch(storageActions.addItems({ folderId, items: parsedItems }));
+      dispatch(storageActions.addItems({ folderId, items: parsedItems }));
 
-    if (hasMoreDriveFolders) {
-      dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
-      dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
-    } else {
-      dispatch(storageActions.setHasMoreDriveFiles(!areLastItems));
-      dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
+      if (hasMoreDriveFolders) {
+        dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
+        dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
+      } else {
+        dispatch(storageActions.setHasMoreDriveFiles(!areLastItems));
+        dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
+      }
+    } catch (error) {
+      errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
+      throw error;
     }
   },
 );
