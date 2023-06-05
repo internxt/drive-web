@@ -13,6 +13,7 @@ import {
   PaymentMethod,
   UserSubscription,
   FreeTrialAvailable,
+  RedeemCodePayload,
 } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
@@ -91,6 +92,11 @@ const paymentService = {
   async preventCancellation(): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.preventCancellation();
+  },
+
+  async redeemCode(payload: RedeemCodePayload): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.applyRedeemCode(payload);
   },
 
   async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {

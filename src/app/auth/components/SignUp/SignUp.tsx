@@ -27,6 +27,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import authService, { getNewToken } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import paymentService from 'app/payment/services/payment.service';
 
 const MAX_PASSWORD_LENGTH = 20;
 
@@ -76,9 +77,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     },
   });
   const dispatch = useAppDispatch();
-  const [planId, setPlanId] = useState<string>();
-  const [mode, setMode] = useState<string>();
-  const [coupon, setCouponCode] = useState<string>();
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
@@ -109,13 +107,6 @@ function SignUp(props: SignUpProps): JSX.Element {
   useEffect(() => {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
-
-  useEffect(() => {
-    const params = new URLSearchParams(navigationService.history.location.search);
-    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
-    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
-    setCouponCode(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
-  }, []);
 
   function onChangeHandler(input: string) {
     setIsValidPassword(false);
@@ -149,6 +140,8 @@ function SignUp(props: SignUpProps): JSX.Element {
   }
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
+    console.log('redeemCodeObject', redeemCodeObject);
     event?.preventDefault();
     setIsLoading(true);
 
@@ -192,13 +185,8 @@ function SignUp(props: SignUpProps): JSX.Element {
       if (redirectUrl) {
         window.location.replace(redirectUrl);
         return;
-      }
-      if (planId && mode) {
-        coupon
-          ? window.location.replace(
-              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
-            )
-          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
+      } else if (redeemCodeObject) {
+        paymentService.redeemCode(redeemCodeObject);
       } else {
         navigationService.push(AppView.Drive);
       }
