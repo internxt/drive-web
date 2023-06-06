@@ -48,7 +48,7 @@ jobs:
           wait-on-timeout: 18000
       - name: Upload screenshots
         uses: actions/upload-artifact@v3.1.2
-        if: failure()
+        if: failure() || cancelled()
         with:
           name: cypress-snapshots
           path: test/e2e/cypress/screenshots
