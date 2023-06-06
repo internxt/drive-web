@@ -96,7 +96,10 @@ const paymentService = {
 
   async redeemCode(payload: RedeemCodePayload): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.applyRedeemCode(payload);
+    return paymentsClient.applyRedeemCode({
+      code: payload.code,
+      provider: payload.provider,
+    });
   },
 
   async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {

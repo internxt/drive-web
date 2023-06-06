@@ -141,7 +141,6 @@ function SignUp(props: SignUpProps): JSX.Element {
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
-    console.log('redeemCodeObject', redeemCodeObject);
     event?.preventDefault();
     setIsLoading(true);
 
@@ -155,6 +154,7 @@ function SignUp(props: SignUpProps): JSX.Element {
       localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 
       localStorageService.clear();
+
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
@@ -186,7 +186,11 @@ function SignUp(props: SignUpProps): JSX.Element {
         window.location.replace(redirectUrl);
         return;
       } else if (redeemCodeObject) {
-        paymentService.redeemCode(redeemCodeObject);
+        await paymentService.redeemCode(redeemCodeObject).catch((err) => {
+          errorService.reportError(err);
+        });
+        dispatch(planThunks.initializeThunk());
+        navigationService.push(AppView.Drive);
       } else {
         navigationService.push(AppView.Drive);
       }
