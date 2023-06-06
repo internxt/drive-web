@@ -1427,10 +1427,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.4.32":
-  version "1.4.32"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.32/5e6a6dc9c32d4198c7a8301fdb6794a7251cb2a7#5e6a6dc9c32d4198c7a8301fdb6794a7251cb2a7"
-  integrity sha512-QFDKtTj4X1JBOGV6t/cyS7WkcYGYaDXsfXGpniLv0Sizqh/t0YCElsQMQYv/GsGJMu80gzEq+ce1vcXvWVxj4A==
+"@internxt/sdk@^1.4.33":
+  version "1.4.33"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.33/f4ebf3103bdf888b07ac93f60f9df106ea20a117#f4ebf3103bdf888b07ac93f60f9df106ea20a117"
+  integrity sha512-x6zCwljmKg6sXg+wFzQ581ZeWLPQd5LSuobaYX7eEG2ITHxxhWYeOBLeyogUK/DJvysn//glBasR+zlfmw74Kg==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
