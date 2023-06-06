@@ -2,12 +2,12 @@ import streamSaver from 'streamsaver';
 
 import analyticsService from 'app/analytics/services/analytics.service';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
-import localStorageService from 'app/core/services/local-storage.service';
 import { DriveFileData } from '../../types';
 import downloadFileFromBlob from './downloadFileFromBlob';
 import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
+import { ConnectionLostError } from '../../../network/requests';
 
 interface BlobWritable {
   getWriter: () => {
@@ -121,10 +121,19 @@ export default async function downloadFile(
     { isTeam, updateProgressCallback, abortController },
   );
 
-  await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController).catch((err) => {
+  let connectionLost = false;
+  try {
+    const connectionLostListener = () => {
+      connectionLost = true;
+      window.removeEventListener('offline', connectionLostListener);
+    };
+    window.addEventListener('offline', connectionLostListener);
+
+    await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
+  } catch (err) {
     const errMessage = err instanceof Error ? err.message : (err as string);
 
-    if (!abortController?.signal.aborted) {
+    if (abortController?.signal.aborted && !connectionLost) {
       analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
     } else {
       analyticsService.trackFileDownloadError({
@@ -133,8 +142,9 @@ export default async function downloadFile(
       });
     }
 
-    throw new Error(errMessage);
-  });
+    if (connectionLost) throw new ConnectionLostError();
+    else throw err;
+  }
 
   analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }
