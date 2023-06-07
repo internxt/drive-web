@@ -28,7 +28,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
-      - run: echo ${{ secrets.STAGING_NGINX_CONFIG }} | base64 -d > ./infrastructure/staging/nginx.conf
       - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
       - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
       - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
