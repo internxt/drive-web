@@ -1,5 +1,6 @@
 {
   "baseUrl": "http://localhost:3000",
+  "proxyUrl": "http://localhost:8080",
   "chromeWebSecurity": false,
   "defaultCommandTimeout": 60000,
   "pluginsFile": "cypress/plugins/index.ts",
