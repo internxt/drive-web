@@ -73,7 +73,7 @@
     "build": "craco build",
     "vercel:install": "yarn run add:npmrc && yarn install",
     "test:unit": "jest src/ && jest test/unit",
-    "test:e2e": "cypress run --project test/e2e --browser chrome",
+    "test:e2e": "node ./cypress-transform-dotenv.js && cypress run --project test/e2e --browser chrome",
     "cypress:open": "node ./cypress-transform-dotenv.js && cypress open --project test/e2e",
     "test": "npm run test:unit && npm run test:e2e",
     "eject": "react-scripts eject",
