@@ -41,6 +41,7 @@ jobs:
       - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./.env
       - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./.env
       - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./.env
+      - run: echo REACT_APP_DONT_USE_PROXY=${{ secrets.REACT_APP_DONT_USE_PROXY }} >> ./.env
       - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./.env
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
