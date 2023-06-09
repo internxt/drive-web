@@ -32,10 +32,13 @@ export async function uploadFileBlob(
   },
 ): Promise<{ etag: string }> {
   try {
-    const res = await axios({
+    const res = await axios.create()({
       url,
       method: 'PUT',
       data: content,
+      headers: {
+        'content-type': 'application/octet-stream',
+      },
       onUploadProgress: (progress: ProgressEvent) => {
         opts.progressCallback(progress.total, progress.loaded);
       },
