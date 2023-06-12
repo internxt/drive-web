@@ -53,14 +53,10 @@ export default function Button({
       autoFocus={autofocus}
       className={`${
         size === 'default' ? 'h-10 px-5' : 'h-8 px-3.5'
-      } outline-none relative flex select-none flex-row items-center justify-center whitespace-nowrap rounded-lg text-base font-medium ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out focus-visible:ring-opacity-50 ${styles} ${className}`}
+      } outline-none relative flex select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg text-base font-medium ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out focus-visible:ring-opacity-50 ${styles} ${className}`}
     >
-      {loading && (
-        <div className="absolute left-1/2 top-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform">
-          <Spinner />
-        </div>
-      )}
-      <div className={loading ? 'opacity-0' : ''}>{children}</div>
+      {loading && <Spinner size={18} />}
+      <span className={`${loading ? 'opacity-90' : ''}`}>{children}</span>
     </button>
   );
 }

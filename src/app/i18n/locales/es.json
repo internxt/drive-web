@@ -205,6 +205,7 @@
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
+              "edit": "Editar",
               "email": "Correo electrónico",
               "resendEmail": "Reenviar correo de verificación"
             },
@@ -215,10 +216,21 @@
             },
             "editProfile": {
               "name": "Nombre",
-              "lastname": "Apellido"
+              "lastname": "Apellido",
+              "updateProfile": "Perfil actualizado correctamente",
+              "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
-            "updateProfile": "Perfil actualizado correctamente",
-            "errorUpdatingProfile": "No hemos podido actualizar su perfil"
+            "changeEmail": {
+              "title": "Cambiar correo electrónico",
+              "email": "Correo",
+              "newEmail": "Nuevo correo",
+              "password": "Contraseña",
+              "errorPassword": "Contraseña incorrecta, prueba otra vez",
+              "sendVerification": "Enviar verificación",
+              "sendingVerification": "Enviando verificación",
+              "sucessSendingVerification": "Verificación de correo electrónico enviada",
+              "errorSendingVerification": "Error enviando verificación"
+            }
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
@@ -899,6 +911,7 @@
     "moreInfo": "Más info",
     "dismiss": "Dismiss",
     "save": "Guardar",
+    "saving": "Guardando",
     "back": "Atrás",
     "edit": "Editar",
     "submit": "Enviar",

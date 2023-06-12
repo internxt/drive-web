@@ -232,11 +232,23 @@
               "description": "Check your inbox"
             },
             "editProfile": {
+              "title": "Edit account details",
               "name": "Name",
-              "lastname": "Lastname"
+              "lastname": "Lastname",
+              "updatedProfile": "Profile updated successfully",
+              "errorUpdatingProfile": "We could not update your profile"
             },
-            "updateProfile": "Profile updated successfully",
-            "errorUpdatingProfile": "We could not update your profile"
+            "changeEmail": {
+              "title": "Change email",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Password",
+              "errorPassword": "Wrong password, try again",
+              "sendVerification": "Send verification",
+              "sendingVerification": "Sending verification",
+              "sucessSendingVerification": "Email verification sent",
+              "errorSendingVerification": "Error sending verification"
+            }
           },
           "deleteAccount": {
             "head": "Delete account",
@@ -916,6 +928,7 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saving": "Saving",
     "back": "Back",
     "edit": "Edit",
     "submit": "Submit",

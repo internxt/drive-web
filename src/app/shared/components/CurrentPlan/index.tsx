@@ -45,11 +45,7 @@ export default function CurrentPlan({
           )}
         </div>
       </div>
-      {button && (
-        <Button size="medium" onClick={onButtonClick}>
-          {button}
-        </Button>
-      )}
+      {button && <Button onClick={onButtonClick}>{button}</Button>}
     </div>
   );
 }

@@ -216,11 +216,22 @@
               "description": "Consultez votre email"
             },
             "editProfile": {
+              "title": "Modifier les détails du compte",
               "name": "Prénom",
-              "lastname": "Nom"
+              "lastname": "Nom",
+              "updateProfile": "Profil mis à jour avec succès",
+              "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
-            "updateProfile": "Profil mis à jour avec succès",
-            "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
+            "changeEmail": {
+              "title": " Changer d'adresse électronique ",
+              "email": "Courriel",
+              "newEmail": "Nouvelle adresse électronique ",
+              "password": "Mot de passe",
+              "sendVerification": "Envoyer la vérification",
+              "sendingVerification": "Envoi de la vérification",
+              "sucessSendingVerification": "Vérification par courriel envoyée",
+              "errorSendingVerification": "Erreur d'envoi de la vérification"
+            }
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
