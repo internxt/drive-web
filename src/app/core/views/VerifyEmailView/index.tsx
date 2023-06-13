@@ -1,4 +1,4 @@
-import { CheckCircle, WarningOctagon } from 'phosphor-react';
+import { CheckCircle, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import Spinner from '../../../shared/components/Spinner/Spinner';
@@ -8,18 +8,18 @@ export default function VerifyEmailView(): JSX.Element {
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
 
-  const [state, setState] = useState<'loading' | 'error' | 'success'>('loading');
+  const [status, setStatus] = useState<'loading' | 'error' | 'success'>('loading');
 
   async function verify() {
-    setState('loading');
+    setStatus('loading');
 
     try {
       const usersClient = SdkFactory.getInstance().createUsersClient();
       await usersClient.verifyEmail({ verificationToken: decodeURIComponent(token) });
-      setState('success');
+      setStatus('success');
     } catch (err) {
       console.error(err);
-      setState('error');
+      setStatus('error');
     }
   }
 
@@ -27,25 +27,52 @@ export default function VerifyEmailView(): JSX.Element {
     verify();
   }, []);
 
+  const layout = {
+    success: {
+      icon: <CheckCircle className="text-primary" weight="thin" size={96} />,
+      title: 'Email verified successfully',
+      subtitle: 'You can close this tab now',
+    },
+    error: {
+      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      title: 'Can’t verify your email',
+      subtitle: 'Check the link is correct or request email verification again in Settings > Account',
+    },
+  };
+
+  const cta = {
+    success: {
+      label: 'Open Internxt Drive',
+      path: '/',
+    },
+    error: {
+      label: 'Go to Account',
+      path: '/preferences?tab=account',
+    },
+  };
+
+  const State = ({ icon, title, subtitle }: { icon: JSX.Element; title: string; subtitle: string }) => (
+    <div className="flex w-full max-w-xs flex-col items-center space-y-5">
+      {icon}
+
+      <div className="flex flex-col items-center space-y-1 text-center">
+        <h1 className="text-2xl font-medium text-gray-100">{title}</h1>
+        <p className="text-base leading-tight text-gray-80">{subtitle}</p>
+      </div>
+    </div>
+  );
+
   return (
     <div className="flex min-h-screen items-center justify-center">
-      <div className="flex w-full max-w-xl flex-col items-center">
-        <div className="flex items-center">
-          {state === 'loading' && <Spinner className="h-5 w-5" />}
-          {state === 'error' && <WarningOctagon className="text-red-std" weight="fill" size={24} />}
-          {state === 'success' && <CheckCircle className="text-green" weight="fill" size={24} />}
-          <h1 className="ml-2 text-2xl font-medium text-gray-80">
-            {state === 'loading'
-              ? 'Verifying your email'
-              : state === 'error'
-              ? 'Something went wrong'
-              : 'Email verified'}
-          </h1>
-        </div>
-        {state === 'error' && <p className="mt-4 text-gray-70">We could not verify your email address</p>}
-        {(state === 'error' || state === 'success') && (
-          <Link className="mt-2 font-medium text-primary no-underline" to="/">
-            Go back home
+      <div className="flex w-full max-w-xl flex-col items-center space-y-5">
+        {status === 'loading' ? <Spinner size={24} /> : <State {...layout[status]} />}
+
+        {status !== 'loading' && (
+          <Link
+            className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
+            to={cta[status].path}
+          >
+            {cta[status].label}
           </Link>
         )}
       </div>
