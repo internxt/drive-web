@@ -213,6 +213,12 @@
       "exact": true
     },
     {
+      "id": "change-email",
+      "layout": "empty",
+      "path": "/change-email/:token",
+      "exact": false
+    },
+    {
       "id": "verify-email",
       "layout": "empty",
       "path": "/verify-email/:token",
