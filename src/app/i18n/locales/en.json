@@ -243,6 +243,7 @@
               "email": "Email",
               "newEmail": "New email",
               "password": "Password",
+              "errorSameEmail": "New email should be different from the current one",
               "errorPassword": "Wrong password, try again",
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",

@@ -227,6 +227,7 @@
               "email": "Courriel",
               "newEmail": "Nouvelle adresse électronique ",
               "password": "Mot de passe",
+              "errorSameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
               "sucessSendingVerification": "Vérification par courriel envoyée",

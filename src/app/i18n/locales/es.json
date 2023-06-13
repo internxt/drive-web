@@ -225,6 +225,7 @@
               "email": "Correo",
               "newEmail": "Nuevo correo",
               "password": "Contraseña",
+              "errorSameEmail": "El nuevo correo electrónico debe ser diferente del actual",
               "errorPassword": "Contraseña incorrecta, prueba otra vez",
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",

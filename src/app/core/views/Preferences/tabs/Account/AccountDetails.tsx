@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CheckCircle, Warning } from 'phosphor-react';
+import { CheckCircle, Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import userService from '../../../../../auth/services/user.service';
@@ -231,13 +231,13 @@ function AccountDetailsModal({
 
 function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose: () => void; email: string }) {
   const { translate } = useTranslationContext();
-  const [password, setPassword] = useState('');
-  const [newEmail, setNewEmail] = useState('');
+  const [password, setPassword] = useState<string>('');
+  const [newEmail, setNewEmail] = useState<string>('');
 
   const [status, setStatus] = useState<
     | { tag: 'ready' }
     | { tag: 'loading' }
-    | { tag: 'error'; type: 'NAME_INVALID' | 'LASTNAME_INVALID' | 'PASSWORD_INVALID' | 'UNKNOWN' }
+    | { tag: 'error'; type: 'NAME_INVALID' | 'LASTNAME_INVALID' | 'PASSWORD_INVALID' | 'SAME_EMAIL' | 'UNKNOWN' }
   >({ tag: 'ready' });
 
   useEffect(() => {
@@ -248,26 +248,30 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
 
   async function onChange(e) {
     e.preventDefault();
-    try {
-      setStatus({ tag: 'loading' });
-      const correctPassword = await areCredentialsCorrect(email, password);
-      if (correctPassword) {
-        // TODO -> Send verificaion email
-        // Send verification to newEmail
+    if (email === newEmail) {
+      setStatus({ tag: 'error', type: 'SAME_EMAIL' });
+    } else {
+      try {
+        setStatus({ tag: 'loading' });
+        const correctPassword = await areCredentialsCorrect(email, password);
+        if (correctPassword) {
+          // TODO -> Send verificaion email
+          // Send verification to newEmail
+          notificationsService.show({
+            text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification'),
+            type: ToastType.Success,
+          });
+          onClose();
+        } else {
+          setStatus({ tag: 'error', type: 'PASSWORD_INVALID' });
+        }
+      } catch {
+        setStatus({ tag: 'error', type: 'UNKNOWN' });
         notificationsService.show({
-          text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification'),
-          type: ToastType.Success,
+          text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),
+          type: ToastType.Error,
         });
-        onClose();
-      } else {
-        setStatus({ tag: 'error', type: 'PASSWORD_INVALID' });
       }
-    } catch {
-      setStatus({ tag: 'error', type: 'UNKNOWN' });
-      notificationsService.show({
-        text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),
-        type: ToastType.Error,
-      });
     }
   }
 
@@ -291,6 +295,12 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
             autoComplete="off"
             label={translate('views.account.tabs.account.accountDetails.changeEmail.newEmail') as string}
             onChange={setNewEmail}
+            accent={status.tag === 'error' && status.type === 'SAME_EMAIL' ? 'error' : undefined}
+            message={
+              status.tag === 'error' && status.type === 'SAME_EMAIL'
+                ? (translate('views.account.tabs.account.accountDetails.changeEmail.errorSameEmail') as string)
+                : undefined
+            }
             name="newemail"
           />
           <Input
@@ -299,7 +309,7 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
             label={translate('views.account.tabs.account.accountDetails.changeEmail.password') as string}
             variant="password"
             onChange={setPassword}
-            accent={status.tag === 'error' ? 'error' : undefined}
+            accent={status.tag === 'error' && status.type === 'PASSWORD_INVALID' ? 'error' : undefined}
             message={
               status.tag === 'error' && status.type === 'PASSWORD_INVALID'
                 ? (translate('views.account.tabs.account.accountDetails.changeEmail.errorPassword') as string)
