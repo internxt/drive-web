@@ -1,7 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { Desktop, SignOut, UserPlus, Gear } from 'phosphor-react';
+import { Desktop, SignOut, UserPlus, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import Popover from '../../../shared/components/Popover';

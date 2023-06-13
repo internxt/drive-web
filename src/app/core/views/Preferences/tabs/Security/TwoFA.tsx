@@ -1,4 +1,4 @@
-import { CheckCircle, Warning } from 'phosphor-react';
+import { CheckCircle, Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import authService, {
   deactivate2FA,

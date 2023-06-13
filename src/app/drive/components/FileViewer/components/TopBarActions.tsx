@@ -10,7 +10,7 @@ import {
   LinkBreak,
   PencilSimple,
   Trash,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';

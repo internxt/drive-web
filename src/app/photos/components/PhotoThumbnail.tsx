@@ -1,4 +1,4 @@
-import { Check } from 'phosphor-react';
+import { Check } from '@phosphor-icons/react';
 
 export default function PhotoThumbnail({
   className = '',

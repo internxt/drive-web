@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { WarningCircle } from 'phosphor-react';
+import { WarningCircle } from '@phosphor-icons/react';
 
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 // import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';

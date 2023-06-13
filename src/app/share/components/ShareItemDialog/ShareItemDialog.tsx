@@ -10,7 +10,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { aes, items } from '@internxt/lib';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import PasswordInput from './components/PasswordInput';
-import { Check, Copy } from 'phosphor-react';
+import { Check, Copy } from '@phosphor-icons/react';
 import dateService from 'app/core/services/date.service';
 import shareService from 'app/share/services/share.service';
 import localStorageService from 'app/core/services/local-storage.service';

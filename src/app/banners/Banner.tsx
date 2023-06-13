@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { X } from 'phosphor-react';
+import { X } from '@phosphor-icons/react';
 import NeonBlur from 'assets/images/banner/infinity.svg';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 

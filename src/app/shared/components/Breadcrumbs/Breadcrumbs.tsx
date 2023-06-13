@@ -1,4 +1,4 @@
-import { CaretRight, DotsThree } from 'phosphor-react';
+import { CaretRight, DotsThree } from '@phosphor-icons/react';
 import { forwardRef, ReactNode } from 'react';
 import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
