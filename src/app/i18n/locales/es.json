@@ -206,7 +206,7 @@
               "name": "Nombre",
               "lastname": "Apellido",
               "edit": "Editar",
-              "email": "Correo electrónico",
+              "email": "Correo",
               "resendEmail": "Reenviar correo de verificación"
             },
             "verify": {
@@ -226,7 +226,7 @@
               "newEmail": "Nuevo correo",
               "password": "Contraseña",
               "errorSameEmail": "El nuevo correo electrónico debe ser diferente del actual",
-              "errorPassword": "Contraseña incorrecta, prueba otra vez",
+              "errorPassword": "Contraseña incorrecta, inténtalo de nuevo",
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
               "sucessSendingVerification": "Verificación enviada a {{email}}",
@@ -470,6 +470,42 @@
             }
           }
         }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "Correo electrónico verificado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar la verificación del correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      }
+    },
+    "emailChange": {
+      "password": "Contraseña",
+      "auth": {
+        "title": "Verificar cambio de correo electrónico",
+        "subtitle": "El correo electrónico de tu cuenta se cambiará a {{email}}",
+        "wrongPassword": "Contraseña incorrecta, inténtelo de nuevo",
+        "cta": "Continuar"
+      },
+      "success": {
+        "title": "Correo electrónico cambiado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar el cambio de correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      },
+      "expired": {
+        "title": "Enlace de verificación caducado",
+        "subtitle": "Vuelve a solicitar el cambio de correo electrónico en Ajustes > Cuenta",
+        "cta": "Ir a Cuenta"
       }
     },
     "redirectToApp": {

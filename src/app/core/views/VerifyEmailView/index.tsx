@@ -3,8 +3,10 @@ import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SdkFactory } from '../../factory/sdk';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function VerifyEmailView(): JSX.Element {
+  const { translate } = useTranslationContext();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
 
@@ -30,23 +32,23 @@ export default function VerifyEmailView(): JSX.Element {
   const layout = {
     success: {
       icon: <CheckCircle className="text-primary" weight="thin" size={96} />,
-      title: 'Email verified successfully',
-      subtitle: 'You can close this tab now',
+      title: translate('views.emailVerification.success.title'),
+      subtitle: translate('views.emailVerification.success.subtitle'),
     },
     error: {
       icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
-      title: 'Can’t verify your email',
-      subtitle: 'Check the link is correct or request email verification again in Settings > Account',
+      title: translate('views.emailVerification.error.title'),
+      subtitle: translate('views.emailVerification.error.subtitle'),
     },
   };
 
   const cta = {
     success: {
-      label: 'Open Internxt Drive',
+      label: translate('views.emailVerification.success.cta'),
       path: '/',
     },
     error: {
-      label: 'Go to Account',
+      label: translate('views.emailVerification.error.cta'),
       path: '/preferences?tab=account',
     },
   };

@@ -490,6 +490,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": "Email verified successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
+    "emailChange": {
+      "password": "Password",
+      "auth": {
+        "title": "Verify email change",
+        "subtitle": "Your account email will be changed to {{email}}",
+        "wrongPassword": "Wrong password, please try again",
+        "cta": "Continue"
+      },
+      "success": {
+        "title": "Email changed successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email change again in Settings > Account",
+        "cta": "Go to Account"
+      },
+      "expired": {
+        "title": "Verification link expired",
+        "subtitle": "You can request email change again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"

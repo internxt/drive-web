@@ -206,14 +206,14 @@
             "card": {
               "name": "Prénom",
               "lastname": "Nom",
-              "edit": "Modifier",
-              "email": "Courriel",
-              "resendEmail": "Renvoyer courriel de vérification"
+              "edit": "Éditer",
+              "email": "Email",
+              "resendEmail": "Renvoyer l'email de vérification"
             },
             "verify": {
-              "verify": "Vérifier email",
-              "verified": "Verified email",
-              "description": "Consultez votre email"
+              "verify": "Vérifier votre email",
+              "verified": "Email vérifié",
+              "description": "Vérifiez votre boîte de réception"
             },
             "editProfile": {
               "title": "Modifier les détails du compte",
@@ -223,14 +223,15 @@
               "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
             "changeEmail": {
-              "title": " Changer d'adresse électronique ",
-              "email": "Courriel",
-              "newEmail": "Nouvelle adresse électronique ",
+              "title": "Changer d'adresse électronique",
+              "email": "Email",
+              "newEmail": "New email",
               "password": "Mot de passe",
               "errorSameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
+              "errorPassword": " Mauvais mot de passe, réessayez ",
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
-              "sucessSendingVerification": "Vérification par courriel envoyée à {{email}}",
+              "sucessSendingVerification": "Vérification par courriel envoyée",
               "errorSendingVerification": "Erreur d'envoi de la vérification"
             }
           },
@@ -423,6 +424,42 @@
             }
           }
         }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": " Email vérifié avec succès ",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé ",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la vérification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      }
+    },
+    "emailChange": {
+      "password": "Mot de passe",
+      "auth": {
+        "title": " Vérifier le changement d'adresse électronique ",
+        "subtitle": "L'email de votre compte sera remplacée par {{email}}",
+        "wrongPassword": "Mot de passe incorrect, réessayez",
+        "cta": "Continuer"
+      },
+      "success": {
+        "title": " Changement d'adresse électronique réussi",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      },
+      "expired": {
+        "title": " Lien de vérification expiré ",
+        "subtitle": " Demandez à nouveau la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
       }
     },
     "redirectToApp": {
@@ -861,6 +898,7 @@
     "moreInfo": "Plus d'informations",
     "dismiss": "Rejeter",
     "save": "Enregistrer",
+    "saving": "Sauvagarde en cours",
     "back": "Retourner",
     "edit": "Éditer",
     "submit": "Soumettre",
