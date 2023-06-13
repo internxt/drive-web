@@ -247,7 +247,7 @@
               "errorPassword": "Wrong password, try again",
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",
-              "sucessSendingVerification": "Email verification sent",
+              "sucessSendingVerification": "Email verification sent to {{email}}",
               "errorSendingVerification": "Error sending verification"
             }
           },

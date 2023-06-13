@@ -258,7 +258,9 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
           // TODO -> Send verificaion email
           // Send verification to newEmail
           notificationsService.show({
-            text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification'),
+            text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification', {
+              email: newEmail,
+            }),
             type: ToastType.Success,
           });
           onClose();

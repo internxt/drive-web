@@ -230,7 +230,7 @@
               "errorSameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
-              "sucessSendingVerification": "Vérification par courriel envoyée",
+              "sucessSendingVerification": "Vérification par courriel envoyée à {{email}}",
               "errorSendingVerification": "Erreur d'envoi de la vérification"
             }
           },

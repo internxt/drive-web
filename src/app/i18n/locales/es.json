@@ -229,7 +229,7 @@
               "errorPassword": "Contraseña incorrecta, prueba otra vez",
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
-              "sucessSendingVerification": "Verificación de correo electrónico enviada",
+              "sucessSendingVerification": "Verificación enviada a {{email}}",
               "errorSendingVerification": "Error enviando verificación"
             }
           },
