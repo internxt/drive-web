@@ -1,4 +1,4 @@
-import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from 'phosphor-react';
+import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Input({
@@ -42,8 +42,10 @@ export default function Input({
 
   const focusInput = () => {
     if (inputRef && inputRef.current) {
-      inputRef.current.selectionStart = inputRef.current.value.length;
-      inputRef.current.selectionEnd = inputRef.current.value.length;
+      if (variant !== 'email') {
+        inputRef.current.selectionStart = inputRef.current.value.length;
+        inputRef.current.selectionEnd = inputRef.current.value.length;
+      }
       inputRef.current.focus();
     }
   };
