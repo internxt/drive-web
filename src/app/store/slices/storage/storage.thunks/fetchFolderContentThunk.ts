@@ -21,6 +21,8 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
     const foldersOffset = storageState.levelsFoldersLength[folderId];
     const filesOffset = storageState.levelsFilesLength[folderId];
+    const driveItemsSort = storageState.driveItemsSort;
+    const driveItemsOrder = storageState.driveItemsOrder;
 
     if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
 
@@ -29,11 +31,22 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       let itemsPromise;
 
       if (hasMoreDriveFolders) {
-        [itemsPromise] = await storageClient.getFolderFolders(folderId, foldersOffset);
+        [itemsPromise] = await storageClient.getFolderFolders(
+          folderId,
+          foldersOffset,
+          DEFAULT_LIMIT,
+          driveItemsSort,
+          driveItemsOrder,
+        );
       } else if (hasMoreDriveFiles) {
-        [itemsPromise] = await storageClient.getFolderFiles(folderId, filesOffset);
+        [itemsPromise] = await storageClient.getFolderFiles(
+          folderId,
+          filesOffset,
+          DEFAULT_LIMIT,
+          driveItemsSort,
+          driveItemsOrder,
+        );
       }
-
       const items = await itemsPromise;
 
       const parsedItems = items.result.map(
