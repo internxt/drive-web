@@ -40,8 +40,25 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search in Drive",
-
+    "searchBar": {
+      "placeholder": "Search in Drive",
+      "filters": {
+        "folder": "Folder",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Clear"
+      },
+      "emptyState": {
+        "title": "Find files and folders",
+        "subtitle": "Search by name and type"
+      },
+      "notFoundState": {
+        "title": "No results found",
+        "subtitle": "No files or folders match the search"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"

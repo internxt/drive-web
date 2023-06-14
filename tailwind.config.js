@@ -455,7 +455,7 @@ module.exports = {
     pointerEvents: ['responsive', 'group-hover'],
     position: ['responsive', 'group-hover'],
     resize: ['responsive', 'group-hover'],
-    ringColor: ['responsive', 'dark', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
+    ringColor: ['responsive', 'hover', 'active', 'dark', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     ringOffsetColor: ['responsive', 'dark', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     ringOffsetWidth: ['responsive', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
     ringOpacity: ['responsive', 'dark', 'focus-within', 'focus-visible', 'focus', 'group-hover'],
