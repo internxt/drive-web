@@ -240,11 +240,8 @@ export function trackUserResetPasswordRequest(): void {
   // window.analytics.track(AnalyticsTrackNames.UserResetPasswordRequest);
 }
 
-export function track(email: string, status: 'error' | 'success'): void {
-  /* window.analytics.track('Password Changed', {
-    status,
-    email,
-  }); */
+export function track(reason: string, status?: 'error' | 'success'): void {
+  window.rudderanalytics.track(reason, { status });
 }
 
 export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {
@@ -255,9 +252,36 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
   // window.analytics.track(AnalyticsTrackNames.ShareLinkBucketIdUndefined, payload);
 }
 
+export async function trackCancelPayment(priceId: string) {
+  try {
+    const checkoutSessionId = localStorage.getItem('sessionId');
+    const {
+      amount_total,
+      id: sessionId,
+      customer_email,
+    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+      params: {
+        sessionId: checkoutSessionId,
+      },
+      headers: httpService.getHeaders(true, false),
+    });
+
+    const amount = amount_total * 0.01;
+
+    window.rudderanalytics.track(AnalyticsTrackNames.CancelPaymentConversionEvent, {
+      sessionId: sessionId,
+      email: customer_email,
+      price: amount,
+      priceId: priceId,
+    });
+  } catch (err) {
+    const castedError = errorService.castError(err);
+    console.error(castedError);
+  }
+}
+
 export async function trackPaymentConversion() {
   try {
-    // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
@@ -415,6 +439,7 @@ const analyticsService = {
   trackPaymentConversion,
   trackFileUploadAborted,
   getTrackingActionId,
+  trackCancelPayment,
 };
 
 export default analyticsService;

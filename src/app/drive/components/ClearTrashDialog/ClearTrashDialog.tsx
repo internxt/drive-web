@@ -7,6 +7,7 @@ import clearTrash from '../../../../use_cases/trash/clear-trash';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { planThunks } from 'app/store/slices/plan';
 
 interface ClearTrashDialogProps {
   onItemsDeleted?: () => void;
@@ -31,6 +32,9 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 

@@ -96,7 +96,7 @@ export default function AccountPopover({
           <p className="ml-3">Guest</p>
         </Item>
       )}
-      <Item onClick={onLogout} data-test="logout">
+      <Item onClick={onLogout}>
         <SignOut size={20} />
         <p className="ml-3" data-test="logout">
           {translate('views.account.popover.logout')}

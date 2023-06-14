@@ -42,7 +42,8 @@ export default function RecoverView(): JSX.Element {
   const [showSuccess, setShowSuccess] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    event?.preventDefault();
     setIsProcessing(true);
     const { password, lastPassword } = formData;
 

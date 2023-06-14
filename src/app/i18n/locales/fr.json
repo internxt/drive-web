@@ -8,11 +8,33 @@
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
     "cta": "Obtenir l'offre"
   },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
   "lang": {
     "title": "Langue",
-    "es": "Espagnol (ES)",
-    "en": "Anglais (EN)",
-    "fr": "Français (FR)"
+    "en": "English (Anglais)",
+    "es": "Español (Espagnol)",
+    "fr": "Français (Français)",
+    "it": "Italiano (Italien)",
+    "cn": "简体中文 (Chinois)",
+    "ru": "Русский (Russe)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -22,7 +44,7 @@
     "decrypting": "Décryptage...",
     "login": {
       "title": "Connexion",
-      "forgotPwd": "Vous avez oublié votre mot de passe ?",
+      "forgotPwd": "Mot de passe oublié ?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
@@ -31,7 +53,8 @@
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "login": "Connexion"
+      "login": "Connexion",
+      "encrypting": "Cryptage"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
@@ -195,7 +218,9 @@
             "editProfile": {
               "name": "Prénom",
               "lastname": "Nom"
-            }
+            },
+            "updateProfile": "Profil mis à jour avec succès",
+            "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -221,6 +246,7 @@
           "invoices": {
             "head": "Factures",
             "billingDate": "Date de facturation",
+            "plan": "Plan",
             "empty": {
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
@@ -253,7 +279,8 @@
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Paiement unique"
           },
           "features": {
             "title": "Caractéristiques incluses dans tous les plans :",
@@ -320,6 +347,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "L'authentification à deux facteurs offre une sécurité supplémentaire en exigeant une vérification pour la connexion. En plus de votre mot de passe, vous aurez besoin d'un code généré.",
             "button": "Activer 2FA",
+            "disable": "Désactiver 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -451,6 +479,7 @@
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
+      "total": "Total",
       "pending": "En attente",
       "accepted": "Accepté",
       "empty": "Vous n'avez encore invité personne",
@@ -534,8 +563,11 @@
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
-    "errorMovingToTrash": "An error occurred while moving the items to trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "errorMovingToTrash": "Error lors du déplacement des éléments.",
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Connexion Internet perdue",
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -663,7 +695,7 @@
         "decrypting": "Décryptage du fichier",
         "in-process": "{{progress}}% Téléchargement du fichier",
         "success": "Fichier téléchargé",
-        "error": "Erreur pendant le téléchargement",
+        "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"
       },
       "errors": {}
@@ -693,8 +725,9 @@
         "pending": "En attente de téléchargement",
         "decrypting": "Décryptage des fichiers",
         "in-process": "{{progress}}% Téléchargement du dossier",
+        "in-process-without-progress": "Téléchargement du dossier",
         "success": "Dossier téléchargé",
-        "error": "Erreur pendant le téléchargement",
+        "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"
       },
       "errors": {}
@@ -879,7 +912,9 @@
       "title": "Chargement maximum de fichiers",
       "advice": "Le maximum est de 1000 fichiers par téléchargement",
       "close": "Fermer"
-    }
+    },
+    "movingToTrash": "Déplacement d'éléments vers la corbeille",
+    "deletingItems": "Deleting items from trash"
   },
   "appSumo": {
     "tiers": {
@@ -904,8 +939,8 @@
   },
   "inviteAFriend": {
     "title": "Inviter un ami",
-    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Obtenez 1GB pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
+    "descriptionWidget": "Obtenez {{N}} Go extra free storage by inviting your friends (1 Go par utilisateur enregistré via votre invitation)",
+    "description": "Obtenez 1 Go pour chaque ami que vous invitez à Internxt. Recevez jusqu'à {{N}} Go au total.",
     "label": "Inviter à",
     "placeholder": "Entrez l'email de votre ami",
     "actions": {

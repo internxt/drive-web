@@ -11,10 +11,12 @@ export default function DeviceListItem({
   device,
   onClick,
   onDoubleClick,
+  dataTest,
 }: {
   device: Device | (DriveFolderData & { size: number });
   onClick: (clickedDevice: typeof device) => void;
   onDoubleClick: (clickedDevice: typeof device) => void;
+  dataTest?: string;
 }): JSX.Element {
   let Icon;
 
@@ -41,6 +43,7 @@ export default function DeviceListItem({
       className="flex flex-grow items-center py-3.5"
       onClick={() => onClick(device)}
       onDoubleClick={() => onDoubleClick(device)}
+      data-test={dataTest}
     >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <Icon className="h-8 w-8" />

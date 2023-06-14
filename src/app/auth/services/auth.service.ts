@@ -36,7 +36,6 @@ export async function logOut(): Promise<void> {
   localStorageService.clear();
   RealtimeService.getInstance().stop();
   navigationService.push(AppView.Login);
-  window.location.reload();
 }
 
 export function cancelAccount(): Promise<void> {
@@ -292,7 +291,14 @@ const extractOneUseCredentialsForAutoSubmit = (
   searchParams: URLSearchParams,
 ): {
   enabled: boolean;
-  credentials?: { email: string; password: string };
+  credentials?: {
+    email: string;
+    password: string;
+    redeemCodeObject?: {
+      code: string;
+      provider: string;
+    };
+  };
 } => {
   // Auto submit is not enabled;
   if (searchParams.get('autoSubmit') !== 'true') {
@@ -310,6 +316,7 @@ const extractOneUseCredentialsForAutoSubmit = (
       credentials: {
         email: credentials.email,
         password: credentials.password,
+        redeemCodeObject: credentials.redeemCode,
       },
     };
   } catch (error) {

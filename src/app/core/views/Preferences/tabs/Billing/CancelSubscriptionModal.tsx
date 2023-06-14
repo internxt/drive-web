@@ -5,6 +5,11 @@ import Button from '../../../../../shared/components/Button/Button';
 import Modal from '../../../../../shared/components/Modal';
 import { FreeStoragePlan } from '../../../../../drive/types';
 import sizeService from '../../../../../drive/services/size.service';
+import paymentService from 'app/payment/services/payment.service';
+import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import { useAppDispatch } from '../../../../../store/hooks';
+import { planThunks } from '../../../../../store/slices/plan';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -24,30 +29,81 @@ const CancelSubscriptionModal = ({
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2>(1);
+  const [step, setStep] = useState<1 | 2 | 3>(2);
+  const [couponAvailable, setCouponAvailable] = useState(false);
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (isOpen) {
+    paymentService
+      .requestPreventCancellation()
+      .then((response) => {
+        setCouponAvailable(response.elegible);
+      })
+      .catch((error) => {
+        console.error(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorApplyCoupon'),
+          type: ToastType.Error,
+        });
+      });
+  }, []);
+
+  useEffect(() => {
+    if (couponAvailable) {
       setStep(1);
+      analyticsService.page('Cancelation incentive');
     }
-  }, [isOpen]);
+  }, [couponAvailable]);
+
+  const applyCoupon = async () => {
+    try {
+      await paymentService.preventCancellation();
+      notificationsService.show({ text: translate('notificationMessages.successApplyCoupon') });
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
+    } catch (error: any) {
+      const errorMessage = JSON.parse(error.message);
+      if (errorMessage.message === 'User already applied coupon') {
+        notificationsService.show({
+          text: translate('notificationMessages.alreadyAppliedCoupon'),
+          type: ToastType.Error,
+        });
+      } else {
+        notificationsService.show({
+          text: translate('notificationMessages.errorApplyCoupon'),
+          type: ToastType.Error,
+        });
+      }
+    } finally {
+      onClose();
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
-      <h1 className="text-2xl font-medium text-gray-80">
-        {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
-      </h1>
-      <h2 className="text-base font-light text-gray-50">{step} of 2</h2>
-      {step === 1 ? (
-        <Step1
+      {(step === 2 || step === 3) && (
+        <>
+          <h1 className="text-2xl font-medium text-gray-80">
+            {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
+          </h1>
+          <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>
+        </>
+      )}
+      {step === 1 && <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />}
+
+      {step === 2 && (
+        <Step2
           currentPlanName={currentPlanName}
           onClose={onClose}
           setStep={setStep}
           currentPlanInfo={currentPlanInfo}
           currentUsage={currentUsage}
         />
-      ) : (
-        <Step2
+      )}
+
+      {step === 3 && (
+        <Step3
           currentPlanName={currentPlanName}
           onClose={onClose}
           cancellingSubscription={cancellingSubscription}
@@ -60,6 +116,55 @@ const CancelSubscriptionModal = ({
 
 const Step1 = ({
   currentPlanName,
+  setStep,
+  applyCoupon,
+}: {
+  currentPlanName: string;
+  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
+  applyCoupon: () => void;
+}): JSX.Element => {
+  const { translate } = useTranslationContext();
+
+  return (
+    <>
+      <p className="mt-5 text-center text-3xl font-semibold">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.title')}
+      </p>
+      <p className="font-regular mb-10 text-center text-7xl text-primary">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.subtitle')}
+      </p>
+      <p className="font-regular mt-4 text-lg text-gray-100">
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.text1')}
+        <span className="font-semibold"> {currentPlanName} </span>
+        {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.text2')}
+      </p>
+      <div className="mt-5 flex justify-end">
+        <Button
+          className={'shadow-subtle-hard'}
+          variant="secondary"
+          onClick={() => {
+            analyticsService.page('Cancel Subscription');
+            setStep(2);
+          }}
+        >
+          {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}
+        </Button>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analyticsService.track('Subscription Cancelation Incentive Accepted');
+            applyCoupon();
+          }}
+        >
+          {translate('views.account.tabs.billing.cancelSubscriptionModal.coupon.continue')}
+        </Button>
+      </div>
+    </>
+  );
+};
+
+const Step2 = ({
+  currentPlanName,
   currentPlanInfo,
   currentUsage,
   setStep,
@@ -68,7 +173,7 @@ const Step1 = ({
   currentPlanName: string;
   currentPlanInfo: string;
   currentUsage: number;
-  setStep: Dispatch<SetStateAction<2 | 1>>;
+  setStep: Dispatch<SetStateAction<3 | 2 | 1>>;
   onClose: () => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -146,12 +251,18 @@ const Step1 = ({
           className={'shadow-subtle-hard'}
           variant="secondary"
           onClick={() => {
-            setStep(2);
+            setStep(3);
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.continue')}
         </Button>
-        <Button className="ml-2 shadow-subtle-hard" onClick={onClose}>
+        <Button
+          className="ml-2 shadow-subtle-hard"
+          onClick={() => {
+            analyticsService.track('Keep Subscription Clicked');
+            onClose();
+          }}
+        >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.keepSubscription')}
         </Button>
       </div>
@@ -159,7 +270,7 @@ const Step1 = ({
   );
 };
 
-const Step2 = ({
+const Step3 = ({
   currentPlanName,
   onClose,
   cancellingSubscription,
@@ -171,56 +282,9 @@ const Step2 = ({
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [feedbackSelected, setFeedbackSelected] = useState<string>('');
   const [otherFeedback, setOtherFeedback] = useState<string>('');
 
   const MAX_OTHERFEEDBACK_LENGTH = 1000;
-
-  const feedbackOptions = [
-    {
-      id: 'TooExpensive',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.tooExpensive'),
-    },
-    {
-      id: 'LackOfFeatures',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.lackOfFeatures'),
-    },
-    {
-      id: 'WantTryAnother',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.wantTryAnother'),
-    },
-    {
-      id: 'JustTrying',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.justTrying'),
-    },
-    {
-      id: 'Other',
-      title: translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.other'),
-    },
-  ];
-
-  const feedbackList = feedbackOptions.map((feedbackElement) => {
-    return (
-      <div className="mt-2" key={'div-' + feedbackElement.id}>
-        <label
-          className="flex flex-row items-center"
-          onClick={() => {
-            setFeedbackSelected(feedbackElement.id);
-          }}
-        >
-          <input
-            type="checkbox"
-            checked={feedbackSelected === feedbackElement.id}
-            readOnly
-            className="checkbox-rounded"
-          />
-          <p className="ml-2 text-base font-medium">{feedbackElement.title}</p>
-        </label>
-      </div>
-    );
-  });
-
-  const isFeedbackSelectedOther = () => feedbackSelected === 'Other';
 
   return (
     <>
@@ -229,37 +293,30 @@ const Step2 = ({
           currentPlanName,
         })}
       </p>
-      <div className="mt-2">{feedbackList}</div>
-      {isFeedbackSelectedOther() && (
-        <div>
-          <textarea
-            disabled={cancellingSubscription}
-            value={otherFeedback}
-            placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
-            rows={4}
-            className="outline-none mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
-            onChange={(e) => setOtherFeedback(String(e.target.value))}
-          />
-          <div className="flex w-full max-w-lg justify-end">
-            <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red-std') || ''}`}>
-              {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
-            </span>
-          </div>
+      <div>
+        <textarea
+          disabled={cancellingSubscription}
+          value={otherFeedback}
+          placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
+          rows={4}
+          className="outline-none mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+          onChange={(e) => setOtherFeedback(String(e.target.value))}
+        />
+        <div className="flex w-full max-w-lg justify-end">
+          <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red-std') || ''}`}>
+            {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
+          </span>
         </div>
-      )}
+      </div>
 
       <div className="mt-4 flex justify-end">
         <Button
           loading={cancellingSubscription}
-          disabled={isFeedbackSelectedOther() && otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH}
+          disabled={otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH || otherFeedback.length <= 0}
           variant="secondary"
           className="shadow-subtle-hard"
           onClick={() => {
-            if (isFeedbackSelectedOther()) {
-              cancelSubscription(otherFeedback.trim());
-            } else {
-              cancelSubscription(feedbackSelected);
-            }
+            cancelSubscription(otherFeedback.trim());
           }}
         >
           {translate('views.account.tabs.billing.cancelSubscriptionModal.cancelSubscription')}

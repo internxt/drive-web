@@ -55,6 +55,7 @@ function moveFile(
     .moveFile(payload)
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });
@@ -75,6 +76,7 @@ function moveFolder(
     .moveFolder(payload)
     .then((response) => trackMove(response, 'folder'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });

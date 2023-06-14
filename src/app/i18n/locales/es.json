@@ -8,11 +8,33 @@
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
+  "lifetimeBanner": {
+    "title": "Oferta lifetime",
+    "description": "¡Privacidad en la nube para siempre!",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Obtén la oferta"
+  },
   "lang": {
     "title": "Idioma",
-    "es": "Español (ES)",
-    "en": "Inglés (EN)",
-    "fr": "Francés (FR)"
+    "en": "English (Inglés)",
+    "es": "Español (Español)",
+    "fr": "Français (Francés)",
+    "it": "Italiano (Italiano)",
+    "cn": "简体中文 (Chino)",
+    "ru": "Русский (Ruso)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -31,7 +53,8 @@
     "signup": {
       "title": "Crear una cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
-      "login": "Iniciar sesión"
+      "login": "Iniciar sesión",
+      "encrypting": "Encriptando"
     },
     "forgotPassword": {
       "title": "Contraseña olvidada",
@@ -193,7 +216,9 @@
             "editProfile": {
               "name": "Nombre",
               "lastname": "Apellido"
-            }
+            },
+            "updateProfile": "Perfil actualizado correctamente",
+            "errorUpdatingProfile": "No hemos podido actualizar su perfil"
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
@@ -223,12 +248,14 @@
             },
             "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
             "feedback": {
-              "placeholder": "Denos su opinión",
-              "tooExpensive": "Demasiado caro",
-              "lackOfFeatures": "Falta de funcionalidades",
-              "wantTryAnother": "Quiero probar otro proveedor de almacenamiento",
-              "justTrying": "Solo estaba probando Internxt Drive",
-              "other": "Otro"
+              "placeholder": "Denos su opinión"
+            },
+            "coupon": {
+              "title": "3 MESES",
+              "subtitle": "GRATIS",
+              "text1": "Si mantienes tu suscripción de",
+              "text2": "obtendrás los 3 meses siguientes gratis. Solo se aplicara una vez",
+              "continue": "Obtener 3 meses GRATIS"
             }
           },
           "billed": "Facturación {{interval}} {{renewDate}}",
@@ -243,6 +270,7 @@
           "invoices": {
             "head": "Facturas",
             "billingDate": "Fecha de facturación",
+            "plan": "Plan",
             "empty": {
               "title": "Estás en el plan gratuito",
               "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."
@@ -274,7 +302,8 @@
           "card": {
             "annually": "{{amount}}€ facturado al año",
             "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€"
+            "lifetime": "{{amount}}€",
+            "oneTimePayment": "Pago único"
           },
           "features": {
             "title": "Funciones incluidas en todos los planes",
@@ -364,6 +393,7 @@
             "titleDisable": "Desactivar autenticación en dos pasos",
             "description": "La autenticación en dos pasos proporciona una capa de seguridad adicional, ya que requiere verificación al iniciar sesión. Además de tu contraseña, necesitarás un código generado.",
             "button": "Activar",
+            "disable": "Deshabilitar 2FA",
             "enabled": "Activado",
             "disabled": "Desactivado",
             "modal": {
@@ -496,6 +526,7 @@
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
       "pending": "Pendientes",
+      "total": "Total",
       "accepted": "Aceptadas",
       "empty": "No has invitado a nadie aún",
       "resend": "Reenviar invitación",
@@ -580,7 +611,10 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos."
+    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Conexión a internet perdida",
+    "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -708,7 +742,7 @@
         "decrypting": "Descifrando archivo",
         "in-process": "{{progress}}% Descargando archivo",
         "success": "Archivo descargado",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}
@@ -738,8 +772,9 @@
         "pending": "Descarga pendiente",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% carpeta descargada",
+        "in-process-without-progress": "Descargando carpeta",
         "success": "Carpeta descargada",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}
@@ -815,7 +850,10 @@
     "emailNotEmpty": "El correo no debe estar vacío",
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
-    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción"
+    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCoupon": "Se han aplicado 3 meses gratis",
+    "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
+    "alreadyAppliedCoupon": "El cupón ya se ha aplicado"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

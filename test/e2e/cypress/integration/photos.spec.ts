@@ -14,7 +14,7 @@ describe('Photos panel', () => {
     cy.visit('/app/photos');
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
-    cy.get('[data-test=photos-gallery]').contains('Your gallery is empty');
+    cy.get('[data-test=photos-gallery]').contains('Your photo gallery is empty');
     cy.get('[data-test=photos-grid]').should('not.exist');
   });
 
@@ -24,7 +24,7 @@ describe('Photos panel', () => {
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
     cy.get('[data-test=photos-grid]').should('be.visible');
-    cy.get('[data-test=photos-grid]').find('img').should('have.length', 1);
+    cy.get('[data-test=photos-grid]').find('[data-test^="photos-item-"] > .relative').should('have.length', 1);
   });
 
   it('CY-03_Should list 2 photos', () => {
@@ -33,7 +33,7 @@ describe('Photos panel', () => {
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
     cy.get('[data-test=photos-grid]').should('be.visible');
-    cy.get('[data-test=photos-grid]').find('img').should('have.length', 2);
+    cy.get('[data-test=photos-grid]').find('[data-test^="photos-item-"] > .relative').should('have.length', 2);
   });
 
   it('CY-04_Should do a fullscreen preview', () => {
@@ -79,7 +79,7 @@ describe('Photos panel', () => {
     cy.get('[data-test=photos-download-selected]')
       .click({ force: true })
       .then(() => {
-        cy.readFile(join(downloadsFolder, resultZipName), 'binary', { timeout: 15000 });
+        cy.readFile(join(downloadsFolder, resultZipName), 'binary', { timeout: 30000 });
         // TODO not only check if the zip had been downloaded (it should be compared with the desired zip)
         // i've tried to compare files but it runs out of memory
       });

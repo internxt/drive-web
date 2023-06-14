@@ -8,11 +8,50 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
+  "notFound": {
+    "header": "Error 404",
+    "title": "Nothing to see here...",
+    "description": "The page you are looking for could not be found.",
+    "card1": {
+      "title": "Return Home",
+      "description": "Go back to Internxt Drive."
+    },
+    "card2": {
+      "title": "Visit Help Center",
+      "description": "Troubleshoot common issues and browse our FAQ."
+    },
+    "card3": {
+      "title": "Contact Support",
+      "description": "Reach out to our Support Team at hello@internxt.com."
+    }
+  },
   "lang": {
     "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)"
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "简体中文 (Chinese)",
+    "ru": "Русский (Russian)"
   },
   "auth": {
     "email": "Email",
@@ -30,8 +69,9 @@
     },
     "signup": {
       "title": "Create account",
-      "haveAccount": "already have an account?",
-      "login": "Log in"
+      "haveAccount": "Already have an account?",
+      "login": "Log in",
+      "encrypting": "Encrypting"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -194,7 +234,9 @@
             "editProfile": {
               "name": "Name",
               "lastname": "Lastname"
-            }
+            },
+            "updateProfile": "Profile updated successfully",
+            "errorUpdatingProfile": "We could not update your profile"
           },
           "deleteAccount": {
             "head": "Delete account",
@@ -224,12 +266,14 @@
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
-              "placeholder": "Give us some feedback",
-              "tooExpensive": "Too expensive",
-              "lackOfFeatures": "Lack of features",
-              "wantTryAnother": "Want to try another storage provider",
-              "justTrying": "Was just trying out Internxt Drive",
-              "other": "Other"
+              "placeholder": "Give us some feedback"
+            },
+            "coupon": {
+              "title": "3 MONTHS",
+              "subtitle": "FREE",
+              "text1": "By keeping your",
+              "text2": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "continue": "Get 3 months FREE"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",
@@ -244,6 +288,7 @@
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
@@ -275,7 +320,8 @@
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "One-time payment"
           },
           "features": {
             "title": "Features included in all plans",
@@ -365,6 +411,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
             "button": "Enable 2FA",
+            "disable": "Disable 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -496,6 +543,7 @@
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
+      "total": "Total",
       "pending": "Pending",
       "accepted": "Accepted",
       "empty": "You have not invited anyone yet",
@@ -581,7 +629,10 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Internet connection lost",
+    "errorLoadingTrashItems": "Error loading trash items"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
@@ -708,7 +759,7 @@
         "decrypting": "Decrypting file",
         "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -738,8 +789,9 @@
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% Downloading folder",
+        "in-process-without-progress": "Downloading folder",
         "success": "Folder downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -831,7 +883,10 @@
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successApplyCoupon": "3 months free of charge applied",
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCoupon": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",

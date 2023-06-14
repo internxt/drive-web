@@ -52,15 +52,15 @@ class App extends Component<AppProps> {
 
   async componentDidMount(): Promise<void> {
     const token = localStorageService.get('xToken');
+    const params = new URLSearchParams(window.location.search);
+    const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
 
-    if (token && navigationService.history.location.pathname !== '/new') {
+    if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
       /**
        * In case we receive a valid redirectUrl param, we return to that URL with the current token
        */
-      const redirectUrl = authService.getRedirectUrl(
-        new URLSearchParams(navigationService.history.location.search),
-        token,
-      );
+      const redirectUrl = authService.getRedirectUrl(params, token);
+
       if (redirectUrl) {
         window.location.replace(redirectUrl);
         return;

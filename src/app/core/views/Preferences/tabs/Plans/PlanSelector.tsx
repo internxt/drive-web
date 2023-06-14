@@ -28,7 +28,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
   const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
-  const [isDialgOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
@@ -49,7 +49,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         const response = await paymentService.createCheckoutSession({
           price_id: priceId,
           success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: window.location.href,
+          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
           customer_email: user.email,
           mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
@@ -58,25 +58,60 @@ export default function PlanSelector({ className = '' }: { className?: string })
       } catch (err) {
         console.error(err);
         notificationsService.show({
-          text: 'Something went wrong while creating your subscription',
+          text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
       } finally {
         setLoadingPlanAction(null);
+        setIsDialogOpen(false);
       }
     } else {
-      try {
-        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-        dispatch(planActions.setSubscription(updatedSubscription));
-        notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: 'Something went wrong while updating your subscription',
-          type: ToastType.Error,
-        });
-      } finally {
-        setLoadingPlanAction(null);
+      if (interval === 'lifetime') {
+        try {
+          const response = await paymentService.createCheckoutSession({
+            price_id: priceId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
+            customer_email: user.email,
+            mode: 'payment',
+          });
+          localStorage.setItem('sessionId', response.sessionId);
+          await paymentService.redirectToCheckout(response).then(async (result) => {
+            await paymentService.cancelSubscription();
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              notificationsService.show({
+                type: ToastType.Success,
+                text: 'Payment successful',
+              });
+            }
+          });
+        } catch (error) {
+          console.error(error);
+          notificationsService.show({
+            text: translate('notificationMessages.errorCancelSubscription'),
+            type: ToastType.Error,
+          });
+        }
+      } else {
+        try {
+          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+          dispatch(planActions.setSubscription(updatedSubscription));
+          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+        } catch (err) {
+          console.error(err);
+          notificationsService.show({
+            text: translate('notificationMessages.errorCancelSubscription'),
+            type: ToastType.Error,
+          });
+        } finally {
+          setLoadingPlanAction(null);
+          setIsDialogOpen(false);
+        }
       }
     }
   }
@@ -91,7 +126,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       {prices && (
         <ChangePlanDialog
           prices={prices}
-          isDialgOpen={isDialgOpen}
+          isDialgOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onPlanClick}
           priceIdSelected={priceIdSelected}
@@ -128,6 +163,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
+              onPlanClick={onPlanClick}
+              priceID={price.id}
             />
           ))}
         </div>
@@ -164,16 +201,21 @@ function Price({
   onClick,
   disabled,
   loading,
+  onPlanClick,
+  priceID,
 }: DisplayPrice & {
   button: 'change' | 'current' | 'upgrade';
   onClick?: () => void;
   className?: string;
   disabled: boolean;
   loading: boolean;
+  onPlanClick: (value: string) => void;
+  priceID: string;
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
   const { translate } = useTranslationContext();
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   if (interval === 'month') {
     amountMonthly = amount;
@@ -207,22 +249,37 @@ function Price({
               amount: displayAmount(amountMonthly),
             })}
       </p>
-      {interval !== 'lifetime' && (
+      {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
         </p>
+      ) : (
+        <p className=" text-gray-50">{translate('views.account.tabs.plans.card.oneTimePayment')}</p>
       )}
-      <Button
-        loading={loading}
-        onClick={onClick}
-        disabled={button === 'current' || disabled}
-        variant="primary"
-        className="mt-5 w-full"
-      >
-        {displayButtonText}
-      </Button>
+
+      {plan.subscription?.type === 'free' ? (
+        <Button
+          loading={loading}
+          onClick={() => onPlanClick(priceID)}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      ) : (
+        <Button
+          loading={loading}
+          onClick={onClick}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      )}
     </div>
   );
 }

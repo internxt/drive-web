@@ -7,6 +7,7 @@ import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { t } from 'i18next';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -24,11 +25,15 @@ class DriveView extends Component<DriveViewProps> {
     this.fetchItems();
   }
 
+  componentWillUnmount(): void {
+    const { dispatch } = this.props;
+    dispatch(storageActions.resetDrivePagination());
+  }
+
   fetchItems = (): void => {
-    const { dispatch, currentFolderId } = this.props;
+    const { dispatch } = this.props;
 
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
@@ -40,7 +45,7 @@ class DriveView extends Component<DriveViewProps> {
 
       items.push({
         id: firstPath.id,
-        label: 'Drive',
+        label: t('sideNav.drive'),
         icon: null, //<UilHdd className="w-4 h-4 mr-1" />
         active: true,
         isFirstPath: true,
@@ -67,7 +72,6 @@ class DriveView extends Component<DriveViewProps> {
   }
 }
 
-// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
 const sortFoldersFirst = (items: DriveItemData[]) =>
   items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 

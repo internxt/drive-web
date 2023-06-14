@@ -10,6 +10,7 @@ import deleteItems from '../../../../use_cases/trash/delete-items';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { planThunks } from 'app/store/slices/plan';
 
 interface DeleteItemsDialogProps {
   onItemsDeleted?: () => void;
@@ -38,6 +39,9 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
 
