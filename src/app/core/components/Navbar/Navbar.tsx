@@ -42,6 +42,7 @@ const Navbar = (props: NavbarProps) => {
   if (!user) throw new Error('User is not defined');
 
   const searchInput = useRef<HTMLInputElement>(null);
+  const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
   const [openSeachBox, setOpenSeachBox] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterType[]>([]);
@@ -78,20 +79,21 @@ const Navbar = (props: NavbarProps) => {
     if (query.length > 0) {
       //! setSearchResult of the real results
       setSearchResult([
-        { name: 'Test folder', type: 'folder', id: '1' },
-        { name: 'Test file', type: 'pdf', id: '2' },
-        { name: 'Test file', type: 'pdf', id: '3' },
-        { name: 'Test file', type: 'pdf', id: '4' },
-        { name: 'Test file', type: 'pdf', id: '5' },
-        { name: 'Test file', type: 'pdf', id: '6' },
-        { name: 'Test file', type: 'pdf', id: '7' },
-        { name: 'Test file', type: 'pdf', id: '8' },
-        { name: 'Test file', type: 'pdf', id: '9' },
-        { name: 'Test file', type: 'pdf', id: '10' },
+        { name: 'Test folder 1', type: 'folder', id: '1' },
+        { name: 'Test file 2', type: 'pdf', id: '2' },
+        { name: 'Test file 3', type: 'pdf', id: '3' },
+        { name: 'Test file 4', type: 'pdf', id: '4' },
+        { name: 'Test file 5', type: 'pdf', id: '5' },
+        { name: 'Test file 6', type: 'pdf', id: '6' },
+        { name: 'Test file 7', type: 'pdf', id: '7' },
+        { name: 'Test file 8', type: 'pdf', id: '8' },
+        { name: 'Test file 9', type: 'pdf', id: '9' },
+        { name: 'Test file 10', type: 'pdf', id: '10' },
       ]);
     } else {
       setSearchResult([]);
     }
+    searchResultList.current?.scrollTo(0, 0);
     setSelectedResult(0);
     setLoadingSearch(false);
   };
@@ -134,15 +136,19 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const handleKeyDown = (e) => {
+    let item: number | null = null;
     if (e.key === 'Escape') {
       setPreventBlur(false);
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       setSelectedResult((current) => (current > 0 ? current - 1 : 0));
+      item = selectedResult > 0 ? selectedResult - 1 : 0;
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       setSelectedResult((current) => (current < searchResult.length - 1 ? current + 1 : searchResult.length - 1));
+      item = selectedResult < searchResult.length - 1 ? selectedResult + 1 : searchResult.length - 1;
     }
+    if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
 
   const FilterItem = ({ id, Icon, name }) => (
@@ -306,12 +312,15 @@ const Navbar = (props: NavbarProps) => {
             </div>
 
             {searchResult.length > 0 ? (
-              <ul className="flex h-full flex-col overflow-y-auto pb-4">
+              <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
                 {searchResult.map((item, index) => {
                   const Icon = iconService.getItemIcon(item.type === 'folder', item.type);
                   return (
                     <li
                       key={item.id}
+                      id={`searchResult_${item.id}`}
+                      role="option"
+                      aria-selected={selectedResult === index}
                       className={`${
                         selectedResult === index && 'bg-gray-5'
                       } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
