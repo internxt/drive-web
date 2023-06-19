@@ -78,7 +78,6 @@ import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/
 import BannerWrapper from 'app/banners/BannerWrapper';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
-const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -229,6 +228,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [hasMoreFiles]);
 
   useEffect(() => {
+    if (hasMoreFiles && hasMoreFolders) {
+      setHasMoreItems(true);
+    }
+  }, [hasMoreFiles, hasMoreFolders]);
+
+  useEffect(() => {
     resetPaginationState();
     fetchItems();
   }, [currentFolderId]);
@@ -321,8 +326,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }),
       ).then(() => {
         onFileUploaded && onFileUploaded();
-        dispatch(storageActions.setHasMoreDriveFolders(true));
-        dispatch(storageActions.setHasMoreDriveFiles(true));
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
       setFileInputKey(Date.now());
@@ -1045,8 +1048,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
           },
         }),
       ).then(() => {
-        dispatch(storageActions.setHasMoreDriveFolders(true));
-        dispatch(storageActions.setHasMoreDriveFiles(true));
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
     }
@@ -1071,8 +1072,6 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
             },
           }),
         ).then(() => {
-          dispatch(storageActions.setHasMoreDriveFolders(true));
-          dispatch(storageActions.setHasMoreDriveFiles(true));
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
         });
     }

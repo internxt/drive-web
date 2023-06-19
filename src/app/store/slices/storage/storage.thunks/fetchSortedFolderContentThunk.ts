@@ -1,5 +1,4 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import _ from 'lodash';
 
 import { storageActions } from '..';
 import { RootState } from '../../..';
@@ -15,6 +14,9 @@ const DEFAULT_LIMIT = 50;
 export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchSortedFolderContentThunk',
   async (folderId, { getState, dispatch }) => {
+    dispatch(storageActions.setHasMoreDriveFolders(true));
+    dispatch(storageActions.setHasMoreDriveFiles(true));
+
     const storageState = getState().storage;
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders;
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
@@ -24,6 +26,8 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { st
     const driveItemsOrder = storageState.driveItemsOrder;
 
     try {
+      dispatch(storageActions.setIsLoadingFolder({ folderId, value: true }));
+      dispatch(storageActions.setItems({ folderId, items: [] }));
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
       let folderPromise;
 
@@ -66,6 +70,8 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { st
     } catch (error) {
       errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
       throw error;
+    } finally {
+      dispatch(storageActions.setIsLoadingFolder({ folderId, value: false }));
     }
   },
 );

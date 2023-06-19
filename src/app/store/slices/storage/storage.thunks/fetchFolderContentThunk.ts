@@ -13,14 +13,17 @@ import errorService from '../../../../core/services/error.service';
 
 const DEFAULT_LIMIT = 50;
 
+const filterFolderItems = (item: DriveItemData) => item.isFolder;
+const filterFilesItems = (item: DriveItemData) => !item.isFolder;
+
 export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
     const storageState = getState().storage;
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders;
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
-    const foldersOffset = storageState.levelsFoldersLength[folderId];
-    const filesOffset = storageState.levelsFilesLength[folderId];
+    const foldersOffset = (storageState.levels[folderId] ?? []).filter(filterFolderItems).length;
+    const filesOffset = (storageState.levels[folderId] ?? []).filter(filterFilesItems).length;
     const driveItemsSort = storageState.driveItemsSort;
     const driveItemsOrder = storageState.driveItemsOrder;
 
