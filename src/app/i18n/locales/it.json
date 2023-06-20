@@ -276,7 +276,11 @@
               "title": "Hai un piano gratuito",
               "subtitle": "Qui appariranno automaticamente i dati della carta di credito quando utilizzi un piano di abbonamento a pagamento."
             },
-            "title": "Aggiungere un nuovo metodo di pagamento"
+            "title": "Aggiungere un nuovo metodo di pagamento",
+            "contactUs": {
+              "description": "Contattaci per aggiornare il tuo metodo di pagamento",
+              "contact": "Conttato"
+            }
           },
           "invoices": {
             "head": "Fatture",

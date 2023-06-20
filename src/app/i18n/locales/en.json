@@ -283,7 +283,11 @@
               "title": "You are on free plan",
               "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contact us to update your payment method",
+              "contact": "Contact"
+            }
           },
           "invoices": {
             "head": "Invoices",

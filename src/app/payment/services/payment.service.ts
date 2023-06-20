@@ -58,7 +58,7 @@ const paymentService = {
     return paymentsClient.getSetupIntent();
   },
 
-  async getDefaultPaymentMethod(): Promise<PaymentMethod> {
+  async getDefaultPaymentMethod(): Promise<PaymentMethod | any> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getDefaultPaymentMethod();
   },

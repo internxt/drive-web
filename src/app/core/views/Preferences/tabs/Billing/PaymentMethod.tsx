@@ -19,52 +19,55 @@ import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.pn
 import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
+interface StateProps {
+  tag: 'ready' | 'loading' | 'empty';
+  card?: PaymentMethod['card'];
+  type?: string;
+}
+
+const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
+  visa: visaIcon,
+  amex: amexIcon,
+  diners: dinersIcon,
+  discover: discoverIcon,
+  jcb: jcbIcon,
+  mastercard: mastercardIcon,
+  unionpay: unionpayIcon,
+  unknown: unknownIcon,
+};
+
+const paymentsTypes = {
+  paypal: 'PayPal',
+  sepa_debit: 'SEPA Direct Debit',
+};
+
 export default function PaymentMethodComponent({ className = '' }: { className?: string }): JSX.Element {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [state, setState] = useState<{ tag: 'ready'; card: PaymentMethod['card'] } | { tag: 'loading' | 'empty' }>({
+  const [state, setState] = useState<StateProps>({
     tag: 'loading',
   });
   const { translate } = useTranslationContext();
 
-  const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
-    visa: visaIcon,
-    amex: amexIcon,
-    diners: dinersIcon,
-    discover: discoverIcon,
-    jcb: jcbIcon,
-    mastercard: mastercardIcon,
-    unionpay: unionpayIcon,
-    unknown: unknownIcon,
-  };
-
   useEffect(() => {
     paymentService
       .getDefaultPaymentMethod()
-      .then((data) => setState({ tag: 'ready', card: data.card }))
+      .then((data) => {
+        if (data.card) {
+          setState({ tag: 'ready', card: data.card });
+        } else if (data.type) {
+          setState({ tag: 'ready', type: data.type });
+        } else {
+          setState({ tag: 'empty' });
+        }
+      })
       .catch(() => setState({ tag: 'empty' }));
   }, []);
-
-  const card = state.tag === 'ready' ? state.card : null;
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.paymentMethod.head')}>
       <Card>
-        {state.tag === 'ready' && card ? (
-          <div className="flex">
-            <img className="h-9 rounded-md" src={cardBrands[card.brand]} />
-            <div className="ml-4 flex-1">
-              <div className="flex items-center text-gray-80">
-                <p style={{ lineHeight: 1 }} className="text-2xl font-bold">
-                  {'···· ···· ····'}
-                </p>
-                <p className="ml-1.5 text-sm">{card.last4}</p>
-              </div>
-              <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
-            </div>
-            <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
-              {translate('actions.edit')}
-            </Button>
-          </div>
+        {(state.tag === 'ready' && state.card) || (state.tag === 'ready' && state.type) ? (
+          <InitialState payment={state} setIsModalOpen={setIsModalOpen} />
         ) : state.tag === 'loading' ? (
           <div className="flex h-10 items-center justify-center">
             <Spinner className="h-5 w-5" />
@@ -76,6 +79,54 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
 
       <PaymentMethodModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Section>
+  );
+}
+
+//Create a function that returns the component when the state.tag = ready
+function InitialState({ payment, setIsModalOpen }: { payment: StateProps; setIsModalOpen: (value: boolean) => void }) {
+  const { translate } = useTranslationContext();
+  const { card, type } = payment;
+
+  return (
+    <div className="flex">
+      {card ? (
+        <>
+          <img className="h-9 rounded-md" src={cardBrands[card.brand]} />
+          <div className="ml-4 flex-1">
+            <div className="flex items-center text-gray-80">
+              <p style={{ lineHeight: 1 }} className="text-2xl font-bold">
+                {'···· ···· ····'}
+              </p>
+              <p className="ml-1.5 text-sm">{card.last4}</p>
+            </div>
+            <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
+          </div>
+          <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
+            {translate('actions.edit')}
+          </Button>
+        </>
+      ) : (
+        type && (
+          <>
+            <div className="ml-4 flex-1">
+              <div className="flex items-center text-gray-100">
+                <p className="text-base font-medium leading-tight">{paymentsTypes[type]}</p>
+              </div>
+              <p className="text-sm text-gray-50">
+                {translate('views.account.tabs.billing.paymentMethod.contactUs.description')}
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              size="medium"
+              onClick={() => window.open('mailto:hello@internxt.com', '_blank')}
+            >
+              {translate('views.account.tabs.billing.paymentMethod.contactUs.contact')}
+            </Button>
+          </>
+        )
+      )}
+    </div>
   );
 }
 

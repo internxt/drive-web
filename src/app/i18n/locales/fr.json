@@ -241,7 +241,11 @@
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les informations relatives à la carte de crédit apparaîtront automatiquement ici lorsque vous souscrirez un abonnement payant."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contactez-nous pour changer de mode de paiement",
+              "contact": "Contactez"
+            }
           },
           "invoices": {
             "head": "Factures",
