@@ -18,11 +18,12 @@ import mastercardIcon from '../../../../../../assets/icons/card-brands/mastercar
 import unionpayIcon from '../../../../../../assets/icons/card-brands/unionpay.png';
 import unknownIcon from '../../../../../../assets/icons/card-brands/unknown.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { Source } from '@stripe/stripe-js';
 
 interface StateProps {
   tag: 'ready' | 'loading' | 'empty';
   card?: PaymentMethod['card'];
-  type?: string;
+  type?: Source.Type;
 }
 
 const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
@@ -51,10 +52,10 @@ export default function PaymentMethodComponent({ className = '' }: { className?:
   useEffect(() => {
     paymentService
       .getDefaultPaymentMethod()
-      .then((data) => {
+      .then((data: PaymentMethod | Source) => {
         if (data.card) {
-          setState({ tag: 'ready', card: data.card });
-        } else if (data.type) {
+          setState({ tag: 'ready', card: data.card as PaymentMethod['card'] });
+        } else if ('type' in data) {
           setState({ tag: 'ready', type: data.type });
         } else {
           setState({ tag: 'empty' });
