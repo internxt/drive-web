@@ -265,7 +265,11 @@
               "title": "Estás en el plan gratuito",
               "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
             },
-            "title": "Añadir nuevo método de pago"
+            "title": "Añadir nuevo método de pago",
+            "contactUs": {
+              "description": "Ponte en contacto con nosotros para actualizar tu método de pago",
+              "contact": "Contacta"
+            }
           },
           "invoices": {
             "head": "Facturas",
