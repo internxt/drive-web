@@ -1,6 +1,10 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
 
+export const SOCKET_EVENTS = {
+  FILE_CREATED: 'FILE_CREATED',
+};
+
 export default class RealtimeService {
   private socket?: Socket;
   private static instance: RealtimeService;
@@ -13,7 +17,7 @@ export default class RealtimeService {
     return this.instance;
   }
 
-  init(onConnected?: () => void): void {
+  init(userEmail: string, onConnected?: () => void): void {
     if (!isProduction()) {
       console.log('[REALTIME]: CONNECTING...');
     }
@@ -30,7 +34,7 @@ export default class RealtimeService {
       if (!isProduction()) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       }
-
+      this.socket?.emit('join', userEmail);
       onConnected?.();
     });
 

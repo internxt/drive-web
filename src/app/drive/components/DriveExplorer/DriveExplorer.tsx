@@ -76,8 +76,8 @@ import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
+import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 
-const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -230,6 +230,20 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
+    RealtimeService.getInstance().onEvent((data) => {
+      if (data.event === SOCKET_EVENTS.FILE_CREATED) {
+        const folderId = data.payload.folderId;
+        if (folderId === currentFolderId) {
+          dispatch(
+            storageActions.pushItems({
+              updateRecents: true,
+              folderIds: [folderId],
+              items: [data.payload as DriveItemData],
+            }),
+          );
+        }
+      }
+    });
   }, [currentFolderId]);
 
   useEffect(() => {
