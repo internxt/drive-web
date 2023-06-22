@@ -1,4 +1,4 @@
-import React, { MouseEvent, ReactNode } from 'react';
+import { MouseEvent } from 'react';
 import {
   PencilSimple,
   Trash,
@@ -8,10 +8,13 @@ import {
   Gear,
   LinkBreak,
   ClockCounterClockwise,
-} from 'phosphor-react';
+  Users,
+} from '@phosphor-icons/react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppDispatch } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -30,6 +33,7 @@ interface FileDropdownActionsProps {
 }
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const onDownloadButtonClicked = (e: MouseEvent): void => {
     const { onDownloadButtonClicked } = props;
@@ -99,31 +103,37 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
 
       {/* {!hiddenActions.includes(DriveItemAction.Share) && !props.isTrash ? (
           <Dropdown.Item id="share" onClick={onShareButtonClicked}>
-            <Eye className="mr-1 h-5 w-5 text-blue-60" />
+            <Eye className="mr-1" size={20} />
             <span>Open preview</span>
           </Dropdown.Item>
         ) : null} */}
+      {!props.isTrash ? (
+        <Dropdown.Item id="share" onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}>
+          <Users className="mr-1" size={20} />
+          <span>{translate('drive.dropdown.share')}</span>
+        </Dropdown.Item>
+      ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareButtonClicked}>
-          <Link className="mr-1 h-5 w-5 text-blue-60" />
+          <Link className="mr-1" size={20} />
           <span>{translate('drive.dropdown.getLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareCopyButtonClicked}>
-          <Copy className="mr-1 h-5 w-5 text-blue-60" />
+          <Copy className="mr-1" size={20} />
           <span>{translate('drive.dropdown.copyLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareSettings) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareSettingsButtonClicked}>
-          <Gear className="mr-1 h-5 w-5 text-blue-60" />
+          <Gear className="mr-1" size={20} />
           <span>{translate('drive.dropdown.linkSettings')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.ShareDeleteLink) && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={onShareDeleteButtonClicked}>
-          <LinkBreak className="mr-1 h-5 w-5 text-blue-60" />
+          <LinkBreak className="mr-1" size={20} />
           <span>{translate('drive.dropdown.deleteLink')}</span>
         </Dropdown.Item>
       ) : null}
@@ -134,35 +144,37 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         </Dropdown.Item>
       ) : null}
 
-      {!props.isTrash && <hr className="my-1.5 text-neutral-30"></hr>}
+      {!props.isTrash && <hr className="my-1.5 text-gray-10" />}
 
       {!hiddenActions.includes(DriveItemAction.Rename) && !props.isTrash ? (
         <Dropdown.Item id="rename" onClick={onRenameButtonClicked}>
-          <PencilSimple className="mr-1 h-5 w-5 text-blue-60" />
+          <PencilSimple className="mr-1" size={20} />
           <span>{translate('drive.dropdown.rename')}</span>
         </Dropdown.Item>
       ) : null}
 
       {/* {!hiddenActions.includes(DriveItemAction.Info) ? (
           <Dropdown.Item id="info" onClick={onInfoButtonClicked}>
-            <ArrowsOutCardinal className="mr-1 h-5 w-5 text-blue-60" />
+            <ArrowsOutCardinal className="mr-1" size={20} />
             <span>Move</span>
           </Dropdown.Item>
         ) : null} */}
       {!hiddenActions.includes(DriveItemAction.Download) && !props.isTrash ? (
         <Dropdown.Item id="download" onClick={onDownloadButtonClicked}>
-          <DownloadSimple className="mr-1 h-5 w-5 text-blue-60" />
+          <DownloadSimple className="mr-1" size={20} />
           <span>{translate('drive.dropdown.download')}</span>
         </Dropdown.Item>
       ) : null}
-      <hr className="my-1.5 text-neutral-30"></hr>
+
+      <hr className="my-1.5 text-gray-10"></hr>
+
       {!hiddenActions.includes(DriveItemAction.Delete) ? (
         <Dropdown.Item
           id="delete"
           className={`${!props.isTrash ? 'text-red-60 hover:text-red-60' : ''}`}
           onClick={!props.isTrash ? onDeleteButtonClicked : onDeletePermanentlyButtonClicked}
         >
-          <Trash className={`mr-1 h-5 w-5 ${props.isTrash ? 'text-blue-60' : ''}`} />
+          <Trash className={`mr-1 ${props.isTrash ? 'text-blue-60' : ''}`} size={20} />
           <span>
             {props.isTrash ? translate('drive.dropdown.deletePermanently') : translate('drive.dropdown.moveToTrash')}
           </span>

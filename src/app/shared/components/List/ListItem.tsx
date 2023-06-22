@@ -100,7 +100,7 @@ export default function ListItem<T extends { id: string }>({
   // at the same time as the view to get the size and make the necessary positional adjustments.
   const MenuItemList = () => (
     <div
-      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+      className="outline-none z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -224,8 +224,10 @@ export default function ListItem<T extends { id: string }>({
                 <Menu.Button
                   id={'list-item-menu-button'}
                   ref={menuButtonRef as LegacyRef<HTMLButtonElement>}
-                  className={`outline-none focus-visible:outline-primary flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
-                    selected ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
+                  className={`outline-none flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
+                    selected
+                      ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10 focus-visible:bg-primary focus-visible:bg-opacity-10'
+                      : 'text-gray-60 hover:bg-gray-10 focus-visible:bg-gray-10'
                   }`}
                   onClick={() => onThreeDotsButtonPressed?.(item)}
                 >
@@ -233,6 +235,7 @@ export default function ListItem<T extends { id: string }>({
                 </Menu.Button>
                 {open && (
                   <Menu.Items
+                    className="outline-none"
                     style={
                       openedFromRightClick
                         ? { position: 'absolute', left: posX, top: posY, zIndex: 99 }

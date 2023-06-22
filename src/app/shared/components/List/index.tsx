@@ -83,8 +83,8 @@ export default function List<T extends { id: any }, F extends keyof T>({
   onMouseEnter,
   onMouseLeave,
   keyBoardShortcutActions,
+  disableKeyboardShortcuts,
 }: // keyboardShortcuts,
-// disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
   const [isScrollable, ref, node] = useIsScrollable([items]);
   const isItemSelected = (item: T) => {
@@ -164,26 +164,50 @@ ListProps<T, F>): JSX.Element {
     'ctrl+a, cmd+a',
     (e) => {
       e.preventDefault();
-      selectAllItems();
+      if (!disableKeyboardShortcuts) selectAllItems();
     },
-    [items, selectedItems],
+    [items, selectedItems, disableKeyboardShortcuts],
   );
 
-  useHotkeys('esc', unselectAllItems, [selectedItems]);
+  useHotkeys(
+    'esc',
+    () => {
+      if (!disableKeyboardShortcuts) unselectAllItems();
+    },
+    [selectedItems, disableKeyboardShortcuts],
+  );
 
-  useHotkeys('enter', executeClickOnSelectedItem, [selectedItems]);
+  useHotkeys(
+    'enter',
+    () => {
+      if (!disableKeyboardShortcuts) executeClickOnSelectedItem();
+    },
+    [selectedItems, disableKeyboardShortcuts],
+  );
 
   const handleRKeyPressed = () => {
     keyBoardShortcutActions?.onRKeyPressed?.();
   };
 
-  useHotkeys('r', handleRKeyPressed, [selectedItems]);
+  useHotkeys(
+    'r',
+    () => {
+      if (!disableKeyboardShortcuts) handleRKeyPressed();
+    },
+    [selectedItems, disableKeyboardShortcuts],
+  );
 
   const handleBackspaceKeyPressed = () => {
     keyBoardShortcutActions?.onBackspaceKeyPressed?.();
   };
 
-  useHotkeys('backspace', handleBackspaceKeyPressed, [selectedItems]);
+  useHotkeys(
+    'backspace',
+    () => {
+      if (!disableKeyboardShortcuts) handleBackspaceKeyPressed();
+    },
+    [selectedItems, disableKeyboardShortcuts],
+  );
 
   function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {

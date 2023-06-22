@@ -40,7 +40,7 @@ export default function Button({
   } else if (variant === 'secondary' && disabled) {
     styles = 'bg-white text-gray-30 border border-black border-opacity-5 shadow-sm';
   } else if (variant === 'tertiary' && !disabled) {
-    styles = 'hover:bg-gray-5 active:bg-gray-10';
+    styles = 'hover:bg-gray-5 active:bg-gray-10 focus-visible:bg-gray-10';
   } else if (variant === 'tertiary' && disabled) {
     styles = 'text-gray-30';
   }
@@ -60,7 +60,7 @@ export default function Button({
           <Spinner />
         </div>
       )}
-      <div className={loading ? 'opacity-0' : ''}>{children}</div>
+      <div className={`${loading ? 'opacity-0' : ''} flex items-center justify-center space-x-2`}>{children}</div>
     </button>
   );
 }

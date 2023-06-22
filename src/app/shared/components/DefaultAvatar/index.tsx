@@ -12,7 +12,7 @@ export default function DefaultAvatar({
   return (
     <div
       style={{ width: diameter, height: diameter, fontSize: diameter / 2.1 }}
-      className={`${className} flex items-center justify-center rounded-full bg-primary-dark bg-opacity-15 font-medium text-primary-dark`}
+      className={`${className} flex select-none items-center justify-center rounded-full bg-primary-dark bg-opacity-15 font-medium text-primary-dark`}
     >
       <p>{initials}</p>
     </div>
