@@ -17,7 +17,6 @@ import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import RealtimeService from 'app/core/services/socket.service';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import dayjs from 'dayjs';
