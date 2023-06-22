@@ -17,7 +17,7 @@ export default class RealtimeService {
     return this.instance;
   }
 
-  init(userEmail: string, onConnected?: () => void): void {
+  init(onConnected?: () => void): void {
     if (!isProduction()) {
       console.log('[REALTIME]: CONNECTING...');
     }
@@ -34,7 +34,7 @@ export default class RealtimeService {
       if (!isProduction()) {
         console.log('[REALTIME]: CONNECTED WITH ID', this.socket?.id);
       }
-      this.socket?.emit('join', userEmail);
+
       onConnected?.();
     });
 
@@ -56,9 +56,10 @@ export default class RealtimeService {
     return this.socket.id;
   }
 
-  onEvent(cb: (data: any) => void): void {
+  onEvent(cb: (data: any) => void): boolean {
     if (this.socket?.disconnected) {
-      return console.log('[REALTIME] SOCKET IS DISCONNECTED');
+      console.log('[REALTIME] SOCKET IS DISCONNECTED');
+      return false;
     }
 
     this.socket?.on('event', (data) => {
@@ -68,6 +69,7 @@ export default class RealtimeService {
 
       cb(data);
     });
+    return true;
   }
 
   stop(): void {

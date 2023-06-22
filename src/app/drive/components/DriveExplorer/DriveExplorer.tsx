@@ -169,6 +169,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  // LISTEN NOTIFICATION STATES
+  const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
+
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
@@ -198,6 +201,38 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     },
   );
+
+  const realtimeService = RealtimeService.getInstance();
+  const handleFileCreatedEvent = (data) => {
+    if (data.event === SOCKET_EVENTS.FILE_CREATED) {
+      const folderId = data.payload.folderId;
+
+      if (folderId === currentFolderId) {
+        dispatch(
+          storageActions.pushItems({
+            updateRecents: true,
+            folderIds: [folderId],
+            items: [data.payload as DriveItemData],
+          }),
+        );
+      }
+    }
+  };
+  const handleOnEventCreation = () => {
+    const isEventCreated = realtimeService.onEvent(handleFileCreatedEvent);
+    if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
+    else setTimeout(handleOnEventCreation, 10000);
+  };
+
+  useEffect(() => {
+    try {
+      if (!folderListenerList.includes(currentFolderId)) {
+        handleOnEventCreation();
+      }
+    } catch (err) {
+      errorService.reportError(err);
+    }
+  }, [currentFolderId]);
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
@@ -237,20 +272,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
-    RealtimeService.getInstance().onEvent((data) => {
-      if (data.event === SOCKET_EVENTS.FILE_CREATED) {
-        const folderId = data.payload.folderId;
-        if (folderId === currentFolderId) {
-          dispatch(
-            storageActions.pushItems({
-              updateRecents: true,
-              folderIds: [folderId],
-              items: [data.payload as DriveItemData],
-            }),
-          );
-        }
-      }
-    });
   }, [currentFolderId]);
 
   useEffect(() => {

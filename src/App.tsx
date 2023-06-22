@@ -33,6 +33,7 @@ import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import Mobile from 'app/drive/views/MobileView/MobileView';
+import RealtimeService from './app/core/services/socket.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -83,6 +84,8 @@ class App extends Component<AppProps> {
     await LRUFilesPreviewCacheManager.getInstance();
     await LRUPhotosCacheManager.getInstance();
     await LRUPhotosPreviewsCacheManager.getInstance();
+
+    RealtimeService.getInstance().init();
 
     try {
       await this.props.dispatch(

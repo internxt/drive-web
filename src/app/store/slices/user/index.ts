@@ -164,7 +164,6 @@ export const userSlice = createSlice({
       localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
-      RealtimeService.getInstance().init(state.user?.email ?? '');
       localStorageService.set(LocalStorageItem.UserToken, action.payload);
     },
     resetState: (state: UserState) => {
