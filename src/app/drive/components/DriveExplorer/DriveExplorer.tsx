@@ -143,7 +143,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
-  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+  const isSelectedItemShared = selectedItems[0]?.shares && selectedItems[0]?.shares?.length > 0;
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
