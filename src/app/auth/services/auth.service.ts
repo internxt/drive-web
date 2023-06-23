@@ -202,10 +202,10 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedPrivateKey: privateKeyEncrypted,
     })
     .then(() => {
-      analyticsService.track(email, 'success');
+      // analyticsService.track(email, 'success');
     })
     .catch((error) => {
-      analyticsService.track(email, 'error');
+      // analyticsService.track(email, 'error');
       if (error.status === 500) {
         throw new Error('The password you introduced does not match your current password');
       }
