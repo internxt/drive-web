@@ -40,6 +40,7 @@ const ShareDialog = (props) => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
 
+  const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
@@ -97,11 +98,12 @@ const ShareDialog = (props) => {
   };
 
   const openUserOptions = (e: any, user: InvitedUserProps) => {
-    const email = user.email;
     const buttonY: number = ((e as MouseEvent).currentTarget as HTMLElement).getBoundingClientRect().top;
     const buttonHeight: number = ((e as MouseEvent).currentTarget as HTMLElement).offsetHeight;
     const userListY: number = userList.current ? userList.current.getBoundingClientRect().top : 0;
     setUserOptionsY(buttonY + buttonHeight - userListY + 8);
+
+    setUserOptionsEmail(user.email);
 
     if (userOptions.current) {
       userOptions.current.click();
@@ -142,7 +144,10 @@ const ShareDialog = (props) => {
             <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
 
             {/* Remove */}
-            <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+            <button
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              onClick={() => onRemoveUser(userOptionsEmail)}
+            >
               <p className="w-full text-left text-base font-medium leading-none">
                 {translate('modals.shareModal.list.userItem.remove')}
               </p>
