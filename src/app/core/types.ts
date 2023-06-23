@@ -124,6 +124,7 @@ export enum AppView {
   CheckoutSuccess = 'checkout-success',
   CheckoutCancel = 'checkout-cancel',
   CheckoutPlan = 'checkout-plan',
+  PaymentMethod = 'payment-method',
   Checkout = 'checkout',
   Remove = 'remove',
   RemoveDialog = 'removedialog',

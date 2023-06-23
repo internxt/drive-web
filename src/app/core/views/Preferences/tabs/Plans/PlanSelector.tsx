@@ -5,13 +5,16 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ArrowRight } from 'phosphor-react';
 import { bytesToString } from '../../../../../drive/services/size.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planActions, PlanState } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
+import { uiActions } from 'app/store/slices/ui';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -42,30 +45,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string) {
-    setLoadingPlanAction(priceId);
-
-    if (subscription?.type !== 'subscription') {
-      try {
-        const response = await paymentService.createCheckoutSession({
-          price_id: priceId,
-          success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-          customer_email: user.email,
-          mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        });
-        localStorage.setItem('sessionId', response.sessionId);
-        await paymentService.redirectToCheckout(response);
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: translate('notificationMessages.errorCancelSubscription'),
-          type: ToastType.Error,
-        });
-      } finally {
-        setLoadingPlanAction(null);
-        setIsDialogOpen(false);
-      }
-    } else {
+    // Navigate to /payment-method
+    if (plan.subscription?.type === 'subscription') {
       if (interval === 'lifetime') {
         try {
           const response = await paymentService.createCheckoutSession({
@@ -113,6 +94,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
           setIsDialogOpen(false);
         }
       }
+    } else if (subscription?.type === 'free') {
+      navigationService.push(AppView.PaymentMethod);
     }
   }
 

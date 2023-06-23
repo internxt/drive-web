@@ -862,11 +862,11 @@
     "addSecurePassword": "在链接中添加一个密码以提高安全性",
     "password": "密码",
     "views": "访问量",
-    "noViewsYet": "No views yet",
+    "noViewsYet": "还没有任何访问",
     "dateCreated": "创建日期",
     "buttons": {
       "copyLink": "复制链接",
-      "linkCopied": "Link copied",
+      "linkCopied": "链接已复制",
       "cancel": "取消",
       "save": "保存"
     }

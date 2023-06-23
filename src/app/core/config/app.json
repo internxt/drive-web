@@ -164,6 +164,13 @@
       "auth": true
     },
     {
+      "id": "payment-method",
+      "layout": "empty",
+      "path": "/payment-method",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "remove",
       "layout": "empty",
       "path": "/remove",
