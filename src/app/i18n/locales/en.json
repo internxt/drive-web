@@ -542,6 +542,16 @@
           "stopSharing": "Stop sharing"
         },
         "copyLink": "Copy link"
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "People will no longer be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
       }
     },
     "deletePhotosModal": {

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
@@ -37,6 +38,7 @@ const ShareDialog = (props) => {
   };
 
   const [accessMode, setAccessMode] = useState<AccessMode>('public');
+  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
 
@@ -89,12 +91,38 @@ const ShareDialog = (props) => {
     }
   };
 
+  const cropSharedName = (name: string) => {
+    if (name.length > 32) {
+      return name.substring(0, 32).concat('...');
+    } else {
+      return name;
+    }
+  };
+
   const onStopSharing = () => {
     setIsLoading(true);
 
     // TODO -> Stop sharing
-
-    setIsLoading(false);
+    const stoppedSharing = true;
+    if (stoppedSharing) {
+      // If success
+      notificationsService.show({
+        text: translate('modals.shareModal.stopSharing.notification.success', {
+          name: cropSharedName(props.selectedItems[0]?.name ?? ''),
+        }),
+        type: ToastType.Success,
+      });
+      setShowStopSharingConfirmation(false);
+      setIsLoading(false);
+      onClose();
+    } else {
+      // If error
+      notificationsService.show({
+        text: translate('modals.shareModal.stopSharing.notification.error'),
+        type: ToastType.Error,
+      });
+      setIsLoading(false);
+    }
   };
 
   const openUserOptions = (e: any, user: InvitedUserProps) => {
@@ -267,65 +295,72 @@ const ShareDialog = (props) => {
                     }`}
                     static
                   >
-                    {/* Public */}
-                    <button
-                      className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                      onClick={() => changeAccess('public')}
-                    >
-                      <Globe size={32} weight="light" />
-                      <div className="flex flex-1 flex-col items-start">
-                        <p className="text-base font-medium leading-none">
-                          {translate('modals.shareModal.general.accessOptions.public.title')}
-                        </p>
-                        <p className="text-sm leading-tight text-gray-60">
-                          {translate('modals.shareModal.general.accessOptions.public.subtitle')}
-                        </p>
-                      </div>
-                      <div className="flex h-full w-5 items-center justify-center">
-                        {accessMode === 'public' ? (
-                          isLoading ? (
-                            <Spinner className="h-5 w-5" />
-                          ) : (
-                            <Check size={20} />
-                          )
-                        ) : null}
-                      </div>
-                    </button>
+                    {({ close }) => (
+                      <>
+                        {/* Public */}
+                        <button
+                          className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                          onClick={() => changeAccess('public')}
+                        >
+                          <Globe size={32} weight="light" />
+                          <div className="flex flex-1 flex-col items-start">
+                            <p className="text-base font-medium leading-none">
+                              {translate('modals.shareModal.general.accessOptions.public.title')}
+                            </p>
+                            <p className="text-sm leading-tight text-gray-60">
+                              {translate('modals.shareModal.general.accessOptions.public.subtitle')}
+                            </p>
+                          </div>
+                          <div className="flex h-full w-5 items-center justify-center">
+                            {accessMode === 'public' ? (
+                              isLoading ? (
+                                <Spinner className="h-5 w-5" />
+                              ) : (
+                                <Check size={20} />
+                              )
+                            ) : null}
+                          </div>
+                        </button>
 
-                    {/* Restricted */}
-                    <button
-                      className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-                      onClick={() => changeAccess('restricted')}
-                    >
-                      <Users size={32} weight="light" />
-                      <div className="flex flex-1 flex-col items-start">
-                        <p className="text-base font-medium leading-none">
-                          {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                        </p>
-                        <p className="text-sm leading-tight text-gray-60">
-                          {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
-                        </p>
-                      </div>
-                      <div className="flex h-full w-5 items-center justify-center">
-                        {accessMode === 'restricted' ? (
-                          isLoading ? (
-                            <Spinner className="h-5 w-5" />
-                          ) : (
-                            <Check size={20} />
-                          )
-                        ) : null}
-                      </div>
-                    </button>
+                        {/* Restricted */}
+                        <button
+                          className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                          onClick={() => changeAccess('restricted')}
+                        >
+                          <Users size={32} weight="light" />
+                          <div className="flex flex-1 flex-col items-start">
+                            <p className="text-base font-medium leading-none">
+                              {translate('modals.shareModal.general.accessOptions.restricted.title')}
+                            </p>
+                            <p className="text-sm leading-tight text-gray-60">
+                              {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
+                            </p>
+                          </div>
+                          <div className="flex h-full w-5 items-center justify-center">
+                            {accessMode === 'restricted' ? (
+                              isLoading ? (
+                                <Spinner className="h-5 w-5" />
+                              ) : (
+                                <Check size={20} />
+                              )
+                            ) : null}
+                          </div>
+                        </button>
 
-                    {/* Stop sharing */}
-                    <button
-                      className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
-                      onClick={onStopSharing}
-                    >
-                      <p className="text-base font-medium">
-                        {translate('modals.shareModal.general.accessOptions.stopSharing')}
-                      </p>
-                    </button>
+                        {/* Stop sharing */}
+                        <button
+                          className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                          onClick={() => {
+                            setShowStopSharingConfirmation(true);
+                            close();
+                          }}
+                        >
+                          <p className="text-base font-medium">
+                            {translate('modals.shareModal.general.accessOptions.stopSharing')}
+                          </p>
+                        </button>
+                      </>
+                    )}
                   </Popover.Panel>
                 </>
               )}
@@ -338,6 +373,33 @@ const ShareDialog = (props) => {
           </Button>
         </div>
       </div>
+
+      {/* Stop sharing confirmation dialog */}
+      <Modal
+        maxWidth="max-w-sm"
+        className="space-y-5 p-5"
+        isOpen={showStopSharingConfirmation}
+        onClose={() => setShowStopSharingConfirmation(false)}
+        preventClosing={showStopSharingConfirmation && isLoading}
+      >
+        <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
+        <p className="text-lg text-gray-80">
+          {translate('modals.shareModal.stopSharing.subtitle', { name: props.selectedItems[0]?.name ?? '' })}
+        </p>
+        <div className="flex items-center justify-end space-x-2">
+          <Button
+            variant="secondary"
+            onClick={() => setShowStopSharingConfirmation(false)}
+            disabled={showStopSharingConfirmation && isLoading}
+          >
+            {translate('modals.shareModal.stopSharing.cancel')}
+          </Button>
+          <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
+            {isLoading && <Spinner className="h-4 w-4" />}
+            <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
+          </Button>
+        </div>
+      </Modal>
     </Modal>
   );
 };
