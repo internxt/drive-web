@@ -545,7 +545,7 @@
       },
       "stopSharing": {
         "title": "Stop sharing?",
-        "subtitle": "People will no longer be able to access \"{{name}}\"",
+        "subtitle": "No one will be able to access \"{{name}}\"",
         "cancel": "Cancel",
         "confirm": "Stop sharing",
         "notification": {

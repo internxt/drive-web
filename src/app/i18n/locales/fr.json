@@ -450,6 +450,46 @@
       "placeholder": "Dossier sans titre",
       "untitled": "Dossier sans titre"
     },
+    "shareModal": {
+      "title": "Partager \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personnes ayant un accès",
+        "invite": "Inviter",
+        "userItem": {
+          "roles": {
+            "owner": "Propriétaire",
+            "editor": "Éditeur",
+            "viewer": " Visualisateur "
+          },
+          "remove": "Supprimer"
+        }
+      },
+      "general": {
+        "generalAccess": "Accès général",
+        "accessOptions": {
+          "public": {
+            "title": "Publique",
+            "subtitle": "Toute personne ayant le lien peut accéder"
+          },
+          "restricted": {
+            "title": "Restreint",
+            "subtitle": "Seules les personnes ajoutées peuvent accéder"
+          },
+          "stopSharing": "Arrêter le partage"
+        },
+        "copyLink": "Copier le lien"
+      },
+      "stopSharing": {
+        "title": "Arrêter le partage ?",
+        "subtitle": "Personne ne pourra plus accéder à \"{{name}}\"",
+        "cancel": "Annuler",
+        "confirm": "Arrêter le partage",
+        "notification": {
+          "success": "Ne plus partager \"{{name}}\"",
+          "error": "Impossible d'arrêter le partage, veuillez réessayer"
+        }
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",

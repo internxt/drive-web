@@ -488,6 +488,46 @@
       "placeholder": "Безымянная папка",
       "untitled": "Безымянная папка"
     },
+    "shareModal": {
+      "title": "Поделиться \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Люди с доступом",
+        "invite": "Пригласите",
+        "userItem": {
+          "roles": {
+            "owner": "Владелец",
+            "editor": "Редактор",
+            "viewer": "Просмотрщик"
+          },
+          "remove": "Удалить"
+        }
+      },
+      "general": {
+        "generalAccess": "Общий доступ",
+        "accessOptions": {
+          "public": {
+            "title": "Общественность",
+            "subtitle": "Любой человек, имеющий ссылку, может получить доступ"
+          },
+          "restricted": {
+            "title": "Ограниченный",
+            "subtitle": "Только добавленные люди могут получить доступ"
+          },
+          "stopSharing": "Прекратите делиться"
+        },
+        "copyLink": "Копировать ссылку"
+      },
+      "stopSharing": {
+        "title": "Перестать делиться?",
+        "subtitle": "Никто не сможет получить доступ к \"{{name}}\"",
+        "cancel": "Отмена",
+        "confirm": "Прекратите делиться",
+        "notification": {
+          "success": "Больше не обмениваются \"{{name}}\"",
+          "error": "Не удалось остановить обмен, пожалуйста, попробуйте еще раз"
+        }
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "выбранные файлы",
       "singleToolBar": "выбранный файл",

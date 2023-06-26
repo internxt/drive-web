@@ -496,6 +496,46 @@
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
     },
+    "shareModal": {
+      "title": "Compartir \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personas con acceso",
+        "invite": "Invitar",
+        "userItem": {
+          "roles": {
+            "owner": "Propietario",
+            "editor": "Editor",
+            " viewer": "Visor"
+          },
+          " remove": "Eliminar"
+        }
+      },
+      "general": {
+        "generalAccess": "Acceso general",
+        "accessOptions": {
+          "public": {
+            "title": "Publico",
+            "subtitle": "Cualquiera con el enlace puede acceder"
+          },
+          "restricted": {
+            "title": "Restringido",
+            "subtitle": "Sólo pueden acceder las personas añadidas"
+          },
+          "stopSharing": "Dejar de compartir"
+        },
+        "copyLink": "Copiar enlace"
+      },
+      "stopSharing": {
+        "title": "¿Dejar de compartir?",
+        "subtitle": "Nadie podrá acceder a \"{{name}}\"",
+        "cancelar": "Cancelar",
+        "confirmar": "Dejar de compartir",
+        "notification": {
+          "success": "Dejar de compartir \"{{name}}\"",
+          "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
+        }
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
       "singleToolBar": "archivo seleccionado",
