@@ -1,7 +1,7 @@
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import React, { ReactNode, useEffect, useCallback, useLayoutEffect, useState } from 'react';
-import { ArrowUp, ArrowDown } from 'phosphor-react';
+import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import _ from 'lodash';

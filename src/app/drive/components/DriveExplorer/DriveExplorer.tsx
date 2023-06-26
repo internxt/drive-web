@@ -14,7 +14,7 @@ import {
   PencilSimple,
   CaretDown,
   ArrowFatUp,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';

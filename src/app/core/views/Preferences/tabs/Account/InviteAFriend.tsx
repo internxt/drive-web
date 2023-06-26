@@ -2,7 +2,7 @@ import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
 import { FriendInvite } from '@internxt/sdk/dist/drive/users/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
-import { CheckCircle, Info, Question } from 'phosphor-react';
+import { CheckCircle, Info, Question } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import userService from '../../../../../auth/services/user.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';

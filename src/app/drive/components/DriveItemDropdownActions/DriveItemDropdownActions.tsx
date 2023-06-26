@@ -8,7 +8,7 @@ import {
   Gear,
   LinkBreak,
   ClockCounterClockwise,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
