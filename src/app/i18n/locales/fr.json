@@ -503,6 +503,7 @@
       "confirmPassword": "Confirmer le nouveau mot de passe",
       "strongPassword": "Le mot de passe est fort",
       "errors": {
+        "longPassword": "Le mot de passe peut avoir un maximum de 50 caractères",
         "shortPassword": "Le mot de passe est trop court, il doit comporter au moins 8 caractères",
         "notComplex": "Le mot de passe n'est pas assez complexe",
         "weakPassword": "Le mot de passe est faible",

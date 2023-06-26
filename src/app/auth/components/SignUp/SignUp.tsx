@@ -28,8 +28,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import authService, { getNewToken } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from 'app/payment/services/payment.service';
-
-const MAX_PASSWORD_LENGTH = 20;
+import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 
 export interface SignUpProps {
   location: {
@@ -111,7 +110,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   function onChangeHandler(input: string) {
     setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
-      setPasswordState({ tag: 'error', label: 'Password is too long' });
+      setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
       return;
     }
 
