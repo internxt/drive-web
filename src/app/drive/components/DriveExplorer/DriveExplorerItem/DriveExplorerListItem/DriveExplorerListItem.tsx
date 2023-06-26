@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { PencilSimple, Link, Trash, DownloadSimple } from 'phosphor-react';
+import { PencilSimple, Link, Trash, DownloadSimple } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';

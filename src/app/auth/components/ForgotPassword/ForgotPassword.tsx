@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
 import { Link } from 'react-router-dom';
-import { CaretLeft, WarningCircle } from 'phosphor-react';
+import { CaretLeft, WarningCircle } from '@phosphor-icons/react';
 import userService from '../../services/user.service';
 
 import { IFormValues } from 'app/core/types';

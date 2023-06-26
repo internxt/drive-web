@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DownloadSimple, Share, Trash, X } from 'phosphor-react';
+import { DownloadSimple, Share, Trash, X } from '@phosphor-icons/react';
 
 export default function Toolbar({
   className = '',
