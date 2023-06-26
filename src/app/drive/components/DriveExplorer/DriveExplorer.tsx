@@ -14,6 +14,7 @@ import {
   PencilSimple,
   CaretDown,
   ArrowFatUp,
+  Users,
 } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
@@ -77,7 +78,6 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ShareDialog from '../ShareDialog/ShareDialog';
-import { Users } from '@phosphor-icons/react';
 
 const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
@@ -612,7 +612,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog />
+      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
@@ -739,21 +739,23 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <div className="flex items-center justify-center">
                       {selectedItems.length === 1 && (
                         <>
-                          <div
-                            className="flex items-center justify-center"
-                            data-tooltip-id="share-tooltip"
-                            data-tooltip-content={translate('drive.dropdown.share')}
-                            data-tooltip-place="bottom"
-                          >
-                            <Button
-                              variant="tertiary"
-                              className="aspect-square"
-                              onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
+                          {process.env.NODE_ENV !== 'production' && (
+                            <div
+                              className="flex items-center justify-center"
+                              data-tooltip-id="share-tooltip"
+                              data-tooltip-content={translate('drive.dropdown.share')}
+                              data-tooltip-place="bottom"
                             >
-                              <Users className="h-6 w-6" />
-                            </Button>
-                            <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
-                          </div>
+                              <Button
+                                variant="tertiary"
+                                className="aspect-square"
+                                onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
+                              >
+                                <Users className="h-6 w-6" />
+                              </Button>
+                              <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
+                            </div>
+                          )}
                           {isSelectedItemShared && (
                             <div
                               className="flex items-center justify-center"
