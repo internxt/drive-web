@@ -209,11 +209,14 @@ function AccountDetailsModal({
             value={emailValue}
             name="email"
           />
-          <div className="flex h-11 items-center">
-            <Button disabled={status.tag === 'loading'} variant="secondary" onClick={openEditEmail}>
-              {translate('actions.change')}
-            </Button>
-          </div>
+
+          {process.env.NODE_ENV !== 'production' && (
+            <div className="flex h-11 items-center">
+              <Button disabled={status.tag === 'loading'} variant="secondary" onClick={openEditEmail}>
+                {translate('actions.change')}
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="flex justify-end">
