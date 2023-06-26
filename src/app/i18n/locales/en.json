@@ -567,6 +567,7 @@
       "confirmPassword": "Confirm new password",
       "strongPassword": "Password is strong",
       "errors": {
+        "longPassword": "The password can have a maximum of 50 characters",
         "shortPassword": "Password has to be at least 8 characters long",
         "notComplex": "Password is not complex enough",
         "weakPassword": "Password is weak",

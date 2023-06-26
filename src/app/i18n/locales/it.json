@@ -560,6 +560,7 @@
       "confirmPassword": "Conferma la nuova password",
       "strongPassword": "Password is strong",
       "errors": {
+        "longPassword": "La password può contenere un massimo di 50 caratteri",
         "shortPassword": "Password has to be at least 8 characters long",
         "notComplex": "Password is not complex enough",
         "weakPassword": "Password is weak",
