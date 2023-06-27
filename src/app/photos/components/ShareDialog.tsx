@@ -1,5 +1,5 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
-import { Copy, Link, XCircle } from 'phosphor-react';
+import { Copy, Link, XCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SdkFactory } from '../../core/factory/sdk';

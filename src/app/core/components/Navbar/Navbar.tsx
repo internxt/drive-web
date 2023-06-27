@@ -13,7 +13,7 @@ import navigationService from '../../services/navigation.service';
 import { AppView, Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { Gear, MagnifyingGlass } from 'phosphor-react';
+import { Gear, MagnifyingGlass } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';
