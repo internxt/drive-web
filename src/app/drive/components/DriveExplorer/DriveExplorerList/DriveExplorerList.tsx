@@ -1,6 +1,4 @@
-import React, { memo, useEffect, useState } from 'react';
-import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
-import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
@@ -8,7 +6,6 @@ import { AppDispatch, RootState } from '../../../../store';
 import { storageActions } from '../../../../store/slices/storage';
 import { DriveItemData } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
-import DriveListItemSkeleton from '../../DriveListItemSkeleton/DriveListItemSkeleton';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import List from '../../../../shared/components/List';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
@@ -25,6 +22,7 @@ import {
   contextMenuDriveFolderShared,
   contextMenuDriveFolderNotSharedLink,
 } from './DriveItemContextMenu';
+import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -40,6 +38,11 @@ interface DriveExplorerListProps {
 }
 
 type ObjectWithId = { id: string | number };
+
+type ContextMenuDriveItem =
+  | DriveItemData
+  | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
+  | (ListShareLinksItem & { code: string });
 
 function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] {
   const result: T[] = [];
@@ -59,6 +62,10 @@ function findUniqueItems<T extends ObjectWithId>(array1: T[], array2: T[]): T[] 
 
   return [...result, ...Array.from(map.values())];
 }
+
+const createDriveListItem = (item: DriveItemData, isTrash?: boolean) => (
+  <DriveExplorerListItem item={item} isTrash={isTrash} />
+);
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
@@ -88,55 +95,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     }
   }, [props.items.length]);
 
-  const hasItems = props.items.length > 0;
-
-  const itemsList = (): JSX.Element[] => {
-    return props.items.map((item: DriveItemData) => {
-      const itemParentId = item.parentId || item.folderId;
-      const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}-${itemParentId}`;
-
-      return <DriveExplorerListItem isTrash={props.isTrash} key={itemKey} item={item} />;
-    });
-  };
-
-  const itemsFileList = (): JSX.Element[] => {
-    return props.items
-      .filter((item) => !item.isFolder)
-      .map((item: DriveItemData) => {
-        const itemParentId = item.parentId || item.folderId;
-        const itemKey = `'file'-${item.id}-${itemParentId}`;
-
-        return <DriveExplorerListItem key={itemKey} item={item} isTrash={props.isTrash} />;
-      });
-  };
-
-  const itemsFolderList = (): JSX.Element[] => {
-    return props.items
-      .filter((item) => item.isFolder)
-      .map((item: DriveItemData) => {
-        const itemParentId = item.parentId || item.folderId;
-        const itemKey = `'folder'-${item.id}-${itemParentId}`;
-
-        return <DriveExplorerListItem key={itemKey} item={item} isTrash={props.isTrash} />;
-      });
-  };
-
-  const isAllSelected = () => {
-    const isAllItemsSelected = props.selectedItems.length === props.items.length && props.items.length > 0;
-    return isAllItemsSelected;
-  };
-
-  const loadingSkeleton = (): JSX.Element[] =>
-    Array(60)
-      .fill(0)
-      .map((n, i) => <DriveListItemSkeleton key={i} />);
-
-  const onSelectAllButtonClicked = () => {
-    const { dispatch, items } = props;
-    setIsAllSelectedEnabled(!isAllSelectedEnabled);
-    isAllSelected() ? dispatch(storageActions.clearSelectedItems()) : dispatch(storageActions.selectItems(items));
-  };
-
   const onSelectedItemsChanged = (changes: { props: DriveItemData; value: boolean }[]) => {
     let updatedSelectedItems = props.selectedItems;
 
@@ -164,11 +122,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.setOrder({ by: value.field, direction }));
   };
 
-  const sortButtonFactory = () => {
-    const IconComponent = order.direction === OrderDirection.Desc ? UilArrowDown : UilArrowUp;
-    return <IconComponent className="ml-2" />;
-  };
-
   function handleMouseEnter() {
     props.onHoverListItems?.(true);
   }
@@ -176,6 +129,99 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   function handleMouseLeave() {
     props.onHoverListItems?.(false);
   }
+
+  const renameItem = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
+      dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
+    },
+    [dispatch, uiActions],
+  );
+
+  const moveItem = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
+  );
+
+  const restoreItem = useCallback(
+    (item: DriveItemData | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>) => {
+      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
+      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
+  );
+
+  const deletePermanently = useCallback(
+    (item: DriveItemData | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>) => {
+      dispatch(storageActions.setItemsToDelete([item as DriveItemData]));
+      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
+  );
+
+  const openPreview = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+    },
+    [dispatch, uiActions],
+  );
+
+  const getLink = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+    },
+    [dispatch, sharedThunks],
+  );
+
+  const copyLink = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+    },
+    [dispatch, sharedThunks],
+  );
+
+  const openLinkSettings = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(
+        storageActions.setItemToShare({
+          share: (item as DriveItemData)?.shares?.[0],
+          item: item as DriveItemData,
+        }),
+      );
+      dispatch(uiActions.setIsShareItemDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
+  );
+
+  const deleteLink = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(
+        sharedThunks.deleteLinkThunk({
+          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
+          item: item as DriveItemData,
+        }),
+      );
+    },
+    [dispatch, sharedThunks],
+  );
+
+  const downloadItem = useCallback(
+    (item: ContextMenuDriveItem) => {
+      dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
+    },
+    [dispatch, storageThunks],
+  );
+
+  const moveToTrash = useCallback(
+    (item: ContextMenuDriveItem) => {
+      moveItemsToTrash([item as DriveItemData]);
+    },
+    [moveItemsToTrash],
+  );
 
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
@@ -218,7 +264,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           ]}
           items={props.items}
           isLoading={isLoading}
-          itemComposition={[(item) => <DriveExplorerListItem item={item} isTrash={props.isTrash} />]}
+          itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           skinSkeleton={skinSkeleton}
@@ -262,149 +308,54 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   })
                 : props.selectedItems[0]?.isFolder
                 ? contextMenuTrashFolder({
-                    restoreItem: (item: DriveItemData) => {
-                      dispatch(storageActions.setItemsToMove([item]));
-                      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                    },
-                    deletePermanently: (item: DriveItemData) => {
-                      dispatch(storageActions.setItemsToDelete([item]));
-                      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
-                    },
+                    restoreItem: restoreItem,
+                    deletePermanently: deletePermanently,
                   })
                 : contextMenuTrashItems({
-                    openPreview: (item: DriveItemData) => {
-                      dispatch(uiActions.setIsFileViewerOpen(true));
-                      dispatch(uiActions.setFileViewerItem(item));
-                    },
-                    restoreItem: (item: DriveItemData) => {
-                      dispatch(storageActions.setItemsToMove([item]));
-                      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                    },
-                    deletePermanently: (item: DriveItemData) => {
-                      dispatch(storageActions.setItemsToDelete([item]));
-                      dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
-                    },
+                    openPreview: openPreview,
+                    restoreItem: restoreItem,
+                    deletePermanently: deletePermanently,
                   })
               : isSelectedSharedItem
               ? props.selectedItems[0]?.isFolder
                 ? contextMenuDriveFolderShared({
-                    copyLink: (item) => {
-                      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
-                    },
-                    openLinkSettings: (item) => {
-                      dispatch(
-                        storageActions.setItemToShare({
-                          share: (item as DriveItemData)?.shares?.[0],
-                          item: item as DriveItemData,
-                        }),
-                      );
-                      dispatch(uiActions.setIsShareItemDialogOpen(true));
-                    },
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
-                    renameItem: (item) => {
-                      dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
-                      dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
-                    },
-                    moveItem: (item) => {
-                      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
-                      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                    },
-                    downloadItem: (item) => {
-                      dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
-                    },
-                    moveToTrash: (item) => {
-                      moveItemsToTrash([item as DriveItemData]);
-                    },
+                    copyLink: copyLink,
+                    openLinkSettings: openLinkSettings,
+                    deleteLink: deleteLink,
+                    renameItem: renameItem,
+                    moveItem: moveItem,
+                    downloadItem: downloadItem,
+                    moveToTrash: moveToTrash,
                   })
                 : contextMenuDriveItemShared({
-                    openPreview: (item) => {
-                      dispatch(uiActions.setIsFileViewerOpen(true));
-                      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-                    },
-                    copyLink: (item) => {
-                      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
-                    },
-                    openLinkSettings: (item) => {
-                      dispatch(
-                        storageActions.setItemToShare({
-                          share: (item as DriveItemData)?.shares?.[0],
-                          item: item as DriveItemData,
-                        }),
-                      );
-                      dispatch(uiActions.setIsShareItemDialogOpen(true));
-                    },
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
-                    renameItem: (item) => {
-                      dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
-                      dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
-                    },
-                    moveItem: (item) => {
-                      dispatch(storageActions.setItemsToMove([item as DriveItemData]));
-                      dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                    },
-                    downloadItem: (item) => {
-                      dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
-                    },
-                    moveToTrash: (item) => {
-                      moveItemsToTrash([item as DriveItemData]);
-                    },
+                    openPreview: openPreview,
+                    copyLink: copyLink,
+                    openLinkSettings: openLinkSettings,
+                    deleteLink: deleteLink,
+                    renameItem: renameItem,
+                    moveItem: moveItem,
+                    downloadItem: downloadItem,
+                    moveToTrash: moveToTrash,
                   })
               : props.selectedItems[0]?.isFolder
               ? contextMenuDriveFolderNotSharedLink({
-                  getLink: (item: DriveItemData) => {
-                    dispatch(sharedThunks.getSharedLinkThunk({ item }));
-                  },
-                  renameItem: (item: DriveItemData) => {
-                    dispatch(uiActions.setCurrentEditingNameDirty(item.name));
-                    dispatch(uiActions.setCurrentEditingNameDriveItem(item));
-                  },
-                  moveItem: (item: DriveItemData) => {
-                    dispatch(storageActions.setItemsToMove([item]));
-                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                  },
-                  downloadItem: (item: DriveItemData) => {
-                    dispatch(storageThunks.downloadItemsThunk([item]));
-                  },
-                  moveToTrash: (item: DriveItemData) => {
-                    moveItemsToTrash([item]);
-                  },
+                  getLink: getLink,
+                  renameItem: renameItem,
+                  moveItem: moveItem,
+                  downloadItem: downloadItem,
+                  moveToTrash: moveToTrash,
                 })
               : contextMenuDriveNotSharedLink({
-                  openPreview: (item: DriveItemData) => {
-                    dispatch(uiActions.setIsFileViewerOpen(true));
-                    dispatch(uiActions.setFileViewerItem(item));
+                  shareLink: (item) => {
+                    getLink(item);
+                    openLinkSettings(item);
                   },
-                  getLink: (item: DriveItemData) => {
-                    dispatch(sharedThunks.getSharedLinkThunk({ item }));
-                  },
-                  renameItem: (item: DriveItemData) => {
-                    dispatch(uiActions.setCurrentEditingNameDirty(item.name));
-                    dispatch(uiActions.setCurrentEditingNameDriveItem(item));
-                  },
-                  moveItem: (item: DriveItemData) => {
-                    dispatch(storageActions.setItemsToMove([item]));
-                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                  },
-                  downloadItem: (item: DriveItemData) => {
-                    dispatch(storageThunks.downloadItemsThunk([item]));
-                  },
-                  moveToTrash: (item: DriveItemData) => {
-                    moveItemsToTrash([item]);
-                  },
+                  openPreview: openPreview,
+                  getLink: getLink,
+                  renameItem: renameItem,
+                  moveItem: moveItem,
+                  downloadItem: downloadItem,
+                  moveToTrash: moveToTrash,
                 })
           }
           selectedItems={props.selectedItems}

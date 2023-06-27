@@ -12,6 +12,7 @@ import {
   LinkBreak,
   PencilSimple,
   Trash,
+  Users,
 } from '@phosphor-icons/react';
 import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
@@ -23,6 +24,24 @@ const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
   action: openPreview,
   disabled: (item) => {
     return item.isFolder;
+  },
+});
+
+const shareLinkMenuItem = (shareLink: (target) => void) => ({
+  name: t('drive.dropdown.shareLink'),
+  icon: Users,
+  action: shareLink,
+  disabled: () => {
+    return false;
+  },
+});
+
+const manageLinkAccessMenuItem = (manageAccess: (target) => void) => ({
+  name: t('drive.dropdown.manageLinkAccess'),
+  icon: Users,
+  action: manageAccess,
+  disabled: () => {
+    return false;
   },
 });
 
@@ -158,6 +177,7 @@ const contextMenuSelectedItems = ({
 ];
 
 const contextMenuDriveNotSharedLink = ({
+  shareLink,
   openPreview,
   getLink,
   renameItem,
@@ -165,6 +185,7 @@ const contextMenuDriveNotSharedLink = ({
   downloadItem,
   moveToTrash,
 }: {
+  shareLink: (item: DriveItemData) => void;
   openPreview: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
   renameItem: (item: DriveItemData) => void;
@@ -172,9 +193,10 @@ const contextMenuDriveNotSharedLink = ({
   downloadItem: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  getOpenPreviewMenuItem(openPreview),
+  shareLinkMenuItem(shareLink),
   getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
+  getOpenPreviewMenuItem(openPreview),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
@@ -223,9 +245,10 @@ const contextMenuDriveItemShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  getOpenPreviewMenuItem(openPreview),
-  ...getSharedLinkMenuItems({ copyLink, openLinkSettings, deleteLink }),
+  manageLinkAccessMenuItem(openLinkSettings),
+  getGetLinkMenuItem(copyLink),
   { name: '', action: () => false, separator: true },
+  getOpenPreviewMenuItem(openPreview),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),

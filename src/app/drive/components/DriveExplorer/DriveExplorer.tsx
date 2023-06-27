@@ -76,8 +76,8 @@ import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
+import ShareDialog from '../../../photos/components/ShareDialog';
 
-const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -197,6 +197,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     },
   );
+
+  console.log({ userId: props.user?.userId });
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
@@ -978,6 +980,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </>
           )}
         </div>
+        s
       </div>
     </div>
   );

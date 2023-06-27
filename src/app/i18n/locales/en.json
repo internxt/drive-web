@@ -957,6 +957,8 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "shareLink": "Share",
+      "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
       "download": "Download",
