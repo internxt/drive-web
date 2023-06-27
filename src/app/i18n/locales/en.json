@@ -518,6 +518,46 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "Share \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "People with access",
+        "invite": "Invite",
+        "userItem": {
+          "roles": {
+            "owner": "Owner",
+            "editor": "Editor",
+            "viewer": "Viewer"
+          },
+          "remove": "Remove"
+        }
+      },
+      "general": {
+        "generalAccess": "General access",
+        "accessOptions": {
+          "public": {
+            "title": "Public",
+            "subtitle": "Anyone with the link can access"
+          },
+          "restricted": {
+            "title": "Restricted",
+            "subtitle": "Only people added can access"
+          },
+          "stopSharing": "Stop sharing"
+        },
+        "copyLink": "Copy link"
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "No one will be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
@@ -961,6 +1001,8 @@
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
+      "share": "Share",
+      "manageAccess": "Manage access",
       "download": "Download",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",

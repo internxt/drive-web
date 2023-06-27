@@ -14,6 +14,7 @@ import {
   PencilSimple,
   CaretDown,
   ArrowFatUp,
+  Users,
 } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
@@ -76,7 +77,7 @@ import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
-import ShareDialog from '../../../photos/components/ShareDialog';
+import ShareDialog from '../ShareDialog/ShareDialog';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -414,7 +415,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const viewModesIcons = {
     [FileViewMode.List]: (
       <SquaresFour
-        className="h-6 w-6"
+        size={24}
+        className="outline-none"
         data-tooltip-id="viewMode-tooltip"
         data-tooltip-content={translate('drive.viewMode.gridMode')}
         data-tooltip-place="bottom"
@@ -422,7 +424,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     ),
     [FileViewMode.Grid]: (
       <Rows
-        className="h-6 w-6"
+        size={24}
+        className="outline-none"
         data-tooltip-id="viewMode-tooltip"
         data-tooltip-content={translate('drive.viewMode.listMode')}
         data-tooltip-place="bottom"
@@ -522,8 +525,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <div ref={stepOneTutorialRef} className="flex items-center justify-center">
         <Button variant="primary" onClick={onUploadFileButtonClicked}>
           <div className="flex items-center justify-center space-x-2.5">
-            <div className="flex items-center space-x-0.5">
-              <UploadSimple weight="fill" size={24} />
+            <div className="flex items-center space-x-2">
+              <UploadSimple size={24} />
               <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
             </div>
           </div>
@@ -610,6 +613,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
+      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
@@ -734,20 +738,25 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   <>
                     {separatorV}
                     <div className="flex items-center justify-center">
-                      <div
-                        className="flex items-center justify-center"
-                        data-tooltip-id="download-tooltip"
-                        data-tooltip-content={translate('drive.dropdown.download')}
-                        data-tooltip-place="bottom"
-                      >
-                        <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
-                          <DownloadSimple className="h-6 w-6" />
-                        </Button>
-                        <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
-                      </div>
-
                       {selectedItems.length === 1 && (
                         <>
+                          {process.env.NODE_ENV !== 'production' && (
+                            <div
+                              className="flex items-center justify-center"
+                              data-tooltip-id="share-tooltip"
+                              data-tooltip-content={translate('drive.dropdown.share')}
+                              data-tooltip-place="bottom"
+                            >
+                              <Button
+                                variant="tertiary"
+                                className="aspect-square"
+                                onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
+                              >
+                                <Users className="h-6 w-6" />
+                              </Button>
+                              <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
+                            </div>
+                          )}
                           {isSelectedItemShared && (
                             <div
                               className="flex items-center justify-center"
@@ -761,18 +770,31 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                               <TooltipElement id="linkSettings-tooltip" delayShow={DELAY_SHOW_MS} />
                             </div>
                           )}
-                          <div
-                            className="flex items-center justify-center"
-                            data-tooltip-id="rename-tooltip"
-                            data-tooltip-content={translate('drive.dropdown.rename')}
-                            data-tooltip-place="bottom"
-                          >
-                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
-                              <PencilSimple className="h-6 w-6" />
-                            </Button>
-                            <TooltipElement id="rename-tooltip" delayShow={DELAY_SHOW_MS} />
-                          </div>
                         </>
+                      )}
+                      <div
+                        className="flex items-center justify-center"
+                        data-tooltip-id="download-tooltip"
+                        data-tooltip-content={translate('drive.dropdown.download')}
+                        data-tooltip-place="bottom"
+                      >
+                        <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
+                          <DownloadSimple className="h-6 w-6" />
+                        </Button>
+                        <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
+                      </div>
+                      {selectedItems.length === 1 && (
+                        <div
+                          className="flex items-center justify-center"
+                          data-tooltip-id="rename-tooltip"
+                          data-tooltip-content={translate('drive.dropdown.rename')}
+                          data-tooltip-place="bottom"
+                        >
+                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
+                            <PencilSimple className="h-6 w-6" />
+                          </Button>
+                          <TooltipElement id="rename-tooltip" delayShow={DELAY_SHOW_MS} />
+                        </div>
                       )}
                       <div
                         className="flex items-center justify-center"

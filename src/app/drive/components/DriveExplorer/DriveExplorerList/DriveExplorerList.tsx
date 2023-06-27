@@ -30,6 +30,7 @@ interface DriveExplorerListProps {
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   order: OrderSettings;
+  disableKeyboardShortcuts: boolean;
   dispatch: AppDispatch;
   onEndOfScroll(): void;
   hasMoreItems: boolean;
@@ -262,6 +263,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               orderable: false,
             },
           ]}
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
           items={props.items}
           isLoading={isLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
@@ -386,4 +388,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  disableKeyboardShortcuts:
+    state.ui.isShareDialogOpen ||
+    state.ui.isSurveyDialogOpen ||
+    state.ui.isEditFolderNameDialog ||
+    state.ui.isFileViewerOpen ||
+    state.ui.isMoveItemsDialogOpen ||
+    state.ui.isCreateFolderDialogOpen ||
+    state.ui.isNameCollisionDialogOpen ||
+    state.ui.isReachedPlanLimitDialogOpen,
 }))(DriveExplorerList);

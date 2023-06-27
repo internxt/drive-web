@@ -511,6 +511,46 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "Condividi \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Persone con accesso",
+        "invite": "Invito",
+        "userItem": {
+          "roles": {
+            "owner": "Propietario",
+            "editor": "Editor",
+            "viewer": "Visualizzatore"
+          },
+          "remove": "Eliminare"
+        }
+      },
+      "general": {
+        "generalAccess": "Accesso generale",
+        "accessOptions": {
+          "public": {
+            "title": "Pubblico",
+            "subtitle": "Chiunque abbia il link può accedere"
+          },
+          "restricted": {
+            "title": "Limitato",
+            "subtitle": "Solo le persone aggiunte possono accedere"
+          },
+          "stopSharing": "Smettere di condividere"
+        },
+        "copyLink": "Copiare il link"
+      },
+      "stopSharing": {
+        "title": "Smettere di condividere?",
+        "subtitle": "Nessuno potrà accedere a \"{{name}}\"",
+        "cancel": "Annullare",
+        "confirm": "Smettere di condividere",
+        "notification": {
+          "success": "Non condividiamo più \"{{name}}\"",
+          "error": "Non è stato possibile smettere di condividere, provare di nuovo"
+        }
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "file selezionati",
       "singleToolBar": "file selezionati",
