@@ -39,6 +39,8 @@ const initialState: StorageState = {
   driveFoldersToRename: [],
   moveDestinationFolderId: null,
   folderPathDialog: [],
+  driveItemsSort: 'plainName',
+  driveItemsOrder: 'ASC',
 };
 
 export const removeDuplicates = (list: DriveItemData[]) => {
@@ -340,6 +342,14 @@ export const storageSlice = createSlice({
     },
     resetState(state: StorageState) {
       Object.assign(state, initialState);
+    },
+
+    setDriveItemsSort: (state: StorageState, action: PayloadAction<string>) => {
+      state.driveItemsSort = action.payload;
+    },
+
+    setDriveItemsOrder: (state: StorageState, action: PayloadAction<string>) => {
+      state.driveItemsOrder = action.payload;
     },
   },
   extraReducers: storageExtraReducers,
