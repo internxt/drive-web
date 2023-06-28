@@ -78,6 +78,7 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ShareDialog from '../ShareDialog/ShareDialog';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -140,6 +141,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
+  const isAdvancedShareDialogOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -198,8 +200,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     },
   );
-
-  console.log({ userId: props.user?.userId });
 
   useEffect(() => {
     if (!isSignUpTutorialCompleted && currentTutorialStep === 1 && successNotifications.length > 0) {
@@ -396,7 +396,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item: selectedItems[0],
         }),
       );
-      dispatch(uiActions.setIsShareItemDialogOpen(true));
+      dispatch(sharedThunks.getSharedLinkThunk({ item: selectedItems[0] as DriveItemData }));
     }
   };
 
@@ -613,7 +613,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
+      {process.env.NODE_ENV !== 'production' && isAdvancedShareDialogOpen && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
@@ -751,6 +751,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                 variant="tertiary"
                                 className="aspect-square"
                                 onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
+                                //AQUI ESTA
                               >
                                 <Users className="h-6 w-6" />
                               </Button>
@@ -1002,7 +1003,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </>
           )}
         </div>
-        s
       </div>
     </div>
   );

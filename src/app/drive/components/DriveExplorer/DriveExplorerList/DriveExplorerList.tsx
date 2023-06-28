@@ -185,7 +185,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, sharedThunks],
   );
 
-  const openLinkSettings = useCallback(
+  const openAdvancedShareLinkSettings = useCallback(
     (item: ContextMenuDriveItem) => {
       dispatch(
         storageActions.setItemToShare({
@@ -193,21 +193,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           item: item as DriveItemData,
         }),
       );
-      dispatch(uiActions.setIsShareItemDialogOpen(true));
+      dispatch(uiActions.setIsShareDialogOpen(true));
     },
     [dispatch, storageActions, uiActions],
-  );
-
-  const deleteLink = useCallback(
-    (item: ContextMenuDriveItem) => {
-      dispatch(
-        sharedThunks.deleteLinkThunk({
-          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-          item: item as DriveItemData,
-        }),
-      );
-    },
-    [dispatch, sharedThunks],
   );
 
   const downloadItem = useCallback(
@@ -322,8 +310,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               ? props.selectedItems[0]?.isFolder
                 ? contextMenuDriveFolderShared({
                     copyLink: copyLink,
-                    openLinkSettings: openLinkSettings,
-                    deleteLink: deleteLink,
+                    openShareAccessSettings: (item) => {
+                      openAdvancedShareLinkSettings(item);
+                    },
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
@@ -332,8 +321,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 : contextMenuDriveItemShared({
                     openPreview: openPreview,
                     copyLink: copyLink,
-                    openLinkSettings: openLinkSettings,
-                    deleteLink: deleteLink,
+                    openShareAccessSettings: (item) => {
+                      openAdvancedShareLinkSettings(item);
+                    },
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
@@ -341,6 +331,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   })
               : props.selectedItems[0]?.isFolder
               ? contextMenuDriveFolderNotSharedLink({
+                  shareLink: (item) => {
+                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
+                    // WAITING BACKEND ENDPOINTS
+                    openAdvancedShareLinkSettings(item);
+                  },
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,
@@ -349,8 +344,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 })
               : contextMenuDriveNotSharedLink({
                   shareLink: (item) => {
-                    getLink(item);
-                    openLinkSettings(item);
+                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
+                    // WAITING BACKEND ENDPOINTS
+
+                    openAdvancedShareLinkSettings(item);
                   },
                   openPreview: openPreview,
                   getLink: getLink,

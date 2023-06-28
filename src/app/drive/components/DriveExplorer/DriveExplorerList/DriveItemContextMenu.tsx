@@ -4,12 +4,9 @@ import {
   ArrowsOutCardinal,
   Backspace,
   ClockCounterClockwise,
-  Copy,
   DownloadSimple,
   Eye,
-  Gear,
   Link,
-  LinkBreak,
   PencilSimple,
   Trash,
   Users,
@@ -96,15 +93,6 @@ const getMoveItemMenuItem = (moveItem: (target?) => void) => ({
   },
 });
 
-const getDeleteLinkMenuItem = (deleteLink: (target?) => void) => ({
-  name: t('drive.dropdown.deleteLink'),
-  icon: LinkBreak,
-  action: deleteLink,
-  disabled: () => {
-    return false;
-  },
-});
-
 const getRestoreMenuItem = (restoreItem: (target?) => void) => ({
   name: t('drive.dropdown.restore'),
   icon: ClockCounterClockwise,
@@ -122,34 +110,6 @@ const getDeletePermanentlyMenuItem = (deletePermanently: (target?) => void) => (
     return false;
   },
 });
-
-const getSharedLinkMenuItems = ({
-  copyLink,
-  openLinkSettings,
-  deleteLink,
-}: {
-  copyLink: (target?) => void;
-  openLinkSettings: (target?) => void;
-  deleteLink: (target?) => void;
-}) => [
-  {
-    name: t('drive.dropdown.copyLink'),
-    icon: Copy,
-    action: copyLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.linkSettings'),
-    icon: Gear,
-    action: openLinkSettings,
-    disabled: () => {
-      return false;
-    },
-  },
-  getDeleteLinkMenuItem(deleteLink),
-];
 
 const contextMenuSelectedItems = ({
   selectedItems,
@@ -205,18 +165,21 @@ const contextMenuDriveNotSharedLink = ({
 ];
 
 const contextMenuDriveFolderNotSharedLink = ({
+  shareLink,
   getLink,
   renameItem,
   moveItem,
   downloadItem,
   moveToTrash,
 }: {
+  shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
   renameItem: (item: DriveItemData) => void;
   moveItem: (item: DriveItemData) => void;
   downloadItem: (item: DriveItemData) => void;
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
+  shareLinkMenuItem(shareLink),
   getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
@@ -229,8 +192,7 @@ const contextMenuDriveFolderNotSharedLink = ({
 const contextMenuDriveItemShared = ({
   openPreview,
   copyLink,
-  openLinkSettings,
-  deleteLink,
+  openShareAccessSettings,
   renameItem,
   moveItem,
   downloadItem,
@@ -238,14 +200,13 @@ const contextMenuDriveItemShared = ({
 }: {
   openPreview: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  openLinkSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   renameItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  manageLinkAccessMenuItem(openLinkSettings),
+  manageLinkAccessMenuItem(openShareAccessSettings),
   getGetLinkMenuItem(copyLink),
   { name: '', action: () => false, separator: true },
   getOpenPreviewMenuItem(openPreview),
@@ -258,22 +219,21 @@ const contextMenuDriveItemShared = ({
 
 const contextMenuDriveFolderShared = ({
   copyLink,
-  openLinkSettings,
-  deleteLink,
+  openShareAccessSettings,
   renameItem,
   moveItem,
   downloadItem,
   moveToTrash,
 }: {
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  openLinkSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   renameItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  ...getSharedLinkMenuItems({ copyLink, openLinkSettings, deleteLink }),
+  manageLinkAccessMenuItem(openShareAccessSettings),
+  getGetLinkMenuItem(copyLink),
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
@@ -283,15 +243,12 @@ const contextMenuDriveFolderShared = ({
 ];
 
 const contextMenuMultipleSharedView = ({
-  deleteLink,
   downloadItem,
   moveToTrash,
 }: {
-  deleteLink: (item: ListShareLinksItem) => void;
   downloadItem: (item: ListShareLinksItem) => void;
   moveToTrash: (item: ListShareLinksItem) => void;
 }): ListItemMenu<ListShareLinksItem> => [
-  getDeleteLinkMenuItem(deleteLink),
   getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
   getMoveToTrashMenuItem(moveToTrash),
@@ -378,14 +335,13 @@ const contextMenuSelectedBackupItems = ({
 
 const contextMenuDriveItemSharedsView = ({
   copyShareLink,
-  openLinkSettings,
-  deleteLink,
+  openShareAccessSettings,
 }: {
   copyShareLink: (item) => void;
-  openLinkSettings: (item) => void;
-  deleteLink: (open: boolean) => void;
+  openShareAccessSettings: (item) => void;
 }): ListItemMenu<DriveItemData> => [
-  ...getSharedLinkMenuItems({ copyLink: copyShareLink, openLinkSettings, deleteLink: () => deleteLink(true) }),
+  manageLinkAccessMenuItem(openShareAccessSettings),
+  getGetLinkMenuItem(copyShareLink),
 ];
 
 export {

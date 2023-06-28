@@ -180,12 +180,6 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  function onOpenLinkUpdateModal(item: ListShareLinksItem & { code: string }) {
-    const mnemonic = localStorageService.getUser()!.mnemonic;
-    setLinkToUpdate(item);
-    setIsUpdateLinkModalOpen(true);
-  }
-
   const copyLink = (item) => {
     const itemType = item.isFolder ? 'folder' : 'file';
     const encryptedCode = item.code || item.encryptedCode;
@@ -193,9 +187,9 @@ export default function SharedLinksView(): JSX.Element {
     copyShareLink(itemType, plainCode, item.token);
   };
 
-  const openLinkSettings = (item) => {
+  const openShareAccessSettings = (item) => {
     dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
+    dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
   const moveSelectedItemsToTrash = async () => {
@@ -370,7 +364,6 @@ export default function SharedLinksView(): JSX.Element {
           menu={
             selectedItems.length > 1
               ? contextMenuMultipleSharedView({
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: () => {
                     const itemsToDownload = selectedItems.map((selectedShareLink) => ({
                       ...(selectedShareLink.item as DriveItemData),
@@ -383,8 +376,7 @@ export default function SharedLinksView(): JSX.Element {
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderShared({
                   copyLink,
-                  openLinkSettings,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  openShareAccessSettings,
                   renameItem: renameItem,
                   moveItem: moveItem,
                   downloadItem: downloadItem,
@@ -396,8 +388,7 @@ export default function SharedLinksView(): JSX.Element {
                     dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
                   },
                   copyLink,
-                  openLinkSettings,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
+                  openShareAccessSettings,
                   renameItem: renameItem,
                   moveItem: moveItem,
                   downloadItem: downloadItem,

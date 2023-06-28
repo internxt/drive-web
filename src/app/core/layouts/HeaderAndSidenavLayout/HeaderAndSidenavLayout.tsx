@@ -4,7 +4,6 @@ import Navbar from '../../components/Navbar/Navbar';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
-import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
 import InviteTeamMemberDialog from 'app/teams/components/InviteTeamMemberDialog/InviteTeamMemberDialog';
 import navigationService from '../../services/navigation.service';
 import GuestDialog from 'app/guests/components/GuestDialog/GuestDialog';
@@ -14,6 +13,7 @@ import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from '../../services/config.service';
+import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 
 export interface HeaderAndSidenavLayoutProps {
   children: JSX.Element;
@@ -24,7 +24,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const { children } = props;
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
@@ -44,7 +44,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className="flex h-auto min-h-full flex-col">
-      {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
+      {isShareItemDialogOpen && itemToShare && <ShareDialog />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
       {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
