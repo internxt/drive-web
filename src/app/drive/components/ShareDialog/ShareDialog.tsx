@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -148,98 +148,6 @@ const ShareDialog = (props) => {
     }
   };
 
-  const UserOptions = ({ listPosition }) => {
-    const isUserSelected = selectedUserListIndex === listPosition;
-
-    return isUserSelected ? (
-      <Popover
-        className="absolute z-10 h-0 max-h-0 w-full"
-        style={{
-          top: `${userOptionsY}px`,
-          right: 0,
-          minWidth: '160px',
-        }}
-      >
-        <Popover.Panel
-          className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
-            isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
-          }`}
-          style={{
-            top: '44px',
-            minWidth: '160px',
-          }}
-          static
-        >
-          {/* Editor */}
-          <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
-            <p className="w-full text-left text-base font-medium leading-none">
-              {translate('modals.shareModal.list.userItem.roles.editor')}
-            </p>
-            <Check size={20} />
-          </button>
-
-          {/* Viewer */}
-          <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
-            <p className="w-full text-left text-base font-medium leading-none">
-              {translate('modals.shareModal.list.userItem.roles.viewer')}
-            </p>
-          </button>
-
-          <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
-
-          {/* Remove */}
-          <button
-            className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-            onClick={() => onRemoveUser(userOptionsEmail)}
-          >
-            <p className="w-full text-left text-base font-medium leading-none">
-              {translate('modals.shareModal.list.userItem.remove')}
-            </p>
-          </button>
-        </Popover.Panel>
-      </Popover>
-    ) : (
-      <></>
-    );
-  };
-
-  const User = ({ user, listPosition }: { user: InvitedUserProps; listPosition: number | null }) => (
-    <div
-      className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
-        user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
-      }`}
-    >
-      <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
-          {user.name}&nbsp;{user.lastname}
-        </p>
-        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
-          {user.email}
-        </p>
-      </div>
-
-      {user.role === 'owner' ? (
-        <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
-      ) : (
-        <>
-          <div
-            className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
-            onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
-            tabIndex={-1}
-          >
-            <span className="pointer-events-none">
-              {translate(`modals.shareModal.list.userItem.roles.${user.role}`)}
-            </span>
-            <CaretDown size={16} weight="bold" className="pointer-events-none" />
-          </div>
-          <UserOptions listPosition={listPosition} />
-        </>
-      )}
-    </div>
-  );
-
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
       <div className="flex h-16 w-full items-center justify-between space-x-5 border-b border-gray-10 px-5">
@@ -270,9 +178,28 @@ const ShareDialog = (props) => {
             className="mt-1.5 flex flex-col overflow-y-auto"
             style={{ minHeight: '224px', maxHeight: '336px' }}
           >
-            <User user={owner} listPosition={null} />
+            <User
+              user={owner}
+              listPosition={null}
+              translate={translate}
+              openUserOptions={openUserOptions}
+              selectedUserListIndex={selectedUserListIndex}
+              userOptionsY={userOptionsY}
+              onRemoveUser={onRemoveUser}
+              userOptionsEmail={userOptionsEmail}
+            />
             {invitedUsers.map((user, index) => (
-              <User user={user} key={user.email} listPosition={index} />
+              <User
+                user={user}
+                key={user.email}
+                listPosition={index}
+                translate={translate}
+                openUserOptions={openUserOptions}
+                selectedUserListIndex={selectedUserListIndex}
+                userOptionsY={userOptionsY}
+                onRemoveUser={onRemoveUser}
+                userOptionsEmail={userOptionsEmail}
+              />
             ))}
           </div>
         </div>
@@ -423,3 +350,129 @@ export default connect((state: RootState) => ({
   user: state.user.user,
   selectedItems: state.storage.selectedItems,
 }))(ShareDialog);
+
+const UserOptions = ({
+  listPosition,
+  selectedUserListIndex,
+  userOptionsY,
+  translate,
+  onRemoveUser,
+  userOptionsEmail,
+}) => {
+  const isUserSelected = selectedUserListIndex === listPosition;
+
+  return isUserSelected ? (
+    <Popover
+      className="absolute z-10 h-0 max-h-0 w-full"
+      style={{
+        top: `${userOptionsY}px`,
+        right: 0,
+        minWidth: '160px',
+      }}
+    >
+      <Popover.Panel
+        className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+          isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+        }`}
+        style={{
+          top: '44px',
+          minWidth: '160px',
+        }}
+        static
+      >
+        {/* Editor */}
+        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.roles.editor')}
+          </p>
+          <Check size={20} />
+        </button>
+
+        {/* Viewer */}
+        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.roles.viewer')}
+          </p>
+        </button>
+
+        <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
+
+        {/* Remove */}
+        <button
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          onClick={() => onRemoveUser(userOptionsEmail)}
+        >
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.remove')}
+          </p>
+        </button>
+      </Popover.Panel>
+    </Popover>
+  ) : (
+    <></>
+  );
+};
+
+const User = ({
+  user,
+  listPosition,
+  translate,
+  openUserOptions,
+  selectedUserListIndex,
+  userOptionsY,
+  onRemoveUser,
+  userOptionsEmail,
+}: {
+  user: InvitedUserProps;
+  listPosition: number | null;
+  translate: (key: string, props?: Record<string, unknown>) => string;
+  openUserOptions: (
+    event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
+    user: InvitedUserProps,
+    listPosition: number | null,
+  ) => void;
+  selectedUserListIndex;
+  userOptionsY;
+  onRemoveUser;
+  userOptionsEmail;
+}) => (
+  <div
+    className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
+      user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
+    }`}
+  >
+    <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
+
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+        {user.name}&nbsp;{user.lastname}
+      </p>
+      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+        {user.email}
+      </p>
+    </div>
+
+    {user.role === 'owner' ? (
+      <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
+    ) : (
+      <>
+        <div
+          className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
+          onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
+          tabIndex={-1}
+        >
+          <span className="pointer-events-none">{translate(`modals.shareModal.list.userItem.roles.${user.role}`)}</span>
+          <CaretDown size={16} weight="bold" className="pointer-events-none" />
+        </div>
+        <UserOptions
+          listPosition={listPosition}
+          selectedUserListIndex={selectedUserListIndex}
+          userOptionsY={userOptionsY}
+          translate={translate}
+          onRemoveUser={onRemoveUser}
+          userOptionsEmail={userOptionsEmail}
+        />
+      </>
+    )}
+  </div>
+);
