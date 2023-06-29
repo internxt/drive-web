@@ -552,6 +552,17 @@
           "success": "No longer sharing \"{{name}}\"",
           "error": "Couldn't stop sharing, please try again"
         }
+      },
+      "invite": {
+        "title": "Invite people",
+        "textarea": "Enter your message text (optional)",
+        "notifyUsers": "Notify users",
+        "instructions": "Press enter or space to separate emails",
+        "email": "Type email",
+        "invite": "Invite",
+        "editor": "Editor",
+        "viewer": "Viewer",
+        "listUsers": "Users to invite"
       }
     },
     "deletePhotosModal": {

@@ -22,6 +22,7 @@ export interface IFormValues {
   createFolder: string;
   teamMembers: number;
   token: string;
+  userRole: string;
 }
 
 export interface AppConfig {
