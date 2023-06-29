@@ -209,11 +209,7 @@ const ShareDialog = (props) => {
         user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
       }`}
     >
-      {user.role === 'owner' ? (
-        <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
-      ) : (
-        <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
-      )}
+      <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
 
       <div className="flex flex-1 flex-col overflow-hidden">
         <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
