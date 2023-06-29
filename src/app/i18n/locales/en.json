@@ -283,7 +283,11 @@
               "title": "You are on free plan",
               "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contact us to update your payment method",
+              "contact": "Contact"
+            }
           },
           "invoices": {
             "head": "Invoices",
@@ -614,6 +618,7 @@
       "confirmPassword": "Confirm new password",
       "strongPassword": "Password is strong",
       "errors": {
+        "longPassword": "The password can have a maximum of 50 characters",
         "shortPassword": "Password has to be at least 8 characters long",
         "notComplex": "Password is not complex enough",
         "weakPassword": "Password is weak",

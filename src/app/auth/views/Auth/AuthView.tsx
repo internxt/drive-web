@@ -3,7 +3,7 @@ import { useSignUp } from '../../components/SignUp/useSignUp';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
-import { WarningCircle } from 'phosphor-react';
+import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';

@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import { ArrowRight } from 'phosphor-react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Button from '../../../../../shared/components/Button/Button';
 import Modal from '../../../../../shared/components/Modal';

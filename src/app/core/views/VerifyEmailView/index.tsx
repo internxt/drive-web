@@ -1,4 +1,4 @@
-import { CheckCircle, WarningOctagon } from 'phosphor-react';
+import { CheckCircle, WarningOctagon } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
 import Spinner from '../../../shared/components/Spinner/Spinner';

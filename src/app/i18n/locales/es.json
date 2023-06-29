@@ -265,7 +265,11 @@
               "title": "Estás en el plan gratuito",
               "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
             },
-            "title": "Añadir nuevo método de pago"
+            "title": "Añadir nuevo método de pago",
+            "contactUs": {
+              "description": "Ponte en contacto con nosotros para actualizar tu método de pago",
+              "contact": "Contacta"
+            }
           },
           "invoices": {
             "head": "Facturas",
@@ -585,6 +589,7 @@
       "confirmPassword": "Confirmar contraseña",
       "strongPassword": "La contraseña es fuerte",
       "errors": {
+        "longPassword": "La contraseña puede tener como maximo 50 caracteres",
         "shortPassword": "La contraseña debe tener al menos 8 caracteres",
         "notComplex": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
         "weakPassword": "La contraseña es débil",

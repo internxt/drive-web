@@ -241,7 +241,11 @@
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les informations relatives à la carte de crédit apparaîtront automatiquement ici lorsque vous souscrirez un abonnement payant."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contactez-nous pour changer de mode de paiement",
+              "contact": "Contactez"
+            }
           },
           "invoices": {
             "head": "Factures",
@@ -539,6 +543,7 @@
       "confirmPassword": "Confirmer le nouveau mot de passe",
       "strongPassword": "Le mot de passe est fort",
       "errors": {
+        "longPassword": "Le mot de passe peut avoir un maximum de 50 caractères",
         "shortPassword": "Le mot de passe est trop court, il doit comporter au moins 8 caractères",
         "notComplex": "Le mot de passe n'est pas assez complexe",
         "weakPassword": "Le mot de passe est faible",

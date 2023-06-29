@@ -78,8 +78,8 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ShareDialog from '../ShareDialog/ShareDialog';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
-const PAGINATION_LIMIT = 50;
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
 
@@ -145,7 +145,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
-  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+  const isSelectedItemShared = selectedItems[0]?.shares && selectedItems[0]?.shares?.length > 0;
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
@@ -228,6 +228,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       setHasMoreItems(false);
     }
   }, [hasMoreFiles]);
+
+  useEffect(() => {
+    if (hasMoreFiles && hasMoreFolders) {
+      setHasMoreItems(true);
+    }
+  }, [hasMoreFiles, hasMoreFolders]);
 
   useEffect(() => {
     resetPaginationState();
@@ -320,7 +326,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           files: Array.from(unrepeatedUploadedFiles),
           parentFolderId: currentFolderId,
         }),
-      ).then(() => onFileUploaded && onFileUploaded());
+      ).then(() => {
+        onFileUploaded && onFileUploaded();
+        dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      });
       setFileInputKey(Date.now());
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
@@ -917,6 +926,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
+                  title={title}
                 />
               </div>
             )}
@@ -1060,7 +1070,9 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
             onSuccess: onDragAndDropEnd,
           },
         }),
-      );
+      ).then(() => {
+        dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      });
     }
     if (rootList.length) {
       errorService.addBreadcrumb({
@@ -1082,7 +1094,9 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
               onSuccess: onDragAndDropEnd,
             },
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+        });
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
