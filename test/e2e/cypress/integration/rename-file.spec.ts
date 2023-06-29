@@ -23,6 +23,8 @@ describe('Rename item', () => {
     cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type(`${newFolderName}{enter}`);
 
+    cy.reload();
+
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName).should('exist');
 
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName).rightclick({ force: true });

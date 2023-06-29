@@ -12,7 +12,7 @@ import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 // import analyticsService from 'app/analytics/services/analytics.service';
-import { WarningCircle } from 'phosphor-react';
+import { WarningCircle } from '@phosphor-icons/react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';

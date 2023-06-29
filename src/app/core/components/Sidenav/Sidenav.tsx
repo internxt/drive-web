@@ -1,4 +1,4 @@
-import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from 'phosphor-react';
+import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from '@phosphor-icons/react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
