@@ -39,7 +39,6 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
 
   useEffect(() => {
     if (email) {
-      // const isValidEmail = email.match(emailRegex);
       isValidEmail(email) || usersToInvite.length > 0
         ? setIsInviteButtonDisabled(false)
         : setIsInviteButtonDisabled(true);
@@ -108,7 +107,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <Listbox.Option
                     key="editor"
                     value="editor"
-                    className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                   >
                     {({ selected }) => (
                       <>
@@ -120,7 +119,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <Listbox.Option
                     key="viewer"
                     value="viewer"
-                    className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                   >
                     {({ selected }) => (
                       <>
