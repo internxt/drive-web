@@ -107,7 +107,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
             <span>Open preview</span>
           </Dropdown.Item>
         ) : null} */}
-      {!props.isTrash ? (
+      {!props.isTrash && process.env.NODE_ENV !== 'production' ? (
         <Dropdown.Item id="share" onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}>
           <Users className="mr-1" size={20} />
           <span>{translate('drive.dropdown.share')}</span>
