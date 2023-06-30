@@ -549,6 +549,17 @@
           "success": "Non condividiamo più \"{{name}}\"",
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
+      },
+      "invite": {
+        "title": "Invita le persone",
+        "textarea": "Inserire il testo del messaggio (opzionale)",
+        "notifyUsers": "Notifica agli utenti",
+        "instructions": "Premere invio o spazio per separare le e-mail",
+        "email": "Tipo e-mail",
+        "invite": "Invitare",
+        "editor": "Editore",
+        "viewer": "Visualizzatore",
+        "listUsers": "Utenti da invitare"
       }
     },
     "deletePhotosModal": {

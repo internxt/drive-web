@@ -492,6 +492,17 @@
           "success": "Ne plus partager \"{{name}}\"",
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
+      },
+      "invite": {
+        "title": "Inviter des personnes",
+        "textarea": "Entrez le texte de votre message (facultatif)",
+        "notifyUsers": "Notifier les utilisateurs",
+        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "email": "Type d'email",
+        "invite": "Inviter",
+        "editor": "Éditeur",
+        "viewer": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter"
       }
     },
     "deletePhotosModal": {
