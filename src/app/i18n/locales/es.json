@@ -525,6 +525,22 @@
         },
         "copyLink": "Copiar enlace"
       },
+      "invite": {
+        "title": "Invitar personas"
+      },
+      "requests": {
+        "title": "Solicitudes de acceso",
+        "button": "Solicitudes",
+        "empty": "No quedan solicitudes",
+        "actions": {
+          "accept": "Aceptar",
+          "deny": "Denegar",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Espectador"
+          }
+        }
+      },
       "stopSharing": {
         "title": "¿Dejar de compartir?",
         "subtitle": "Nadie podrá acceder a \"{{name}}\"",

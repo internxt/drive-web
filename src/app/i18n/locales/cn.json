@@ -537,6 +537,22 @@
         },
         "copyLink": "复制链接"
       },
+      "invite": {
+        "title": "邀请人"
+      },
+      "requests": {
+        "title": "访问请求",
+        "button": "请求",
+        "empty": "没有剩余请求",
+        "actions": {
+          "accept": "接受",
+          "deny": "否认",
+          "roles": {
+            "editor": "编辑器",
+            "viewer": "观众"
+          }
+        }
+      },
       "stopSharing": {
         "title": "停止分享?",
         "subtitle": "没有人能够访问 \"{{name}}\"",
