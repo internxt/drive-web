@@ -50,7 +50,7 @@ const ShareDialog = (props) => {
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const [inviteUser, setInviteUser] = useState<boolean>(false);
+  const [isInvitingUser, setIsInvitingUser] = useState<boolean>(false);
 
   useEffect(() => {
     if (isOpen) loadShareInfo();
@@ -76,8 +76,7 @@ const ShareDialog = (props) => {
   };
 
   const onInviteUser = () => {
-    // TODO -> Open invite user screen
-    setInviteUser(!inviteUser);
+    setIsInvitingUser(!isInvitingUser);
     closeSelectedUserPopover();
   };
 
@@ -153,7 +152,7 @@ const ShareDialog = (props) => {
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
-      {!inviteUser ? (
+      {!isInvitingUser ? (
         <div>
           <div className="flex h-16 w-full items-center justify-between space-x-5 border-b border-gray-10 px-5">
             <span

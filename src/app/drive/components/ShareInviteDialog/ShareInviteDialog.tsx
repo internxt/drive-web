@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { IFormValues } from 'app/core/types';
 import { Listbox } from '@headlessui/react';
 import { CaretDown, Check, ArrowLeft } from '@phosphor-icons/react';
+import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import Button from 'app/shared/components/Button/Button';
 import Avatar from 'app/shared/components/Avatar';
@@ -34,12 +35,14 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
-  const [inviteUsersButton, setInviteUsersButton] = useState<boolean>(true);
+  const [isInviteButtonDisabled, setIsInviteButtonDisabled] = useState<boolean>(true);
 
   useEffect(() => {
     if (email) {
-      const isValidEmail = email.match(emailRegex);
-      isValidEmail || usersToInvite.length > 0 ? setInviteUsersButton(false) : setInviteUsersButton(true);
+      // const isValidEmail = email.match(emailRegex);
+      isValidEmail(email) || usersToInvite.length > 0
+        ? setIsInviteButtonDisabled(false)
+        : setIsInviteButtonDisabled(true);
     }
   }, [email]);
 
@@ -216,7 +219,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
               <BaseCheckbox checked={notifyUser} onClick={() => setNotifyUser(!notifyUser)} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={inviteUsersButton}>
+            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled}>
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>
