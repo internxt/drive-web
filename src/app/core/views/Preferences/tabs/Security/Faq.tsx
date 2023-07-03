@@ -1,6 +1,6 @@
 import { Disclosure } from '@headlessui/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretUp } from 'phosphor-react';
+import { CaretUp } from '@phosphor-icons/react';
 import Section from '../../components/Section';
 
 export default function Faq({ className = '' }: { className?: string }): JSX.Element {

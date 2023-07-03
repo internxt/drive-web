@@ -1427,10 +1427,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/9a19de23e3330a81c0e2bace1a6a0325fc8633197cf677e44ea75e54df315b5e"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.4.33":
-  version "1.4.33"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.33/f4ebf3103bdf888b07ac93f60f9df106ea20a117#f4ebf3103bdf888b07ac93f60f9df106ea20a117"
-  integrity sha512-x6zCwljmKg6sXg+wFzQ581ZeWLPQd5LSuobaYX7eEG2ITHxxhWYeOBLeyogUK/DJvysn//glBasR+zlfmw74Kg==
+"@internxt/sdk@^1.4.34":
+  version "1.4.34"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.34/46c4ba3830ace132262700fe86f68479795158f2#46c4ba3830ace132262700fe86f68479795158f2"
+  integrity sha512-iiVnDTiNmyD0TbDRG2g9Bh3KkTXGf6JpMZJyunejMFWU9ZjoX1HLMeVj5iaYbrj07G3cBw4phNSyImXooPZDig==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -1670,6 +1670,11 @@
   dependencies:
     mkdirp "^1.0.4"
     rimraf "^3.0.2"
+
+"@phosphor-icons/react@^2.0.10":
+  version "2.0.10"
+  resolved "https://registry.yarnpkg.com/@phosphor-icons/react/-/react-2.0.10.tgz#dcf2f6dabd42bf9156be38caf59d4c818af2b817"
+  integrity sha512-q5ITPNFhmEiYZLZOvEhjo2phlfxoOmit7vE1tBYMxcMqnZX2vdbMw3deDE7wCegpBKM/q/p39BJmhhoPcjZyCg==
 
 "@pmmmwh/react-refresh-webpack-plugin@0.4.2":
   version "0.4.2"
@@ -10237,11 +10242,6 @@ performance-now@^2.1.0:
   version "2.1.0"
   resolved "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz"
   integrity sha1-Ywn04OX6kT7BxpMHrjZLSzd8nns=
-
-phosphor-react@^1.4.1:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/phosphor-react/-/phosphor-react-1.4.1.tgz#97b0e034d9937db9b97fe53b186e9646464fd4e7"
-  integrity sha512-gO5j7U0xZrdglTAYDYPACU4xDOFBTJmptrrB/GeR+tHhCZF3nUMyGmV/0hnloKjuTrOmpSFlbfOY78H39rgjUQ==
 
 picocolors@^0.2.1:
   version "0.2.1"

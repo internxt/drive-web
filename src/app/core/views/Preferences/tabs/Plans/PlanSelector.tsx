@@ -3,7 +3,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowRight } from 'phosphor-react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';

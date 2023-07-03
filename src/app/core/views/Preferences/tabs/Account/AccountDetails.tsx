@@ -1,6 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CheckCircle, Warning } from 'phosphor-react';
+import { CheckCircle, Warning } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import userService from '../../../../../auth/services/user.service';

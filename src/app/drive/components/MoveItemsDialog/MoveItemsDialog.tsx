@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import { FolderSimplePlus, CaretRight } from 'phosphor-react';
+import { FolderSimplePlus, CaretRight } from '@phosphor-icons/react';
 import Modal from 'app/shared/components/Modal';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';

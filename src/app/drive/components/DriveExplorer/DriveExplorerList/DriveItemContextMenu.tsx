@@ -12,7 +12,7 @@ import {
   LinkBreak,
   PencilSimple,
   Trash,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../types';

@@ -36,6 +36,8 @@ export interface StorageState {
   viewMode: FileViewMode;
   namePath: FolderPath[];
   folderPathDialog: FolderPathDialog[];
+  driveItemsSort: string;
+  driveItemsOrder: string;
 }
 
 export interface StorageSetFiltersPayload {

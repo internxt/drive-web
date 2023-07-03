@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { ArrowClockwise, XCircle } from 'phosphor-react';
+import { ArrowClockwise, XCircle } from '@phosphor-icons/react';
 import { useRetryDownload } from '../../hooks/useRetryDownload';
 
 import tasksService from '../../services/tasks.service';
