@@ -567,6 +567,16 @@
         "editor": "Editor",
         "viewer": "Viewer",
         "listUsers": "Users to invite"
+      },
+      "requestAccess": {
+        "title": "You don't have access",
+        "description": "Request access to the owner or switch to an account with access.",
+        "textarea": "Message (optional)",
+        "requestButton": "Request access",
+        "logged": "Logged in as",
+        "change": "Change",
+        "requestSent": "Request Sent",
+        "confirmation": "You will get an email if the file/folder is shared with you"
       }
     },
     "deletePhotosModal": {

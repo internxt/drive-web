@@ -560,6 +560,16 @@
         "editor": "Editore",
         "viewer": "Visualizzatore",
         "listUsers": "Utenti da invitare"
+      },
+      "requestAccess": {
+        "title": "Non hai accesso",
+        "description": "Richiedi l'accesso al proprietario o passa a un account con accesso.",
+        "textarea": "Messaggio (facoltativo)",
+        "requestButton": "Richiesta di accesso",
+        "logged": "Collegato come",
+        "change": "Cambia",
+        "requestSent": "Richiesta inviata",
+        "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
       }
     },
     "deletePhotosModal": {
