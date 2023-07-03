@@ -41,7 +41,7 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
-  isRequestAccesDialogOpen: true,
+  isRequestAccesDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
