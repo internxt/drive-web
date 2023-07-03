@@ -18,6 +18,7 @@ interface CheckoutOptions {
   cancel_url: string;
   customer_email: string;
   mode: string | undefined;
+  paymentMethod: string;
 }
 
 export default function CheckoutPlanView(): JSX.Element {
@@ -50,37 +51,23 @@ export default function CheckoutPlanView(): JSX.Element {
       cancel_url: `${window.location.origin}/checkout/cancel`,
       customer_email: user.email,
       mode: mode,
+      paymentMethod: 'card',
     };
 
-    if (subscription?.type !== 'subscription') {
-      try {
-        if (coupon && freeTrials) {
-          checkoutOptions.coupon_code = coupon;
-          checkoutOptions.trial_days = freeTrials;
-        } else if (coupon !== 'null') {
-          checkoutOptions.coupon_code = coupon;
-        }
-
-        response = await paymentService.createCheckoutSession(checkoutOptions);
-        localStorage.setItem('sessionId', response.sessionId);
-
-        await paymentService.redirectToCheckout(response);
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: translate('notificationMessages.errorCancelSubscription'),
-          type: ToastType.Error,
-        });
-      }
-    } else {
+    if (plan.subscription?.type === 'subscription') {
       if (mode === 'payment') {
         try {
-          if (coupon) {
-            checkoutOptions.coupon_code = coupon;
-          }
-          response = await paymentService.createCheckoutSession(checkoutOptions);
+          const response = await paymentService.createCheckoutSession({
+            price_id: planId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
+            customer_email: user.email,
+            mode: 'payment',
+          });
           localStorage.setItem('sessionId', response.sessionId);
-          await paymentService.redirectToCheckout(response).then(async (result) => {
+          console.log('response', response);
+          await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+            console.log('it worked');
             await paymentService.cancelSubscription();
             if (result.error) {
               notificationsService.show({
@@ -105,7 +92,7 @@ export default function CheckoutPlanView(): JSX.Element {
         try {
           const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
           dispatch(planActions.setSubscription(updatedSubscription));
-          navigationService.push(AppView.Preferences);
+          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
         } catch (err) {
           console.error(err);
           notificationsService.show({
@@ -114,6 +101,8 @@ export default function CheckoutPlanView(): JSX.Element {
           });
         }
       }
+    } else if (subscription?.type === 'free') {
+      navigationService.push(AppView.PaymentMethod, { planId });
     }
   }
 

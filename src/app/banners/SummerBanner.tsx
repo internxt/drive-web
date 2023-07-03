@@ -58,6 +58,7 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
                 cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
                 customer_email: user.email,
                 coupon_code: '6FACDcgf',
+                paymentMethod: 'card',
               });
               localStorage.setItem('sessionId', response.sessionId);
               await paymentService.redirectToCheckout(response);

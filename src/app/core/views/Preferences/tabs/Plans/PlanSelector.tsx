@@ -11,7 +11,6 @@ import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planActions, PlanState } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
-import { uiActions } from 'app/store/slices/ui';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -45,7 +44,6 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string) {
-    // Navigate to /payment-method
     if (plan.subscription?.type === 'subscription') {
       if (interval === 'lifetime') {
         try {
@@ -57,7 +55,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
             mode: 'payment',
           });
           localStorage.setItem('sessionId', response.sessionId);
-          await paymentService.redirectToCheckout(response).then(async (result) => {
+          await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
             await paymentService.cancelSubscription();
             if (result.error) {
               notificationsService.show({
@@ -95,7 +93,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         }
       }
     } else if (subscription?.type === 'free') {
-      navigationService.push(AppView.PaymentMethod);
+      navigationService.push(AppView.PaymentMethod, { priceId });
     }
   }
 

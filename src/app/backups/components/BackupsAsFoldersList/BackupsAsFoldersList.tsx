@@ -137,8 +137,8 @@ export default function BackupsAsFoldersList({
           emptyState={
             <Empty
               icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-              title="This folder is empty"
-              subtitle="Use Internxt Desktop to upload your data"
+              title={translate('backups.empty.title')}
+              subtitle={translate('backups.empty.description')}
             />
           }
           menu={contextMenuSelectedBackupItems({
