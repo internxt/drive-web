@@ -6,12 +6,12 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
-// import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import './ShareDialog.scss';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
@@ -31,6 +31,7 @@ interface RequestProps {
   lastname: string;
   email: string;
   message?: string;
+  denied?: boolean;
 }
 
 interface ViewProps {
@@ -53,7 +54,28 @@ const ShareDialog = (props) => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
-  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
+  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([
+    {
+      avatar: '',
+      name: 'Juan',
+      lastname: 'Mendes',
+      email: 'juan@inxt.com',
+      message:
+        'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+    },
+    {
+      avatar: '',
+      name: 'Eve',
+      lastname: 'Korn',
+      email: 'eve@inxt.com',
+    },
+    {
+      avatar: '',
+      name: 'Maria',
+      lastname: 'Korn',
+      email: 'maria@inxt.com',
+    },
+  ]);
 
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
@@ -66,6 +88,17 @@ const ShareDialog = (props) => {
     if (isOpen) loadShareInfo();
   }, [isOpen]);
 
+  useEffect(() => {
+    const removeDeniedRequests = () => {
+      setAccessRequests((prevRequests) => prevRequests.filter((request) => !request.denied));
+    };
+
+    let timer;
+    if (accessRequests.some((req) => req.denied)) timer = setTimeout(removeDeniedRequests, 500);
+
+    return () => clearTimeout(timer);
+  }, [accessRequests]);
+
   const loadShareInfo = () => {
     // TODO -> Load access mode
     const shareAccessMode: AccessMode = 'public';
@@ -76,7 +109,7 @@ const ShareDialog = (props) => {
     setInvitedUsers(loadedUsers);
 
     // TODO -> Load access requests
-    const accessRequests = [
+    const mockedAccessRequests = [
       {
         avatar: '',
         name: 'Juan',
@@ -98,7 +131,7 @@ const ShareDialog = (props) => {
         email: 'maria@inxt.com',
       },
     ];
-    setAccessRequests(accessRequests);
+    setAccessRequests(mockedAccessRequests);
   };
 
   const onClose = (): void => {
@@ -166,7 +199,7 @@ const ShareDialog = (props) => {
   };
 
   const removeRequest = (email: string) => {
-    setAccessRequests((reuests) => reuests.filter((request) => request.email !== email));
+    setAccessRequests((request) => request.filter((request) => request.email !== email));
   };
 
   const onAcceptRequest = (email: string, role: UserRole) => {
@@ -177,6 +210,17 @@ const ShareDialog = (props) => {
   const onDenyrequest = (email: string) => {
     // TODO -> Deny user access request
     removeRequest(email);
+  };
+
+  const handleDenyRequest = (email) => {
+    setAccessRequests((prevRequests) =>
+      prevRequests.map((request) => {
+        if (request.email === email) {
+          return { ...request, denied: true };
+        }
+        return request;
+      }),
+    );
   };
 
   const openUserOptions = (e: unknown, user: InvitedUserProps) => {
@@ -499,7 +543,12 @@ const ShareDialog = (props) => {
         <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '640px' }}>
           {accessRequests.length > 0 ? (
             accessRequests.map((request, index) => (
-              <div className={`flex flex-col space-y-3 ${index > 0 && 'border-t border-gray-5 pt-3'}`}>
+              <div
+                className={`flex flex-col space-y-3 ${index > 0 && !request.denied && 'border-t border-gray-5 pt-3'} ${
+                  request.denied && 'hide-request'
+                }`}
+                key={request.email + index}
+              >
                 <div className="flex flex-shrink-0 items-center space-x-2.5">
                   <Avatar src={request.avatar} fullName={`${request.name} ${request.lastname}`} diameter={40} />
 
@@ -563,7 +612,7 @@ const ShareDialog = (props) => {
                         </>
                       )}
                     </Popover>
-                    <Button variant="secondary" onClick={() => onDenyrequest(request.email)}>
+                    <Button variant="secondary" onClick={() => handleDenyRequest(request.email)}>
                       <span>{translate('modals.shareModal.requests.actions.deny')}</span>
                     </Button>
                   </div>
