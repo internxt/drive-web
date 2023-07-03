@@ -65,9 +65,8 @@ export default function CheckoutPlanView(): JSX.Element {
             mode: 'payment',
           });
           localStorage.setItem('sessionId', response.sessionId);
-          console.log('response', response);
+
           await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
-            console.log('it worked');
             await paymentService.cancelSubscription();
             if (result.error) {
               notificationsService.show({

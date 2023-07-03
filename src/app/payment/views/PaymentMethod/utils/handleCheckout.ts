@@ -33,9 +33,8 @@ async function paypalSetupIntent(setupIntentId): Promise<SetupIntentResult> {
   });
 }
 
-export async function handleCheckout({ paymentMethod, planId, interval, email }: HandleCheckoutProps): Promise<void> {
-  localStorage.setItem('FirstStep', 'true');
-
+export async function handleCheckout({ paymentMethod, planId, interval, email }: HandleCheckoutProps) {
+  console.log('paymentMethod', paymentMethod);
   if (paymentMethod === 'paypal') {
     try {
       const { client_secret } = await paymentService.createCheckoutSession({
@@ -44,10 +43,14 @@ export async function handleCheckout({ paymentMethod, planId, interval, email }:
         cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
         customer_email: email,
         mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        paymentMethod: paymentMethod,
+        payment_method: paymentMethod,
       });
 
-      paypalSetupIntent(client_secret);
+      await paypalSetupIntent(client_secret).then(() => {
+        if (interval === 'lifetime') {
+          paymentService.cancelSubscription();
+        }
+      });
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');
@@ -64,11 +67,24 @@ export async function handleCheckout({ paymentMethod, planId, interval, email }:
         cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
         customer_email: email,
         mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        paymentMethod: paymentMethod,
+        payment_method: paymentMethod,
       });
 
       localStorage.setItem('sessionId', id);
-      await paymentService.redirectToCheckout({ sessionId: id });
+      await paymentService.redirectToCheckout({ sessionId: id }).then(async (result) => {
+        if (interval === 'lifetime') await paymentService.cancelSubscription();
+        if (result.error) {
+          notificationsService.show({
+            type: ToastType.Error,
+            text: result.error.message as string,
+          });
+        } else {
+          notificationsService.show({
+            type: ToastType.Success,
+            text: 'Payment successful',
+          });
+        }
+      });
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');
