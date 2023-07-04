@@ -34,23 +34,11 @@ async function paypalSetupIntent(setupIntentId): Promise<SetupIntentResult> {
 }
 
 export async function handleCheckout({ paymentMethod, planId, interval, email }: HandleCheckoutProps) {
-  console.log('paymentMethod', paymentMethod);
   if (paymentMethod === 'paypal') {
     try {
-      const { client_secret } = await paymentService.createCheckoutSession({
-        price_id: planId,
-        success_url: `${window.location.origin}/payment-method`,
-        cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
-        customer_email: email,
-        mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        payment_method: paymentMethod,
-      });
+      const paypalIntent = await paymentService.getPaypalSetupIntent(planId);
 
-      await paypalSetupIntent(client_secret).then(() => {
-        if (interval === 'lifetime') {
-          paymentService.cancelSubscription();
-        }
-      });
+      await paypalSetupIntent(paypalIntent.client_secret);
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');
@@ -67,24 +55,10 @@ export async function handleCheckout({ paymentMethod, planId, interval, email }:
         cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
         customer_email: email,
         mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        payment_method: paymentMethod,
       });
 
       localStorage.setItem('sessionId', id);
-      await paymentService.redirectToCheckout({ sessionId: id }).then(async (result) => {
-        if (interval === 'lifetime') await paymentService.cancelSubscription();
-        if (result.error) {
-          notificationsService.show({
-            type: ToastType.Error,
-            text: result.error.message as string,
-          });
-        } else {
-          notificationsService.show({
-            type: ToastType.Success,
-            text: 'Payment successful',
-          });
-        }
-      });
+      await paymentService.redirectToCheckout({ sessionId: id });
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');

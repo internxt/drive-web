@@ -120,6 +120,14 @@ const paymentService = {
     return paymentsClient.createCheckoutSession(payload);
   },
 
+  async getPaypalSetupIntent(priceId): Promise<{ client_secret: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+
+    return paymentsClient.getPaypalSetupIntent({
+      priceId,
+    });
+  },
+
   // TODO: refactor as individual
   async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
     const mnemonicTeam = generateMnemonic(256);

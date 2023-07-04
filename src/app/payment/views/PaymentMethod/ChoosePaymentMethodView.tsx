@@ -61,7 +61,7 @@ const Checkbox = ({
       >
         {checked && (
           <div
-            className={`flex h-3 w-2 cursor-pointer flex-col items-center justify-center rounded-full border bg-white text-white ${
+            className={`flex h-3 w-2.5 cursor-pointer flex-col items-center justify-center rounded-full border bg-white text-white ${
               checked && 'bg-white'
             }`}
           />
@@ -121,7 +121,13 @@ const ChoosePaymentMethod: React.FC = () => {
         ) : (
           <>
             <StepTracking isFirstStepCompleted={isFirstStepCompleted} />
-            <div className="flex w-full flex-col items-center justify-center pl-20 pt-5">{Step}</div>
+            <div
+              className={`flex w-full flex-col items-center justify-center ${
+                isFirstStepCompleted ? 'pl-0' : 'pl-20'
+              } pt-5`}
+            >
+              {Step}
+            </div>
           </>
         )}
       </div>

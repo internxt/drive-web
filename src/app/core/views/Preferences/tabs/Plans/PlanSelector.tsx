@@ -47,7 +47,30 @@ export default function PlanSelector({ className = '' }: { className?: string })
     if (plan.subscription?.type === 'subscription') {
       if (interval === 'lifetime') {
         try {
-          navigationService.push(AppView.PaymentMethod, { priceId });
+          const { id } = await paymentService.createCheckoutSession({
+            price_id: priceId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
+            customer_email: user.email,
+            mode: interval === 'lifetime' ? 'payment' : 'subscription',
+          });
+
+          localStorage.setItem('sessionId', id);
+          await paymentService.redirectToCheckout({ sessionId: id }).then(async (result) => {
+            await paymentService.cancelSubscription();
+
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              notificationsService.show({
+                type: ToastType.Success,
+                text: 'Payment successful',
+              });
+            }
+          });
         } catch (error) {
           console.error(error);
           notificationsService.show({
