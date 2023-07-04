@@ -2,7 +2,7 @@ import React, { forwardRef, ReactNode, useEffect } from 'react';
 import i18next from 'i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
-import { CaretDown } from 'phosphor-react';
+import { CaretDown } from '@phosphor-icons/react';
 import { Menu, Transition } from '@headlessui/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

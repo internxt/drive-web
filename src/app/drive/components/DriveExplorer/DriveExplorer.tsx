@@ -14,7 +14,7 @@ import {
   PencilSimple,
   CaretDown,
   ArrowFatUp,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -75,7 +75,6 @@ import { TaskStatus } from '../../../tasks/types';
 import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import BannerWrapper from 'app/banners/BannerWrapper';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
@@ -144,7 +143,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
-  const isSelectedItemShared = selectedItems[0]?.shares?.length !== 0;
+  const isSelectedItemShared = selectedItems[0]?.shares && selectedItems[0]?.shares?.length > 0;
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
@@ -659,7 +658,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

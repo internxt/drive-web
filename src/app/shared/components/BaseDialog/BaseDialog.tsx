@@ -1,4 +1,4 @@
-import { IconWeight, X } from 'phosphor-react';
+import { IconWeight, X } from '@phosphor-icons/react';
 
 interface BaseDialogProps {
   isOpen: boolean;

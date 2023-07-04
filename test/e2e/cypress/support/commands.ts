@@ -45,6 +45,7 @@ Cypress.Commands.add('login', () => {
       // To not show the after signup onboarding
       cy.window().then((win) => {
         win.localStorage.setItem('signUpTutorialCompleted', 'true');
+        win.localStorage.setItem('showSummerBanner', 'false');
       });
     },
   );
