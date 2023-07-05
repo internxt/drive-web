@@ -78,7 +78,6 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ShareDialog from '../ShareDialog/ShareDialog';
-import RequestAccesDialog from '../RequestAccesDialog/RequestAccesDialog';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
@@ -622,12 +621,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {process.env.NODE_ENV !== 'production' && (
-        <>
-          <ShareDialog />
-          <RequestAccesDialog />
-        </>
-      )}
+      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
