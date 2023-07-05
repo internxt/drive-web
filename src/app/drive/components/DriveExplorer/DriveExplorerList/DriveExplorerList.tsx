@@ -2,6 +2,9 @@ import React, { memo, useEffect, useState } from 'react';
 import UilArrowDown from '@iconscout/react-unicons/icons/uil-arrow-down';
 import UilArrowUp from '@iconscout/react-unicons/icons/uil-arrow-up';
 import { connect } from 'react-redux';
+import { useAppSelector } from 'app/store/hooks';
+import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
@@ -37,6 +40,7 @@ interface DriveExplorerListProps {
   hasMoreItems: boolean;
   isTrash?: boolean;
   onHoverListItems?: (areHover: boolean) => void;
+  title: JSX.Element | string;
 }
 
 type ObjectWithId = { id: string | number };
@@ -154,6 +158,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = props;
 
+  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
+  const isRecents = props.title === translate('views.recents.head');
+  const isTrash = props.title === translate('trash.trash');
+
   const sortBy = (value: { field: 'type' | 'name' | 'updatedAt' | 'size'; direction: 'ASC' | 'DESC' }) => {
     const direction =
       order.by === value.field
@@ -162,6 +170,24 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           : OrderDirection.Desc
         : OrderDirection.Asc;
     dispatch(storageActions.setOrder({ by: value.field, direction }));
+
+    if (value.field === 'name') {
+      dispatch(storageActions.setDriveItemsSort('plainName'));
+      dispatch(storageActions.setDriveItemsOrder(direction));
+
+      dispatch(storageActions.setHasMoreDriveFolders(true));
+      dispatch(storageActions.setHasMoreDriveFiles(true));
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    }
+
+    if (value.field === 'updatedAt') {
+      dispatch(storageActions.setDriveItemsSort('updatedAt'));
+      dispatch(storageActions.setDriveItemsOrder(direction));
+
+      dispatch(storageActions.setHasMoreDriveFolders(true));
+      dispatch(storageActions.setHasMoreDriveFiles(true));
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    }
   };
 
   const sortButtonFactory = () => {
@@ -201,13 +227,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               label: translate('drive.list.columns.name'),
               width: 'flex flex-grow items-center pl-6',
               name: 'name',
-              orderable: false,
+              orderable: isRecents || isTrash ? false : true,
+              defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.modified'),
               width: 'hidden w-3/12 lg:flex pl-4',
               name: 'updatedAt',
-              orderable: false,
+              orderable: isRecents || isTrash ? false : true,
+              defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),

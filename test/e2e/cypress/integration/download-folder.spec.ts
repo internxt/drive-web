@@ -3,7 +3,7 @@ import { MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Download Folder', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');
-  const downloadedFolderFullPath = join(downloadsFolder, 'family.zip');
+  const downloadedFolderFullPath = join(downloadsFolder, 'Family.zip');
 
   beforeEach(() => {
     cy.clearLocalStorage();
