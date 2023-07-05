@@ -243,6 +243,9 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
     | { tag: 'error'; type: 'NAME_INVALID' | 'LASTNAME_INVALID' | 'PASSWORD_INVALID' | 'SAME_EMAIL' | 'UNKNOWN' }
   >({ tag: 'ready' });
 
+  const isInvalidPasswordError = status.tag === 'error' && status.type === 'PASSWORD_INVALID';
+  const isLoadingStatus = status.tag === 'loading';
+
   useEffect(() => {
     if (isOpen) {
       setStatus({ tag: 'ready' });
@@ -310,13 +313,13 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
           />
           <Input
             required
-            disabled={status.tag === 'loading'}
+            disabled={isLoadingStatus}
             label={translate('views.account.tabs.account.accountDetails.changeEmail.password') as string}
             variant="password"
             onChange={setPassword}
-            accent={status.tag === 'error' && status.type === 'PASSWORD_INVALID' ? 'error' : undefined}
+            accent={isInvalidPasswordError ? 'error' : undefined}
             message={
-              status.tag === 'error' && status.type === 'PASSWORD_INVALID'
+              isInvalidPasswordError
                 ? (translate('views.account.tabs.account.accountDetails.changeEmail.errorPassword') as string)
                 : undefined
             }
@@ -325,11 +328,11 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
         </div>
 
         <div className="flex justify-end space-x-2">
-          <Button disabled={status.tag === 'loading'} variant="secondary" onClick={onClose}>
+          <Button disabled={isLoadingStatus} variant="secondary" onClick={onClose}>
             {translate('actions.cancel')}
           </Button>
-          <Button loading={status.tag === 'loading'} type="submit">
-            {status.tag === 'loading'
+          <Button loading={isLoadingStatus} type="submit">
+            {isLoadingStatus
               ? translate('views.account.tabs.account.accountDetails.changeEmail.sendingVerification')
               : translate('views.account.tabs.account.accountDetails.changeEmail.sendVerification')}
           </Button>
