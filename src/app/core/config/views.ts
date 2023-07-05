@@ -27,6 +27,7 @@ import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
+import ChangeEmailView from '../views/ChangeEmailView';
 import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
@@ -68,6 +69,7 @@ const views: Array<{
   { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
+  { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

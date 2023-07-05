@@ -134,6 +134,7 @@ export enum AppView {
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
   VerifyEmail = 'verify-email',
+  ChangeEmail = 'change-email',
 }
 
 export enum SignupDeviceSource {

@@ -232,11 +232,24 @@
               "description": "Controlla nella tua casella di posta o nello spam"
             },
             "editProfile": {
+              "title": "Modifica dei dettagli dell'account",
               "name": "Nome",
-              "lastname": "Cognome"
+              "lastname": "Cognome",
+              "updateProfile": "Profilo aggiornato con successo",
+              "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
             },
-            "updateProfile": "Profilo aggiornato con successo",
-            "errorUpdatingProfile": "Non è stato possibile aggiornare il profilo"
+            "changeEmail": {
+              "title": "Cambia email",
+              "email": "Email",
+              "newEmail": "Nuova email",
+              "password": "Password",
+              "errorSameEmail": "La nuova email deve essere diversa da quella attuale",
+              "errorPassword": "Password errata, riprovare",
+              "sendVerification": "Invia verifica",
+              "sendingVerification": "Invio verifica",
+              "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
+              "errorSendingVerification": "Errore nell'invio della verifica"
+            }
           },
           "deleteAccount": {
             "head": "Elimina l'account",
@@ -472,6 +485,42 @@
             }
           }
         }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "Email verificata con successo",
+        "subtitle": "Puoi chiudere questa scheda ora",
+        "cta": "Aprire Internxt Drive"
+      },
+      "error": {
+        "title": "Qualcosa è andato storto",
+        "subtitle": "Controlla se il link è corretto o richiedi nuovamente la verifica dell'email in Impostazioni > Account",
+        "cta": "Vai all'account"
+      }
+    },
+    "emailChange": {
+      "password": "Password",
+      "auth": {
+        "title": "Verifica modifica email",
+        "subtitle": "L'email del tuo account sarà modificata in {{email}}",
+        "wrongPassword": "Password errata, si prega di riprovare",
+        "cta": "Continua"
+      },
+      "success": {
+        "title": "Email modificata con successo",
+        "subtitle": "Puoi chiudere questa scheda ora",
+        "cta": "Aprire Internxt Drive"
+      },
+      "error": {
+        "title": "Qualcosa è andato storto",
+        "subtitle": "Controlla se il link è corretto o richiedi nuovamente la modifica dell'email in Impostazioni > Account",
+        "cta": "Vai all'account"
+      },
+      "expired": {
+        "title": "Link di verifica scaduto",
+        "subtitle": "Puoi richiedere nuovamente la modifica dell'email in Impostazioni > Account",
+        "cta": "Vai all'account"
       }
     },
     "redirectToApp": {
@@ -911,6 +960,7 @@
     "moreInfo": "Maggiori informazioni",
     "dismiss": "Licenziare",
     "save": "Salva",
+    "saving": "Salvare",
     "back": "Indietro",
     "edit": "Modifica",
     "submit": "Invia",
