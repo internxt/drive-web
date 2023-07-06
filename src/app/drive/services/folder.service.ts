@@ -17,6 +17,7 @@ import { updateDatabaseFileSourceData } from './database.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
+import { TrackingPlan } from '../../analytics/TrackingPlan';
 
 export interface IFolders {
   bucket: string;
@@ -269,7 +270,6 @@ async function downloadFolderAsZip(
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
-
   const zip =
     options?.destination ||
     new FlatFolderZip(rootFolder.name, {
@@ -287,6 +287,18 @@ async function downloadFolderAsZip(
     throw new Error('user null');
   }
 
+  const analyticsProcessIdentifier = analyticsService.getTrackingActionId();
+  let trackingDownloadProperties: TrackingPlan.DownloadProperties = {
+    process_identifier: analyticsProcessIdentifier,
+    is_multiple: 1,
+    bandwidth: 0,
+    band_utilization: 0,
+    file_size: 0,
+    file_extension: '',
+    file_id: 0,
+    file_name: '',
+    parent_folder_id: 0,
+  };
   try {
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
@@ -313,6 +325,20 @@ async function downloadFolderAsZip(
             updateProgress(1);
             return cachedFile.source.stream();
           }
+          console.log({ file });
+          trackingDownloadProperties = {
+            process_identifier: analyticsProcessIdentifier,
+            file_id: typeof file.id === 'string' ? parseInt(file.id) : file.id,
+            file_size: file.size,
+            file_extension: file.type,
+            file_name: file.name,
+            parent_folder_id: file.folderId,
+            is_multiple: 1,
+            bandwidth: 0,
+            band_utilization: 0,
+          };
+          analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+          console.log({ trackingDownloadProperties });
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
@@ -322,6 +348,7 @@ async function downloadFolderAsZip(
             },
             mnemonic: user.mnemonic,
           });
+          analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
           const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
           await updateDatabaseFileSourceData({
@@ -356,8 +383,15 @@ async function downloadFolderAsZip(
       await zip.close();
     }
   } catch (err) {
+    const castedError = errorService.castError(err);
+    analyticsService.trackFileDownloadError({
+      ...trackingDownloadProperties,
+      error_message_user: 'Error downloading folder',
+      error_message: castedError.message,
+      stack_trace: castedError.stack ?? '',
+    });
     zip.abort();
-    throw errorService.castError(err);
+    throw castedError;
   }
 }
 

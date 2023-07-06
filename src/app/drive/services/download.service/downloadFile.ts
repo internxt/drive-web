@@ -106,13 +106,16 @@ export default async function downloadFile(
   }
 
   const trackingDownloadProperties: TrackingPlan.DownloadProperties = {
-    file_download_id: analyticsService.getTrackingActionId(),
+    process_identifier: analyticsService.getTrackingActionId(),
     file_id: typeof fileId === 'string' ? parseInt(fileId) : fileId,
     file_size: itemData.size,
     file_extension: itemData.type,
     file_name: completeFilename,
     parent_folder_id: itemData.folderId,
     file_download_method_supported: support,
+    bandwidth: 0,
+    band_utilization: 0,
+    is_multiple: 0,
   };
   analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
@@ -136,9 +139,16 @@ export default async function downloadFile(
     if (abortController?.signal.aborted && !connectionLost) {
       analyticsService.trackFileDownloadAborted(trackingDownloadProperties);
     } else {
+      const error_message_user = connectionLost ? 'Internet connection lost' : 'Error downloading file';
       analyticsService.trackFileDownloadError({
         ...trackingDownloadProperties,
         error_message: errMessage,
+        error_message_user: error_message_user,
+        stack_trace: err instanceof Error ? err?.stack ?? '' : '',
+        bandwidth: 0,
+        band_utilization: 0,
+        process_identifier: '',
+        is_multiple: 0,
       });
     }
 

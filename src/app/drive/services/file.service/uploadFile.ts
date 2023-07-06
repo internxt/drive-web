@@ -26,15 +26,23 @@ export async function uploadFile(
   file: FileToUpload,
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
+  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string },
   abortController?: AbortController,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
+  const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
+
   const trackingUploadProperties: TrackingPlan.UploadProperties = {
     file_upload_id: analyticsService.getTrackingActionId(),
     file_size: file.size,
     file_extension: file.type,
     parent_folder_id: file.parentFolderId,
     file_name: file.name,
+    bandwidth: 0, // FALTA ESTO
+    band_utilization: 0, // FALTA ESTO
+    process_identifier: trackingParameters?.processIdentifier,
+    is_multiple: trackingParameters?.isMultipleUpload,
+    is_brave: isBrave,
   };
   try {
     analyticsService.trackFileUploadStarted(trackingUploadProperties);
@@ -44,6 +52,8 @@ export async function uploadFile(
         ...trackingUploadProperties,
         bucket_id: 0,
         error_message: 'Bucket not found',
+        error_message_user: 'Login again to start uploading files',
+        stack_trace: '',
       });
       notificationsService.show({ text: 'Login again to start uploading files', type: ToastType.Warning });
       localStorageService.clear();
@@ -112,6 +122,8 @@ export async function uploadFile(
         ...trackingUploadProperties,
         bucket_id: parseInt(bucketId),
         error_message: castedError.message,
+        error_message_user: castedError.message,
+        stack_trace: castedError?.stack ?? 'Unknwon stack trace',
       });
     } else {
       analyticsService.trackFileUploadAborted({
