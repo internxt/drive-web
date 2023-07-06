@@ -503,6 +503,16 @@
         "editor": "Éditeur",
         "viewer": "Visualiseur",
         "listUsers": "Utilisateurs à inviter"
+      },
+      "requestAccess": {
+        "title": "Vous n'avez pas accès",
+        "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
+        "textarea": "Message (optionnel)",
+        "requestButton": "Demande d'accès",
+        "logged": "Connecté comme",
+        "change": "Changer",
+        "requestSent": "Demande envoyée",
+        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
       }
     },
     "deletePhotosModal": {
