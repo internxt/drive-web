@@ -69,7 +69,7 @@ const views: Array<{
   { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
-  { id: AppView.RequestAccess, component: RequestAccess },
+  // { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

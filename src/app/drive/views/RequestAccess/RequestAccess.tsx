@@ -6,6 +6,7 @@ import { LockSimple, CheckCircle } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import bigLogo from 'assets/icons/big-logo.svg';
+import './RequestAccess.scss';
 
 function RequestAccess(): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -68,9 +69,9 @@ function RequestAccess(): JSX.Element {
                 {translate('modals.shareModal.requestAccess.requestButton')}
               </Button>
             </div>
-            <div className="mt-4 w-full max-w-xs transform rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
+            <div className="request-access-user-container mt-4 transform rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
               <div className="flex items-center justify-between">
-                <div>
+                <div className="mr-4">
                   <p className="text-sm font-medium">{translate('modals.shareModal.requestAccess.logged')}</p>
                   <span className="font-regular mt-0.5 text-base text-gray-50">{user?.email}</span>
                 </div>
