@@ -15,9 +15,10 @@ function RequestAccess(): JSX.Element {
   const [messageText, setMessageText] = useState<string>('');
   const [messageTextLimit, setMessageTextLimit] = useState<boolean>(false);
   const [requestSent, setRequestSent] = useState<boolean>(false);
+  const alertUsersTextareaMaxLenght = 950;
 
   useEffect(() => {
-    if (messageText.length >= 950) {
+    if (messageText.length >= alertUsersTextareaMaxLenght) {
       setMessageTextLimit(true);
     } else {
       setMessageTextLimit(false);
