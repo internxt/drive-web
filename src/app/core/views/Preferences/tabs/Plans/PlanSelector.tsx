@@ -9,7 +9,7 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { planActions, PlanState } from '../../../../../store/slices/plan';
+import { planActions, PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -44,62 +44,76 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string) {
-    if (plan.subscription?.type === 'subscription') {
-      if (interval === 'lifetime') {
-        try {
-          const { id } = await paymentService.createCheckoutSession({
-            price_id: priceId,
-            success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-            customer_email: user.email,
-            mode: interval === 'lifetime' ? 'payment' : 'subscription',
-          });
+    if (
+      (subscription?.type === 'free' && interval === 'lifetime') ||
+      (subscription?.type === 'subscription' && interval === 'lifetime')
+    ) {
+      try {
+        const response = await paymentService.createCheckoutSession({
+          price_id: priceId,
+          success_url: `${window.location.origin}/checkout/success`,
+          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
+          customer_email: user.email,
+          mode: interval === 'lifetime' ? 'payment' : 'subscription',
+        });
 
-          localStorage.setItem('sessionId', id);
-          await paymentService.redirectToCheckout({ sessionId: id }).then(async (result) => {
-            await paymentService.cancelSubscription();
+        localStorage.setItem('sessionId', response.id);
+        await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+          await paymentService.cancelSubscription();
 
-            if (result.error) {
-              notificationsService.show({
-                type: ToastType.Error,
-                text: result.error.message as string,
-              });
-            } else {
-              notificationsService.show({
-                type: ToastType.Success,
-                text: 'Payment successful',
-              });
-            }
-          });
-        } catch (error) {
-          console.error(error);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        }
-      } else {
-        try {
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-          dispatch(planActions.setSubscription(updatedSubscription));
-          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-        } catch (err) {
-          console.error(err);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        } finally {
-          setLoadingPlanAction(null);
-          setIsDialogOpen(false);
-        }
+          if (result.error) {
+            notificationsService.show({
+              type: ToastType.Error,
+              text: result.error.message as string,
+            });
+          } else {
+            notificationsService.show({
+              type: ToastType.Success,
+              text: 'Payment successful',
+            });
+          }
+        });
+      } catch (error) {
+        console.error(error);
+        notificationsService.show({
+          text: translate('notificationMessages.errorCancelSubscription'),
+          type: ToastType.Error,
+        });
       }
-    } else if (subscription?.type === 'free') {
+
+      navigationService.push(AppView.PaymentMethod, { priceId });
+    } else if (
+      (subscription?.type === 'subscription' && interval !== 'lifetime') ||
+      subscription?.type === 'lifetime'
+    ) {
+      try {
+        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+        dispatch(planActions.setSubscription(updatedSubscription));
+        dispatch(planThunks.initializeThunk());
+        notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+      } catch (err) {
+        console.error(err);
+        notificationsService.show({
+          text: translate('notificationMessages.errorCancelSubscription'),
+          type: ToastType.Error,
+        });
+      } finally {
+        setLoadingPlanAction(null);
+        setIsDialogOpen(false);
+      }
+    } else {
       navigationService.push(AppView.PaymentMethod, { priceId });
     }
   }
 
   const onPlanSelected = (priceId: string) => {
+    if (subscription?.type === 'lifetime') {
+      notificationsService.show({
+        text: 'You already have a lifetime subscription',
+        type: ToastType.Info,
+      });
+      return;
+    }
     setPriceIdSelected(priceId);
     setIsDialogOpen(true);
   };

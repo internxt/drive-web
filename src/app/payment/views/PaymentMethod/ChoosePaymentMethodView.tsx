@@ -14,12 +14,11 @@ import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Icon from './components/Icon';
 import { handleCheckout } from './utils/handleCheckout';
-import user, { userThunks } from 'app/store/slices/user';
 import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { PlanState, planThunks } from 'app/store/slices/plan';
+import { planThunks } from 'app/store/slices/plan';
 import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import { useAppDispatch } from 'app/store/hooks';
+import { stripeService } from './utils/stripe.service';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -83,33 +82,37 @@ const ChoosePaymentMethod: React.FC = () => {
   const [isFirstStepCompleted, setIsFirstStepCompleted] = useState(false);
   const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep />;
   const [isLoading, setIsLoading] = useState(false);
-  const dispatch = useAppDispatch();
+  const params = new URLSearchParams(window.location.search);
+
+  const setupIntent = async () => {
+    const intentId = localStorage.getItem('setupIntentId');
+    if (intentId) {
+      const setupIntent = await stripeService.retrieveSetupIntent(intentId);
+      return setupIntent;
+    } else {
+      return null;
+    }
+  };
 
   useEffect(() => {
-    if (localStorage.getItem('FirstStep') === 'true') {
-      setIsLoading(true);
-      setTimeout(() => {
-        dispatch(planThunks.initializeThunk());
-        setTimeout(() => {
-          paymentService
-            .getUserSubscription()
-            .then(({ type }) => {
-              if (type === 'subscription') {
-                if (!localStorage.getItem('FirstStep')) {
-                  navigationService.push(AppView.Drive);
-                } else if (localStorage.getItem('FirstStep')) {
-                  setIsFirstStepCompleted(true);
-                }
-              }
-            })
-            .catch((err) => {
-              console.log('err', err);
-            })
-            .finally(() => {
-              setIsLoading(false);
-            });
-        }, 500);
-      }, 500);
+    setIsLoading(true);
+    if (params.get('payment') === 'success') {
+      setIsFirstStepCompleted(true);
+      setIsLoading(false);
+    } else {
+      setupIntent().then((setupIntent) => {
+        if (setupIntent?.setupIntent?.status === 'succeeded') {
+          setIsFirstStepCompleted(true);
+          setIsLoading(false);
+        } else if (setupIntent?.setupIntent?.status === 'canceled') {
+          setIsFirstStepCompleted(false);
+          setIsLoading(false);
+          navigationService.push(AppView.Drive);
+        } else if (!setupIntent) {
+          setIsFirstStepCompleted(false);
+          setIsLoading(false);
+        }
+      });
     }
   }, []);
 
@@ -285,7 +288,6 @@ const FirstStep = () => {
           disabled={!paymentMethod}
           onClick={() => {
             handleCheckout(handleCheckoutObject);
-            localStorage.setItem('FirstStep', 'true');
             localStorage.setItem('spaceForPaymentMethod', planSelected?.space ?? '');
           }}
           className={`flex w-full items-center justify-center rounded-lg ${
@@ -304,7 +306,7 @@ const LastStep = () => {
   const space = localStorage.getItem('spaceForPaymentMethod');
 
   const onCheckoutSuccess = useCallback(async () => {
-    await dispatch(userThunks.refreshUserThunk());
+    await dispatch(planThunks.initializeThunk());
     try {
       await analyticsService.trackPaymentConversion();
     } catch (err) {
@@ -326,8 +328,9 @@ const LastStep = () => {
       <button
         onClick={() => {
           navigationService.push(AppView.Drive);
-          localStorage.removeItem('FirstStep');
+
           localStorage.removeItem('spaceForPaymentMethod');
+          localStorage.removeItem('setupIntentId');
         }}
         className={'flex w-full items-center justify-center rounded-lg bg-primary py-3 text-white'}
       >

@@ -4,22 +4,11 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import paymentService from 'app/payment/services/payment.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { planActions, PlanState } from 'app/store/slices/plan';
+import { planActions, PlanState, planThunks } from 'app/store/slices/plan';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-
-interface CheckoutOptions {
-  price_id: string;
-  coupon_code?: string;
-  trial_days?: number;
-  success_url: string;
-  cancel_url: string;
-  customer_email: string;
-  mode: string | undefined;
-  paymentMethod: string;
-}
 
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -38,22 +27,12 @@ export default function CheckoutPlanView(): JSX.Element {
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
-      const freeTrials = Number(params.get('freeTrials'));
-      checkout(planId, coupon, mode, freeTrials);
+
+      checkout(planId, coupon, mode);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, coupon?: string, mode?: string, freeTrials?: number) {
-    let response;
-    const checkoutOptions: CheckoutOptions = {
-      price_id: planId,
-      success_url: `${window.location.origin}/checkout/success`,
-      cancel_url: `${window.location.origin}/checkout/cancel`,
-      customer_email: user.email,
-      mode: mode,
-      paymentMethod: 'card',
-    };
-
+  async function checkout(planId: string, coupon?: string, mode?: string) {
     if (plan.subscription?.type === 'subscription') {
       if (mode === 'payment') {
         try {
@@ -91,7 +70,9 @@ export default function CheckoutPlanView(): JSX.Element {
         try {
           const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
           dispatch(planActions.setSubscription(updatedSubscription));
+          dispatch(planThunks.initializeThunk());
           notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+          navigationService.push(AppView.Drive);
         } catch (err) {
           console.error(err);
           notificationsService.show({
@@ -101,7 +82,8 @@ export default function CheckoutPlanView(): JSX.Element {
         }
       }
     } else if (subscription?.type === 'free') {
-      navigationService.push(AppView.PaymentMethod, { planId });
+      const couponCode = coupon ? coupon : undefined;
+      navigationService.push(AppView.PaymentMethod, { priceId: planId, coupon: couponCode });
     }
   }
 
