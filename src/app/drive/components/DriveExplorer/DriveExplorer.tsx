@@ -76,8 +76,8 @@ import { TaskStatus } from '../../../tasks/types';
 import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
 import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import BannerWrapper from 'app/banners/BannerWrapper';
 import ShareDialog from '../ShareDialog/ShareDialog';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 const TRASH_PAGINATION_OFFSET = 50;
@@ -141,6 +141,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
+  const isAdvancedShareDialogOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -404,7 +405,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item: selectedItems[0],
         }),
       );
-      dispatch(uiActions.setIsShareItemDialogOpen(true));
+      dispatch(sharedThunks.getSharedLinkThunk({ item: selectedItems[0] as DriveItemData }));
     }
   };
 
@@ -621,14 +622,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
+      {process.env.NODE_ENV !== 'production' && isAdvancedShareDialogOpen && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

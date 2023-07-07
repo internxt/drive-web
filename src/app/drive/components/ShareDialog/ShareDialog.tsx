@@ -13,6 +13,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretDown, Check, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { DriveItemData } from '../../types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
@@ -29,6 +31,8 @@ const ShareDialog = (props) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
+  const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+
   const owner: InvitedUserProps = {
     avatar: props.user.avatar,
     name: props.user.name,
@@ -72,10 +76,15 @@ const ShareDialog = (props) => {
 
   const onCopyLink = (): void => {
     // TODO -> Copy share link
+    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
     closeSelectedUserPopover();
   };
 
   const onInviteUser = () => {
+    // TODO -> Open invite user screen
+    // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
+    // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
+    // OR THAT LOGIC WILL BE DONE BY THE BACKEND
     setIsInvitingUser(!isInvitingUser);
     closeSelectedUserPopover();
   };
