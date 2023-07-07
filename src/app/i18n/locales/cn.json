@@ -599,6 +599,27 @@
           "success": "不再分享 \"{{name}}\"",
           "error": "无法停止分享，请再试一次"
         }
+      },
+      "invite": {
+        "title": "邀请人们",
+        "textarea": "输入你的信息文本（可选）",
+        "notifyUsers": "通知用户",
+        "instructions": "按回车键或空格来分隔电子邮件",
+        "email": "类型：电子邮件",
+        "invite": "邀请",
+        "editor": "编辑",
+        "viewer": "浏览者",
+        "listUsers": "要邀请的用户"
+      },
+      "requestAccess": {
+        "title": "您无权访问",
+        "description": "向所有者请求访问权限或切换到具有访问权限的帐户",
+        "textarea": "留言（可选）",
+        "requestButton": "申请进入",
+        "logged": "登录为",
+        "change": "改变",
+        "requestSent": "请求已发送",
+        "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
       }
     },
     "deletePhotosModal": {

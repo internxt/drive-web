@@ -541,6 +541,27 @@
           "success": "Ne plus partager \"{{name}}\"",
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
+      },
+      "invite": {
+        "title": "Inviter des personnes",
+        "textarea": "Entrez le texte de votre message (facultatif)",
+        "notifyUsers": "Notifier les utilisateurs",
+        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "email": "Type d'email",
+        "invite": "Inviter",
+        "editor": "Éditeur",
+        "viewer": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter"
+      },
+      "requestAccess": {
+        "title": "Vous n'avez pas accès",
+        "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
+        "textarea": "Message (optionnel)",
+        "requestButton": "Demande d'accès",
+        "logged": "Connecté comme",
+        "change": "Changer",
+        "requestSent": "Demande envoyée",
+        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
       }
     },
     "deletePhotosModal": {

@@ -587,6 +587,27 @@
           "success": "Dejar de compartir \"{{name}}\"",
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
+      },
+      "invite": {
+        "title": "Invitar a otros",
+        "textarea": "Escribe un mensaje (opcional)",
+        "notifyUsers": "Notificar a los usuarios",
+        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "email": "Correo electrónico",
+        "invite": "Invitar",
+        "editor": "Editor",
+        "viewer": "Visualizador",
+        "listUsers": "Usuarios a invitar"
+      },
+      "requestAccess": {
+        "title": "No tienes acceso",
+        "description": "Solicita acceso al propietario o cambia a una cuenta con acceso.",
+        "textarea": "Mensaje (opcional)",
+        "requestButton": "Solicita acceso",
+        "logged": "Conectado como",
+        "change": "Cambiar",
+        "requestSent": "Solicitud enviada",
+        "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
       }
     },
     "deletePhotosModal": {

@@ -225,6 +225,13 @@
       "exact": false
     },
     {
+      "id": "request-access",
+      "layout": "empty",
+      "path": "/request-access",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "not-found",
       "layout": "empty",
       "path": "",
