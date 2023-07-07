@@ -759,7 +759,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                 variant="tertiary"
                                 className="aspect-square"
                                 onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
-                                //AQUI ESTA
                               >
                                 <Users className="h-6 w-6" />
                               </Button>

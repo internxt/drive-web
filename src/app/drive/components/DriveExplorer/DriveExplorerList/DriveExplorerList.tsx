@@ -211,17 +211,29 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, sharedThunks],
   );
 
-  const openAdvancedShareLinkSettings = useCallback(
-    (item: ContextMenuDriveItem) => {
-      dispatch(
-        storageActions.setItemToShare({
-          share: (item as DriveItemData)?.shares?.[0],
-          item: item as DriveItemData,
-        }),
-      );
-      dispatch(uiActions.setIsShareDialogOpen(true));
-    },
-    [dispatch, storageActions, uiActions],
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  const openLinkSettings = useCallback(
+    isProduction
+      ? (item) => {
+          dispatch(
+            storageActions.setItemToShare({
+              share: (item as DriveItemData)?.shares?.[0],
+              item: item as DriveItemData,
+            }),
+          );
+          dispatch(uiActions.setIsShareItemDialogOpen(true));
+        }
+      : (item: ContextMenuDriveItem) => {
+          dispatch(
+            storageActions.setItemToShare({
+              share: (item as DriveItemData)?.shares?.[0],
+              item: item as DriveItemData,
+            }),
+          );
+          dispatch(uiActions.setIsShareDialogOpen(true));
+        },
+    [dispatch, storageActions, uiActions, isProduction],
   );
 
   const downloadItem = useCallback(
@@ -339,7 +351,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 ? contextMenuDriveFolderShared({
                     copyLink: copyLink,
                     openShareAccessSettings: (item) => {
-                      openAdvancedShareLinkSettings(item);
+                      openLinkSettings(item);
+                    },
+                    deleteLink: (item) => {
+                      dispatch(
+                        sharedThunks.deleteLinkThunk({
+                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
+                          item: item as DriveItemData,
+                        }),
+                      );
                     },
                     renameItem: renameItem,
                     moveItem: moveItem,
@@ -350,7 +370,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openPreview: openPreview,
                     copyLink: copyLink,
                     openShareAccessSettings: (item) => {
-                      openAdvancedShareLinkSettings(item);
+                      openLinkSettings(item);
+                    },
+                    deleteLink: (item) => {
+                      dispatch(
+                        sharedThunks.deleteLinkThunk({
+                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
+                          item: item as DriveItemData,
+                        }),
+                      );
                     },
                     renameItem: renameItem,
                     moveItem: moveItem,
@@ -362,7 +390,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   shareLink: (item) => {
                     //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
                     // WAITING BACKEND ENDPOINTS
-                    openAdvancedShareLinkSettings(item);
+                    // openAdvancedShareLinkSettings(item);
+                    openLinkSettings(item);
                   },
                   getLink: getLink,
                   renameItem: renameItem,
@@ -374,8 +403,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   shareLink: (item) => {
                     //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
                     // WAITING BACKEND ENDPOINTS
-
-                    openAdvancedShareLinkSettings(item);
+                    // openAdvancedShareLinkSettings(item);
+                    openLinkSettings(item);
                   },
                   openPreview: openPreview,
                   getLink: getLink,

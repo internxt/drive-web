@@ -96,6 +96,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   };
 
   const { title, hiddenActions } = props;
+  const isProduction = process.env.NODE_ENV === 'production';
 
   return (
     <div>
@@ -107,7 +108,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
             <span>Open preview</span>
           </Dropdown.Item>
         ) : null} */}
-      {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
+      {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !isProduction && !props.isTrash ? (
         <Dropdown.Item
           id="share"
           onClick={() => {
@@ -119,7 +120,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           <span>{translate('drive.dropdown.share')}</span>
         </Dropdown.Item>
       ) : null}
-      {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !props.isTrash ? (
+      {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !isProduction && !props.isTrash ? (
         <Dropdown.Item id="share" onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}>
           <Users className="mr-1" size={20} />
           <span>{translate('drive.dropdown.manageLinkAccess')}</span>
@@ -135,6 +136,18 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         <Dropdown.Item id="share" onClick={onShareCopyButtonClicked}>
           <Copy className="mr-1" size={20} />
           <span>{translate('drive.dropdown.copyLink')}</span>
+        </Dropdown.Item>
+      ) : null}
+      {!hiddenActions.includes(DriveItemAction.ShareSettings) && isProduction && !props.isTrash ? (
+        <Dropdown.Item id="share" onClick={onShareSettingsButtonClicked}>
+          <Gear className="mr-1 h-5 w-5 text-blue-60" />
+          <span>{translate('drive.dropdown.linkSettings')}</span>
+        </Dropdown.Item>
+      ) : null}
+      {!hiddenActions.includes(DriveItemAction.ShareDeleteLink) && isProduction && !props.isTrash ? (
+        <Dropdown.Item id="share" onClick={onShareDeleteButtonClicked}>
+          <LinkBreak className="mr-1 h-5 w-5 text-blue-60" />
+          <span>{translate('drive.dropdown.deleteLink')}</span>
         </Dropdown.Item>
       ) : null}
       {!hiddenActions.includes(DriveItemAction.Info) && props.isTrash ? (
