@@ -229,15 +229,28 @@
             },
             "verify": {
               "verify": "验证您的电子邮件",
-              "verified": "Verified email",
+              "verified": "已核实电邮",
               "description": "检查你的收件箱"
             },
             "editProfile": {
+              "title": "编辑帐户详细信息",
               "name": "名字",
-              "lastname": "姓氏"
+              "lastname": "姓氏",
+              "updateProfile": "个人资料文件更新成功",
+              "errorUpdatingProfile": "我们无法更新您的个人资料"
             },
-            "updateProfile": "个人资料文件更新成功",
-            "errorUpdatingProfile": "我们无法更新您的个人资料"
+            "changeEmail": {
+              "title": "更改电子邮件",
+              "email": "电子邮件",
+              "newEmail": "新电邮",
+              "password": "密码",
+              "errorSameEmail": "新的电子邮件应该不同于当前的电子邮件",
+              "errorPassword": "密码错误,再试一次",
+              "sendVerification": "发送验证",
+              "sendingVerification": "发送验证",
+              "sucessSendingVerification": "发送电子邮件到 {{email}}",
+              "errorSendingVerification": "错误发送验证"
+            }
           },
           "deleteAccount": {
             "head": "删除账户",
@@ -473,6 +486,42 @@
             }
           }
         }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "电子邮件验证成功",
+        "subtitle": "您现在可以关闭此标签",
+        "cta": "打开Internxt Drive"
+      },
+      "error": {
+        "title": "出错了",
+        "subtitle": "检查链接是否正确或在设置>账户中再次请求电子邮件验证",
+        "cta": "转到账户"
+      }
+    },
+    "emailChange": {
+      "password": "密码",
+      "auth": {
+        "title": "验证电子邮件变更",
+        "subtitle": "您的账户电子邮件将被改为 {{email}}",
+        "wrongPassword": "错误的密码，请重试",
+        "cta": "继续"
+      },
+      "success": {
+        "title": "电子邮件更改成功",
+        "subtitle": "你现在可以关闭这个标签",
+        "cta": "打开Internxt Drive"
+      },
+      "error": {
+        "title": "出错了",
+        "subtitle": "检查链接是否正确，或在设置>账户中再次请求更改电子邮件",
+        "cta": "转到账户"
+      },
+      "expired": {
+        "title": "验证链接已过期",
+        "subtitle": "您可以在 \"设置\">\"账户 \"中再次请求更改电子邮件",
+        "cta": "转到账户"
       }
     },
     "redirectToApp": {
@@ -952,6 +1001,7 @@
     "moreInfo": "更多信息",
     "dismiss": "解散",
     "save": "保存",
+    "saving": "保存",
     "back": "返回",
     "edit": "编辑",
     "submit": "提交",
