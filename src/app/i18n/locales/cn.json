@@ -152,6 +152,7 @@
     "photos": "照片",
     "backups": "备份",
     "sharedLinks": "共享的链接",
+    "shared": "共享的",
     "recents": "最近",
     "trash": "垃圾箱",
     "desktop": "桌面应用程序"
@@ -779,7 +780,8 @@
       "link-content": "链接内容",
       "shared": "已共享的",
       "created": "已创建的",
-      "size": "大小"
+      "size": "大小",
+      "owner": "业主"
     },
     "empty-state": {
       "title": "暂时没有分享的内容",

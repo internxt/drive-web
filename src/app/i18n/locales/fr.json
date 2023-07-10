@@ -135,6 +135,7 @@
     "photos": "Photos",
     "backups": "Sauvegardes",
     "sharedLinks": "Liens partagés",
+    "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
     "desktop": "App de bureau"
@@ -720,7 +721,8 @@
       "link-content": "Contenu du lien",
       "shared": "Partagé",
       "created": "Créé",
-      "size": "Taille"
+      "size": "Taille",
+      "owner": "Propriétaire"
     },
     "empty-state": {
       "title": "Rien n'a encore été partagé",

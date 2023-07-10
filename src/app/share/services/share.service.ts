@@ -3,7 +3,7 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
-import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { ListPrivateSharedFoldersResponse, ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 interface CreateShareResponse {
@@ -56,6 +56,28 @@ export function incrementShareView(token: string): Promise<{ incremented: boolea
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getReceivedSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getReceivedSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSentSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -165,6 +187,8 @@ const shareService = {
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
+  getSentSharedFolders,
+  getReceivedSharedFolders,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,

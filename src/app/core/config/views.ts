@@ -32,7 +32,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
-import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
+import SharedView from '../../share/views/SharedLinksView/SharedView';
 
 const views: Array<{
   id: string;
@@ -52,6 +52,7 @@ const views: Array<{
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.SharedLinks, component: SharedLinksView },
+  { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },
