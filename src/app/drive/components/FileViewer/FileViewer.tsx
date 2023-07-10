@@ -28,7 +28,7 @@ import {
 import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretLeft, CaretRight } from 'phosphor-react';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import TopBarActions from './components/TopBarActions';
 import { useHotkeys } from 'react-hotkeys-hook';
 import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';

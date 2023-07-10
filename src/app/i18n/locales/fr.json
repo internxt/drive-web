@@ -206,21 +206,34 @@
             "card": {
               "name": "Prénom",
               "lastname": "Nom",
-              "edit": "Modifier",
-              "email": "Courriel",
-              "resendEmail": "Renvoyer courriel de vérification"
+              "edit": "Éditer",
+              "email": "Email",
+              "resendEmail": "Renvoyer l'email de vérification"
             },
             "verify": {
-              "verify": "Vérifier email",
-              "verified": "Verified email",
-              "description": "Consultez votre email"
+              "verify": "Vérifier votre email",
+              "verified": "Email vérifié",
+              "description": "Vérifiez votre boîte de réception"
             },
             "editProfile": {
+              "title": "Modifier les détails du compte",
               "name": "Prénom",
-              "lastname": "Nom"
+              "lastname": "Nom",
+              "updateProfile": "Profil mis à jour avec succès",
+              "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
-            "updateProfile": "Profil mis à jour avec succès",
-            "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
+            "changeEmail": {
+              "title": "Changer d'adresse électronique",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Mot de passe",
+              "errorSameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
+              "errorPassword": " Mauvais mot de passe, réessayez ",
+              "sendVerification": "Envoyer la vérification",
+              "sendingVerification": "Envoi de la vérification",
+              "sucessSendingVerification": "Vérification par courriel envoyée",
+              "errorSendingVerification": "Erreur d'envoi de la vérification"
+            }
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -241,7 +254,11 @@
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les informations relatives à la carte de crédit apparaîtront automatiquement ici lorsque vous souscrirez un abonnement payant."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contactez-nous pour changer de mode de paiement",
+              "contact": "Contactez"
+            }
           },
           "invoices": {
             "head": "Factures",
@@ -413,6 +430,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": " Email vérifié avec succès ",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé ",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la vérification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      }
+    },
+    "emailChange": {
+      "password": "Mot de passe",
+      "auth": {
+        "title": " Vérifier le changement d'adresse électronique ",
+        "subtitle": "L'email de votre compte sera remplacée par {{email}}",
+        "wrongPassword": "Mot de passe incorrect, réessayez",
+        "cta": "Continuer"
+      },
+      "success": {
+        "title": " Changement d'adresse électronique réussi",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      },
+      "expired": {
+        "title": " Lien de vérification expiré ",
+        "subtitle": " Demandez à nouveau la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      }
+    },
     "redirectToApp": {
       "message": "Merci",
       "goToApp": "Retourner à l'application"
@@ -504,6 +557,27 @@
           "success": "Ne plus partager \"{{name}}\"",
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
+      },
+      "invite": {
+        "title": "Inviter des personnes",
+        "textarea": "Entrez le texte de votre message (facultatif)",
+        "notifyUsers": "Notifier les utilisateurs",
+        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "email": "Type d'email",
+        "invite": "Inviter",
+        "editor": "Éditeur",
+        "viewer": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter"
+      },
+      "requestAccess": {
+        "title": "Vous n'avez pas accès",
+        "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
+        "textarea": "Message (optionnel)",
+        "requestButton": "Demande d'accès",
+        "logged": "Connecté comme",
+        "change": "Changer",
+        "requestSent": "Demande envoyée",
+        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
       }
     },
     "deletePhotosModal": {
@@ -555,6 +629,7 @@
       "confirmPassword": "Confirmer le nouveau mot de passe",
       "strongPassword": "Le mot de passe est fort",
       "errors": {
+        "longPassword": "Le mot de passe peut avoir un maximum de 50 caractères",
         "shortPassword": "Le mot de passe est trop court, il doit comporter au moins 8 caractères",
         "notComplex": "Le mot de passe n'est pas assez complexe",
         "weakPassword": "Le mot de passe est faible",
@@ -905,6 +980,7 @@
     "moreInfo": "Plus d'informations",
     "dismiss": "Rejeter",
     "save": "Enregistrer",
+    "saving": "Sauvagarde en cours",
     "back": "Retourner",
     "edit": "Éditer",
     "submit": "Soumettre",

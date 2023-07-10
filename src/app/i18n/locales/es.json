@@ -205,7 +205,8 @@
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
-              "email": "Correo electrónico",
+              "edit": "Editar",
+              "email": "Correo",
               "resendEmail": "Reenviar correo de verificación"
             },
             "verify": {
@@ -215,10 +216,22 @@
             },
             "editProfile": {
               "name": "Nombre",
-              "lastname": "Apellido"
+              "lastname": "Apellido",
+              "updateProfile": "Perfil actualizado correctamente",
+              "errorUpdatingProfile": "No hemos podido actualizar su perfil"
             },
-            "updateProfile": "Perfil actualizado correctamente",
-            "errorUpdatingProfile": "No hemos podido actualizar su perfil"
+            "changeEmail": {
+              "title": "Cambiar correo electrónico",
+              "email": "Correo",
+              "newEmail": "Nuevo correo",
+              "password": "Contraseña",
+              "errorSameEmail": "El nuevo correo electrónico debe ser diferente del actual",
+              "errorPassword": "Contraseña incorrecta, inténtalo de nuevo",
+              "sendVerification": "Enviar verificación",
+              "sendingVerification": "Enviando verificación",
+              "sucessSendingVerification": "Verificación enviada a {{email}}",
+              "errorSendingVerification": "Error enviando verificación"
+            }
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
@@ -265,7 +278,11 @@
               "title": "Estás en el plan gratuito",
               "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
             },
-            "title": "Añadir nuevo método de pago"
+            "title": "Añadir nuevo método de pago",
+            "contactUs": {
+              "description": "Ponte en contacto con nosotros para actualizar tu método de pago",
+              "contact": "Contacta"
+            }
           },
           "invoices": {
             "head": "Facturas",
@@ -459,6 +476,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": "Correo electrónico verificado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar la verificación del correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      }
+    },
+    "emailChange": {
+      "password": "Contraseña",
+      "auth": {
+        "title": "Verificar cambio de correo electrónico",
+        "subtitle": "El correo electrónico de tu cuenta se cambiará a {{email}}",
+        "wrongPassword": "Contraseña incorrecta, inténtelo de nuevo",
+        "cta": "Continuar"
+      },
+      "success": {
+        "title": "Correo electrónico cambiado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar el cambio de correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      },
+      "expired": {
+        "title": "Enlace de verificación caducado",
+        "subtitle": "Vuelve a solicitar el cambio de correo electrónico en Ajustes > Cuenta",
+        "cta": "Ir a Cuenta"
+      }
+    },
     "redirectToApp": {
       "message": "Gracias!",
       "goToApp": "Volver a la aplicación"
@@ -550,6 +603,27 @@
           "success": "Dejar de compartir \"{{name}}\"",
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
+      },
+      "invite": {
+        "title": "Invitar a otros",
+        "textarea": "Escribe un mensaje (opcional)",
+        "notifyUsers": "Notificar a los usuarios",
+        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "email": "Correo electrónico",
+        "invite": "Invitar",
+        "editor": "Editor",
+        "viewer": "Visualizador",
+        "listUsers": "Usuarios a invitar"
+      },
+      "requestAccess": {
+        "title": "No tienes acceso",
+        "description": "Solicita acceso al propietario o cambia a una cuenta con acceso.",
+        "textarea": "Mensaje (opcional)",
+        "requestButton": "Solicita acceso",
+        "logged": "Conectado como",
+        "change": "Cambiar",
+        "requestSent": "Solicitud enviada",
+        "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
       }
     },
     "deletePhotosModal": {
@@ -601,6 +675,7 @@
       "confirmPassword": "Confirmar contraseña",
       "strongPassword": "La contraseña es fuerte",
       "errors": {
+        "longPassword": "La contraseña puede tener como maximo 50 caracteres",
         "shortPassword": "La contraseña debe tener al menos 8 caracteres",
         "notComplex": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
         "weakPassword": "La contraseña es débil",
@@ -955,6 +1030,7 @@
     "moreInfo": "Más info",
     "dismiss": "Dismiss",
     "save": "Guardar",
+    "saving": "Guardando",
     "back": "Atrás",
     "edit": "Editar",
     "submit": "Enviar",

@@ -270,7 +270,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={getFormatFileName()}>
                 {getFormatFileName()}
               </abbr>
-              <span className="text-cool-gray-60">{getFormatFileSize()}</span>
+              <span className="text-cool-gray-60">{getFormatFileSize()}lala</span>
             </div>
           </div>
         </div>
@@ -286,6 +286,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
             >
               <UilEye height="20" width="20" />
+              lala
               <span>{translate('actions.view')}</span>
             </button>
           )}

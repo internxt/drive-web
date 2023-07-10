@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { MouseEvent, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -6,11 +6,15 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
+// import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
+import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
 
 type AccessMode = 'public' | 'restricted';
@@ -42,6 +46,8 @@ const ShareDialog = (props) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
+  const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+
   const owner: InvitedUserProps = {
     avatar: props.user.avatar,
     name: props.user.name,
@@ -49,6 +55,10 @@ const ShareDialog = (props) => {
     email: props.user.email,
     role: 'owner',
   };
+
+  const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
+
+  const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
   const [accessMode, setAccessMode] = useState<AccessMode>('public');
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
@@ -76,12 +86,11 @@ const ShareDialog = (props) => {
       email: 'maria@inxt.com',
     },
   ]);
-
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-
+  const [isInvitingUser, setIsInvitingUser] = useState<boolean>(false);
   const [view, setView] = useState<Views>('general');
 
   useEffect(() => {
@@ -107,7 +116,6 @@ const ShareDialog = (props) => {
     // TODO -> Load invited users
     const loadedUsers: InvitedUserProps[] = [];
     setInvitedUsers(loadedUsers);
-
     // TODO -> Load access requests
     const mockedAccessRequests = [
       {
@@ -134,25 +142,59 @@ const ShareDialog = (props) => {
     setAccessRequests(mockedAccessRequests);
   };
 
+  const removeRequest = (email: string) => {
+    setAccessRequests((request) => request.filter((request) => request.email !== email));
+  };
+
+  const onAcceptRequest = (email: string, role: UserRole) => {
+    // TODO -> Accept user access request
+    removeRequest(email);
+  };
+
+  const onDenyrequest = (email: string) => {
+    // TODO -> Deny user access request
+    removeRequest(email);
+  };
+
+  const handleDenyRequest = (email) => {
+    setAccessRequests((prevRequests) =>
+      prevRequests.map((request) => {
+        if (request.email === email) {
+          return { ...request, denied: true };
+        }
+        return request;
+      }),
+    );
+  };
+
   const onClose = (): void => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
   const onCopyLink = (): void => {
     // TODO -> Copy share link
+    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
+    closeSelectedUserPopover();
   };
 
   const onInviteUser = () => {
     // TODO -> Open invite user screen
+    // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
+    // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
+    // OR THAT LOGIC WILL BE DONE BY THE BACKEND
+    setIsInvitingUser(!isInvitingUser);
+    closeSelectedUserPopover();
   };
 
   const onRemoveUser = (email: string) => {
     // TODO -> Use API to remove user
     // Then update frot-end
     setInvitedUsers((current) => current.filter((user) => user.email !== email));
+    closeSelectedUserPopover();
   };
 
   const changeAccess = (mode: AccessMode) => {
+    closeSelectedUserPopover();
     if (mode != accessMode) {
       setIsLoading(true);
       setAccessMode(mode);
@@ -198,36 +240,14 @@ const ShareDialog = (props) => {
     }
   };
 
-  const removeRequest = (email: string) => {
-    setAccessRequests((request) => request.filter((request) => request.email !== email));
-  };
-
-  const onAcceptRequest = (email: string, role: UserRole) => {
-    // TODO -> Accept user access request
-    removeRequest(email);
-  };
-
-  const onDenyrequest = (email: string) => {
-    // TODO -> Deny user access request
-    removeRequest(email);
-  };
-
-  const handleDenyRequest = (email) => {
-    setAccessRequests((prevRequests) =>
-      prevRequests.map((request) => {
-        if (request.email === email) {
-          return { ...request, denied: true };
-        }
-        return request;
-      }),
-    );
-  };
-
-  const openUserOptions = (e: unknown, user: InvitedUserProps) => {
+  const openUserOptions = (e: any, user: InvitedUserProps, selectedIndex: number | null) => {
     const buttonY: number = ((e as MouseEvent).currentTarget as HTMLElement).getBoundingClientRect().top;
     const buttonHeight: number = ((e as MouseEvent).currentTarget as HTMLElement).offsetHeight;
     const userListY: number = userList.current ? userList.current.getBoundingClientRect().top : 0;
     setUserOptionsY(buttonY + buttonHeight - userListY + 8);
+
+    if (selectedIndex === selectedUserListIndex) closeSelectedUserPopover();
+    else setSelectedUserListIndex(selectedIndex);
 
     setUserOptionsEmail(user.email);
 
@@ -235,86 +255,6 @@ const ShareDialog = (props) => {
       userOptions.current.click();
     }
   };
-
-  const UserOptions = () => (
-    <Popover className="relative z-10 h-0 max-h-0 w-full">
-      {({ open }) => (
-        <>
-          <Popover.Button as="button" ref={userOptions} className="outline-none z-1" />
-
-          <Popover.Panel
-            className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
-              open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
-            }`}
-            style={{
-              top: `${userOptionsY}px`,
-              minWidth: '160px',
-            }}
-            static
-          >
-            {/* Editor */}
-            <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
-              <p className="w-full text-left text-base font-medium leading-none">
-                {translate('modals.shareModal.list.userItem.roles.editor')}
-              </p>
-              <Check size={20} />
-            </button>
-
-            {/* Viewer */}
-            <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
-              <p className="w-full text-left text-base font-medium leading-none">
-                {translate('modals.shareModal.list.userItem.roles.viewer')}
-              </p>
-            </button>
-
-            <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
-
-            {/* Remove */}
-            <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-              onClick={() => onRemoveUser(userOptionsEmail)}
-            >
-              <p className="w-full text-left text-base font-medium leading-none">
-                {translate('modals.shareModal.list.userItem.remove')}
-              </p>
-            </button>
-          </Popover.Panel>
-        </>
-      )}
-    </Popover>
-  );
-
-  const User = ({ user }: { user: InvitedUserProps }) => (
-    <div
-      className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
-        user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
-      }`}
-    >
-      <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
-
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
-          {user.name}&nbsp;{user.lastname}
-        </p>
-        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
-          {user.email}
-        </p>
-      </div>
-
-      {user.role === 'owner' ? (
-        <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
-      ) : (
-        <div
-          className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
-          onMouseUpCapture={(event) => openUserOptions(event, user)}
-          tabIndex={-1}
-        >
-          <span className="pointer-events-none">{translate(`modals.shareModal.list.userItem.roles.${user.role}`)}</span>
-          <CaretDown size={16} weight="bold" className="pointer-events-none" />
-        </div>
-      )}
-    </div>
-  );
 
   const Header = (headerProps: ViewProps): JSX.Element => {
     const headers = {
@@ -351,7 +291,6 @@ const ShareDialog = (props) => {
 
     return headers[headerProps.view];
   };
-
   const View = (viewProps: ViewProps): JSX.Element => {
     const view = {
       general: (
@@ -383,18 +322,34 @@ const ShareDialog = (props) => {
               </div>
             </div>
 
-            <UserOptions />
-
             {/* List of users invited to the shared item */}
             <div
               ref={userList}
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              <User user={owner} />
-
-              {invitedUsers.map((user) => (
-                <User user={user} key={user.email} />
+              <User
+                user={owner}
+                listPosition={null}
+                translate={translate}
+                openUserOptions={openUserOptions}
+                selectedUserListIndex={selectedUserListIndex}
+                userOptionsY={userOptionsY}
+                onRemoveUser={onRemoveUser}
+                userOptionsEmail={userOptionsEmail}
+              />
+              {invitedUsers.map((user, index) => (
+                <User
+                  user={user}
+                  key={user.email}
+                  listPosition={index}
+                  translate={translate}
+                  openUserOptions={openUserOptions}
+                  selectedUserListIndex={selectedUserListIndex}
+                  userOptionsY={userOptionsY}
+                  onRemoveUser={onRemoveUser}
+                  userOptionsEmail={userOptionsEmail}
+                />
               ))}
             </div>
           </div>
@@ -646,13 +601,19 @@ const ShareDialog = (props) => {
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
-      <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
-        <Header view={view} />
-      </div>
+      {!isInvitingUser ? (
+        <>
+          <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
+            <Header view={view} />
+          </div>
 
-      <div className="flex flex-col space-y-4 p-5">
-        <View view={view} />
-      </div>
+          <div className="flex flex-col space-y-4 p-5">
+            <View view={view} />
+          </div>
+        </>
+      ) : (
+        <ShareInviteDialog onInviteUser={onInviteUser} />
+      )}
     </Modal>
   );
 };
@@ -661,3 +622,129 @@ export default connect((state: RootState) => ({
   user: state.user.user,
   selectedItems: state.storage.selectedItems,
 }))(ShareDialog);
+
+const UserOptions = ({
+  listPosition,
+  selectedUserListIndex,
+  userOptionsY,
+  translate,
+  onRemoveUser,
+  userOptionsEmail,
+}) => {
+  const isUserSelected = selectedUserListIndex === listPosition;
+
+  return isUserSelected ? (
+    <Popover
+      className="absolute z-10 h-0 max-h-0 w-full"
+      style={{
+        top: `${userOptionsY}px`,
+        right: 0,
+        minWidth: '160px',
+      }}
+    >
+      <Popover.Panel
+        className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+          isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
+        }`}
+        style={{
+          top: '44px',
+          minWidth: '160px',
+        }}
+        static
+      >
+        {/* Editor */}
+        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.roles.editor')}
+          </p>
+          <Check size={20} />
+        </button>
+
+        {/* Viewer */}
+        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.roles.viewer')}
+          </p>
+        </button>
+
+        <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
+
+        {/* Remove */}
+        <button
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          onClick={() => onRemoveUser(userOptionsEmail)}
+        >
+          <p className="w-full text-left text-base font-medium leading-none">
+            {translate('modals.shareModal.list.userItem.remove')}
+          </p>
+        </button>
+      </Popover.Panel>
+    </Popover>
+  ) : (
+    <></>
+  );
+};
+
+const User = ({
+  user,
+  listPosition,
+  translate,
+  openUserOptions,
+  selectedUserListIndex,
+  userOptionsY,
+  onRemoveUser,
+  userOptionsEmail,
+}: {
+  user: InvitedUserProps;
+  listPosition: number | null;
+  translate: (key: string, props?: Record<string, unknown>) => string;
+  openUserOptions: (
+    event: MouseEvent<HTMLDivElement, globalThis.MouseEvent>,
+    user: InvitedUserProps,
+    listPosition: number | null,
+  ) => void;
+  selectedUserListIndex;
+  userOptionsY;
+  onRemoveUser;
+  userOptionsEmail;
+}) => (
+  <div
+    className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
+      user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
+    }`}
+  >
+    <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
+
+    <div className="flex flex-1 flex-col overflow-hidden">
+      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+        {user.name}&nbsp;{user.lastname}
+      </p>
+      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+        {user.email}
+      </p>
+    </div>
+
+    {user.role === 'owner' ? (
+      <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
+    ) : (
+      <>
+        <div
+          className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
+          onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
+          tabIndex={-1}
+        >
+          <span className="pointer-events-none">{translate(`modals.shareModal.list.userItem.roles.${user.role}`)}</span>
+          <CaretDown size={16} weight="bold" className="pointer-events-none" />
+        </div>
+        <UserOptions
+          listPosition={listPosition}
+          selectedUserListIndex={selectedUserListIndex}
+          userOptionsY={userOptionsY}
+          translate={translate}
+          onRemoveUser={onRemoveUser}
+          userOptionsEmail={userOptionsEmail}
+        />
+      </>
+    )}
+  </div>
+);

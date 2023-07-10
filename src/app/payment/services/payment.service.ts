@@ -4,7 +4,7 @@ import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { loadStripe } from '@stripe/stripe-js/pure';
-import { RedirectToCheckoutServerOptions, Stripe, StripeError } from '@stripe/stripe-js';
+import { RedirectToCheckoutServerOptions, Stripe, Source, StripeError } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
@@ -58,7 +58,7 @@ const paymentService = {
     return paymentsClient.getSetupIntent();
   },
 
-  async getDefaultPaymentMethod(): Promise<PaymentMethod> {
+  async getDefaultPaymentMethod(): Promise<PaymentMethod | Source> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getDefaultPaymentMethod();
   },

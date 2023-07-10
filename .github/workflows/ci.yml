@@ -17,17 +17,36 @@ env:
   CI: false
 jobs:
   tests:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     strategy:
       matrix:
         node-version: [14.x]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
           registry-url: 'https://npm.pkg.github.com'
+      - run: echo REACT_APP_CRYPTO_SECRET=${{ secrets.REACT_APP_CRYPTO_SECRET }} >> ./.env
+      - run: echo REACT_APP_STRIPE_PK=${{ secrets.REACT_APP_STRIPE_PK }} >> ./.env
+      - run: echo REACT_APP_STRIPE_TEST_PK=${{ secrets.REACT_APP_STRIPE_TEST_PK }} >> ./.env
+      - run: echo REACT_APP_API_URL=${{ secrets.REACT_APP_API_URL }} >> ./.env
+      - run: echo REACT_APP_SEGMENT_KEY=${{ secrets.REACT_APP_SEGMENT_KEY }} >> ./.env
+      - run: echo REACT_APP_MAGIC_IV=${{ secrets.REACT_APP_MAGIC_IV }} >> ./.env
+      - run: echo REACT_APP_MAGIC_SALT=${{ secrets.REACT_APP_MAGIC_SALT }} >> ./.env
+      - run: echo REACT_APP_CRYPTO_SECRET2=${{ secrets.REACT_APP_CRYPTO_SECRET2 }} >> ./.env
+      - run: echo GENERATE_SOURCEMAP=${{ secrets.GENERATE_SOURCEMAP }} >> ./.env
+      - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> ./.env
+      - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./.env
+      - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./.env
+      - run: echo REACT_APP_PROXY=${{ secrets.REACT_APP_PROXY }} >> ./.env
+      - run: echo REACT_APP_DONT_USE_PROXY=${{ secrets.REACT_APP_DONT_USE_PROXY }} >> ./.env
+      - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./.env
+      - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./.env
+      - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./.env
+      - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./.env
+      - run: echo NODE_ENV=production >> ./.env
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
@@ -39,11 +58,19 @@ jobs:
       - name: Unit test run
         run: yarn test:unit
       - name: Cypress run
-        uses: cypress-io/github-action@v2
+        uses: cypress-io/github-action@v5
         with:
+          browser: chrome
           start: yarn start
           command: yarn test:e2e
           wait-on: http://localhost:3000
+          wait-on-timeout: 18000
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v3.1.2
+        if: failure() || cancelled()
+        with:
+          name: cypress-snapshots
+          path: test/e2e/cypress/screenshots
   build:
     runs-on: ubuntu-latest
     strategy:
