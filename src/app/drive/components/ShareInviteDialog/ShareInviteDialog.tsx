@@ -72,11 +72,11 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
     <div>
       <div className="flex h-16 w-full items-center justify-between space-x-5 border-b border-gray-10 px-5">
         <h4
-          className="flex max-w-full items-center overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
+          className="flex max-w-full items-center space-x-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
           title={translate('modals.shareModal.invite.title')}
         >
-          <ArrowLeft onClick={props.onInviteUser} size={22} className="mr-2 cursor-pointer" />
-          {translate('modals.shareModal.invite.title')}
+          <ArrowLeft onClick={props.onInviteUser} size={22} className="cursor-pointer" />
+          <span>{translate('modals.shareModal.invite.title')}</span>
         </h4>
       </div>
 
