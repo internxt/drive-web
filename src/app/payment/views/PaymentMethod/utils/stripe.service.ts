@@ -3,10 +3,6 @@ import envService from 'app/core/services/env.service';
 
 let stripe: Stripe;
 
-// const getStripe = async () => {
-
-// };
-
 async function paypalSetupIntent(setupIntentId: string): Promise<SetupIntentResult> {
   if (!stripe) {
     stripe = (await loadStripe(

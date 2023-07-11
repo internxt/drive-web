@@ -114,7 +114,9 @@ const paymentService = {
     return paymentsClient.cancelSubscription();
   },
 
-  async createCheckoutSession(payload: CreateCheckoutSessionPayload & { mode?: string }): Promise<any> {
+  async createCheckoutSession(
+    payload: CreateCheckoutSessionPayload & { mode?: string },
+  ): Promise<{ sessionId: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.createCheckoutSession(payload);
