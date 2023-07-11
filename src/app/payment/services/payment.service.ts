@@ -4,7 +4,7 @@ import httpService from '../../core/services/http.service';
 import envService from '../../core/services/env.service';
 import { LifetimeTier, StripeSessionMode } from '../types';
 import { loadStripe } from '@stripe/stripe-js/pure';
-import { RedirectToCheckoutServerOptions, Stripe, Source, StripeError } from '@stripe/stripe-js';
+import { RedirectToCheckoutServerOptions, Stripe, Source, StripeError, SetupIntentResult } from '@stripe/stripe-js';
 import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
@@ -168,6 +168,22 @@ const paymentService = {
     const stripe = await this.getStripe();
 
     await stripe.redirectToCheckout({ sessionId: response.id });
+  },
+
+  async paypalSetupIntent(setupIntentId: string): Promise<SetupIntentResult> {
+    const stripe = await this.getStripe();
+
+    return await stripe.confirmPayPalSetup(setupIntentId, {
+      return_url: `${window.location.origin}/payment-method`,
+      mandate_data: {
+        customer_acceptance: {
+          type: 'online',
+          online: {
+            infer_from_client: true,
+          },
+        },
+      },
+    });
   },
 };
 

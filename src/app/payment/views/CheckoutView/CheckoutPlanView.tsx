@@ -16,6 +16,7 @@ export default function CheckoutPlanView(): JSX.Element {
 
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
@@ -33,8 +34,13 @@ export default function CheckoutPlanView(): JSX.Element {
 
   async function checkout(planId: string, coupon?: string, mode?: string) {
     const couponCode = coupon !== 'null' ? { coupon_code: coupon } : undefined;
-    if (plan.subscription?.type === 'subscription') {
-      if (mode === 'payment') {
+    const isFreePlan = subscription?.type === 'free';
+    const isSubscription = subscription?.type === 'subscription';
+    const isLifetimePlan = subscription?.type === 'lifetime';
+    const isOneTimePayment = mode === 'payment';
+
+    if (isSubscription) {
+      if (isOneTimePayment) {
         try {
           const { sessionId } = await paymentService.createCheckoutSession({
             price_id: planId,
@@ -82,7 +88,7 @@ export default function CheckoutPlanView(): JSX.Element {
           });
         }
       }
-    } else if (subscription?.type === 'free' && mode === 'payment') {
+    } else if (isFreePlan && isOneTimePayment) {
       const { sessionId } = await paymentService.createCheckoutSession({
         price_id: planId,
         success_url: `${window.location.origin}/checkout/success`,
@@ -92,7 +98,6 @@ export default function CheckoutPlanView(): JSX.Element {
         ...couponCode,
       });
       localStorage.setItem('sessionId', sessionId);
-      console.log('sessionId', sessionId);
 
       await paymentService.redirectToCheckout({ sessionId: sessionId }).then(async (result) => {
         await paymentService.cancelSubscription();
@@ -103,7 +108,7 @@ export default function CheckoutPlanView(): JSX.Element {
           });
         }
       });
-    } else if (subscription?.type === 'lifetime') {
+    } else if (isLifetimePlan) {
       notificationsService.show({
         type: ToastType.Info,
         text: 'You already have a lifetime subscription',

@@ -1,9 +1,6 @@
-import { aes } from '@internxt/lib';
-import localStorageService from 'app/core/services/local-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import paymentService from 'app/payment/services/payment.service';
 import { t } from 'i18next';
-import { stripeService } from './stripe.service';
 
 interface HandleCheckoutProps {
   paymentMethod: string;
@@ -21,15 +18,13 @@ export async function handleCheckout({
   coupon,
 }: HandleCheckoutProps): Promise<void> {
   const couponCode = coupon && { coupon: coupon };
+  const isPaypal = paymentMethod === 'paypal';
 
-  if (paymentMethod === 'paypal') {
+  if (isPaypal) {
     try {
       const paypalIntent = await paymentService.getPaypalSetupIntent({ priceId: planId, ...couponCode });
-      const clientSecretEncrypted = aes.encrypt(paypalIntent.client_secret, localStorageService.getUser()!.mnemonic);
 
-      localStorage.setItem('setupIntentId', clientSecretEncrypted);
-
-      await stripeService.paypalSetupIntent(paypalIntent.client_secret);
+      await paymentService.paypalSetupIntent(paypalIntent.client_secret);
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');

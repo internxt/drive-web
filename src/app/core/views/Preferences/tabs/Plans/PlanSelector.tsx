@@ -44,10 +44,13 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string) {
-    if (
+    const onLifetimePlanIsSelected =
       (subscription?.type === 'free' && interval === 'lifetime') ||
-      (subscription?.type === 'subscription' && interval === 'lifetime')
-    ) {
+      (subscription?.type === 'subscription' && interval === 'lifetime');
+
+    const onUpdatingSubscriptionPlan = subscription?.type === 'subscription' && interval !== 'lifetime';
+
+    if (onLifetimePlanIsSelected) {
       try {
         const { sessionId } = await paymentService.createCheckoutSession({
           price_id: priceId,
@@ -82,10 +85,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       }
 
       navigationService.push(AppView.PaymentMethod, { priceId });
-    } else if (
-      (subscription?.type === 'subscription' && interval !== 'lifetime') ||
-      subscription?.type === 'lifetime'
-    ) {
+    } else if (onUpdatingSubscriptionPlan) {
       try {
         const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
         dispatch(planActions.setSubscription(updatedSubscription));

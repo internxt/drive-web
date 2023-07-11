@@ -17,11 +17,8 @@ import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import analyticsService from 'app/analytics/services/analytics.service';
 import { planThunks } from 'app/store/slices/plan';
 import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import { stripeService } from './utils/stripe.service';
 import Checkbox from './components/Checkbox';
 import { t } from 'i18next';
-import localStorageService from 'app/core/services/local-storage.service';
-import { aes } from '@internxt/lib';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -54,27 +51,19 @@ const ChoosePaymentMethod: React.FC = () => {
   };
 
   const handlePaymentStatus = (success: boolean) => {
+    localStorage.removeItem('spaceForPaymentMethod');
     setIsFirstStepCompleted(success);
     setIsLoading(false);
   };
 
-  const setupIntent = async (setupIntentId: string) => {
-    if (setupIntentId) {
-      const setupIntent = await stripeService.retrieveSetupIntent(setupIntentId);
-      return setupIntent;
-    } else {
-      return null;
-    }
-  };
-
   useEffect(() => {
-    const getSetupIntent = localStorage.getItem('setupIntentId');
-    const setupIntentDecrypted = getSetupIntent && aes.decrypt(getSetupIntent, localStorageService.getUser()!.mnemonic);
-
     const urlParams = new URLSearchParams(window.location.search);
     const priceId = String(urlParams.get('priceId'));
     const coupon = String(urlParams.get('coupon_code'));
     const couponCode = coupon !== 'null' ? { coupon: coupon } : undefined;
+    const isPaypalPaymentCompleted = params.get('redirect_status') === 'succeeded';
+    const isPaypalPaymentFailed = params.get('redirect_status') === 'failed';
+    const isCreditCardPaymentCompleted = params.get('payment') === 'success';
 
     paymentService.getPrices().then((prices) => {
       const plan = prices.find((price) => price.id === priceId);
@@ -91,23 +80,17 @@ const ChoosePaymentMethod: React.FC = () => {
     });
 
     setIsLoading(true);
-    if (params.get('payment') === 'success') {
+    if (isCreditCardPaymentCompleted) {
       handlePaymentStatus(true);
-      localStorage.removeItem('setupIntentId');
-    } else if (setupIntentDecrypted) {
-      setupIntent(setupIntentDecrypted).then((setupIntent) => {
-        if (setupIntent?.setupIntent?.status === 'succeeded') {
-          handlePaymentStatus(true);
-          localStorage.removeItem('setupIntentId');
-        } else if (setupIntent?.setupIntent?.status === 'canceled') {
-          handlePaymentStatus(false);
-          localStorage.removeItem('setupIntentId');
-          localStorage.removeItem('spaceForPaymentMethod');
-          navigationService.push(AppView.Drive);
-        } else {
-          setIsLoading(false);
-        }
-      });
+    } else if (isPaypalPaymentCompleted) {
+      if (isPaypalPaymentCompleted) {
+        handlePaymentStatus(true);
+      } else if (isPaypalPaymentFailed) {
+        handlePaymentStatus(false);
+        navigationService.push(AppView.Drive);
+      } else {
+        setIsLoading(false);
+      }
     } else {
       setIsLoading(false);
     }
