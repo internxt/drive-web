@@ -9,7 +9,6 @@ async function paypalSetupIntent(setupIntentId: string): Promise<SetupIntentResu
       envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
     )) as Stripe;
   }
-  await localStorage.setItem('setupIntentId', setupIntentId);
 
   return await stripe.confirmPayPalSetup(setupIntentId, {
     return_url: `${window.location.origin}/payment-method`,
