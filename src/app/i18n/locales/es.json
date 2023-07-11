@@ -898,7 +898,7 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} movid{{s}} a {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",
