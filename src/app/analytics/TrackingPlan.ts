@@ -1,7 +1,7 @@
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace TrackingPlan {
   export interface DownloadProperties {
-    file_size: number; // bytes
+    file_size: number;
     file_extension: string;
     bandwidth: number;
     band_utilization: number;

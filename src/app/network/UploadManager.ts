@@ -298,7 +298,6 @@ class UploadManager {
 
         this.uploadQueue.concurrency = concurrency;
 
-        // aqui
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
 
         const uploadedFiles = await Promise.all(uploadPromises);
