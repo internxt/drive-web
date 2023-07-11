@@ -39,6 +39,12 @@ const ChoosePaymentMethod: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const params = new URLSearchParams(window.location.search);
 
+  const interval = {
+    month: t('views.account.tabs.plans.paymentMethod.billing.month'),
+    year: t('views.account.tabs.plans.paymentMethod.billing.year'),
+    lifetime: t('views.account.tabs.plans.paymentMethod.billing.lifetime'),
+  };
+
   const billing = {
     month: t('general.renewal.monthly'),
     year: t('general.renewal.annually'),
@@ -73,7 +79,7 @@ const ChoosePaymentMethod: React.FC = () => {
           id: plan.id,
           amount: Math.abs(plan.amount / 100).toFixed(2),
           renewal: billing[plan.interval],
-          interval: plan.interval,
+          interval: interval[plan.interval],
           space: bytesToString(plan.bytes),
           ...couponCode,
         });
@@ -142,7 +148,7 @@ const StepTracking = ({ isFirstStepCompleted }: { isFirstStepCompleted: boolean 
         }}
       >
         <ArrowLeft size={24} />
-        <p>Back</p>
+        <p>{t('actions.back')}</p>
       </div>
       <div className="flex w-full flex-col items-center justify-center py-4">
         <div className="flex w-full max-w-sm flex-row items-center justify-center">
@@ -166,9 +172,15 @@ const StepTracking = ({ isFirstStepCompleted }: { isFirstStepCompleted: boolean 
         </div>
 
         <div className="flex w-full flex-row items-center justify-center space-x-24 pt-1.5">
-          <p className={`text-sm ${isFirstStepCompleted ? textColor.completed : textColor.current}`}>Preview order</p>
-          <p className={`text-sm ${isFirstStepCompleted ? textColor.completed : textColor.pending}`}>Checkout</p>
-          <p className={`${isFirstStepCompleted ? textColor.current : textColor.pending} text-sm`}>Confirmation</p>
+          <p className={`text-sm ${isFirstStepCompleted ? textColor.completed : textColor.current}`}>
+            {t('views.account.tabs.plans.paymentMethod.stepTracking.first')}
+          </p>
+          <p className={`text-sm ${isFirstStepCompleted ? textColor.completed : textColor.pending}`}>
+            {t('views.account.tabs.plans.paymentMethod.stepTracking.second')}
+          </p>
+          <p className={`${isFirstStepCompleted ? textColor.current : textColor.pending} text-sm`}>
+            {t('views.account.tabs.plans.paymentMethod.stepTracking.third')}
+          </p>
         </div>
       </div>
     </div>
@@ -201,23 +213,27 @@ const FirstStep = ({ planSelected }) => {
   return (
     <div className="flex w-full max-w-sm flex-col items-center justify-center space-y-8">
       <div className="flex w-full flex-col items-start justify-start space-y-3">
-        <p className="text-xl font-medium text-gray-100">Selected plan:</p>
+        <p className="text-xl font-medium text-gray-100">
+          {t('views.account.tabs.plans.paymentMethod.firstStep.selectedPlan')}:
+        </p>
         <div className="items-left flex w-full flex-row items-center space-x-8 rounded-xl border border-gray-10 py-7 pl-5 shadow-md">
           <p className="text-3xl font-medium text-primary">{planSelected?.space}</p>
           <div className="flex flex-col">
-            <p className="text-sm">Price</p>
+            <p className="text-sm">{t('views.account.tabs.plans.paymentMethod.firstStep.price')}</p>
             <p className="text-lg font-medium text-gray-100">
               €{planSelected?.amount}/{planSelected?.interval}
             </p>
           </div>
           <div className="flex flex-col">
-            <p className="text-sm">Billing</p>
+            <p className="text-sm">{t('views.account.tabs.plans.paymentMethod.firstStep.billing')}</p>
             <p className="text-lg font-medium text-gray-100">{planSelected?.renewal}</p>
           </div>
         </div>
       </div>
       <div className="flex w-full flex-col space-y-3">
-        <p className="text-xl font-medium text-gray-100">How would you like to pay?</p>
+        <p className="text-xl font-medium text-gray-100">
+          {t('views.account.tabs.plans.paymentMethod.firstStep.howLikePay')}
+        </p>
         <div className="flex w-full flex-row items-center justify-between space-x-5 rounded-xl border border-gray-10 py-7 px-5 shadow-md">
           <div className="flex flex-row items-center space-x-4">
             <Checkbox
@@ -225,7 +241,7 @@ const FirstStep = ({ planSelected }) => {
               checked={paymentMethod === 'paypal'}
               onClick={() => handleCheckbox('paypal')}
             />
-            <p className="text-xl font-medium">PayPal</p>
+            <p className="text-xl font-medium">{t('views.account.tabs.plans.paymentMethod.firstStep.paypal')}</p>
           </div>
           <img src={PayPal} />
         </div>
@@ -236,7 +252,7 @@ const FirstStep = ({ planSelected }) => {
               checked={paymentMethod === 'credit-card'}
               onClick={() => handleCheckbox('card')}
             />
-            <p className="text-xl font-medium">Credit card</p>
+            <p className="text-xl font-medium">{t('views.account.tabs.plans.paymentMethod.firstStep.creditCard')}</p>
           </div>
           <div className="flex flex-row space-x-1">
             {cards.map((card) => (
@@ -246,7 +262,7 @@ const FirstStep = ({ planSelected }) => {
         </div>
       </div>
       <div className="flex w-full flex-col items-center justify-center space-y-3">
-        <p className="text-gray-60">You won't be charged yet</p>
+        <p className="text-gray-60">{t('views.account.tabs.plans.paymentMethod.firstStep.wontBeCharged')}</p>
         <button
           disabled={!paymentMethod}
           onClick={() => {
@@ -257,7 +273,7 @@ const FirstStep = ({ planSelected }) => {
             paymentMethod ? 'bg-primary' : 'cursor-not-allowed bg-gray-30'
           } py-3 text-white`}
         >
-          Continue
+          {t('views.account.tabs.plans.paymentMethod.firstStep.continue')}
         </button>
       </div>
     </div>
@@ -285,8 +301,12 @@ const LastStep = () => {
         <CheckCircle size={80} weight="light" />
       </div>
       <div className="flex flex-col items-center justify-center space-y-2 text-center">
-        <p className="text-xl font-medium text-gray-100">Space updated to {space}</p>
-        <p className="text-lg text-gray-60">Thank you for upgrading your account space</p>
+        <p className="text-xl font-medium text-gray-100">
+          {t('views.account.tabs.plans.paymentMethod.thirdStep.spaceUpgraded', {
+            space: space,
+          })}
+        </p>
+        <p className="text-lg text-gray-60">{t('views.account.tabs.plans.paymentMethod.thirdStep.thanksForUpdate')}</p>
       </div>
       <button
         onClick={() => {
@@ -295,7 +315,7 @@ const LastStep = () => {
         }}
         className={'flex w-full items-center justify-center rounded-lg bg-primary py-3 text-white'}
       >
-        Go to Internxt Drive
+        {t('views.account.tabs.plans.paymentMethod.thirdStep.goToDrive')}
       </button>
     </div>
   );

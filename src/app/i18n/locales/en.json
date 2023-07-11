@@ -328,6 +328,11 @@
             "oneTimePayment": "One-time payment"
           },
           "paymentMethod": {
+            "billing": {
+              "lifetime": "lifetime",
+              "month": "month",
+              "year": "year"
+            },
             "stepTracking": {
               "first": "Review order",
               "second": "Checkout",
