@@ -9,6 +9,7 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
 import { AppView } from '../../../core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export interface RecentsViewProps {
   isLoadingRecents: boolean;
@@ -19,6 +20,7 @@ export interface RecentsViewProps {
 const RecentsView = (props: RecentsViewProps) => {
   const { translate } = useTranslationContext();
   useEffect(() => {
+    notificationsService.dismiss();
     props.dispatch(storageThunks.resetNamePathThunk());
     refreshRecents();
   }, []);

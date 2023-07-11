@@ -71,6 +71,7 @@ export default function SharedLinksView(): JSX.Element {
   }
 
   useEffect(() => {
+    notificationsService.dismiss();
     fetchItems(page, orderBy, 'append');
   }, []);
 

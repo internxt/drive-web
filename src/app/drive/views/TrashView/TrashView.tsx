@@ -7,6 +7,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageActions } from 'app/store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export interface TrashViewProps {
   isLoadingItemsOnTrash: boolean;
@@ -18,8 +19,8 @@ const TrashView = (props: TrashViewProps) => {
   const { translate } = useTranslationContext();
 
   useEffect(() => {
+    notificationsService.dismiss();
     const { dispatch } = props;
-
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
   }, []);

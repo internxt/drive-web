@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -19,6 +20,7 @@ export interface DriveViewProps {
 
 class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
+    notificationsService.dismiss();
     const { dispatch } = this.props;
 
     dispatch(storageThunks.resetNamePathThunk());

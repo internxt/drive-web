@@ -15,6 +15,7 @@ import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -25,7 +26,10 @@ export default function PhotosView({ className = '' }: { className?: string }): 
     dispatch(photosThunks.fetchThunk());
   }
 
-  useEffect(fetchPhotos, []);
+  useEffect(() => {
+    notificationsService.dismiss();
+    fetchPhotos();
+  }, []);
 
   const [deletePending, setDeletePending] = useState<null | 'selected' | 'preview'>(null);
   const [sharePending, setSharePending] = useState<null | 'selected' | 'preview'>(null);
