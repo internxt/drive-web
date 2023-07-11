@@ -1,3 +1,5 @@
+import { aes } from '@internxt/lib';
+import localStorageService from 'app/core/services/local-storage.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import paymentService from 'app/payment/services/payment.service';
 import { t } from 'i18next';
@@ -23,8 +25,9 @@ export async function handleCheckout({
   if (paymentMethod === 'paypal') {
     try {
       const paypalIntent = await paymentService.getPaypalSetupIntent({ priceId: planId, ...couponCode });
+      const clientSecretEncrypted = aes.encrypt(paypalIntent.client_secret, localStorageService.getUser()!.mnemonic);
 
-      localStorage.setItem('setupIntentId', paypalIntent.client_secret);
+      localStorage.setItem('setupIntentId', clientSecretEncrypted);
 
       await stripeService.paypalSetupIntent(paypalIntent.client_secret);
     } catch (error) {

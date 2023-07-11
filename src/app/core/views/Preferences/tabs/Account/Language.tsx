@@ -65,7 +65,7 @@ export default function Language(): JSX.Element {
     changeLang(i18next.language);
   }, [lang]);
 
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, _ref) => {
     return (
       <div
         className={'flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}

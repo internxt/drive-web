@@ -20,6 +20,8 @@ import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceA
 import { stripeService } from './utils/stripe.service';
 import Checkbox from './components/Checkbox';
 import { t } from 'i18next';
+import localStorageService from 'app/core/services/local-storage.service';
+import { aes } from '@internxt/lib';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -66,7 +68,9 @@ const ChoosePaymentMethod: React.FC = () => {
   };
 
   useEffect(() => {
-    const setupIntentId = localStorage.getItem('setupIntentId');
+    const getSetupIntent = localStorage.getItem('setupIntentId');
+    const setupIntentDecrypted = getSetupIntent && aes.decrypt(getSetupIntent, localStorageService.getUser()!.mnemonic);
+
     const urlParams = new URLSearchParams(window.location.search);
     const priceId = String(urlParams.get('priceId'));
     const coupon = String(urlParams.get('coupon_code'));
@@ -90,8 +94,8 @@ const ChoosePaymentMethod: React.FC = () => {
     if (params.get('payment') === 'success') {
       handlePaymentStatus(true);
       localStorage.removeItem('setupIntentId');
-    } else if (setupIntentId) {
-      setupIntent(setupIntentId).then((setupIntent) => {
+    } else if (setupIntentDecrypted) {
+      setupIntent(setupIntentDecrypted).then((setupIntent) => {
         if (setupIntent?.setupIntent?.status === 'succeeded') {
           handlePaymentStatus(true);
           localStorage.removeItem('setupIntentId');
@@ -100,6 +104,8 @@ const ChoosePaymentMethod: React.FC = () => {
           localStorage.removeItem('setupIntentId');
           localStorage.removeItem('spaceForPaymentMethod');
           navigationService.push(AppView.Drive);
+        } else {
+          setIsLoading(false);
         }
       });
     } else {
