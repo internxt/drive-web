@@ -27,12 +27,12 @@ export default function CheckoutPlanView(): JSX.Element {
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
-
       checkout(planId, coupon, mode);
     }
   }, [subscription]);
 
   async function checkout(planId: string, coupon?: string, mode?: string) {
+    const couponCode = coupon !== 'null' ? { coupon_code: coupon } : undefined;
     if (plan.subscription?.type === 'subscription') {
       if (mode === 'payment') {
         try {
@@ -42,6 +42,7 @@ export default function CheckoutPlanView(): JSX.Element {
             cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
             customer_email: user.email,
             mode: 'payment',
+            ...couponCode,
           });
           localStorage.setItem('sessionId', response.sessionId);
 
@@ -81,9 +82,34 @@ export default function CheckoutPlanView(): JSX.Element {
           });
         }
       }
-    } else if (subscription?.type === 'free') {
-      const couponCode = coupon ? coupon : undefined;
-      navigationService.push(AppView.PaymentMethod, { priceId: planId, coupon: couponCode });
+    } else if (subscription?.type === 'free' && mode === 'payment') {
+      const response = await paymentService.createCheckoutSession({
+        price_id: planId,
+        success_url: `${window.location.origin}/checkout/success`,
+        cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
+        customer_email: user.email,
+        mode: 'payment',
+        ...couponCode,
+      });
+      localStorage.setItem('sessionId', response.sessionId);
+
+      await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+        await paymentService.cancelSubscription();
+        if (result.error) {
+          notificationsService.show({
+            type: ToastType.Error,
+            text: result.error.message as string,
+          });
+        }
+      });
+    } else if (subscription?.type === 'lifetime') {
+      notificationsService.show({
+        type: ToastType.Info,
+        text: 'You already have a lifetime subscription',
+      });
+      navigationService.push(AppView.Drive);
+    } else {
+      navigationService.push(AppView.PaymentMethod, { priceId: planId, ...couponCode });
     }
   }
 

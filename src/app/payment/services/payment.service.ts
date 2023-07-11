@@ -120,11 +120,18 @@ const paymentService = {
     return paymentsClient.createCheckoutSession(payload);
   },
 
-  async getPaypalSetupIntent(priceId): Promise<{ client_secret: string }> {
+  async getPaypalSetupIntent({
+    priceId,
+    coupon,
+  }: {
+    priceId: string;
+    coupon?: string;
+  }): Promise<{ client_secret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.getPaypalSetupIntent({
       priceId,
+      coupon,
     });
   },
 

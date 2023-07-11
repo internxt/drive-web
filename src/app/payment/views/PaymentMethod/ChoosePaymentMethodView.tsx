@@ -8,7 +8,6 @@ import PayPal from '../../../../assets/icons/card-brands/PayPal.png';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { bytesToString } from 'app/drive/services/size.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -19,6 +18,8 @@ import analyticsService from 'app/analytics/services/analytics.service';
 import { planThunks } from 'app/store/slices/plan';
 import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import { stripeService } from './utils/stripe.service';
+import Checkbox from './components/Checkbox';
+import { t } from 'i18next';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -28,66 +29,30 @@ interface PlanSelected {
   renewal: string;
   interval: string;
   space: string;
+  coupon?: string;
 }
-
-const Checkbox = ({
-  id,
-  checked,
-  indeterminate,
-  onClick,
-  required,
-  className,
-  rounded,
-}: {
-  id: string;
-  checked: boolean;
-  indeterminate?: boolean;
-  onClick?: () => void;
-  required?: boolean;
-  className?: string;
-  rounded?: string;
-}): JSX.Element => {
-  return (
-    <label
-      className={`focus-within:outline-primary relative h-5 w-5 ${rounded ? rounded : 'rounded'} ${className}`}
-      onClick={onClick}
-    >
-      <div
-        onClick={(e) => e.preventDefault()}
-        className={`relative flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded-full border bg-white p-1 text-white ${
-          indeterminate || checked ? 'border-primary bg-primary' : 'border-gray-30 hover:border-gray-40'
-        }`}
-      >
-        {checked && (
-          <div
-            className={`flex h-3 w-2.5 cursor-pointer flex-col items-center justify-center rounded-full border bg-white text-white ${
-              checked && 'bg-white'
-            }`}
-          />
-        )}
-      </div>
-      <input
-        id={id}
-        checked={checked}
-        type="checkbox"
-        required={required ?? false}
-        readOnly
-        className="base-checkbox h-0 w-0 appearance-none opacity-0"
-      />
-    </label>
-  );
-};
 
 const ChoosePaymentMethod: React.FC = () => {
   const [isFirstStepCompleted, setIsFirstStepCompleted] = useState(false);
-  const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep />;
+  const [planSelected, setPlanSelected] = useState<PlanSelected>();
+  const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep planSelected={planSelected} />;
   const [isLoading, setIsLoading] = useState(false);
   const params = new URLSearchParams(window.location.search);
 
-  const setupIntent = async () => {
-    const intentId = localStorage.getItem('setupIntentId');
-    if (intentId) {
-      const setupIntent = await stripeService.retrieveSetupIntent(intentId);
+  const billing = {
+    month: t('general.renewal.monthly'),
+    year: t('general.renewal.annually'),
+    lifetime: t('general.renewal.lifetime'),
+  };
+
+  const handlePaymentStatus = (success: boolean) => {
+    setIsFirstStepCompleted(success);
+    setIsLoading(false);
+  };
+
+  const setupIntent = async (setupIntentId: string) => {
+    if (setupIntentId) {
+      const setupIntent = await stripeService.retrieveSetupIntent(setupIntentId);
       return setupIntent;
     } else {
       return null;
@@ -95,24 +60,44 @@ const ChoosePaymentMethod: React.FC = () => {
   };
 
   useEffect(() => {
+    const setupIntentId = localStorage.getItem('setupIntentId');
+    const urlParams = new URLSearchParams(window.location.search);
+    const priceId = String(urlParams.get('priceId'));
+    const coupon = String(urlParams.get('coupon_code'));
+    const couponCode = coupon !== 'null' ? { coupon: coupon } : undefined;
+
+    paymentService.getPrices().then((prices) => {
+      const plan = prices.find((price) => price.id === priceId);
+      if (plan) {
+        setPlanSelected({
+          id: plan.id,
+          amount: Math.abs(plan.amount / 100).toFixed(2),
+          renewal: billing[plan.interval],
+          interval: plan.interval,
+          space: bytesToString(plan.bytes),
+          ...couponCode,
+        });
+      }
+    });
+
     setIsLoading(true);
     if (params.get('payment') === 'success') {
-      setIsFirstStepCompleted(true);
-      setIsLoading(false);
-    } else {
-      setupIntent().then((setupIntent) => {
+      handlePaymentStatus(true);
+      localStorage.removeItem('setupIntentId');
+    } else if (setupIntentId) {
+      setupIntent(setupIntentId).then((setupIntent) => {
         if (setupIntent?.setupIntent?.status === 'succeeded') {
-          setIsFirstStepCompleted(true);
-          setIsLoading(false);
+          handlePaymentStatus(true);
+          localStorage.removeItem('setupIntentId');
         } else if (setupIntent?.setupIntent?.status === 'canceled') {
-          setIsFirstStepCompleted(false);
-          setIsLoading(false);
+          handlePaymentStatus(false);
+          localStorage.removeItem('setupIntentId');
+          localStorage.removeItem('spaceForPaymentMethod');
           navigationService.push(AppView.Drive);
-        } else if (!setupIntent) {
-          setIsFirstStepCompleted(false);
-          setIsLoading(false);
         }
       });
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
@@ -151,7 +136,10 @@ const StepTracking = ({ isFirstStepCompleted }: { isFirstStepCompleted: boolean 
         className={`${
           isFirstStepCompleted ? 'hidden' : 'flex'
         } cursor-pointer flex-row items-start justify-start space-x-2 font-medium text-gray-60`}
-        onClick={() => navigationService.push(AppView.Drive)}
+        onClick={() => {
+          navigationService.push(AppView.Drive);
+          localStorage.removeItem('setupIntentId');
+        }}
       >
         <ArrowLeft size={24} />
         <p>Back</p>
@@ -187,45 +175,20 @@ const StepTracking = ({ isFirstStepCompleted }: { isFirstStepCompleted: boolean 
   );
 };
 
-const FirstStep = () => {
-  const { translate } = useTranslationContext();
+const FirstStep = ({ planSelected }) => {
   const [paymentMethod, setPaymentMethod] = useState('');
-  const [planSelected, setPlanSelected] = useState<PlanSelected>();
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
-
-  const billing = {
-    month: translate('general.renewal.monthly'),
-    year: translate('general.renewal.annually'),
-    lifetime: translate('general.renewal.lifetime'),
-  };
 
   const handleCheckoutObject = {
     paymentMethod: paymentMethod,
     planId: planSelected?.id ?? '',
     interval: planSelected?.interval ?? '',
     email: user.email,
+    coupon: planSelected?.coupon ?? '',
   };
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const priceId = String(urlParams.get('priceId'));
-
-    paymentService.getPrices().then((prices) => {
-      const plan = prices.find((price) => price.id === priceId);
-      if (plan) {
-        setPlanSelected({
-          id: plan.id,
-          amount: Math.abs(plan.amount / 100).toFixed(2),
-          renewal: billing[plan.interval],
-          interval: plan.interval,
-          space: bytesToString(plan.bytes),
-        });
-      }
-    });
-  }, []);
 
   const handleCheckbox = (id) => {
     if (id === 'paypal') {
@@ -327,10 +290,8 @@ const LastStep = () => {
       </div>
       <button
         onClick={() => {
-          navigationService.push(AppView.Drive);
-
           localStorage.removeItem('spaceForPaymentMethod');
-          localStorage.removeItem('setupIntentId');
+          navigationService.push(AppView.Drive);
         }}
         className={'flex w-full items-center justify-center rounded-lg bg-primary py-3 text-white'}
       >
