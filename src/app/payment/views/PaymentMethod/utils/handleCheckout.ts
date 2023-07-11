@@ -42,7 +42,7 @@ export async function handleCheckout({
         }
       : {};
     try {
-      const { id } = await paymentService.createCheckoutSession({
+      const { sessionId } = await paymentService.createCheckoutSession({
         price_id: planId,
         success_url: `${window.location.origin}/payment-method?payment=success`,
         cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
@@ -51,8 +51,9 @@ export async function handleCheckout({
         ...couponCode,
       });
 
-      localStorage.setItem('sessionId', id);
-      await paymentService.redirectToCheckout({ sessionId: id });
+      localStorage.setItem('sessionId', sessionId);
+
+      await paymentService.redirectToCheckout({ sessionId });
     } catch (error) {
       const err = error as Error;
       console.error('[ERROR/STACK]:', err.stack ?? 'No stack trace');

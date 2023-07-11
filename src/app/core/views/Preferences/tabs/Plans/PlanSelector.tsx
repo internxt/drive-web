@@ -49,7 +49,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       (subscription?.type === 'subscription' && interval === 'lifetime')
     ) {
       try {
-        const response = await paymentService.createCheckoutSession({
+        const { sessionId } = await paymentService.createCheckoutSession({
           price_id: priceId,
           success_url: `${window.location.origin}/checkout/success`,
           cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
@@ -57,8 +57,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
           mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
 
-        localStorage.setItem('sessionId', response.id);
-        await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+        localStorage.setItem('sessionId', sessionId);
+        await paymentService.redirectToCheckout({ sessionId }).then(async (result) => {
           await paymentService.cancelSubscription();
 
           if (result.error) {

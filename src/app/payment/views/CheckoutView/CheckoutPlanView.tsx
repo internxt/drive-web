@@ -36,7 +36,7 @@ export default function CheckoutPlanView(): JSX.Element {
     if (plan.subscription?.type === 'subscription') {
       if (mode === 'payment') {
         try {
-          const response = await paymentService.createCheckoutSession({
+          const { sessionId } = await paymentService.createCheckoutSession({
             price_id: planId,
             success_url: `${window.location.origin}/checkout/success`,
             cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
@@ -44,9 +44,9 @@ export default function CheckoutPlanView(): JSX.Element {
             mode: 'payment',
             ...couponCode,
           });
-          localStorage.setItem('sessionId', response.sessionId);
+          localStorage.setItem('sessionId', sessionId);
 
-          await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+          await paymentService.redirectToCheckout({ sessionId }).then(async (result) => {
             await paymentService.cancelSubscription();
             if (result.error) {
               notificationsService.show({
@@ -83,7 +83,7 @@ export default function CheckoutPlanView(): JSX.Element {
         }
       }
     } else if (subscription?.type === 'free' && mode === 'payment') {
-      const response = await paymentService.createCheckoutSession({
+      const { sessionId } = await paymentService.createCheckoutSession({
         price_id: planId,
         success_url: `${window.location.origin}/checkout/success`,
         cancel_url: `${window.location.origin}/checkout/cancel?price_id=${planId}`,
@@ -91,9 +91,10 @@ export default function CheckoutPlanView(): JSX.Element {
         mode: 'payment',
         ...couponCode,
       });
-      localStorage.setItem('sessionId', response.sessionId);
+      localStorage.setItem('sessionId', sessionId);
+      console.log('sessionId', sessionId);
 
-      await paymentService.redirectToCheckout({ sessionId: response.id }).then(async (result) => {
+      await paymentService.redirectToCheckout({ sessionId: sessionId }).then(async (result) => {
         await paymentService.cancelSubscription();
         if (result.error) {
           notificationsService.show({
