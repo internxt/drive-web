@@ -20,6 +20,12 @@ import './ShareDialog.scss';
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
 type Views = 'general' | 'invite' | 'requests';
+type RequestStatus = 'pending' | 'accepted' | 'denied';
+const REQUEST_STATUS = {
+  PENDING: 'pending' as RequestStatus,
+  ACCEPTED: 'accepted' as RequestStatus,
+  DENIED: 'denied' as RequestStatus,
+};
 
 interface InvitedUserProps {
   avatar: string;
@@ -35,12 +41,15 @@ interface RequestProps {
   lastname: string;
   email: string;
   message?: string;
-  denied?: boolean;
+  status: RequestStatus;
 }
 
 interface ViewProps {
   view: Views;
 }
+
+const isRequestPending = (status: RequestStatus): boolean =>
+  status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const ShareDialog = (props) => {
   const { translate } = useTranslationContext();
@@ -72,18 +81,21 @@ const ShareDialog = (props) => {
       email: 'juan@inxt.com',
       message:
         'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+      status: REQUEST_STATUS.PENDING,
     },
     {
       avatar: '',
       name: 'Eve',
       lastname: 'Korn',
       email: 'eve@inxt.com',
+      status: REQUEST_STATUS.PENDING,
     },
     {
       avatar: '',
       name: 'Maria',
       lastname: 'Korn',
       email: 'maria@inxt.com',
+      status: REQUEST_STATUS.PENDING,
     },
   ]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
@@ -98,11 +110,11 @@ const ShareDialog = (props) => {
 
   useEffect(() => {
     const removeDeniedRequests = () => {
-      setAccessRequests((prevRequests) => prevRequests.filter((request) => !request.denied));
+      setAccessRequests((prevRequests) => prevRequests.filter((request) => isRequestPending(request.status)));
     };
 
     let timer;
-    if (accessRequests.some((req) => req.denied)) timer = setTimeout(removeDeniedRequests, 500);
+    if (accessRequests.some((req) => !isRequestPending(req.status))) timer = setTimeout(removeDeniedRequests, 500);
 
     return () => clearTimeout(timer);
   }, [accessRequests]);
@@ -124,18 +136,21 @@ const ShareDialog = (props) => {
         email: 'juan@inxt.com',
         message:
           'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+        status: REQUEST_STATUS.PENDING,
       },
       {
         avatar: '',
         name: 'Eve',
         lastname: 'Korn',
         email: 'eve@inxt.com',
+        status: REQUEST_STATUS.PENDING,
       },
       {
         avatar: '',
         name: 'Maria',
         lastname: 'Korn',
         email: 'maria@inxt.com',
+        status: REQUEST_STATUS.PENDING,
       },
     ];
     setAccessRequests(mockedAccessRequests);
@@ -147,7 +162,15 @@ const ShareDialog = (props) => {
 
   const onAcceptRequest = (email: string, role: UserRole) => {
     // TODO -> Accept user access request
-    removeRequest(email);
+    setAccessRequests((prevRequests) =>
+      prevRequests.map((request) => {
+        if (request.email === email) {
+          return { ...request, status: REQUEST_STATUS.ACCEPTED };
+        }
+        return request;
+      }),
+    );
+    // removeRequest(email);
   };
 
   const onDenyrequest = (email: string) => {
@@ -155,11 +178,11 @@ const ShareDialog = (props) => {
     removeRequest(email);
   };
 
-  const handleDenyRequest = (email) => {
+  const handleDenyRequest = (email: string) => {
     setAccessRequests((prevRequests) =>
       prevRequests.map((request) => {
         if (request.email === email) {
-          return { ...request, denied: true };
+          return { ...request, status: REQUEST_STATUS.DENIED };
         }
         return request;
       }),
@@ -498,9 +521,9 @@ const ShareDialog = (props) => {
           {accessRequests.length > 0 ? (
             accessRequests.map((request, index) => (
               <div
-                className={`flex flex-col space-y-3 ${index > 0 && !request.denied && 'border-t border-gray-5 pt-3'} ${
-                  request.denied && 'hide-request'
-                }`}
+                className={`flex flex-col space-y-3 ${
+                  index > 0 && isRequestPending(request.status) && 'border-t border-gray-5 pt-3'
+                } ${!isRequestPending(request.status) && 'hide-request'}`}
                 key={request.email + index}
               >
                 <div className="flex flex-shrink-0 items-center space-x-2.5">

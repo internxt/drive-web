@@ -7,8 +7,9 @@
     max-height: 640px;
     opacity: 1;
   }
+
   to {
-    max-height: 0px;
+    max-height: 0;
     opacity: 0;
   }
 }
