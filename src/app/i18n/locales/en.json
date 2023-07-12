@@ -664,7 +664,8 @@
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
     "connectionLostError": "Internet connection lost",
-    "errorLoadingTrashItems": "Error loading trash items"
+    "errorLoadingTrashItems": "Error loading trash items",
+    "errorUpdatingSubscription": "Error while updating your subscription"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",

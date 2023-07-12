@@ -599,7 +599,8 @@
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
     "connectionLostError": "Connexion Internet perdue",
-    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille",
+    "errorUpdatingSubscription": "Error while updating your subscription"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",

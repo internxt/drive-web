@@ -658,7 +658,8 @@
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 10GB)",
     "connectionLostError": "互联网连接丢失",
-    "errorLoadingTrashItems": "Error loading trash items"
+    "errorLoadingTrashItems": "Error loading trash items",
+    "errorUpdatingSubscription": "Error while updating your subscription"
   },
   "backups": {
     "backups-from": "来自 {{deviceName}} 的备份",

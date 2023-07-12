@@ -19,6 +19,7 @@ import { planThunks } from 'app/store/slices/plan';
 import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import Checkbox from './components/Checkbox';
 import { t } from 'i18next';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -87,6 +88,10 @@ const ChoosePaymentMethod: React.FC = () => {
         handlePaymentStatus(true);
       } else if (isPaypalPaymentFailed) {
         handlePaymentStatus(false);
+        notificationsService.show({
+          text: t('error.errorUpdatingSubscription'),
+          type: ToastType.Error,
+        });
         navigationService.push(AppView.Drive);
       } else {
         setIsLoading(false);
