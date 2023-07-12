@@ -88,10 +88,9 @@ const ShareDialog = (props) => {
   ]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
+  const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const [isInvitingUser, setIsInvitingUser] = useState<boolean>(false);
-  const [view, setView] = useState<Views>('general');
 
   useEffect(() => {
     if (isOpen) loadShareInfo();
@@ -182,7 +181,7 @@ const ShareDialog = (props) => {
     // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
     // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
     // OR THAT LOGIC WILL BE DONE BY THE BACKEND
-    setIsInvitingUser(!isInvitingUser);
+    setView('invite');
     closeSelectedUserPopover();
   };
 
@@ -493,7 +492,7 @@ const ShareDialog = (props) => {
           </Modal>
         </>
       ),
-      invite: <></>,
+      invite: <ShareInviteDialog onInviteUser={onInviteUser} />,
       requests: (
         <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '640px' }}>
           {accessRequests.length > 0 ? (
@@ -601,19 +600,12 @@ const ShareDialog = (props) => {
 
   return (
     <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
-      {!isInvitingUser ? (
-        <>
-          <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
-            <Header view={view} />
-          </div>
-
-          <div className="flex flex-col space-y-4 p-5">
-            <View view={view} />
-          </div>
-        </>
-      ) : (
-        <ShareInviteDialog onInviteUser={onInviteUser} />
-      )}
+      <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
+        <Header view={view} />
+      </div>
+      <div className="flex flex-col space-y-4 p-5">
+        <View view={view} />
+      </div>
     </Modal>
   );
 };

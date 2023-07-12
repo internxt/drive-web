@@ -70,158 +70,144 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
 
   return (
     <div>
-      <div className="flex h-16 w-full items-center justify-between space-x-5 border-b border-gray-10 px-5">
-        <h4
-          className="flex max-w-full items-center space-x-4 overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
-          title={translate('modals.shareModal.invite.title')}
-        >
-          <ArrowLeft onClick={props.onInviteUser} size={22} className="cursor-pointer" />
-          <span>{translate('modals.shareModal.invite.title')}</span>
-        </h4>
-      </div>
-
-      <div className="p-5">
-        <form className="m flex w-full" onSubmit={handleSubmit(onAddInviteUser)}>
-          <input
-            className="no-ring semi-dense mr-2 w-full flex-grow border border-neutral-30"
-            placeholder={translate('form.fields.email.placeholder') as string}
-            type="text"
-            {...register('email', {
-              required: true,
-              pattern: emailRegex,
-            })}
-          />
-          <Listbox value={userRole} onChange={setUserRole}>
-            {({ open }) => (
-              <div className="relative">
-                <Listbox.Button value={userRole} {...register('userRole')} name="userRole">
-                  <Button variant="secondary">
-                    <span className="capitalize">{userRole}</span>
-                    <CaretDown
-                      size={24}
-                      className={`${open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'}`}
-                    />
-                  </Button>
-                </Listbox.Button>
-                <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                  <Listbox.Option
-                    key="editor"
-                    value="editor"
-                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span>{translate('modals.shareModal.invite.editor')}</span>
-                        {selected ? <Check size={20} /> : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                  <Listbox.Option
-                    key="viewer"
-                    value="viewer"
-                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span>{translate('modals.shareModal.invite.viewer')}</span>
-                        {selected ? <Check size={20} /> : null}
-                      </>
-                    )}
-                  </Listbox.Option>
-                </Listbox.Options>
-              </div>
-            )}
-          </Listbox>
-        </form>
-        <div className="font-regular mt-1.5 text-xs text-gray-100">
-          {translate('modals.shareModal.invite.instructions')}
-        </div>
-        {usersToInvite.length != 0 && (
-          <div className="mt-4">
-            <h5 className="mb-2.5 text-lg font-medium">{translate('modals.shareModal.invite.listUsers')}</h5>
-            <ul>
-              {usersToInvite.map((user) => (
-                <li
-                  key={user.email}
-                  className="share-invite-user flex items-center justify-between border-b border-gray-5 py-2"
+      <form className="m flex w-full" onSubmit={handleSubmit(onAddInviteUser)}>
+        <input
+          className="no-ring semi-dense mr-2 w-full flex-grow border border-neutral-30"
+          placeholder={translate('form.fields.email.placeholder') as string}
+          type="text"
+          {...register('email', {
+            required: true,
+            pattern: emailRegex,
+          })}
+        />
+        <Listbox value={userRole} onChange={setUserRole}>
+          {({ open }) => (
+            <div className="relative">
+              <Listbox.Button value={userRole} {...register('userRole')} name="userRole">
+                <Button variant="secondary">
+                  <span className="capitalize">{userRole}</span>
+                  <CaretDown
+                    size={24}
+                    className={`${open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'}`}
+                  />
+                </Button>
+              </Listbox.Button>
+              <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
+                <Listbox.Option
+                  key="editor"
+                  value="editor"
+                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                 >
-                  <div className="flex items-center">
-                    <Avatar src="" fullName={`${user.email}`} diameter={40} />
-                    <p className="ml-2.5">{user.email}</p>
-                  </div>
-                  <Listbox value={user.userRole} onChange={onEditRole}>
-                    {({ open }) => (
-                      <div className="relative">
-                        <Listbox.Button value={user.userRole} name={user.email}>
-                          <Button variant="secondary">
-                            <span className="capitalize">{user.userRole}</span>
-                            <CaretDown
-                              size={24}
-                              className={`${
-                                open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'
-                              }`}
-                            />
-                          </Button>
-                        </Listbox.Button>
-                        <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                          <Listbox.Option
-                            key="editor"
-                            value="editor"
-                            className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
-                          >
-                            {({ selected }) => (
-                              <>
-                                <span>{translate('modals.shareModal.invite.editor')}</span>
-                                {selected ? <Check size={20} /> : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                          <Listbox.Option
-                            key="viewer"
-                            value="viewer"
-                            className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
-                          >
-                            {({ selected }) => (
-                              <>
-                                <span>{translate('modals.shareModal.invite.viewer')}</span>
-                                {selected ? <Check size={20} /> : null}
-                              </>
-                            )}
-                          </Listbox.Option>
-                        </Listbox.Options>
-                      </div>
-                    )}
-                  </Listbox>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-        <div className="mt-4 border-t border-gray-10 pt-4">
-          {notifyUser && (
-            <>
-              <textarea
-                value={messageText}
-                placeholder={translate('modals.shareModal.invite.textarea')}
-                rows={4}
-                className="outline-none w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
-                onChange={(e) => setMessageText(String(e.target.value))}
-                maxLength={1000}
-              />
-              <span className="font-regular flex w-full justify-end text-xs text-gray-50">
-                {messageText.length === 0 ? 0 : messageText.length}/1000
-              </span>
-            </>
-          )}
-          <div className="mt-2.5 flex w-full items-center justify-between">
-            <div className="flex items-center">
-              <BaseCheckbox checked={notifyUser} onClick={() => setNotifyUser(!notifyUser)} />
-              <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
+                  {({ selected }) => (
+                    <>
+                      <span>{translate('modals.shareModal.invite.editor')}</span>
+                      {selected ? <Check size={20} /> : null}
+                    </>
+                  )}
+                </Listbox.Option>
+                <Listbox.Option
+                  key="viewer"
+                  value="viewer"
+                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                >
+                  {({ selected }) => (
+                    <>
+                      <span>{translate('modals.shareModal.invite.viewer')}</span>
+                      {selected ? <Check size={20} /> : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              </Listbox.Options>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled}>
-              <span>{translate('modals.shareModal.invite.invite')}</span>
-            </Button>
+          )}
+        </Listbox>
+      </form>
+      <div className="font-regular mt-1.5 text-xs text-gray-100">
+        {translate('modals.shareModal.invite.instructions')}
+      </div>
+      {usersToInvite.length != 0 && (
+        <div className="mt-4">
+          <h5 className="mb-2.5 text-lg font-medium">{translate('modals.shareModal.invite.listUsers')}</h5>
+          <ul>
+            {usersToInvite.map((user) => (
+              <li
+                key={user.email}
+                className="share-invite-user flex items-center justify-between border-b border-gray-5 py-2"
+              >
+                <div className="flex items-center">
+                  <Avatar src="" fullName={`${user.email}`} diameter={40} />
+                  <p className="ml-2.5">{user.email}</p>
+                </div>
+                <Listbox value={user.userRole} onChange={onEditRole}>
+                  {({ open }) => (
+                    <div className="relative">
+                      <Listbox.Button value={user.userRole} name={user.email}>
+                        <Button variant="secondary">
+                          <span className="capitalize">{user.userRole}</span>
+                          <CaretDown
+                            size={24}
+                            className={`${open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'}`}
+                          />
+                        </Button>
+                      </Listbox.Button>
+                      <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
+                        <Listbox.Option
+                          key="editor"
+                          value="editor"
+                          className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span>{translate('modals.shareModal.invite.editor')}</span>
+                              {selected ? <Check size={20} /> : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                        <Listbox.Option
+                          key="viewer"
+                          value="viewer"
+                          className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span>{translate('modals.shareModal.invite.viewer')}</span>
+                              {selected ? <Check size={20} /> : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      </Listbox.Options>
+                    </div>
+                  )}
+                </Listbox>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      <div className="mt-4 border-t border-gray-10 pt-4">
+        {notifyUser && (
+          <>
+            <textarea
+              value={messageText}
+              placeholder={translate('modals.shareModal.invite.textarea')}
+              rows={4}
+              className="outline-none w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+              onChange={(e) => setMessageText(String(e.target.value))}
+              maxLength={1000}
+            />
+            <span className="font-regular flex w-full justify-end text-xs text-gray-50">
+              {messageText.length === 0 ? 0 : messageText.length}/1000
+            </span>
+          </>
+        )}
+        <div className="mt-2.5 flex w-full items-center justify-between">
+          <div className="flex items-center">
+            <BaseCheckbox checked={notifyUser} onClick={() => setNotifyUser(!notifyUser)} />
+            <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
           </div>
+          <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled}>
+            <span>{translate('modals.shareModal.invite.invite')}</span>
+          </Button>
         </div>
       </div>
     </div>
