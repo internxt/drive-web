@@ -867,7 +867,7 @@
     "copyLink": "Copier le lien dans le presse-papiers",
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
-    "restoreItems": "{{itemsToRecover}} déplacé vers {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
