@@ -309,6 +309,33 @@
             "lifetime": "{{amount}}€",
             "oneTimePayment": "Pago único"
           },
+          "paymentMethod": {
+            "billing": {
+              "lifetime": "lifetime",
+              "month": "mes",
+              "year": "año"
+            },
+            "stepTracking": {
+              "first": "Revisar pedido",
+              "second": "Pagar",
+              "third": "Confirmación"
+            },
+            "firstStep": {
+              "selectedPlan": "Plan seleccionado",
+              "price": "Precio",
+              "billing": "Facturación",
+              "howLikePay": "¿Cómo te gustaría pagar?",
+              "PayPal": "PayPal",
+              "creditCard": "Tarjeta de crédito",
+              "wontBeCharged": "No se te cobrará todavía",
+              "continue": "Continuar"
+            },
+            "thirdStep": {
+              "spaceUpgraded": "Espacio actualizado a {{space}}",
+              "thanksForUpdate": "Gracias por actualizar el espacio de tu cuenta",
+              "goToDrive": "Ir a Internxt Drive"
+            }
+          },
           "features": {
             "title": "Funciones incluidas en todos los planes",
             "sections": {
