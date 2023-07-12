@@ -321,6 +321,33 @@
             "lifetime": "欧元€{{amount}}",
             "oneTimePayment": "一次性付款"
           },
+          "paymentMethod": {
+            "billing": {
+              "lifetime": "终生",
+              "month": "月",
+              "year": "年"
+            },
+            "stepTracking": {
+              "first": "审查顺序",
+              "second": "结账",
+              "third": "确认"
+            },
+            "firstStep": {
+              "selectedPlan": "所选计划",
+              "price": "价格",
+              "billing": "计费",
+              "howLikePay": "您想如何支付？",
+              "paypal": "PayPal",
+              "creditCard": "信用卡",
+              "wontBeCharged": "您还不会被收取费用",
+              "continue": "继续"
+            },
+            "thirdStep": {
+              "spaceUpgraded": "空间更新为{{space}}",
+              "thanksForUpdate": "感谢您升级您的账户空间",
+              "goToDrive": "转到Internxt驱动器"
+            }
+          },
           "features": {
             "title": "所有计划中包括的功能",
             "sections": {
