@@ -31,8 +31,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
-import PaymentMethodView from 'app/payment/views/PaymentMethod/ChoosePaymentMethodView';
-import ChoosePaymentMethod from 'app/payment/views/PaymentMethod/ChoosePaymentMethodView';
+import ChoosePaymentMethodView from 'app/payment/views/PaymentMethod/ChoosePaymentMethodView';
 
 const views: Array<{
   id: string;
@@ -63,7 +62,7 @@ const views: Array<{
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
-  { id: AppView.PaymentMethod, component: ChoosePaymentMethod },
+  { id: AppView.PaymentMethod, component: ChoosePaymentMethodView },
   { id: AppView.Remove, component: RemoveAccountView },
   { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
   { id: AppView.ShareFileToken, component: ShareFileView },

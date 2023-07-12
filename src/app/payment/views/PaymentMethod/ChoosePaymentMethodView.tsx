@@ -32,7 +32,7 @@ interface PlanSelected {
   coupon?: string;
 }
 
-const ChoosePaymentMethod: React.FC = () => {
+const ChoosePaymentMethod = (): JSX.Element => {
   const [isFirstStepCompleted, setIsFirstStepCompleted] = useState(false);
   const [planSelected, setPlanSelected] = useState<PlanSelected>();
   const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep planSelected={planSelected} />;
