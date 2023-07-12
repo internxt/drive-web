@@ -76,14 +76,16 @@
       "layout": "header-and-sidenav",
       "path": "/app/backups",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "shared-links",
       "layout": "header-and-sidenav",
       "path": "/app/shared-links",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "photos",
