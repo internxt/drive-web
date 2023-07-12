@@ -302,6 +302,33 @@
             "lifetime": "€{{amount}}",
             "oneTimePayment": "Единовременная оплата"
           },
+          "paymentMethod": {
+            "billing": {
+              "lifetime": "lifetime",
+              "month": "month",
+              "year": "year"
+            },
+            "stepTracking": {
+              "first": "Review order",
+              "second": "Checkout",
+              "third": "Confirmation"
+            },
+            "firstStep": {
+              "selectedPlan": "Selected plan",
+              "price": "Price",
+              "billing": "Billing",
+              "howLikePay": "How would you like to pay?",
+              "paypal": "PayPal",
+              "creditCard": "Credit card",
+              "wontBeCharged": "You won't be charged yet",
+              "continue": "Continue"
+            },
+            "thirdStep": {
+              "spaceUpgraded": "Space updated to {{space}}",
+              "thanksForUpdate": "Thank you for upgrading your account space",
+              "goToDrive": "Go to Internxt Drive"
+            }
+          },
           "features": {
             "title": "Функции, включенные во все планы",
             "sections": {
