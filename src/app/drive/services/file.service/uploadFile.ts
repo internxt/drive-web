@@ -38,8 +38,8 @@ export async function uploadFile(
     file_extension: file.type,
     parent_folder_id: file.parentFolderId,
     file_name: file.name,
-    bandwidth: 0, // FALTA ESTO
-    band_utilization: 0, // FALTA ESTO
+    bandwidth: 0,
+    band_utilization: 0,
     process_identifier: trackingParameters?.processIdentifier,
     is_multiple: trackingParameters?.isMultipleUpload,
     is_brave: isBrave,
