@@ -141,7 +141,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
-  const isAdvancedShareDialogOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -622,7 +621,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {process.env.NODE_ENV !== 'production' && isAdvancedShareDialogOpen && <ShareDialog />}
+      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />

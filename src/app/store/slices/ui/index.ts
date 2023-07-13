@@ -31,6 +31,7 @@ interface UISliceState {
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
+  isToastNotificacionOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -62,6 +63,7 @@ const initialState: UISliceState = {
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
+  isToastNotificacionOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -164,6 +166,9 @@ export const uiSlice = createSlice({
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
+    setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isToastNotificacionOpen = action.payload;
+    },
   },
 });
 
@@ -190,6 +195,7 @@ export const {
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
+  setIsToastNotificacionOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

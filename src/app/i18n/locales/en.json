@@ -596,6 +596,22 @@
         },
         "copyLink": "Copy link"
       },
+      "invite": {
+        "title": "Invite people"
+      },
+      "requests": {
+        "title": "Access requests",
+        "button": "Requests",
+        "empty": "No requests left",
+        "actions": {
+          "accept": "Accept",
+          "deny": "Deny",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Viewer"
+          }
+        }
+      },
       "stopSharing": {
         "title": "Stop sharing?",
         "subtitle": "No one will be able to access \"{{name}}\"",
