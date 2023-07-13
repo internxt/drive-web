@@ -288,9 +288,9 @@ const LastStep = () => {
     }
   }, [dispatch]);
 
-  useEffectAsync(async () => {
-    setTimeout(async () => {
-      await onCheckoutSuccess();
+  useEffectAsync(() => {
+    setTimeout(() => {
+      onCheckoutSuccess();
     }, 1000);
   }, []);
 
