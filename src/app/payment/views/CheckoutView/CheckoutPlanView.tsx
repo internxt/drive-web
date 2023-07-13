@@ -4,7 +4,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import paymentService from 'app/payment/services/payment.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { planActions, PlanState, planThunks } from 'app/store/slices/plan';
+import { planActions, planThunks } from 'app/store/slices/plan';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
@@ -14,7 +14,7 @@ export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
-  const plan = useSelector((state: RootState) => state.plan) as PlanState;
+  const plan = useSelector((state: RootState) => state.plan);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
 
   if (user === undefined) {
@@ -28,11 +28,12 @@ export default function CheckoutPlanView(): JSX.Element {
       const planId = String(params.get('planId'));
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
-      checkout(planId, coupon, mode);
+      const discount = Number(params.get('discount') as string | undefined);
+      checkout(planId, coupon, mode, discount);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, coupon?: string, mode?: string) {
+  async function checkout(planId: string, coupon?: string, mode?: string, discount?: number) {
     const couponCode = coupon !== 'null' ? { coupon_code: coupon } : undefined;
     const isFreePlan = subscription?.type === 'free';
     const isSubscription = subscription?.type === 'subscription';
@@ -115,7 +116,7 @@ export default function CheckoutPlanView(): JSX.Element {
       });
       navigationService.push(AppView.Drive);
     } else {
-      navigationService.push(AppView.PaymentMethod, { priceId: planId, ...couponCode });
+      navigationService.push(AppView.PaymentMethod, { priceId: planId, discount: discount, ...couponCode });
     }
   }
 

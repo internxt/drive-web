@@ -39,7 +39,6 @@ const ChoosePaymentMethod = (): JSX.Element => {
   const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep planSelected={planSelected} />;
   const [isLoading, setIsLoading] = useState(false);
   const params = new URLSearchParams(window.location.search);
-  const dispatch = useAppDispatch();
 
   const interval = {
     month: t('views.account.tabs.plans.paymentMethod.billing.month'),
@@ -62,6 +61,7 @@ const ChoosePaymentMethod = (): JSX.Element => {
     const urlParams = new URLSearchParams(window.location.search);
     const priceId = String(urlParams.get('priceId'));
     const coupon = String(urlParams.get('coupon_code'));
+    const priceDiscount = Number(urlParams.get('discount'));
     const couponCode = coupon !== 'null' ? { coupon: coupon } : undefined;
 
     const isPaypalPaymentCompleted = params.get('redirect_status') === 'succeeded';
@@ -71,9 +71,10 @@ const ChoosePaymentMethod = (): JSX.Element => {
     paymentService.getPrices().then((prices) => {
       const plan = prices.find((price) => price.id === priceId);
       if (plan) {
+        const price = Math.abs(plan.amount / 100).toFixed(2);
         setPlanSelected({
           id: plan.id,
-          amount: Math.abs(plan.amount / 100).toFixed(2),
+          amount: priceDiscount ? Math.abs((Number(price) * (100 - priceDiscount)) / 100).toFixed(2) : price,
           renewal: billing[plan.interval],
           interval: interval[plan.interval],
           space: bytesToString(plan.bytes),
