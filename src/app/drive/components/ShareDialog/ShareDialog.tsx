@@ -55,6 +55,7 @@ const ShareDialog = (props) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
+  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const owner: InvitedUserProps = {
@@ -622,7 +623,7 @@ const ShareDialog = (props) => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>
