@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { IFormValues } from 'app/core/types';
 import { Listbox } from '@headlessui/react';
-import { CaretDown, Check, ArrowLeft } from '@phosphor-icons/react';
+import { CaretDown, Check } from '@phosphor-icons/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import Button from 'app/shared/components/Button/Button';
 import Avatar from 'app/shared/components/Avatar';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
 
@@ -20,17 +21,10 @@ interface UsersToInvite {
 }
 
 const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
-  const {
-    register,
-    formState: { errors },
-    handleSubmit,
-    watch,
-    resetField,
-  } = useForm<IFormValues>({ mode: 'onChange' });
+  const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
-  const emailRegex =
-    /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/;
-  const email = watch('email');
+  const [email, setEmail] = useState<string>('');
+  const [emailAccent, setEmailAccent] = useState<string>('');
   const [userRole, setUserRole] = useState<string>('editor');
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
@@ -38,26 +32,33 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
   const [isInviteButtonDisabled, setIsInviteButtonDisabled] = useState<boolean>(true);
 
   useEffect(() => {
-    if (email) {
-      isValidEmail(email) || usersToInvite.length > 0
-        ? setIsInviteButtonDisabled(false)
-        : setIsInviteButtonDisabled(true);
+    isValidEmail(email) || usersToInvite.length > 0
+      ? setIsInviteButtonDisabled(false)
+      : setIsInviteButtonDisabled(true);
+
+    if (email.indexOf(',') > -1) {
+      onAddInviteUser();
     }
+
+    setEmailAccent('');
   }, [email]);
 
-  const onAddInviteUser: SubmitHandler<IFormValues> = (formData, event) => {
-    event?.preventDefault();
-    const userInvitedEmail = formData.email;
-    const userInvitedRole = formData.userRole;
+  const onAddInviteUser = () => {
+    const splitEmail = email.split(',');
+    const emailToAdd = splitEmail[0];
+    const userInvitedEmail = emailToAdd;
+    const userInvitedRole = userRole;
     const userInvited = { email: userInvitedEmail, userRole: userInvitedRole };
     const isDuplicated = usersToInvite.find((user) => user.email === userInvited.email);
 
-    if (!isDuplicated) {
+    if (!isDuplicated && isValidEmail(userInvitedEmail)) {
       const unique: Array<UsersToInvite> = [...usersToInvite];
       unique.push(userInvited);
       setUsersToInvite(unique);
+      setEmail('');
+    } else {
+      setEmailAccent('error');
     }
-    resetField('email');
   };
 
   const onEditRole = () => {
@@ -71,52 +72,50 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
   return (
     <div>
       <form className="m flex w-full" onSubmit={handleSubmit(onAddInviteUser)}>
-        <input
-          className="no-ring semi-dense mr-2 w-full flex-grow border border-neutral-30"
-          placeholder={translate('form.fields.email.placeholder') as string}
-          type="text"
-          {...register('email', {
-            required: true,
-            pattern: emailRegex,
-          })}
+        <Input
+          className="mr-2 w-full"
+          required
+          variant="email"
+          onChange={(e) => setEmail(e)}
+          accent={emailAccent === 'error' ? 'error' : undefined}
+          name="email"
+          value={email}
         />
         <Listbox value={userRole} onChange={setUserRole}>
-          {() => (
-            <div className="relative">
-              <Listbox.Button value={userRole} {...register('userRole')} name="userRole">
-                <Button variant="secondary">
-                  <span className="capitalize">{userRole}</span>
-                  <CaretDown size={24} />
-                </Button>
-              </Listbox.Button>
-              <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                <Listbox.Option
-                  key="editor"
-                  value="editor"
-                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                >
-                  {({ selected }) => (
-                    <>
-                      <span>{translate('modals.shareModal.invite.editor')}</span>
-                      {selected ? <Check size={20} /> : null}
-                    </>
-                  )}
-                </Listbox.Option>
-                <Listbox.Option
-                  key="viewer"
-                  value="viewer"
-                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                >
-                  {({ selected }) => (
-                    <>
-                      <span>{translate('modals.shareModal.invite.viewer')}</span>
-                      {selected ? <Check size={20} /> : null}
-                    </>
-                  )}
-                </Listbox.Option>
-              </Listbox.Options>
-            </div>
-          )}
+          <div className="relative">
+            <Listbox.Button value={userRole} name="userRole">
+              <Button variant="secondary">
+                <span className="capitalize">{userRole}</span>
+                <CaretDown size={24} />
+              </Button>
+            </Listbox.Button>
+            <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
+              <Listbox.Option
+                key="editor"
+                value="editor"
+                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+              >
+                {({ selected }) => (
+                  <>
+                    <span>{translate('modals.shareModal.invite.editor')}</span>
+                    {selected ? <Check size={20} /> : null}
+                  </>
+                )}
+              </Listbox.Option>
+              <Listbox.Option
+                key="viewer"
+                value="viewer"
+                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+              >
+                {({ selected }) => (
+                  <>
+                    <span>{translate('modals.shareModal.invite.viewer')}</span>
+                    {selected ? <Check size={20} /> : null}
+                  </>
+                )}
+              </Listbox.Option>
+            </Listbox.Options>
+          </div>
         </Listbox>
       </form>
       <div className="font-regular mt-1.5 text-xs text-gray-100">
@@ -136,42 +135,40 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <p className="ml-2.5">{user.email}</p>
                 </div>
                 <Listbox value={user.userRole} onChange={onEditRole}>
-                  {() => (
-                    <div className="relative">
-                      <Listbox.Button value={user.userRole} name={user.email}>
-                        <Button variant="secondary">
-                          <span className="capitalize">{user.userRole}</span>
-                          <CaretDown size={24} />
-                        </Button>
-                      </Listbox.Button>
-                      <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                        <Listbox.Option
-                          key="editor"
-                          value="editor"
-                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                        >
-                          {({ selected }) => (
-                            <>
-                              <span>{translate('modals.shareModal.invite.editor')}</span>
-                              {selected ? <Check size={20} /> : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                        <Listbox.Option
-                          key="viewer"
-                          value="viewer"
-                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                        >
-                          {({ selected }) => (
-                            <>
-                              <span>{translate('modals.shareModal.invite.viewer')}</span>
-                              {selected ? <Check size={20} /> : null}
-                            </>
-                          )}
-                        </Listbox.Option>
-                      </Listbox.Options>
-                    </div>
-                  )}
+                  <div className="relative">
+                    <Listbox.Button value={user.userRole} name={user.email}>
+                      <Button variant="secondary">
+                        <span className="capitalize">{user.userRole}</span>
+                        <CaretDown size={24} />
+                      </Button>
+                    </Listbox.Button>
+                    <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
+                      <Listbox.Option
+                        key="editor"
+                        value="editor"
+                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span>{translate('modals.shareModal.invite.editor')}</span>
+                            {selected ? <Check size={20} /> : null}
+                          </>
+                        )}
+                      </Listbox.Option>
+                      <Listbox.Option
+                        key="viewer"
+                        value="viewer"
+                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                      >
+                        {({ selected }) => (
+                          <>
+                            <span>{translate('modals.shareModal.invite.viewer')}</span>
+                            {selected ? <Check size={20} /> : null}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    </Listbox.Options>
+                  </div>
                 </Listbox>
               </li>
             ))}
