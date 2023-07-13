@@ -81,15 +81,12 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
           })}
         />
         <Listbox value={userRole} onChange={setUserRole}>
-          {({ open }) => (
+          {() => (
             <div className="relative">
               <Listbox.Button value={userRole} {...register('userRole')} name="userRole">
                 <Button variant="secondary">
                   <span className="capitalize">{userRole}</span>
-                  <CaretDown
-                    size={24}
-                    className={`${open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'}`}
-                  />
+                  <CaretDown size={24} />
                 </Button>
               </Listbox.Button>
               <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
@@ -139,22 +136,19 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <p className="ml-2.5">{user.email}</p>
                 </div>
                 <Listbox value={user.userRole} onChange={onEditRole}>
-                  {({ open }) => (
+                  {() => (
                     <div className="relative">
                       <Listbox.Button value={user.userRole} name={user.email}>
                         <Button variant="secondary">
                           <span className="capitalize">{user.userRole}</span>
-                          <CaretDown
-                            size={24}
-                            className={`${open ? 'rotate-180 transform transition' : 'rotate-0 transform transition'}`}
-                          />
+                          <CaretDown size={24} />
                         </Button>
                       </Listbox.Button>
                       <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
                         <Listbox.Option
                           key="editor"
                           value="editor"
-                          className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                         >
                           {({ selected }) => (
                             <>
@@ -166,7 +160,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                         <Listbox.Option
                           key="viewer"
                           value="viewer"
-                          className="flex h-9 w-full cursor-pointer items-center justify-start justify-between space-x-3 rounded-lg py-2 px-3 px-3 text-base font-medium hover:bg-gray-5"
+                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                         >
                           {({ selected }) => (
                             <>
@@ -201,8 +195,8 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
           </>
         )}
         <div className="mt-2.5 flex w-full items-center justify-between">
-          <div className="flex items-center">
-            <BaseCheckbox checked={notifyUser} onClick={() => setNotifyUser(!notifyUser)} />
+          <div className="flex cursor-pointer items-center" onClick={() => setNotifyUser(!notifyUser)}>
+            <BaseCheckbox checked={notifyUser} />
             <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
           </div>
           <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled}>
