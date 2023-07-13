@@ -258,12 +258,7 @@ export async function areCredentialsCorrect(email: string, password: string): Pr
 }
 
 export const getRedirectUrl = (urlSearchParams: URLSearchParams, token: string): string | null => {
-  const ALLOWED_DOMAINS = [
-    'https://internxt.com',
-    'https://drive.internxt.com',
-    'http://localhost:3001',
-    'http://localhost:3000',
-  ];
+  const ALLOWED_DOMAINS = ['https://internxt.com', 'https://drive.internxt.com'];
   const redirectUrl = urlSearchParams.get('redirectUrl');
 
   if (!redirectUrl) return null;

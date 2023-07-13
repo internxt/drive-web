@@ -5,7 +5,7 @@ import visaIcon from '../../../../assets/icons/card-brands/visa.png';
 import amexIcon from '../../../../assets/icons/card-brands/amex.png';
 import mastercardIcon from '../../../../assets/icons/card-brands/mastercard.png';
 import PayPal from '../../../../assets/icons/card-brands/PayPal.png';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { bytesToString } from 'app/drive/services/size.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -20,6 +20,7 @@ import PreparingWorkspaceAnimation from 'app/auth/components/PreparingWorkspaceA
 import Checkbox from './components/Checkbox';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useAppDispatch } from 'app/store/hooks';
 
 const cards = [visaIcon, amexIcon, mastercardIcon];
 
@@ -38,6 +39,7 @@ const ChoosePaymentMethod = (): JSX.Element => {
   const Step: JSX.Element = isFirstStepCompleted ? <LastStep /> : <FirstStep planSelected={planSelected} />;
   const [isLoading, setIsLoading] = useState(false);
   const params = new URLSearchParams(window.location.search);
+  const dispatch = useAppDispatch();
 
   const interval = {
     month: t('views.account.tabs.plans.paymentMethod.billing.month'),
@@ -52,7 +54,6 @@ const ChoosePaymentMethod = (): JSX.Element => {
   };
 
   const handlePaymentStatus = (success: boolean) => {
-    localStorage.removeItem('spaceForPaymentMethod');
     setIsFirstStepCompleted(success);
     setIsLoading(false);
   };
@@ -62,6 +63,7 @@ const ChoosePaymentMethod = (): JSX.Element => {
     const priceId = String(urlParams.get('priceId'));
     const coupon = String(urlParams.get('coupon_code'));
     const couponCode = coupon !== 'null' ? { coupon: coupon } : undefined;
+
     const isPaypalPaymentCompleted = params.get('redirect_status') === 'succeeded';
     const isPaypalPaymentFailed = params.get('redirect_status') === 'failed';
     const isCreditCardPaymentCompleted = params.get('payment') === 'success';
@@ -84,18 +86,17 @@ const ChoosePaymentMethod = (): JSX.Element => {
     if (isCreditCardPaymentCompleted) {
       handlePaymentStatus(true);
     } else if (isPaypalPaymentCompleted) {
-      if (isPaypalPaymentCompleted) {
-        handlePaymentStatus(true);
-      } else if (isPaypalPaymentFailed) {
-        handlePaymentStatus(false);
+      handlePaymentStatus(true);
+    } else if (isPaypalPaymentFailed) {
+      console.log('Paypal payment failed, show error notification');
+      setTimeout(() => {
         notificationsService.show({
           text: t('error.errorUpdatingSubscription'),
           type: ToastType.Error,
         });
-        navigationService.push(AppView.Drive);
-      } else {
-        setIsLoading(false);
-      }
+      }, 500);
+      handlePaymentStatus(false);
+      navigationService.push(AppView.Drive);
     } else {
       setIsLoading(false);
     }
@@ -138,7 +139,7 @@ const StepTracking = ({ isFirstStepCompleted }: { isFirstStepCompleted: boolean 
         } cursor-pointer flex-row items-start justify-start space-x-2 font-medium text-gray-60`}
         onClick={() => {
           navigationService.push(AppView.Drive);
-          localStorage.removeItem('setupIntentId');
+          localStorage.removeItem('planSpace');
         }}
       >
         <ArrowLeft size={24} />
@@ -261,7 +262,7 @@ const FirstStep = ({ planSelected }) => {
           disabled={!paymentMethod}
           onClick={() => {
             handleCheckout(handleCheckoutObject);
-            localStorage.setItem('spaceForPaymentMethod', planSelected?.space ?? '');
+            localStorage.setItem('planSpace', planSelected?.space ?? '');
           }}
           className={`flex w-full items-center justify-center rounded-lg ${
             paymentMethod ? 'bg-primary' : 'cursor-not-allowed bg-gray-30'
@@ -275,9 +276,8 @@ const FirstStep = ({ planSelected }) => {
 };
 
 const LastStep = () => {
-  const dispatch = useDispatch();
-  const space = localStorage.getItem('spaceForPaymentMethod');
-
+  const dispatch = useAppDispatch();
+  const space = localStorage.getItem('planSpace');
   const onCheckoutSuccess = useCallback(async () => {
     await dispatch(planThunks.initializeThunk());
     try {
@@ -287,7 +287,11 @@ const LastStep = () => {
     }
   }, [dispatch]);
 
-  useEffectAsync(onCheckoutSuccess, []);
+  useEffectAsync(async () => {
+    setTimeout(async () => {
+      await onCheckoutSuccess();
+    }, 1000);
+  }, []);
 
   return (
     <div className="flex w-full max-w-sm flex-col items-center justify-center space-y-8">
@@ -304,7 +308,7 @@ const LastStep = () => {
       </div>
       <button
         onClick={() => {
-          localStorage.removeItem('spaceForPaymentMethod');
+          localStorage.removeItem('planSpace');
           navigationService.push(AppView.Drive);
         }}
         className={'flex w-full items-center justify-center rounded-lg bg-primary py-3 text-white'}
