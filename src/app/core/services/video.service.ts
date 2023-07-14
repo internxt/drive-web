@@ -54,8 +54,8 @@ export async function loadVideoIntoPlayer(
 
         resolve({
           metadata: {
-            width: 0,
-            height: 0,
+            width: videoPlayer.videoWidth,
+            height: videoPlayer.videoHeight,
           },
         });
       });
