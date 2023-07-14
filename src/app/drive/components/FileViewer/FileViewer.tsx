@@ -150,6 +150,7 @@ const FileViewer = ({
     };
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
+  console.log('FileViewer');
   useEffect(() => {
     if (dirtyName) {
       setBlob(null);

@@ -20,61 +20,52 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const [videoPlayer, setVideoPlayer] = useState<HTMLVideoElement | null>(null);
 
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<DriveFileData>();
 
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(false);
 
-
   function downloadFile(currentFile) {
-    (abortController: AbortController) =>
-      isTypeSupportedByVideoPlayer(currentFile.type) ?
-        loadVideoIntoPlayer(
-          videoPlayer,
-          {
-            bucketId: currentFile.bucketId,
-            fileId: currentFile.fileId,
-            creds: {
-              pass: bridgePass,
-              user: bridgeUser
-            },
-            mnemonic: encryptionKey,
-            options: {
-              notifyProgress: (totalBytes, downloadedBytes) => {
-                setUpdateProgress(downloadedBytes / totalBytes);
+    currentFile &&
+      ((abortController: AbortController) =>
+        isTypeSupportedByVideoPlayer(currentFile.type)
+          ? videoPlayer &&
+            loadVideoIntoPlayer(
+              videoPlayer,
+              {
+                bucketId: currentFile.bucketId,
+                fileId: currentFile.fileId,
+                creds: {
+                  pass: bridgePass,
+                  user: bridgeUser,
+                },
+                mnemonic: encryptionKey,
+                options: {
+                  notifyProgress: (totalBytes, downloadedBytes) => {
+                    setUpdateProgress(downloadedBytes / totalBytes);
+                  },
+                  abortController,
+                },
               },
-              abortController,
-            }
-          },
-          currentFile.type,
-        )
-      : 
-      downloadService.fetchFileBlob(
-        { ...currentFile, bucketId: currentFile.bucket },
-        {
-          updateProgressCallback: (progress) => setUpdateProgress(progress),
-          isTeam,
-          abortController,
-        },
-      );
+              currentFile.type,
+            )
+          : downloadService.fetchFileBlob(
+              { ...currentFile, bucketId: currentFile.bucket },
+              {
+                updateProgressCallback: (progress) => setUpdateProgress(progress),
+                isTeam,
+                abortController,
+              },
+            ))(new AbortController());
   }
 
   useEffect(() => {
     file && setCurrentFile(file);
   }, [file]);
 
-  const downloader = currentFile
-    ? (abortController: AbortController) =>
-        downloadService.fetchFileBlob(
-          { ...currentFile, bucketId: currentFile.bucket },
-          {
-            updateProgressCallback: (progress) => setUpdateProgress(progress),
-            isTeam,
-            abortController,
-          },
-        )
-    : null;
+  const downloader = downloadFile(currentFile);
 
   return file && downloader ? (
     <FileViewer
