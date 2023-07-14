@@ -16,12 +16,12 @@ const NotificationToast = ({
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
   const dispatch = useDispatch();
-  dispatch(uiActions.setIsToastNotificacionOpen(true));
-
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
 
   useEffect(() => {
+    dispatch(uiActions.setIsToastNotificacionOpen(true));
+
     return () => {
       dispatch(uiActions.setIsToastNotificacionOpen(false));
     };
