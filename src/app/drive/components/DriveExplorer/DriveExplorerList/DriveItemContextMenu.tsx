@@ -17,8 +17,9 @@ import {
 import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../types';
+import envService from '../../../../core/services/env.service';
 
-const isProduction = process.env.NODE_ENV === 'production';
+const isProduction = envService.isProduction();
 
 const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
   name: t('drive.dropdown.openPreview'),

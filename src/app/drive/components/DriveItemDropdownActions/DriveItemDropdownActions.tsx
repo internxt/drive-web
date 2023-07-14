@@ -15,6 +15,7 @@ import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
+import envService from '../../../core/services/env.service';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -96,7 +97,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   };
 
   const { title, hiddenActions } = props;
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = envService.isProduction();
 
   return (
     <div>

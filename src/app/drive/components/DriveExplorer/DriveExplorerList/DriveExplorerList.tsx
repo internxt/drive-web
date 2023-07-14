@@ -26,6 +26,7 @@ import {
   contextMenuDriveFolderNotSharedLink,
 } from './DriveItemContextMenu';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import envService from '../../../../core/services/env.service';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -211,7 +212,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, sharedThunks],
   );
 
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = envService.isProduction();
 
   const openLinkSettings = useCallback(
     isProduction

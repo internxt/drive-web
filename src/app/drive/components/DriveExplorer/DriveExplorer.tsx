@@ -79,6 +79,7 @@ import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/
 import ShareDialog from '../ShareDialog/ShareDialog';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import envService from '../../../core/services/env.service';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -621,7 +622,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {process.env.NODE_ENV !== 'production' && <ShareDialog />}
+      {!envService.isProduction() && <ShareDialog />}
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
@@ -747,7 +748,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <div className="flex items-center justify-center">
                       {selectedItems.length === 1 && (
                         <>
-                          {process.env.NODE_ENV !== 'production' && (
+                          {!envService.isProduction() && (
                             <div
                               className="flex items-center justify-center"
                               data-tooltip-id="share-tooltip"

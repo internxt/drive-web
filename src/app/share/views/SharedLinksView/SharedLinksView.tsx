@@ -34,6 +34,7 @@ import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItems
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
+import envService from '../../../core/services/env.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -189,8 +190,9 @@ export default function SharedLinksView(): JSX.Element {
 
   const openShareAccessSettings = (item) => {
     dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
-    const isProduction = process.env.NODE_ENV === 'production';
-    isProduction ? dispatch(uiActions.setIsShareItemDialogOpen(true)) : dispatch(uiActions.setIsShareDialogOpen(true));
+    envService.isProduction()
+      ? dispatch(uiActions.setIsShareItemDialogOpen(true))
+      : dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
   const moveSelectedItemsToTrash = async () => {
