@@ -6,6 +6,8 @@ import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
 import { useEffect, useState } from 'react';
+import { isTypeSupportedByVideoPlayer, loadVideoIntoPlayer } from '../../../core/services/video.service';
+import { getEnvironmentConfig } from 'app/drive/services/network.service';
 
 interface FileViewerWrapperProps {
   file: DriveFileData | null;
@@ -22,9 +24,33 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<DriveFileData>();
 
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(false);
+
+
   function downloadFile(currentFile) {
-    if (isTypeSupportedByVideoPlayer().includes(currentFile.type)) {
-      videoService.loadVideoIntoPlayer(
+    (abortController: AbortController) =>
+      isTypeSupportedByVideoPlayer(currentFile.type) ?
+        loadVideoIntoPlayer(
+          videoPlayer,
+          {
+            bucketId: currentFile.bucketId,
+            fileId: currentFile.fileId,
+            creds: {
+              pass: bridgePass,
+              user: bridgeUser
+            },
+            mnemonic: encryptionKey,
+            options: {
+              notifyProgress: (totalBytes, downloadedBytes) => {
+                setUpdateProgress(downloadedBytes / totalBytes);
+              },
+              abortController,
+            }
+          },
+          currentFile.type,
+        )
+      : 
+      downloadService.fetchFileBlob(
         { ...currentFile, bucketId: currentFile.bucket },
         {
           updateProgressCallback: (progress) => setUpdateProgress(progress),
@@ -32,17 +58,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
           abortController,
         },
       );
-    } else {
-      (abortController: AbortController) =>
-        downloadService.fetchFileBlob(
-          { ...currentFile, bucketId: currentFile.bucket },
-          {
-            updateProgressCallback: (progress) => setUpdateProgress(progress),
-            isTeam,
-            abortController,
-          },
-        );
-    }
   }
 
   useEffect(() => {
