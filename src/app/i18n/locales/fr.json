@@ -57,10 +57,13 @@
       "encrypting": "Cryptage"
     },
     "forgotPassword": {
-      "title": "Mot de passe oublié",
-      "description": "Comme spécifié dans la section sécurité de l'application, votre mot de passe est utilisé pour le cryptage et le décryptage et vous êtes le seul à y avoir accès. Par conséquent, nous ne pouvons pas restaurer votre compte sans le mot de passe. Vous pouvez vous réinscrire en saisissant votre email ci-dessous afin que nous puissions supprimer votre compte et tous vos fichiers.",
-      "sendInstructions": "Envoyer des instructions",
-      "sending": "Envoi..."
+      "title": "Récupération de compte",
+      "continue": "Continuer",
+      "sending": "Envoi...",
+      "password": "Rappelez-vous votre mot de passe ?",
+      "login": "Connexion",
+      "successTitle": "Vérifiez votre boîte de réception",
+      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte."
     }
   },
   "general": {

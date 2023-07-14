@@ -74,10 +74,13 @@
       "encrypting": "Encrypting"
     },
     "forgotPassword": {
-      "title": "Forgot password",
-      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
-      "sendInstructions": "Send instructions",
-      "sending": "Sending..."
+      "title": "Account recovery",
+      "continue": "Continue",
+      "sending": "Sending...",
+      "password": "Remember your password?",
+      "login": "Login",
+      "successTitle": "Check your inbox",
+      "successDescription": "We’ve sent you a one-time link to recover you account password"
     }
   },
   "general": {

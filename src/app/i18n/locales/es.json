@@ -57,10 +57,13 @@
       "encrypting": "Encriptando"
     },
     "forgotPassword": {
-      "title": "Contraseña olvidada",
-      "description": "Como se especifica en la sección de seguridad de la aplicación, tu contraseña se utiliza para cifrar y descifrar y sólo tú tienes acceso a ella. Por lo tanto, no podemos restaurar tu cuenta sin la contraseña. Puedes registrarte de nuevo introduciendo tu correo electrónico a continuación para que podamos eliminar tu cuenta y todos tus archivos.",
-      "sendInstructions": "Enviar instrucciones",
-      "sending": "Enviando..."
+      "title": "Recuperación de cuenta",
+      "continue": "Continuar",
+      "sending": "Enviando...",
+      "password": "¿Recuerdas tu contraseña?",
+      "login": "Iniciar sesión",
+      "successTitle": "Comprueba tu bandeja de entrada",
+      "successDescription": "Te hemos enviado un enlace para recuperar la contraseña de tu cuenta."
     }
   },
   "general": {
