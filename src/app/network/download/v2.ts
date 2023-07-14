@@ -1,7 +1,6 @@
 import { Network } from '@internxt/sdk/dist/network';
 import { sha256 } from '../crypto';
 import { NetworkFacade } from '../NetworkFacade';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
 
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
@@ -18,7 +17,7 @@ interface DownloadFileParams {
   options?: DownloadFileOptions;
 }
 
-interface DownloadOwnFileParams extends DownloadFileParams {
+export interface DownloadOwnFileParams extends DownloadFileParams {
   creds: NetworkCredentials;
   mnemonic: string;
   token?: never;
@@ -88,40 +87,14 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
   });
 };
 
-const downloadFile: DownloadFileFunction = async (params) => {
-  const videoPlayer = document.getElementById('video-Inxt');
-  let stream: FileStream;
-
+const downloadFile: DownloadFileFunction = (params) => {
   if (params.token && params.encryptionKey) {
-    stream = await downloadSharedFile(params);
+    return downloadSharedFile(params);
   } else if (params.creds && params.mnemonic) {
-    stream = await downloadOwnFile(params);
+    return downloadOwnFile(params);
   } else {
     throw new Error('DOWNLOAD ERRNO. 0');
   }
-
-  await addFileToVideoPlayer(videoPlayer, stream);
-  return new ReadableStream();
 };
-
-async function addFileToVideoPlayer(videoPlayer, stream: FileStream) {
-  const mediaSource = new MediaSource();
-  videoPlayer.src = URL.createObjectURL(mediaSource);
-
-  mediaSource.addEventListener('sourceopen', async () => {
-    const sourceBuffer = mediaSource.addSourceBuffer('video/webm; codecs="vp8,vorbis"');
-    const blob = await binaryStreamToBlob(stream, 'video/webm');
-
-    console.log('blob', blob);
-
-    sourceBuffer.addEventListener('updateend', () => {
-      console.log('updateend', mediaSource.readyState);
-      mediaSource.endOfStream();
-      videoPlayer.play();
-    });
-
-    sourceBuffer.appendBuffer(await blob.arrayBuffer());
-  });
-}
 
 export default downloadFile;

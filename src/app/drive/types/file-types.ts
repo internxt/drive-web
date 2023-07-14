@@ -1,4 +1,43 @@
 type FileExtensionMap = Record<string, string[]>;
+export interface VideoExtensions {
+  webm: 'webm';
+  mkv: 'mkv';
+  vob: 'vob';
+  ogg: 'ogg';
+  drc: 'drc';
+  avi: 'avi';
+  mts: 'mts';
+  m2ts: 'm2ts';
+  mov: 'mov';
+  qt: 'qt';
+  wmv: 'wmv';
+  yuv: 'yuv';
+  rm: 'rm';
+  rmvb: 'rmvb';
+  viv: 'viv';
+  asf: 'asf';
+  amv: 'amv';
+  mp4: 'mp4';
+  m4p: 'm4p';
+  mpg: 'mpg';
+  mp2: 'mp2';
+  mpeg: 'mpeg';
+  mpe: 'mpe';
+  mpv: 'mpv';
+  m2v: 'm2v';
+  m4v: 'm4v';
+  svi: 'svi';
+  '3gp': '3gp';
+  '3g2': '3g2';
+  mxf: 'mxf';
+  roq: 'roq';
+  msv: 'msv';
+  flv: 'flv';
+  f4v: 'f4v';
+  f4p: 'f4p';
+  f4a: 'f4a';
+  f4b: 'f4b';
+}
 
 const audioExtensions: FileExtensionMap = {
   '3gp': ['3gp'],
@@ -208,8 +247,12 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Default]: [],
 };
 
-export const thumbnailableImageExtension: string[] = [...imageExtensions['jpg'], ...imageExtensions['png'],
-...imageExtensions['bmp'], ...imageExtensions['gif']];
+export const thumbnailableImageExtension: string[] = [
+  ...imageExtensions['jpg'],
+  ...imageExtensions['png'],
+  ...imageExtensions['bmp'],
+  ...imageExtensions['gif'],
+];
 
 export const thumbnailablePdfExtension: string[] = pdfExtensions['pdf'];
 
