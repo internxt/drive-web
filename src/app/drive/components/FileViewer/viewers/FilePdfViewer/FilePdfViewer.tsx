@@ -1,9 +1,8 @@
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment, useRef, useEffect } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface PageWithObserverProps {
   pageNumber: number;

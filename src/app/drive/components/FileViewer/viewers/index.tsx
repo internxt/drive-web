@@ -6,4 +6,5 @@ const FilePdfViewer = lazy(() => import('./FilePdfViewer/FilePdfViewer'));
 export default {
   [FileExtensionGroup.Image]: FileImageViewer,
   [FileExtensionGroup.Pdf]: FilePdfViewer,
+  [FileExtensionGroup.Video]: FilePdfViewer,
 };

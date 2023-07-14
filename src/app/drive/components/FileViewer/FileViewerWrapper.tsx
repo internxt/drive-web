@@ -22,6 +22,29 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<DriveFileData>();
 
+  function downloadFile(currentFile) {
+    if (isTypeSupportedByVideoPlayer().includes(currentFile.type)) {
+      videoService.loadVideoIntoPlayer(
+        { ...currentFile, bucketId: currentFile.bucket },
+        {
+          updateProgressCallback: (progress) => setUpdateProgress(progress),
+          isTeam,
+          abortController,
+        },
+      );
+    } else {
+      (abortController: AbortController) =>
+        downloadService.fetchFileBlob(
+          { ...currentFile, bucketId: currentFile.bucket },
+          {
+            updateProgressCallback: (progress) => setUpdateProgress(progress),
+            isTeam,
+            abortController,
+          },
+        );
+    }
+  }
+
   useEffect(() => {
     file && setCurrentFile(file);
   }, [file]);
