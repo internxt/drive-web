@@ -25,7 +25,7 @@ import {
   updateDatabaseFilePrewiewData,
   updateDatabaseFileSourceData,
 } from '../../services/database.service';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
+import { FileExtensionGroup, VideoExtensions, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
@@ -35,6 +35,7 @@ import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialo
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
+import { isTypeSupportedByVideoPlayer } from 'app/core/services/video.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -150,7 +151,6 @@ const FileViewer = ({
     };
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
-  console.log('FileViewer');
   useEffect(() => {
     if (dirtyName) {
       setBlob(null);
@@ -170,8 +170,16 @@ const FileViewer = ({
       break;
     }
   }
+  let Viewer;
 
-  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
+  if (isTypeSupportedByVideoPlayer(file!.type as keyof VideoExtensions)) {
+    console.log('isVideo!');
+    Viewer = viewers[FileExtensionGroup.Video];
+  } else {
+    Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
+  }
+
+  console.log(Viewer);
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
@@ -302,13 +310,14 @@ const FileViewer = ({
   };
 
   useEffect(() => {
-    if (isTypeAllowed && show && file) {
+    if (show && file) {
       const abortController = new AbortController();
 
       checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
         if (isOlder) {
           downloader(abortController)
             .then(async (fileBlob) => {
+              if (isTypeSupportedByVideoPlayer(file.type as keyof VideoExtensions)) return;
               setBlob(fileBlob);
               await updateDatabaseFileSourceData({
                 folderId: file?.folderId,
@@ -369,15 +378,15 @@ const FileViewer = ({
               </button>
             )}
 
-            {isTypeAllowed ? (
+            {file ? (
               <div
                 tabIndex={0}
                 className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
               >
                 <div onClick={(e) => e.stopPropagation()} className="">
-                  {blob ? (
+                  {file ? (
                     <Suspense fallback={<div></div>}>
-                      <Viewer blob={blob} changeFile={changeFile} />
+                      <Viewer blob={blob} changeFile={changeFile} file={file} />
                     </Suspense>
                   ) : (
                     <>
