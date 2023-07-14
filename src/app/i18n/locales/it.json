@@ -1001,7 +1001,7 @@
     "copyLink": "Link condiviso copiato negli appunti",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
-    "restoreItems": "{{itemsToRecover}} spostato a {{destination}}",
+    "restoreItems": "{{itemsToRecover}} ripristinato correttamente",
     "itemDeleted": "{{item}} eliminate",
     "itemsDeleted": "File eliminati",
     "emailNotEmpty": "L'e-mail non deve essere vuota",

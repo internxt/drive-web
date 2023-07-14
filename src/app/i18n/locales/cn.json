@@ -1002,7 +1002,7 @@
     "copyLink": "复制链接到剪贴板",
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
-    "restoreItems": "{{itemsToRecover}} 已移动到 {{destination}}",
+    "restoreItems": "{{itemsToRecover}} 成功恢復",
     "itemDeleted": "{{item}} 已删除",
     "itemsDeleted": "文件已删除",
     "emailNotEmpty": "电子邮件不能为空",

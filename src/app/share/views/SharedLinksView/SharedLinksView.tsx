@@ -35,13 +35,16 @@ import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import envService from '../../../core/services/env.service';
+import { domainManager } from '../../services/DomainManager';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
-
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
+
+  copy(`${shareDomain}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
