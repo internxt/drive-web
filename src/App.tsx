@@ -161,6 +161,8 @@ class App extends Component<AppProps> {
               </span>
             )}
 
+            <video id="video-Inxt" controls></video>
+
             <Switch>
               <Route exact path="/">
                 <Redirect to="/login" />
