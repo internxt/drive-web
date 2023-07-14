@@ -27,6 +27,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(false);
 
+  useEffect(() => {
+    const videoId = 'video-Inxt';
+    const video = document.getElementById(videoId) as HTMLVideoElement;
+    setVideoPlayer(video);
+  }, []);
+
   function downloadFile(currentFile) {
     currentFile &&
       ((abortController: AbortController) =>
