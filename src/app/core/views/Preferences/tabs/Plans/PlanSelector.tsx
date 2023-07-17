@@ -351,10 +351,7 @@ const ChangePlanDialog = ({
           <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
           {subscription?.type === 'subscription' ? (
             <div>
-              <span className="text-base font-medium">
-                {subscription.currency}
-                {displayAmount(currentAmountMonthly)}
-              </span>
+              <span className="text-base font-medium">{`€${displayAmount(currentAmountMonthly)}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
@@ -376,7 +373,7 @@ const ChangePlanDialog = ({
             </div>
           ) : (
             <div>
-              <span className="text-base font-medium">{`€${displayAmount(amountMonthly)}`}</span>
+              <span className="text-base font-medium">{`€${displayAmount(1)}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
