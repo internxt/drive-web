@@ -132,6 +132,10 @@ const pdfExtensions: FileExtensionMap = {
 };
 const previewablePdfExtensionGroups: string[] = ['pdf'];
 
+const previewVideoExtensionsGroup: string[] = ['mp4', 'webm', 'ogg'];
+
+const previewAudioExtensionsGroup: string[] = ['mp3', 'wav', 'ogg'];
+
 const pptExtensions: FileExtensionMap = {
   ppt: ['ppt', 'pptx', 'pptm'],
 };
@@ -231,14 +235,14 @@ const fileExtensionGroups: fileExtensionsDictionary = {
 };
 
 export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary = {
-  [FileExtensionGroup.Audio]: [],
+  [FileExtensionGroup.Audio]: previewAudioExtensionsGroup,
   [FileExtensionGroup.Code]: [],
   [FileExtensionGroup.Figma]: [],
   [FileExtensionGroup.Image]: previewableImageExtensionGroups,
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],
   [FileExtensionGroup.Txt]: [],
-  [FileExtensionGroup.Video]: [],
+  [FileExtensionGroup.Video]: previewVideoExtensionsGroup,
   [FileExtensionGroup.Word]: [],
   [FileExtensionGroup.Xls]: [],
   [FileExtensionGroup.Xml]: [],

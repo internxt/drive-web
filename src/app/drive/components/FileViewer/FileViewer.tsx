@@ -170,20 +170,8 @@ const FileViewer = ({
       break;
     }
   }
-  let Viewer;
 
-  console.log('file.type', file!.type);
-
-  if (isTypeSupportedByVideoPlayer(file!.type as keyof VideoExtensions)) {
-    console.log('isVideo!');
-    Viewer = viewers[FileExtensionGroup.Video];
-  } else if (file!.type === 'mp3') {
-    Viewer = viewers[FileExtensionGroup.Audio];
-  } else {
-    Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
-  }
-
-  console.log(Viewer);
+  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
   const [blob, setBlob] = useState<Blob | null>(null);
 
@@ -382,13 +370,13 @@ const FileViewer = ({
               </button>
             )}
 
-            {file ? (
+            {isTypeAllowed ? (
               <div
                 tabIndex={0}
                 className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
               >
                 <div onClick={(e) => e.stopPropagation()} className="">
-                  {file ? (
+                  {blob || (file && isTypeSupportedByVideoPlayer(file?.type as keyof VideoExtensions)) ? (
                     <Suspense fallback={<div></div>}>
                       <Viewer blob={blob} changeFile={changeFile} file={file} />
                     </Suspense>
