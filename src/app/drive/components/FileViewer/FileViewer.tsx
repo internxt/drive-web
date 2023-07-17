@@ -5,26 +5,7 @@ import viewers from './viewers';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
-import {
-  compareThumbnail,
-  getThumbnailFrom,
-  setCurrentThumbnail,
-  setThumbnails,
-  ThumbnailToUpload,
-  uploadThumbnail,
-} from 'app/drive/services/thumbnail.service';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { sessionSelectors } from 'app/store/slices/session/session.selectors';
-import localStorageService from 'app/core/services/local-storage.service';
-import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import dateService from '../../../core/services/date.service';
-import {
-  getDatabaseFilePrewiewData,
-  getDatabaseFileSourceData,
-  updateDatabaseFilePrewiewData,
-  updateDatabaseFileSourceData,
-} from '../../services/database.service';
 import { FileExtensionGroup, VideoExtensions, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -99,6 +80,7 @@ const FileViewer = ({
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
 
+  // ESTO
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
@@ -205,133 +187,16 @@ const FileViewer = ({
   );
 
   const dispatch = useAppDispatch();
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const userEmail: string = localStorageService.getUser()?.email || '';
-
-  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
-    const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
-    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
-
-    const fileObject = new File([file], driveFile.name);
-    const fileUpload: FileToUpload = {
-      name: driveFile.name,
-      size: driveFile.size,
-      type: driveFile.type,
-      content: fileObject,
-      parentFolderId: driveFile.folderId,
-    };
-
-    const thumbnailGenerated = await getThumbnailFrom(fileUpload);
-
-    const isDifferentThumbnailOrNotExists =
-      !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
-
-    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
-      const thumbnailToUpload: ThumbnailToUpload = {
-        fileId: driveFile.id,
-        size: thumbnailGenerated.file.size,
-        max_width: thumbnailGenerated.max_width,
-        max_height: thumbnailGenerated.max_height,
-        type: thumbnailGenerated.type,
-        content: thumbnailGenerated.file,
-      };
-      const updateProgressCallback = () => {
-        return;
-      };
-      const abortController = new AbortController();
-
-      let thumbnailUploaded;
-
-      if (userEmail)
-        thumbnailUploaded = await uploadThumbnail(
-          userEmail,
-          thumbnailToUpload,
-          isTeam,
-          updateProgressCallback,
-          abortController,
-        );
-
-      if (thumbnailUploaded && thumbnailGenerated.file) {
-        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
-
-        let newThumbnails: Thumbnail[];
-        if (currentThumbnail) {
-          //Replace existing thumbnail with the new uploadedThumbnail
-          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
-          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-        } else {
-          newThumbnails =
-            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-        }
-        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-        await updateDatabaseFilePrewiewData({
-          fileId: driveFile.id,
-          folderId: driveFile.folderId,
-          previewBlob: thumbnailToUpload.content,
-          updatedAt: driveFile.updatedAt,
-        });
-      }
-    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
-      await updateDatabaseFilePrewiewData({
-        fileId: driveFile.id,
-        folderId: driveFile.folderId,
-        previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
-        updatedAt: driveFile.updatedAt,
-      });
-    }
-  };
-
-  const checkIfDatabaseBlobIsOlder = async (fileToView: DriveFileData) => {
-    const fileId = fileToView?.id;
-    const databaseBlob = await getDatabaseFileSourceData({ fileId });
-
-    const isDatabaseBlobOlder = !databaseBlob?.updatedAt
-      ? true
-      : dateService.isDateOneBefore({
-          dateOne: databaseBlob?.updatedAt as string,
-          dateTwo: fileToView?.updatedAt as string,
-        });
-
-    if (fileToView && databaseBlob?.source && !isDatabaseBlobOlder) {
-      setBlob(databaseBlob.source as Blob);
-      await handleFileThumbnail(fileToView, databaseBlob.source as File);
-
-      return false;
-    }
-    return true;
-  };
 
   useEffect(() => {
-    if (show && file) {
-      const abortController = new AbortController();
-
-      checkIfDatabaseBlobIsOlder(file).then((isOlder) => {
-        if (isOlder) {
-          downloader(abortController)
-            .then(async (fileBlob) => {
-              if (isTypeSupportedByVideoPlayer(file.type as keyof VideoExtensions)) return;
-              setBlob(fileBlob);
-              await updateDatabaseFileSourceData({
-                folderId: file?.folderId,
-                sourceBlob: fileBlob,
-                fileId: file?.id,
-                updatedAt: file?.updatedAt,
-              });
-
-              await handleFileThumbnail(file, fileBlob as File);
-            })
-            .catch(() => {
-              if (abortController.signal.aborted) {
-                return;
-              }
-            });
-        }
-        return () => abortController.abort();
+    if (show) {
+      downloader(new AbortController()).then((blob) => setBlob(blob)).catch((err) => {
+        console.log('err', err);
       });
-    } else if (!show) {
+    } else {
       setBlob(null);
     }
-  }, [show, file]);
+  }, [show]);
 
   return (
     <Transition

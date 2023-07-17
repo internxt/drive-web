@@ -179,6 +179,10 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
   });
 };
 
+const canFileBeCached = (file: DriveFileData): boolean => {
+  return file.size < 50 * 1024 * 1024;
+};
+
 export {
   getDatabaseProfileAvatar,
   updateDatabaseProfileAvatar,
@@ -193,4 +197,5 @@ export {
   updateDatabasePhotosSourceData,
   deleteDatabasePhotos,
   deleteDatabaseItems,
+  canFileBeCached
 };
