@@ -596,9 +596,6 @@
         },
         "copyLink": "Copy link"
       },
-      "invite": {
-        "title": "Invite people"
-      },
       "requests": {
         "title": "Access requests",
         "button": "Requests",

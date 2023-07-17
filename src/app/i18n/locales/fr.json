@@ -532,9 +532,6 @@
         },
         "copyLink": "Copier le lien"
       },
-      "invite": {
-        "title": "Inviter des personnes"
-      },
       "requests": {
         "title": "Demandes d'accès",
         "button": "Demandes",

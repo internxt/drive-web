@@ -590,9 +590,6 @@
         },
         "copyLink": "复制链接"
       },
-      "invite": {
-        "title": "邀请人"
-      },
       "requests": {
         "title": "访问请求",
         "button": "请求",
