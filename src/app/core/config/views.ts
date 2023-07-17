@@ -12,7 +12,7 @@ import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
 import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/DeactivationTeamsView';
 import ShareFileView from 'app/share/views/ShareView/ShareFileView';
-import RemoveAccountView from 'app/auth/views/RemoveAccountView/RemoveAccountView';
+import RecoveryLinkView from 'app/auth/views/RecoveryLinkView/RecoveryLinkView';
 import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
@@ -62,8 +62,7 @@ const views: Array<{
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
-  { id: AppView.Remove, component: RemoveAccountView },
-  { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
+  { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },

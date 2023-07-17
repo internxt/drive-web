@@ -166,15 +166,9 @@
       "auth": true
     },
     {
-      "id": "remove",
+      "id": "recovery-link",
       "layout": "empty",
-      "path": "/remove",
-      "exact": true
-    },
-    {
-      "id": "removedialog",
-      "layout": "empty",
-      "path": "/removedialog",
+      "path": "/recovery-link",
       "exact": true
     },
     {

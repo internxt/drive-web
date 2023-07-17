@@ -11,7 +11,7 @@ import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-function ForgotPassword(): JSX.Element {
+function RecoveryLink(): JSX.Element {
   const { translate } = useTranslationContext();
   const {
     register,
@@ -107,4 +107,4 @@ function ForgotPassword(): JSX.Element {
   );
 }
 
-export default ForgotPassword;
+export default RecoveryLink;

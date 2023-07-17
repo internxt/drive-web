@@ -205,7 +205,7 @@ export default function LogIn(): JSX.Element {
                 onClick={(): void => {
                   // analyticsService.trackUserResetPasswordRequest();
                 }}
-                to="/remove"
+                to="/recovery-link"
                 className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
               >
                 {translate('auth.login.forgotPwd')}
