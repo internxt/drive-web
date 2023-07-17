@@ -1,5 +1,3 @@
-import { DownloadOwnFileParams } from '../../network/download/v2';
-import { downloadFile } from '../../network/download';
 import { binaryStreamToBlob } from './stream.service';
 import { VideoExtensions } from '../../drive/types/file-types';
 
@@ -16,7 +14,7 @@ export function isTypeSupportedByVideoPlayer(type: keyof VideoExtensions): boole
 
 export async function loadVideoIntoPlayer(
   videoPlayer: HTMLVideoElement,
-  params: DownloadOwnFileParams,
+  video: Blob,
   videoType: keyof VideoTypes,
 ): Promise<{
   metadata: {
@@ -24,7 +22,7 @@ export async function loadVideoIntoPlayer(
     height: number;
   };
 }> {
-  const videoStream = await downloadFile(params);
+  console.log('video', video);
   const mediaSource = new MediaSource();
   const metadata = {
     width: 0,
@@ -47,7 +45,7 @@ export async function loadVideoIntoPlayer(
       }
       const mime = `video/${videoType}`;
       const sourceBuffer = mediaSource.addSourceBuffer(type);
-      const blob = await binaryStreamToBlob(videoStream, mime);
+      // const blob = await binaryStreamToBlob(videoStream, mime);
 
       sourceBuffer.addEventListener('updateend', () => {
         mediaSource.endOfStream();
@@ -62,19 +60,19 @@ export async function loadVideoIntoPlayer(
 
       sourceBuffer.addEventListener('error', reject);
 
-      sourceBuffer.appendBuffer(await blob.arrayBuffer());
+      sourceBuffer.appendBuffer(await video.arrayBuffer());
     });
   });
 }
 
 export async function loadAudioIntoPlayer(
   audioPlayer: HTMLAudioElement,
-  params: DownloadOwnFileParams,
+  audio: Blob,
+  // audioStream: ReadableStream<Uint8Array>,
   videoType: keyof VideoTypes,
 ): Promise<void> {
   const mime = `audio/${videoType}`;
-  const audioStream = await downloadFile(params);
-  const blob = await binaryStreamToBlob(audioStream, mime);
+  // const blob = await binaryStreamToBlob(audioStream, mime);
 
-  audioPlayer.src = URL.createObjectURL(blob);
+  audioPlayer.src = URL.createObjectURL(audio);
 }

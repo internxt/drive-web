@@ -40,19 +40,16 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
 
   const [updateProgress, setUpdateProgress] = useState(0);
-  const [currentFile, setCurrentFile] = useState<DriveFileData>();
+  const [currentFile, setCurrentFile] = useState<DriveFileData>(file);
 
-  function downloadFile(currentFile) {
-    return (abortController: AbortController) =>
-      isTypeSupportedByVideoPlayer(currentFile.type)
-        ? Promise.resolve(new Blob())
-        : downloadService.fetchFileBlob(
-          { ...currentFile, bucketId: currentFile.bucket },
-          {
-            updateProgressCallback: (progress) => setUpdateProgress(progress),
-            isTeam,
-            abortController,
-          },
+  function downloadFile(currentFile: DriveFileData, abortController: AbortController) {
+    return downloadService.fetchFileBlob(
+      { ...currentFile, bucketId: currentFile.bucket },
+      {
+        updateProgressCallback: (progress) => setUpdateProgress(progress),
+        isTeam,
+        abortController,
+      },
     );
   }
 
@@ -135,8 +132,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
     return {
       download: async (): Promise<Blob> => {
-        const shouldFileBeCached = canFileBeCached(file);
-        const fileSource = await getDatabaseFileSourceData({ fileId: file.id });
+        const shouldFileBeCached = canFileBeCached(currentFile);
+        const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
         const isCached = !!fileSource;
         let fileContent: Blob;
 
@@ -145,28 +142,28 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
             ? true
             : dateService.isDateOneBefore({
                 dateOne: fileSource?.updatedAt as string,
-                dateTwo: file?.updatedAt as string,
+                dateTwo: currentFile?.updatedAt as string,
               });
           if (isCacheExpired) {
-            fileContent = await downloadFile(file)(abortController);
+            fileContent = await downloadFile(currentFile, abortController);
             await updateDatabaseFileSourceData({
-              folderId: file.folderId,
+              folderId: currentFile.folderId,
               sourceBlob: fileContent,
-              fileId: file.id,
-              updatedAt: file.updatedAt,
+              fileId: currentFile.id,
+              updatedAt: currentFile.updatedAt,
             });
           } else {
             fileContent = fileSource.source as Blob;
-            await handleFileThumbnail(file, fileSource.source as File);
+            await handleFileThumbnail(currentFile, fileSource.source as File);
           }
         } else {
-          fileContent = await downloadFile(file)(abortController);
+          fileContent = await downloadFile(currentFile, abortController);
           if (shouldFileBeCached) {
             await updateDatabaseFileSourceData({
-              folderId: file.folderId,
+              folderId: currentFile.folderId,
               sourceBlob: fileContent,
-              fileId: file.id,
-              updatedAt: file.updatedAt,
+              fileId: currentFile.id,
+              updatedAt: currentFile.updatedAt,
             });
           }
         }
@@ -181,16 +178,13 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const fileContentManager = getFileContentManager();
 
-  useEffect(() => {
-    file && setCurrentFile(file);
-  }, [file]);
-
   return showPreview ? (
     <FileViewer
       show={showPreview}
       file={currentFile}
       onClose={() => {
         onClose();
+        console.log('close');
         fileContentManager.abort();
       }}
       onDownload={onDownload}

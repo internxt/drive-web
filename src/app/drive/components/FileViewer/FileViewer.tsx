@@ -189,14 +189,16 @@ const FileViewer = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (show) {
-      downloader(new AbortController()).then((blob) => setBlob(blob)).catch((err) => {
-        console.log('err', err);
-      });
+    if (show && isTypeAllowed) {
+      downloader(new AbortController())
+        .then(setBlob)
+        .catch((err) => {
+          // TODO
+        });
     } else {
       setBlob(null);
     }
-  }, [show]);
+  }, [show, file]);
 
   return (
     <Transition
@@ -241,7 +243,7 @@ const FileViewer = ({
                 className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
               >
                 <div onClick={(e) => e.stopPropagation()} className="">
-                  {blob || (file && isTypeSupportedByVideoPlayer(file?.type as keyof VideoExtensions)) ? (
+                  {blob && file ? (
                     <Suspense fallback={<div></div>}>
                       <Viewer blob={blob} changeFile={changeFile} file={file} />
                     </Suspense>

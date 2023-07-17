@@ -55,16 +55,11 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
+  const [fileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [renderPages, setRenderPages] = useState<number>();
-
-  //useEffect to avoid flickering
-  useEffect(() => {
-    setFileUrl(URL.createObjectURL(props.blob));
-  }, [props.blob]);
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
