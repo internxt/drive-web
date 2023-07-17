@@ -373,7 +373,7 @@ const ChangePlanDialog = ({
             </div>
           ) : (
             <div>
-              <span className="text-base font-medium">{`€${displayAmount(1)}`}</span>
+              <span className="text-base font-medium">{`€${displayAmount(amountMonthly)}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
