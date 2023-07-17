@@ -15,9 +15,6 @@ const FileVideoViewer = ({
   useEffect(() => {
     const videoPlayer = videoPlayerRef.current as HTMLVideoElement;
 
-    // const { width, height } = videoPlayer.getBoundingClientRect();
-    // setDimensions({ width, height });
-
     videoPlayer.addEventListener('loadedmetadata', () => {
       const { videoWidth, videoHeight } = videoPlayer;
       setDimensions({ width: videoWidth, height: videoHeight });
