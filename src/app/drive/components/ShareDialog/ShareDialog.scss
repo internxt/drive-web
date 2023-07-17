@@ -1,0 +1,15 @@
+.hide-request {
+  animation: hideRequest 0.5s forwards;
+}
+
+@keyframes hideRequest {
+  from {
+    max-height: 640px;
+    opacity: 1;
+  }
+
+  to {
+    max-height: 0;
+    opacity: 0;
+  }
+}

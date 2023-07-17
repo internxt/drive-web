@@ -549,6 +549,80 @@
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
     },
+    "shareModal": {
+      "title": "Compartir \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personas con acceso",
+        "invite": "Invitar",
+        "userItem": {
+          "roles": {
+            "owner": "Propietario",
+            "editor": "Editor",
+            " viewer": "Visor"
+          },
+          " remove": "Eliminar"
+        }
+      },
+      "general": {
+        "generalAccess": "Acceso general",
+        "accessOptions": {
+          "public": {
+            "title": "Publico",
+            "subtitle": "Cualquiera con el enlace puede acceder"
+          },
+          "restricted": {
+            "title": "Restringido",
+            "subtitle": "Sólo pueden acceder las personas añadidas"
+          },
+          "stopSharing": "Dejar de compartir"
+        },
+        "copyLink": "Copiar enlace"
+      },
+      "requests": {
+        "title": "Solicitudes de acceso",
+        "button": "Solicitudes",
+        "empty": "No quedan solicitudes",
+        "actions": {
+          "accept": "Aceptar",
+          "deny": "Denegar",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Espectador"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "¿Dejar de compartir?",
+        "subtitle": "Nadie podrá acceder a \"{{name}}\"",
+        "cancelar": "Cancelar",
+        "confirmar": "Dejar de compartir",
+        "notification": {
+          "success": "Dejar de compartir \"{{name}}\"",
+          "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
+        }
+      },
+      "invite": {
+        "title": "Invitar a otros",
+        "textarea": "Escribe un mensaje (opcional)",
+        "notifyUsers": "Notificar a los usuarios",
+        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "email": "Correo electrónico",
+        "invite": "Invitar",
+        "editor": "Editor",
+        "viewer": "Visualizador",
+        "listUsers": "Usuarios a invitar"
+      },
+      "requestAccess": {
+        "title": "No tienes acceso",
+        "description": "Solicita acceso al propietario o cambia a una cuenta con acceso.",
+        "textarea": "Mensaje (opcional)",
+        "requestButton": "Solicita acceso",
+        "logged": "Conectado como",
+        "change": "Cambiar",
+        "requestSent": "Solicitud enviada",
+        "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
       "singleToolBar": "archivo seleccionado",
