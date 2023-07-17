@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
-import { loadVideoIntoPlayer } from 'app/core/services/media.service';
+import { loadAudioIntoPlayer } from 'app/core/services/media.service';
 import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { VideoExtensions } from 'app/drive/types/file-types';
 
@@ -9,11 +9,11 @@ const FileVideoViewer = ({ file }: { file: DriveFileData }) => {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(false);
 
   useEffect(() => {
-    const videoId = 'video-Inxt';
-    const video = document.getElementById(videoId) as HTMLVideoElement;
+    const audioId = 'audio-Inxt';
+    const audioPlayer = document.getElementById(audioId) as HTMLVideoElement;
 
-    loadVideoIntoPlayer(
-      video,
+    loadAudioIntoPlayer(
+      audioPlayer,
       {
         bucketId: file.bucket,
         fileId: file.fileId,
@@ -32,7 +32,7 @@ const FileVideoViewer = ({ file }: { file: DriveFileData }) => {
       file.type as keyof VideoExtensions,
     )
       .then((meta) => {
-        console.log('Video meta', meta);
+        console.log('Audio meta', meta);
       })
       .catch((err) => {
         // TODO: Handle it.
@@ -41,7 +41,7 @@ const FileVideoViewer = ({ file }: { file: DriveFileData }) => {
 
   return (
     <div>
-      <video id="video-Inxt" controls></video>
+      <audio id="audio-Inxt" controls></audio>
     </div>
   );
 };

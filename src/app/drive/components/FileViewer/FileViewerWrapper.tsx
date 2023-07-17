@@ -6,7 +6,7 @@ import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
 import { useEffect, useState } from 'react';
-import { isTypeSupportedByVideoPlayer } from '../../../core/services/video.service';
+import { isTypeSupportedByVideoPlayer } from '../../../core/services/media.service';
 
 interface FileViewerWrapperProps {
   file: DriveFileData | null;
@@ -25,17 +25,17 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   function downloadFile(currentFile) {
     if (currentFile) {
-      return (abortController: AbortController) => 
-        isTypeSupportedByVideoPlayer(currentFile.type)  ? 
-          Promise.resolve(new Blob()) :
-          downloadService.fetchFileBlob(
-            { ...currentFile, bucketId: currentFile.bucket },
-            {
-              updateProgressCallback: (progress) => setUpdateProgress(progress),
-              isTeam,
-              abortController,
-            },
-          );
+      return (abortController: AbortController) =>
+        isTypeSupportedByVideoPlayer(currentFile.type)
+          ? Promise.resolve(new Blob())
+          : downloadService.fetchFileBlob(
+              { ...currentFile, bucketId: currentFile.bucket },
+              {
+                updateProgressCallback: (progress) => setUpdateProgress(progress),
+                isTeam,
+                abortController,
+              },
+            );
     } else {
       return null;
     }

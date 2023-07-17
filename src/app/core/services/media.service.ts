@@ -66,3 +66,15 @@ export async function loadVideoIntoPlayer(
     });
   });
 }
+
+export async function loadAudioIntoPlayer(
+  audioPlayer: HTMLAudioElement,
+  params: DownloadOwnFileParams,
+  videoType: keyof VideoTypes,
+): Promise<void> {
+  const mime = `audio/${videoType}`;
+  const audioStream = await downloadFile(params);
+  const blob = await binaryStreamToBlob(audioStream, mime);
+
+  audioPlayer.src = URL.createObjectURL(blob);
+}

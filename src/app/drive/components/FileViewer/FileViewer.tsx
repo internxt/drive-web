@@ -35,7 +35,7 @@ import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialo
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
-import { isTypeSupportedByVideoPlayer } from 'app/core/services/video.service';
+import { isTypeSupportedByVideoPlayer } from 'app/core/services/media.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -172,9 +172,13 @@ const FileViewer = ({
   }
   let Viewer;
 
+  console.log('file.type', file!.type);
+
   if (isTypeSupportedByVideoPlayer(file!.type as keyof VideoExtensions)) {
     console.log('isVideo!');
     Viewer = viewers[FileExtensionGroup.Video];
+  } else if (file!.type === 'mp3') {
+    Viewer = viewers[FileExtensionGroup.Audio];
   } else {
     Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
   }
