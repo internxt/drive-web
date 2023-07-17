@@ -14,7 +14,6 @@ import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.servi
 import Dialog from '../../../shared/components/Dialog/Dialog';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import notificationsService from 'app/notifications/services/notifications.service';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -72,7 +71,6 @@ export default function BackupsView(): JSX.Element {
   };
 
   useEffect(() => {
-    notificationsService.dismiss();
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
 
