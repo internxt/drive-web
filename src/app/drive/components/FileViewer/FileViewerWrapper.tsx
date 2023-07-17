@@ -12,7 +12,7 @@ import {
   getDatabaseFilePrewiewData,
   updateDatabaseFilePrewiewData,
   canFileBeCached,
-  updateDatabaseFileSourceData
+  updateDatabaseFileSourceData,
 } from '../../services/database.service';
 import dateService from '../../../core/services/date.service';
 import {
@@ -153,12 +153,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
             });
           }
         }
-      
+
         return fileContent;
       },
       abort: () => {
         abortController.abort();
-      }
+      },
     };
   }
 
@@ -170,7 +170,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       file={currentFile}
       onClose={() => {
         onClose();
-        console.log('close');
         fileContentManager.abort();
       }}
       onDownload={onDownload}

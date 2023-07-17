@@ -22,7 +22,6 @@ export async function loadVideoIntoPlayer(
     height: number;
   };
 }> {
-  console.log('video', video);
   const mediaSource = new MediaSource();
   const metadata = {
     width: 0,

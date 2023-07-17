@@ -68,6 +68,7 @@ const FileViewer = ({
   isShareView,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
+  const [isErrorWhileDownloading, setIsErrorWhileDownloading] = useState<boolean>(false);
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
@@ -191,9 +192,13 @@ const FileViewer = ({
   useEffect(() => {
     if (show && isTypeAllowed) {
       downloader(new AbortController())
-        .then(setBlob)
+        .then((blob) => {
+          setBlob(blob);
+          setIsErrorWhileDownloading(false);
+        })
         .catch((err) => {
           // TODO
+          setIsErrorWhileDownloading(true);
         });
     } else {
       setBlob(null);
@@ -237,15 +242,20 @@ const FileViewer = ({
               </button>
             )}
 
-            {isTypeAllowed ? (
+            {isTypeAllowed && !isErrorWhileDownloading ? (
               <div
                 tabIndex={0}
-                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+                className="outline-none z-10 flex h-full max-h-full w-full max-w-full flex-col items-center justify-center overflow-auto"
               >
-                <div onClick={(e) => e.stopPropagation()} className="">
+                <div onClick={(e) => e.stopPropagation()} className="flex h-full w-full items-center justify-center">
                   {blob && file ? (
                     <Suspense fallback={<div></div>}>
-                      <Viewer blob={blob} changeFile={changeFile} file={file} />
+                      <Viewer
+                        blob={blob}
+                        changeFile={changeFile}
+                        file={file}
+                        setIsErrorWhileDownloading={setIsErrorWhileDownloading}
+                      />
                     </Suspense>
                   ) : (
                     <>

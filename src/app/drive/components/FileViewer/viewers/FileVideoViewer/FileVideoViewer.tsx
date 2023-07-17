@@ -1,31 +1,47 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
-import { loadVideoIntoPlayer } from 'app/core/services/media.service';
-import { VideoExtensions } from 'app/drive/types/file-types';
+const FileVideoViewer = ({
+  blob,
+}: {
+  file: DriveFileData;
+  blob: Blob;
+  setIsErrorWhileDownloading: (isError: boolean) => void;
+}): JSX.Element => {
+  const [dimensions, setDimensions] = useState({ width: 640, height: 480 });
+  const videoPlayerRef = useRef<HTMLVideoElement>(null);
 
-const FileVideoViewer = ({ file, blob }: { file: DriveFileData, blob: Blob }): JSX.Element => {
+  // Get the dimensions of the video.
   useEffect(() => {
-    const videoId = 'video-Inxt';
-    const video = document.getElementById(videoId) as HTMLVideoElement;
+    const videoPlayer = videoPlayerRef.current as HTMLVideoElement;
 
-    loadVideoIntoPlayer(
-      video,
-      blob,
-      file.type as keyof VideoExtensions,
-    )
-      .then((meta) => {
-        //TODO: Handle it.
-        console.log('Video meta', meta);
-      })
-      .catch((err) => {
-        // TODO: Handle it.
-      });
+    // const { width, height } = videoPlayer.getBoundingClientRect();
+    // setDimensions({ width, height });
+
+    videoPlayer.addEventListener('loadedmetadata', () => {
+      const { videoWidth, videoHeight } = videoPlayer;
+      setDimensions({ width: videoWidth, height: videoHeight });
+    });
+
+    // Set the video src.
+    videoPlayer.src = URL.createObjectURL(blob);
+
+    // Cleanup.
+    return () => {
+      URL.revokeObjectURL(videoPlayer.src);
+    };
   }, []);
 
   return (
-    <div>
-      <video id="video-Inxt" controls></video>
+    <div className={'flex h-full w-full flex-col items-center justify-center'}>
+      <video
+        ref={videoPlayerRef}
+        controls
+        className={`${dimensions.width > dimensions.height ? 'w-full' : 'h-full'}`}
+        style={{
+          aspectRatio: `${dimensions.width}/${dimensions.height}`,
+        }}
+      ></video>
     </div>
   );
 };
