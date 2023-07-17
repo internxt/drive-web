@@ -81,21 +81,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         type: thumbnailGenerated.type,
         content: thumbnailGenerated.file,
       };
-      const updateProgressCallback = () => {
-        return;
-      };
-      const abortController = new AbortController();
-
       let thumbnailUploaded;
-
-      if (userEmail)
-        thumbnailUploaded = await uploadThumbnail(
-          userEmail,
-          thumbnailToUpload,
-          isTeam,
-          updateProgressCallback,
-          abortController,
-        );
 
       if (thumbnailUploaded && thumbnailGenerated.file) {
         setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
