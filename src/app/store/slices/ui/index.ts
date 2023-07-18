@@ -8,6 +8,7 @@ interface UISliceState {
   isFileLoggerOpen: boolean;
   isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
+  isShareDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -18,6 +19,7 @@ interface UISliceState {
   isReachedPlanLimitDialogOpen: boolean;
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
+  isShareItemDialogOpenInPreviewView: boolean;
   isInviteMemberDialogOpen: boolean;
   isUploadItemsFailsDialogOpen: boolean;
   isDriveItemInfoMenuOpen: boolean;
@@ -29,6 +31,7 @@ interface UISliceState {
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
+  isToastNotificacionOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -37,6 +40,7 @@ const initialState: UISliceState = {
   isFileLoggerOpen: false,
   isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
+  isShareDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -47,6 +51,7 @@ const initialState: UISliceState = {
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
+  isShareItemDialogOpenInPreviewView: false,
   isInviteMemberDialogOpen: false,
   isUploadItemsFailsDialogOpen: false,
   isDriveItemInfoMenuOpen: false,
@@ -58,6 +63,7 @@ const initialState: UISliceState = {
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
+  isToastNotificacionOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -78,6 +84,9 @@ export const uiSlice = createSlice({
     },
     setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNameCollisionDialogOpen = action.payload;
+    },
+    setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareDialogOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
@@ -108,6 +117,9 @@ export const uiSlice = createSlice({
     },
     setIsShareItemDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareItemDialogOpen = action.payload;
+    },
+    setIsShareItemDialogOpenInPreviewView: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareItemDialogOpenInPreviewView = action.payload;
     },
     setIsInviteMemberDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isInviteMemberDialogOpen = action.payload;
@@ -154,6 +166,9 @@ export const uiSlice = createSlice({
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
+    setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isToastNotificacionOpen = action.payload;
+    },
   },
 });
 
@@ -180,6 +195,7 @@ export const {
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
+  setIsToastNotificacionOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

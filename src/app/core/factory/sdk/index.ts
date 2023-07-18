@@ -134,7 +134,6 @@ export class SdkFactory {
   private getApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     return {
-      mnemonic: this.getMnemonic(workspace),
       token: this.getToken(workspace),
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
@@ -145,7 +144,6 @@ export class SdkFactory {
   private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
     return {
-      mnemonic: this.getMnemonic(workspace),
       token: this.getNewToken(workspace),
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());

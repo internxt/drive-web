@@ -1,5 +1,3 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { TFunction } from 'i18next';
 import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
 import NameCollisionDialog, { OnSubmitPressed, OPERATION_TYPE } from '.';
@@ -11,6 +9,7 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
+import errorService from '../../../core/services/error.service';
 
 type NameCollisionContainerProps = {
   currentFolderId: number;
@@ -29,7 +28,6 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   foldersToRename,
   driveFoldersToRename,
 }) => {
-  const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const [repeatedItemsToUpload, setRepeatedItemsToUpload] = useState<(File | DriveItemData)[]>([]);
   const [driveRepeatedItems, setDriveRepeatedItems] = useState<DriveItemData[]>([]);
@@ -42,7 +40,10 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
-  const handleNewItems = (files: any[], folders: any[]) => [...files, ...folders];
+  const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
+    ...files,
+    ...folders,
+  ];
 
   const newItems = useMemo(
     () => handleNewItems(repeatedItemsToUpload, repeatedFolderToUpload),
@@ -53,6 +54,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => handleNewItems(driveRepeatedItems, driveRepeatedFolder),
     [driveRepeatedItems, driveRepeatedFolder],
   );
+
   useEffect(() => {
     setRepeatedItemsToUpload(filesToRename);
     setDriveRepeatedItems(driveFilesToRename);
@@ -70,19 +72,20 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
   const onCancelRenameDialogButtonPressed = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen(false));
-    resetPendintToRenameFolders();
-    resetPendintToRenameItems();
+    resetPendingToRenameFolders();
+    resetPendingToRenameItems();
   };
 
-  const resetPendintToRenameItems = () => {
+  const resetPendingToRenameItems = () => {
     dispatch(storageActions.setFilesToRename([]));
     dispatch(storageActions.setDriveFilesToRename([]));
   };
 
-  const resetPendintToRenameFolders = () => {
+  const resetPendingToRenameFolders = () => {
     dispatch(storageActions.setFoldersToRename([]));
     dispatch(storageActions.setDriveFoldersToRename([]));
   };
+
   const replaceAndMoveItem = async ({
     itemsToReplace,
     itemsToMove,
@@ -90,7 +93,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToMove: DriveItemData[];
   }) => {
-    await moveItemsToTrash(itemsToReplace, translate as TFunction);
+    await moveItemsToTrash(itemsToReplace);
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
@@ -116,7 +119,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToReplace: DriveItemData[];
     itemsToUpload: (IRoot | File)[];
   }) => {
-    await moveItemsToTrash(itemsToReplace, translate as TFunction);
+    await moveItemsToTrash(itemsToReplace);
 
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
@@ -165,18 +168,54 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   }: OnSubmitPressed) => {
     switch (operationType + operation) {
       case 'move' + 'keep':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Move and rename items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await keepAndMoveItem(itemsToUpload as DriveItemData[]);
         break;
       case 'move' + 'replace':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Move and replace items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await replaceAndMoveItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToMove: itemsToUpload as DriveItemData[],
         });
         break;
       case 'upload' + 'keep':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Upload and rename items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await keepAndUploadItem(itemsToUpload as (File | IRoot)[]);
         break;
       case 'upload' + 'replace':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Upload and replace items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await replaceAndUploadItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToUpload: itemsToUpload as (File | IRoot)[],
@@ -188,8 +227,8 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   return (
     <NameCollisionDialog
       isOpen={isOpen}
-      newItems={newItems}
-      driveItems={driveItems}
+      newItems={newItems as (File | IRoot)[]}
+      driveItems={driveItems as (DriveItemData | IRoot)[]}
       onCancelButtonPressed={onCancelRenameDialogButtonPressed}
       onSubmitButtonPressed={triggerSelectedOptinsOnSubmit}
       onCloseDialog={closeRenameDialog}

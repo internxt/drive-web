@@ -1,9 +1,9 @@
 import { Document, Page } from 'react-pdf';
 import { useState, Fragment, useRef, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
-import { MagnifyingGlassMinus, MagnifyingGlassPlus } from 'phosphor-react';
+import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretLeft, CaretRight } from 'phosphor-react';
+import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface PageWithObserverProps {
   pageNumber: number;
@@ -57,9 +57,10 @@ const DEFAULT_ZOOM = 1;
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
-  const [numPages, setNumPages] = useState(null);
+  const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const [renderPages, setRenderPages] = useState<number>();
 
   //useEffect to avoid flickering
   useEffect(() => {
@@ -82,6 +83,18 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
     setNumPages(numPages);
   }
 
+  useEffect(() => {
+    if (numPages > 50) {
+      if (currentPage + 15 <= numPages) {
+        setRenderPages(currentPage + 15);
+      } else {
+        setRenderPages(currentPage + (numPages - currentPage));
+      }
+    } else {
+      setRenderPages(numPages);
+    }
+  }, [currentPage, numPages]);
+
   return (
     <div className="flex max-h-full w-full items-center justify-center pt-16">
       <Fragment>
@@ -89,7 +102,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
           <div className="flex items-center justify-center">
             <Document file={fileUrl} loading="" onLoadSuccess={onDocumentLoadSuccess}>
               <div className="flex flex-col items-center space-y-3">
-                {Array.from(new Array(numPages), (el, index) => (
+                {Array.from(new Array(renderPages), (el, index) => (
                   <PageWithObserver
                     loading=""
                     onPageVisible={setCurrentPage}
@@ -126,7 +139,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
               <div className="h-8 w-px bg-white bg-opacity-10" />
 
-              <div className="flex flex-row items-center justify-center">
+              <div className="flex flex-row items-center justify-center space-x-2">
                 <button
                   onClick={decreaseZoom}
                   disabled={zoom === 0}

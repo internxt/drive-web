@@ -1,13 +1,15 @@
 {
   "name": "drive-web",
-  "version": "v1.0.2",
+  "version": "v1.0.116",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
     "@iconscout/react-unicons": "^1.1.6",
     "@internxt/inxt-js": "=1.2.21",
     "@internxt/lib": "^1.2.0",
-    "@internxt/sdk": "^1.4.24",
+    "@internxt/sdk": "^1.4.37",
+    "@phosphor-icons/react": "^2.0.10",
+    "@popperjs/core": "^2.11.6",
     "@reduxjs/toolkit": "^1.6.0",
     "@sentry/react": "^7.1.0",
     "@sentry/tracing": "^7.1.0",
@@ -32,7 +34,6 @@
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
     "openpgp": "^4.10.10",
-    "phosphor-react": "^1.4.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^17.0.1",
@@ -52,9 +53,11 @@
     "react-infinite-scroll-component": "6.1.0",
     "react-loading-skeleton": "^2.2.0",
     "react-pdf": "^5.4.0",
+    "react-popper": "^2.3.0",
     "react-redux": "^7.2.4",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "react-tooltip": "^5.8.3",
     "redux-thunk": "^2.3.0",
     "socket.io-client": "4.4.1",
     "streamsaver": "^2.0.5",
@@ -146,7 +149,7 @@
     "webpack-bundle-analyzer": "^4.5.0"
   },
   "engines": {
-    "node": "v14.17.0 - v16.18.1"
+    "node": ">=14.17.0 <17"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts}": [

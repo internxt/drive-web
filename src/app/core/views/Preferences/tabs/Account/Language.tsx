@@ -1,34 +1,74 @@
 import React, { forwardRef, ReactNode, useEffect } from 'react';
-import i18next, { DefaultTFuncReturn } from 'i18next';
+import i18next from 'i18next';
 import Section from '../../components/Section';
 import Card from 'app/shared/components/Card';
-import { CaretDown } from 'phosphor-react';
+import { CaretDown } from '@phosphor-icons/react';
 import { Menu, Transition } from '@headlessui/react';
 import localStorageService from 'app/core/services/local-storage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-function getLanguage(): string {
-  const deviceLanguage = localStorageService.get('language') as string;
-  return deviceLanguage;
-}
+import dayjs from 'dayjs';
 
-const deviceLang = getLanguage();
+const localStorageLanguage = localStorageService.get('language');
+
+const languages = ['en', 'es', 'fr', 'it', 'cn', 'ru'];
+
+function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
+  return (
+    <Menu>
+      <Menu.Button className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out'}>
+        {title}
+      </Menu.Button>
+      <Transition
+        className={'left-0'}
+        enter="transform transition duration-50 ease-out"
+        enterFrom="scale-98 opacity-0"
+        enterTo="scale-100 opacity-100"
+        leave="transform transition duration-50 ease-out"
+        leaveFrom="scale-98 opacity-100"
+        leaveTo="scale-100 opacity-0"
+      >
+        <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
+          {menuItems && (
+            <div className="border-translate w-full border-gray-10">
+              {menuItems?.map((item, index) => (
+                <div className={'pt-2'} key={'menuitem-' + index}>
+                  <Menu.Item>{item}</Menu.Item>
+                </div>
+              ))}
+            </div>
+          )}
+        </Menu.Items>
+      </Transition>
+    </Menu>
+  );
+}
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [lang, setLang] = React.useState<string>(deviceLang === 'es' ? 'es' : 'en');
-  const [currentLangText, setCurrentLangText] = React.useState<DefaultTFuncReturn>(
-    deviceLang === 'es' ? 'Español (ES)' : 'English (US)',
-  );
+  const [lang, setLang] = React.useState<string>();
+
+  function changeLang(lang: string = localStorageLanguage || i18next.language) {
+    setLang(lang);
+  }
 
   useEffect(() => {
-    localStorageService.set('language', lang);
+    if (localStorageLanguage) {
+      changeLang(localStorageLanguage);
+    } else {
+      changeLang(i18next.language);
+    }
+  }, []);
+
+  useEffect(() => {
+    localStorageService.set('language', lang as string);
+    changeLang(i18next.language);
   }, [lang]);
 
-  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
+  const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
     return (
       <div
-        className="flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10"
+        className={'flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
         onClick={onClick}
       >
         {children}
@@ -36,67 +76,28 @@ export default function Language(): JSX.Element {
     );
   });
 
-  function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
-    return (
-      <Menu>
-        <Menu.Button className={'flex h-full w-full rounded-lg text-base transition-all duration-75 ease-in-out'}>
-          {title}
-        </Menu.Button>
-        <Transition
-          className={'left-0'}
-          enter="transform transition duration-50 ease-out"
-          enterFrom="scale-98 opacity-0"
-          enterTo="scale-100 opacity-100"
-          leave="transform transition duration-50 ease-out"
-          leaveFrom="scale-98 opacity-100"
-          leaveTo="scale-100 opacity-0"
-        >
-          <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
-            {menuItems && (
-              <div className="border-translate w-full border-gray-10">
-                {menuItems?.map((item, index) => (
-                  <div className="pt-2" key={'menuitem-' + index}>
-                    <Menu.Item>{item}</Menu.Item>
-                  </div>
-                ))}
-              </div>
-            )}
-          </Menu.Items>
-        </Transition>
-      </Menu>
-    );
-  }
-
   return (
     <Section className="" title={translate('lang.title')}>
       <Card>
         <LangDropdown
           title={
             <div className="flex w-full flex-row justify-between">
-              <p>{currentLangText}</p>
+              <p>{translate(`lang.${lang}`)}</p>
               <CaretDown size={20} />
             </div>
           }
-          menuItems={[
+          menuItems={languages.map((lang) => (
             <MenuItem
+              key={lang}
               onClick={() => {
-                setLang('en');
-                i18next.changeLanguage('en');
-                setCurrentLangText(translate('lang.en') as string);
+                setLang(lang);
+                i18next.changeLanguage(lang);
+                dayjs.locale(lang);
               }}
             >
-              <p>{translate('lang.en')}</p>
-            </MenuItem>,
-            <MenuItem
-              onClick={() => {
-                setLang('es');
-                i18next.changeLanguage('es');
-                setCurrentLangText(translate('lang.es') as string);
-              }}
-            >
-              <p>{translate('lang.es')}</p>
-            </MenuItem>,
-          ]}
+              <p>{translate(`lang.${lang}`)}</p>
+            </MenuItem>
+          ))}
         />
       </Card>
     </Section>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 import copy from 'copy-to-clipboard';
 import { DriveItemData } from 'app/drive/types';
@@ -10,27 +10,32 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { aes, items } from '@internxt/lib';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import PasswordInput from './components/PasswordInput';
-import { Check, Copy } from 'phosphor-react';
+import { Check, Copy } from '@phosphor-icons/react';
 import dateService from 'app/core/services/date.service';
 import shareService from 'app/share/services/share.service';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
 import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { domainManager } from '../../services/DomainManager';
+import _ from 'lodash';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
   item: DriveItemData;
+  isPreviewView?: boolean;
 }
 
-function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
-  const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
-  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
+async function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
+
+  copy(`${shareDomain}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
-const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => {
+const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const isSavedAlreadyWithPassword = !!share?.hashed_password;
   const dispatch = useAppDispatch();
@@ -38,7 +43,10 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   const [passwordInputVirgin, setPasswordInputVirgin] = useState(true);
   const [isPasswordProtected, setIsPasswordProtected] = useState(isSavedAlreadyWithPassword);
   const [isLinkCopied, setIsLinkCopied] = useState(false);
-  const isOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
+  const isOpen = useAppSelector(
+    isPreviewView ? (state) => state.ui.isShareItemDialogOpenInPreviewView : (state) => state.ui.isShareItemDialogOpen,
+  );
+
   const dateShareLink = share?.createdAt;
 
   const onClose = (): void => {
@@ -46,7 +54,11 @@ const ShareItemDialog = ({ share, item }: ShareItemDialogProps): JSX.Element => 
   };
 
   const close = () => {
-    dispatch(uiActions.setIsShareItemDialogOpen(false));
+    dispatch(
+      isPreviewView
+        ? uiActions.setIsShareItemDialogOpenInPreviewView(false)
+        : uiActions.setIsShareItemDialogOpen(false),
+    );
     dispatch(storageActions.setItemToShare(null));
   };
 

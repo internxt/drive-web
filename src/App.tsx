@@ -32,6 +32,8 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import Mobile from 'app/drive/views/MobileView/MobileView';
+import { domainManager } from './app/share/services/DomainManager';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -51,15 +53,14 @@ class App extends Component<AppProps> {
 
   async componentDidMount(): Promise<void> {
     const token = localStorageService.get('xToken');
+    const params = new URLSearchParams(window.location.search);
+    const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
 
-    if (token && navigationService.history.location.pathname !== '/new') {
+    if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
       /**
        * In case we receive a valid redirectUrl param, we return to that URL with the current token
        */
-      const redirectUrl = authService.getRedirectUrl(
-        new URLSearchParams(navigationService.history.location.search),
-        token,
-      );
+      const redirectUrl = authService.getRedirectUrl(params, token);
 
       if (redirectUrl) {
         window.location.replace(redirectUrl);
@@ -79,12 +80,14 @@ class App extends Component<AppProps> {
       dispatch(sessionActions.setHasConnection(true));
     });
 
-    await LRUFilesCacheManager.getInstance();
-    await LRUFilesPreviewCacheManager.getInstance();
-    await LRUPhotosCacheManager.getInstance();
-    await LRUPhotosPreviewsCacheManager.getInstance();
-
     try {
+      await LRUFilesCacheManager.getInstance();
+      await LRUFilesPreviewCacheManager.getInstance();
+      await LRUPhotosCacheManager.getInstance();
+      await LRUPhotosPreviewsCacheManager.getInstance();
+
+      await domainManager.fetchDomains();
+
       await this.props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -129,6 +132,11 @@ class App extends Component<AppProps> {
     } = this.props;
     const pathName = window.location.pathname.split('/')[1];
     let template = <PreparingWorkspaceAnimation />;
+    let isMobile = false;
+
+    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+      isMobile = true;
+    }
 
     if (window.location.pathname) {
       if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
@@ -161,7 +169,13 @@ class App extends Component<AppProps> {
               <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/account" to="/preferences" />
-              {this.routes}
+              {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+                <Route path="*">
+                  <Mobile user={this.props.user} />
+                </Route>
+              ) : (
+                this.routes
+              )}
             </Switch>
 
             <Toaster position="bottom-center" />

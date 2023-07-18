@@ -1,4 +1,4 @@
-import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
+import { CaretLeft, DownloadSimple, Share, Trash, X } from '@phosphor-icons/react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -128,7 +128,7 @@ export default function Preview({
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate z-50" data-test="photos-preview">
+      <div className="absolute inset-0 isolate z-10" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"
@@ -165,7 +165,7 @@ export default function Preview({
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
-              <p className="ml-3">{translate('general,loading.default')}</p>
+              <p className="ml-3">{translate('general.loading.default')}</p>
             </div>
           </div>
         )}

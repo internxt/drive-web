@@ -1,5 +1,5 @@
 import copy from 'copy-to-clipboard';
-import { Copy } from 'phosphor-react';
+import { Copy } from '@phosphor-icons/react';
 import { useState } from 'react';
 import Tooltip from '../Tooltip';
 

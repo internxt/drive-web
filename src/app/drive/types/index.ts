@@ -16,12 +16,14 @@ export interface DriveFolderData {
   isFolder: boolean;
   name: string;
   plain_name: string;
+  plainName?: string | null;
   parentId: number;
   parent_id: number | null;
   updatedAt: string;
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  uuid?: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -43,12 +45,14 @@ export interface DriveFileData {
   id: number;
   name: string;
   plain_name: string | null;
+  plainName?: string | null;
   size: number;
   type: string;
   updatedAt: string;
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
+  uuid?: string;
 }
 
 interface Thumbnail {
@@ -79,6 +83,8 @@ export type DriveItemData = DriveFileData & DriveFolderData;
 
 export interface DriveItemPatch {
   name?: string;
+  plain_name?: string;
+  plainName?: string;
   currentThumbnail?: Thumbnail;
   thumbnails?: Thumbnail[];
   shares?: ShareLink[];
@@ -141,4 +147,9 @@ export enum FileViewMode {
 export enum DownloadFolderMethod {
   FileSystemAccessAPI = 'file-system-access-api',
   StreamSaver = 'stream-saver',
+}
+
+export enum FreeStoragePlan {
+  simpleName = '2GB',
+  storageLimit = 2147483648,
 }

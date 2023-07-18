@@ -55,6 +55,7 @@ function moveFile(
     .moveFile(payload)
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });
@@ -75,6 +76,7 @@ function moveFolder(
     .moveFolder(payload)
     .then((response) => trackMove(response, 'folder'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });
@@ -117,7 +119,7 @@ async function afterMoving(
               : itemsToRecover[0].isFolder
               ? t('general.folder')
               : t('general.file'),
-          s: itemsToRecover.length > 1 ? 's' : '',
+          s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
         });
     notificationsService.show({
       type: ToastType.Success,

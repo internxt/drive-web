@@ -7,7 +7,7 @@ import { sessionSelectors } from '../../../store/slices/session/session.selector
 import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { Binoculars, Gear, MagnifyingGlass, X } from 'phosphor-react';
+import { Binoculars, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';

@@ -36,6 +36,8 @@ export const updateItemMetadataThunk = createAsyncThunk<
         isFolder: item.isFolder,
         patch: {
           name: payload.metadata.itemName,
+          plain_name: payload.metadata.itemName,
+          plainName: payload.metadata.itemName,
         },
       }),
     );

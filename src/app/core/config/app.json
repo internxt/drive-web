@@ -40,6 +40,18 @@
       "exact": true
     },
     {
+      "id": "signup-blog",
+      "layout": "empty",
+      "path": "/signup-blog",
+      "exact": true
+    },
+    {
+      "id": "buttonAuth",
+      "layout": "empty",
+      "path": "/buttonAuth",
+      "exact": true
+    },
+    {
       "id": "recover",
       "layout": "empty",
       "path": "/recover",
@@ -64,14 +76,16 @@
       "layout": "header-and-sidenav",
       "path": "/app/backups",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "shared-links",
       "layout": "header-and-sidenav",
       "path": "/app/shared-links",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "photos",
@@ -81,6 +95,7 @@
       "auth": true,
       "hideSearch": true
     },
+
     {
       "id": "trash",
       "layout": "header-and-sidenav",
@@ -126,6 +141,13 @@
       "id": "checkout-success",
       "layout": "empty",
       "path": "/checkout/success",
+      "exact": false,
+      "auth": true
+    },
+    {
+      "id": "checkout-cancel",
+      "layout": "empty",
+      "path": "/checkout/cancel",
       "exact": false,
       "auth": true
     },
@@ -193,10 +215,23 @@
       "exact": true
     },
     {
+      "id": "change-email",
+      "layout": "empty",
+      "path": "/change-email/:token",
+      "exact": false
+    },
+    {
       "id": "verify-email",
       "layout": "empty",
       "path": "/verify-email/:token",
       "exact": false
+    },
+    {
+      "id": "request-access",
+      "layout": "empty",
+      "path": "/request-access",
+      "exact": true,
+      "auth": true
     },
     {
       "id": "not-found",

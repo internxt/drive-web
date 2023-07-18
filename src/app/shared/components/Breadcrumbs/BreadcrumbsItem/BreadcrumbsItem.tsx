@@ -12,7 +12,7 @@ import {
   Gear,
   ArrowsOutCardinal,
   DownloadSimple,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -33,7 +33,6 @@ import {
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { TFunction } from 'i18next';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -168,7 +167,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   const onMoveToTrashButtonClicked = async () => {
     const previousBreadcrumb = props.items[props.items.length - 2];
-    await moveItemsToTrash(currentFolder, translate as TFunction);
+    await moveItemsToTrash(currentFolder);
     onItemClicked(previousBreadcrumb);
   };
 

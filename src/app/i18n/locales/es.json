@@ -1,13 +1,40 @@
 {
+  "mobileView": {
+    "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
+    "logOut": "Cerrar sesión"
+  },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
+  "lifetimeBanner": {
+    "title": "Oferta lifetime",
+    "description": "¡Privacidad en la nube para siempre!",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Obtén la oferta"
+  },
   "lang": {
     "title": "Idioma",
-    "es": "Español (ES)",
-    "en": "Inglés (US)"
+    "en": "English (Inglés)",
+    "es": "Español (Español)",
+    "fr": "Français (Francés)",
+    "it": "Italiano (Italiano)",
+    "cn": "简体中文 (Chino)",
+    "ru": "Русский (Ruso)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -26,7 +53,8 @@
     "signup": {
       "title": "Crear una cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
-      "login": "Iniciar sesión"
+      "login": "Iniciar sesión",
+      "encrypting": "Encriptando"
     },
     "forgotPassword": {
       "title": "Contraseña olvidada",
@@ -195,8 +223,8 @@
             "card": {
               "name": "Nombre",
               "lastname": "Apellido",
-
-              "email": "Correo electrónico",
+              "edit": "Editar",
+              "email": "Correo",
               "resendEmail": "Reenviar correo de verificación"
             },
             "verify": {
@@ -206,7 +234,21 @@
             },
             "editProfile": {
               "name": "Nombre",
-              "lastname": "Apellido"
+              "lastname": "Apellido",
+              "updateProfile": "Perfil actualizado correctamente",
+              "errorUpdatingProfile": "No hemos podido actualizar su perfil"
+            },
+            "changeEmail": {
+              "title": "Cambiar correo electrónico",
+              "email": "Correo",
+              "newEmail": "Nuevo correo",
+              "password": "Contraseña",
+              "errorSameEmail": "El nuevo correo electrónico debe ser diferente del actual",
+              "errorPassword": "Contraseña incorrecta, inténtalo de nuevo",
+              "sendVerification": "Enviar verificación",
+              "sendingVerification": "Enviando verificación",
+              "sucessSendingVerification": "Verificación enviada a {{email}}",
+              "errorSendingVerification": "Error enviando verificación"
             }
           },
           "deleteAccount": {
@@ -220,7 +262,33 @@
           "label": "Facturación",
           "currentPlan": "Plan actual",
           "subsRenew": "La suscripción se renueva en {{daysUntilRenewal}} días",
-          "cancelSubscription": "Cancelar suscripción",
+          "cancelSubscriptionModal": {
+            "title": "Cancelar suscripción",
+            "description": "Está a punto de cancelar su plan Internxt de {{currentPlanName}}. Al cancelar su plan, será degradado al plan gratuito Internxt {{freePlanName}}. Confirme su elección para continuar, por favor.",
+            "keepSubscription": "Mantener suscripción",
+            "continue": "Continuar",
+            "cancelSubscription": "Cancelar suscripción",
+            "infoBox": {
+              "titleCurrent": "Actual",
+              "titleNew": "Nuevo",
+              "year": "año",
+              "month": "mes",
+              "free": "Gratis",
+              "reachedFreeLimit": "Has superado el límite de {{freePlanName}}",
+              "reachedFreeLimitDescription": "Como actualmente estás usando {{currentUsage}} de espacio, Internxt Drive dejará de sincronizar tus ficheros, y tampoco serás capaz de añadir nuevos"
+            },
+            "giveUsFeedback": "Cuéntenos por qué quiere cancelar su plan Internxt de {{currentPlanName}} y cambiar al plan gratuito.",
+            "feedback": {
+              "placeholder": "Denos su opinión"
+            },
+            "coupon": {
+              "title": "3 MESES",
+              "subtitle": "GRATIS",
+              "text1": "Si mantienes tu suscripción de",
+              "text2": "obtendrás los 3 meses siguientes gratis. Solo se aplicara una vez",
+              "continue": "Obtener 3 meses GRATIS"
+            }
+          },
           "billed": "Facturación {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Método de pago",
@@ -228,11 +296,16 @@
               "title": "Estás en el plan gratuito",
               "subtitle": "La información de la tarjeta de crédito aparecerá aquí automáticamente cuando tengas un plan de suscripción de pago."
             },
-            "title": "Añadir nuevo método de pago"
+            "title": "Añadir nuevo método de pago",
+            "contactUs": {
+              "description": "Ponte en contacto con nosotros para actualizar tu método de pago",
+              "contact": "Contacta"
+            }
           },
           "invoices": {
             "head": "Facturas",
             "billingDate": "Fecha de facturación",
+            "plan": "Plan",
             "empty": {
               "title": "Estás en el plan gratuito",
               "subtitle": "Las facturas emitidas aparecerán aquí automáticamente cuando se realice un pago."
@@ -261,11 +334,11 @@
             "business": "Cambiar a Planes para Empresas"
           },
           "viewAllFeatures": "View all features",
-
           "card": {
             "annually": "{{amount}}€ facturado al año",
             "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€"
+            "lifetime": "{{amount}}€",
+            "oneTimePayment": "Pago único"
           },
           "features": {
             "title": "Funciones incluidas en todos los planes",
@@ -288,6 +361,29 @@
                 "point2": "Sincronización con ancho de banda ilimitado",
                 "point3": "Copia de seguridad de cualquier carpeta en tu ordenador"
               }
+            }
+          },
+          "dialog": {
+            "title": "Cambiar plan",
+            "subtitle1": "Estás a punto de cambiar tu plan Internxt de ",
+            "subtitle2": " a ",
+            "subtitle3": ". Confirma tu elección para continuar, por favor.",
+            "plan": {
+              "current": "Actual",
+              "new": "Nuevo",
+              "interval": "mes"
+            },
+            "alert": {
+              "title": "Estás por encima de ",
+              "text1": "Porque estás utilizando ",
+              "text2": ", tu Internxt Drive dejará de sincronizar tus archivos y no podrás añadir nuevos archivos"
+            },
+            "message": {
+              "text": "Se te cobrará ahora y en cada periodo de pago hasta que se produzcan nuevos cambios."
+            },
+            "button": {
+              "back": "Mantener plan actual",
+              "continue": "Cambiar de plan"
             }
           }
         },
@@ -332,6 +428,7 @@
             "titleDisable": "Desactivar autenticación en dos pasos",
             "description": "La autenticación en dos pasos proporciona una capa de seguridad adicional, ya que requiere verificación al iniciar sesión. Además de tu contraseña, necesitarás un código generado.",
             "button": "Activar",
+            "disable": "Deshabilitar 2FA",
             "enabled": "Activado",
             "disabled": "Desactivado",
             "modal": {
@@ -397,10 +494,49 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": "Correo electrónico verificado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar la verificación del correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      }
+    },
+    "emailChange": {
+      "password": "Contraseña",
+      "auth": {
+        "title": "Verificar cambio de correo electrónico",
+        "subtitle": "El correo electrónico de tu cuenta se cambiará a {{email}}",
+        "wrongPassword": "Contraseña incorrecta, inténtelo de nuevo",
+        "cta": "Continuar"
+      },
+      "success": {
+        "title": "Correo electrónico cambiado con éxito",
+        "subtitle": "Puedes cerrar esta pestaña",
+        "cta": "Abrir Internxt Drive"
+      },
+      "error": {
+        "title": "Algo salió mal",
+        "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar el cambio de correo electrónico en Configuración > Cuenta",
+        "cta": "Ir a Cuenta"
+      },
+      "expired": {
+        "title": "Enlace de verificación caducado",
+        "subtitle": "Vuelve a solicitar el cambio de correo electrónico en Ajustes > Cuenta",
+        "cta": "Ir a Cuenta"
+      }
+    },
     "redirectToApp": {
       "message": "Gracias!",
       "goToApp": "Volver a la aplicación"
     }
+  },
+  "contextMenu": {
+    "itemsSelected": "archivos seleccionados"
   },
   "modals": {
     "renameItemDialog": {
@@ -430,6 +566,80 @@
       "label": "Nombre",
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
+    },
+    "shareModal": {
+      "title": "Compartir \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personas con acceso",
+        "invite": "Invitar",
+        "userItem": {
+          "roles": {
+            "owner": "Propietario",
+            "editor": "Editor",
+            " viewer": "Visor"
+          },
+          " remove": "Eliminar"
+        }
+      },
+      "general": {
+        "generalAccess": "Acceso general",
+        "accessOptions": {
+          "public": {
+            "title": "Publico",
+            "subtitle": "Cualquiera con el enlace puede acceder"
+          },
+          "restricted": {
+            "title": "Restringido",
+            "subtitle": "Sólo pueden acceder las personas añadidas"
+          },
+          "stopSharing": "Dejar de compartir"
+        },
+        "copyLink": "Copiar enlace"
+      },
+      "requests": {
+        "title": "Solicitudes de acceso",
+        "button": "Solicitudes",
+        "empty": "No quedan solicitudes",
+        "actions": {
+          "accept": "Aceptar",
+          "deny": "Denegar",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Espectador"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "¿Dejar de compartir?",
+        "subtitle": "Nadie podrá acceder a \"{{name}}\"",
+        "cancelar": "Cancelar",
+        "confirmar": "Dejar de compartir",
+        "notification": {
+          "success": "Dejar de compartir \"{{name}}\"",
+          "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
+        }
+      },
+      "invite": {
+        "title": "Invitar a otros",
+        "textarea": "Escribe un mensaje (opcional)",
+        "notifyUsers": "Notificar a los usuarios",
+        "instructions": "Pulsa intro o espacio para introducir más correos electronicos",
+        "email": "Correo electrónico",
+        "invite": "Invitar",
+        "editor": "Editor",
+        "viewer": "Visualizador",
+        "listUsers": "Usuarios a invitar"
+      },
+      "requestAccess": {
+        "title": "No tienes acceso",
+        "description": "Solicita acceso al propietario o cambia a una cuenta con acceso.",
+        "textarea": "Mensaje (opcional)",
+        "requestButton": "Solicita acceso",
+        "logged": "Conectado como",
+        "change": "Cambiar",
+        "requestSent": "Solicitud enviada",
+        "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      }
     },
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
@@ -461,6 +671,7 @@
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
       "pending": "Pendientes",
+      "total": "Total",
       "accepted": "Aceptadas",
       "empty": "No has invitado a nadie aún",
       "resend": "Reenviar invitación",
@@ -479,6 +690,7 @@
       "confirmPassword": "Confirmar contraseña",
       "strongPassword": "La contraseña es fuerte",
       "errors": {
+        "longPassword": "La contraseña puede tener como maximo 50 caracteres",
         "shortPassword": "La contraseña debe tener al menos 8 caracteres",
         "notComplex": "La contraseña debe contener al menos una letra mayúscula, una minúscula y un número",
         "weakPassword": "La contraseña es débil",
@@ -544,7 +756,11 @@
     "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
-    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos."
+    "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
+    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Conexión a internet perdida",
+    "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
   "backups": {
     "backups-from": "Copias de seguridad de {{deviceName}}",
@@ -672,7 +888,7 @@
         "decrypting": "Descifrando archivo",
         "in-process": "{{progress}}% Descargando archivo",
         "success": "Archivo descargado",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}
@@ -702,8 +918,9 @@
         "pending": "Descarga pendiente",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% carpeta descargada",
+        "in-process-without-progress": "Descargando carpeta",
         "success": "Carpeta descargada",
-        "error": "Error durante la descarga",
+        "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
       },
       "errors": {}
@@ -773,13 +990,16 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} restablecid{{s}}",
+    "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",
     "verificationEmail": "Correo de verificación enviado",
     "successCancelSubscription": "Tu suscripción ha sido cancelada",
-    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción"
+    "errorCancelSubscription": "Algo ha ido mal al cancelar la suscripción",
+    "successApplyCoupon": "Se han aplicado 3 meses gratis",
+    "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
+    "alreadyAppliedCoupon": "El cupón ya se ha aplicado"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",
@@ -825,10 +1045,12 @@
     "moreInfo": "Más info",
     "dismiss": "Dismiss",
     "save": "Guardar",
+    "saving": "Guardando",
     "back": "Atrás",
     "edit": "Editar",
     "submit": "Enviar",
     "access": "Acceder",
+    "previous": "Anterior",
     "next": "Siguiente",
     "disable": "Desactivar",
     "move": "Mover",
@@ -836,7 +1058,8 @@
     "navigating": "Restaurando...",
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
-    "restore": "Restaurar"
+    "restore": "Restaurar",
+    "copyLink": "Copiar enlace"
   },
   "drive": {
     "usage": "Uso",
@@ -853,7 +1076,12 @@
         "actions": "Acciones"
       }
     },
+    "viewMode": {
+      "gridMode": "Vista de cuadrícula",
+      "listMode": "Vista de lista"
+    },
     "dropdown": {
+      "openPreview": "Abrir previsualización",
       "getLink": "Copiar enlace",
       "rename": "Renombrar",
       "download": "Descargar",
@@ -863,7 +1091,8 @@
       "deleteLink": "Eliminar enlace",
       "restore": "Restaurar",
       "deletePermanently": "Eliminar permanentemente",
-      "move": "Mover"
+      "move": "Mover",
+      "delete": "Eliminar"
     },
     "deleteItems": {
       "title": "¿Eliminar permanentemente?",
@@ -881,7 +1110,9 @@
       "title": "Maximum file upload",
       "advice": "The maximum is 1000 files per upload.",
       "close": "Cerrar"
-    }
+    },
+    "movingToTrash": "Moviendo elementos a la papelera",
+    "deletingItems": "Eliminando elementos de la papelera"
   },
   "appSumo": {
     "tiers": {
@@ -939,6 +1170,21 @@
       "title": "¡Obtén {{creditSum}} gratis!",
       "progress": "{{currentCredit}}",
       "limit": "de {{creditSum}} desbloqueados"
+    }
+  },
+  "errors": {
+    "downloadingDesktopApp": "Algo ha ido mal al descargar la aplicación de escritorio"
+  },
+  "tutorial": {
+    "signUpTutorial": {
+      "stepOne": {
+        "title": "Saca el máximo partido a Internxt Drive",
+        "description": "Descarga la aplicación de escritorio para sincronizar y hacer copias de seguridad de todas tus carpetas y archivos."
+      },
+      "stepTwo": {
+        "title": "Empecemos...",
+        "description": "Haga clic en el botón Cargar para cargar su primer archivo."
+      }
     }
   }
 }

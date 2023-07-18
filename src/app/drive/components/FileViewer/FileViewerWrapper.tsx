@@ -15,8 +15,10 @@ interface FileViewerWrapperProps {
 
 const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProps): JSX.Element => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
-  const onDownload = () => file && dispatch(storageThunks.downloadItemsThunk([file as DriveItemData]));
+  const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<DriveFileData>();
 
@@ -45,6 +47,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       downloader={downloader}
       setCurrentFile={setCurrentFile}
       progress={updateProgress}
+      isAuthenticated={isAuthenticated}
     />
   ) : (
     <div className="hidden" />

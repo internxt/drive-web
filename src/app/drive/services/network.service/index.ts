@@ -7,7 +7,7 @@ import { TeamsSettings } from '../../../teams/types';
 import { uploadFile } from 'app/network/upload';
 import { Abortable } from 'app/network/Abortable';
 
-export const MAX_ALLOWED_UPLOAD_SIZE = 3 * 1024 * 1024 * 1024;
+export const MAX_ALLOWED_UPLOAD_SIZE = 10 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
 interface IUploadParams {
@@ -85,18 +85,21 @@ export class Network {
 
     const abortController = new AbortController();
 
-    return [uploadFile(bucketId, {
-      ...params,
-      ...{
-        progressCallback: (totalBytes, uploadedBytes) => {
-          params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
-        }
+    return [
+      uploadFile(bucketId, {
+        ...params,
+        ...{
+          progressCallback: (totalBytes, uploadedBytes) => {
+            params.progressCallback(uploadedBytes / totalBytes, totalBytes, uploadedBytes);
+          },
+        },
+        creds: this.creds,
+        mnemonic: this.mnemonic,
+      }),
+      {
+        abort: () => abortController.abort(),
       },
-      creds: this.creds,
-      mnemonic: this.mnemonic,
-    }), {
-      abort: () => abortController.abort()
-    }];
+    ];
   }
 
   /**

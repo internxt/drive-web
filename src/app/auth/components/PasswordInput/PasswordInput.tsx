@@ -2,7 +2,7 @@ import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-fo
 import { IFormValues } from 'app/core/types';
 
 import './PasswordInput.scss';
-import { Eye, EyeSlash } from 'phosphor-react';
+import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 interface InputProps {
@@ -21,6 +21,7 @@ interface InputProps {
   className?: string;
   autoFocus?: boolean;
   value?: string;
+  autoComplete?: string;
 }
 const PasswordInput = ({
   label,
@@ -37,6 +38,7 @@ const PasswordInput = ({
   onBlur,
   className,
   autoFocus,
+  autoComplete,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
   return (
@@ -48,6 +50,7 @@ const PasswordInput = ({
         min={0}
         required={true}
         autoFocus={autoFocus}
+        autoComplete={autoComplete}
         {...register(label, {
           required,
           minLength,

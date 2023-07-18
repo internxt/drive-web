@@ -18,6 +18,7 @@ interface InputProps {
   autoFocus?: boolean;
   onFocus?: () => void;
   onBlur?: () => void;
+  autoComplete?: string;
 }
 export default function TextInput({
   label,
@@ -33,6 +34,7 @@ export default function TextInput({
   required,
   className,
   autoFocus,
+  autoComplete,
 }: InputProps): JSX.Element {
   return (
     <div className={`${className}`}>
@@ -40,6 +42,8 @@ export default function TextInput({
         type={type}
         disabled={disabled}
         placeholder={placeholder}
+        autoComplete={autoComplete}
+        id={label}
         min={0}
         required={true}
         autoFocus={autoFocus}

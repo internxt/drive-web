@@ -18,7 +18,13 @@ const itemsListService = {
         (items.getItemDisplayName(a).toLowerCase() < items.getItemDisplayName(b).toLowerCase() ? 1 : -1) * dirNumber,
       type: (a, b) => (a.type < b.type ? 1 : -1) * dirNumber,
       updatedAt: (a, b) => (a.updatedAt < b.updatedAt ? 1 : -1) * dirNumber,
-      size: (a, b) => (a.size < b.size ? 1 : -1) * dirNumber,
+      size: (a, b) => {
+        // parsed as unknown first in order to match required types of parseInt function
+        // because size arrives as a string but type of Size in DriveItemData is a number
+        const sizeA = parseInt(a.size as unknown as string);
+        const sizeB = parseInt(b.size as unknown as string);
+        return (sizeA < sizeB ? 1 : -1) * dirNumber;
+      },
     };
 
     list.sort(sortFns[by]);

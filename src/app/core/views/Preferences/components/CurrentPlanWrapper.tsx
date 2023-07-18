@@ -1,5 +1,5 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { useContext } from 'react';
 import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
@@ -53,19 +53,24 @@ export default function CurrentPlanWrapper({
   let planSubtitle: Parameters<typeof CurrentPlan>[0]['planSubtitle'];
 
   if (userSubscription.type === 'subscription') {
+    const amount = userSubscription.amount;
+    const amountAfterCoupon = userSubscription.amountAfterCoupon;
+
     const currencySymbol =
       CURRENCY_SYMBOLS[userSubscription.currency.toUpperCase()] ?? userSubscription.currency.toUpperCase();
-    const mainLabel = `${userSubscription.amount / 100} ${currencySymbol}/ ${
+    const mainLabel = `${amount / 100} ${currencySymbol}/ ${
       userSubscription.interval === 'year'
         ? translate('views.account.tabs.account.view.subscription.yearly')
         : translate('views.account.tabs.account.view.subscription.monthly')
     }`;
 
-    const beforeMainLabelCrossed = userSubscription.amountAfterCoupon
-      ? `${userSubscription.amountAfterCoupon / 100} ${currencySymbol}`
-      : undefined;
+    let beforeMainLabelCrossed;
 
-    planSubtitle = { mainLabel, beforeMainLabelCrossed };
+    if (amountAfterCoupon || amountAfterCoupon === 0) {
+      beforeMainLabelCrossed = `${amountAfterCoupon / 100} ${currencySymbol}`;
+    }
+
+    planSubtitle = { mainLabel, beforeMainLabelCrossed, amount, amountAfterCoupon };
   }
 
   const tabContext = useContext(TabContext);

@@ -1,7 +1,7 @@
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import React, { ReactNode, useEffect, useCallback, useLayoutEffect, useState } from 'react';
-import { ArrowUp, ArrowDown } from 'phosphor-react';
+import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import _ from 'lodash';
@@ -17,12 +17,14 @@ interface ListProps<T, F> {
   items: T[];
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
+  onClick?: (props: T) => void;
   onDoubleClick?: (props: T) => void;
+  onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: ReactNode;
-  onNextPage: () => void;
+  onNextPage?: () => void;
   onOrderByChanged?: (value: { field: F; direction: 'ASC' | 'DESC' }) => void;
   orderBy?: { field: F; direction: 'ASC' | 'DESC' };
   hasMoreItems?: boolean;
@@ -30,6 +32,14 @@ interface ListProps<T, F> {
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | 'multiselect' | Array<'delete' & (() => void)>>;
   disableKeyboardShortcuts?: boolean;
+  disableItemCompositionStyles?: boolean;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  keyBoardShortcutActions?: {
+    onShiftFKeysPressed?: () => void;
+    onRKeyPressed?: () => void;
+    onBackspaceKeyPressed?: () => void;
+  };
 }
 
 /**
@@ -51,12 +61,14 @@ interface ListProps<T, F> {
  *
  * This component has no state in it. The state must be kept by an smarter component (higher in the herarchy)
  */
-export default function List<T extends { id: string }, F extends keyof T>({
+export default function List<T extends { id: any }, F extends keyof T>({
   header,
   items,
   itemComposition,
   selectedItems,
+  onClick,
   onDoubleClick,
+  onEnterPressed,
   onSelectedItemsChanged,
   isLoading,
   skinSkeleton,
@@ -67,8 +79,12 @@ export default function List<T extends { id: string }, F extends keyof T>({
   hasMoreItems,
   menu,
   className,
+  disableItemCompositionStyles,
+  onMouseEnter,
+  onMouseLeave,
+  keyBoardShortcutActions,
+  disableKeyboardShortcuts,
 }: // keyboardShortcuts,
-// disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
   const [isScrollable, ref, node] = useIsScrollable([items]);
   const isItemSelected = (item: T) => {
@@ -85,17 +101,31 @@ ListProps<T, F>): JSX.Element {
       />
     ));
 
+  // Check if this is necessary, commented because it calls twice onNextPage
+  // because InfiniteScroll already manage this case
   useEffect(() => {
     if (!node || isLoading) return;
 
     if (!isScrollable && hasMoreItems) {
-      onNextPage();
+      // onNextPage?.();
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
+
+  const handleNexstPage = () => {
+    onNextPage?.();
+  };
 
   function unselectAllItems() {
     const changesToMake = selectedItems.map((item) => ({ props: item, value: false }));
     onSelectedItemsChanged(changesToMake);
+  }
+
+  function executeClickOnSelectedItem() {
+    const oneItemSelected = selectedItems.length === 1;
+    if (oneItemSelected) {
+      const selectedItem = selectedItems[0];
+      onEnterPressed?.(selectedItem);
+    }
   }
 
   function unselectAllItemsAndSelectOne(props: T) {
@@ -130,35 +160,48 @@ ListProps<T, F>): JSX.Element {
     }
   }
 
+  const handleKeyPress = (action) => {
+    return () => {
+      if (!disableKeyboardShortcuts) action();
+    };
+  };
+
+  const handleRKeyPressed = () => {
+    keyBoardShortcutActions?.onRKeyPressed?.();
+  };
+
+  const handleBackspaceKeyPressed = () => {
+    keyBoardShortcutActions?.onBackspaceKeyPressed?.();
+  };
+
   useHotkeys(
     'ctrl+a, cmd+a',
     (e) => {
       e.preventDefault();
-      selectAllItems();
+      handleKeyPress(selectAllItems);
     },
-    [items, selectedItems],
+    [items, selectedItems, disableKeyboardShortcuts],
   );
 
-  useHotkeys('esc', unselectAllItems, [selectedItems]);
+  useHotkeys('esc', handleKeyPress(unselectAllItems), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('enter', handleKeyPress(executeClickOnSelectedItem), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('r', handleKeyPress(handleRKeyPressed), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('backspace', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
 
-  function onItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+  function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
-      onSelectedItemsChanged([{ props, value: !isItemSelected(props) }]);
-    } else {
-      unselectAllItemsAndSelectOne(props);
+      onSelectedItemsChanged([{ props: itemClicked, value: !isItemSelected(itemClicked) }]);
+    } else if (!isItemSelected(itemClicked)) {
+      onClick?.(itemClicked);
     }
   }
 
-  useEffect(() => {
-    const cb = (e: MouseEvent) => {
-      if (!(e.target as Element | null)?.closest('#generic-list-component')) {
-        unselectAllItems();
-      }
-    };
-    document.addEventListener('click', cb);
-
-    return () => document.removeEventListener('click', cb);
-  }, [selectedItems]);
+  function onRightItemClick(props: T, e: React.MouseEvent<HTMLDivElement>) {
+    e.preventDefault();
+    if (!isItemSelected(props)) {
+      unselectAllItemsAndSelectOne(props);
+    }
+  }
 
   return (
     <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
@@ -185,6 +228,7 @@ ListProps<T, F>): JSX.Element {
             >
               <span>{column.label}</span>
               {column.name === orderBy?.field &&
+                column.orderable &&
                 (orderBy?.direction === 'ASC' ? (
                   <ArrowUp size={14} weight="bold" />
                 ) : (
@@ -199,15 +243,16 @@ ListProps<T, F>): JSX.Element {
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 ? (
+        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={onNextPage}
-              hasMore={hasMoreItems ?? false}
+              next={handleNexstPage}
+              hasMore={!!hasMoreItems}
               loader={loader}
+              scrollThreshold={0.7}
               scrollableTarget="scrollableList"
               className="h-full"
               style={{ overflow: 'visible' }}
@@ -220,9 +265,16 @@ ListProps<T, F>): JSX.Element {
                   selected={isItemSelected(item)}
                   onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
                   onClick={(e) => onItemClick(item, e)}
+                  onClickContextMenu={(e) => onRightItemClick(item, e)}
+                  onThreeDotsButtonPressed={(item) => {
+                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                  }}
                   columnsWidth={header.map((column) => column.width)}
                   menu={menu}
                   onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                  disableItemCompositionStyles={disableItemCompositionStyles}
+                  onMouseEnter={onMouseEnter}
+                  onMouseLeave={onMouseLeave}
                 />
               ))}
             </InfiniteScroll>

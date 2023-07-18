@@ -4,6 +4,7 @@ import {
   sha512HmacBuffer,
   sha512HmacBufferFromHex,
 } from '@internxt/inxt-js/build/lib/utils/crypto';
+import { streamFileIntoChunks } from 'app/core/services/stream.service';
 import { Sha256 } from 'asmcrypto.js';
 import { mnemonicToSeed } from 'bip39';
 import { Cipher, CipherCCM, createCipheriv, createHash } from 'crypto';
@@ -88,9 +89,45 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
   return encryptedFileReadable;
 }
 
+/**
+ * Given a stream and a cipher, encrypt its content on pull
+ * @param readable Readable stream
+ * @param cipher Cipher used to encrypt the content
+ * @returns A readable whose output is the encrypted content of the source stream
+ */
+export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
+  const reader = readable.getReader();
+
+  return new ReadableStream({
+    async pull(controller) {
+      console.log('2ND_STEP: PULLING');
+      const status = await reader.read();
+
+      if (!status.done) {
+        controller.enqueue(cipher.update(status.value));
+      } else {
+        controller.close();
+      }
+    },
+  });
+}
+
+export function encryptStreamInParts(
+  plainFile: { size: number; stream(): ReadableStream<Uint8Array> },
+  cipher: Cipher,
+  parts: number,
+): ReadableStream<Uint8Array> {
+  // We include a marginChunkSize because if we split the chunk directly, there will always be one more chunk left, this will cause a mismatch with the urls provided
+  const marginChunkSize = 1024;
+  const chunkSize = plainFile.size / parts + marginChunkSize;
+  const readableFileChunks = streamFileIntoChunks(plainFile.stream(), chunkSize);
+
+  return encryptReadablePull(readableFileChunks, cipher);
+}
+
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
-  cipher: Cipher
+  cipher: Cipher,
 ): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = new Sha256();
@@ -113,10 +150,40 @@ export async function getEncryptedFile(
 
   return [
     new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160').update(Buffer.from(hasher.result as Uint8Array)).digest('hex'),
+    createHash('ripemd160')
+      .update(Buffer.from(hasher.result as Uint8Array))
+      .digest('hex'),
   ];
 }
 
 export function sha256(input: Buffer): Buffer {
   return createHash('sha256').update(input).digest();
+}
+
+export async function processEveryFileBlobReturnHash(
+  chunkedFileReadable: ReadableStream<Uint8Array>,
+  onEveryBlob: (blob: Blob) => Promise<void>,
+): Promise<string> {
+  const reader = chunkedFileReadable.getReader();
+  const hasher = new Sha256();
+
+  let done = false;
+
+  while (!done) {
+    const status = await reader.read();
+    if (!status.done) {
+      const value = status.value;
+      hasher.process(value);
+      const blob = new Blob([value], { type: 'application/octet-stream' });
+      await onEveryBlob(blob);
+    }
+
+    done = status.done;
+  }
+
+  hasher.finish();
+
+  return createHash('ripemd160')
+    .update(Buffer.from(hasher.result as Uint8Array))
+    .digest('hex');
 }

@@ -2,17 +2,23 @@ import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
 import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 import { validateMnemonic } from 'bip39';
-import { uploadFile } from '@internxt/sdk/dist/network/upload';
+import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
 
-import { getEncryptedFile } from './crypto';
+import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
 import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
+import { queue, QueueObject } from 'async';
+import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
+}
+
+interface UploadMultipartOptions extends UploadOptions {
+  parts: number;
 }
 
 interface DownloadOptions {
@@ -22,26 +28,28 @@ interface DownloadOptions {
   downloadingCallback?: DownloadProgressCallback;
 }
 
+interface UploadTask {
+  contentToUpload: Blob;
+  urlToUpload: string;
+  index: number;
+}
+
 /**
- * The entry point for interacting with the network 
+ * The entry point for interacting with the network
  */
 export class NetworkFacade {
-  private cryptoLib: NetworkModule.Crypto;
+  private readonly cryptoLib: NetworkModule.Crypto;
 
-  constructor(private network: NetworkModule.Network) {
+  constructor(private readonly network: NetworkModule.Network) {
     this.cryptoLib = {
       algorithm: NetworkModule.ALGORITHMS.AES256CTR,
       validateMnemonic: (mnemonic) => {
         return validateMnemonic(mnemonic);
       },
       generateFileKey: (mnemonic, bucketId, index) => {
-        return Environment.utils.generateFileKey(
-          mnemonic,
-          bucketId,
-          (index as Buffer)
-        );
+        return Environment.utils.generateFileKey(mnemonic, bucketId, index as Buffer);
       },
-      randomBytes
+      randomBytes,
     };
   }
 
@@ -56,7 +64,7 @@ export class NetworkFacade {
       mnemonic,
       file.size,
       async (algorithm, key, iv) => {
-        const cipher = createCipheriv('aes-256-ctr', (key as Buffer), (iv as Buffer));
+        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
 
         fileToUpload = encryptedFile;
@@ -66,14 +74,10 @@ export class NetworkFacade {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
 
-        await uploadFileBlob(
-          fileToUpload,
-          fetchUrl,
-          {
-            progressCallback: options.uploadingCallback,
-            abortController: options.abortController
-          }
-        );
+        await uploadFileBlob(fileToUpload, fetchUrl, {
+          progressCallback: options.uploadingCallback,
+          abortController: options.abortController,
+        });
 
         /**
          * TODO: Memory leak here, probably due to closures usage with this variable.
@@ -82,7 +86,124 @@ export class NetworkFacade {
         fileToUpload = new Blob([]);
 
         return fileHash;
+      },
+    );
+  }
+
+  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
+    const partsUploadedBytes: Record<number, number> = {};
+
+    function notifyProgress(partId: number, uploadedBytes: number) {
+      partsUploadedBytes[partId] = uploadedBytes;
+
+      options.uploadingCallback(
+        file.size,
+        Object.values(partsUploadedBytes).reduce((a, p) => a + p, 0),
+      );
+    }
+
+    const uploadsAbortController = new AbortController();
+    options.abortController?.signal.addEventListener('abort', () => uploadsAbortController.abort());
+
+    let realError: Error | null = null;
+    let fileReadable: ReadableStream<Uint8Array>;
+    const fileParts: { PartNumber: number; ETag: string }[] = [];
+
+    const encryptFile: EncryptFileFunction = async (algorithm, key, iv) => {
+      const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
+      fileReadable = encryptStreamInParts(file, cipher, options.parts);
+    };
+
+    const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
+      let partIndex = 0;
+      const limitConcurrency = 6;
+
+      const worker = async (upload: UploadTask) => {
+        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+          progressCallback: (_, uploadedBytes) => {
+            notifyProgress(upload.index, uploadedBytes);
+          },
+          abortController: uploadsAbortController,
+        });
+
+        const ETag = etag;
+
+        if (!ETag) {
+          throw new Error('ETag header was not returned');
+        }
+        fileParts.push({
+          ETag,
+          PartNumber: upload.index + 1,
+        });
+      };
+
+      const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
+        worker(task)
+          .then(() => {
+            callback();
+          })
+          .catch((e) => {
+            callback(e);
+          });
+      }, limitConcurrency);
+
+      const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
+        if (uploadQueue.running() === limitConcurrency) {
+          await uploadQueue.unsaturated();
+        }
+
+        if (uploadsAbortController.signal.aborted) {
+          if (realError) throw realError;
+          else throw new Error('Upload cancelled by user');
+        }
+
+        let errorAlreadyThrown = false;
+
+        uploadQueue
+          .pushAsync({
+            contentToUpload: blob,
+            urlToUpload: urls[partIndex],
+            index: partIndex++,
+          })
+          .catch((err) => {
+            if (errorAlreadyThrown) return;
+
+            errorAlreadyThrown = true;
+            if (err) {
+              uploadQueue.kill();
+              if (!uploadsAbortController?.signal.aborted) {
+                // Failed due to other reason, so abort requests
+                uploadsAbortController.abort();
+                // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
+                // https://github.com/node-fetch/node-fetch/issues/1462
+                realError = err;
+              }
+            }
+          });
+
+        // TODO: Remove
+        blob = new Blob([]);
+      });
+
+      while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
+        await uploadQueue.drain();
       }
+
+      return {
+        hash: fileHash,
+        parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
+      };
+    };
+
+    return uploadMultipartFile(
+      this.network,
+      this.cryptoLib,
+      bucketId,
+      mnemonic,
+      file.size,
+      encryptFile,
+      uploadFileMultipart,
+      options.parts,
     );
   }
 
@@ -90,7 +211,7 @@ export class NetworkFacade {
     bucketId: string,
     fileId: string,
     mnemonic: string,
-    options?: DownloadOptions
+    options?: DownloadOptions,
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
@@ -110,17 +231,15 @@ export class NetworkFacade {
             throw new Error('Download aborted');
           }
 
-          const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(downloadable.url).hostname.includes('internxt');
-          const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + downloadable.url;
+          const encryptedContentStream = await fetch(downloadable.url, {
+            signal: options?.abortController?.signal,
+          }).then((res) => {
+            if (!res.body) {
+              throw new Error('No content received');
+            }
 
-          const encryptedContentStream = await fetch(fetchUrl, { signal: options?.abortController?.signal })
-            .then((res) => {
-              if (!res.body) {
-                throw new Error('No content received');
-              }
-
-              return res.body;
-            });
+            return res.body;
+          });
 
           encryptedContentStreams.push(encryptedContentStream);
         }
@@ -128,14 +247,14 @@ export class NetworkFacade {
       async (algorithm, key, iv, fileSize) => {
         const decryptedStream = getDecryptedStream(
           encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), (iv as Buffer)),
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
           options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
-      options && options.token && { token: options.token } || undefined
+      (options?.token && { token: options.token }) || undefined,
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

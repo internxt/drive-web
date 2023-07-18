@@ -41,20 +41,19 @@ const MB_450_IN_BYTES = 471859200;
 export class LRUFilesCacheManager {
   private static instance: LRUCache<DriveItemBlobData>;
 
-  public static getInstance(): LRUCache<DriveItemBlobData> {
+  public static async getInstance(): Promise<LRUCache<DriveItemBlobData>> {
     if (!LRUFilesCacheManager.instance) {
       const levelsBlobsCache = new LevelsBlobsCache();
 
-      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobs).then((lruCacheState) => {
-        if (lruCacheState) {
-          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES, {
-            lruKeyList: lruCacheState.lruKeyList,
-            itemsListSize: lruCacheState.itemsListSize,
-          });
-        } else {
-          LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES);
-        }
-      });
+      const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.LevelsBlobs);
+      if (lruCacheState) {
+        LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES, {
+          lruKeyList: lruCacheState.lruKeyList,
+          itemsListSize: lruCacheState.itemsListSize,
+        });
+      } else {
+        LRUFilesCacheManager.instance = new LRUCache<DriveItemBlobData>(levelsBlobsCache, MB_450_IN_BYTES);
+      }
     }
     return LRUFilesCacheManager.instance;
   }

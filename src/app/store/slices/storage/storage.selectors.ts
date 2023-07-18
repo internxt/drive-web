@@ -1,6 +1,5 @@
 import { RootState } from '../..';
 import { DriveItemData } from '../../../drive/types';
-import itemsListService from '../../../drive/services/items-list.service';
 import { sessionSelectors } from '../session/session.selectors';
 
 const rootFolderId = (state: RootState): number => {
@@ -37,6 +36,12 @@ const storageSelectors = {
     const currentFolderId = this.currentFolderId(state);
     return this.levelItems(state)(currentFolderId);
   },
+  hasMoreFiles(state: RootState): boolean {
+    return state.storage.hasMoreDriveFiles;
+  },
+  hasMoreFolders(state: RootState): boolean {
+    return state.storage.hasMoreDriveFolders;
+  },
   levelItems(state: RootState): (folderId: number) => DriveItemData[] {
     return (folderId) => state.storage.levels[folderId] || [];
   },
@@ -49,11 +54,12 @@ const storageSelectors = {
         return fullName.toLowerCase().match(filters.text.toLowerCase());
       });
 
-      itemsListService.sort(
-        filteredItems,
-        state.storage.order.by as 'name' | 'type' | 'updatedAt' | 'size',
-        state.storage.order.direction,
-      );
+      // UNCOMMENT TO REORDER THE ITEMS
+      // itemsListService.sort(
+      //   filteredItems,
+      //   state.storage.order.by as 'name' | 'type' | 'updatedAt' | 'size',
+      //   state.storage.order.direction,
+      // );
 
       return filteredItems;
     };
@@ -61,7 +67,7 @@ const storageSelectors = {
   isItemSelected(state: RootState): (item: DriveItemData) => boolean {
     return (item) => state.storage.selectedItems.some((i) => item.id === i.id && item.isFolder === i.isFolder);
   },
-  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0
+  isSomeItemSelected: (state: RootState): boolean => state.storage.selectedItems.length > 0,
 };
 
 export default storageSelectors;
