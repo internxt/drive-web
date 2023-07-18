@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 import { loadAudioIntoPlayer } from 'app/core/services/media.service';
-import { VideoExtensions } from 'app/drive/types/file-types';
+import { AudioExtensions } from 'app/drive/types/file-types';
 
 const FileAudioViewer = ({
   file,
@@ -17,8 +17,7 @@ const FileAudioViewer = ({
     const audioId = 'audio-Inxt';
     const audioPlayer = document.getElementById(audioId) as HTMLVideoElement;
 
-    loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof VideoExtensions).catch((err) => {
-      // TODO: Handle it.
+    loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
       console.error('Error loading audio into player', err);
       setIsErrorWhileDownloading(true);
     });

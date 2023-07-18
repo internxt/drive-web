@@ -39,6 +39,48 @@ export interface VideoExtensions {
   f4b: 'f4b';
 }
 
+export interface AudioExtensions {
+  '3gp': ['3gp'],
+  aa: ['aa'],
+  aac: ['aac'],
+  aax: ['aax'],
+  act: ['act'],
+  aiff: ['aiff'],
+  alac: ['alac'],
+  amr: ['amr'],
+  ape: ['ape'],
+  au: ['au'],
+  awd: ['awd'],
+  dss: ['dss'],
+  dvf: ['dvf'],
+  flac: ['flac'],
+  gsm: ['gsm'],
+  iklax: ['iklax'],
+  ivs: ['ivs'],
+  m4a: ['m4a'],
+  m4b: ['m4b'],
+  m4p: ['m4p'],
+  mmf: ['mmf'],
+  mp3: ['mp3'],
+  mpc: ['mpc'],
+  msv: ['msv'],
+  nmf: ['nmf'],
+  ogg: ['ogg', 'oga', 'mogg'],
+  opus: ['opus'],
+  ra: ['ra', 'rm'],
+  rf64: ['rf64'],
+  sln: ['sln'],
+  tta: ['tta'],
+  voc: ['voc'],
+  vox: ['vox'],
+  wav: ['wav'],
+  wma: ['wma'],
+  wv: ['wv'],
+  webm: ['webm'],
+  '8svx': ['8svx'],
+  cda: ['cda'],
+}
+
 const audioExtensions: FileExtensionMap = {
   '3gp': ['3gp'],
   aa: ['aa'],
@@ -132,8 +174,6 @@ const pdfExtensions: FileExtensionMap = {
 };
 const previewablePdfExtensionGroups: string[] = ['pdf'];
 
-const previewAudioExtensionsGroup: string[] = ['mp3', 'wav', 'ogg'];
-
 const pptExtensions: FileExtensionMap = {
   ppt: ['ppt', 'pptx', 'pptm'],
 };
@@ -169,6 +209,14 @@ const videoExtensions: FileExtensionMap = {
   nsv: ['nsv'],
   flv: ['flv', 'f4v', 'f4p', 'f4a', 'f4b'],
 };
+
+const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions).flatMap((extensions) => {
+  return extensions.flat();
+});
+
+const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions).flatMap((extensions) => {
+  return extensions.flat();
+});
 
 const WordExtensions: FileExtensionMap = {
   doc: ['doc', 'docx'],
@@ -240,7 +288,7 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Pdf]: previewablePdfExtensionGroups,
   [FileExtensionGroup.Ppt]: [],
   [FileExtensionGroup.Txt]: [],
-  [FileExtensionGroup.Video]: Object.keys(videoExtensions),
+  [FileExtensionGroup.Video]: previewVideoExtensionsGroup,
   [FileExtensionGroup.Word]: [],
   [FileExtensionGroup.Xls]: [],
   [FileExtensionGroup.Xml]: [],

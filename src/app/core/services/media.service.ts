@@ -1,15 +1,26 @@
 import { binaryStreamToBlob } from './stream.service';
-import { VideoExtensions } from '../../drive/types/file-types';
+import { VideoExtensions, AudioExtensions } from '../../drive/types/file-types';
 
 type VideoTypes = Record<keyof VideoExtensions, string>;
+type AudioTypes = Record<keyof AudioExtensions, string>;
 
 const videoTypes: Partial<VideoTypes> = {
   mp4: 'video/webm; codecs="vp8,vorbis"',
   webm: 'video/webm; codecs="vp8,vorbis"',
 };
 
+const audioTypes: Partial<AudioTypes> = {
+  mp3: 'audio/mp3',
+  wav: 'audio/wav',
+  ogg: 'audio/ogg'
+};
+
 export function isTypeSupportedByVideoPlayer(type: keyof VideoExtensions): boolean {
   return Object.keys(videoTypes).includes(type);
+}
+
+export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boolean {
+  return Object.keys(audioTypes).includes(type);
 }
 
 export async function loadVideoIntoPlayer(
@@ -68,9 +79,9 @@ export async function loadAudioIntoPlayer(
   audioPlayer: HTMLAudioElement,
   audio: Blob,
   // audioStream: ReadableStream<Uint8Array>,
-  videoType: keyof VideoTypes,
+  audioType: keyof AudioTypes,
 ): Promise<void> {
-  const mime = `audio/${videoType}`;
+  const mime = `audio/${audioType}`;
   // const blob = await binaryStreamToBlob(audioStream, mime);
 
   audioPlayer.src = URL.createObjectURL(audio);
