@@ -214,7 +214,7 @@ const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions).fla
   return extensions.flat();
 });
 
-const excludedAudioExtensionsGroup: string[] = [
+const exludeUnsupportedAudioExtensions: string[] = [
   'aa',
   'aax',
   'act',
@@ -251,7 +251,7 @@ const excludedAudioExtensionsGroup: string[] = [
 
 const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions)
   .flatMap((extensions) => extensions.flat())
-  .filter((extension) => !excludedAudioExtensionsGroup.includes(extension));
+  .filter((extension) => !exludeUnsupportedAudioExtensions.includes(extension));
 
 const WordExtensions: FileExtensionMap = {
   doc: ['doc', 'docx'],
