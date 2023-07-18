@@ -248,9 +248,9 @@ const FileViewer = ({
             {isTypeAllowed && !isErrorWhileDownloading ? (
               <div
                 tabIndex={0}
-                className="outline-none z-10 flex h-full max-h-full w-full max-w-full flex-col items-center justify-center overflow-auto"
+                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
               >
-                <div onClick={(e) => e.stopPropagation()} className="flex h-full w-full items-center justify-center">
+                <div onClick={(e) => e.stopPropagation()} className="">
                   {blob && file ? (
                     <Suspense fallback={<div></div>}>
                       <Viewer
