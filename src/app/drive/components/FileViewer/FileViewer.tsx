@@ -192,7 +192,14 @@ const FileViewer = ({
   const largeFile = file && isLargeFile(file.size);
 
   useEffect(() => {
-    if (show && isTypeAllowed && largeFile) {
+    if (show && isTypeAllowed) {
+      if (
+        (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
+        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile)
+      ) {
+        setIsErrorWhileDownloading(true);
+        return;
+      }
       downloader(new AbortController())
         .then((blob) => {
           setBlob(blob);
