@@ -114,7 +114,7 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const handleSearch = () => {
-    if (searchInput.current?.value.length ?? 0 > 0) {
+    if ((searchInput.current?.value.length ?? 0) > 0) {
       setLoadingSearch(true);
       if (typingTimerID !== null) clearTimeout(typingTimerID);
       const id = setTimeout(() => search(), doneTypingInterval);
