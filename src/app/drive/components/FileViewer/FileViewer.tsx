@@ -16,13 +16,12 @@ import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialo
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
-import { isTypeSupportedByVideoPlayer } from 'app/core/services/media.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob>;
+  downloader: (abortController: AbortController) => Promise<Blob | undefined>;
   show: boolean;
   progress?: number;
   setCurrentFile?: (file: DriveFileData) => void;
@@ -193,6 +192,10 @@ const FileViewer = ({
     if (show && isTypeAllowed) {
       downloader(new AbortController())
         .then((blob) => {
+          if (!blob) {
+            setIsErrorWhileDownloading(true);
+            return;
+          }
           setBlob(blob);
           setIsErrorWhileDownloading(false);
         })

@@ -118,7 +118,7 @@ const audioExtensions: FileExtensionMap = {
   wav: ['wav'],
   wma: ['wma'],
   wv: ['wv'],
-  webm: ['webm'],
+  weba: ['weba'],
   '8svx': ['8svx'],
   cda: ['cda'],
 };
@@ -182,7 +182,7 @@ const txtExtensions: FileExtensionMap = {
   txt: ['txt', 'text', 'conf', 'def', 'list', 'log', 'md', 'lock'],
 };
 
-const videoExtensions: FileExtensionMap = {
+export const videoExtensions: FileExtensionMap = {
   webm: ['webm'],
   mkv: ['mkv'],
   vob: ['vob'],
@@ -210,9 +210,44 @@ const videoExtensions: FileExtensionMap = {
   flv: ['flv', 'f4v', 'f4p', 'f4a', 'f4b'],
 };
 
-const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions).flatMap((extensions) => {
-  return extensions.flat();
-});
+const excludeUnsupportedVideoExtensions: string[] = [
+  'mkv',
+  'vob',
+  'ogv',
+  'ogg',
+  'drc',
+  'avi',
+  'mts',
+  'm2ts',
+  'qt',
+  'wmv',
+  'yuv',
+  'rm',
+  'rmvb',
+  'viv',
+  'asf',
+  'amv',
+  'm4p',
+  'mpg',
+  'mp2',
+  'mpe',
+  'mpv',
+  'mpeg',
+  'm2v',
+  'svi',
+  '3g2',
+  'mxf',
+  'roq',
+  'nsv',
+  'flv',
+  'f4p',
+  'f4a',
+  'f4b',
+];
+
+const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions)
+  .flatMap((extensions) => extensions.flat())
+  .filter((extension) => !excludeUnsupportedVideoExtensions.includes(extension));
 
 const excludeUnsupportedAudioExtensions: string[] = [
   'aa',
@@ -225,6 +260,7 @@ const excludeUnsupportedAudioExtensions: string[] = [
   'au',
   'awd',
   'dss',
+  '3gp',
   'dvf',
   'gsm',
   'iklax',
