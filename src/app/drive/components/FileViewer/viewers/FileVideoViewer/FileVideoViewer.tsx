@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 const FileVideoViewer = ({
+  file,
   blob,
 }: {
   file: DriveFileData;

@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
-import { useEffect, useState } from 'react';
-import { isTypeSupportedByVideoPlayer } from '../../../core/services/media.service';
+import { useState } from 'react';
 import {
   getDatabaseFileSourceData,
   getDatabaseFilePrewiewData,
@@ -21,11 +20,11 @@ import {
   setCurrentThumbnail,
   setThumbnails,
   ThumbnailToUpload,
-  uploadThumbnail,
 } from 'app/drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import localStorageService from 'app/core/services/local-storage.service';
+import { isLargeFile, isMediaExtension } from 'app/core/services/media.service';
 
 interface FileViewerWrapperProps {
   file: DriveFileData;
@@ -117,11 +116,17 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     const abortController = new AbortController();
 
     return {
-      download: async (): Promise<Blob> => {
+      download: async (): Promise<Blob | undefined> => {
         const shouldFileBeCached = canFileBeCached(currentFile);
+        const canMediaBePlayed =
+          isMediaExtension.includes(currentFile.type.toLowerCase()) && isLargeFile(currentFile.size);
         const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
         const isCached = !!fileSource;
         let fileContent: Blob;
+
+        if (!canMediaBePlayed) {
+          return;
+        }
 
         if (isCached) {
           const isCacheExpired = !fileSource?.updatedAt

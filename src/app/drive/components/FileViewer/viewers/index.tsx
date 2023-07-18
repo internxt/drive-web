@@ -8,6 +8,6 @@ const FileAudioViewer = lazy(() => import('./FileAudioViewer/FileAudioViewer'));
 export default {
   [FileExtensionGroup.Image]: FileImageViewer,
   [FileExtensionGroup.Pdf]: FilePdfViewer,
-  // [FileExtensionGroup.Video]: FileVideoViewer,
+  [FileExtensionGroup.Video]: FileVideoViewer,
   [FileExtensionGroup.Audio]: FileAudioViewer,
 };
