@@ -6,7 +6,7 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { DriveFileData, DriveItemData } from 'app/drive/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { FileExtensionGroup, VideoExtensions, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
+import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
 import iconService from 'app/drive/services/icon.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
@@ -16,12 +16,13 @@ import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialo
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
+import { isLargeFile } from 'app/core/services/media.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob | undefined>;
+  downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
   progress?: number;
   setCurrentFile?: (file: DriveFileData) => void;
@@ -188,14 +189,19 @@ const FileViewer = ({
 
   const dispatch = useAppDispatch();
 
+  const largeFile = file && isLargeFile(file.size);
+
   useEffect(() => {
     if (show && isTypeAllowed) {
+      if (
+        (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
+        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile)
+      ) {
+        setIsErrorWhileDownloading(true);
+        return;
+      }
       downloader(new AbortController())
         .then((blob) => {
-          if (!blob) {
-            setIsErrorWhileDownloading(true);
-            return;
-          }
           setBlob(blob);
           setIsErrorWhileDownloading(false);
         })
@@ -205,6 +211,7 @@ const FileViewer = ({
         });
     } else {
       setBlob(null);
+      setIsErrorWhileDownloading(true);
     }
   }, [show, file]);
 
@@ -248,9 +255,9 @@ const FileViewer = ({
             {isTypeAllowed && !isErrorWhileDownloading ? (
               <div
                 tabIndex={0}
-                className="outline-none z-10 flex h-full max-h-full w-full max-w-full flex-col items-center justify-center overflow-auto"
+                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
               >
-                <div onClick={(e) => e.stopPropagation()} className="flex h-full w-full items-center justify-center">
+                <div onClick={(e) => e.stopPropagation()} className="">
                   {blob && file ? (
                     <Suspense fallback={<div></div>}>
                       <Viewer
