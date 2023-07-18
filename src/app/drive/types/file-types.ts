@@ -40,45 +40,45 @@ export interface VideoExtensions {
 }
 
 export interface AudioExtensions {
-  '3gp': ['3gp'],
-  aa: ['aa'],
-  aac: ['aac'],
-  aax: ['aax'],
-  act: ['act'],
-  aiff: ['aiff'],
-  alac: ['alac'],
-  amr: ['amr'],
-  ape: ['ape'],
-  au: ['au'],
-  awd: ['awd'],
-  dss: ['dss'],
-  dvf: ['dvf'],
-  flac: ['flac'],
-  gsm: ['gsm'],
-  iklax: ['iklax'],
-  ivs: ['ivs'],
-  m4a: ['m4a'],
-  m4b: ['m4b'],
-  m4p: ['m4p'],
-  mmf: ['mmf'],
-  mp3: ['mp3'],
-  mpc: ['mpc'],
-  msv: ['msv'],
-  nmf: ['nmf'],
-  ogg: ['ogg', 'oga', 'mogg'],
-  opus: ['opus'],
-  ra: ['ra', 'rm'],
-  rf64: ['rf64'],
-  sln: ['sln'],
-  tta: ['tta'],
-  voc: ['voc'],
-  vox: ['vox'],
-  wav: ['wav'],
-  wma: ['wma'],
-  wv: ['wv'],
-  webm: ['webm'],
-  '8svx': ['8svx'],
-  cda: ['cda'],
+  '3gp': ['3gp'];
+  aa: ['aa'];
+  aac: ['aac'];
+  aax: ['aax'];
+  act: ['act'];
+  aiff: ['aiff'];
+  alac: ['alac'];
+  amr: ['amr'];
+  ape: ['ape'];
+  au: ['au'];
+  awd: ['awd'];
+  dss: ['dss'];
+  dvf: ['dvf'];
+  flac: ['flac'];
+  gsm: ['gsm'];
+  iklax: ['iklax'];
+  ivs: ['ivs'];
+  m4a: ['m4a'];
+  m4b: ['m4b'];
+  m4p: ['m4p'];
+  mmf: ['mmf'];
+  mp3: ['mp3'];
+  mpc: ['mpc'];
+  msv: ['msv'];
+  nmf: ['nmf'];
+  ogg: ['ogg', 'oga', 'mogg'];
+  opus: ['opus'];
+  ra: ['ra', 'rm'];
+  rf64: ['rf64'];
+  sln: ['sln'];
+  tta: ['tta'];
+  voc: ['voc'];
+  vox: ['vox'];
+  wav: ['wav'];
+  wma: ['wma'];
+  wv: ['wv'];
+  webm: ['webm'];
+  '8svx': ['8svx'];
+  cda: ['cda'];
 }
 
 const audioExtensions: FileExtensionMap = {
@@ -214,9 +214,44 @@ const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions).fla
   return extensions.flat();
 });
 
-const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions).flatMap((extensions) => {
-  return extensions.flat();
-});
+const excludedAudioExtensionsGroup: string[] = [
+  'aa',
+  'aax',
+  'act',
+  'aiff',
+  'alac',
+  'amr',
+  'ape',
+  'au',
+  'awd',
+  'dss',
+  'dvf',
+  'gsm',
+  'iklax',
+  'ivs',
+  'm4b',
+  'm4p',
+  'mmf',
+  'mpc',
+  'msv',
+  'nmf',
+  'mogg',
+  'ra',
+  'rm',
+  'rf64',
+  'sln',
+  'tta',
+  'voc',
+  'vox',
+  'wma',
+  'wv',
+  '8svx',
+  'cda',
+];
+
+const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions)
+  .flatMap((extensions) => extensions.flat())
+  .filter((extension) => !excludedAudioExtensionsGroup.includes(extension));
 
 const WordExtensions: FileExtensionMap = {
   doc: ['doc', 'docx'],
