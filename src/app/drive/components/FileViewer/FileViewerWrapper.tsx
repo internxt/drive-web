@@ -24,7 +24,7 @@ import {
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import localStorageService from 'app/core/services/local-storage.service';
-import { isLargeVideo, isVideoExtension } from 'app/core/services/media.service';
+import { isLargeFile, isMediaExtension } from 'app/core/services/media.service';
 
 interface FileViewerWrapperProps {
   file: DriveFileData;
@@ -118,13 +118,13 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     return {
       download: async (): Promise<Blob | undefined> => {
         const shouldFileBeCached = canFileBeCached(currentFile);
-        const canVideoBePlayed =
-          isVideoExtension.includes(currentFile.type.toLowerCase()) && isLargeVideo(currentFile.size);
+        const canMediaBePlayed =
+          isMediaExtension.includes(currentFile.type.toLowerCase()) && isLargeFile(currentFile.size);
         const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
         const isCached = !!fileSource;
         let fileContent: Blob;
 
-        if (!canVideoBePlayed) {
+        if (!canMediaBePlayed) {
           return;
         }
 

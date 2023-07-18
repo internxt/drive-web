@@ -81,7 +81,7 @@ export interface AudioExtensions {
   cda: ['cda'];
 }
 
-const audioExtensions: FileExtensionMap = {
+export const audioExtensions: FileExtensionMap = {
   '3gp': ['3gp'],
   aa: ['aa'],
   aac: ['aac'],

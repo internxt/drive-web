@@ -1,5 +1,5 @@
 import { binaryStreamToBlob } from './stream.service';
-import { VideoExtensions, AudioExtensions, videoExtensions } from '../../drive/types/file-types';
+import { VideoExtensions, AudioExtensions, videoExtensions, audioExtensions } from '../../drive/types/file-types';
 import { DriveFileData } from 'app/drive/types';
 
 type VideoTypes = Record<keyof VideoExtensions, string>;
@@ -24,13 +24,17 @@ export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boole
   return Object.keys(audioTypes).includes(type);
 }
 
-export function isLargeVideo(size: number): boolean {
+export function isLargeFile(size: number): boolean {
   return size < 100 * 1024 * 1024;
 }
 
-export const isVideoExtension: string[] = Object.values(videoExtensions).flatMap((extensions) => {
-  return extensions.flat();
-});
+export const isMediaExtension: string[] =
+  Object.values(videoExtensions).flatMap((extensions) => {
+    return extensions.flat();
+  }) ||
+  Object.values(audioExtensions).flatMap((extensions) => {
+    return extensions.flat();
+  });
 
 export async function loadVideoIntoPlayer(
   videoPlayer: HTMLVideoElement,
