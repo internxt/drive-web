@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 import { loadAudioIntoPlayer } from 'app/core/services/media.service';
@@ -13,19 +13,21 @@ const FileAudioViewer = ({
   blob: Blob;
   setIsErrorWhileDownloading: (isError: boolean) => void;
 }): JSX.Element => {
+  const audioRef = useRef<HTMLAudioElement>(null);
   useEffect(() => {
-    const audioId = 'audio-Inxt';
-    const audioPlayer = document.getElementById(audioId) as HTMLVideoElement;
+    const audioPlayer = audioRef.current;
 
-    loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
-      console.error('Error loading audio into player', err);
-      setIsErrorWhileDownloading(true);
-    });
+    if (audioPlayer) {
+      loadAudioIntoPlayer(audioPlayer, blob, file.type as keyof AudioExtensions).catch((err) => {
+        console.error('Error loading audio into player', err);
+        setIsErrorWhileDownloading(true);
+      });
+    }
   }, []);
 
   return (
     <div>
-      <audio id="audio-Inxt" controls></audio>
+      <audio ref={audioRef} controls></audio>
     </div>
   );
 };
