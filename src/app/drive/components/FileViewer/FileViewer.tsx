@@ -16,6 +16,7 @@ import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialo
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
+import { isLargeFile, isMediaExtension } from 'app/core/services/media.service';
 
 interface FileViewerProps {
   file?: DriveFileData;
@@ -188,14 +189,13 @@ const FileViewer = ({
 
   const dispatch = useAppDispatch();
 
+  const largeFile = file && isLargeFile(file.size);
+
   useEffect(() => {
-    if (show && isTypeAllowed) {
+    if (show && isTypeAllowed && largeFile) {
       downloader(new AbortController())
         .then((blob) => {
-          if (!blob) {
-            setIsErrorWhileDownloading(true);
-            return;
-          }
+          if (!blob) return;
           setBlob(blob);
           setIsErrorWhileDownloading(false);
         })
@@ -205,6 +205,7 @@ const FileViewer = ({
         });
     } else {
       setBlob(null);
+      setIsErrorWhileDownloading(true);
     }
   }, [show, file]);
 

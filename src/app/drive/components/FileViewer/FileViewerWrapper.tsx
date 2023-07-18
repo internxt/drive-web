@@ -118,15 +118,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     return {
       download: async (): Promise<Blob | undefined> => {
         const shouldFileBeCached = canFileBeCached(currentFile);
-        const canMediaBePlayed =
-          isMediaExtension.includes(currentFile.type.toLowerCase()) && isLargeFile(currentFile.size);
+
         const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
         const isCached = !!fileSource;
         let fileContent: Blob;
-
-        if (!canMediaBePlayed) {
-          return;
-        }
 
         if (isCached) {
           const isCacheExpired = !fileSource?.updatedAt
