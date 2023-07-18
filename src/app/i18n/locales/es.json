@@ -69,6 +69,7 @@
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
     "searchBar": {
+      "oldSearchBarPlaceholder": "Buscar en esta carpeta",
       "placeholder": "Buscar en Drive",
       "filters": {
         "folder": "Carpeta",

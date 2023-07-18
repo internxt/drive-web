@@ -86,6 +86,7 @@
     "terms": "Terms and conditions",
     "help": "Need help?",
     "searchBar": {
+      "oldSearchBarPlaceholder": "Search this folder",
       "placeholder": "Search in Drive",
       "filters": {
         "folder": "Folder",
