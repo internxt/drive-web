@@ -183,7 +183,7 @@ class App extends Component<AppProps> {
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
-            {isFileViewerOpen && (
+            {isFileViewerOpen && fileViewerItem && (
               <FileViewerWrapper
                 file={fileViewerItem}
                 onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}

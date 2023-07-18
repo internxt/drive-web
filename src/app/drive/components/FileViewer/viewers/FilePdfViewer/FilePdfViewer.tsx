@@ -1,9 +1,8 @@
 import { Document, Page } from 'react-pdf';
-import { useState, Fragment, useRef, useEffect } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 import { FormatFileViewerProps } from '../../FileViewer';
 import { MagnifyingGlassMinus, MagnifyingGlassPlus } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 
 interface PageWithObserverProps {
   pageNumber: number;
@@ -56,16 +55,11 @@ const DEFAULT_ZOOM = 1;
 
 const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [fileUrl, setFileUrl] = useState(URL.createObjectURL(props.blob));
+  const [fileUrl] = useState(URL.createObjectURL(props.blob));
   const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [zoom, setZoom] = useState(DEFAULT_ZOOM);
   const [renderPages, setRenderPages] = useState<number>();
-
-  //useEffect to avoid flickering
-  useEffect(() => {
-    setFileUrl(URL.createObjectURL(props.blob));
-  }, [props.blob]);
 
   function increaseZoom() {
     if (zoom < zoomRange.length - 1) {
