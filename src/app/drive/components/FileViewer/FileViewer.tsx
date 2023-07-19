@@ -17,6 +17,7 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
+import errorService from 'app/core/services/error.service';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -205,6 +206,7 @@ const FileViewer = ({
           setBlob(blob);
         })
         .catch((err) => {
+          errorService.reportError(err);
           const error = err as Error;
           console.error('[DOWNLOAD FILE/ERROR]: ', error.stack || error.message || error);
           setIsErrorWhileDownloading(true);
