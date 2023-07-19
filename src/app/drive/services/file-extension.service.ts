@@ -16,11 +16,12 @@ function computeExtensionsLists(
 
   return extensionsLists as Record<FileExtensionGroup, string[]>;
 }
-
-function computeExtensionsList(groupId: FileExtensionGroup, filter: string[] = []): string[] {
-  return Object.values(fileExtensionGroups[groupId])
-    .reduce((acc, formatExtensions) => acc.concat(formatExtensions), [])
-    .filter((extension) => !filter || filter.includes(extension));
+function computeExtensionsList(groupId: FileExtensionGroup, filter: string[]): string[] {
+  return Object.entries(fileExtensionGroups[groupId])
+    .filter(([formatKey]) => !filter || filter.includes(formatKey))
+    .reduce((t, [, formatExtensions]): string[] => {
+      return t.concat(formatExtensions);
+    }, [] as string[]);
 }
 
 const fileExtensionService = {

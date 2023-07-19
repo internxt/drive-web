@@ -166,8 +166,9 @@ const imageExtensions: FileExtensionMap = {
   png: ['png'],
   eps: ['eps'],
   raw: ['raw', 'cr2', 'nef', 'orf', 'sr2'],
+  webp: ['webp'],
 };
-const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif'];
+const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', 'webp'];
 
 const pdfExtensions: FileExtensionMap = {
   pdf: ['pdf'],
@@ -245,9 +246,9 @@ const excludeUnsupportedVideoExtensions: string[] = [
   'f4b',
 ];
 
-const previewVideoExtensionsGroup: string[] = Object.values(videoExtensions)
-  .flatMap((extensions) => extensions.flat())
-  .filter((extension) => !excludeUnsupportedVideoExtensions.includes(extension));
+const previewVideoExtensionsGroup: string[] = Object.keys(videoExtensions).filter(
+  (extension) => !excludeUnsupportedVideoExtensions.includes(extension),
+);
 
 const excludeUnsupportedAudioExtensions: string[] = [
   'aa',
