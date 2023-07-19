@@ -19,7 +19,7 @@ import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
 
 interface FileViewerProps {
-  file?: DriveFileData;
+  file: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
   downloader: (abortController: AbortController) => Promise<Blob>;
@@ -69,6 +69,7 @@ const FileViewer = ({
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isErrorWhileDownloading, setIsErrorWhileDownloading] = useState<boolean>(false);
+
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
@@ -189,9 +190,9 @@ const FileViewer = ({
 
   const dispatch = useAppDispatch();
 
-  const largeFile = file && isLargeFile(file.size);
-
   useEffect(() => {
+    setIsErrorWhileDownloading(false);
+    const largeFile = isLargeFile(file.size);
     if (show && isTypeAllowed) {
       if (
         (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
@@ -203,10 +204,11 @@ const FileViewer = ({
       downloader(new AbortController())
         .then((blob) => {
           setBlob(blob);
-          setIsErrorWhileDownloading(false);
         })
         .catch((err) => {
+          const error = err as Error;
           // TODO
+          console.error('[DOWNLOAD FILE/ERROR]: ', error.stack || error.message || error);
           setIsErrorWhileDownloading(true);
         });
     } else {
