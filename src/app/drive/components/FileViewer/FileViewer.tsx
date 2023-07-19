@@ -82,7 +82,6 @@ const FileViewer = ({
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
 
-  // ESTO
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
@@ -207,7 +206,6 @@ const FileViewer = ({
         })
         .catch((err) => {
           const error = err as Error;
-          // TODO
           console.error('[DOWNLOAD FILE/ERROR]: ', error.stack || error.message || error);
           setIsErrorWhileDownloading(true);
         });
