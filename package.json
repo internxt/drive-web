@@ -47,7 +47,7 @@
     "react-gtm-module": "^2.0.11",
     "react-hook-form": "^7.11.0",
     "react-hot-toast": "^2.2.0",
-    "react-hotkeys-hook": "^3.4.7",
+    "react-hotkeys-hook": "^4.3.2",
     "react-i18next": "^12.1.4",
     "react-image-file-resizer": "^0.4.8",
     "react-infinite-scroll-component": "6.1.0",

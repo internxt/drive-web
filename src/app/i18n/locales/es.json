@@ -68,7 +68,26 @@
     "of": "de",
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
-    "searchBar": "Buscar en esta carpeta",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Buscar en esta carpeta",
+      "placeholder": "Buscar en Drive",
+      "filters": {
+        "folder": "Carpeta",
+        "pdf": "PDF",
+        "image": "Imagen",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Borrar"
+      },
+      "emptyState": {
+        "title": "Buscar archivos y carpetas",
+        "subtitle": "Buscar por nombre y tipo"
+      },
+      "notFoundState": {
+        "title": "No hay resultados",
+        "subtitle": "Ninguna coincidencia para tu búsqueda"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
