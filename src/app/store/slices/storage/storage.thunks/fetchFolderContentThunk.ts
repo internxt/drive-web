@@ -49,6 +49,8 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
           driveItemsSort,
           driveItemsOrder,
         );
+      } else {
+        return;
       }
       const items = await itemsPromise;
 
