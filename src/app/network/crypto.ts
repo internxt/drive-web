@@ -95,7 +95,7 @@ export function encryptReadable(readable: ReadableStream<Uint8Array>, cipher: Ci
  * @param cipher Cipher used to encrypt the content
  * @returns A readable whose output is the encrypted content of the source stream
  */
- export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
+export function encryptReadablePull(readable: ReadableStream<Uint8Array>, cipher: Cipher): ReadableStream<Uint8Array> {
   const reader = readable.getReader();
 
   return new ReadableStream({
@@ -127,7 +127,7 @@ export function encryptStreamInParts(
 
 export async function getEncryptedFile(
   plainFile: { stream(): ReadableStream<Uint8Array> },
-  cipher: Cipher
+  cipher: Cipher,
 ): Promise<[Blob, string]> {
   const readable = encryptReadable(plainFile.stream(), cipher).getReader();
   const hasher = new Sha256();
@@ -150,7 +150,9 @@ export async function getEncryptedFile(
 
   return [
     new Blob(blobParts, { type: 'application/octet-stream' }),
-    createHash('ripemd160').update(Buffer.from(hasher.result as Uint8Array)).digest('hex'),
+    createHash('ripemd160')
+      .update(Buffer.from(hasher.result as Uint8Array))
+      .digest('hex'),
   ];
 }
 

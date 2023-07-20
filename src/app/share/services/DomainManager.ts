@@ -1,7 +1,8 @@
+import envService from '../../core/services/env.service';
 import errorService from '../../core/services/error.service';
 import shareService from './share.service';
 
-const isDevelopment = process.env.NODE_ENV === 'development';
+const isDevelopment = !envService.isProduction();
 
 class DomainManager {
   private static instance: DomainManager;

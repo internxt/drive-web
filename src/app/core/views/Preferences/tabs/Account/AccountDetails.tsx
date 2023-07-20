@@ -15,6 +15,7 @@ import { useAppDispatch } from '../../../../../store/hooks';
 import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
+import envService from '../../../../services/env.service';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -210,7 +211,7 @@ function AccountDetailsModal({
             name="email"
           />
 
-          {process.env.NODE_ENV !== 'production' && (
+          {!envService.isProduction() && (
             <div className="flex h-11 items-center">
               <Button disabled={status.tag === 'loading'} variant="secondary" onClick={openEditEmail}>
                 {translate('actions.change')}

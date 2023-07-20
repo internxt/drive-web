@@ -8,6 +8,7 @@ interface UISliceState {
   isFileLoggerOpen: boolean;
   isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
+  isShareDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -30,6 +31,7 @@ interface UISliceState {
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
+  isToastNotificacionOpen: boolean;
 }
 
 const initialState: UISliceState = {
@@ -38,6 +40,7 @@ const initialState: UISliceState = {
   isFileLoggerOpen: false,
   isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
+  isShareDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -60,6 +63,7 @@ const initialState: UISliceState = {
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
+  isToastNotificacionOpen: false,
 };
 
 export const uiSlice = createSlice({
@@ -80,6 +84,9 @@ export const uiSlice = createSlice({
     },
     setIsNameCollisionDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isNameCollisionDialogOpen = action.payload;
+    },
+    setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isShareDialogOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
@@ -159,6 +166,9 @@ export const uiSlice = createSlice({
     resetState: (state: UISliceState) => {
       Object.assign(state, initialState);
     },
+    setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isToastNotificacionOpen = action.payload;
+    },
   },
 });
 
@@ -185,6 +195,7 @@ export const {
   setCurrentEditingNameDriveItem,
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
+  setIsToastNotificacionOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
