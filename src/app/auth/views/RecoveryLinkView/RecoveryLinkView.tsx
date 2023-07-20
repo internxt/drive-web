@@ -5,7 +5,7 @@ import RecoveryLink from '../../components/RecoveryLink/RecoveryLink';
 function RecoveryLinkView(): JSX.Element {
   const { translate } = useTranslationContext();
   return (
-    <div className="flex h-full w-full flex-col bg-white">
+    <div className="flex h-full w-full flex-col bg-gray-5">
       <div className="flex flex-shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
         <img src={bigLogo} width="120" alt="" />
       </div>

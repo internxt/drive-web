@@ -81,6 +81,15 @@
       "login": "登录",
       "successTitle": "检查您的收件箱",
       "successDescription": "我们已经向您发送了一个一次性链接来恢复您的账户密码"
+    },
+    "recoverAccount": {
+      "title": "帐户恢复",
+      "subtitle": "你有备份钥匙吗",
+      "info": "备份密钥是什么样的",
+      "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KERY.txt'",
+      "info2": "备份密钥长度为24个字",
+      "haveKeyButton": "是的 我有備用鑰匙",
+      "notKeyButton": "不 我沒有"
     }
   },
   "general": {

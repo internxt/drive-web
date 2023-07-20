@@ -109,7 +109,7 @@ export enum AppView {
   SignupBlog = 'signup-blog',
   Auth = 'auth',
   ButtonAuth = 'buttonAuth',
-  Recover = 'recover',
+  RecoverAccount = 'recover-account',
   Drive = 'drive',
   Recents = 'recents',
   Trash = 'trash',

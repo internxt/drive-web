@@ -21,7 +21,7 @@ import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import RecoverView from '../../auth/views/RecoverView/RecoverView';
+import RecoverAccountView from 'app/auth/views/RecoverAccountView/RecoverAccountView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
@@ -45,7 +45,7 @@ const views: Array<{
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
-  { id: AppView.Recover, component: RecoverView },
+  { id: AppView.RecoverAccount, component: RecoverAccountView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },

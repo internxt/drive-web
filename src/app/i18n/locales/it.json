@@ -81,6 +81,15 @@
       "login": "Accesso",
       "successTitle": "Controllare la posta in arrivo",
       "successDescription": "Vi abbiamo inviato un link unico per recuperare la password del vostro account."
+    },
+    "recoverAccount": {
+      "title": "Recupero dell'account",
+      "subtitle": "Hai una chiave di backup?",
+      "info": "Che aspetto ha la chiave di backup?",
+      "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KERY.txt'",
+      "info2": "La chiave di backup è lunga 24 parole",
+      "haveKeyButton": "Sì, ho una chiave di backup",
+      "notKeyButton": "No, non ne ho uno"
     }
   },
   "general": {

@@ -1,0 +1,79 @@
+import { useState } from 'react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import Button from 'app/auth/components/Button/Button';
+import { Question } from '@phosphor-icons/react';
+import bigLogo from 'assets/icons/big-logo.svg';
+
+export default function RecoverAccountView(): JSX.Element {
+  const { translate } = useTranslationContext();
+
+  const [hasBackupKey, setHasBackupKey] = useState<boolean | undefined>();
+
+  return (
+    <div className="flex h-full w-full flex-col bg-gray-5">
+      <div className="flex flex-shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+        <img src={bigLogo} width="120" alt="" />
+      </div>
+
+      <div className="flex h-full flex-col items-center justify-center">
+        <div className="flex w-96 flex-col rounded-2xl bg-white p-8 shadow-soft">
+          {hasBackupKey === undefined && (
+            <>
+              <h3 className="font-regular mb-1 text-base text-gray-60">{translate('auth.recoverAccount.title')}</h3>
+              <h4 className="text-2xl font-medium text-gray-100">{translate('auth.recoverAccount.subtitle')}</h4>
+              <div className="my-5 flex flex-col rounded-2xl border border-gray-10 bg-gray-1 p-4">
+                <h5 className="flex items-center">
+                  <span className="mr-1.5">
+                    <Question weight="fill" size={18} className="text-primary" />
+                  </span>
+                  <p className="text-sm font-medium text-gray-80">{translate('auth.recoverAccount.info')}</p>
+                </h5>
+                <ul className="font-regular mt-1 list-disc pl-8 text-sm text-gray-60">
+                  <li className="mt-1">{translate('auth.recoverAccount.info1')}</li>
+                  <li className="mt-1">{translate('auth.recoverAccount.info2')}</li>
+                </ul>
+              </div>
+              <Button
+                disabled={false}
+                text={translate('auth.recoverAccount.haveKeyButton')}
+                disabledText="disabled"
+                loading={false}
+                style="button-primary"
+                className="mb-2 w-full"
+                onClick={() => setHasBackupKey(true)}
+              />
+              <Button
+                disabled={false}
+                text={translate('auth.recoverAccount.notKeyButton')}
+                disabledText="disabled"
+                loading={false}
+                style="button-secondary"
+                className="w-full border border-gray-5 bg-white"
+                onClick={() => setHasBackupKey(false)}
+              />
+            </>
+          )}
+          {hasBackupKey === true && <div onClick={() => setHasBackupKey(undefined)}>Verify backup key</div>}
+          {hasBackupKey === false && <div onClick={() => setHasBackupKey(undefined)}>Restart Account</div>}
+        </div>
+      </div>
+
+      <div className="flex flex-shrink-0 flex-row justify-center py-8">
+        <a
+          href="https://internxt.com/legal"
+          target="_blank"
+          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+        >
+          {translate('general.terms')}
+        </a>
+        <a
+          href="https://help.internxt.com"
+          target="_blank"
+          className="font-regular mr-4 mt-6 text-base text-gray-80 no-underline hover:text-gray-100"
+        >
+          {translate('general.help')}
+        </a>
+      </div>
+    </div>
+  );
+}

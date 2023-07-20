@@ -51,7 +51,7 @@ function RecoveryLink(): JSX.Element {
   return (
     <>
       {step === 1 ? (
-        <div className="flex w-96 flex-col rounded-2xl p-8 shadow-soft">
+        <div className="flex w-96 flex-col rounded-2xl bg-white p-8 shadow-soft">
           <h1 className="text-2xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
           <form className="mt-5 w-full" onSubmit={handleSubmit(onSubmit)}>
             <label className="space-y-1">
