@@ -18,6 +18,8 @@ import { LRUFilesCacheManager } from 'app/database/services/database.service/LRU
 import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
 import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { TrackingPlan } from '../../../../analytics/TrackingPlan';
+import analyticsService from '../../../../analytics/services/analytics.service';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
 
@@ -161,7 +163,18 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     items.forEach((_, index) => {
       downloadProgress[index] = 0;
     });
-
+    const analyticsProcessIdentifier = analyticsService.getTrackingActionId();
+    let trackingDownloadProperties: TrackingPlan.DownloadProperties = {
+      process_identifier: analyticsProcessIdentifier,
+      is_multiple: items.length > 1 ? 1 : 0,
+      bandwidth: 0,
+      band_utilization: 0,
+      file_size: 0,
+      file_extension: '',
+      file_id: 0,
+      file_name: '',
+      parent_folder_id: 0,
+    };
     for (const [index, driveItem] of items.entries()) {
       try {
         if (driveItem.isFolder) {
@@ -185,6 +198,18 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
             downloadProgress[index] = 1;
             fileStream = blob.stream();
           } else {
+            trackingDownloadProperties = {
+              process_identifier: analyticsProcessIdentifier,
+              file_id: typeof driveItem.id === 'string' ? parseInt(driveItem.id) : driveItem.id,
+              file_size: driveItem.size,
+              file_extension: driveItem.type,
+              file_name: driveItem.name,
+              parent_folder_id: driveItem.folderId,
+              is_multiple: 1,
+              bandwidth: 0,
+              band_utilization: 0,
+            };
+            analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
             const downloadedFileStream = await downloadFile({
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
@@ -204,6 +229,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 },
               },
             });
+            analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
+
             const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
             await updateDatabaseFileSourceData({
               folderId: driveItem.folderId,
@@ -217,9 +244,22 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
 
           folder.addFile(`${driveItem.name}.${driveItem.type}`, fileStream);
         }
-      } catch (e) {
-        errorService.reportError(e);
-        errors.push(e);
+      } catch (error) {
+        const castedError = errorService.castError(error);
+        if (abortController.signal.aborted) {
+          analyticsService.trackFileDownloadAborted({
+            ...trackingDownloadProperties,
+          });
+        } else {
+          analyticsService.trackFileDownloadError({
+            ...trackingDownloadProperties,
+            error_message_user: 'Error downloading file',
+            error_message: castedError.message,
+            stack_trace: castedError.stack ?? '',
+          });
+        }
+        errorService.reportError(error);
+        errors.push(error);
       }
     }
 
