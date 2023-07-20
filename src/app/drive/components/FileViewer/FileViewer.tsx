@@ -192,7 +192,8 @@ const FileViewer = ({
 
   useEffect(() => {
     setIsErrorWhileDownloading(false);
-    const largeFile = isLargeFile(file.size);
+    const largeFile = isLargeFile(file?.size);
+
     if (show && isTypeAllowed) {
       if (
         (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
