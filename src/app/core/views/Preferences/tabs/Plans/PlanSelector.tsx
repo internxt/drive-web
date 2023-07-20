@@ -364,7 +364,7 @@ const ChangePlanDialog = ({
             <p className="text-base font-medium capitalize">{subscription?.type}</p>
           )}
         </div>
-        <ArrowRight className="mx-5 font-semibold text-gray-20" />
+        <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
         <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}
