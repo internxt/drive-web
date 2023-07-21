@@ -4,6 +4,7 @@ import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
 import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
@@ -79,7 +80,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
               autoFocus
               name="fileName"
             />
-            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+            <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
           </div>
         )}
         <div className="file-list-item-name flex max-w-full items-center">

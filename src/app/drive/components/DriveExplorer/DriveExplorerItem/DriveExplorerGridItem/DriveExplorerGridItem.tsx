@@ -5,6 +5,7 @@ import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import iconService from '../../../../services/icon.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
 import useForceUpdate from '../../../../../core/hooks/useForceUpdate';
 import { DriveItemAction, DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
@@ -60,7 +61,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             onKeyDown={onNameEnterKeyDown}
             autoFocus
           />
-          <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+          <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
         </div>
         <span
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
