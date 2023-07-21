@@ -3,6 +3,9 @@ import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/r
 import { NavLink } from 'react-router-dom';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
+import { useDispatch } from 'react-redux';
+import { uiActions } from '../../../store/slices/ui';
+import { useEffect } from 'react';
 
 const NotificationToast = ({
   text,
@@ -12,8 +15,17 @@ const NotificationToast = ({
   closable,
   onClose,
 }: Omit<ToastShowProps, 'duration'> & { visible: boolean; onClose: () => void }): JSX.Element => {
+  const dispatch = useDispatch();
   let Icon: typeof CheckCircle | undefined;
   let IconColor: string | undefined;
+
+  useEffect(() => {
+    dispatch(uiActions.setIsToastNotificacionOpen(true));
+
+    return () => {
+      dispatch(uiActions.setIsToastNotificacionOpen(false));
+    };
+  }, []);
 
   switch (type) {
     case ToastType.Success:

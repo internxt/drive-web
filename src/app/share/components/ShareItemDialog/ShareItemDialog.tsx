@@ -17,6 +17,8 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { TFunction } from 'i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { domainManager } from '../../services/DomainManager';
+import _ from 'lodash';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
@@ -24,9 +26,12 @@ interface ShareItemDialogProps {
   isPreviewView?: boolean;
 }
 
-function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
-  const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
-  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
+async function copyShareLink(type: string, code: string, token: string, translate: TFunction) {
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
+
+  copy(`${shareDomain}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 

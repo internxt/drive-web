@@ -7,6 +7,7 @@ import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
 import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
+import analyticsService from '../analytics/services/analytics.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -92,6 +93,7 @@ class UploadManager {
 
       const upload = () => {
         uploadAttempts++;
+        const isMultipleUpload = this.items.length > 1 ? 1 : 0;
 
         uploadFile(
           fileData.userEmail,
@@ -116,6 +118,7 @@ class UploadManager {
               });
             }
           },
+          { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
           this.abortController ?? fileData.abortController,
         )
           .then((driveFileData) => {
@@ -224,6 +227,7 @@ class UploadManager {
   private items: UploadManagerFileParams[];
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  private uploadUUIDV4: string;
 
   constructor(
     items: UploadManagerFileParams[],
@@ -235,6 +239,7 @@ class UploadManager {
     this.abortController = abortController;
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
+    this.uploadUUIDV4 = analyticsService.getTrackingActionId();
   }
 
   private classifyFilesBySize(

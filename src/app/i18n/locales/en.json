@@ -85,7 +85,26 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search this folder",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Search this folder",
+      "placeholder": "Search in Drive",
+      "filters": {
+        "folder": "Folder",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Clear"
+      },
+      "emptyState": {
+        "title": "Find files and folders",
+        "subtitle": "Search by name and type"
+      },
+      "notFoundState": {
+        "title": "No results found",
+        "subtitle": "No files or folders match the search"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -232,11 +251,24 @@
               "description": "Check your inbox"
             },
             "editProfile": {
+              "title": "Edit account details",
               "name": "Name",
-              "lastname": "Lastname"
+              "lastname": "Lastname",
+              "updatedProfile": "Profile updated successfully",
+              "errorUpdatingProfile": "We could not update your profile"
             },
-            "updateProfile": "Profile updated successfully",
-            "errorUpdatingProfile": "We could not update your profile"
+            "changeEmail": {
+              "title": "Change email",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Password",
+              "errorSameEmail": "New email should be different from the current one",
+              "errorPassword": "Wrong password, try again",
+              "sendVerification": "Send verification",
+              "sendingVerification": "Sending verification",
+              "sucessSendingVerification": "Email verification sent to {{email}}",
+              "errorSendingVerification": "Error sending verification"
+            }
           },
           "deleteAccount": {
             "head": "Delete account",
@@ -481,6 +513,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": "Email verified successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
+    "emailChange": {
+      "password": "Password",
+      "auth": {
+        "title": "Verify email change",
+        "subtitle": "Your account email will be changed to {{email}}",
+        "wrongPassword": "Wrong password, please try again",
+        "cta": "Continue"
+      },
+      "success": {
+        "title": "Email changed successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email change again in Settings > Account",
+        "cta": "Go to Account"
+      },
+      "expired": {
+        "title": "Verification link expired",
+        "subtitle": "You can request email change again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"
@@ -517,6 +585,80 @@
       "label": "Name",
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
+    },
+    "shareModal": {
+      "title": "Share \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "People with access",
+        "invite": "Invite",
+        "userItem": {
+          "roles": {
+            "owner": "Owner",
+            "editor": "Editor",
+            "viewer": "Viewer"
+          },
+          "remove": "Remove"
+        }
+      },
+      "general": {
+        "generalAccess": "General access",
+        "accessOptions": {
+          "public": {
+            "title": "Public",
+            "subtitle": "Anyone with the link can access"
+          },
+          "restricted": {
+            "title": "Restricted",
+            "subtitle": "Only people added can access"
+          },
+          "stopSharing": "Stop sharing"
+        },
+        "copyLink": "Copy link"
+      },
+      "requests": {
+        "title": "Access requests",
+        "button": "Requests",
+        "empty": "No requests left",
+        "actions": {
+          "accept": "Accept",
+          "deny": "Deny",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Viewer"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "No one will be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
+      },
+      "invite": {
+        "title": "Invite people",
+        "textarea": "Enter your message text (optional)",
+        "notifyUsers": "Notify users",
+        "instructions": "Press enter or space to separate emails",
+        "email": "Type email",
+        "invite": "Invite",
+        "editor": "Editor",
+        "viewer": "Viewer",
+        "listUsers": "Users to invite"
+      },
+      "requestAccess": {
+        "title": "You don't have access",
+        "description": "Request access to the owner or switch to an account with access.",
+        "textarea": "Message (optional)",
+        "requestButton": "Request access",
+        "logged": "Logged in as",
+        "change": "Change",
+        "requestSent": "Request Sent",
+        "confirmation": "You will get an email if the file/folder is shared with you"
+      }
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
@@ -882,7 +1024,7 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restored successfully",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
@@ -921,6 +1063,7 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saving": "Saving",
     "back": "Back",
     "edit": "Edit",
     "submit": "Submit",
@@ -957,8 +1100,12 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "shareLink": "Share",
+      "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
+      "share": "Share",
+      "manageAccess": "Manage access",
       "download": "Download",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",

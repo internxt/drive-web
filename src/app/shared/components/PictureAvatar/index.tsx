@@ -7,5 +7,12 @@ export default function PictureAvatar({
   diameter: number;
   className?: string;
 }): JSX.Element {
-  return <img style={{ width: diameter, height: diameter }} className={`${className} rounded-full`} src={src} />;
+  return (
+    <img
+      style={{ width: diameter, height: diameter }}
+      className={`${className} select-none rounded-full`}
+      src={src}
+      draggable={false}
+    />
+  );
 }

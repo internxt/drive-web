@@ -22,6 +22,7 @@ export interface IFormValues {
   createFolder: string;
   teamMembers: number;
   token: string;
+  userRole: string;
 }
 
 export interface AppConfig {
@@ -134,6 +135,8 @@ export enum AppView {
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
   VerifyEmail = 'verify-email',
+  ChangeEmail = 'change-email',
+  RequestAccess = 'request-access',
 }
 
 export enum SignupDeviceSource {
