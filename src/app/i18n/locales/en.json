@@ -89,7 +89,12 @@
       "info1": "The backup key file name is 'INTERNXT-BACKUP-KERY.txt'",
       "info2": "The backup key is 24 words long",
       "haveKeyButton": "Yes, I have a backup key",
-      "notKeyButton": "No, I don't have one"
+      "notKeyButton": "No, I don't have one",
+      "backupKey": {
+        "title": "Verify backup key",
+        "alert": "If you upload a wrong backup key your data will get corrupted, please make sure your backup key is correct.",
+        "button": "Upload backup key"
+      }
     }
   },
   "general": {

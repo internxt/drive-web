@@ -89,7 +89,12 @@
       "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KERY.txt'",
       "info2": "La chiave di backup è lunga 24 parole",
       "haveKeyButton": "Sì, ho una chiave di backup",
-      "notKeyButton": "No, non ne ho uno"
+      "notKeyButton": "No, non ne ho uno",
+      "backupKey": {
+        "title": "Carica la chiave di backup",
+        "alert": "Se carichi una chiave di backup errata, i tuoi dati verranno danneggiati, assicurati che la tua chiave di backup sia corretta.",
+        "button": "Carica la chiave di backup"
+      }
     }
   },
   "general": {

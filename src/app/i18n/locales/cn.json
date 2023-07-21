@@ -89,7 +89,12 @@
       "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KERY.txt'",
       "info2": "备份密钥长度为24个字",
       "haveKeyButton": "是的 我有備用鑰匙",
-      "notKeyButton": "不 我沒有"
+      "notKeyButton": "不 我沒有",
+      "backupKey": {
+        "title": "验证备份密钥",
+        "alert": "如果您上传错误的备份密钥 您的数据将被损坏 请确保您的备份密钥正确",
+        "button": "上传备份密钥"
+      }
     }
   },
   "general": {

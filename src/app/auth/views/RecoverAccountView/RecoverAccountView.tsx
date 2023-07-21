@@ -3,6 +3,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/auth/components/Button/Button';
 import { Question } from '@phosphor-icons/react';
 import bigLogo from 'assets/icons/big-logo.svg';
+import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';
 
 export default function RecoverAccountView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -34,18 +35,14 @@ export default function RecoverAccountView(): JSX.Element {
                 </ul>
               </div>
               <Button
-                disabled={false}
                 text={translate('auth.recoverAccount.haveKeyButton')}
-                disabledText="disabled"
                 loading={false}
                 style="button-primary"
                 className="mb-2 w-full"
                 onClick={() => setHasBackupKey(true)}
               />
               <Button
-                disabled={false}
                 text={translate('auth.recoverAccount.notKeyButton')}
-                disabledText="disabled"
                 loading={false}
                 style="button-secondary"
                 className="w-full border border-gray-5 bg-white"
@@ -53,7 +50,7 @@ export default function RecoverAccountView(): JSX.Element {
               />
             </>
           )}
-          {hasBackupKey === true && <div onClick={() => setHasBackupKey(undefined)}>Verify backup key</div>}
+          {hasBackupKey === true && <ChangePassword setHasBackupKey={setHasBackupKey} />}
           {hasBackupKey === false && <div onClick={() => setHasBackupKey(undefined)}>Restart Account</div>}
         </div>
       </div>

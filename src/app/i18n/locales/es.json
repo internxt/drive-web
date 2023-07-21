@@ -72,7 +72,12 @@
       "info1": "El nombre de la clave de recuperación es 'INTERNXT-BACKUP-KERY.txt'",
       "info2": "La clave de recuperación tiene 24 palabras",
       "haveKeyButton": "Si, tengo la clave de recuperación",
-      "notKeyButton": "No, no tengo clave de recuperación"
+      "notKeyButton": "No, no tengo clave de recuperación",
+      "backupKey": {
+        "title": "Verificar clave de recuperación",
+        "alert": "Si carga una clave de respaldo incorrecta, sus datos se dañarán, asegúrese de que su clave de respaldo sea correcta.",
+        "button": "Subir clave de recuperación"
+      }
     }
   },
   "general": {

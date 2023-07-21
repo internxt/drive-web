@@ -72,7 +72,12 @@
       "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KERY.txt'",
       "info2": "La clé de secours fait 24 mots",
       "haveKeyButton": "Oui, j'ai une clé de secours",
-      "notKeyButton": "Non, je n'en ai pas"
+      "notKeyButton": "Non, je n'en ai pas",
+      "backupKey": {
+        "title": "Vérifier la clé de sauvegarde",
+        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte.",
+        "button": "Télécharger la clé de sauvegarde"
+      }
     }
   },
   "general": {
