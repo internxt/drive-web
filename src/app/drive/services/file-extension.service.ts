@@ -16,7 +16,6 @@ function computeExtensionsLists(
 
   return extensionsLists as Record<FileExtensionGroup, string[]>;
 }
-
 function computeExtensionsList(groupId: FileExtensionGroup, filter: string[]): string[] {
   return Object.entries(fileExtensionGroups[groupId])
     .filter(([formatKey]) => !filter || filter.includes(formatKey))

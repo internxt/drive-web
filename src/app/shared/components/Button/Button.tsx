@@ -56,7 +56,7 @@ export default function Button({
       } outline-none relative flex select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg text-base font-medium ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out focus-visible:ring-opacity-50 ${styles} ${className}`}
     >
       {loading && <Spinner size={18} />}
-      <span className={`${loading ? 'opacity-90' : ''}`}>{children}</span>
+      <div className={`${loading ? 'opacity-0' : ''} flex items-center justify-center space-x-2`}>{children}</div>
     </button>
   );
 }

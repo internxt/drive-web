@@ -591,6 +591,19 @@
         },
         "copyLink": "复制链接"
       },
+      "requests": {
+        "title": "访问请求",
+        "button": "请求",
+        "empty": "没有剩余请求",
+        "actions": {
+          "accept": "接受",
+          "deny": "否认",
+          "roles": {
+            "editor": "编辑器",
+            "viewer": "观众"
+          }
+        }
+      },
       "stopSharing": {
         "title": "停止分享?",
         "subtitle": "没有人能够访问 \"{{name}}\"",
@@ -988,7 +1001,7 @@
     "copyLink": "复制链接到剪贴板",
     "linkUpdated": "链接已更新",
     "itemsMovedToTrash": "{{item}} 已被移至回收站",
-    "restoreItems": "{{itemsToRecover}} 已移动到 {{destination}}",
+    "restoreItems": "{{itemsToRecover}} 成功恢復",
     "itemDeleted": "{{item}} 已删除",
     "itemsDeleted": "文件已删除",
     "emailNotEmpty": "电子邮件不能为空",

@@ -590,6 +590,19 @@
         },
         "copyLink": "Copiare il link"
       },
+      "requests": {
+        "title": "Richieste di accesso",
+        "button": "Richieste",
+        "empty": "Nessuna richiesta rimasta",
+        "actions": {
+          "accept": "Accetta",
+          "deny": "Nega",
+          "roles": {
+            "editor": "Editore",
+            "viewer": "Visualizzatore"
+          }
+        }
+      },
       "stopSharing": {
         "title": "Smettere di condividere?",
         "subtitle": "Nessuno potrà accedere a \"{{name}}\"",
@@ -987,7 +1000,7 @@
     "copyLink": "Link condiviso copiato negli appunti",
     "linkUpdated": "Link aggiornato",
     "itemsMovedToTrash": "{{item}} spostati nel cestino",
-    "restoreItems": "{{itemsToRecover}} spostato a {{destination}}",
+    "restoreItems": "{{itemsToRecover}} ripristinato correttamente",
     "itemDeleted": "{{item}} eliminate",
     "itemsDeleted": "File eliminati",
     "emailNotEmpty": "L'e-mail non deve essere vuota",

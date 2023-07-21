@@ -533,6 +533,19 @@
         },
         "copyLink": "Copier le lien"
       },
+      "requests": {
+        "title": "Demandes d'accès",
+        "button": "Demandes",
+        "empty": "Aucune demande restante",
+        "actions": {
+          "accept": "Accepter",
+          "deny": "Refuser",
+          "roles": {
+            "editor": "Editeur",
+            "viewer": "Lecteur"
+          }
+        }
+      },
       "stopSharing": {
         "title": "Arrêter le partage ?",
         "subtitle": "Personne ne pourra plus accéder à \"{{name}}\"",
@@ -930,7 +943,7 @@
     "copyLink": "Copier le lien dans le presse-papiers",
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
-    "restoreItems": "{{itemsToRecover}} déplacé vers {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",

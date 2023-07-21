@@ -35,15 +35,15 @@ function RequestAccess(): JSX.Element {
   };
 
   return (
-    <div className="flex h-full w-full flex-col overflow-auto bg-white sm:bg-gray-5">
-      <div className="flex flex-shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+    <div className="flex h-full w-full flex-col items-center overflow-auto bg-white sm:bg-gray-5">
+      <div className="flex flex-shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
         <img src={bigLogo} width="120" alt="" />
       </div>
 
-      <div className="flex h-full flex-col items-center justify-center">
+      <div className="flex h-full w-full max-w-xs flex-shrink-0 flex-col items-center justify-start pb-8">
         {!requestSent ? (
           <>
-            <div className="flex w-full max-w-xs transform flex-col items-center rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
+            <div className="flex w-full transform flex-col items-center rounded-2xl bg-white p-5 text-gray-100 transition-all duration-100 ease-out sm:shadow-subtle-hard">
               <LockSimple size={80} weight="thin" className="mt-3" />
               <h4 className="mt-4 text-center text-xl font-medium">
                 {translate('modals.shareModal.requestAccess.title')}
@@ -55,7 +55,7 @@ function RequestAccess(): JSX.Element {
                 value={messageText}
                 placeholder={translate('modals.shareModal.requestAccess.textarea')}
                 rows={4}
-                className="outline-none mt-5 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+                className="outline-none mt-5 w-full max-w-lg resize-none rounded-6px border border-gray-40 bg-gray-1 p-3 pl-4 ring-primary ring-opacity-10 focus:border-primary focus:ring-3"
                 onChange={(e) => setMessageText(String(e.target.value))}
                 maxLength={1000}
               />
@@ -70,11 +70,18 @@ function RequestAccess(): JSX.Element {
                 {translate('modals.shareModal.requestAccess.requestButton')}
               </Button>
             </div>
-            <div className="request-access-user-container mt-4 transform rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
-              <div className="flex items-center justify-between">
-                <div className="mr-4">
+
+            <div className="request-access-user-container mt-4 w-full transform rounded-2xl bg-white p-5 text-gray-100 transition-all duration-100 ease-out sm:shadow-subtle-hard">
+              <div className="flex w-full items-center justify-between">
+                <div className="mr-4 flex-1">
                   <p className="text-sm font-medium">{translate('modals.shareModal.requestAccess.logged')}</p>
-                  <span className="font-regular mt-0.5 text-base text-gray-50">{user?.email}</span>
+                  <p
+                    className="font-regular mt-0.5 flex-1 truncate text-base text-gray-50"
+                    style={{ maxWidth: '167px' }}
+                    title={user?.email}
+                  >
+                    {user?.email}
+                  </p>
                 </div>
                 <Button variant="secondary" className="cursor-pointer" onClick={onChangeAccount}>
                   {translate('modals.shareModal.requestAccess.change')}

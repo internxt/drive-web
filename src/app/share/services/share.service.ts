@@ -3,9 +3,14 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
-import { ListPrivateSharedFoldersResponse, ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import {
+  ListPrivateSharedFoldersResponse,
+  ListShareLinksItem,
+  ShareDomainsResponse,
+} from '@internxt/sdk/dist/drive/share/types';
+import { domainManager } from './DomainManager';
+import _ from 'lodash';
 
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 interface CreateShareResponse {
   created: boolean;
   token: string;
@@ -31,19 +36,24 @@ export function getLinkFromShare(
   mnemonic: string,
   type: string,
 ): string {
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
+
   if (share.created) {
-    return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${type}/${share.token}/${plainCode}`;
+    return `${shareDomain}/sh/${type}/${share.token}/${plainCode}`;
   } else {
-    return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${type}/${share.token}/${aes.decrypt(
-      (share as any).encryptedCode,
-      mnemonic,
-    )}`;
+    return `${shareDomain}/sh/${type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)}`;
   }
 }
 
 export function buildLinkFromShare(mnemonic: string, share: ListShareLinksItem & { code: string }): string {
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
   const plainCode = aes.decrypt(share.code, mnemonic);
-  return `${REACT_APP_SHARE_LINKS_DOMAIN}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
+
+  return `${shareDomain}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
 }
 
 export function incrementShareView(token: string): Promise<{ incremented: boolean; token: string }> {
@@ -113,6 +123,13 @@ export function getSharedFolderInfo(token: string, password?: string): Promise<S
 export async function getSharedFolderSize(shareId: string, folderId: string): Promise<any> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLinkFolderSize({ itemId: shareId, folderId }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getShareDomains(): Promise<ShareDomainsResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getShareDomains().catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -193,6 +210,7 @@ const shareService = {
   getAllShareLinks,
   buildLinkFromShare,
   incrementShareView,
+  getShareDomains,
 };
 
 export default shareService;

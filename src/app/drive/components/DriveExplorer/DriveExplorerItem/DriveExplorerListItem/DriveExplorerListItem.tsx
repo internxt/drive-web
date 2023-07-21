@@ -12,6 +12,7 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 
 import { DriveItemData } from '../../../../types';
+import envService from '../../../../../core/services/env.service';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
@@ -98,7 +99,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     );
   };
   const itemIsShared = item.shares?.length || 0 > 0;
-  const isProduction = process.env.NODE_ENV === 'production';
+  const isProduction = envService.isProduction();
 
   const template = (
     <div

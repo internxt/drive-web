@@ -571,6 +571,19 @@
         },
         "copyLink": "Копировать ссылку"
       },
+      "requests": {
+        "title": "Запросы на доступ",
+        "button": "Запросы",
+        "empty": "Запросов не осталось",
+        "actions": {
+          "accept": "Принять",
+          "deny": "Запретить",
+          "roles": {
+            "editor": "Редактор",
+            "viewer": "зритель"
+          }
+        }
+      },
       "stopSharing": {
         "title": "Перестать делиться?",
         "subtitle": "Никто не сможет получить доступ к \"{{name}}\"",
@@ -917,7 +930,7 @@
     "copyLink": "Ссылка с общим доступом скопирована в буфер обмена",
     "linkUpdated": "Ссылка обновлена",
     "itemsMovedToTrash": "{{item}} перемещен в корзину",
-    "restoreItems": "{{itemsToRecover}} перемещен в {{destination}}",
+    "restoreItems": "{{itemsToRecover}} успешно восстановлено",
     "itemDeleted": "{{item}} удален",
     "itemsDeleted": "Файлы удалены",
     "emailNotEmpty": "Поле электронной почты не должно быть пустым",

@@ -68,7 +68,26 @@
     "of": "de",
     "terms": "Términos y condiciones",
     "help": "¿Necesitas ayuda?",
-    "searchBar": "Buscar en esta carpeta",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Buscar en esta carpeta",
+      "placeholder": "Buscar en Drive",
+      "filters": {
+        "folder": "Carpeta",
+        "pdf": "PDF",
+        "image": "Imagen",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Borrar"
+      },
+      "emptyState": {
+        "title": "Buscar archivos y carpetas",
+        "subtitle": "Buscar por nombre y tipo"
+      },
+      "notFoundState": {
+        "title": "No hay resultados",
+        "subtitle": "Ninguna coincidencia para tu búsqueda"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -579,6 +598,19 @@
         },
         "copyLink": "Copiar enlace"
       },
+      "requests": {
+        "title": "Solicitudes de acceso",
+        "button": "Solicitudes",
+        "empty": "No quedan solicitudes",
+        "actions": {
+          "accept": "Aceptar",
+          "deny": "Denegar",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Espectador"
+          }
+        }
+      },
       "stopSharing": {
         "title": "¿Dejar de compartir?",
         "subtitle": "Nadie podrá acceder a \"{{name}}\"",
@@ -961,7 +993,7 @@
     "copyLink": "Enlace copiado al portapapeles",
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
-    "restoreItems": "{{itemsToRecover}} movid{{s}} a {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",

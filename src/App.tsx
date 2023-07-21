@@ -33,6 +33,7 @@ import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import Mobile from 'app/drive/views/MobileView/MobileView';
+import { domainManager } from './app/share/services/DomainManager';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -79,12 +80,14 @@ class App extends Component<AppProps> {
       dispatch(sessionActions.setHasConnection(true));
     });
 
-    await LRUFilesCacheManager.getInstance();
-    await LRUFilesPreviewCacheManager.getInstance();
-    await LRUPhotosCacheManager.getInstance();
-    await LRUPhotosPreviewsCacheManager.getInstance();
-
     try {
+      await LRUFilesCacheManager.getInstance();
+      await LRUFilesPreviewCacheManager.getInstance();
+      await LRUPhotosCacheManager.getInstance();
+      await LRUPhotosPreviewsCacheManager.getInstance();
+
+      await domainManager.fetchDomains();
+
       await this.props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -180,7 +183,7 @@ class App extends Component<AppProps> {
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
-            {isFileViewerOpen && (
+            {isFileViewerOpen && fileViewerItem && (
               <FileViewerWrapper
                 file={fileViewerItem}
                 onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}

@@ -12,6 +12,7 @@ import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planActions, PlanState } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
+import moneyService from 'app/payment/services/money.service';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -310,6 +311,7 @@ const ChangePlanDialog = ({
 
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
+  let subscriptionCurrencySymbol: string | null = null;
 
   if (selectedPlanInterval === 'month') {
     amountMonthly = selectedPlanAmount;
@@ -318,6 +320,7 @@ const ChangePlanDialog = ({
   }
 
   if (subscription?.type === 'subscription') {
+    subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency);
     if (subscription.interval === 'month') {
       currentAmountMonthly = subscription.amount;
     } else if (subscription.interval === 'year') {
@@ -351,10 +354,9 @@ const ChangePlanDialog = ({
           <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
           {subscription?.type === 'subscription' ? (
             <div>
-              <span className="text-base font-medium">
-                {subscription.currency}
-                {displayAmount(currentAmountMonthly)}
-              </span>
+              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
+                currentAmountMonthly,
+              )}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
@@ -362,7 +364,7 @@ const ChangePlanDialog = ({
             <p className="text-base font-medium capitalize">{subscription?.type}</p>
           )}
         </div>
-        <ArrowRight className="mx-5 font-semibold text-gray-20" />
+        <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
         <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}
