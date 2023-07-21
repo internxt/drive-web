@@ -27,7 +27,7 @@ const SignupAuth = () => {
 
 export default function SignupBlog(): JSX.Element {
   return (
-    <div className="flex flex-col items-center justify-center overflow-hidden py-3 sm:py-10">
+    <div className="flex flex-col items-center justify-center overflow-hidden">
       <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-blue-20 to-white">
         <div className="mt-5 mb-10 flex w-full flex-col items-center justify-center px-5 text-center sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">
           <p className="text-3xl font-semibold">
