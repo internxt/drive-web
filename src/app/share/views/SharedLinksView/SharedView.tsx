@@ -11,7 +11,7 @@ import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import _ from 'lodash';
-import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { ListAllSharedFoldersResponse, ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -52,9 +52,7 @@ export default function SharedView(): JSX.Element {
   const dispatch = useAppDispatch();
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
-  const [hasMoreReceivedSharedFolders, setHasMoreReceivedSharedFolders] = useState<boolean>(true);
-  const [hasMoreSentSharedFolders, setHasMoreSentSharedFolders] = useState<boolean>(true);
-
+  const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [currentItemFetch, setCurrentItemFetch] = useState<SharedLinksFetchItem>(SHARED_LINKS_FETCH_ITEMS.FOLDERS);
 
   const [page, setPage] = useState<number>(0);
@@ -83,32 +81,21 @@ export default function SharedView(): JSX.Element {
     try {
       let items;
       if (currentItemFetch === SHARED_LINKS_FETCH_ITEMS.FOLDERS) {
-        let response;
-        if (hasMoreReceivedSharedFolders) {
-          response = await shareService.getReceivedSharedFolders(
+        let response: ListAllSharedFoldersResponse;
+
+        if (hasMoreFolders) {
+          response = await shareService.getAllSharedFolders(
             page,
             ITEMS_PER_PAGE,
             orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
           );
-          items = response.folders.filter((shareLink) => shareLink?.item !== null) as (ListShareLinksItem & {
-            code: string;
-          })[];
-          setHasMoreReceivedSharedFolders(ITEMS_PER_PAGE === response.folders.length);
+          const foldersSharedByMe = response.sharedByMe;
+          const foldersSharedWithMe = response.sharedWithMe;
+
+          if (foldersSharedByMe.length < ITEMS_PER_PAGE && foldersSharedWithMe.length < ITEMS_PER_PAGE)
+            setHasMoreFolders(false);
+          if (response) items = [...foldersSharedByMe, ...foldersSharedWithMe];
         }
-        if (hasMoreSentSharedFolders) {
-          response = await shareService.getSentSharedFolders(
-            page,
-            ITEMS_PER_PAGE,
-            orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-          );
-          setHasMoreSentSharedFolders(ITEMS_PER_PAGE === response.folders.length);
-        }
-        items = [
-          ...items,
-          ...(response.folders.filter((shareLink) => shareLink?.item !== null) as (ListShareLinksItem & {
-            code: string;
-          })[]),
-        ];
       } else if (currentItemFetch === SHARED_LINKS_FETCH_ITEMS.FILES) {
         // TODO: Add files fetch
       }
@@ -125,14 +112,14 @@ export default function SharedView(): JSX.Element {
       setIsLoading(false);
     }
   }
-
+  console.log({ isLoading });
   useEffect(() => {
-    if (!hasMoreReceivedSharedFolders && !hasMoreSentSharedFolders) {
+    if (!hasMoreFolders) {
       setCurrentItemFetch(SHARED_LINKS_FETCH_ITEMS.FILES);
     }
     // TODO: add files when implement files fetching
-    setHasMoreItems(hasMoreReceivedSharedFolders || hasMoreSentSharedFolders);
-  }, [hasMoreReceivedSharedFolders, hasMoreSentSharedFolders]);
+    setHasMoreItems(hasMoreFolders);
+  }, [hasMoreFolders]);
 
   function onNextPage() {
     fetchItems(page + 1, orderBy, 'append');

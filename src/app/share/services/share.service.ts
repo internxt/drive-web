@@ -4,6 +4,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
 import {
+  ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
   ShareDomainsResponse,
@@ -88,6 +89,17 @@ export function getSentSharedFolders(
 ): Promise<ListPrivateSharedFoldersResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getAllSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -206,6 +218,7 @@ const shareService = {
   getSharedDirectoryFolders,
   getSentSharedFolders,
   getReceivedSharedFolders,
+  getAllSharedFolders,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
