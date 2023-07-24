@@ -1,6 +1,11 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
-import { FriendInvite, InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
+import {
+  FriendInvite,
+  InitializeUserResponse,
+  UpdateProfilePayload,
+  UserPublicKeyResponse,
+} from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
   const usersClient = SdkFactory.getInstance().createUsersClient();
@@ -50,6 +55,11 @@ const sendVerificationEmail = (): Promise<void> => {
   return usersClient.sendVerificationEmail();
 };
 
+const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.getPublicKeyWithEmail({ email });
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -60,6 +70,7 @@ const userService = {
   updateUserAvatar,
   deleteUserAvatar,
   sendVerificationEmail,
+  getPublicKeyByEmail,
 };
 
 export default userService;

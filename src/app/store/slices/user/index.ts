@@ -21,12 +21,14 @@ import RealtimeService from 'app/core/services/socket.service';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
 import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import dayjs from 'dayjs';
+import { getUserPublicKeyThunkExtraReducers, getUserPublicKeyThunk } from './user.thunks/getUserPublicKeyThunk';
 
-interface UserState {
+export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
   user?: UserSettings;
+  isFetchingUserPublicKey: boolean;
 }
 
 const initialState: UserState = {
@@ -34,6 +36,7 @@ const initialState: UserState = {
   isAuthenticated: false,
   isInitialized: false,
   user: undefined,
+  isFetchingUserPublicKey: false,
 };
 
 export const initializeUserThunk = createAsyncThunk<
@@ -196,6 +199,7 @@ export const userSlice = createSlice({
       .addCase(logoutThunk.pending, () => undefined)
       .addCase(logoutThunk.fulfilled, () => undefined)
       .addCase(logoutThunk.rejected, () => undefined);
+    getUserPublicKeyThunkExtraReducers(builder);
   },
 });
 
@@ -229,6 +233,7 @@ export const userThunks = {
   initializeUserThunk,
   refreshUserThunk,
   logoutThunk,
+  getUserPublicKeyThunk,
 };
 
 export default userSlice.reducer;
