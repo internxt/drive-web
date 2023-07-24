@@ -326,6 +326,11 @@ const extractOneUseCredentialsForAutoSubmit = (
   }
 };
 
+const sendChangePasswordEmail = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.sendChangePasswordEmail(email);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -336,6 +341,7 @@ const authService = {
   extractOneUseCredentialsForAutoSubmit,
   getNewToken,
   getRedirectUrl,
+  sendChangePasswordEmail,
 };
 
 export default authService;

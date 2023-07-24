@@ -1,15 +1,12 @@
 import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-
 import { Link } from 'react-router-dom';
-import { WarningCircle, Envelope } from '@phosphor-icons/react';
-import userService from '../../services/user.service';
-
-import { IFormValues } from 'app/core/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import authService from 'app/auth/services/auth.service';
 import TextInput from '../TextInput/TextInput';
 import Button from '../Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { IFormValues } from 'app/core/types';
+import { WarningCircle, Envelope } from '@phosphor-icons/react';
 
 function RecoveryLink(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -20,32 +17,22 @@ function RecoveryLink(): JSX.Element {
   } = useForm<IFormValues>({ mode: 'onChange' });
 
   const [step, setStep] = useState(1);
-  const [isLoading, setIsLoading] = useState(false);
-  const [getEmail, setEmail] = useState('');
   const [showErrors, setShowErrors] = useState(false);
   const [emailErrors, setEmailErrors] = useState('');
 
   const sendEmail = async (email: string) => {
-    // try {
-    //   setIsLoading(true);
-    //   await userService.sendDeactivationEmail(email);
-    //   notificationsService.show({ text: translate('success.accountDeactivationEmailSent'), type: ToastType.Success });
-    //   if (showErrors === false) {
-    //     setStep(2);
-    //   }
-    // } catch (err: unknown) {
-    //   notificationsService.show({ text: translate('error.deactivatingAccount'), type: ToastType.Error });
-    //   setEmailErrors(translate('error.deactivatingAccount') as string);
-    //   setShowErrors(true);
-    // } finally {
-    //   setIsLoading(false);
-    // }
+    try {
+      await authService.sendChangePasswordEmail(email);
+      setStep(2);
+    } catch (error) {
+      setEmailErrors(translate('auth.forgotPassword.notFound'));
+      setShowErrors(true);
+    }
   };
 
   const onSubmit: SubmitHandler<IFormValues> = (formData, event) => {
     event?.preventDefault();
     sendEmail(formData.email);
-    setEmail(formData.email);
   };
 
   return (
@@ -77,9 +64,8 @@ function RecoveryLink(): JSX.Element {
             </label>
 
             <Button
-              disabled={isLoading}
-              text={isLoading ? translate('auth.forgotPassword.sending') : translate('auth.forgotPassword.continue')}
-              loading={isLoading}
+              text={translate('auth.forgotPassword.continue')}
+              loading={false}
               style="button-primary"
               disabledText="Send instructions"
               className="mt-4 w-full"
