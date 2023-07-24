@@ -54,7 +54,7 @@
     {
       "id": "recover-account",
       "layout": "empty",
-      "path": "/recover-account",
+      "path": "/recover-account/:token",
       "exact": true
     },
     {
