@@ -77,6 +77,7 @@
       "title": "Account recovery",
       "continue": "Continue",
       "sending": "Sending...",
+      "notFound": "Email address not found, please try again",
       "password": "Remember your password?",
       "login": "Login",
       "successTitle": "Check your inbox",
@@ -94,7 +95,32 @@
         "title": "Verify backup key",
         "alert": "If you upload a wrong backup key your data will get corrupted, please make sure your backup key is correct.",
         "button": "Upload backup key"
+      },
+      "changePassword": {
+        "title": "Change password",
+        "newPassword": "New Password",
+        "repeatNewPassword": "Repeat new password",
+        "notMatch": "Passwords don't match",
+        "submitButton": "Change password",
+        "notPasswordStrength": "Password must have a number",
+        "shortPasswordStrength": "Password must be at least 8 characters",
+        "warningPasswordStrength": "Password is weak",
+        "successPasswordStrength": "Password is strong",
+        "emailSent": {
+          "title": "Password changed",
+          "description": "All your data has been re-encrypted and all your active sessions were logged out.",
+          "redirect": "Redirecting to Internxt Drive in",
+          "button": "Go to Internxt Drive"
+        }
       }
+    },
+    "restartAccount": {
+      "title": "Restart account",
+      "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
+      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
+      "alert2": "You will still be able to use this email to create a new account and start over.",
+      "button": "Send account restart verification",
+      "successDescription": "We’ve sent you a one-time link to verify your account restart"
     }
   },
   "general": {

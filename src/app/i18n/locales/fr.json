@@ -60,6 +60,7 @@
       "title": "Récupération de compte",
       "continue": "Continuer",
       "sending": "Envoi...",
+      "notFound": "L'adresse électronique n'a pas été trouvée, veuillez réessayer",
       "password": "Rappelez-vous votre mot de passe ?",
       "login": "Connexion",
       "successTitle": "Vérifiez votre boîte de réception",
@@ -77,7 +78,32 @@
         "title": "Vérifier la clé de sauvegarde",
         "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte.",
         "button": "Télécharger la clé de sauvegarde"
+      },
+      "changePassword": {
+        "title": "Modifier le mot de passe",
+        "newPassword": "Nouveau mot de passe",
+        "repeatNewPassword": "Répéter le mot de passe",
+        "notMatch": "Les mots de passe ne correspondent pas",
+        "submitButton": "Modifier le mot de passe",
+        "notPasswordStrength": "Le mot de passe doit comporter un chiffre",
+        "shortPasswordStrength": "Le mot de passe doit comporter au moins 8 caractères",
+        "warningPasswordStrength": "Le mot de passe est wea",
+        "successPasswordStrength": "Le mot de passe est fort",
+        "emailSent": {
+          "title": "Mot de passe modifié",
+          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées.",
+          "redirect": "Redirection vers Internxt Drive in",
+          "button": "Aller à Internxt Drive"
+        }
       }
+    },
+    "restartAccount": {
+      "title": "Redémarrer le compte",
+      "description": "Grâce à notre politique de cryptage de bout en bout et d'absence de connaissance, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde.",
+      "alert1": "En redémarrant votre compte, vous comprenez que tous vos fichiers, photos et sauvegardes seront définitivement supprimés.",
+      "alert2": "Vous pourrez toujours utiliser cet e-mail pour créer un nouveau compte et recommencer.",
+      "button": "Envoyer la vérification du redémarrage du compte",
+      "successDescription": "Nous vous avons envoyé un lien unique pour vérifier le redémarrage de votre compte."
     }
   },
   "general": {

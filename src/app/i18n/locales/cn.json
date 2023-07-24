@@ -77,6 +77,7 @@
       "title": "账户恢复",
       "continue": "继续",
       "sending": "发送",
+      "notFound": "未找到电子邮件地址 请重试",
       "password": "记住您的密码",
       "login": "登录",
       "successTitle": "检查您的收件箱",
@@ -94,7 +95,32 @@
         "title": "验证备份密钥",
         "alert": "如果您上传错误的备份密钥 您的数据将被损坏 请确保您的备份密钥正确",
         "button": "上传备份密钥"
+      },
+      "changePassword": {
+        "title": "更改密码",
+        "newPassword": "新密码",
+        "repeatNewPassword": "重复新密码",
+        "notMatch": "密码不匹配",
+        "submitButton": "更改密码",
+        "notPasswordStrength": "密码必须有数字",
+        "shortPasswordStrength": "密码必须至少包含 8 个字符",
+        "warningPasswordStrength": "密码无效",
+        "successPasswordStrength": "密码牢固",
+        "emailSent": {
+          "title": "密码已更改",
+          "description": "您的所有数据都已重新加密 您的所有活动会话都已注销",
+          "redirect": "重定向",
+          "button": "前往 Internxt Drive"
+        }
       }
+    },
+    "restartAccount": {
+      "title": "重启账户",
+      "description": "由于我们采用端到端加密和零知识政策 如果没有密码或备份密钥 您将无法访问您的数据",
+      "alert1": "重启账户后 您了解您的所有文件、照片和备份将被永久删除",
+      "alert2": "您仍然可以使用此电子邮件创建新账户并重新开始",
+      "button": "发送账户重启验证",
+      "successDescription": "我们已经向您发送了一个一次性链接来验证您的帐户重启"
     }
   },
   "general": {

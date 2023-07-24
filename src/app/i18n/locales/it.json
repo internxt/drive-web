@@ -77,6 +77,7 @@
       "title": "Recupero del conto",
       "continue": "Continuare",
       "sending": "Invio...",
+      "notFound": "Indirizzo email non trovato, riprovare",
       "password": "Ricorda la password?",
       "login": "Accesso",
       "successTitle": "Controllare la posta in arrivo",
@@ -94,7 +95,32 @@
         "title": "Carica la chiave di backup",
         "alert": "Se carichi una chiave di backup errata, i tuoi dati verranno danneggiati, assicurati che la tua chiave di backup sia corretta.",
         "button": "Carica la chiave di backup"
+      },
+      "changePassword": {
+        "title": "Cambia password",
+        "newPassword": "Nuova password",
+        "repeatNewPassword": "Ripeti la nuova password",
+        "notMatch": "Le password non coincidono",
+        "submitButton": "Cambia password",
+        "notPasswordStrength": "La password deve avere un numero",
+        "shortPasswordStrength": "La password deve essere di almeno 8 caratteri",
+        "warningPasswordStrength": "Password debole",
+        "successPasswordStrength": "La password è forte",
+        "emailSent": {
+          "title": "Password cambiata",
+          "description": "Tutti i dati sono stati nuovamente crittografati e tutte le sessioni attive sono state interrotte.",
+          "redirect": "Reindirizzamento a Internxt Drive in",
+          "button": "Vai a Internxt Drive"
+        }
       }
+    },
+    "restartAccount": {
+      "title": "Riavvia il conto",
+      "description": "Grazie alla nostra crittografia end-to-end e alla politica 'zero-knowledge', non è possibile accedere ai propri dati senza la propria password o una chiave di backup.",
+      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
+      "alert2": "Riavviando l'account, l'utente è consapevole che tutti i file, le foto e i backup saranno eliminati in modo permanente.",
+      "button": "Inviare la verifica del riavvio dell'account",
+      "successDescription": "Le abbiamo inviato un link unico per verificare il riavvio del suo account."
     }
   },
   "general": {

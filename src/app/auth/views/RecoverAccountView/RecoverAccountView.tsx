@@ -4,6 +4,7 @@ import Button from 'app/auth/components/Button/Button';
 import { Question } from '@phosphor-icons/react';
 import bigLogo from 'assets/icons/big-logo.svg';
 import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';
+import RestartAccount from 'app/auth/components/RestartAccount/RestartAccount';
 
 export default function RecoverAccountView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -51,7 +52,7 @@ export default function RecoverAccountView(): JSX.Element {
             </>
           )}
           {hasBackupKey === true && <ChangePassword setHasBackupKey={setHasBackupKey} />}
-          {hasBackupKey === false && <div onClick={() => setHasBackupKey(undefined)}>Restart Account</div>}
+          {hasBackupKey === false && <RestartAccount setHasBackupKey={setHasBackupKey} />}
         </div>
       </div>
 
