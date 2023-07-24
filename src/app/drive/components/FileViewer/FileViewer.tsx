@@ -279,7 +279,9 @@ const FileViewer = ({
                         } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
                       rounded-xl font-medium`}
                       >
-                        <ItemIconComponent className="mr-3 flex" width={60} height={80} />
+                        <div className="flex h-9 w-9 items-center">
+                          <ItemIconComponent className="mr-3" width={32} height={32} />
+                        </div>
                         <span className="w-96 truncate text-center text-lg">{filename}</span>
                         <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
                         <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
@@ -300,7 +302,9 @@ const FileViewer = ({
                       space-y-6 rounded-xl font-medium"
               >
                 <div className="flex flex-col items-center justify-center">
-                  <ItemIconComponent className="flex" width={80} height={80} />
+                  <div className="flex h-9 w-9 items-center">
+                    <ItemIconComponent className="mr-3" width={32} height={32} />
+                  </div>
                   <span className="w-96 truncate pt-2 text-center text-lg">{filename}</span>
                   <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
                 </div>
@@ -343,7 +347,9 @@ const FileViewer = ({
               </button>
 
               <Dialog.Title className="flex w-11/12 flex-row items-center text-lg">
-                <ItemIconComponent className="mr-3" width={32} height={32} />
+                <div className="flex h-9 w-9 items-center">
+                  <ItemIconComponent className="mr-3" width={32} height={32} />
+                </div>
                 <p className="w-full truncate">{filename}</p>
               </Dialog.Title>
             </div>
