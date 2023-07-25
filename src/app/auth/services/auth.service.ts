@@ -176,6 +176,30 @@ export const getPasswordDetails = async (
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
 };
 
+const updateCredentialsWithToken = async (
+  token: string,
+  newPassword: string,
+  mnemonicInPlain: string,
+  privateKeyInPlain: string
+): Promise<void> => {
+  const hashedNewPassword = passToHash({ password: newPassword });
+  const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
+  const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
+
+  const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
+  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
+  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+
+
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.changePasswordWithLink(
+    token,
+    encryptedHashedNewPassword,
+    encryptedHashedNewPasswordSalt,
+    encryptedMnemonic
+  );
+};
+
 export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 

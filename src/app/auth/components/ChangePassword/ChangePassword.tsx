@@ -115,15 +115,20 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
     const token = window.location.pathname.split('/').pop();
     const { password } = formData;
+    const mnemonic = buckupKeyContent;
 
-    const hashObj = passToHash({ password });
-    const encPass = encryptText(hashObj.hash);
-    const encSalt = encryptText(hashObj.salt);
-
-    const encMnemonic = encryptTextWithKey(buckupKeyContent, password);
+    if (!token) {
+      // TODO: Show missing token message error
+      throw new Error();
+    }
 
     try {
-      await authService.changePasswordWithLink(token, encPass, encSalt, encMnemonic);
+      await authService.updateCredentialsWithToken(
+        token, 
+        password, 
+        mnemonic, 
+        ''
+      );
       setIsEmailSent(true);
     } catch (error) {
       notificationsService.show({
