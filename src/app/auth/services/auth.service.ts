@@ -331,9 +331,14 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
-const changePasswordWithLink = (token: string | undefined, password: string, mnemonic: string): Promise<void> => {
+const changePasswordWithLink = (
+  token: string | undefined,
+  password: string,
+  salt: string,
+  mnemonic: string,
+): Promise<void> => {
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  return authClient.changePasswordWithLink(token, password, mnemonic);
+  return authClient.changePasswordWithLink(token, password, salt, mnemonic);
 };
 
 const authService = {

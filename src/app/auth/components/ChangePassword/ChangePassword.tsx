@@ -37,7 +37,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
   const [isEqualPassword, setIsEqualPassword] = useState(false);
   const [isEmailSent, setIsEmailSent] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [countDown, setCountDown] = useState<number>(5);
+  const [countDown, setCountDown] = useState<number>(10);
 
   const [passwordState, setPasswordState] = useState<{
     tag: 'error' | 'warning' | 'success';
@@ -118,11 +118,12 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
     const hashObj = passToHash({ password });
     const encPass = encryptText(hashObj.hash);
+    const encSalt = encryptText(hashObj.salt);
 
     const encMnemonic = encryptTextWithKey(buckupKeyContent, password);
 
     try {
-      await authService.changePasswordWithLink(token, encPass, encMnemonic);
+      await authService.changePasswordWithLink(token, encPass, encSalt, encMnemonic);
       setIsEmailSent(true);
     } catch (error) {
       notificationsService.show({
