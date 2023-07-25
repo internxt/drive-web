@@ -29,6 +29,7 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { validateMnemonic } from 'bip39';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -182,6 +183,11 @@ const updateCredentialsWithToken = async (
   mnemonicInPlain: string,
   privateKeyInPlain: string,
 ): Promise<void> => {
+  const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
+  if (mnemonicIsInvalid) {
+    throw new Error('Invalid mnemonic');
+  }
+
   const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
   const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
