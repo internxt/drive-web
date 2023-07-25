@@ -57,7 +57,7 @@ const sendVerificationEmail = (): Promise<void> => {
 
 const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
-  return usersClient.getPublicKeyWithEmail({ email });
+  return usersClient.getPublicKeyByEmail({ email });
 };
 
 const userService = {
