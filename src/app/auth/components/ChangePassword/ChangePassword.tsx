@@ -56,9 +56,10 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
   useEffect(() => {
     if (countDown > 0 && isEmailSent) {
-      setInterval(() => {
+      const timer = setInterval(() => {
         setCountDown(countDown - 1);
       }, 1000);
+      return () => clearInterval(timer);
     }
 
     countDown === 0 && window.location.assign(`${window.location.origin}/login`);
@@ -73,7 +74,12 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     const backupKey = await file.text();
     const isValidBackupKey = validateMnemonic(backupKey);
 
-    isValidBackupKey && setBackupKeyContent(backupKey);
+    isValidBackupKey
+      ? setBackupKeyContent(backupKey)
+      : notificationsService.show({
+          text: translate('auth.recoverAccount.changePassword.backupKeyError'),
+          type: ToastType.Error,
+        });
   };
 
   function onChangeHandler(input: string) {

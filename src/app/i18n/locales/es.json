@@ -91,6 +91,7 @@
         "successPasswordStrength": "Contraseña segura",
         "serverError": "Algo ha ido mal al cambiar la contraseña",
         "tokenError": "Se ha producido un error al validar la clave de recuperación",
+        "backupKeyError": "La clave de recuperación subida no es válida",
         "emailSent": {
           "title": "Contraseña modificada",
           "description": "Todos tus datos han sido encriptados de nuevo y todas tus sesiones activas han sido cerradas.",

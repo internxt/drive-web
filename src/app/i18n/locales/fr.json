@@ -91,6 +91,7 @@
         "successPasswordStrength": "Le mot de passe est fort",
         "serverError": "Un problème s'est produit lors de la modification du mot de passe",
         "tokenError": "Une erreur s'est produite lors de la validation de la clé de sauvegarde",
+        "backupKeyError": "La clé de sauvegarde téléchargée est invalide",
         "emailSent": {
           "title": "Mot de passe modifié",
           "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées.",
