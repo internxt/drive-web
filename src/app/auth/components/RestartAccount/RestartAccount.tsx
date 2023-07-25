@@ -30,7 +30,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
           </span>
           <h3 className="mb-1 text-2xl font-medium">{translate('auth.restartAccount.title')}</h3>
           <p className="font-regular mb-5 text-sm text-gray-80">{translate('auth.restartAccount.description')}</p>
-          <div className="font-regular mb-4 flex rounded-md border border-red-br bg-red-bg p-4 text-sm text-red-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-red-std border-opacity-30 bg-red-std bg-opacity-5 p-4 text-sm text-red-dark">
             <span className="mr-1.5 pt-0.5">
               <WarningCircle size={18} weight="fill" className="text-red-std" />
             </span>

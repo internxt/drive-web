@@ -106,6 +106,8 @@
         "shortPasswordStrength": "La password deve essere di almeno 8 caratteri",
         "warningPasswordStrength": "Password debole",
         "successPasswordStrength": "La password è forte",
+        "serverError": "Qualcosa è andato storto durante la modifica della password",
+        "tokenError": "Si è verificato un errore durante la convalida della chiave di backup",
         "emailSent": {
           "title": "Password cambiata",
           "description": "Tutti i dati sono stati nuovamente crittografati e tutte le sessioni attive sono state interrotte.",

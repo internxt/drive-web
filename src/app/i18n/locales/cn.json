@@ -106,6 +106,8 @@
         "shortPasswordStrength": "密码必须至少包含 8 个字符",
         "warningPasswordStrength": "密码无效",
         "successPasswordStrength": "密码牢固",
+        "serverError": "更改密码时出了问题",
+        "tokenError": "验证备份密钥时发生错误",
         "emailSent": {
           "title": "密码已更改",
           "description": "您的所有数据都已重新加密 您的所有活动会话都已注销",

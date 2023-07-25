@@ -106,6 +106,8 @@
         "shortPasswordStrength": "Password must be at least 8 characters",
         "warningPasswordStrength": "Password is weak",
         "successPasswordStrength": "Password is strong",
+        "serverError": "Something went wrong while changing the password",
+        "tokenError": "An error occurred while validating the backup key",
         "emailSent": {
           "title": "Password changed",
           "description": "All your data has been re-encrypted and all your active sessions were logged out.",
