@@ -180,7 +180,7 @@ const updateCredentialsWithToken = async (
   token: string,
   newPassword: string,
   mnemonicInPlain: string,
-  privateKeyInPlain: string
+  privateKeyInPlain: string,
 ): Promise<void> => {
   const hashedNewPassword = passToHash({ password: newPassword });
   const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
@@ -190,13 +190,12 @@ const updateCredentialsWithToken = async (
   // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
   // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-
   const authClient = SdkFactory.getNewApiInstance().createAuthClient();
   return authClient.changePasswordWithLink(
     token,
     encryptedHashedNewPassword,
     encryptedHashedNewPasswordSalt,
-    encryptedMnemonic
+    encryptedMnemonic,
   );
 };
 
@@ -355,16 +354,6 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
-const changePasswordWithLink = (
-  token: string | undefined,
-  password: string,
-  salt: string,
-  mnemonic: string,
-): Promise<void> => {
-  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
-  return authClient.changePasswordWithLink(token, password, salt, mnemonic);
-};
-
 const authService = {
   logOut,
   doLogin,
@@ -376,7 +365,7 @@ const authService = {
   getNewToken,
   getRedirectUrl,
   sendChangePasswordEmail,
-  changePasswordWithLink,
+  updateCredentialsWithToken,
 };
 
 export default authService;

@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction, useState, RefObject, createRef, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { Link } from 'react-router-dom';
-import { encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 import authService from 'app/auth/services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
@@ -118,21 +117,19 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     const mnemonic = buckupKeyContent;
 
     if (!token) {
-      // TODO: Show missing token message error
+      notificationsService.show({
+        text: translate('auth.recoverAccount.changePassword.tokenError'),
+        type: ToastType.Error,
+      });
       throw new Error();
     }
 
     try {
-      await authService.updateCredentialsWithToken(
-        token, 
-        password, 
-        mnemonic, 
-        ''
-      );
+      await authService.updateCredentialsWithToken(token, password, mnemonic, '');
       setIsEmailSent(true);
     } catch (error) {
       notificationsService.show({
-        text: 'Something went wrong while downloading the desktop app',
+        text: translate('auth.recoverAccount.changePassword.serverError'),
         type: ToastType.Error,
       });
     }
@@ -158,7 +155,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             {translate('auth.recoverAccount.title')}
           </span>
           <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.backupKey.title')}</h3>
-          <div className="font-regular mb-4 flex rounded-md border border-orange-br bg-orange-bg p-4 text-sm text-orange-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-orange-dark border-opacity-30 bg-orange-dark bg-opacity-5 p-4 text-sm text-orange-dark">
             <span className="mr-1.5 pt-0.5">
               <Warning size={18} weight="fill" />
             </span>
