@@ -10,6 +10,8 @@ import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox'
 import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
+import { useDispatch } from 'react-redux';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
 
 interface ShareInviteDialog {
   onInviteUser: () => void;
@@ -23,6 +25,7 @@ interface UsersToInvite {
 const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
   const [userRole, setUserRole] = useState<string>('editor');
@@ -66,7 +69,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
   };
 
   const onInvite = () => {
-    // Ivite added users
+    usersToInvite.forEach((user) => dispatch(sharedThunks.shareFileWithUser({ email: user.email })));
   };
 
   return (

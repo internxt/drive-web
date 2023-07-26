@@ -17,7 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import { storageActions } from '../storage';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { decryptMessageWithPrivateKey, encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -172,20 +172,20 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         navigationService.push(AppView.Login);
         return;
       }
-      const { privateKey } = user;
+      const { mnemonic } = user;
 
       const publicKeyResponse = await userService.getPublicKeyByEmail(payload.email);
       const publicKey = publicKeyResponse.publicKey;
 
-      const encryptedPrivateKey = await encryptMessageWithPublicKey({
-        message: privateKey,
+      const encryptedMnemonic = await encryptMessageWithPublicKey({
+        message: mnemonic,
         publicKeyInBase64: publicKey,
       });
 
-      console.log({ encryptedPrivateKey });
+      console.log({ encryptedMnemonic });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
+      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }

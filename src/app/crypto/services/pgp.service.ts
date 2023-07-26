@@ -24,14 +24,13 @@ export const encryptMessageWithPublicKey = async ({
   message: string;
   publicKeyInBase64: string;
 }): Promise<openpgp.WebStream<string>> => {
-  const publicKeyArmored = Buffer.from(publicKeyInBase64, 'base64').toString('ascii');
+  const publicKeyArmored = Buffer.from(publicKeyInBase64, 'base64').toString();
   const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
   const encryptedMessage = await openpgp.encrypt({
     message: await openpgp.createMessage({ text: message }),
     encryptionKeys: publicKey,
   });
-  console.log({ encryptedMessage: encryptedMessage });
 
   return encryptedMessage;
 };
@@ -50,10 +49,10 @@ export const decryptMessageWithPrivateKey = async ({
     armoredMessage: encryptedMessage,
   });
 
-  const { data: decrypted } = await openpgp.decrypt({
+  const { data: decryptedMessage } = await openpgp.decrypt({
     message,
     decryptionKeys: privateKey,
   });
 
-  return decrypted;
+  return decryptedMessage;
 };
