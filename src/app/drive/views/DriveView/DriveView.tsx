@@ -8,7 +8,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 export interface DriveViewProps {
   namePath: FolderPath[];

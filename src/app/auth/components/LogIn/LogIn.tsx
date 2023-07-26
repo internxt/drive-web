@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
