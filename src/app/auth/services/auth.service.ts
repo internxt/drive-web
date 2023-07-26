@@ -178,7 +178,7 @@ export const getPasswordDetails = async (
 };
 
 const updateCredentialsWithToken = async (
-  token: string,
+  token: string | undefined,
   newPassword: string,
   mnemonicInPlain: string,
   privateKeyInPlain: string,

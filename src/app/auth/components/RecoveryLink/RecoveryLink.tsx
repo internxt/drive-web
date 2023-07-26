@@ -7,6 +7,7 @@ import Button from '../Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { IFormValues } from 'app/core/types';
 import { WarningCircle, Envelope } from '@phosphor-icons/react';
+import errorService from 'app/core/services/error.service';
 
 function RecoveryLink(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -27,6 +28,7 @@ function RecoveryLink(): JSX.Element {
     } catch (error) {
       setEmailErrors(translate('auth.forgotPassword.notFound'));
       setShowErrors(true);
+      errorService.reportError(error);
     }
   };
 

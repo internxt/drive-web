@@ -13,6 +13,7 @@ import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthInd
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import { validateMnemonic } from 'bip39';
+import errorService from 'app/core/services/error.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -30,7 +31,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const confirmPassword = useWatch({ control, name: 'confirmPassword', defaultValue: '' });
   const [backupKeyInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
-  const [buckupKeyContent, setBackupKeyContent] = useState<string>('');
+  const [backupKeyContent, setBackupKeyContent] = useState<string>('');
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [isEqualPassword, setIsEqualPassword] = useState(false);
@@ -50,8 +51,8 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
   useEffect(() => {
     const confirmPasswordLength = confirmPassword.length;
-    const firstLettersPassord = password.substring(0, confirmPasswordLength);
-    confirmPassword && confirmPassword != firstLettersPassord ? setIsEqualPassword(false) : setIsEqualPassword(true);
+    const firstLettersPassword = password.substring(0, confirmPasswordLength);
+    confirmPassword && confirmPassword != firstLettersPassword ? setIsEqualPassword(false) : setIsEqualPassword(true);
   }, [confirmPassword]);
 
   useEffect(() => {
@@ -82,7 +83,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
         });
   };
 
-  function onChangeHandler(input: string) {
+  const onChangeHandler = (input: string) => {
     setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
       setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
@@ -112,7 +113,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
         label: translate('auth.recoverAccount.changePassword.successPasswordStrength'),
       });
     }
-  }
+  };
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
@@ -120,14 +121,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
     const token = window.location.pathname.split('/').pop();
     const { password } = formData;
-    const mnemonic = buckupKeyContent;
+    const mnemonic = backupKeyContent;
 
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
         type: ToastType.Error,
       });
-      throw new Error();
     }
 
     try {
@@ -138,13 +138,14 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
         text: translate('auth.recoverAccount.changePassword.serverError'),
         type: ToastType.Error,
       });
+      errorService.reportError(error);
     }
     setIsLoading(false);
   };
 
   return (
     <>
-      {!buckupKeyContent ? (
+      {!backupKeyContent ? (
         <>
           <input
             className="hidden"
