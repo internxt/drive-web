@@ -3,6 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet';
 
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
@@ -126,6 +127,7 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  // TODO: remove the unused code below
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
@@ -182,6 +184,9 @@ export default function LogIn(): JSX.Element {
 
   return (
     <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+      <Helmet>
+        <link rel="canonical" href={'https://drive.internxt.com/login'} />
+      </Helmet>
       <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
         <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
 
