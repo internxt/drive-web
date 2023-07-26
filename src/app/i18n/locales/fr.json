@@ -8,11 +8,33 @@
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
     "cta": "Obtenir l'offre"
   },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
   "lang": {
     "title": "Langue",
-    "es": "Espagnol (ES)",
-    "en": "Anglais (EN)",
-    "fr": "Français (FR)"
+    "en": "English (Anglais)",
+    "es": "Español (Espagnol)",
+    "fr": "Français (Français)",
+    "it": "Italiano (Italien)",
+    "cn": "简体中文 (Chinois)",
+    "ru": "Русский (Russe)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -31,7 +53,8 @@
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "login": "Connexion"
+      "login": "Connexion",
+      "encrypting": "Cryptage"
     },
     "forgotPassword": {
       "title": "Mot de passe oublié",
@@ -183,21 +206,34 @@
             "card": {
               "name": "Prénom",
               "lastname": "Nom",
-              "edit": "Modifier",
-              "email": "Courriel",
-              "resendEmail": "Renvoyer courriel de vérification"
+              "edit": "Éditer",
+              "email": "Email",
+              "resendEmail": "Renvoyer l'email de vérification"
             },
             "verify": {
-              "verify": "Vérifier email",
-              "verified": "Verified email",
-              "description": "Consultez votre email"
+              "verify": "Vérifier votre email",
+              "verified": "Email vérifié",
+              "description": "Vérifiez votre boîte de réception"
             },
             "editProfile": {
+              "title": "Modifier les détails du compte",
               "name": "Prénom",
-              "lastname": "Nom"
+              "lastname": "Nom",
+              "updateProfile": "Profil mis à jour avec succès",
+              "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
             },
-            "updateProfile": "Profil mis à jour avec succès",
-            "errorUpdatingProfile": "Nous n'avons pas pu mettre à jour votre profil"
+            "changeEmail": {
+              "title": "Changer d'adresse électronique",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Mot de passe",
+              "errorSameEmail": "Le nouvel e-mail doit être différent de l'e-mail actuel",
+              "errorPassword": " Mauvais mot de passe, réessayez ",
+              "sendVerification": "Envoyer la vérification",
+              "sendingVerification": "Envoi de la vérification",
+              "sucessSendingVerification": "Vérification par courriel envoyée",
+              "errorSendingVerification": "Erreur d'envoi de la vérification"
+            }
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -218,11 +254,16 @@
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les informations relatives à la carte de crédit apparaîtront automatiquement ici lorsque vous souscrirez un abonnement payant."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contactez-nous pour changer de mode de paiement",
+              "contact": "Contactez"
+            }
           },
           "invoices": {
             "head": "Factures",
             "billingDate": "Date de facturation",
+            "plan": "Plan",
             "empty": {
               "title": "Vous êtes sur le plan gratuit",
               "subtitle": "Les factures émises apparaîtront automatiquement ici lorsqu'un paiement est effectué."
@@ -255,7 +296,8 @@
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Paiement unique"
           },
           "features": {
             "title": "Caractéristiques incluses dans tous les plans :",
@@ -322,6 +364,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "L'authentification à deux facteurs offre une sécurité supplémentaire en exigeant une vérification pour la connexion. En plus de votre mot de passe, vous aurez besoin d'un code généré.",
             "button": "Activer 2FA",
+            "disable": "Désactiver 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -387,6 +430,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": " Email vérifié avec succès ",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé ",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la vérification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      }
+    },
+    "emailChange": {
+      "password": "Mot de passe",
+      "auth": {
+        "title": " Vérifier le changement d'adresse électronique ",
+        "subtitle": "L'email de votre compte sera remplacée par {{email}}",
+        "wrongPassword": "Mot de passe incorrect, réessayez",
+        "cta": "Continuer"
+      },
+      "success": {
+        "title": " Changement d'adresse électronique réussi",
+        "subtitle": "Vous pouvez fermer cet onglet",
+        "cta": "Ouvrir Internxt Drive"
+      },
+      "error": {
+        "title": " Quelque chose s'est mal passé",
+        "subtitle": " Vérifiez si le lien est correct ou redemandez la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      },
+      "expired": {
+        "title": " Lien de vérification expiré ",
+        "subtitle": " Demandez à nouveau la modification de l'email dans Paramètres > Compte ",
+        "cta": "Aller au Compte"
+      }
+    },
     "redirectToApp": {
       "message": "Merci",
       "goToApp": "Retourner à l'application"
@@ -424,6 +503,80 @@
       "placeholder": "Dossier sans titre",
       "untitled": "Dossier sans titre"
     },
+    "shareModal": {
+      "title": "Partager \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personnes ayant un accès",
+        "invite": "Inviter",
+        "userItem": {
+          "roles": {
+            "owner": "Propriétaire",
+            "editor": "Éditeur",
+            "viewer": " Visualisateur "
+          },
+          "remove": "Supprimer"
+        }
+      },
+      "general": {
+        "generalAccess": "Accès général",
+        "accessOptions": {
+          "public": {
+            "title": "Publique",
+            "subtitle": "Toute personne ayant le lien peut accéder"
+          },
+          "restricted": {
+            "title": "Restreint",
+            "subtitle": "Seules les personnes ajoutées peuvent accéder"
+          },
+          "stopSharing": "Arrêter le partage"
+        },
+        "copyLink": "Copier le lien"
+      },
+      "requests": {
+        "title": "Demandes d'accès",
+        "button": "Demandes",
+        "empty": "Aucune demande restante",
+        "actions": {
+          "accept": "Accepter",
+          "deny": "Refuser",
+          "roles": {
+            "editor": "Editeur",
+            "viewer": "Lecteur"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Arrêter le partage ?",
+        "subtitle": "Personne ne pourra plus accéder à \"{{name}}\"",
+        "cancel": "Annuler",
+        "confirm": "Arrêter le partage",
+        "notification": {
+          "success": "Ne plus partager \"{{name}}\"",
+          "error": "Impossible d'arrêter le partage, veuillez réessayer"
+        }
+      },
+      "invite": {
+        "title": "Inviter des personnes",
+        "textarea": "Entrez le texte de votre message (facultatif)",
+        "notifyUsers": "Notifier les utilisateurs",
+        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "email": "Type d'email",
+        "invite": "Inviter",
+        "editor": "Éditeur",
+        "viewer": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter"
+      },
+      "requestAccess": {
+        "title": "Vous n'avez pas accès",
+        "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
+        "textarea": "Message (optionnel)",
+        "requestButton": "Demande d'accès",
+        "logged": "Connecté comme",
+        "change": "Changer",
+        "requestSent": "Demande envoyée",
+        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
@@ -453,6 +606,7 @@
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
+      "total": "Total",
       "pending": "En attente",
       "accepted": "Accepté",
       "empty": "Vous n'avez encore invité personne",
@@ -472,6 +626,7 @@
       "confirmPassword": "Confirmer le nouveau mot de passe",
       "strongPassword": "Le mot de passe est fort",
       "errors": {
+        "longPassword": "Le mot de passe peut avoir un maximum de 50 caractères",
         "shortPassword": "Le mot de passe est trop court, il doit comporter au moins 8 caractères",
         "notComplex": "Le mot de passe n'est pas assez complexe",
         "weakPassword": "Le mot de passe est faible",
@@ -537,7 +692,10 @@
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Connexion Internet perdue",
+    "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },
   "backups": {
     "backups-from": "Sauvagardes de {{deviceName}}",
@@ -695,6 +853,7 @@
         "pending": "En attente de téléchargement",
         "decrypting": "Décryptage des fichiers",
         "in-process": "{{progress}}% Téléchargement du dossier",
+        "in-process-without-progress": "Téléchargement du dossier",
         "success": "Dossier téléchargé",
         "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
         "cancelled": "Téléchargement annulé"
@@ -782,7 +941,7 @@
     "copyLink": "Copier le lien dans le presse-papiers",
     "linkUpdated": "Lien mis à jour",
     "itemsMovedToTrash": "{{item}} déplacé vers la corbeille",
-    "restoreItems": "{{itemsToRecover}} déplacé vers {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restauré avec succès",
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
@@ -818,6 +977,7 @@
     "moreInfo": "Plus d'informations",
     "dismiss": "Rejeter",
     "save": "Enregistrer",
+    "saving": "Sauvagarde en cours",
     "back": "Retourner",
     "edit": "Éditer",
     "submit": "Soumettre",

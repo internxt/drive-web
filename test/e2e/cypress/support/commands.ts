@@ -46,6 +46,7 @@ Cypress.Commands.add('login', (enableOnboarding?: boolean) => {
       if (!enableOnboarding)
         cy.window().then((win) => {
           win.localStorage.setItem('signUpTutorialCompleted', 'true');
+          win.localStorage.setItem('showSummerBanner', 'false');
         });
     },
   );

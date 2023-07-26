@@ -1,5 +1,5 @@
 /*eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { Eye, EyeSlash } from 'phosphor-react';
+import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { useState } from 'react';
 import TextInput, { TextInputProps } from './TextInput';
 

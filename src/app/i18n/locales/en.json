@@ -8,11 +8,50 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
+  "notFound": {
+    "header": "Error 404",
+    "title": "Nothing to see here...",
+    "description": "The page you are looking for could not be found.",
+    "card1": {
+      "title": "Return Home",
+      "description": "Go back to Internxt Drive."
+    },
+    "card2": {
+      "title": "Visit Help Center",
+      "description": "Troubleshoot common issues and browse our FAQ."
+    },
+    "card3": {
+      "title": "Contact Support",
+      "description": "Reach out to our Support Team at hello@internxt.com."
+    }
+  },
   "lang": {
     "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)",
-    "fr": "French (FR)"
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "简体中文 (Chinese)",
+    "ru": "Русский (Russian)"
   },
   "auth": {
     "email": "Email",
@@ -30,8 +69,9 @@
     },
     "signup": {
       "title": "Create account",
-      "haveAccount": "already have an account?",
-      "login": "Log in"
+      "haveAccount": "Already have an account?",
+      "login": "Log in",
+      "encrypting": "Encrypting"
     },
     "forgotPassword": {
       "title": "Forgot password",
@@ -45,7 +85,26 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search this folder",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Search this folder",
+      "placeholder": "Search in Drive",
+      "filters": {
+        "folder": "Folder",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Clear"
+      },
+      "emptyState": {
+        "title": "Find files and folders",
+        "subtitle": "Search by name and type"
+      },
+      "notFoundState": {
+        "title": "No results found",
+        "subtitle": "No files or folders match the search"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -192,11 +251,24 @@
               "description": "Check your inbox"
             },
             "editProfile": {
+              "title": "Edit account details",
               "name": "Name",
-              "lastname": "Lastname"
+              "lastname": "Lastname",
+              "updatedProfile": "Profile updated successfully",
+              "errorUpdatingProfile": "We could not update your profile"
             },
-            "updateProfile": "Profile updated successfully",
-            "errorUpdatingProfile": "We could not update your profile"
+            "changeEmail": {
+              "title": "Change email",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Password",
+              "errorSameEmail": "New email should be different from the current one",
+              "errorPassword": "Wrong password, try again",
+              "sendVerification": "Send verification",
+              "sendingVerification": "Sending verification",
+              "sucessSendingVerification": "Email verification sent to {{email}}",
+              "errorSendingVerification": "Error sending verification"
+            }
           },
           "deleteAccount": {
             "head": "Delete account",
@@ -226,12 +298,14 @@
             },
             "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
             "feedback": {
-              "placeholder": "Give us some feedback",
-              "tooExpensive": "Too expensive",
-              "lackOfFeatures": "Lack of features",
-              "wantTryAnother": "Want to try another storage provider",
-              "justTrying": "Was just trying out Internxt Drive",
-              "other": "Other"
+              "placeholder": "Give us some feedback"
+            },
+            "coupon": {
+              "title": "3 MONTHS",
+              "subtitle": "FREE",
+              "text1": "By keeping your",
+              "text2": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "continue": "Get 3 months FREE"
             }
           },
           "billed": "Billed {{interval}} {{renewDate}}",
@@ -241,11 +315,16 @@
               "title": "You are on free plan",
               "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contact us to update your payment method",
+              "contact": "Contact"
+            }
           },
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
@@ -277,7 +356,8 @@
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "One-time payment"
           },
           "features": {
             "title": "Features included in all plans",
@@ -367,6 +447,7 @@
             "titleDisable": "Disable Two-Factor Authentication",
             "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
             "button": "Enable 2FA",
+            "disable": "Disable 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -432,6 +513,42 @@
         }
       }
     },
+    "emailVerification": {
+      "success": {
+        "title": "Email verified successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
+    "emailChange": {
+      "password": "Password",
+      "auth": {
+        "title": "Verify email change",
+        "subtitle": "Your account email will be changed to {{email}}",
+        "wrongPassword": "Wrong password, please try again",
+        "cta": "Continue"
+      },
+      "success": {
+        "title": "Email changed successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email change again in Settings > Account",
+        "cta": "Go to Account"
+      },
+      "expired": {
+        "title": "Verification link expired",
+        "subtitle": "You can request email change again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"
@@ -469,6 +586,80 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "Share \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "People with access",
+        "invite": "Invite",
+        "userItem": {
+          "roles": {
+            "owner": "Owner",
+            "editor": "Editor",
+            "viewer": "Viewer"
+          },
+          "remove": "Remove"
+        }
+      },
+      "general": {
+        "generalAccess": "General access",
+        "accessOptions": {
+          "public": {
+            "title": "Public",
+            "subtitle": "Anyone with the link can access"
+          },
+          "restricted": {
+            "title": "Restricted",
+            "subtitle": "Only people added can access"
+          },
+          "stopSharing": "Stop sharing"
+        },
+        "copyLink": "Copy link"
+      },
+      "requests": {
+        "title": "Access requests",
+        "button": "Requests",
+        "empty": "No requests left",
+        "actions": {
+          "accept": "Accept",
+          "deny": "Deny",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Viewer"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "No one will be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
+      },
+      "invite": {
+        "title": "Invite people",
+        "textarea": "Enter your message text (optional)",
+        "notifyUsers": "Notify users",
+        "instructions": "Press enter or space to separate emails",
+        "email": "Type email",
+        "invite": "Invite",
+        "editor": "Editor",
+        "viewer": "Viewer",
+        "listUsers": "Users to invite"
+      },
+      "requestAccess": {
+        "title": "You don't have access",
+        "description": "Request access to the owner or switch to an account with access.",
+        "textarea": "Message (optional)",
+        "requestButton": "Request access",
+        "logged": "Logged in as",
+        "change": "Change",
+        "requestSent": "Request Sent",
+        "confirmation": "You will get an email if the file/folder is shared with you"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
@@ -498,6 +689,7 @@
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
+      "total": "Total",
       "pending": "Pending",
       "accepted": "Accepted",
       "empty": "You have not invited anyone yet",
@@ -517,6 +709,7 @@
       "confirmPassword": "Confirm new password",
       "strongPassword": "Password is strong",
       "errors": {
+        "longPassword": "The password can have a maximum of 50 characters",
         "shortPassword": "Password has to be at least 8 characters long",
         "notComplex": "Password is not complex enough",
         "weakPassword": "Password is weak",
@@ -583,7 +776,10 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Internet connection lost",
+    "errorLoadingTrashItems": "Error loading trash items"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
@@ -740,6 +936,7 @@
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% Downloading folder",
+        "in-process-without-progress": "Downloading folder",
         "success": "Folder downloaded",
         "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
@@ -827,13 +1024,16 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
+    "restoreItems": "{{itemsToRecover}} restored successfully",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successApplyCoupon": "3 months free of charge applied",
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCoupon": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",
@@ -863,6 +1063,7 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saving": "Saving",
     "back": "Back",
     "edit": "Edit",
     "submit": "Submit",
@@ -899,8 +1100,12 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "shareLink": "Share",
+      "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
+      "share": "Share",
+      "manageAccess": "Manage access",
       "download": "Download",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",

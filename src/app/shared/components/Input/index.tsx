@@ -1,4 +1,4 @@
-import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from 'phosphor-react';
+import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Input({
@@ -15,12 +15,14 @@ export default function Input({
   onFocus,
   onBlur,
   autofocus = false,
+  autoComplete = 'on',
   dataTest,
   name,
+  required = false,
 }: {
   className?: string;
   label?: string;
-  variant?: 'default' | 'search' | 'password';
+  variant?: 'default' | 'search' | 'password' | 'email';
   accent?: 'error' | 'warning' | 'success';
   disabled?: boolean;
   placeholder?: string;
@@ -31,15 +33,19 @@ export default function Input({
   onBlur?: () => void;
   message?: string;
   autofocus?: boolean;
+  autoComplete?: 'on' | 'off';
   dataTest?: string;
   name?: string;
+  required?: boolean;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const focusInput = () => {
     if (inputRef && inputRef.current) {
-      inputRef.current.selectionStart = inputRef.current.value.length;
-      inputRef.current.selectionEnd = inputRef.current.value.length;
+      if (variant !== 'email') {
+        inputRef.current.selectionStart = inputRef.current.value.length;
+        inputRef.current.selectionEnd = inputRef.current.value.length;
+      }
       inputRef.current.focus();
     }
   };
@@ -87,7 +93,7 @@ export default function Input({
         disabled={disabled}
         className={`inxt-input outline-none h-11 w-full rounded-md border text-lg font-normal text-gray-80 ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 
           ${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
-        type={variant === 'password' && !showPassword ? 'password' : 'text'}
+        type={variant === 'password' && !showPassword ? 'password' : variant === 'email' ? 'email' : 'text'}
         placeholder={placeholder}
         onChange={(e) => onChange && onChange(e.target.value)}
         onFocus={() => {
@@ -98,9 +104,11 @@ export default function Input({
           if (onBlur) onBlur();
           setIsFocused(false);
         }}
+        autoComplete={autoComplete}
         value={value}
         data-test={dataTest}
         name={name}
+        required={required}
       />
       {variant === 'password' && isFocused && (
         <div

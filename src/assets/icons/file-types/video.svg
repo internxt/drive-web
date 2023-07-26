@@ -1,4 +1,5 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg data-testid="video-svg" width="128" height="128" viewBox="0 0 128 128" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
 <g clip-path="url(#clip0_1302_1837)">
 <path d="M6 112C2.68629 112 0 109.314 0 106V22C0 18.6863 2.68629 16 6 16H122C125.314 16 128 18.6863 128 22V106C128 109.314 125.314 112 122 112H6Z" fill="#FCFCFD"/>
 <path d="M0.8 22C0.8 19.1281 3.12812 16.8 6 16.8H122C124.872 16.8 127.2 19.1281 127.2 22V106C127.2 108.872 124.872 111.2 122 111.2H6C3.12812 111.2 0.8 108.872 0.8 106V22Z" stroke="#EBECF0" stroke-width="1.6"/>

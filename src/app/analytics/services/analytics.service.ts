@@ -10,7 +10,6 @@ import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrackNames } from '../types';
 import { TrackingPlan } from '../TrackingPlan';
-
 import { v4 as uuidv4 } from 'uuid';
 
 const analytics: Analytics = Analytics.getInstance();
@@ -29,6 +28,22 @@ export const PATH_NAMES = {
   '/remove': 'Remove Account',
   '/app': 'App',
 };
+
+export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadStart, properties);
+}
+
+export function trackFileUploadCompleted(properties: TrackingPlan.UploadCompletedProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadCompleted, properties);
+}
+
+export function trackFileUploadError(properties: TrackingPlan.UploadErrorProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadError, properties);
+}
+
+export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
+}
 
 export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadStarted, properties);
@@ -178,28 +193,6 @@ export function trackFileRename(payload: { email: string; file_id: number | stri
   // window.analytics.track(AnalyticsTrackNames.FileRename, payload);
 }
 
-export function trackFileUploadStarted(properties: {
-  file_upload_id: string;
-  file_size: number;
-  file_extension: string;
-  parent_folder_id: number;
-  file_name: string;
-}): void {
-  analytics.track(TrackingPlan.EventNames.FileUploadStart, properties);
-}
-
-export function trackFileUploadError(properties: TrackingPlan.UploadErrorProperties): void {
-  analytics.track(TrackingPlan.EventNames.FileUploadError, properties);
-}
-
-export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
-  analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
-}
-
-export function trackFileUploadCompleted(properties: TrackingPlan.UploadCompletedProperties): void {
-  analytics.track(TrackingPlan.EventNames.FileUploadCompleted, properties);
-}
-
 export function trackMoveItem(
   keyOp: string,
   payload: { email: string; file_id: number; platform: DevicePlatform },
@@ -240,11 +233,9 @@ export function trackUserResetPasswordRequest(): void {
   // window.analytics.track(AnalyticsTrackNames.UserResetPasswordRequest);
 }
 
-export function track(email: string, status: 'error' | 'success'): void {
-  /* window.analytics.track('Password Changed', {
-    status,
-    email,
-  }); */
+export function track(reason: string, status?: 'error' | 'success'): void {
+  console.log('track');
+  window.rudderanalytics.track(reason, { status });
 }
 
 export function trackFileUploadBucketIdUndefined(payload: { email: string; platform: DevicePlatform }): void {
@@ -255,9 +246,36 @@ export function trackShareLinkBucketIdUndefined(payload: { email: string }): voi
   // window.analytics.track(AnalyticsTrackNames.ShareLinkBucketIdUndefined, payload);
 }
 
+export async function trackCancelPayment(priceId: string) {
+  try {
+    const checkoutSessionId = localStorage.getItem('sessionId');
+    const {
+      amount_total,
+      id: sessionId,
+      customer_email,
+    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+      params: {
+        sessionId: checkoutSessionId,
+      },
+      headers: httpService.getHeaders(true, false),
+    });
+
+    const amount = amount_total * 0.01;
+
+    window.rudderanalytics.track(AnalyticsTrackNames.CancelPaymentConversionEvent, {
+      sessionId: sessionId,
+      email: customer_email,
+      price: amount,
+      priceId: priceId,
+    });
+  } catch (err) {
+    const castedError = errorService.castError(err);
+    console.error(castedError);
+  }
+}
+
 export async function trackPaymentConversion() {
   try {
-    // window.analytics.page('Checkout Success');
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
@@ -397,10 +415,13 @@ const analyticsService = {
   trackFolderRename,
   trackFileRename,
   trackFileDownloadStarted,
+  trackFileDownloadCompleted,
   trackFileDownloadError,
+  trackFileDownloadAborted,
   trackFileUploadStarted,
-  trackFileUploadError,
   trackFileUploadCompleted,
+  trackFileUploadAborted,
+  trackFileUploadError,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,
@@ -410,11 +431,9 @@ const analyticsService = {
   trackUserResetPasswordRequest,
   track,
   trackFileUploadBucketIdUndefined,
-  trackFileDownloadCompleted,
-  trackFileDownloadAborted,
   trackPaymentConversion,
-  trackFileUploadAborted,
   getTrackingActionId,
+  trackCancelPayment,
 };
 
 export default analyticsService;

@@ -61,8 +61,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -72,7 +74,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: t('error.maxSizeUploadLimitError'),
         type: ToastType.Warning,
       });
       return;
@@ -123,7 +125,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     options.onSuccess?.();
 
-    dispatch(planThunks.fetchUsageThunk());
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
@@ -148,8 +152,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -159,7 +165,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: t('error.maxSizeUploadLimitError'),
         type: ToastType.Warning,
       });
       return;
@@ -203,7 +209,10 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     await uploadFileWithManager(filesToUploadData);
 
     options.onSuccess?.();
-    dispatch(planThunks.fetchUsageThunk());
+
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
 
     if (errors.length > 0) {
       for (const error of errors) {
@@ -232,8 +241,10 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -243,7 +254,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: t('error.maxSizeUploadLimitError'),
         type: ToastType.Warning,
       });
       return;
@@ -286,8 +297,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     options.onSuccess?.();
 
-    dispatch(planThunks.fetchUsageThunk());
-
     if (errors.length > 0) {
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
@@ -313,8 +322,10 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     try {
       const planLimit = getState().plan.planLimit;
       const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
 
-      if (planLimit && planUsage >= planLimit) {
+      if (planLimit && totalItemsSize >= planLimit) {
         dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
         return;
       }
@@ -324,7 +335,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (showSizeWarning) {
       notificationsService.show({
-        text: 'File too large.\nYou can only upload or download files of up to 1GB through the web app',
+        text: t('error.maxSizeUploadLimitError'),
         type: ToastType.Warning,
       });
       return;
@@ -359,8 +370,6 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     options.showNotifications = true;
     options.onSuccess?.();
-
-    dispatch(planThunks.fetchUsageThunk());
 
     if (errors.length > 0) {
       for (const error of errors) {

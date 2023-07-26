@@ -12,7 +12,7 @@ import {
   Gear,
   ArrowsOutCardinal,
   DownloadSimple,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';

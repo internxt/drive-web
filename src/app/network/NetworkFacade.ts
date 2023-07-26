@@ -11,6 +11,8 @@ import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
+import { TrackingPlan } from '../analytics/TrackingPlan';
+import analyticsService from '../analytics/services/analytics.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -35,7 +37,7 @@ interface UploadTask {
 }
 
 /**
- * The entry point for interacting with the network 
+ * The entry point for interacting with the network
  */
 export class NetworkFacade {
   private readonly cryptoLib: NetworkModule.Crypto;
@@ -47,13 +49,9 @@ export class NetworkFacade {
         return validateMnemonic(mnemonic);
       },
       generateFileKey: (mnemonic, bucketId, index) => {
-        return Environment.utils.generateFileKey(
-          mnemonic,
-          bucketId,
-          (index as Buffer)
-        );
+        return Environment.utils.generateFileKey(mnemonic, bucketId, index as Buffer);
       },
-      randomBytes
+      randomBytes,
     };
   }
 
@@ -68,7 +66,7 @@ export class NetworkFacade {
       mnemonic,
       file.size,
       async (algorithm, key, iv) => {
-        const cipher = createCipheriv('aes-256-ctr', (key as Buffer), (iv as Buffer));
+        const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
 
         fileToUpload = encryptedFile;
@@ -78,14 +76,10 @@ export class NetworkFacade {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
 
-        await uploadFileBlob(
-          fileToUpload,
-          fetchUrl,
-          {
-            progressCallback: options.uploadingCallback,
-            abortController: options.abortController
-          }
-        );
+        await uploadFileBlob(fileToUpload, fetchUrl, {
+          progressCallback: options.uploadingCallback,
+          abortController: options.abortController,
+        });
 
         /**
          * TODO: Memory leak here, probably due to closures usage with this variable.
@@ -94,7 +88,7 @@ export class NetworkFacade {
         fileToUpload = new Blob([]);
 
         return fileHash;
-      }
+      },
     );
   }
 
@@ -104,7 +98,10 @@ export class NetworkFacade {
     function notifyProgress(partId: number, uploadedBytes: number) {
       partsUploadedBytes[partId] = uploadedBytes;
 
-      options.uploadingCallback(file.size, Object.values(partsUploadedBytes).reduce((a,p) => a+p, 0));
+      options.uploadingCallback(
+        file.size,
+        Object.values(partsUploadedBytes).reduce((a, p) => a + p, 0),
+      );
     }
 
     const uploadsAbortController = new AbortController();
@@ -124,14 +121,14 @@ export class NetworkFacade {
       const limitConcurrency = 6;
 
       const worker = async (upload: UploadTask) => {
-        const response = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);
           },
-            abortController: uploadsAbortController,
+          abortController: uploadsAbortController,
         });
 
-        const ETag = response.getResponseHeader('etag');
+        const ETag = etag;
 
         if (!ETag) {
           throw new Error('ETag header was not returned');
@@ -143,11 +140,13 @@ export class NetworkFacade {
       };
 
       const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
-        worker(task).then(() => {
-          callback();
-        }).catch(e => {
-          callback(e);
-        });
+        worker(task)
+          .then(() => {
+            callback();
+          })
+          .catch((e) => {
+            callback(e);
+          });
       }, limitConcurrency);
 
       const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
@@ -156,26 +155,34 @@ export class NetworkFacade {
         }
 
         if (uploadsAbortController.signal.aborted) {
-          if (realError) throw realError; else return;
+          if (realError) throw realError;
+          else throw new Error('Upload cancelled by user');
         }
 
-        uploadQueue.pushAsync({
-          contentToUpload: blob,
-          urlToUpload: urls[partIndex],
-          index: partIndex++,
-        }).catch((err) => {
-          if (err) {
-            uploadQueue.kill();
-            if (!uploadsAbortController?.signal.aborted) {
-              // Failed due to other reason, so abort requests
-              uploadsAbortController.abort();
-              // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
-              // https://github.com/node-fetch/node-fetch/issues/1462
-              realError = err;
+        let errorAlreadyThrown = false;
+
+        uploadQueue
+          .pushAsync({
+            contentToUpload: blob,
+            urlToUpload: urls[partIndex],
+            index: partIndex++,
+          })
+          .catch((err) => {
+            if (errorAlreadyThrown) return;
+
+            errorAlreadyThrown = true;
+            if (err) {
+              uploadQueue.kill();
+              if (!uploadsAbortController?.signal.aborted) {
+                // Failed due to other reason, so abort requests
+                uploadsAbortController.abort();
+                // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
+                // https://github.com/node-fetch/node-fetch/issues/1462
+                realError = err;
+              }
             }
-          }
-        });  
-        
+          });
+
         // TODO: Remove
         blob = new Blob([]);
       });
@@ -202,12 +209,11 @@ export class NetworkFacade {
     );
   }
 
-
   async download(
     bucketId: string,
     fileId: string,
     mnemonic: string,
-    options?: DownloadOptions
+    options?: DownloadOptions,
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
     let fileStream: ReadableStream<Uint8Array>;
@@ -227,14 +233,15 @@ export class NetworkFacade {
             throw new Error('Download aborted');
           }
 
-          const encryptedContentStream = await fetch(downloadable.url, { signal: options?.abortController?.signal })
-            .then((res) => {
-              if (!res.body) {
-                throw new Error('No content received');
-              }
+          const encryptedContentStream = await fetch(downloadable.url, {
+            signal: options?.abortController?.signal,
+          }).then((res) => {
+            if (!res.body) {
+              throw new Error('No content received');
+            }
 
-              return res.body;
-            });
+            return res.body;
+          });
 
           encryptedContentStreams.push(encryptedContentStream);
         }
@@ -242,14 +249,14 @@ export class NetworkFacade {
       async (algorithm, key, iv, fileSize) => {
         const decryptedStream = getDecryptedStream(
           encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), (iv as Buffer)),
+          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
           options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
-      options && options.token && { token: options.token } || undefined
+      (options?.token && { token: options.token }) || undefined,
     );
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

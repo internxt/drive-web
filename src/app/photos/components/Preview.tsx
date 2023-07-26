@@ -1,4 +1,4 @@
-import { CaretLeft, DownloadSimple, Share, Trash, X } from 'phosphor-react';
+import { CaretLeft, DownloadSimple, Share, Trash, X } from '@phosphor-icons/react';
 import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
 import { useDispatch, useSelector } from 'react-redux';

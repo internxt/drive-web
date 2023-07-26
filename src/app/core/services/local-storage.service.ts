@@ -52,6 +52,7 @@ function clear(): void {
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
   localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+  localStorage.removeItem('showSummerBanner');
 }
 
 const localStorageService = {

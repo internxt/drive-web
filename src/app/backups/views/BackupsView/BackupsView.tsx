@@ -162,7 +162,7 @@ export default function BackupsView(): JSX.Element {
         secondaryAction={translate('modals.deleteBackupModal.secondaryAction')}
         primaryActionColor="danger"
       />
-      <div className="flex h-14 flex-shrink-0 items-center  px-5">
+      <div className="z-50 flex h-14 flex-shrink-0 items-center px-5">
         {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
       </div>
       {body}

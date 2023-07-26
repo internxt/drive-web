@@ -11,6 +11,7 @@ import { uiActions } from 'app/store/slices/ui';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import httpService from 'app/core/services/http.service';
 import { AxiosError } from 'axios';
+import localStorageService from '../../../core/services/local-storage.service';
 
 const GuestInviteDialog = () => {
   const {
@@ -28,10 +29,19 @@ const GuestInviteDialog = () => {
   };
 
   const sendGuestInvitation = (guestEmail: string) => {
+    const mnemonic = localStorageService.get('xMnemonic') || '';
+    const headers = {
+      'internxt-mnemonic': mnemonic,
+    };
+
     return httpService
-      .post<{ guest: string }, void>('/api/guest/invite', {
-        guest: guestEmail,
-      })
+      .post<{ guest: string }, void>(
+        '/api/guest/invite',
+        {
+          guest: guestEmail,
+        },
+        { headers },
+      )
       .catch((err: AxiosError) => {
         if (err.isAxiosError) {
           throw Error(err.response?.data.error);

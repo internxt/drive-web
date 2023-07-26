@@ -11,6 +11,8 @@
     "signup-onboarding.spec.ts",
     "unauthorized.spec.ts",
     "upload-file.spec.ts",
+    "drive-pagination.spec.ts",
+    "drive-icon-list.spec.ts",
     "recents-panel.spec.ts",
     "account-panel.spec.ts",
     "backups.spec.ts",

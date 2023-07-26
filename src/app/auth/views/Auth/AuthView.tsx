@@ -3,7 +3,7 @@ import { useSignUp } from '../../components/SignUp/useSignUp';
 import { useState } from 'react';
 
 import { IFormValues } from 'app/core/types';
-import { WarningCircle } from 'phosphor-react';
+import { WarningCircle } from '@phosphor-icons/react';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import { useForm } from 'react-hook-form';
@@ -29,7 +29,7 @@ export const SignupComponent = ({
   buttonColor?: string;
   textContent: any;
   appRedirect?: boolean;
-}) => {
+}): JSX.Element => {
   const [loading, setLoading] = useState(false);
   const dispatch = useAppDispatch();
 
@@ -50,7 +50,11 @@ export const SignupComponent = ({
   });
 
   return (
-    <form onSubmit={handleSubmit((e) => signup(e, dispatch, doRegister, setLoading, appRedirect, setError))}>
+    <form
+      onSubmit={handleSubmit(async (e) => {
+        await signup(e, dispatch, doRegister, setLoading, appRedirect, setError);
+      })}
+    >
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
         <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
           <div className="flex w-full">
@@ -120,7 +124,7 @@ export const SignupComponent = ({
             </button>
           </div>
 
-          <span className="w-full text-xs text-gray-50 sm:text-left">
+          <span className="hidden w-full text-xs text-gray-50 sm:text-left md:flex">
             <span>{textContent.legal.line1}</span>{' '}
             <a
               href="https://internxt.com/legal"

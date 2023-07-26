@@ -1,4 +1,4 @@
-import { Check, Minus } from 'phosphor-react';
+import { Check, Minus } from '@phosphor-icons/react';
 import React from 'react';
 
 interface BaseCheckboxProps {

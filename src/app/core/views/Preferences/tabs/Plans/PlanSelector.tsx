@@ -3,7 +3,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowRight } from 'phosphor-react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -12,6 +12,7 @@ import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { planActions, PlanState } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
+import moneyService from 'app/payment/services/money.service';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -28,7 +29,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
   const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
-  const [isDialgOpen, setIsDialogOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
@@ -49,7 +50,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         const response = await paymentService.createCheckoutSession({
           price_id: priceId,
           success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: window.location.href,
+          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
           customer_email: user.email,
           mode: interval === 'lifetime' ? 'payment' : 'subscription',
         });
@@ -58,25 +59,60 @@ export default function PlanSelector({ className = '' }: { className?: string })
       } catch (err) {
         console.error(err);
         notificationsService.show({
-          text: 'Something went wrong while creating your subscription',
+          text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
       } finally {
         setLoadingPlanAction(null);
+        setIsDialogOpen(false);
       }
     } else {
-      try {
-        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-        dispatch(planActions.setSubscription(updatedSubscription));
-        notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-      } catch (err) {
-        console.error(err);
-        notificationsService.show({
-          text: 'Something went wrong while updating your subscription',
-          type: ToastType.Error,
-        });
-      } finally {
-        setLoadingPlanAction(null);
+      if (interval === 'lifetime') {
+        try {
+          const response = await paymentService.createCheckoutSession({
+            price_id: priceId,
+            success_url: `${window.location.origin}/checkout/success`,
+            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
+            customer_email: user.email,
+            mode: 'payment',
+          });
+          localStorage.setItem('sessionId', response.sessionId);
+          await paymentService.redirectToCheckout(response).then(async (result) => {
+            await paymentService.cancelSubscription();
+            if (result.error) {
+              notificationsService.show({
+                type: ToastType.Error,
+                text: result.error.message as string,
+              });
+            } else {
+              notificationsService.show({
+                type: ToastType.Success,
+                text: 'Payment successful',
+              });
+            }
+          });
+        } catch (error) {
+          console.error(error);
+          notificationsService.show({
+            text: translate('notificationMessages.errorCancelSubscription'),
+            type: ToastType.Error,
+          });
+        }
+      } else {
+        try {
+          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+          dispatch(planActions.setSubscription(updatedSubscription));
+          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+        } catch (err) {
+          console.error(err);
+          notificationsService.show({
+            text: translate('notificationMessages.errorCancelSubscription'),
+            type: ToastType.Error,
+          });
+        } finally {
+          setLoadingPlanAction(null);
+          setIsDialogOpen(false);
+        }
       }
     }
   }
@@ -91,7 +127,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       {prices && (
         <ChangePlanDialog
           prices={prices}
-          isDialgOpen={isDialgOpen}
+          isDialgOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onPlanClick}
           priceIdSelected={priceIdSelected}
@@ -128,6 +164,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
+              onPlanClick={onPlanClick}
+              priceID={price.id}
             />
           ))}
         </div>
@@ -164,16 +202,21 @@ function Price({
   onClick,
   disabled,
   loading,
+  onPlanClick,
+  priceID,
 }: DisplayPrice & {
   button: 'change' | 'current' | 'upgrade';
   onClick?: () => void;
   className?: string;
   disabled: boolean;
   loading: boolean;
+  onPlanClick: (value: string) => void;
+  priceID: string;
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
   const { translate } = useTranslationContext();
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   if (interval === 'month') {
     amountMonthly = amount;
@@ -207,22 +250,37 @@ function Price({
               amount: displayAmount(amountMonthly),
             })}
       </p>
-      {interval !== 'lifetime' && (
+      {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
         </p>
+      ) : (
+        <p className=" text-gray-50">{translate('views.account.tabs.plans.card.oneTimePayment')}</p>
       )}
-      <Button
-        loading={loading}
-        onClick={onClick}
-        disabled={button === 'current' || disabled}
-        variant="primary"
-        className="mt-5 w-full"
-      >
-        {displayButtonText}
-      </Button>
+
+      {plan.subscription?.type === 'free' ? (
+        <Button
+          loading={loading}
+          onClick={() => onPlanClick(priceID)}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      ) : (
+        <Button
+          loading={loading}
+          onClick={onClick}
+          disabled={button === 'current' || disabled}
+          variant="primary"
+          className="mt-5 w-full"
+        >
+          {displayButtonText}
+        </Button>
+      )}
     </div>
   );
 }
@@ -253,6 +311,7 @@ const ChangePlanDialog = ({
 
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
+  let subscriptionCurrencySymbol: string | null = null;
 
   if (selectedPlanInterval === 'month') {
     amountMonthly = selectedPlanAmount;
@@ -261,6 +320,7 @@ const ChangePlanDialog = ({
   }
 
   if (subscription?.type === 'subscription') {
+    subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency);
     if (subscription.interval === 'month') {
       currentAmountMonthly = subscription.amount;
     } else if (subscription.interval === 'year') {
@@ -294,10 +354,9 @@ const ChangePlanDialog = ({
           <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
           {subscription?.type === 'subscription' ? (
             <div>
-              <span className="text-base font-medium">
-                {subscription.currency}
-                {displayAmount(currentAmountMonthly)}
-              </span>
+              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
+                currentAmountMonthly,
+              )}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
@@ -305,7 +364,7 @@ const ChangePlanDialog = ({
             <p className="text-base font-medium capitalize">{subscription?.type}</p>
           )}
         </div>
-        <ArrowRight className="mx-5 font-semibold text-gray-20" />
+        <ArrowRight size={32} className="mx-5 font-semibold text-gray-20" />
         <div className="flex w-40 flex-col items-center rounded-xl border border-gray-10 p-4 shadow-soft">
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}

@@ -9,10 +9,13 @@ import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import errorService from '../../../core/services/error.service';
+import { storageActions } from 'app/store/slices/storage';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 interface CreateFolderDialogProps {
   onFolderCreated?: () => void;
-  currentFolderId?: number;
+  currentFolderId: number;
   neededFolderId: number;
 }
 
@@ -52,8 +55,12 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
           setIsLoading(false);
           onClose();
           onFolderCreated && onFolderCreated();
+          dispatch(storageActions.setHasMoreDriveFolders(true));
+          dispatch(storageActions.setHasMoreDriveFiles(true));
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
         })
         .catch((e) => {
+          errorService.reportError(e, { extra: { folderName, parentFolderId: currentFolderId } });
           const errorMessage = e?.message?.includes('already exists')
             ? translate('error.folderAlreadyExists')
             : translate('error.creatingFolder');

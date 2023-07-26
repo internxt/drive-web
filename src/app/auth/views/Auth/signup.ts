@@ -4,15 +4,13 @@ import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { userActions, userThunks } from 'app/store/slices/user';
-import { AppView, CampaignLinks } from 'app/core/types';
-import navigationService from 'app/core/services/navigation.service';
+import { CampaignLinks } from 'app/core/types';
 
 const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);
 };
 
 const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setError?) => {
-  data?.preventDefault();
   if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
     postMessage({ action: 'autoScroll' });
     setLoading(false);

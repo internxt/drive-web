@@ -1,4 +1,4 @@
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Share link options', () => {
   const DATA_TEST_SHARE_ITEM_DIALOG = '[data-test=share-item-dialog]';
@@ -9,7 +9,12 @@ describe('Share link options', () => {
   beforeEach(() => {
     cy.clearLocalStorage();
     cy.login();
-    cy.uploadExampleFile();
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
+      delete req.headers['if-none-match'];
+    }).as('getFiles');
+    cy.wait('@getFiles', { timeout: 60000 }).then(() => {
+      cy.uploadExampleFile();
+    });
 
     cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
     cy.get(MENU_ITEM_SELECTOR)

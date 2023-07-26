@@ -1,9 +1,10 @@
 import { Fragment, useEffect } from 'react';
-import { PencilSimple, Link, Trash, DownloadSimple } from 'phosphor-react';
+import { Link, PencilSimple, Users } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
 import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
@@ -17,6 +18,19 @@ const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const type = item.type;
 
   if (!plainName || !type) return;
+
+  return plainName + '.' + type;
+};
+
+import { DriveItemData } from '../../../../types';
+import envService from '../../../../../core/services/env.service';
+
+const getItemPlainNameWithExtension = (item: DriveItemData) => {
+  const plainName = item?.plainName ?? item?.plain_name;
+  const type = item.type;
+
+  if (!plainName || !type) return;
+  else if (type === 'folder') return plainName;
 
   return plainName + '.' + type;
 };
@@ -76,14 +90,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
               autoFocus
               name="fileName"
             />
-            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+            <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
           </div>
         )}
         <div className="file-list-item-name flex max-w-full items-center">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={item?.plainName ?? items.getItemDisplayName(item)}
+            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
           >
             {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
@@ -96,6 +110,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     );
   };
   const itemIsShared = item.shares?.length || 0 > 0;
+  const isProduction = envService.isProduction();
 
   const template = (
     <div
@@ -107,10 +122,22 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       {/* ICON */}
       <div className="box-content flex w-1/12 items-center px-3">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent className="h-full" />
-          {itemIsShared && (
-            <Link className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full rounded-full border-2 border-white bg-primary p-0.5 text-white group-active:border-blue-100" />
-          )}
+          <ItemIconComponent
+            className="h-full"
+            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
+          />
+          {itemIsShared &&
+            (isProduction ? (
+              <Link
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              />
+            ) : (
+              <Users
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              />
+            ))}
         </div>
       </div>
 

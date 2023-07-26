@@ -27,9 +27,12 @@ import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import PhotosView from '../../photos/views/PhotosView';
 import VerifyEmailView from '../views/VerifyEmailView';
+import ChangeEmailView from '../views/ChangeEmailView';
 import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
+import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 const views: Array<{
   id: string;
@@ -57,6 +60,7 @@ const views: Array<{
   { id: AppView.TeamsDeactivation, component: DeactivationTeamsView },
   { id: AppView.TeamSuccess, component: TeamSuccessView },
   { id: AppView.CheckoutSuccess, component: CheckoutSuccessView },
+  { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.Remove, component: RemoveAccountView },
@@ -66,6 +70,8 @@ const views: Array<{
   { id: AppView.SharePhotosToken, component: SharePhotosView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
+  { id: AppView.ChangeEmail, component: ChangeEmailView },
+  // { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

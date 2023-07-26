@@ -1,4 +1,4 @@
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
 describe('Rename item', () => {
   const newFolderName = 'new-folder';
@@ -8,15 +8,22 @@ describe('Rename item', () => {
   const DATA_TEST_FILE_LIST_FOLDER = '[data-test=file-list-folder]';
 
   beforeEach(() => {
+    cy.intercept('GET', PAGINATION_ENDPOINT_REGEX.FILES, (req) => {
+      delete req.headers['if-none-match'];
+    }).as('getFiles');
     cy.clearLocalStorage();
     cy.login();
-    cy.uploadExampleFile();
+    cy.wait('@getFiles', { timeout: 60000 }).then(() => {
+      cy.uploadExampleFile();
+    });
   });
 
   it('Should rename a folder item', () => {
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains('Family').rightclick({ force: true });
     cy.contains(MENU_ITEM_SELECTOR, renameText).click({ force: true });
     cy.focused().clear().type(`${newFolderName}{enter}`);
+
+    cy.reload();
 
     cy.get(DATA_TEST_FILE_LIST_FOLDER).contains(newFolderName).should('exist');
 

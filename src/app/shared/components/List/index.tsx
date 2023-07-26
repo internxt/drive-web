@@ -1,7 +1,7 @@
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import React, { ReactNode, useEffect, useCallback, useLayoutEffect, useState } from 'react';
-import { ArrowUp, ArrowDown } from 'phosphor-react';
+import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import _ from 'lodash';
@@ -83,8 +83,8 @@ export default function List<T extends { id: any }, F extends keyof T>({
   onMouseEnter,
   onMouseLeave,
   keyBoardShortcutActions,
+  disableKeyboardShortcuts,
 }: // keyboardShortcuts,
-// disableKeyboardShortcuts,
 ListProps<T, F>): JSX.Element {
   const [isScrollable, ref, node] = useIsScrollable([items]);
   const isItemSelected = (item: T) => {
@@ -160,30 +160,33 @@ ListProps<T, F>): JSX.Element {
     }
   }
 
-  useHotkeys(
-    'ctrl+a, cmd+a',
-    (e) => {
-      e.preventDefault();
-      selectAllItems();
-    },
-    [items, selectedItems],
-  );
-
-  useHotkeys('esc', unselectAllItems, [selectedItems]);
-
-  useHotkeys('enter', executeClickOnSelectedItem, [selectedItems]);
+  const handleKeyPress = (action) => {
+    return () => {
+      if (!disableKeyboardShortcuts) action();
+    };
+  };
 
   const handleRKeyPressed = () => {
     keyBoardShortcutActions?.onRKeyPressed?.();
   };
 
-  useHotkeys('r', handleRKeyPressed, [selectedItems]);
-
   const handleBackspaceKeyPressed = () => {
     keyBoardShortcutActions?.onBackspaceKeyPressed?.();
   };
 
-  useHotkeys('backspace', handleBackspaceKeyPressed, [selectedItems]);
+  useHotkeys(
+    'ctrl+a, cmd+a',
+    (e) => {
+      e.preventDefault();
+      handleKeyPress(selectAllItems);
+    },
+    [items, selectedItems, disableKeyboardShortcuts],
+  );
+
+  useHotkeys('esc', handleKeyPress(unselectAllItems), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('enter', handleKeyPress(executeClickOnSelectedItem), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('r', handleKeyPress(handleRKeyPressed), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('backspace', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
 
   function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
@@ -225,6 +228,7 @@ ListProps<T, F>): JSX.Element {
             >
               <span>{column.label}</span>
               {column.name === orderBy?.field &&
+                column.orderable &&
                 (orderBy?.direction === 'ASC' ? (
                   <ArrowUp size={14} weight="bold" />
                 ) : (

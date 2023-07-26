@@ -16,6 +16,9 @@ const errorService = {
     }
     Sentry.captureException(exception, context);
   },
+  addBreadcrumb(breadcrumbProps: Sentry.Breadcrumb): void {
+    Sentry.addBreadcrumb(breadcrumbProps);
+  },
   castError(err: unknown): AppError {
     let castedError: AppError = new AppError('Unknown error');
 

@@ -12,6 +12,7 @@ import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
+import { planThunks } from '../../plan';
 
 export interface IRoot {
   name: string;
@@ -108,6 +109,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
             .unwrap()
             .then(() => {
               alreadyUploaded += level.childrenFiles.length;
+              alreadyUploaded += 1;
 
               tasksService.updateTask({
                 taskId: taskId,
@@ -135,6 +137,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       });
 
       options.onSuccess?.();
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
@@ -260,6 +265,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
             .unwrap()
             .then(() => {
               alreadyUploaded += level.childrenFiles.length;
+              alreadyUploaded += 1;
               if (uploadFolderAbortController.signal.aborted) return;
               tasksService.updateTask({
                 taskId: taskId,
@@ -287,6 +293,10 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       });
 
       options.onSuccess?.();
+
+      setTimeout(() => {
+        dispatch(planThunks.fetchUsageThunk());
+      }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       const updatedTask = tasksService.findTask(taskId);
@@ -313,9 +323,10 @@ function countItemsUnderRoot(root: IRoot): number {
   while (queueOfFolders.length > 0) {
     const folder = queueOfFolders.shift() as IRoot;
 
-    count += folder.childrenFiles?.length ?? 0;
+    count += folder.childrenFiles.length;
 
     if (folder.childrenFolders) {
+      count += folder.childrenFolders.length;
       queueOfFolders.push(...folder.childrenFolders);
     }
   }

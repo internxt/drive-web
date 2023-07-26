@@ -12,6 +12,7 @@ import { DriveFolderData } from 'app/drive/types';
 import folderService from 'app/drive/services/folder.service';
 import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
 import { isFirefox } from 'react-device-detect';
+import { ConnectionLostError } from '../../../../network/requests';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -92,6 +93,12 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
         },
       });
     } catch (err) {
+      if (err instanceof ConnectionLostError) {
+        return tasksService.updateTask({
+          taskId: options.taskId,
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+        });
+      }
       if (abortController.signal.aborted) {
         return tasksService.updateTask({
           taskId: options.taskId,
@@ -102,6 +109,10 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       }
 
       (abortController as { abort: (message: string) => void }).abort((err as Error).message);
+
+      errorService.reportError(err, {
+        extra: { folder: folder.name, bucket: folder.bucket, folderParentId: folder.parentId },
+      });
 
       const castedError = errorService.castError(err);
       const task = tasksService.findTask(options.taskId);

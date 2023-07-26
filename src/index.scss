@@ -304,6 +304,10 @@ code {
       @apply pr-8;
     }
 
+    &.left-icon {
+      @apply pl-9;
+    }
+
     &.no-ring {
       @apply ring-0 focus:ring-1 focus:ring-blue-60;
     }
