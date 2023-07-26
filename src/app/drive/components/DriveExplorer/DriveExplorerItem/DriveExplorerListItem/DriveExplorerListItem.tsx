@@ -9,19 +9,7 @@ import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
-
 import './DriveExplorerListItem.scss';
-import { DriveItemData } from '../../../../types';
-
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
-  const plainName = item?.plainName || item?.plain_name;
-  const type = item.type;
-
-  if (!plainName || !type) return;
-
-  return plainName + '.' + type;
-};
-
 import { DriveItemData } from '../../../../types';
 import envService from '../../../../../core/services/env.service';
 
