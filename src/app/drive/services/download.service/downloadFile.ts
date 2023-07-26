@@ -136,8 +136,8 @@ export default async function downloadFile(
     const band = new Band();
     await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
 
-    band.setEndTime();
-    band.setSize(Number(itemData.size));
+    band.addEndTime();
+    band.sise = Number(itemData.size);
     trackingDownloadProperties.bandwidth = band.getBandwith();
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : (err as string);
@@ -161,7 +161,7 @@ export default async function downloadFile(
     if (connectionLost) throw new ConnectionLostError();
     else throw err;
   }
-  console.log('2');
+
   analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 }
 

@@ -73,8 +73,8 @@ export async function uploadFile(
       mnemonic: encryptionKey,
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
-        band.setEndTime();
-        band.setSize(Number(uploadedBytes));
+        band.addEndTime();
+        band.sise = Number(uploadedBytes);
       },
       abortController,
     });

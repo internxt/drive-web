@@ -224,32 +224,22 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
 }
 
 export class Band {
-  private _startTime: number;
-  private _endTime: number = 0;
-  private _size: number = 0;
+  private startTime: number;
+  private endTime: number = 0;
+  private size: number = 0;
+
   constructor() {
-    this._startTime = new Date().getTime();
+    this.startTime = new Date().getTime();
   }
-  setEndTime() {
-    this._endTime = new Date().getTime();
+  addEndTime(): void {
+    this.endTime = new Date().getTime();
   }
-  setSize(size: number) {
-    this._size = size;
-  }
-  getSize() {
-    return this._size;
-  }
-  getStartTime() {
-    return this._startTime;
-  }
-  getEndTime() {
-    return this._endTime;
+  set sise(size: number) {
+    this.size = size;
   }
   getBandwith(): number {
-    const totalTimeSeconds = (this._endTime - this._startTime) / 1000; // seconds
-    const totalMB = this._size / 1024 / 1024; //MB
-    return Number((totalMB / totalTimeSeconds).toFixed(2));
+    const totalTimeSeconds = (this.endTime - this.startTime) / 1000; // seconds
+    const totalMB = this.size / 1024 / 1024; //MB
+    return Number((totalMB / totalTimeSeconds).toFixed(5));
   }
 }
-
-export const generateFileKey = Environment.utils.generateFileKey;

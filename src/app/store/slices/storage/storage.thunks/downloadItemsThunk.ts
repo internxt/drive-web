@@ -231,8 +231,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
 
                   updateProgressCallback(calculateProgress());
 
-                  band.setEndTime();
-                  band.setSize(Number(downloadedBytes));
+                  band.addEndTime();
+                  band.sise = Number(downloadedBytes);
                 },
               },
             });

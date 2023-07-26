@@ -351,8 +351,8 @@ async function downloadFolderAsZip(
             mnemonic: user.mnemonic,
             options: {
               notifyProgress: (totalBytes, downloadedBytes) => {
-                band.setEndTime();
-                band.setSize(Number(downloadedBytes));
+                band.addEndTime();
+                band.sise = Number(downloadedBytes);
               },
             },
           });
