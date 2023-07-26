@@ -5,7 +5,7 @@ import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { AppView } from '../../../core/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig } from '../network.service';
+import { getEnvironmentConfig, Band } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
@@ -62,6 +62,7 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
 
+    const band = new Band();
     const fileId = await uploadToBucket(bucketId, {
       creds: {
         pass: bridgePass,
@@ -72,10 +73,12 @@ export async function uploadFile(
       mnemonic: encryptionKey,
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
+        band.setEndTime();
+        band.setSize(Number(uploadedBytes));
       },
       abortController,
     });
-
+    trackingUploadProperties.bandwidth = band.getBandwith();
     const name = encryptFilename(file.name, file.parentFolderId);
 
     const storageClient = SdkFactory.getInstance().createStorageClient();

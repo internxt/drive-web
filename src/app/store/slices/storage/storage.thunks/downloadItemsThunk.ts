@@ -20,6 +20,7 @@ import { updateDatabaseFileSourceData } from 'app/drive/services/database.servic
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
+import { Band } from 'app/drive/services/network.service';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
 
@@ -210,6 +211,9 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               band_utilization: 0,
             };
             analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+
+            const band = new Band();
+
             const downloadedFileStream = await downloadFile({
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
@@ -226,9 +230,14 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                   downloadProgress[index] = progress;
 
                   updateProgressCallback(calculateProgress());
+
+                  band.setEndTime();
+                  band.setSize(Number(downloadedBytes));
                 },
               },
             });
+
+            trackingDownloadProperties.bandwidth = band.getBandwith();
             analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
             const sourceBlob = await binaryStreamToBlob(downloadedFileStream);

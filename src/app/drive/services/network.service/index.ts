@@ -223,4 +223,33 @@ export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
   };
 }
 
+export class Band {
+  private _startTime: number;
+  private _endTime: number = 0;
+  private _size: number = 0;
+  constructor() {
+    this._startTime = new Date().getTime();
+  }
+  setEndTime() {
+    this._endTime = new Date().getTime();
+  }
+  setSize(size: number) {
+    this._size = size;
+  }
+  getSize() {
+    return this._size;
+  }
+  getStartTime() {
+    return this._startTime;
+  }
+  getEndTime() {
+    return this._endTime;
+  }
+  getBandwith(): number {
+    const totalTimeSeconds = (this._endTime - this._startTime) / 1000; // seconds
+    const totalMB = this._size / 1024 / 1024; //MB
+    return Number((totalMB / totalTimeSeconds).toFixed(2));
+  }
+}
+
 export const generateFileKey = Environment.utils.generateFileKey;
