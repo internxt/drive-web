@@ -1,5 +1,6 @@
 import { SignupComponent } from './AuthView';
 import InternxtDevices from '../../../../assets/images/banner/Internxt-secure-cloud-storage.webp';
+import { Helmet } from 'react-helmet-async';
 
 const textContent = {
   email: 'Email',
@@ -28,6 +29,9 @@ const SignupAuth = () => {
 export default function SignupBlog(): JSX.Element {
   return (
     <div className="flex flex-col items-center justify-center overflow-hidden">
+      <Helmet>
+        <link rel="canonical" href={'https://drive.internxt.com/signup-blog'} />
+      </Helmet>
       <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-blue-20 to-white">
         <div className="mt-5 mb-10 flex w-full flex-col items-center justify-center px-5 text-center sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">
           <p className="text-3xl font-semibold">
