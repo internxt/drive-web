@@ -64,7 +64,8 @@
       "password": "Rappelez-vous votre mot de passe ?",
       "login": "Connexion",
       "successTitle": "Vérifiez votre boîte de réception",
-      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte."
+      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte.",
+      "ivalidEmail": "Adresse e-mail invalide"
     },
     "recoverAccount": {
       "title": "Récupération du compte",

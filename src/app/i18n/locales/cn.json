@@ -81,7 +81,8 @@
       "password": "记住您的密码",
       "login": "登录",
       "successTitle": "检查您的收件箱",
-      "successDescription": "我们已经向您发送了一个一次性链接来恢复您的账户密码"
+      "successDescription": "我们已经向您发送了一个一次性链接来恢复您的账户密码",
+      "ivalidEmail": "无效电子邮件地址"
     },
     "recoverAccount": {
       "title": "帐户恢复",

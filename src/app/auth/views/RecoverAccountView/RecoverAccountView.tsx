@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Button from 'app/auth/components/Button/Button';
+import Button from 'app/shared/components/Button/Button';
 import { Question } from '@phosphor-icons/react';
 import bigLogo from 'assets/icons/big-logo.svg';
 import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';
@@ -30,28 +30,24 @@ export default function RecoverAccountView(): JSX.Element {
                   </span>
                   <p className="text-sm font-medium text-gray-80">{translate('auth.recoverAccount.info')}</p>
                 </h5>
-                <ul className="font-regular mt-1 list-disc pl-8 text-sm text-gray-60">
+                <ul className="font-regular mt-1 list-disc pl-6 text-sm text-gray-60">
                   <li className="mt-1">{translate('auth.recoverAccount.info1')}</li>
                   <li className="mt-1">{translate('auth.recoverAccount.info2')}</li>
                 </ul>
               </div>
+              <Button variant="primary" className="mb-2 w-full" onClick={() => setHasBackupKey(true)}>
+                {translate('auth.recoverAccount.haveKeyButton')}
+              </Button>
               <Button
-                text={translate('auth.recoverAccount.haveKeyButton')}
-                loading={false}
-                style="button-primary"
-                className="mb-2 w-full"
-                onClick={() => setHasBackupKey(true)}
-              />
-              <Button
-                text={translate('auth.recoverAccount.notKeyButton')}
-                loading={false}
-                style="button-secondary"
-                className="w-full border border-gray-5 bg-white"
+                variant="secondary"
+                className="w-full"
                 // onClick={() => setHasBackupKey(false)}
                 onClick={() => {
                   window.location.href = 'mailto:hello@internxt.com';
                 }}
-              />
+              >
+                {translate('auth.recoverAccount.notKeyButton')}
+              </Button>
             </>
           )}
           {hasBackupKey === true && <ChangePassword setHasBackupKey={setHasBackupKey} />}

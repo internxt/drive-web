@@ -81,7 +81,8 @@
       "password": "Remember your password?",
       "login": "Login",
       "successTitle": "Check your inbox",
-      "successDescription": "We’ve sent you a one-time link to recover you account password"
+      "successDescription": "We’ve sent you a one-time link to recover you account password",
+      "ivalidEmail": "Invalid email address"
     },
     "recoverAccount": {
       "title": "Account recovery",

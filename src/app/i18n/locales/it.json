@@ -81,7 +81,8 @@
       "password": "Ricorda la password?",
       "login": "Accesso",
       "successTitle": "Controllare la posta in arrivo",
-      "successDescription": "Vi abbiamo inviato un link unico per recuperare la password del vostro account."
+      "successDescription": "Vi abbiamo inviato un link unico per recuperare la password del vostro account.",
+      "ivalidEmail": "Indirizzo e-mail non valido"
     },
     "recoverAccount": {
       "title": "Recupero dell'account",
