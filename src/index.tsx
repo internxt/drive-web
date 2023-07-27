@@ -19,6 +19,7 @@ import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
+import { HelmetProvider } from 'react-helmet-async';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -36,11 +37,13 @@ store.dispatch(referralsThunks.initializeThunk());
 
 ReactDOM.render(
   <React.StrictMode>
-    <Provider store={store}>
-      <TranslationProvider>
-        <App />
-      </TranslationProvider>
-    </Provider>
+    <HelmetProvider>
+      <Provider store={store}>
+        <TranslationProvider>
+          <App />
+        </TranslationProvider>
+      </Provider>
+    </HelmetProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
