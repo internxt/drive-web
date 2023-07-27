@@ -12,9 +12,12 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
 import { useDispatch } from 'react-redux';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
 
-interface ShareInviteDialog {
+interface ShareInviteDialogProps {
   onInviteUser: () => void;
+  folderUUID: string;
+  roles: PrivateSharingRole[];
 }
 
 interface UsersToInvite {
@@ -22,13 +25,13 @@ interface UsersToInvite {
   userRole: string;
 }
 
-const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
+const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
-  const [userRole, setUserRole] = useState<string>('editor');
+  const [userRole, setUserRole] = useState<string>(props.roles[0]?.role);
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
@@ -63,13 +66,27 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
       setEmailAccent('error');
     }
   };
+  console.log({ usersToInvite });
 
-  const onEditRole = () => {
-    //   Edit user role
+  const onEditRole = (value: PrivateSharingRole['role'], user: UsersToInvite) => {
+    const newUserToInvite = usersToInvite.map((userToInvite) => {
+      console.log({ userEmail: user.email });
+      console.log({ userToInviteEmail: userToInvite.email });
+      if (user.email === userToInvite.email) {
+        return { ...userToInvite, userRole: value };
+      }
+      return userToInvite;
+    });
+    setUsersToInvite(newUserToInvite);
   };
 
   const onInvite = () => {
-    usersToInvite.forEach((user) => dispatch(sharedThunks.shareFileWithUser({ email: user.email })));
+    usersToInvite.forEach((user) => {
+      const userRoleId = props.roles.find((role) => role.role === user.userRole)?.id;
+      if (!userRoleId) return;
+
+      dispatch(sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }));
+    });
   };
 
   return (
@@ -93,30 +110,20 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
               </Button>
             </Listbox.Button>
             <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-              <Listbox.Option
-                key="editor"
-                value="editor"
-                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-              >
-                {({ selected }) => (
-                  <>
-                    <span>{translate('modals.shareModal.invite.editor')}</span>
-                    {selected ? <Check size={20} /> : null}
-                  </>
-                )}
-              </Listbox.Option>
-              <Listbox.Option
-                key="viewer"
-                value="viewer"
-                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-              >
-                {({ selected }) => (
-                  <>
-                    <span>{translate('modals.shareModal.invite.viewer')}</span>
-                    {selected ? <Check size={20} /> : null}
-                  </>
-                )}
-              </Listbox.Option>
+              {props.roles.map((role) => (
+                <Listbox.Option
+                  key={role.id}
+                  value={role.role}
+                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                >
+                  {({ selected }) => (
+                    <>
+                      <span>{translate(`modals.shareModal.invite.${role.role}`)}</span>
+                      {selected ? <Check size={20} /> : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
             </Listbox.Options>
           </div>
         </Listbox>
@@ -137,7 +144,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <Avatar src="" fullName={`${user.email}`} diameter={40} />
                   <p className="ml-2.5">{user.email}</p>
                 </div>
-                <Listbox value={user.userRole} onChange={onEditRole}>
+                <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                   <div className="relative">
                     <Listbox.Button value={user.userRole} name={user.email}>
                       <Button variant="secondary">
@@ -146,30 +153,20 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                       </Button>
                     </Listbox.Button>
                     <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                      <Listbox.Option
-                        key="editor"
-                        value="editor"
-                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span>{translate('modals.shareModal.invite.editor')}</span>
-                            {selected ? <Check size={20} /> : null}
-                          </>
-                        )}
-                      </Listbox.Option>
-                      <Listbox.Option
-                        key="viewer"
-                        value="viewer"
-                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span>{translate('modals.shareModal.invite.viewer')}</span>
-                            {selected ? <Check size={20} /> : null}
-                          </>
-                        )}
-                      </Listbox.Option>
+                      {props.roles.map((role) => (
+                        <Listbox.Option
+                          key={role.id}
+                          value={role.role}
+                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span>{translate(`modals.shareModal.invite.${role.role}`)}</span>
+                              {selected ? <Check size={20} /> : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
                     </Listbox.Options>
                   </div>
                 </Listbox>

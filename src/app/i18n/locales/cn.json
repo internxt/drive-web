@@ -622,7 +622,10 @@
         "invite": "邀请",
         "editor": "编辑",
         "viewer": "浏览者",
-        "listUsers": "要邀请的用户"
+        "listUsers": "要邀请的用户",
+        "error": {
+          "errorInviting": "发送邀请至{{email}}时出错"
+        }
       },
       "requestAccess": {
         "title": "您无权访问",

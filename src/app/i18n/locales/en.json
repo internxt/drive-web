@@ -647,7 +647,10 @@
         "invite": "Invite",
         "editor": "Editor",
         "viewer": "Viewer",
-        "listUsers": "Users to invite"
+        "listUsers": "Users to invite",
+        "error": {
+          "errorInviting": "Error sending invitation to {{email}}"
+        }
       },
       "requestAccess": {
         "title": "You don't have access",

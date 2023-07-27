@@ -564,7 +564,10 @@
         "invite": "Inviter",
         "editor": "Éditeur",
         "viewer": "Visualiseur",
-        "listUsers": "Utilisateurs à inviter"
+        "listUsers": "Utilisateurs à inviter",
+        "error": {
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}"
+        }
       },
       "requestAccess": {
         "title": "Vous n'avez pas accès",

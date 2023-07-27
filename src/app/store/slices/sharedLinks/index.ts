@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService from 'app/share/services/share.service';
+import shareService, { sharePrivateFolderWithUser } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -17,7 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import { storageActions } from '../storage';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { decryptMessageWithPrivateKey, encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -160,6 +160,8 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
 
 interface ShareFileWithUserPayload {
   email: string;
+  folderUUID: string;
+  roleId: string;
 }
 
 const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
@@ -182,14 +184,22 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKeyInBase64: publicKey,
       });
 
-      console.log({ encryptedMnemonic });
+      await sharePrivateFolderWithUser({
+        emailToShare: payload.email,
+        encryptionKey: encryptedMnemonic as string,
+        privateFolderId: payload.folderUUID,
+        roleId: payload.roleId,
+      });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
-      notificationsService.show({ text: castedError.message, type: ToastType.Error });
+      notificationsService.show({
+        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.email }),
+        type: ToastType.Error,
+      });
     }
   },
 );

@@ -16,6 +16,8 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
+import { getPrivateSharingRoles } from '../../../share/services/share.service';
+import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
@@ -51,7 +53,12 @@ interface ViewProps {
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
-const ShareDialog = (props) => {
+type ShareDialogProps = {
+  user: any;
+  selectedItems: DriveItemData[];
+};
+
+const ShareDialog = (props: ShareDialogProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
@@ -74,6 +81,7 @@ const ShareDialog = (props) => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
+  const [roles, setRoles] = useState<PrivateSharingRole[]>([]);
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([
     {
       avatar: '',
@@ -120,7 +128,7 @@ const ShareDialog = (props) => {
     return () => clearTimeout(timer);
   }, [accessRequests]);
 
-  const loadShareInfo = () => {
+  const loadShareInfo = async () => {
     // TODO -> Load access mode
     const shareAccessMode: AccessMode = 'public';
     setAccessMode(shareAccessMode);
@@ -155,6 +163,9 @@ const ShareDialog = (props) => {
       },
     ];
     setAccessRequests(mockedAccessRequests);
+
+    const newRoles = await getPrivateSharingRoles();
+    setRoles(newRoles.roles);
   };
 
   const removeRequest = (email: string) => {
@@ -516,7 +527,13 @@ const ShareDialog = (props) => {
           </Modal>
         </>
       ),
-      invite: <ShareInviteDialog onInviteUser={onInviteUser} />,
+      invite: (
+        <ShareInviteDialog
+          onInviteUser={onInviteUser}
+          folderUUID={props.selectedItems[0]?.uuid as string}
+          roles={roles}
+        />
+      ),
       requests: (
         <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '640px' }}>
           {accessRequests.length > 0 ? (
