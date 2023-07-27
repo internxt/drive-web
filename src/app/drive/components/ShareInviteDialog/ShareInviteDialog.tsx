@@ -66,12 +66,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       setEmailAccent('error');
     }
   };
-  console.log({ usersToInvite });
 
   const onEditRole = (value: PrivateSharingRole['role'], user: UsersToInvite) => {
     const newUserToInvite = usersToInvite.map((userToInvite) => {
-      console.log({ userEmail: user.email });
-      console.log({ userToInviteEmail: userToInvite.email });
       if (user.email === userToInvite.email) {
         return { ...userToInvite, userRole: value };
       }
