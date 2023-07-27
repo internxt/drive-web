@@ -185,7 +185,7 @@ export default function LogIn(): JSX.Element {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={'https://drive.internxt.com/login'} />
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/login`} />
       </Helmet>
       <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
         <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>

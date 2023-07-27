@@ -72,7 +72,7 @@ class DriveView extends Component<DriveViewProps> {
     return (
       <>
         <Helmet>
-          <link rel="canonical" href={'https://drive.internxt.com/app'} />
+          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
         </Helmet>
         <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />
       </>
