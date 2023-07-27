@@ -333,7 +333,7 @@ export default function SharedView(): JSX.Element {
           }}
           itemComposition={[
             (props) => {
-              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
+              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData)?.type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
@@ -344,15 +344,15 @@ export default function SharedView(): JSX.Element {
                   </div>
                   <span
                     className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
-                    title={`${(props.item as DriveFileData).name}${
-                      !props.isFolder && (props.item as DriveFileData).type
-                        ? `.${(props.item as DriveFileData).type}`
+                    title={`${(props.item as DriveFileData)?.name}${
+                      !props.isFolder && (props.item as DriveFileData)?.type
+                        ? `.${(props.item as DriveFileData)?.type}`
                         : ''
                     }`}
                   >
-                    {`${(props.item as DriveFileData).name}${
-                      !props.isFolder && (props.item as DriveFileData).type
-                        ? `.${(props.item as DriveFileData).type}`
+                    {`${(props.item as DriveFileData)?.name}${
+                      !props.isFolder && (props.item as DriveFileData)?.type
+                        ? `.${(props.item as DriveFileData)?.type}`
                         : ''
                     }`}
                   </span>
