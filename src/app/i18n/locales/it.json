@@ -793,6 +793,7 @@
     "shared-links": "Link condivisi",
     "view": "viste",
     "list": {
+      "name": "Nome",
       "link-content": "Contenuto del link",
       "shared": "Condivisioni",
       "created": "Creato",

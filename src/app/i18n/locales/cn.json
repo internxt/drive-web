@@ -794,6 +794,7 @@
     "shared-links": "共享的链接",
     "view": "访问量",
     "list": {
+      "name": "名稱",
       "link-content": "链接内容",
       "shared": "已共享的",
       "created": "已创建的",

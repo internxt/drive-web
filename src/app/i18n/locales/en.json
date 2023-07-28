@@ -819,6 +819,7 @@
     "shared-links": "Shared links",
     "view": "views",
     "list": {
+      "name": "Name",
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created",

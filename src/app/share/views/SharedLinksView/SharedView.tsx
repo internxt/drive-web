@@ -11,12 +11,12 @@ import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import _ from 'lodash';
-import { ListAllSharedFoldersResponse, ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { ListAllSharedFoldersResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -33,6 +33,7 @@ import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import errorService from '../../../core/services/error.service';
+import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -50,6 +51,7 @@ type SharedLinksFetchItem = typeof SHARED_LINKS_FETCH_ITEMS[keyof typeof SHARED_
 export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -58,8 +60,8 @@ export default function SharedView(): JSX.Element {
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
-  const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [shareLinks, setShareLinks] = useState<any[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
 
@@ -67,7 +69,7 @@ export default function SharedView(): JSX.Element {
     setIsDeleteDialogModalOpen(false);
   }
 
-  function isItemSelected(item: ListShareLinksItem) {
+  function isItemSelected(item: any) {
     return selectedItems.some((i) => item.id === i.id);
   }
 
@@ -112,7 +114,7 @@ export default function SharedView(): JSX.Element {
       setIsLoading(false);
     }
   }
-  console.log({ isLoading });
+
   useEffect(() => {
     if (!hasMoreFolders) {
       setCurrentItemFetch(SHARED_LINKS_FETCH_ITEMS.FILES);
@@ -131,10 +133,10 @@ export default function SharedView(): JSX.Element {
   }
 
   async function deleteShareLink(shareId: string) {
+    //TODO check if its deleted correctly
     //setShareLinks((items) => items.filter((item) => item.id !== shareId));
     //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
     return await shareService.deleteShareLink(shareId);
-    //TODO check if its deleted correctly
   }
 
   async function onDeleteSelectedItems() {
@@ -160,7 +162,7 @@ export default function SharedView(): JSX.Element {
     }
   }
 
-  function onSelectedItemsChanged(changes: { props: ListShareLinksItem & { code: string }; value: boolean }[]) {
+  function onSelectedItemsChanged(changes: { props: any & { code: string }; value: boolean }[]) {
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
@@ -222,7 +224,7 @@ export default function SharedView(): JSX.Element {
 
   const moveToTrash = async (shareLink) => {
     const itemToTrash = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
@@ -231,7 +233,7 @@ export default function SharedView(): JSX.Element {
 
   const downloadItem = (shareLink) => {
     const itemToDownload = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
@@ -239,7 +241,7 @@ export default function SharedView(): JSX.Element {
 
   const moveItem = (shareLink) => {
     const itemToMove = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageActions.setItemsToMove([itemToMove]));
@@ -248,7 +250,7 @@ export default function SharedView(): JSX.Element {
 
   const renameItem = (shareLink) => {
     const itemToRename = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     setEditNameItem(itemToRename);
@@ -294,20 +296,27 @@ export default function SharedView(): JSX.Element {
           <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       </div>
-
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
+        <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
-              label: translate('shared-links.list.link-content'),
+              label: translate('shared-links.list.name'),
               width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
-              name: 'item',
+              name: 'folder',
               orderable: false,
             },
             {
               label: translate('shared-links.list.owner'),
-              width: 'w-40', //w-1/12
-              name: 'views',
+              width: 'w-120', //w-1/12
+              name: 'ownerId',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+
+            {
+              label: translate('shared-links.list.size'),
+              width: 'w-40', //w-1.5/12
+              name: 'fileSize',
               orderable: true,
               defaultDirection: 'ASC',
             },
@@ -318,12 +327,6 @@ export default function SharedView(): JSX.Element {
               orderable: true,
               defaultDirection: 'ASC',
             },
-            {
-              label: translate('shared-links.list.size'),
-              width: 'w-40', //w-1.5/12
-              name: 'fileSize',
-              orderable: false,
-            },
           ]}
           items={shareLinks}
           isLoading={isLoading}
@@ -333,7 +336,8 @@ export default function SharedView(): JSX.Element {
           }}
           itemComposition={[
             (props) => {
-              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData)?.type);
+              console.log({ props });
+              const Icon = iconService.getItemIcon(!!props.folder, (props.file as DriveFileData)?.type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
@@ -344,15 +348,15 @@ export default function SharedView(): JSX.Element {
                   </div>
                   <span
                     className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
-                    title={`${(props.item as DriveFileData)?.name}${
-                      !props.isFolder && (props.item as DriveFileData)?.type
-                        ? `.${(props.item as DriveFileData)?.type}`
+                    title={`${props?.folder ? (props as any).folder.plainName : ''}${
+                      !props.folder && (props.file as DriveFileData)?.type
+                        ? `.${(props.file as DriveFileData)?.type}`
                         : ''
                     }`}
                   >
-                    {`${(props.item as DriveFileData)?.name}${
-                      !props.isFolder && (props.item as DriveFileData)?.type
-                        ? `.${(props.item as DriveFileData)?.type}`
+                    {`${props?.folder ? (props as any).folder.plainName : ''}${
+                      !props.folder && (props.file as DriveFileData)?.type
+                        ? `.${(props.file as DriveFileData)?.type}`
                         : ''
                     }`}
                   </span>
@@ -361,21 +365,21 @@ export default function SharedView(): JSX.Element {
             },
             (props) => (
               // TODO: ADD HERE OWNER OF SHARED ITEM
-              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>{`${
-                props.views
-              } ${translate('shared-links.view')}`}</span>
+              <span
+                className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
+              >{`${props.ownerId}`}</span>
             ),
+            (props) =>
+              props.folder ? (
+                <span className="opacity-25">—</span>
+              ) : (
+                <span>{`${sizeService.bytesToString(props?.fileSize ? props.fileSize : 0, false)}`}</span>
+              ),
             (props) => (
               <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>
                 {dateService.format(props.createdAt, 'D MMM YYYY')}
               </span>
             ),
-            (props) =>
-              props.isFolder ? (
-                <span className="opacity-25">—</span>
-              ) : (
-                <span>{`${sizeService.bytesToString(props.fileSize ? props.fileSize : 0, false)}`}</span>
-              ),
           ]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
@@ -407,7 +411,7 @@ export default function SharedView(): JSX.Element {
               : contextMenuDriveItemShared({
                   openPreview: (shareLink) => {
                     dispatch(uiActions.setIsFileViewerOpen(true));
-                    dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
+                    dispatch(uiActions.setFileViewerItem((shareLink as any).item as DriveItemData));
                   },
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
@@ -424,7 +428,7 @@ export default function SharedView(): JSX.Element {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
-                  ...((selectedItem as ListShareLinksItem).item as DriveItemData),
+                  ...((selectedItem as any).item as DriveItemData),
                   isFolder: selectedItem.isFolder,
                 };
                 setEditNameItem(itemToRename);
@@ -434,8 +438,8 @@ export default function SharedView(): JSX.Element {
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          onOrderByChanged={onOrderByChanged}
-          orderBy={orderBy}
+          // onOrderByChanged={onOrderByChanged}
+          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
@@ -444,6 +448,7 @@ export default function SharedView(): JSX.Element {
         isTrash={false}
       />
       <EditFolderNameDialog />
+      {isShareDialogOpen && <ShareDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}

@@ -801,6 +801,7 @@
     "shared-links": "Enlaces compartidos",
     "view": "visitas",
     "list": {
+      "name": "Nombre",
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
       "created": "Creado",

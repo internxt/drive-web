@@ -735,6 +735,7 @@
     "shared-links": "Liens partagés",
     "view": "Vues",
     "list": {
+      "name": "Nom",
       "link-content": "Contenu du lien",
       "shared": "Partagé",
       "created": "Créé",
