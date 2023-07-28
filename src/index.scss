@@ -272,10 +272,6 @@ code {
   input[type='password']:not(.inxt-input) {
     @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
 
-    &:disabled {
-      @apply bg-neutral-30;
-    }
-
     &:focus {
       outline: none !important;
     }

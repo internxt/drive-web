@@ -29,6 +29,7 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
+import { validateMnemonic } from 'bip39';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -174,6 +175,34 @@ export const getPasswordDetails = async (
   const encryptedCurrentPassword = encryptText(hashedCurrentPassword);
 
   return { salt, hashedCurrentPassword, encryptedCurrentPassword };
+};
+
+const updateCredentialsWithToken = async (
+  token: string | undefined,
+  newPassword: string,
+  mnemonicInPlain: string,
+  privateKeyInPlain: string,
+): Promise<void> => {
+  const mnemonicIsInvalid = !validateMnemonic(mnemonicInPlain);
+  if (mnemonicIsInvalid) {
+    throw new Error('Invalid mnemonic');
+  }
+
+  const hashedNewPassword = passToHash({ password: newPassword });
+  const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
+  const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
+
+  const encryptedMnemonic = encryptTextWithKey(mnemonicInPlain, newPassword);
+  // const privateKey = Buffer.from(privateKeyInPlain, 'base64').toString();
+  // const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
+
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.changePasswordWithLink(
+    token,
+    encryptedHashedNewPassword,
+    encryptedHashedNewPasswordSalt,
+    encryptedMnemonic,
+  );
 };
 
 export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
@@ -326,6 +355,11 @@ const extractOneUseCredentialsForAutoSubmit = (
   }
 };
 
+const sendChangePasswordEmail = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.sendChangePasswordEmail(email);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -336,6 +370,8 @@ const authService = {
   extractOneUseCredentialsForAutoSubmit,
   getNewToken,
   getRedirectUrl,
+  sendChangePasswordEmail,
+  updateCredentialsWithToken,
 };
 
 export default authService;
