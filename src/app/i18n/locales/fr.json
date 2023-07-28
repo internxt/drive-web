@@ -550,6 +550,80 @@
       "placeholder": "Dossier sans titre",
       "untitled": "Dossier sans titre"
     },
+    "shareModal": {
+      "title": "Partager \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personnes ayant un accès",
+        "invite": "Inviter",
+        "userItem": {
+          "roles": {
+            "owner": "Propriétaire",
+            "editor": "Éditeur",
+            "viewer": " Visualisateur "
+          },
+          "remove": "Supprimer"
+        }
+      },
+      "general": {
+        "generalAccess": "Accès général",
+        "accessOptions": {
+          "public": {
+            "title": "Publique",
+            "subtitle": "Toute personne ayant le lien peut accéder"
+          },
+          "restricted": {
+            "title": "Restreint",
+            "subtitle": "Seules les personnes ajoutées peuvent accéder"
+          },
+          "stopSharing": "Arrêter le partage"
+        },
+        "copyLink": "Copier le lien"
+      },
+      "requests": {
+        "title": "Demandes d'accès",
+        "button": "Demandes",
+        "empty": "Aucune demande restante",
+        "actions": {
+          "accept": "Accepter",
+          "deny": "Refuser",
+          "roles": {
+            "editor": "Editeur",
+            "viewer": "Lecteur"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Arrêter le partage ?",
+        "subtitle": "Personne ne pourra plus accéder à \"{{name}}\"",
+        "cancel": "Annuler",
+        "confirm": "Arrêter le partage",
+        "notification": {
+          "success": "Ne plus partager \"{{name}}\"",
+          "error": "Impossible d'arrêter le partage, veuillez réessayer"
+        }
+      },
+      "invite": {
+        "title": "Inviter des personnes",
+        "textarea": "Entrez le texte de votre message (facultatif)",
+        "notifyUsers": "Notifier les utilisateurs",
+        "instructions": "Appuyez sur la touche Entrée ou sur l'espace pour séparer les courriels",
+        "email": "Type d'email",
+        "invite": "Inviter",
+        "editor": "Éditeur",
+        "viewer": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter"
+      },
+      "requestAccess": {
+        "title": "Vous n'avez pas accès",
+        "description": "Demandez l'accès au propriétaire ou passez à un compte avec accès.",
+        "textarea": "Message (optionnel)",
+        "requestButton": "Demande d'accès",
+        "logged": "Connecté comme",
+        "change": "Changer",
+        "requestSent": "Demande envoyée",
+        "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",

@@ -40,7 +40,7 @@ export default function Button({
   } else if (variant === 'secondary' && disabled) {
     styles = 'bg-white text-gray-30 border border-black border-opacity-5 shadow-sm';
   } else if (variant === 'tertiary' && !disabled) {
-    styles = 'hover:bg-gray-5 active:bg-gray-10';
+    styles = 'hover:bg-gray-5 active:bg-gray-10 focus-visible:bg-gray-10';
   } else if (variant === 'tertiary' && disabled) {
     styles = 'text-gray-30';
   }
@@ -56,7 +56,7 @@ export default function Button({
       } outline-none relative flex select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg text-base font-medium ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out focus-visible:ring-opacity-50 ${styles} ${className}`}
     >
       {loading && <Spinner size={18} />}
-      <span className={`${loading ? 'opacity-90' : ''}`}>{children}</span>
+      <div className={`${loading ? 'opacity-0' : ''} flex items-center justify-center space-x-2`}>{children}</div>
     </button>
   );
 }

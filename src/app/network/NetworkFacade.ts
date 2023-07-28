@@ -11,6 +11,8 @@ import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
+import { TrackingPlan } from '../analytics/TrackingPlan';
+import analyticsService from '../analytics/services/analytics.service';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;

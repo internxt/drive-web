@@ -3,6 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
@@ -126,6 +127,7 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  // TODO: remove the unused code below
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
@@ -181,96 +183,101 @@ export default function LogIn(): JSX.Element {
   };
 
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
+    <>
+      <Helmet>
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/login`} />
+      </Helmet>
+      <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
+        <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
 
-        <div className="flex flex-col space-y-3">
-          <label className="space-y-0.5">
-            <span>{translate('auth.email')}</span>
-            <TextInput
-              placeholder={translate('auth.email')}
-              label="email"
-              type="email"
-              register={register}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              error={errors.email}
-            />
-          </label>
-
-          <label className="space-y-0.5">
-            <div className="flex flex-row items-center justify-between">
-              <span className="font-normal">{translate('auth.password')}</span>
-              <Link
-                onClick={(): void => {
-                  // analyticsService.trackUserResetPasswordRequest();
-                }}
-                to="/recovery-link"
-                className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-              >
-                {translate('auth.login.forgotPwd')}
-              </Link>
-            </div>
-
-            <PasswordInput
-              placeholder={translate('auth.password')}
-              label="password"
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Password must not be empty' }}
-              error={errors.password}
-            />
-          </label>
-
-          {showTwoFactor && (
+          <div className="flex flex-col space-y-3">
             <label className="space-y-0.5">
-              <span>{translate('auth.login.2FA')}</span>
-              <PasswordInput
-                className="mb-3"
-                label="twoFactorCode"
-                placeholder={translate('auth.login.twoFactorAuthenticationCode')}
-                error={errors.twoFactorCode}
+              <span>{translate('auth.email')}</span>
+              <TextInput
+                placeholder={translate('auth.email')}
+                label="email"
+                type="email"
                 register={register}
-                required={true}
-                minLength={1}
-                pattern={twoFactorRegexPattern}
+                minLength={{ value: 1, message: 'Email must not be empty' }}
+                error={errors.email}
               />
             </label>
-          )}
 
-          {loginError && showErrors && (
-            <div className="flex flex-row items-start pt-1">
-              <div className="flex h-5 flex-row items-center">
-                <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+            <label className="space-y-0.5">
+              <div className="flex flex-row items-center justify-between">
+                <span className="font-normal">{translate('auth.password')}</span>
+                <Link
+                  onClick={(): void => {
+                    // analyticsService.trackUserResetPasswordRequest();
+                  }}
+                  to="/recovery-link"
+                  className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+                >
+                  {translate('auth.login.forgotPwd')}
+                </Link>
               </div>
-              <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
-            </div>
-          )}
 
-          <Button
-            disabled={isLoggingIn}
-            text={translate('auth.login.title')}
-            disabledText={
-              isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
-            }
-            loading={isLoggingIn}
-            style="button-primary"
-            className="w-full"
-          />
+              <PasswordInput
+                placeholder={translate('auth.password')}
+                label="password"
+                register={register}
+                required={true}
+                minLength={{ value: 1, message: 'Password must not be empty' }}
+                error={errors.password}
+              />
+            </label>
+
+            {showTwoFactor && (
+              <label className="space-y-0.5">
+                <span>{translate('auth.login.2FA')}</span>
+                <PasswordInput
+                  className="mb-3"
+                  label="twoFactorCode"
+                  placeholder={translate('auth.login.twoFactorAuthenticationCode')}
+                  error={errors.twoFactorCode}
+                  register={register}
+                  required={true}
+                  minLength={1}
+                  pattern={twoFactorRegexPattern}
+                />
+              </label>
+            )}
+
+            {loginError && showErrors && (
+              <div className="flex flex-row items-start pt-1">
+                <div className="flex h-5 flex-row items-center">
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                </div>
+                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+              </div>
+            )}
+
+            <Button
+              disabled={isLoggingIn}
+              text={translate('auth.login.title')}
+              disabledText={
+                isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
+              }
+              loading={isLoggingIn}
+              style="button-primary"
+              className="w-full"
+            />
+          </div>
+        </form>
+
+        <div className="mt-4 flex w-full justify-center text-sm">
+          <span>
+            {translate('auth.login.dontHaveAccount')}{' '}
+            <Link
+              to={getSignupLink()}
+              className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+            >
+              {translate('auth.login.createAccount')}
+            </Link>
+          </span>
         </div>
-      </form>
-
-      <div className="mt-4 flex w-full justify-center text-sm">
-        <span>
-          {translate('auth.login.dontHaveAccount')}{' '}
-          <Link
-            to={getSignupLink()}
-            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-          >
-            {translate('auth.login.createAccount')}
-          </Link>
-        </span>
       </div>
-    </div>
+    </>
   );
 }

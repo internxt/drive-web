@@ -132,7 +132,26 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search this folder",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Search this folder",
+      "placeholder": "Search in Drive",
+      "filters": {
+        "folder": "Folder",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Clear"
+      },
+      "emptyState": {
+        "title": "Find files and folders",
+        "subtitle": "Search by name and type"
+      },
+      "notFoundState": {
+        "title": "No results found",
+        "subtitle": "No files or folders match the search"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -614,6 +633,80 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "Share \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "People with access",
+        "invite": "Invite",
+        "userItem": {
+          "roles": {
+            "owner": "Owner",
+            "editor": "Editor",
+            "viewer": "Viewer"
+          },
+          "remove": "Remove"
+        }
+      },
+      "general": {
+        "generalAccess": "General access",
+        "accessOptions": {
+          "public": {
+            "title": "Public",
+            "subtitle": "Anyone with the link can access"
+          },
+          "restricted": {
+            "title": "Restricted",
+            "subtitle": "Only people added can access"
+          },
+          "stopSharing": "Stop sharing"
+        },
+        "copyLink": "Copy link"
+      },
+      "requests": {
+        "title": "Access requests",
+        "button": "Requests",
+        "empty": "No requests left",
+        "actions": {
+          "accept": "Accept",
+          "deny": "Deny",
+          "roles": {
+            "editor": "Editor",
+            "viewer": "Viewer"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "No one will be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
+      },
+      "invite": {
+        "title": "Invite people",
+        "textarea": "Enter your message text (optional)",
+        "notifyUsers": "Notify users",
+        "instructions": "Press enter or space to separate emails",
+        "email": "Type email",
+        "invite": "Invite",
+        "editor": "Editor",
+        "viewer": "Viewer",
+        "listUsers": "Users to invite"
+      },
+      "requestAccess": {
+        "title": "You don't have access",
+        "description": "Request access to the owner or switch to an account with access.",
+        "textarea": "Message (optional)",
+        "requestButton": "Request access",
+        "logged": "Logged in as",
+        "change": "Change",
+        "requestSent": "Request Sent",
+        "confirmation": "You will get an email if the file/folder is shared with you"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
@@ -1054,8 +1147,12 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "shareLink": "Share",
+      "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
+      "share": "Share",
+      "manageAccess": "Manage access",
       "download": "Download",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",

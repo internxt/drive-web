@@ -608,6 +608,80 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "分享 \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "有机会的人",
+        "invite": "邀请",
+        "userItem": {
+          "roles": {
+            "owner": "业主",
+            "editor": "编辑",
+            "viewer": "浏览者"
+          },
+          "remove": "删除"
+        }
+      },
+      "general": {
+        "generalAccess": "一般访问",
+        "accessOptions": {
+          "public": {
+            "title": "公众",
+            "subtitle": "任何拥有该链接的人都可以访问"
+          },
+          "restricted": {
+            "title": "受限制的",
+            "subtitle": "只有被添加的人可以访问"
+          },
+          "stopSharing": "停止分享"
+        },
+        "copyLink": "复制链接"
+      },
+      "requests": {
+        "title": "访问请求",
+        "button": "请求",
+        "empty": "没有剩余请求",
+        "actions": {
+          "accept": "接受",
+          "deny": "否认",
+          "roles": {
+            "editor": "编辑器",
+            "viewer": "观众"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "停止分享?",
+        "subtitle": "没有人能够访问 \"{{name}}\"",
+        "cancel": "取消",
+        "confirm": "停止分享",
+        "notification": {
+          "success": "不再分享 \"{{name}}\"",
+          "error": "无法停止分享，请再试一次"
+        }
+      },
+      "invite": {
+        "title": "邀请人们",
+        "textarea": "输入你的信息文本（可选）",
+        "notifyUsers": "通知用户",
+        "instructions": "按回车键或空格来分隔电子邮件",
+        "email": "类型：电子邮件",
+        "invite": "邀请",
+        "editor": "编辑",
+        "viewer": "浏览者",
+        "listUsers": "要邀请的用户"
+      },
+      "requestAccess": {
+        "title": "您无权访问",
+        "description": "向所有者请求访问权限或切换到具有访问权限的帐户",
+        "textarea": "留言（可选）",
+        "requestButton": "申请进入",
+        "logged": "登录为",
+        "change": "改变",
+        "requestSent": "请求已发送",
+        "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "个文件 已选择 ",
       "singleToolBar": "个文件 已选择 ",

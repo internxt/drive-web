@@ -32,6 +32,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 const views: Array<{
   id: string;
@@ -69,6 +70,7 @@ const views: Array<{
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
+  // { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 
