@@ -162,7 +162,7 @@ export default function SharedView(): JSX.Element {
     }
   }
 
-  function onSelectedItemsChanged(changes: { props: any & { code: string }; value: boolean }[]) {
+  function onSelectedItemsChanged(changes: { props: any; value: boolean }[]) {
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
