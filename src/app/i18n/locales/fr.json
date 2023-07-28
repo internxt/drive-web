@@ -565,6 +565,7 @@
         "editor": "Éditeur",
         "viewer": "Visualiseur",
         "listUsers": "Utilisateurs à inviter",
+        "successSentInvitation": "Partage réussi avec {{email}}",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}"
         }

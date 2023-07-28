@@ -648,6 +648,7 @@
         "editor": "Editor",
         "viewer": "Viewer",
         "listUsers": "Users to invite",
+        "successSentInvitation": "Successful sharing with {{email}}",
         "error": {
           "errorInviting": "Error sending invitation to {{email}}"
         }

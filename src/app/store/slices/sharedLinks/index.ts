@@ -190,6 +190,11 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         privateFolderId: payload.folderUUID,
         roleId: payload.roleId,
       });
+
+      notificationsService.show({
+        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.email }),
+        type: ToastType.Success,
+      });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });

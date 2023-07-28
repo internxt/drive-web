@@ -623,8 +623,9 @@
         "editor": "编辑",
         "viewer": "浏览者",
         "listUsers": "要邀请的用户",
+        "successSentInvitation": "與 {{email}} 成功分享",
         "error": {
-          "errorInviting": "发送邀请至{{email}}时出错"
+          "errorInviting": "傳送邀請至 {{email}} 時出錯"
         }
       },
       "requestAccess": {
