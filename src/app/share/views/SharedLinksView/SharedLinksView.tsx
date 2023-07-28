@@ -126,7 +126,6 @@ export default function SharedLinksView(): JSX.Element {
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
-      console.log('selectedItems', selectedItems.length);
 
       const CHUNK_SIZE = 10;
       const chunks = _.chunk(selectedItems, CHUNK_SIZE);

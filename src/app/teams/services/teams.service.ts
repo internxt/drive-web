@@ -43,7 +43,7 @@ export async function storeTeamsInfo(): Promise<void> {
     if (userTeam && tokenTeams) {
       const mnemonic = await decryptPGP(Buffer.from(userTeam.bridge_mnemonic, 'base64').toString());
 
-      userTeam.bridge_mnemonic = mnemonic.data;
+      userTeam.bridge_mnemonic = mnemonic.data.toString();
 
       localStorageService.set('xTeam', JSON.stringify(userTeam));
       localStorageService.set('xTokenTeam', tokenTeams);
@@ -101,8 +101,8 @@ export async function sendEmailTeamsMember(mail: string): Promise<void> {
   const EncryptBridgePass = await encryptPGPInvitations(bridgePass, publicKey);
   const EncryptMnemonicTeam = await encryptPGPInvitations(mnemonicTeam, publicKey);
 
-  const base64bridge_password = Buffer.from(EncryptBridgePass.data).toString('base64');
-  const base64Mnemonic = Buffer.from(EncryptMnemonicTeam.data).toString('base64');
+  const base64bridge_password = Buffer.from(EncryptBridgePass).toString('base64');
+  const base64Mnemonic = Buffer.from(EncryptMnemonicTeam).toString('base64');
   const bridgeuser = xTeam.bridge_user;
 
   await fetchInvitation(mail, base64bridge_password, base64Mnemonic, bridgeuser);
@@ -146,7 +146,7 @@ export async function checkSessionStripe(
       {
         checkoutSessionId: sessionId,
         test: !envService.isProduction(),
-        mnemonic: mnemonic.data,
+        mnemonic: mnemonic.data.toString(),
       },
       { authWorkspace: Workspace.Individuals },
     )

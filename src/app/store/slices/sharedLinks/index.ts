@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService from 'app/share/services/share.service';
+import shareService, { sharePrivateFolderWithUser } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -14,13 +14,15 @@ import { Environment } from '@internxt/inxt-js';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
 import { DriveItemData } from 'app/drive/types';
-import storageThunks from '../storage/storage.thunks';
-import { storageActions, storageSelectors } from '../storage';
+import { storageActions } from '../storage';
 import { t } from 'i18next';
+import userService from '../../../auth/services/user.service';
+import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
   isLoadingShareds: boolean;
+  isSharingKey: boolean;
   sharedLinks: ListShareLinksItem[] | []; //ShareLink[];
   pagination: {
     page: number;
@@ -32,6 +34,7 @@ export interface ShareLinksState {
 const initialState: ShareLinksState = {
   isLoadingGeneratingLink: false,
   isLoadingShareds: false,
+  isSharingKey: false,
   sharedLinks: [],
   pagination: {
     page: 1,
@@ -155,6 +158,57 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
   },
 );
 
+interface ShareFileWithUserPayload {
+  email: string;
+  folderUUID: string;
+  roleId: string;
+}
+
+const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
+  'shareds/shareFileWithUser',
+  async (payload: ShareFileWithUserPayload, { dispatch, getState }): Promise<string | void> => {
+    const rootState = getState();
+    const user = rootState.user.user;
+    try {
+      if (!user) {
+        navigationService.push(AppView.Login);
+        return;
+      }
+      const { mnemonic } = user;
+
+      const publicKeyResponse = await userService.getPublicKeyByEmail(payload.email);
+      const publicKey = publicKeyResponse.publicKey;
+
+      const encryptedMnemonic = await encryptMessageWithPublicKey({
+        message: mnemonic,
+        publicKeyInBase64: publicKey,
+      });
+
+      await sharePrivateFolderWithUser({
+        emailToShare: payload.email,
+        encryptionKey: encryptedMnemonic as string,
+        privateFolderId: payload.folderUUID,
+        roleId: payload.roleId,
+      });
+
+      notificationsService.show({
+        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.email }),
+        type: ToastType.Success,
+      });
+    } catch (err: unknown) {
+      const castedError = errorService.castError(err);
+      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });
+      if (castedError.message === 'unauthenticated') {
+        return navigationService.push(AppView.Login);
+      }
+      notificationsService.show({
+        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.email }),
+        type: ToastType.Error,
+      });
+    }
+  },
+);
+
 export const sharedSlice = createSlice({
   name: 'shared',
   initialState,
@@ -181,6 +235,15 @@ export const sharedSlice = createSlice({
       })
       .addCase(getSharedLinkThunk.rejected, (state) => {
         state.isLoadingGeneratingLink = false;
+      })
+      .addCase(shareFileWithUser.pending, (state) => {
+        state.isSharingKey = true;
+      })
+      .addCase(shareFileWithUser.fulfilled, (state) => {
+        state.isSharingKey = false;
+      })
+      .addCase(shareFileWithUser.rejected, (state) => {
+        state.isSharingKey = false;
       });
   },
 });
@@ -193,6 +256,7 @@ export const sharedThunks = {
   fetchSharedLinksThunk,
   getSharedLinkThunk,
   deleteLinkThunk,
+  shareFileWithUser,
 };
 
 export default sharedSlice.reducer;

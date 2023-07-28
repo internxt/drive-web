@@ -630,7 +630,11 @@
         "invite": "Invitar",
         "editor": "Editor",
         "viewer": "Visualizador",
-        "listUsers": "Usuarios a invitar"
+        "listUsers": "Usuarios a invitar",
+        "successSentInvitation": "Compartido con éxito con {{email}}",
+        "error": {
+          "errorInviting": "Error al enviar la invitación a {{email}}"
+        }
       },
       "requestAccess": {
         "title": "No tienes acceso",

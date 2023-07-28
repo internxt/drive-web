@@ -22,7 +22,7 @@ import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.se
 import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import dayjs from 'dayjs';
 
-interface UserState {
+export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;

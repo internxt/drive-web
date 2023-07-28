@@ -622,7 +622,11 @@
         "invite": "Invitare",
         "editor": "Editore",
         "viewer": "Visualizzatore",
-        "listUsers": "Utenti da invitare"
+        "listUsers": "Utenti da invitare",
+        "successSentInvitation": "Condivisione riuscita con {{email}}",
+        "error": {
+          "errorInviting": "Errore durante l'invio dell'invito a {{email}}"
+        }
       },
       "requestAccess": {
         "title": "Non hai accesso",

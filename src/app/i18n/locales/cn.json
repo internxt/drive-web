@@ -623,7 +623,11 @@
         "invite": "邀请",
         "editor": "编辑",
         "viewer": "浏览者",
-        "listUsers": "要邀请的用户"
+        "listUsers": "要邀请的用户",
+        "successSentInvitation": "與 {{email}} 成功分享",
+        "error": {
+          "errorInviting": "傳送邀請至 {{email}} 時出錯"
+        }
       },
       "requestAccess": {
         "title": "您无权访问",
