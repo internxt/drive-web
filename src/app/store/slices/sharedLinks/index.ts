@@ -17,7 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import { storageActions } from '../storage';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { decryptMessageWithPrivateKey, encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -209,6 +209,33 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
   },
 );
 
+interface DecryptPrivateKeyPayload {
+  privateKeyEncrypted: string;
+}
+
+//TODO: Complete storing the decryptedPrivateKey where it needs to be accessed from download functions
+// if storage in Redux is not needed, it may be better to extract this to a service rather than use a Thunk.
+const decryptPrivateKeyOfSharedItem = createAsyncThunk<string | void, DecryptPrivateKeyPayload, { state: RootState }>(
+  'shareds/decryptPrivateKeyOfSharedItem',
+  async (payload: DecryptPrivateKeyPayload, { getState }): Promise<string | void> => {
+    const rootState = getState();
+    const user = rootState.user.user;
+    try {
+      const encryptionKey = payload.privateKeyEncrypted;
+      if (encryptionKey) {
+        const decryptedPrivateKey = await decryptMessageWithPrivateKey({
+          encryptedMessage: encryptionKey,
+          privateKeyInBase64: user?.privateKey as string,
+        });
+
+        return decryptedPrivateKey as string;
+      }
+    } catch (err: unknown) {
+      errorService.reportError(err, { extra: { thunk: 'decryptPrivateKeyOfSharedFolder' } });
+    }
+  },
+);
+
 export const sharedSlice = createSlice({
   name: 'shared',
   initialState,
@@ -257,6 +284,7 @@ export const sharedThunks = {
   getSharedLinkThunk,
   deleteLinkThunk,
   shareFileWithUser,
+  decryptPrivateKeyOfSharedItem,
 };
 
 export default sharedSlice.reducer;
