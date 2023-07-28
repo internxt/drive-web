@@ -142,7 +142,6 @@ export default function SharedView(): JSX.Element {
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
-      console.log('selectedItems', selectedItems.length);
 
       const CHUNK_SIZE = 10;
       const chunks = _.chunk(selectedItems, CHUNK_SIZE);
@@ -336,7 +335,6 @@ export default function SharedView(): JSX.Element {
           }}
           itemComposition={[
             (props) => {
-              console.log({ props });
               const Icon = iconService.getItemIcon(!!props.folder, (props.file as DriveFileData)?.type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
