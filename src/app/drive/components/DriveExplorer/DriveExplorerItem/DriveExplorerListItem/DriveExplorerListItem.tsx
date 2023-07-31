@@ -9,9 +9,7 @@ import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
-
 import './DriveExplorerListItem.scss';
-
 import { DriveItemData } from '../../../../types';
 import envService from '../../../../../core/services/env.service';
 
