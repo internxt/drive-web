@@ -33,6 +33,7 @@ import { t } from 'i18next';
 import authService from 'app/auth/services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import Mobile from 'app/drive/views/MobileView/MobileView';
+import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
 
 interface AppProps {
@@ -87,6 +88,8 @@ class App extends Component<AppProps> {
       await LRUPhotosPreviewsCacheManager.getInstance();
 
       await domainManager.fetchDomains();
+
+      RealtimeService.getInstance().init();
 
       await this.props.dispatch(
         initializeUserThunk({
