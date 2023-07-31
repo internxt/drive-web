@@ -22,9 +22,9 @@ import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { t } from 'i18next';
 import {
-  contextMenuDriveFolderShared,
-  contextMenuDriveItemShared,
-  contextMenuMultipleSharedView,
+  contextMenuDriveFolderSharedAFS,
+  contextMenuDriveItemSharedAFS,
+  contextMenuMultipleSharedViewAFS,
 } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -34,6 +34,7 @@ import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/Edi
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
+import Avatar from '../../../shared/components/Avatar';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -45,7 +46,47 @@ function copyShareLink(type: string, code: string, token: string) {
 }
 const ITEMS_PER_PAGE = 50;
 const SHARED_LINKS_FETCH_ITEMS = { FOLDERS: 'FOLDERS', FILES: 'FILES' };
+
 type SharedLinksFetchItem = typeof SHARED_LINKS_FETCH_ITEMS[keyof typeof SHARED_LINKS_FETCH_ITEMS];
+
+//TODO: TEMPORARY TYPE, COMPLETE WHILE ADVANCING IN AFS
+export type SharedLinkItemType = {
+  id: string;
+  folderId: string;
+  ownerId: string;
+  sharedWith: string;
+  encryptionKey: string;
+  createdAt: string;
+  updatedAt: string;
+  owner_id: string;
+  shared_with: string;
+  folder: {
+    id: number;
+    uuid: string;
+    parentId: number;
+    parentUuid: string | null;
+    name: string;
+    bucket: string | null;
+    userId: number;
+    encryptVersion: string;
+    plainName: string | null;
+    deleted: boolean;
+    removed: boolean;
+    deletedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    removedAt: string | null;
+  };
+  owner: {
+    uuid: string;
+    email: string;
+    name: string;
+    lastname: string;
+    avatar: string | null;
+  };
+  file: any;
+  fileSize: number;
+};
 
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
 export default function SharedView(): JSX.Element {
@@ -296,7 +337,7 @@ export default function SharedView(): JSX.Element {
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
+        <List<SharedLinkItemType, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
               label: translate('shared-links.list.name'),
@@ -306,7 +347,7 @@ export default function SharedView(): JSX.Element {
             },
             {
               label: translate('shared-links.list.owner'),
-              width: 'w-120', //w-1/12
+              width: 'w-80', //w-1/12
               name: 'ownerId',
               orderable: true,
               defaultDirection: 'ASC',
@@ -362,10 +403,18 @@ export default function SharedView(): JSX.Element {
               );
             },
             (props) => (
-              // TODO: ADD HERE OWNER OF SHARED ITEM
-              <span
-                className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
-              >{`${props.ownerId}`}</span>
+              <div className="flex flex-row items-center justify-center">
+                <div className="mr-2">
+                  <Avatar
+                    diameter={28}
+                    fullName={`${props.owner?.name} ${props.owner?.lastname}`}
+                    src={props.owner?.avatar ? props.owner?.avatar : null}
+                  />
+                </div>
+                <span
+                  className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
+                >{`${props.owner?.name} ${props.owner?.lastname}`}</span>
+              </div>
             ),
             (props) =>
               props.folder ? (
@@ -385,7 +434,7 @@ export default function SharedView(): JSX.Element {
           hasMoreItems={hasMoreItems}
           menu={
             selectedItems.length > 1
-              ? contextMenuMultipleSharedView({
+              ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: () => {
                     const itemsToDownload = selectedItems.map((selectedShareLink) => ({
@@ -397,7 +446,7 @@ export default function SharedView(): JSX.Element {
                   moveToTrash: moveSelectedItemsToTrash,
                 })
               : selectedItems[0]?.isFolder
-              ? contextMenuDriveFolderShared({
+              ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
@@ -406,7 +455,7 @@ export default function SharedView(): JSX.Element {
                   downloadItem: downloadItem,
                   moveToTrash: moveToTrash,
                 })
-              : contextMenuDriveItemShared({
+              : contextMenuDriveItemSharedAFS({
                   openPreview: (shareLink) => {
                     dispatch(uiActions.setIsFileViewerOpen(true));
                     dispatch(uiActions.setFileViewerItem((shareLink as any).item as DriveItemData));

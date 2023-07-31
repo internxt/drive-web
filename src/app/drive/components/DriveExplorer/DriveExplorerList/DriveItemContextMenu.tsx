@@ -18,6 +18,7 @@ import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../types';
 import envService from '../../../../core/services/env.service';
+import { SharedLinkItemType } from '../../../../share/views/SharedLinksView/SharedView';
 
 const isProduction = envService.isProduction();
 
@@ -414,6 +415,86 @@ const contextMenuDriveItemSharedsView = ({
     : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyShareLink)]),
 ];
 
+const contextMenuDriveItemSharedAFS = ({
+  openPreview,
+  copyLink,
+  openShareAccessSettings,
+  deleteLink,
+  renameItem,
+  moveItem,
+  downloadItem,
+  moveToTrash,
+}: {
+  openPreview: (item: SharedLinkItemType) => void;
+  copyLink: (item: SharedLinkItemType) => void;
+  openShareAccessSettings: (item: SharedLinkItemType) => void;
+  deleteLink: (item: SharedLinkItemType) => void;
+  renameItem: (item: SharedLinkItemType) => void;
+  moveItem: (item: SharedLinkItemType) => void;
+  downloadItem: (item: SharedLinkItemType) => void;
+  moveToTrash: (item: SharedLinkItemType) => void;
+}): ListItemMenu<SharedLinkItemType> => [
+  ...(isProduction
+    ? [
+        getOpenPreviewMenuItem(openPreview),
+        ...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink }),
+      ]
+    : [
+        manageLinkAccessMenuItem(openShareAccessSettings), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING
+        getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
+      ]),
+  { name: '', action: () => false, separator: true },
+  ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
+const contextMenuDriveFolderSharedAFS = ({
+  copyLink,
+  openShareAccessSettings,
+  deleteLink,
+  renameItem,
+  moveItem,
+  downloadItem,
+  moveToTrash,
+}: {
+  copyLink: (item: SharedLinkItemType) => void;
+  openShareAccessSettings: (item: SharedLinkItemType) => void;
+  deleteLink: (item: SharedLinkItemType) => void;
+  renameItem: (item: SharedLinkItemType) => void;
+  moveItem: (item: SharedLinkItemType) => void;
+  downloadItem: (item: SharedLinkItemType) => void;
+  moveToTrash: (item: SharedLinkItemType) => void;
+}): ListItemMenu<SharedLinkItemType> => [
+  ...(isProduction
+    ? [...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink })]
+    : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
+  { name: '', action: () => false, separator: true },
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
+const contextMenuMultipleSharedViewAFS = ({
+  deleteLink,
+  downloadItem,
+  moveToTrash,
+}: {
+  deleteLink: (item: SharedLinkItemType) => void;
+  downloadItem: (item: SharedLinkItemType) => void;
+  moveToTrash: (item: SharedLinkItemType) => void;
+}): ListItemMenu<SharedLinkItemType> => [
+  ...(isProduction ? [getDeleteLinkMenuItem(deleteLink)] : []),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
 export {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveNotSharedLink,
@@ -427,4 +508,7 @@ export {
   contextMenuBackupItems,
   contextMenuDriveItemSharedsView,
   contextMenuMultipleSharedView,
+  contextMenuDriveItemSharedAFS,
+  contextMenuDriveFolderSharedAFS,
+  contextMenuMultipleSharedViewAFS,
 };

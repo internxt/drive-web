@@ -18,6 +18,7 @@ import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
 import { getPrivateSharingRoles } from '../../../share/services/share.service';
 import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
+import errorService from '../../../core/services/error.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
@@ -129,43 +130,47 @@ const ShareDialog = (props: ShareDialogProps) => {
   }, [accessRequests]);
 
   const loadShareInfo = async () => {
-    // TODO -> Load access mode
-    const shareAccessMode: AccessMode = 'public';
-    setAccessMode(shareAccessMode);
+    try {
+      // TODO -> Load access mode
+      const shareAccessMode: AccessMode = 'public';
+      setAccessMode(shareAccessMode);
 
-    // TODO -> Load invited users
-    const loadedUsers: InvitedUserProps[] = [];
-    setInvitedUsers(loadedUsers);
-    // TODO -> Load access requests
-    const mockedAccessRequests = [
-      {
-        avatar: '',
-        name: 'Juan',
-        lastname: 'Mendes',
-        email: 'juan@inxt.com',
-        message:
-          'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
-        status: REQUEST_STATUS.PENDING,
-      },
-      {
-        avatar: '',
-        name: 'Eve',
-        lastname: 'Korn',
-        email: 'eve@inxt.com',
-        status: REQUEST_STATUS.PENDING,
-      },
-      {
-        avatar: '',
-        name: 'Maria',
-        lastname: 'Korn',
-        email: 'maria@inxt.com',
-        status: REQUEST_STATUS.PENDING,
-      },
-    ];
-    setAccessRequests(mockedAccessRequests);
+      // TODO -> Load invited users
+      const loadedUsers: InvitedUserProps[] = [];
+      setInvitedUsers(loadedUsers);
+      // TODO -> Load access requests
+      const mockedAccessRequests = [
+        {
+          avatar: '',
+          name: 'Juan',
+          lastname: 'Mendes',
+          email: 'juan@inxt.com',
+          message:
+            'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+          status: REQUEST_STATUS.PENDING,
+        },
+        {
+          avatar: '',
+          name: 'Eve',
+          lastname: 'Korn',
+          email: 'eve@inxt.com',
+          status: REQUEST_STATUS.PENDING,
+        },
+        {
+          avatar: '',
+          name: 'Maria',
+          lastname: 'Korn',
+          email: 'maria@inxt.com',
+          status: REQUEST_STATUS.PENDING,
+        },
+      ];
+      setAccessRequests(mockedAccessRequests);
 
-    const newRoles = await getPrivateSharingRoles();
-    setRoles(newRoles.roles);
+      const newRoles = await getPrivateSharingRoles();
+      setRoles(newRoles.roles);
+    } catch (error) {
+      errorService.reportError(error);
+    }
   };
 
   const removeRequest = (email: string) => {
