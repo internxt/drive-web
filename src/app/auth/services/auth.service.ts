@@ -20,7 +20,7 @@ import databaseService from 'app/database/services/database.service';
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { getAesInitFromEnv, validateFormat } from 'app/crypto/services/keys.service';
+import { getAesInitFromEnv, assertPrivateKeyIsValid, decryptPrivateKey, assertValidateKeys } from 'app/crypto/services/keys.service';
 import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -94,7 +94,7 @@ export const doLogin = async (
         publicKey: publicKeyArmored,
         revocationCertificate: revocationCertificate,
       };
-      return Promise.resolve(keys);
+      return keys;
     },
   };
 
@@ -102,39 +102,36 @@ export const doLogin = async (
     .login(loginDetails, cryptoProvider)
     .then(async (data) => {
       const { user, token, newToken } = data;
-
-      const publicKey = user.publicKey;
-      const privateKey = user.privateKey;
-      const revocationCertificate = user.revocationKey;
-
-      const { update, privkeyDecrypted, newPrivKey } = await validateFormat(privateKey, password);
-      const newKeys: Keys = {
-        privateKeyEncrypted: newPrivKey,
-        publicKey: publicKey,
-        revocationCertificate: revocationCertificate,
-      };
-      if (update) {
-        await authClient.updateKeys(newKeys, token);
-      }
-
-      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
-      const clearPrivateKeyBase64 = Buffer.from(privkeyDecrypted).toString('base64');
-
-      const clearUser = {
-        ...user,
-        mnemonic: clearMnemonic,
-        privateKey: clearPrivateKeyBase64,
-      };
-
-      localStorageService.set('xToken', token);
-      localStorageService.set('xMnemonic', clearMnemonic);
-      localStorageService.set('xNewToken', newToken);
+      const { privateKey, publicKey } = user;
 
       Sentry.setUser({
         id: user.uuid,
         email: user.email,
         sharedWorkspace: user.sharedWorkspace,
       });
+
+      const plainPrivateKeyInBase64 = privateKey ?
+        Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64') :
+        '';
+
+      if (privateKey) {
+        await assertPrivateKeyIsValid(privateKey, password);
+        await assertValidateKeys(
+          Buffer.from(plainPrivateKeyInBase64, 'base64').toString(),
+          Buffer.from(publicKey, 'base64').toString()
+        );
+      }
+
+      const clearMnemonic = decryptTextWithKey(user.mnemonic, password);
+      const clearUser = {
+        ...user,
+        mnemonic: clearMnemonic,
+        privateKey: plainPrivateKeyInBase64,
+      };
+
+      localStorageService.set('xToken', token);
+      localStorageService.set('xMnemonic', clearMnemonic);
+      localStorageService.set('xNewToken', newToken);
 
       return {
         user: clearUser,
