@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom';
 import { WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -22,13 +21,13 @@ import Button from '../../components/Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
-import { validateFormat } from 'app/crypto/services/keys.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import authService, { getNewToken } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from 'app/payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
+import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 
 export interface SignUpProps {
   location: {
@@ -132,12 +131,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
-  async function clearKey(privateKey: string, password: string) {
-    const { privkeyDecrypted } = await validateFormat(privateKey, password);
-
-    return Buffer.from(privkeyDecrypted).toString('base64');
-  }
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
     event?.preventDefault();
@@ -160,7 +153,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
+      const privateKey = xUser.privateKey ? 
+        Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64') : 
+        undefined;
 
       const user = {
         ...xUser,
