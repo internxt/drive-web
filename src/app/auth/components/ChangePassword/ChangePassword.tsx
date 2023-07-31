@@ -11,6 +11,7 @@ import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@phosphor-icons/react';
 import { validateMnemonic } from 'bip39';
 import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -124,6 +125,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
 
     try {
       await authService.updateCredentialsWithToken(token, password, mnemonic, '');
+      localStorageService.clear();
       setIsEmailSent(true);
     } catch (error) {
       notificationsService.show({
