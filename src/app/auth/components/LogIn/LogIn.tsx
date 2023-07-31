@@ -131,21 +131,7 @@ export default function LogIn(): JSX.Element {
   useEffect(() => {
     if (user && user.registerCompleted && mnemonic) {
       dispatch(userActions.setUser(user));
-
-      const params = new URLSearchParams(navigationService.history.location.search);
-      const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
-      const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
-      const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
-
-      if (planId && mode) {
-        coupon
-          ? window.location.replace(
-              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
-            )
-          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
-      } else {
-        navigationService.push(AppView.Drive);
-      }
+      navigationService.push(AppView.Drive);
     }
     if (user && user.registerCompleted === false) {
       navigationService.history.push('/appsumo/' + user.email);
@@ -159,19 +145,7 @@ export default function LogIn(): JSX.Element {
       if (!registerCompleted) {
         navigationService.history.push('/appsumo/' + email);
       } else if (mnemonic) {
-        const params = new URLSearchParams(navigationService.history.location.search);
-        const planId = params.get('planId') !== undefined ? (params.get('planId') as string) : '';
-        const mode = params.get('mode') !== undefined ? (params.get('mode') as string) : '';
-        const coupon = params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '';
-        if (planId && mode) {
-          coupon
-            ? window.location.replace(
-                `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
-              )
-            : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
-        } else {
-          navigationService.push(AppView.Drive);
-        }
+        navigationService.push(AppView.Drive);
       }
     }
   }, [isAuthenticated, token, user, registerCompleted]);
