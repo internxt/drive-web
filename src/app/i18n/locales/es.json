@@ -71,7 +71,7 @@
       "title": "Recuperar cuenta",
       "subtitle": "¿Tienes la clave de recuperación?",
       "info": "¿Cómo es la clave de recuperación?",
-      "info1": "El nombre de la clave de recuperación es 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "El nombre de la clave de recuperación es 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La clave de recuperación tiene 24 palabras",
       "haveKeyButton": "Si, tengo la clave de recuperación",
       "notKeyButton": "No, no tengo clave de recuperación",

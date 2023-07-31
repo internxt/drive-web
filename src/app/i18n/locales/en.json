@@ -88,7 +88,7 @@
       "title": "Account recovery",
       "subtitle": "Do you have a backup key?",
       "info": "What does the backup key look like?",
-      "info1": "The backup key file name is 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "The backup key file name is 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "The backup key is 24 words long",
       "haveKeyButton": "Yes, I have a backup key",
       "notKeyButton": "No, I don't have one",

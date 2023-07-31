@@ -71,7 +71,7 @@
       "title": "Récupération du compte",
       "subtitle": "Avez-vous une clé de secours ?",
       "info": "À quoi ressemble la clé de sauvegarde ?",
-      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La clé de secours fait 24 mots",
       "haveKeyButton": "Oui, j'ai une clé de secours",
       "notKeyButton": "Non, je n'en ai pas",
