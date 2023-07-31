@@ -890,7 +890,8 @@
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
       "link-deleted": "Link deleted",
-      "links-deleted": "Link(s) deleted"
+      "links-deleted": "Link(s) deleted",
+      "error-deleting-links": "An error occurred deleting links"
     }
   },
   "trash": {

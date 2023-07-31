@@ -865,7 +865,8 @@
       "copy-to-clipboard": "链接已复制到剪贴板",
       "link-updated": "链接设置已更新",
       "link-deleted": "链接已删除",
-      "links-deleted": "链接已删除"
+      "links-deleted": "链接已删除",
+      "error-deleting-links": "刪除共享鏈接時發生錯誤"
     }
   },
   "trash": {

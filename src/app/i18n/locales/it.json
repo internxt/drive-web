@@ -864,7 +864,8 @@
       "copy-to-clipboard": "Link copiato negli appunti",
       "link-updated": "Impostazioni di collegamento aggiornate",
       "link-deleted": "Link rimosso",
-      "links-deleted": "Link(s) rimossi"
+      "links-deleted": "Link(s) rimossi",
+      "error-deleting-links": "Si è verificato un errore durante l'eliminazione dei link condivisi"
     }
   },
   "trash": {
