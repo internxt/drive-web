@@ -34,7 +34,8 @@
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
     "cn": "简体中文 (Chinois)",
-    "ru": "Русский (Russe)"
+    "ru": "Русский (Russe)",
+    "de": "Deutsch (German)"
   },
   "auth": {
     "email": "Adresse électronique",

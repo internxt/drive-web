@@ -51,7 +51,8 @@
     "fr": "Français (Francese)",
     "it": "Italiano (Italiano)",
     "cn": "简体中文 (Cinese)",
-    "ru": "Русский (Russo)"
+    "ru": "Русский (Russo)",
+    "de": "Deutsch (German)"
   },
   "auth": {
     "email": "Email",

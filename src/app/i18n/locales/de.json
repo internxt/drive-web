@@ -1,0 +1,1025 @@
+{
+  "mobileView": {
+    "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
+    "logOut": "Log-out"
+  },
+  "valentinesBanner": {
+    "title": "Liebe ohne grenzen!",
+    "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
+    "cta": "Hol dir das Angebot"
+  },
+  "lifetimeBanner": {
+    "title": "Lifetime Deal!",
+    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Hol dir das Angebot"
+  },
+  "lang": {
+    "title": "Language",
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "简体中文 (Chinese)",
+    "ru": "Русский (Russian)",
+    "de": "Deutsch (German)"
+  },
+  "auth": {
+    "email": "E-Mail",
+    "password": "Passwort",
+    "terms1": "Durch die Erstellung eines Kontos,",
+    "terms2": "akzeptierst du die Allgemeinen Geschäftsbedingungen",
+    "decrypting": "Entschlüsseln...",
+    "login": {
+      "title": "Log-in",
+      "forgotPwd": "Passwort vergessen?",
+      "dontHaveAccount": "Du hast kein Konto?",
+      "createAccount": "Konto erstellen",
+      "2FA": "2FA Code",
+      "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
+    },
+    "signup": {
+      "title": "Konto erstellen",
+      "haveAccount": "Du hast schon ein Konto?",
+      "login": "Log-in"
+    },
+    "forgotPassword": {
+      "title": "Passwort vergessen",
+      "description": "Wie im Sicherheitsbereich der App angegeben, wird dein Passwort zur Ver- und Entschlüsselung verwendet und nur du hast Zugriff darauf. Daher können wir dein Konto ohne das Passwort nicht wiederherstellen. Du kannst dich erneut registrieren, indem du unten deine E-Mail-Adresse eingeben, damit wir dein Konto und alle deine Dateien löschen können.",
+      "sendInstructions": "Sende Anweisungen",
+      "sending": "Senden..."
+    }
+  },
+  "general": {
+    "new": "Neu",
+    "of": "von",
+    "terms": "Geschäftsbedingungen",
+    "help": "Brauchst du Hilfe?",
+    "searchBar": "Durchsuche diesen Ordner",
+    "stage": {
+      "development": "Entwicklung",
+      "production": "Produktion"
+    },
+    "loading": {
+      "default": "Laden...",
+      "redirecting": "Umleiten..."
+    },
+    "renewalPeriod": {
+      "monthly": "Monatlich",
+      "annually": "Jährlich",
+      "lifetime": "Lifetime"
+    },
+    "renewal": {
+      "monthly": "Monatlich",
+      "annually": "Jährlich",
+      "lifetime": "Lifetime"
+    },
+    "workspaces": {
+      "personal": "Einzelpersonen",
+      "business": "Geschäftlich"
+    },
+    "time": {
+      "month": "Monat"
+    },
+    "billing": {
+      "billedEachPeriod": "{{price}} in Rechnung gestellt {{period}}",
+      "oneTimePayment": "Einmal-Zahlung"
+    },
+    "files": "Dateien",
+    "file": "Datei",
+    "folder": "Ordner"
+  },
+  "shareLayout": {
+    "title": "WIR SIND INTERNXT",
+    "subtitle": "Privater und sicherer Cloud-Speicher",
+    "labels": {
+      "privacy": "Datenschutz durch Design",
+      "end-to-end": "End-to-end Verschlüsselung",
+      "military-grade": "Verschlüsselung auf Militärniveau",
+      "zero-knowledge": "Zero-Knowledge Technologie"
+    },
+    "tryInternxt": "Probiere Internxt aus",
+    "topBar": {
+      "drive": "Gehe zu Internxt Drive",
+      "downloadApp": "Download Desktop App",
+      "logout": "Log-out",
+      "login": "Log-in",
+      "createAccount": "Erstelle Konto",
+      "getStarted": "Starte jetzt"
+    }
+  },
+  "shareItemPwdView": {
+    "title": "Dieser Link ist Passwortgeschützt",
+    "putPwd": "Bitte gib das bereitgestellte Passwort ein",
+    "putPwd1": "vom Absender für den Zugriff.",
+    "password": "Passwort",
+    "pwdLayout": "Passwort",
+    "access": "Zugriff"
+  },
+  "sideNav": {
+    "drive": "Drive",
+    "photos": "Photos",
+    "backups": "Backups",
+    "sharedLinks": "Geteilte Links",
+    "recents": "Neueste",
+    "trash": "Papierkorb",
+    "desktop": "Desktop"
+  },
+  "views": {
+    "recents": {
+      "head": "Neueste",
+      "empty": {
+        "title": "Keine aktuellen Dateien verfügbar",
+        "description": "Neue Uploads und kürzlich geöffnete Dateien werden hier automatisch angezeigt",
+        "folderEmpty": "Dieser Ordner ist leer",
+        "folderEmptySubtitle": "Ziehe Dateien per Drag-and-Drop oder wähle einzelne Dateien zum Hochladen aus",
+        "uploadFiles": "Dateien hochladen",
+        "noResults": "Für diese Suche liegen keine Ergebnisse vor",
+        "dragNDrop": "Ziehe es hierher und lege es ab oder klicke auf die Schaltfläche „Hochladen“."
+      }
+    },
+    "photos": {
+      "empty": {
+        "title": "Die Fotogalerie ist leer",
+        "description": "Verwende die mobile Internxt-App, um alle Fotos von deinem Gerät zu synchronisieren"
+      }
+    },
+    "account": {
+      "title": "Konto",
+      "avatar": {
+        "title": "Avatar hochladen",
+        "removePhoto": "Foto löschen",
+        "updatePhoto": "Neues Foto hochladen",
+        "dragNDrop": "Wähle ein Bild aus oder lege es ab",
+        "success": "Avatar wurde erfolgreich aktualisiert",
+        "error": "Beim Hochladen deines Avatars ist etwas passiert",
+        "removed": "Avatar erfolgreich gelöscht",
+        "underLimitSize": "Bitte wähle ein Bild mit einer Größe von weniger als 10 MB"
+      },
+      "popover": {
+        "downloadApp": "Download App",
+        "settings": "Einstellungen",
+        "logout": "Log-out",
+        "spaceUsed": "{{space}}% Platz verbraucht"
+      },
+      "tabs": {
+        "account": {
+          "label": "Konto",
+          "title": "Persönlich",
+          "usage": "Verbraucht {{totalUsed}} von {{totalSpace}}",
+          "view": {
+            "backups": "Backups",
+            "photos": "Photos",
+            "trash": "Papierkorb",
+            "free": {
+              "planName": "Kostenloser Plan",
+              "button": "Upgrade"
+            },
+            "lifetime": {
+              "planName": "Lifetime"
+            },
+            "subscription": {
+              "planName": "Abonnement",
+              "button": "Wechseln",
+              "yearly": "Jahr",
+              "monthly": "Monat"
+            }
+          },
+          "accountDetails": {
+            "head": "Konto Details",
+            "name": "Name",
+            "lastname": "Nachname",
+            "card": {
+              "name": "Name",
+              "lastname": "Nachname",
+              "edit": "Bearbeiten",
+              "email": "E-Mail",
+              "resendEmail": "Bestätigungsmail erneut senden"
+            },
+            "verify": {
+              "verify": "Bestätige deine E-Mail",
+              "verified": "Bestätigte E-Mail",
+              "description": "Überprüfe deinen Posteingang"
+            },
+            "editProfile": {
+              "name": "Name",
+              "lastname": "Nachname"
+            },
+            "updateProfile": "Profil erfolgreich aktualisiert",
+            "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
+          },
+          "deleteAccount": {
+            "head": "Lösche Konto",
+            "description": "Durch das Löschen deines Kontos löscht Internxt deine Dateien und Daten für immer. Sobald diese Aktion eingeleitet wurde, kann sie nicht mehr rückgängig gemacht werden.",
+            "isSubscribed": "Bitte kündige zuerst dein Abonnement",
+            "confirmationEmail": "Bestätigungs-E-Mail wurde gesendet"
+          }
+        },
+        "billing": {
+          "label": "Abrechnung",
+          "currentPlan": "Derzeitiger Plan",
+          "subsRenew": "Das Abonnement verlängert sich in {{daysUntilRenewal}} Tagen",
+          "cancelSubscriptionModal": {
+            "title": "Abonnement beenden",
+            "description": "Du bist dabei, deinen {{currentPlanName}} Internxt-Plan zu kündigen. Wenn du deinen Plan kündigst, wirst du auf den kostenlosen Internxt {{freePlanName}}-Plan herabgestuft. Bitte bestätige Ihre Auswahl, um fortzufahren.",
+            "keepSubscription": "Abonnement behalten",
+            "continue": "Weiter",
+            "cancelSubscription": "Abonnement beenden",
+            "infoBox": {
+              "titleCurrent": "Aktuell",
+              "titleNew": "Neu",
+              "year": "Jahr",
+              "month": "Monat",
+              "free": "Kostenlos",
+              "reachedFreeLimit": "Du bist über dem Limit {{freePlanName}}",
+              "reachedFreeLimitDescription": "Weil du derzeit {{currentUsage}} verwendest, synchronisiert dein Internxt Drive deine Dateien nicht mehr und du kannst keine neuen Dateien hinzufügen"
+            },
+            "giveUsFeedback": "Teile uns mit, warum du deinen Vertrag {{currentPlanName}} Internxt-Plan kündigen und auf den kostenlosen Plan wechseln möchtest?",
+            "feedback": {
+              "placeholder": "Gib uns dein Feedback"
+            }
+          },
+          "billed": "In Rechnung gestellt {{interval}} {{renewDate}}",
+          "paymentMethod": {
+            "head": "Zahlungsart",
+            "empty": {
+              "title": "Du hast einen kostenlosen Plan",
+              "subtitle": "Kreditkarteninformationen werden hier automatisch angezeigt, wenn du ein kostenpflichtiges Abonnement hast."
+            },
+            "title": "Neue Zahlungsart hinzufügen"
+          },
+          "invoices": {
+            "head": "Rechnungen",
+            "billingDate": "Rechnungsdatum",
+            "empty": {
+              "title": "Du hast einen kostenlosen Plan",
+              "subtitle": "Ausgestellte Rechnungen werden hier automatisch angezeigt, wenn du ein kostenpflichtiges Abonnement hast."
+            },
+            "download": "Download Rechnung"
+          }
+        },
+        "info": {
+          "title": "Persönlich",
+          "description": "Überprüfe deine Speicherbenutzer- und Kontodetails",
+          "advice1": {
+            "title": "Welche Daten können bearbeitet werden?",
+            "description": "Aus strengen Sicherheitsgründen und zum Schutz deiner Daten erlauben wir bei Internxt nicht, dass die Daten eines Benutzerkontos wie E-Mail geändert werden."
+          },
+          "advice2": {
+            "title": "Sicherheitskonto",
+            "description": "Deine Dateien werden verschlüsselt, bevor sie dein Gerät verlassen, sodass nur du auf deine Dateien zugreifen kannst, keine Tricks, keine versteckten Dinge, nur Privatsphäre, das ist Internxt."
+          }
+        },
+        "plans": {
+          "label": "Pläne",
+          "title": "Pläne",
+          "description": "Entdecke die verschiedenen Speicher- und Lösungsoptionen, die Internxt bietet",
+          "changeWorkspace": {
+            "personal": "Wechsel zu Plänen für Einzelpersonen",
+            "business": "Wechsel zu den Geschäftsplänen"
+          },
+          "viewAllFeatures": "Alle Funktionen anzeigen",
+          "card": {
+            "annually": "€{{amount}} Jährliche Rechnung",
+            "monthly": "€{{amount}} pro Monat",
+            "lifetime": "€{{amount}}"
+          },
+          "features": {
+            "title": "In allen Plänen enthaltene Funktionen",
+            "sections": {
+              "section1": {
+                "title": "Zufriedenheit garantiert",
+                "point1": "Für alle Abonnements gilt eine 30-tägige Geld-zurück-Garantie.",
+                "point2": "Jederzeit kündbar, keine Tricks.",
+                "point3": "Premium Support."
+              },
+              "section2": {
+                "title": "Standardmäßig sicher",
+                "point1": "Verschlüsselung auf Militärniveau, um deine Privatsphäre zu gewährleisten.",
+                "point2": "Verschlüsselte Dateispeicherung und -freigabe.",
+                "point3": "Zero-Knowledge Cloud-Speicher."
+              },
+              "section3": {
+                "title": "Unbegrenzter Zugriff und Synchronisierung",
+                "point1": "Unbegrenzter Zugriff und Synchronisierung",
+                "point2": "Synchronisiere mit unbegrenzter Bandbreite.",
+                "point3": "Sichere jeden Ordner auf deinem Computer."
+              }
+            }
+          },
+          "dialog": {
+            "title": "Plan wechseln",
+            "subtitle1": "Du bist dabei, deinen Internxt-Plan zu ändern von ",
+            "subtitle2": " zu ",
+            "subtitle3": ". Bitte bestätige deine Auswahl, um fortzufahren.",
+            "plan": {
+              "current": "Aktuell",
+              "new": "Neu",
+              "interval": "Monat"
+            },
+            "alert": {
+              "title": "Du bist über ",
+              "text1": "Weil du verwendest",
+              "text2": ", stoppt Internxt Drive die Synchronisierung deiner Dateien und du kannst keine neuen Dateien hinzufügen"
+            },
+            "message": {
+              "text": "Die Kosten werden dir jetzt und für jeden Zahlungszeitraum bis zu weiteren Änderungen in Rechnung gestellt."
+            },
+            "button": {
+              "back": "Behalte den aktuellen Plan",
+              "continue": "Plan ändern"
+            }
+          }
+        },
+        "password": {
+          "title": "Passwort",
+          "description": "Passwort ändern",
+          "advice1": {
+            "title": "Passwort ändern",
+            "description": "Wenn du dein Passwort änderst, wirst du von allen deinen Geräten abgemeldet. Das eingegebene Passwort wird für die erneute Anmeldung benötigt."
+          },
+          "advice2": {
+            "title": "Was solltest du beachten, damit dein Passwort sicher ist?",
+            "description": ""
+          },
+          "advice3": {
+            "title": "Neuer Verschlüsselungsschlüssel",
+            "description": "Wenn du dein Passwort änderst, werden alle deine Dateien mit deinem alten Passwort entschlüsselt und anschließend mit deinem neuen Passwort erneut verschlüsselt, sodass du den Zugriff darauf nicht verlierst! Diese Aktion kann nicht rückgängig gemacht werden."
+          },
+          "advice4": {
+            "title": "Welche Daten können bearbeitet werden?",
+            "description": "Aus strengen Sicherheitsgründen und zum Schutz deiner Daten erlauben wir bei Internxt nicht, dass die Daten eines Benutzerkontos wie E-Mail geändert werden."
+          }
+        },
+        "security": {
+          "label": "Sicherheit",
+          "lock": {
+            "title": "Zum fortfahren Passwort eingeben",
+            "description": "Aus Sicherheitsgründen musst du dein Passwort eingeben, bevor du Änderungen auf dieser Seite vornehmen kannst.",
+            "inputLabel": "Passwort",
+            "errors": {
+              "incorrect": "Falsches Passwort. Bitte versuche es erneut",
+              "notVerified": "Wir konnten dein Passwort nicht verifizieren"
+            }
+          },
+          "changePassword": {
+            "title": "Passwort ändern",
+            "description": "Merke dir unbedingt dein neues Passwort. Wenn du es verlierst, kannst du nicht mehr auf alle Dateien zugreifen. Wir empfehlen dringend, einen Passwort-Manager zu verwenden.",
+            "button": "Passwort ändern"
+          },
+          "2FA": {
+            "title": "Zwei-Faktor-Authentifizierung (2FA)",
+            "titleDisable": "Zwei-Faktor-Authentifizierung deaktivieren",
+            "description": "Zwei-Faktor-Authentifizierung bietet eine zusätzliche Sicherheitsebene, indem beim Anmelden eine zusätzliche Verifizierung erforderlich ist. Zusätzlich zu deinem Internxt-Passwort benötigst du auch einen eindeutig generierten Code, der an die E-Mail-Adresse gesendet wird, mit der du dein Konto registriert haben.",
+            "button": "Aktiviere 2FA",
+            "enabled": "Aktiviert",
+            "disabled": "Deaktiviert",
+            "modal": {
+              "title": "Zwei-Faktor-Authentifizierung",
+              "stepsLabel": "{{current}} von {{total}}",
+              "button": "Aktiviere 2FA",
+              "2FALabelCode": "Zwei-Faktor-Authentifizierung Code",
+              "or": "Oder",
+              "steps": {
+                "download": {
+                  "title": "Download Authy",
+                  "description": "Wir empfehlen die Verwendung von Authy, du kannst den 2FA-Prozess jedoch auch mit jeder anderen 2FA-App deiner Wahl einrichten."
+                },
+                "qr": {
+                  "title": "Scanne QR mit der 2FA-App",
+                  "description": "Wenn du den QR nicht scannen kannst, gib diesen Code in die App ein."
+                },
+                "backup-key": {
+                  "title": "Backup-Schlüssel speichern",
+                  "description": "Kopiere diesen Code und bewahre ihn sicher auf. Du benötigst ihn für den Fall, dass du dein Gerät verlierst."
+                },
+                "enable": {
+                  "title": "Bestätige 2FA Aktivierung",
+                  "description": "Zwei-Faktor-Authentifizierung Code"
+                },
+                "disable": {
+                  "title": "Deaktiviere Zwei-Faktor-Authentifizierung",
+                  "description": "Um die Zwei-Faktor-Authentifizierung zu deaktivieren, gib den von der App generierten Code in die Eingabe unten ein."
+                }
+              },
+              "errors": {
+                "incorrect": "Der Code ist nicht korrekt, versuche es erneut",
+                "notVerified": "Wir konnten deinen Code nicht verifizieren"
+              }
+            }
+          },
+          "backupKey": {
+            "title": "Backup Schlüssel",
+            "description": "Wenn du dein Passwort vergessen hast, kannst du einen eindeutigen Sicherungsschlüssel verwenden, um dein Konto wiederherzustellen. Gib diesen Code niemals an Dritte weiter.",
+            "button": "Exportiere Backup Schlüssel",
+            "success": "Sicherungsschlüssel erfolgreich heruntergeladen",
+            "error": "Wir konnten deinen Backup-Schlüssel nicht generieren"
+          },
+          "faq": {
+            "title": "Hast du etwas vermisst?",
+            "faq1": {
+              "title": "Warum verliere ich alle meine Dateien, wenn ich mein Passwort vergesse?",
+              "description": "Dein Passwort ist die einzige Möglichkeit, auf dein Konto zuzugreifen. Das Internxt-Team hat keinerlei Zugriff auf dein Konto und kann daher dein Passwort nicht ändern. Dies geschieht, um einen unbefugten Zugriff auf dein Konto und deine persönlichen Daten zu verhindern. <br/><br/>Du kannst dein Konto ohne dein Passwort wiederherstellen, wenn du einen Sicherungsschlüssel erstellt hast. Du kannst eine Kopie deines eindeutigen Sicherungsschlüssels exportieren, indem du in den „Einstellungen“ die Registerkarte „Sicherheit“ aufrufst. Dein Backup-Schlüssel kann zur Wiederherstellung deines Kontos verwendet werden, indem du beim Anmelden „Passwort vergessen“ auswählst und den Anweisungen in der nachfolgenden E-Mail folgen."
+            },
+            "faq2": {
+              "title": "Wie kann ich meine Zugangsdaten schützen?",
+              "description": "Wir empfehlen dir, zum Speichern deines Passworts einen seriösen Passwort-Manager zu verwenden. Nicht nur, um deine Zugangsdaten für Internxt zu speichern, sondern auch, um deine anderen Online-Konten zu schützen."
+            },
+            "faq3": {
+              "title": "Kann ich mein Konto mit einem Backup-Schlüssel wiederherstellen?",
+              "description": "Wenn du noch Zugriff auf deinen einzigartigen Verschlüsselungsschlüssel hast, kannst du deine Daten ohne dein Passwort wiederherstellen. Befolge dazu bitte die Schritte in der E-Mail, die du erhältst, indem du auf „Passwort vergessen“ klickst."
+            },
+            "faq4": {
+              "title": "Verliere ich alle meine Dateien, wenn ich mein Passwort ändere?",
+              "description": "Nein. Da du bereits in deinem Konto angemeldet bist, kannst du dein Passwort ändern, ohne etwas zu verlieren. Wähle unbedingt ein sicheres Passwort, das bei keinem Datenverstoß gefunden wurde."
+            }
+          }
+        }
+      }
+    },
+    "redirectToApp": {
+      "message": "Danke",
+      "goToApp": "Gehe zurück zur App"
+    }
+  },
+  "contextMenu": {
+    "itemsSelected": "Elemente ausgewählt"
+  },
+  "modals": {
+    "renameItemDialog": {
+      "title": "Umbenennen",
+      "label": "Name"
+    },
+    "renameModal": {
+      "title": "Objekt existiert bereits",
+      "titleMultipleItems": "Es sind bereits mehrere Elemente vorhanden",
+      "description": "{{itemName}} existiert bereits an diesem Ort. Möchtest du es ersetzen oder möchtest du beide behalten?",
+      "multipleDescription": "An diesem Speicherort ist bereits mehr als ein Element vorhanden. Möchtest du sie ersetzen oder alle behalten?",
+      "replaceItem": "Aktuelles Element ersetzen",
+      "keepBoth": "Behalte beide",
+      "upload": "Upload",
+      "move": "Verschieben"
+    },
+    "removeSharedLinkModal": {
+      "title": "Lösche Link",
+      "multiSharedDescription": "Nutzer mit den Links verlieren den Zugriff auf die freigegebenen Inhalte",
+      "singleSharedDescription": "Nutzer mit den Links verlieren den Zugriff auf die freigegebenen Inhalte",
+      "cancel": "Abbrechen",
+      "deleteLinks": "Lösche Links",
+      "deleteLink": "Lösche Link"
+    },
+    "newFolderModal": {
+      "title": "Neue Ordner",
+      "label": "Name",
+      "placeholder": "Unbenannter Ordner",
+      "untitled": "Unbenannter Ordner"
+    },
+    "deletePhotosModal": {
+      "multiToolBar": "Elemente ausgewählt ",
+      "singleToolBar": "Element ausgewählt",
+      "multiTitle": "Lösche {{item}} ausgewählte Elemente?",
+      "singleTitle": "Lösche {{item}} ausgewähltes Element?",
+      "subtitle": "Du kannst diese Aktion nicht rückgängig machen",
+      "buttons": {
+        "cancel": "Abbrechen",
+        "delete": "Löschen"
+      }
+    },
+    "sharePhotosModal": {
+      "singleTitle": "Teile {{item}} Foto",
+      "multiTitle": "Teile {{item}} Fotos",
+      "options": "Link Optionen",
+      "limit": "Begrenze die Zeitspanne, in der Nutzer diesen Link öffnen können",
+      "openCount": "Offenes Limit",
+      "times": "Mal",
+      "change": "Ändern",
+      "buttons": {
+        "cancel": "Abbrechen",
+        "create": "Erstelle Link",
+        "creating": "Erstelle Link...",
+        "copyLink": "Kopiere Link"
+      }
+    },
+    "friendsInvitedModal": {
+      "title": "Eingeladene Freunde",
+      "email": "E-Mail",
+      "pending": "Ausstehend",
+      "accepted": "Akzeptiert",
+      "empty": "Du hast noch niemanden eingeladen",
+      "resend": "Einladung erneut versenden",
+      "resentInvitation": "Einladung erneut gesendet",
+      "resendError": "Fehler beim erneuten Senden der E-Mail: {{reason}}"
+    },
+    "deleteAccountModal": {
+      "title": "Bist du sicher?",
+      "subtitle": "Alle deine Dateien werden für immer gelöscht und du verlierst den Zugriff auf dein Internxt-Konto.",
+      "cancel": "Abbrechen",
+      "confirm": "Bestätigen"
+    },
+    "changePasswordModal": {
+      "title": "Passwort ändern",
+      "newPassword": "Neues Passwort",
+      "confirmPassword": "Bestätige neues Passwort",
+      "strongPassword": "Passwort ist stark",
+      "errors": {
+        "shortPassword": "Das Passwort muss mindestens 8 Zeichen lang sein",
+        "notComplex": "Passwort ist nicht komplex genug",
+        "weakPassword": "Passwort ist schwach",
+        "doesntMatch": "Die Passwortbestätigung stimmt nicht mit dem Passwort überein"
+      }
+    },
+    "deleteBackupModal": {
+      "title": "Bist du sicher?",
+      "subtitle": "Dein Backup wird gelöscht.",
+      "primaryAction": "Bestätige",
+      "secondaryAction": "Abbrechen"
+    },
+    "2FAAuthenticationModal": {}
+  },
+  "form": {
+    "fields": {
+      "email": {
+        "placeholder": "E-Mail Adresse"
+      }
+    }
+  },
+  "error": {
+    "wrongPassword": "Falsches Passwort, versuche es erneut oder wende dich an den Linkinhaber",
+    "genericError": "Es gab einen Fehler: {{reason}}",
+    "serverError": "Interner Serverfehler. Versuche es später erneut",
+    "deleteTeamMember": "Interner Serverfehler. Versuche es später erneut",
+    "changingName": "Fehler bei der Namensänderung",
+    "fileAlreadyExists": "Datei mit demselben Namen existiert bereits",
+    "folderAlreadyExists": "Ein Ordner mit demselben Namen existiert bereits",
+    "folderCannotBeEmpty": "Der Ordnername darf nicht leer sein",
+    "creatingFolder": "Fehler beim Erstellen des Ordners",
+    "sendReferralInvitation": "Einladungs-E-Mail konnte nicht gesendet werden",
+    "sendClaimEmail": "Anspruchs-E-Mail konnte nicht gesendet werden",
+    "anyReferralCredit": "Du hast kein Guthaben auf deinem Konto",
+    "backupKeyDontMatch": "Der eingegebene Backup-Schlüssel stimmt nicht mit deinem eindeutigen Backup-Schlüssel überein",
+    "shareLinkMissingBucket": "Der Freigabelink kann aufgrund des fehlenden Buckets nicht generiert werden",
+    "unavailableLink": "Nicht verfügbarer Link",
+    "invalidActivationCode": "Dein Aktivierungscode ist ungültig. Möglicherweise hast du diesen Link schon einmal verwendet und dein Konto ist bereits aktiviert",
+    "redirectToStripe": "Die Umleitung zu Stripe ist fehlgeschlagen. Bitte kontaktiere uns. Grund: {{reason}}",
+    "deactivatingAccount": "Fehler beim Deaktivieren des Kontos. Bitte kontaktiere uns.",
+    "fetchingFolderContent": "Fehler beim Abrufen des Ordnerinhalts",
+    "uploadingFolder": "Fehler beim Hochladen des Ordners",
+    "uploadingFile": "Fehler beim Hochladen der Datei: {{reason}}",
+    "uploadingItems": "Einige Elemente konnten nicht hochgeladen werden",
+    "downloadingFile": "Fehler beim Herunterladen der Datei: {{message}}",
+    "downloadingFolder": "Fehler beim Herunterladen des Ordners: {{message}}",
+    "downloadingItems": "Einige Elemente konnten nicht heruntergeladen werden",
+    "movingItemInsideItself": "Du kannst einen Ordner nicht in sich selbst verschieben",
+    "movingItem": "Fehler beim Verschieben von Elementen",
+    "renamingItem": "Fehler beim Umbenennen von Elementen",
+    "linkExpired": "Dieser sichere Link ist abgelaufen",
+    "teamInvitation": "Die Einladungs-E-Mail konnte nicht gesendet werden",
+    "storageIsFull": "Dein Speicher ist voll",
+    "noSpaceAvailable": "Du hast die Grenzen deines aktuellen Plans erreicht und die Synchronisierung wurde gestoppt. Führe jetzt ein Upgrade durch, damit deine Dateien sicher synchronisiert bleiben.",
+    "sharedFolderTooBig": "Internxt Drive unterstützt das Teilen von Ordnern mit mehr als 1 GB nicht.",
+    "titleSharedFolderTooBig": "Nicht unterstützte Aktion",
+    "workingOnIt": "Wir arbeiten daran, dir eine besseres Erfahrung zu bieten.",
+    "noFilePreview": "Keine Dateivorschau vorhanden",
+    "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
+    "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
+    "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
+    "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
+    "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
+    "emptyPassword": "Das vorherige Passwort darf nicht leer sein",
+    "errorMovingToTrash": "Beim Verschieben der Elemente in den Papierkorb ist ein Fehler aufgetreten.",
+    "errorDeletingFromTrash": "Beim Löschen der Elemente aus dem Papierkorb ist ein Fehler aufgetreten.",
+    "braveNotSupportMultiplePhotosDowload": "Brave unterstützt nicht das Herunterladen mehrerer Fotos."
+  },
+  "backups": {
+    "backups-from": "Backups von {{deviceName}}",
+    "your-devices": "Deine Geräte",
+    "back-to-devices": "Gehe zurück zu den Geräten",
+    "empty": {
+      "title": "Keine Backups verfügbar",
+      "subtitle": "Richte deine Backups in der Internxt-Desktop-App ein und verwalte sie",
+      "downloadApp": "Download Desktop-App"
+    },
+    "devices-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Letztes Update",
+        "size": "Größe"
+      }
+    },
+    "backups-list": {
+      "columns": {
+        "name": "Name",
+        "last-update": "Letztes Update",
+        "size": "Größe",
+        "actions": "Aktionen"
+      }
+    },
+    "dropdown": {
+      "download": "Download",
+      "delete": "Löschen"
+    }
+  },
+  "shared-links": {
+    "shared-links": "Geteilte Links",
+    "view": "Ansichten",
+    "list": {
+      "link-content": "Link-Inhalt",
+      "shared": "Geteilt",
+      "created": "Erstellt",
+      "size": "Größe"
+    },
+    "empty-state": {
+      "title": "Noch nichts geteilt",
+      "subtitle": "Gib einen Ordner oder eine Datei frei, um loszulegen"
+    },
+    "item-menu": {
+      "copy-link": "Kopiere Link",
+      "link-settings": "Einstellungen teilen",
+      "delete-link": "Lösche Link",
+      "delete-links": "Lösche Links"
+    },
+    "link-settings": {
+      "share-settings": "Einstellungen teilen",
+      "views": "Ansichten",
+      "options": "Optionen",
+      "copy-link": "Kopiere Link",
+      "save": "Sichern",
+      "saving": "Sichern",
+      "save-close": "Sichern und schließen",
+      "close": "Schließen"
+    },
+    "toast": {
+      "copy-to-clipboard": "Link in die Zwischenablage kopiert",
+      "link-updated": "Linkeinstellungen aktualisiert",
+      "link-deleted": "Link gelöscht",
+      "links-deleted": "Link(s) gelöscht"
+    }
+  },
+  "trash": {
+    "trash": "Papierkorb",
+    "clearTrash": "Papierkorb wurde geleert",
+    "list": {
+      "name": "Name",
+      "size": "Größe",
+      "moved-to-trash": "In den Papierkorb verschoben"
+    },
+    "empty-state": {
+      "title": "Der Papierkorb des Laufwerks ist leer",
+      "subtitle": "Gelöschte Dateien und Ordner werden hier angezeigt"
+    },
+    "item-menu": {
+      "restore": "Wiederherstellen",
+      "delete-permanently": "Lösche dauerhaft"
+    }
+  },
+  "tasks": {
+    "messages": {
+      "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
+      "processing": "Wird bearbeitet {{pending}} von {{finished}}"
+    },
+    "create-folder": {
+      "status": {
+        "pending": "Ordner muss noch erstellt werden",
+        "in-process": "Erstelle Ordner",
+        "success": "Ordner erstellt",
+        "error": "Fehler beim Erstellen des Ordners",
+        "cancelled": "Ordnererstellung abgebrochen"
+      },
+      "errors": {}
+    },
+    "upload-file": {
+      "status": {
+        "pending": "Warten auf den Upload",
+        "encrypting": "Datei verschlüsseln",
+        "in-process": "{{progress}}% Datei hochladen",
+        "success": "Datei hochgeladen",
+        "error": "Fehler während des Uploads",
+        "cancelled": "Upload abgebrochen"
+      },
+      "errors": {}
+    },
+    "upload-folder": {
+      "status": {
+        "pending": "Warten auf den Upload",
+        "encrypting": "Dateien verschlüsseln",
+        "in-process": "{{progress}}% Ordner hochladen",
+        "success": "Ordner hochgeladen",
+        "error": "Fehler beim Upload",
+        "cancelled": "Upload abgebrochen"
+      },
+      "errors": {}
+    },
+    "download-file": {
+      "status": {
+        "pending": "Steht zum Download bereit",
+        "decrypting": "Datei entschlüsseln",
+        "in-process": "{{progress}}% Datei wird heruntergeladen",
+        "success": "Datei runtergeladen",
+        "error": "Der Download ist fehlgeschlagen. Klicke auf ↻, um es erneut zu versuchen",
+        "cancelled": "Download abgebrochen"
+      },
+      "errors": {}
+    },
+    "download-photos": {
+      "status": {
+        "pending": "Download {{progress}}%",
+        "success": "Runtergeladen",
+        "error": "Fehler beim Download",
+        "cancelled": "Download abgebrochen"
+      },
+      "errors": {}
+    },
+    "download-backup": {
+      "status": {
+        "pending": "Steht zum Download bereit",
+        "decrypting": "Backup entschlüsseln",
+        "in-process": "{{progress}}% Backup wird runtergeladen",
+        "success": "Backup runtergeladen",
+        "error": "Fehler beim Download",
+        "cancelled": "Download abgebrochen"
+      },
+      "errors": {}
+    },
+    "download-folder": {
+      "status": {
+        "pending": "Steht zum Download bereit",
+        "decrypting": "Dateien entschlüsseln",
+        "in-process": "{{progress}}% Ordner runterladen",
+        "success": "Ordner runtergeladen",
+        "error": "Der Download ist fehlgeschlagen. Klicke auf ↻, um es erneut zu versuchen",
+        "cancelled": "Download abgebrochen"
+      },
+      "errors": {}
+    },
+    "move-file": {
+      "status": {
+        "pending": "Steht zum verschieben bereit",
+        "in-process": "Verschiebe Datei",
+        "success": "Datei verschoben",
+        "error": "Fehler während der Verschiebung",
+        "cancelled": "Verschiebung abgebrochen"
+      },
+      "errors": {
+        "409": "Im Zielordner existiert schon eine Datei mit diesem Namen"
+      }
+    },
+    "move-folder": {
+      "status": {
+        "pending": "Steht zum verschieben bereit",
+        "in-process": "Verschiebe Ordner",
+        "success": "Ordner verschoben",
+        "error": "Fehler beim verschieben",
+        "cancelled": "Verschiebung abgebrochen"
+      },
+      "errors": {
+        "409": "Im Zielordner existiert bereits ein Ordner mit diesem Namen"
+      }
+    },
+    "rename-file": {
+      "status": {
+        "pending": "Steht zum umbenennen bereit",
+        "in-process": "Datei umbenennen",
+        "success": "Datei umbenannt",
+        "error": "Fehler beim umbenennen",
+        "cancelled": "Umbenennung abgebrochen"
+      },
+      "errors": {}
+    },
+    "rename-folder": {
+      "status": {
+        "pending": "Steht zum umbenennen bereit",
+        "in-process": "Ordner umbenennen",
+        "success": "Ordner umbenannt",
+        "error": "Fehler beim umbenennen",
+        "cancelled": "Umbenennung abgebrochen"
+      },
+      "errors": {}
+    }
+  },
+  "success": {
+    "passwordChanged": "Passwort wurde erfolgreich geändert",
+    "teamInvitationSent": "Einladungs-E-Mail an gesendet {{email}}",
+    "referralInvitationSent": "Einladungs-E-Mail an gesendet {{email}}",
+    "deletedTeamMember": "{{resource}} wurde erfolgreich gelöscht",
+    "accountDeactivationEmailSent": "Deaktivierungs-E-Mail gesendet!",
+    "claimEmailSent": "Anspruchs-E-Mail gesendet!",
+    "teamsSubscriptionRedeemed": "Euer Team ist bereit! Melde dich erneut an, um Teams zu verwenden",
+    "linkCopied": "Link kopiert!",
+    "twoFactorAuthActivated": "Deine Zwei-Faktor-Authentifizierung wurde aktiviert!",
+    "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
+    "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
+    "done": "Erledigt",
+    "inviteAFriend": "Eine Einladung wurde an geschickt {{email}}",
+    "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
+  },
+  "shareItemDialog": {
+    "title": "Link Einstellungen",
+    "access": "Zugriff",
+    "protect": "Passwortgeschützt",
+    "addSecurePassword": "Sichere diesen Link, indem du ein Passwort einrichtest",
+    "password": "Passwort",
+    "views": "Ansichten",
+    "noViewsYet": "Noch keine Ansichten",
+    "dateCreated": "Datum erstellt",
+    "buttons": {
+      "copyLink": "Kopiere Link",
+      "linkCopied": "Link kopiert",
+      "cancel": "Abbrechen",
+      "save": "Sichern"
+    }
+  },
+  "notificationMessages": {
+    "copyLink": "Geteilter Link in die Zwischenablage kopiert",
+    "linkUpdated": "Link aktualisiert",
+    "itemsMovedToTrash": "{{item}} in den Papierkorb verschoben",
+    "restoreItems": "{{itemsToRecover}} verschoben nach {{destination}}",
+    "itemDeleted": "{{item}} gelöscht",
+    "itemsDeleted": "Dateien gelöscht",
+    "emailNotEmpty": "E-Mail darf nicht leer sein",
+    "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
+    "successCancelSubscription": "Dein Abonnement wurde gekündigt",
+    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten"
+  },
+  "actions": {
+    "undo": "Rückgängig machen",
+    "upload": {
+      "new": "Neu",
+      "folder": "Neuer Ordner",
+      "uploadFiles": "Dateien hochladen",
+      "uploadFolder": "Ordner hochladen"
+    },
+    "change": "Ändern",
+    "download": "Download",
+    "downloading": "Runterladen",
+    "downloaded": "Runtergeladen",
+    "view": "Ansicht",
+    "accessFile": "Zugriff auf Datei",
+    "upgradeNow": "Upgrade jetzt",
+    "purchasePlan": "Upgrade jetzt",
+    "upgrade": "Upgrade",
+    "buyStorage": "Upgrade jetzt",
+    "deleteAccount": "Konto dauerhaft löschen",
+    "changePassword": "Passwort ändern",
+    "buy": "Kaufen",
+    "cancel": "Abbrechen",
+    "create": "Erstelle",
+    "sendInvitation": "Sende Einladung",
+    "subscribe": "Abonniere",
+    "moreInfo": "Mehr Info",
+    "dismiss": "Zurückweisen",
+    "save": "Sichern",
+    "back": "Zurück",
+    "edit": "Bearbeite",
+    "submit": "Einreichen",
+    "access": "Zugriff",
+    "previous": "Vorherige",
+    "next": "Nächste",
+    "disable": "Deaktivieren",
+    "move": "Verschieben",
+    "moving": "Verschieben...",
+    "navigating": "Navigieren...",
+    "restoreHere": "Hier wiederherstellen",
+    "rename": "Umbenennen",
+    "restore": "Wiederherstellen",
+    "copyLink": "Kopiere Link"
+  },
+  "drive": {
+    "usage": "Verwendung",
+    "currentPlan": "Derzeitiger Plan",
+    "loadingFile": "Lade Vorschau",
+    "previewNoAvailable": "Keine Vorschau verfügbar",
+    "pdfPage": "Seite {{page}} von {{pages}}",
+    "list": {
+      "columns": {
+        "type": "Typ",
+        "name": "Name",
+        "modified": "Modifiziert",
+        "size": "Größe",
+        "actions": "Aktionen"
+      }
+    },
+    "viewMode": {
+      "gridMode": "Rasteransicht",
+      "listMode": "Listenansicht"
+    },
+    "dropdown": {
+      "openPreview": "Öffne Vorschau",
+      "getLink": "Erhalte Link",
+      "rename": "Umbenennen",
+      "download": "Download",
+      "moveToTrash": "In den Papierkorb verschieben",
+      "copyLink": "Kopiere Link",
+      "linkSettings": "Link Einstellungen",
+      "deleteLink": "Lösche Link",
+      "restore": "Wiederherstellen",
+      "deletePermanently": "Lösche dauerhaft",
+      "move": "Verschiebe",
+      "delete": "Lösche"
+    },
+    "deleteItems": {
+      "title": "Dauerhaft löschen?",
+      "advice": "Diese Aktion kann nicht rückgängig gemacht werden.",
+      "accept": "Löschen",
+      "progress": "Lösche..."
+    },
+    "clearTrash": {
+      "title": "Laufwerk-Papierkorb leeren?",
+      "advice": "Alle Elemente im Drive-Papierkorb werden dauerhaft gelöscht. Diese Aktion kann man nicht rückgängig machen.",
+      "accept": "Papierkorb leeren",
+      "progress": "Papierkorb leeren..."
+    },
+    "uploadItems": {
+      "title": "Maximaler Datei-Upload",
+      "advice": "Das Maximum ist 1000 Dateien pro Upload.",
+      "close": "Schließen"
+    },
+    "movingToTrash": "Verschiebe Elemente in den Papierkorb",
+    "deletingItems": "Lösche Elemente aus dem Papierkorb"
+  },
+  "appSumo": {
+    "tiers": {
+      "internxt_tier1": "AppSumo Lifetime Tier 1",
+      "internxt_tier2": "AppSumo Lifetime Tier 2",
+      "internxt_tier3": "AppSumo Lifetime Tier 3",
+      "internxt_tier4": "AppSumo Lifetime Tier 4",
+      "internxt_tier5": "AppSumo Lifetime Tier 5",
+      "unlimited": "Lifetime Infinite Members"
+    },
+    "members": {
+      "internxt_tier1": "Team members: 1",
+      "internxt_tier2": "Team members: 5",
+      "internxt_tier3": "Team members: 10",
+      "internxt_tier4": "Team members: 25",
+      "internxt_tier5": "Team members: 100",
+      "unlimited": "Team members: {{total}}"
+    },
+    "plans": {
+      "advice": "Du wirst zu deinem AppSumo-Konto weitergeleitet"
+    }
+  },
+  "inviteAFriend": {
+    "title": "Lade einen Freund ein",
+    "descriptionWidget": "Erhalte bis zu {{N}}GB zusätzlichen kostenlosen Speicherplatz, indem du deine Freunde einlädst (1 GB pro Nutzer, der sich über deine Einladung registriert hat)",
+    "description": "Erhalte 1 GB pro eingeladenem Freund kostenlos. Du kannst bis zu {{N}}GB erhalten.",
+    "label": "E-Mail deines Freundes",
+    "placeholder": "Gib die E-Mail Adresse deines Freundes ein",
+    "actions": {
+      "sendInvitation": "Sende Einladung",
+      "seeInvitations": "Sieh alle Einladungen"
+    },
+    "errors": {
+      "dailyEmailLimit": "Du hast das Limit von 10 Einladungen/Tag erreicht"
+    }
+  },
+  "newsletter": {
+    "dialog": {
+      "title": "Abonniere unseren Newsletter",
+      "message": "Erhalte die neuesten Nachrichten und Updates direkt in deinem E-Mail-Posteingang"
+    }
+  },
+  "referrals": {
+    "items": {
+      "create-account": "Erstelle ein Konto",
+      "install-mobile-app": "Installiere die mobile App und lade eine Datei hoch",
+      "share-file": "Teile eine Datei per Link",
+      "subscribe-to-newsletter": "Abonniere unseren Newsletter",
+      "install-desktop-app": "Installiere die Desktop-App und lade eine Datei hoch",
+      "invite-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
+      "invite-2-friends": "Lade {{completedSteps}}/{{steps}} Freunde ein",
+      "complete-survey": "Komplettiere Umfrage"
+    },
+    "rewards": {
+      "title": "Erhalte {{creditSum}} kostenlos",
+      "progress": "Entsperrt {{currentCredit}}",
+      "limit": "von {{creditSum}}"
+    }
+  },
+  "errors": {
+    "downloadingDesktopApp": "Beim Herunterladen der Desktop-App ist ein Fehler aufgetreten"
+  },
+  "tutorial": {
+    "signUpTutorial": {
+      "stepOne": {
+        "title": "Hol das Beste aus Internxt Drive heraus",
+        "description": "Lade die Desktop-App herunter, um alle deine Ordner und Dateien zu synchronisieren und zu sichern."
+      },
+      "stepTwo": {
+        "title": "Lass uns anfangen...",
+        "description": "Klicke auf „Hochladen“, um deine erste Datei hochzuladen."
+      }
+    }
+  }
+}
