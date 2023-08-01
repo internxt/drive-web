@@ -1107,7 +1107,8 @@
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
     "restore": "Restaurar",
-    "copyLink": "Copiar enlace"
+    "copyLink": "Copiar enlace",
+    "report": "Reportar"
   },
   "drive": {
     "usage": "Uso",

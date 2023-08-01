@@ -27,6 +27,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ReportButton from './ReportButon';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -276,46 +277,49 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
-          {isTypeAllowed() && (
-            <button
-              onClick={() => {
-                setOpenPreview(true);
-              }}
-              className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
+        <div className="flex flex-col items-center justify-center">
+          <div className="flex flex-row items-center justify-center space-x-3">
+            {isTypeAllowed() && (
+              <button
+                onClick={() => {
+                  setOpenPreview(true);
+                }}
+                className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
-            >
-              <UilEye height="20" width="20" />
-              <span>{translate('actions.view')}</span>
-            </button>
-          )}
-
-          <button
-            onClick={download}
-            className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
-          >
-            {Number(progress) == 100 ? (
-              <>
-                {/* Download completed */}
-                <UilCheck height="24" width="24" />
-                <span className="font-medium">{translate('actions.downloaded')}</span>
-              </>
-            ) : isDownloading ? (
-              <>
-                {/* Download in progress */}
-                <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
-                <span>{translate('actions.downloading')}</span>
-                <span className="font-normal text-blue-20">{progress}%</span>
-              </>
-            ) : (
-              <>
-                {/* Download button */}
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{translate('actions.download')}</span>
-              </>
+              >
+                <UilEye height="20" width="20" />
+                <span>{translate('actions.view')}</span>
+              </button>
             )}
-          </button>
+
+            <button
+              onClick={download}
+              className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
+                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
+            >
+              {Number(progress) == 100 ? (
+                <>
+                  {/* Download completed */}
+                  <UilCheck height="24" width="24" />
+                  <span className="font-medium">{translate('actions.downloaded')}</span>
+                </>
+              ) : isDownloading ? (
+                <>
+                  {/* Download in progress */}
+                  <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
+                  <span>{translate('actions.downloading')}</span>
+                  <span className="font-normal text-blue-20">{progress}%</span>
+                </>
+              ) : (
+                <>
+                  {/* Download button */}
+                  <UilImport height="20" width="20" />
+                  <span className="font-medium">{translate('actions.download')}</span>
+                </>
+              )}
+            </button>
+          </div>
+          <ReportButton />
         </div>
       </>
     );

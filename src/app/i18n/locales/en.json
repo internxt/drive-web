@@ -1124,7 +1124,8 @@
     "restoreHere": "Restore here",
     "rename": "Rename",
     "restore": "Restore",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "report": "Report"
   },
   "drive": {
     "usage": "Usage",

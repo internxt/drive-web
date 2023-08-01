@@ -1096,7 +1096,8 @@
     "restoreHere": "在这里恢复",
     "rename": "重命名",
     "restore": "恢复",
-    "copyLink": "复制链接"
+    "copyLink": "复制链接",
+    "report": "报告"
   },
   "drive": {
     "usage": "使用情况",
