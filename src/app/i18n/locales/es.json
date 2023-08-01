@@ -105,9 +105,9 @@
       "title": "Reiniciar cuenta",
       "description": "Gracias a nuestra política de cifrado de extremo a extremo y de conocimiento cero, no podrás acceder a tus datos sin tu contraseña o una clave de recuperación.",
       "alert1": "Al reiniciar tu cuenta, entiendes que todos tus archivos, fotos y copias de seguridad se eliminarán de forma permanente.",
-      "alert2": "Podrás seguir utilizando este correo electrónico para crear una nueva cuenta y empezar de nuevo.",
       "button": "Enviar verificación de reinicio de cuenta",
-      "successDescription": "Te hemos enviado un enlace único para verificar el reinicio de tu cuenta"
+      "successDescription": "Tu cuenta y contraseña se han reiniciado",
+      "error": "Algo ha fallado al reiniciar la cuenta"
     }
   },
   "general": {

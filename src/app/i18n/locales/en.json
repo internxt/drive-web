@@ -122,9 +122,9 @@
       "title": "Restart account",
       "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
       "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
-      "alert2": "You will still be able to use this email to create a new account and start over.",
       "button": "Send account restart verification",
-      "successDescription": "We’ve sent you a one-time link to verify your account restart"
+      "successDescription": "Your account and password have been reset",
+      "error": "Something went wrong while restarting the account"
     }
   },
   "general": {

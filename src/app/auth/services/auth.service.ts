@@ -29,7 +29,7 @@ import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
 import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
-import { validateMnemonic } from 'bip39';
+import { validateMnemonic, generateMnemonic } from 'bip39';
 
 export async function logOut(): Promise<void> {
   analyticsService.trackSignOut();
@@ -205,6 +205,24 @@ const updateCredentialsWithToken = async (
   );
 };
 
+const resetAccountWithToken = async (token: string | undefined, newPassword: string): Promise<void> => {
+  const newMnemonic = generateMnemonic(256);
+  const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
+
+  const hashedNewPassword = passToHash({ password: newPassword });
+  const encryptedHashedNewPassword = encryptText(hashedNewPassword.hash);
+  const encryptedHashedNewPasswordSalt = encryptText(hashedNewPassword.salt);
+
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+
+  return authClient.resetAccountWithToken(
+    token,
+    encryptedHashedNewPassword,
+    encryptedHashedNewPasswordSalt,
+    encryptedNewMnemonic,
+  );
+};
+
 export const changePassword = async (newPassword: string, currentPassword: string, email: string): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
 
@@ -372,6 +390,7 @@ const authService = {
   getRedirectUrl,
   sendChangePasswordEmail,
   updateCredentialsWithToken,
+  resetAccountWithToken,
 };
 
 export default authService;
