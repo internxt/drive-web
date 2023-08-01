@@ -20,7 +20,12 @@ import databaseService from 'app/database/services/database.service';
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { getAesInitFromEnv, assertPrivateKeyIsValid, decryptPrivateKey, assertValidateKeys } from 'app/crypto/services/keys.service';
+import {
+  getAesInitFromEnv,
+  assertPrivateKeyIsValid,
+  decryptPrivateKey,
+  assertValidateKeys,
+} from 'app/crypto/services/keys.service';
 import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -110,15 +115,15 @@ export const doLogin = async (
         sharedWorkspace: user.sharedWorkspace,
       });
 
-      const plainPrivateKeyInBase64 = privateKey ?
-        Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64') :
-        '';
+      const plainPrivateKeyInBase64 = privateKey
+        ? Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64')
+        : '';
 
       if (privateKey) {
         await assertPrivateKeyIsValid(privateKey, password);
         await assertValidateKeys(
           Buffer.from(plainPrivateKeyInBase64, 'base64').toString(),
-          Buffer.from(publicKey, 'base64').toString()
+          Buffer.from(publicKey, 'base64').toString(),
         );
       }
 
@@ -217,7 +222,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
     .changePassword(<ChangePasswordPayload>{
@@ -226,6 +231,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      encryptVersion: '', // !TODO: Add the version used
     })
     .then(() => {
       // !TODO: Add the correct analytics event  when change password is completed

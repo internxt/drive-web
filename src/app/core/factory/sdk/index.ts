@@ -87,6 +87,13 @@ export class SdkFactory {
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createNewUsersClient(): Users {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Users.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createReferralsClient(): Referrals {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
