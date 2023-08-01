@@ -1095,7 +1095,8 @@
     "restoreHere": "Ripristina qui",
     "rename": "Rinominare",
     "restore": "Ripristinare",
-    "copyLink": "Copia link"
+    "copyLink": "Copia link",
+    "report": "Segnalare"
   },
   "drive": {
     "usage": "Utilizzo",

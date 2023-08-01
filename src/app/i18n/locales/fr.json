@@ -1037,7 +1037,9 @@
     "navigating": "Naviguer...",
     "restoreHere": "Restaurer ici",
     "rename": "Renommer",
-    "restore": "Restaurer"
+    "restore": "Restaurer",
+    "copyLink": "Copier le lien",
+    "report": "Signaler"
   },
   "drive": {
     "usage": "Usage",
