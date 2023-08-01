@@ -178,7 +178,7 @@ ListProps<T, F>): JSX.Element {
     'ctrl+a, cmd+a',
     (e) => {
       e.preventDefault();
-      handleKeyPress(selectAllItems);
+      handleKeyPress(selectAllItems());
     },
     [items, selectedItems, disableKeyboardShortcuts],
   );
