@@ -11,11 +11,11 @@ const handleReportShare = () => {
 };
 
 const ReportButton = (): JSX.Element => (
-  <div className={'z-10 mt-2 flex h-10 w-full flex-row items-center justify-center rounded-lg bg-red-std'}>
+  <div className={'z-10 mt-2 flex h-10 w-full cursor-pointer  rounded-lg bg-red-std'}>
     <button
       title="Report"
       onClick={handleReportShare}
-      className="flex h-10 cursor-pointer flex-row items-center rounded-lg bg-white
+      className="flex h-10 w-full cursor-pointer flex-row items-center justify-center rounded-lg bg-white
                           bg-opacity-0 px-6 text-center font-medium transition
                           duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
     >
