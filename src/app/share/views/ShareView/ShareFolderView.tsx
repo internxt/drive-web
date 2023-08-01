@@ -289,7 +289,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-row items-center justify-center">
           <button
             onClick={() => {
               download(itemPassword);
@@ -299,7 +299,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           >
             {downloadButton}
           </button>
-          <ReportButton />
         </div>
       </>
     );
