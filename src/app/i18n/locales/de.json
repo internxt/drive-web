@@ -148,7 +148,7 @@
         "folderEmptySubtitle": "Ziehe Dateien per Drag-and-Drop oder wähle einzelne Dateien zum Hochladen aus",
         "uploadFiles": "Dateien hochladen",
         "noResults": "Für diese Suche liegen keine Ergebnisse vor",
-        "dragNDrop": "Ziehe es hierher und lege es ab oder klicke auf die Schaltfläche „Hochladen“."
+        "dragNDrop": "Ziehe es hierher und lege es ab oder klicke auf die Schaltfläche \"Hochladen\"."
       }
     },
     "photos": {
@@ -1018,7 +1018,7 @@
       },
       "stepTwo": {
         "title": "Lass uns anfangen...",
-        "description": "Klicke auf „Hochladen“, um deine erste Datei hochzuladen."
+        "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
     }
   }
