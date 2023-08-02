@@ -295,7 +295,8 @@
           "card": {
             "annually": "€{{amount}} Jährliche Rechnung",
             "monthly": "€{{amount}} pro Monat",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "Einmalige Zahlung"
           },
           "features": {
             "title": "In allen Plänen enthaltene Funktionen",
