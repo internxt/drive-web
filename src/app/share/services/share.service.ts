@@ -7,6 +7,7 @@ import {
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
+  PrivateSharedFolder,
   PrivateSharingRole,
   ShareDomainsResponse,
   SharePrivateFolderWithUserPayload,
@@ -106,6 +107,18 @@ export function getAllSharedFolders(
   });
 }
 
+export function getSharedFolderUsers(
+  folderUUID: string,
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<{ users: any[] }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderUsers(folderUUID, page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
@@ -148,7 +161,7 @@ export function getShareDomains(): Promise<ShareDomainsResponse> {
   });
 }
 
-export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<ShareDomainsResponse> {
+export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.sharePrivateFolderWithUser(payload).catch((error) => {
     throw errorService.castError(error);
@@ -158,6 +171,28 @@ export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPa
 export function getPrivateSharingRoles(): Promise<{ roles: PrivateSharingRole[] }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getPrivateSharingRoles().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function updateUserRoleOfSharedFolder({
+  userUuid,
+  privateFolderId,
+  roleId,
+}: {
+  userUuid: string;
+  privateFolderId: string;
+  roleId: string;
+}): Promise<{ message: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.grantSharePrivilegesToUser(userUuid, privateFolderId, roleId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: PrivateSharedFolder }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPrivateSharedFolder(folderUUID).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -235,11 +270,14 @@ const shareService = {
   getSentSharedFolders,
   getReceivedSharedFolders,
   getAllSharedFolders,
+  getSharedFolderUsers,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
+  updateUserRoleOfSharedFolder,
+  getPrivateSharedFolder,
 };
 
 export default shareService;

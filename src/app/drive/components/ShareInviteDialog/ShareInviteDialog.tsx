@@ -11,13 +11,16 @@ import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
 import { useDispatch } from 'react-redux';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
 import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { RootState } from '../../../store';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
   folderUUID: string;
   roles: PrivateSharingRole[];
+  onClose: () => void;
 }
 
 interface UsersToInvite {
@@ -77,13 +80,20 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const onInvite = () => {
+  const onInvite = async () => {
+    const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
     usersToInvite.forEach((user) => {
       const userRoleId = props.roles.find((role) => role.role === user.userRole)?.id;
       if (!userRoleId) return;
 
-      dispatch(sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }));
+      sharingPromises.push(
+        dispatch(
+          sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
+        ),
+      );
     });
+    await Promise.all(sharingPromises);
+    props.onClose();
   };
 
   return (
