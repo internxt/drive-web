@@ -88,7 +88,7 @@
       "title": "帐户恢复",
       "subtitle": "你有备份钥匙吗",
       "info": "备份密钥是什么样的",
-      "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "备份密钥长度为24个字",
       "haveKeyButton": "是的 我有備用鑰匙",
       "notKeyButton": "不 我沒有",
@@ -122,9 +122,9 @@
       "title": "重启账户",
       "description": "由于我们采用端到端加密和零知识政策 如果没有密码或备份密钥 您将无法访问您的数据",
       "alert1": "重启账户后 您了解您的所有文件、照片和备份将被永久删除",
-      "alert2": "您仍然可以使用此电子邮件创建新账户并重新开始",
       "button": "发送账户重启验证",
-      "successDescription": "我们已经向您发送了一个一次性链接来验证您的帐户重启"
+      "successDescription": "您的账户和密码已被重置",
+      "error": "重启账户时出了问题"
     }
   },
   "general": {

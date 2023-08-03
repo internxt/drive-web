@@ -88,7 +88,7 @@
       "title": "Account recovery",
       "subtitle": "Do you have a backup key?",
       "info": "What does the backup key look like?",
-      "info1": "The backup key file name is 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "The backup key file name is 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "The backup key is 24 words long",
       "haveKeyButton": "Yes, I have a backup key",
       "notKeyButton": "No, I don't have one",
@@ -122,9 +122,9 @@
       "title": "Restart account",
       "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
       "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
-      "alert2": "You will still be able to use this email to create a new account and start over.",
       "button": "Send account restart verification",
-      "successDescription": "We’ve sent you a one-time link to verify your account restart"
+      "successDescription": "Your account and password have been reset",
+      "error": "Something went wrong while restarting the account"
     }
   },
   "general": {
