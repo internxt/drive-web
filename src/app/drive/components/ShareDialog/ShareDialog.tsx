@@ -78,7 +78,6 @@ const ShareDialog = (props: ShareDialogProps) => {
   };
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
-  const [privateSharedFolder, setPrivateSharedFolder] = useState<any>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('public');
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -95,7 +94,6 @@ const ShareDialog = (props: ShareDialogProps) => {
 
   const resetDialogData = () => {
     setSelectedUserListIndex(null);
-    setPrivateSharedFolder(null);
     setAccessMode('public');
     setShowStopSharingConfirmation(false);
     setIsLoading(false);
@@ -124,6 +122,7 @@ const ShareDialog = (props: ShareDialogProps) => {
     return () => clearTimeout(timer);
   }, [accessRequests]);
 
+  // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const loadShareInfo = async () => {
     try {
       // TODO -> Load access mode
@@ -163,9 +162,6 @@ const ShareDialog = (props: ShareDialogProps) => {
       const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
       const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.roleName }));
       setInvitedUsers(parsedUsersList);
-
-      const privateSharedFolderResponse = await shareService.getPrivateSharedFolder(selectedFolder?.uuid as string);
-      setPrivateSharedFolder(privateSharedFolderResponse.data);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -279,12 +275,12 @@ const ShareDialog = (props: ShareDialogProps) => {
   const handleUserRoleChange = async (email: string, roleName: string) => {
     try {
       setSelectedUserListIndex(null);
-      const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
       const roleId = roles.find((role) => role.role === roleName)?.id;
-      if (userUUID && roleId) {
+
+      if (email && roleId) {
         await shareService.updateUserRoleOfSharedFolder({
-          userUuid: userUUID,
-          privateFolderId: privateSharedFolder.id,
+          userEmail: email,
+          folderUUID: selectedFolder?.uuid as string,
           roleId,
         });
 
@@ -694,6 +690,7 @@ const UserOptions = ({
   translate,
   onRemoveUser,
   userOptionsEmail,
+  selectedRole,
   onChangeRole,
 }) => {
   const isUserSelected = selectedUserListIndex === listPosition;
@@ -727,7 +724,7 @@ const UserOptions = ({
           <p className="w-full text-left text-base font-medium leading-none">
             {translate('modals.shareModal.list.userItem.roles.editor')}
           </p>
-          <Check size={20} />
+          {selectedRole === 'editor' && <Check size={20} />}
         </button>
 
         {/* Viewer */}
@@ -740,6 +737,7 @@ const UserOptions = ({
           <p className="w-full text-left text-base font-medium leading-none">
             {translate('modals.shareModal.list.userItem.roles.viewer')}
           </p>
+          {selectedRole === 'viewer' && <Check size={20} />}
         </button>
 
         <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
@@ -824,6 +822,7 @@ const User = ({
           translate={translate}
           onRemoveUser={onRemoveUser}
           userOptionsEmail={userOptionsEmail}
+          selectedRole={user.roleName}
           onChangeRole={(roleName) => onChangeRole(user.email, roleName)}
         />
       </>
