@@ -74,7 +74,7 @@ export async function uploadFile(
       progressCallback: (totalBytes, uploadedBytes) => {
         updateProgressCallback(uploadedBytes / totalBytes);
         band.addEndTime();
-        band.sise = Number(uploadedBytes);
+        band.setSize = Number(uploadedBytes);
       },
       abortController,
     });

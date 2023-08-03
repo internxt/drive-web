@@ -234,7 +234,7 @@ export class Band {
   addEndTime(): void {
     this.endTime = new Date().getTime();
   }
-  set sise(size: number) {
+  set setSize(size: number) {
     this.size = size;
   }
   getBandwith(): number {

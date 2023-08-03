@@ -137,7 +137,7 @@ export default async function downloadFile(
     await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
 
     band.addEndTime();
-    band.sise = Number(itemData.size);
+    band.setSize = Number(itemData.size);
     trackingDownloadProperties.bandwidth = band.getBandwith();
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : (err as string);

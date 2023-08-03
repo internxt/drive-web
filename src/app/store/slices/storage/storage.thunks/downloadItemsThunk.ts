@@ -232,7 +232,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                   updateProgressCallback(calculateProgress());
 
                   band.addEndTime();
-                  band.sise = Number(downloadedBytes);
+                  band.setSize = Number(downloadedBytes);
                 },
               },
             });

@@ -339,7 +339,6 @@ async function downloadFolderAsZip(
             band_utilization: 0,
           };
           analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
-          console.log({ trackingDownloadProperties });
           const band = new Band();
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
@@ -352,7 +351,7 @@ async function downloadFolderAsZip(
             options: {
               notifyProgress: (totalBytes, downloadedBytes) => {
                 band.addEndTime();
-                band.sise = Number(downloadedBytes);
+                band.setSize = Number(downloadedBytes);
               },
             },
           });
