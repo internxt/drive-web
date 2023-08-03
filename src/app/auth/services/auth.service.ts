@@ -20,7 +20,12 @@ import databaseService from 'app/database/services/database.service';
 import navigationService from 'app/core/services/navigation.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import { getAesInitFromEnv, assertPrivateKeyIsValid, decryptPrivateKey, assertValidateKeys } from 'app/crypto/services/keys.service';
+import {
+  getAesInitFromEnv,
+  assertPrivateKeyIsValid,
+  decryptPrivateKey,
+  assertValidateKeys,
+} from 'app/crypto/services/keys.service';
 import { AppView } from 'app/core/types';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -110,15 +115,15 @@ export const doLogin = async (
         sharedWorkspace: user.sharedWorkspace,
       });
 
-      const plainPrivateKeyInBase64 = privateKey ?
-        Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64') :
-        '';
+      const plainPrivateKeyInBase64 = privateKey
+        ? Buffer.from(decryptPrivateKey(privateKey, password)).toString('base64')
+        : '';
 
       if (privateKey) {
         await assertPrivateKeyIsValid(privateKey, password);
         await assertValidateKeys(
           Buffer.from(plainPrivateKeyInBase64, 'base64').toString(),
-          Buffer.from(publicKey, 'base64').toString()
+          Buffer.from(publicKey, 'base64').toString(),
         );
       }
 
@@ -204,6 +209,12 @@ const updateCredentialsWithToken = async (
 
 const resetAccountWithToken = async (token: string | undefined, newPassword: string): Promise<void> => {
   const newMnemonic = generateMnemonic(256);
+  const mnemonicIsInvalid = !validateMnemonic(newMnemonic);
+
+  if (mnemonicIsInvalid) {
+    throw new Error('Invalid mnemonic');
+  }
+
   const encryptedNewMnemonic = encryptTextWithKey(newMnemonic, newPassword);
 
   const hashedNewPassword = passToHash({ password: newPassword });
