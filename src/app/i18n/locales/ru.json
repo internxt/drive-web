@@ -29,12 +29,13 @@
   },
   "lang": {
     "title": "Язык",
-    "en": "English (EN)",
-    "es": "Español (ES)",
-    "fr": "Français (FR)",
-    "it": "Italiano (IT)",
-    "cn": "简体中文 (CN)",
-    "ru": "Русский (RU)"
+    "en": "English (Английский)",
+    "es": "Español (Испанский)",
+    "fr": "Français (Французский)",
+    "it": "Italiano (Итальянский)",
+    "cn": "简体中文 (Китайский)",
+    "ru": "Русский (Русский)",
+    "de": "Deutsch (Немецкий)"
   },
   "auth": {
     "email": "Электронная почта",
