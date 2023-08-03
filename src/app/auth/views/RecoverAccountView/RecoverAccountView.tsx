@@ -38,20 +38,13 @@ export default function RecoverAccountView(): JSX.Element {
               <Button variant="primary" className="mb-2 w-full" onClick={() => setHasBackupKey(true)}>
                 {translate('auth.recoverAccount.haveKeyButton')}
               </Button>
-              <Button
-                variant="secondary"
-                className="w-full"
-                // onClick={() => setHasBackupKey(false)}
-                onClick={() => {
-                  window.location.href = 'mailto:hello@internxt.com';
-                }}
-              >
+              <Button variant="secondary" className="w-full" onClick={() => setHasBackupKey(false)}>
                 {translate('auth.recoverAccount.notKeyButton')}
               </Button>
             </>
           )}
           {hasBackupKey === true && <ChangePassword setHasBackupKey={setHasBackupKey} />}
-          {/* {hasBackupKey === false && <RestartAccount setHasBackupKey={setHasBackupKey} />} */}
+          {hasBackupKey === false && <RestartAccount setHasBackupKey={setHasBackupKey} />}
         </div>
       </div>
 

@@ -34,7 +34,8 @@
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
     "cn": "简体中文 (Chinois)",
-    "ru": "Русский (Russe)"
+    "ru": "Русский (Russe)",
+    "de": "Deutsch (Allemand)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -71,7 +72,7 @@
       "title": "Récupération du compte",
       "subtitle": "Avez-vous une clé de secours ?",
       "info": "À quoi ressemble la clé de sauvegarde ?",
-      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La clé de secours fait 24 mots",
       "haveKeyButton": "Oui, j'ai une clé de secours",
       "notKeyButton": "Non, je n'en ai pas",
@@ -105,9 +106,9 @@
       "title": "Redémarrer le compte",
       "description": "Grâce à notre politique de cryptage de bout en bout et d'absence de connaissance, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde.",
       "alert1": "En redémarrant votre compte, vous comprenez que tous vos fichiers, photos et sauvegardes seront définitivement supprimés.",
-      "alert2": "Vous pourrez toujours utiliser cet e-mail pour créer un nouveau compte et recommencer.",
       "button": "Envoyer la vérification du redémarrage du compte",
-      "successDescription": "Nous vous avons envoyé un lien unique pour vérifier le redémarrage de votre compte."
+      "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
+      "error": "Un problème s'est produit lors du redémarrage du compte"
     }
   },
   "general": {

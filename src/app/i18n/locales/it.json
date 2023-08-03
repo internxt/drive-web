@@ -51,7 +51,8 @@
     "fr": "Français (Francese)",
     "it": "Italiano (Italiano)",
     "cn": "简体中文 (Cinese)",
-    "ru": "Русский (Russo)"
+    "ru": "Русский (Russo)",
+    "de": "Deutsch (Tedesco)"
   },
   "auth": {
     "email": "Email",
@@ -88,7 +89,7 @@
       "title": "Recupero dell'account",
       "subtitle": "Hai una chiave di backup?",
       "info": "Che aspetto ha la chiave di backup?",
-      "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KERY.txt'",
+      "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La chiave di backup è lunga 24 parole",
       "haveKeyButton": "Sì, ho una chiave di backup",
       "notKeyButton": "No, non ne ho uno",
@@ -122,9 +123,9 @@
       "title": "Riavvia il conto",
       "description": "Grazie alla nostra crittografia end-to-end e alla politica 'zero-knowledge', non è possibile accedere ai propri dati senza la propria password o una chiave di backup.",
       "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
-      "alert2": "Riavviando l'account, l'utente è consapevole che tutti i file, le foto e i backup saranno eliminati in modo permanente.",
       "button": "Inviare la verifica del riavvio dell'account",
-      "successDescription": "Le abbiamo inviato un link unico per verificare il riavvio del suo account."
+      "successDescription": "L'account e la password sono stati resettati",
+      "error": "Qualcosa è andato storto durante il riavvio dell'account"
     }
   },
   "general": {
