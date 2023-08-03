@@ -8,6 +8,7 @@ import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
+import { Helmet } from 'react-helmet-async';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -68,7 +69,14 @@ class DriveView extends Component<DriveViewProps> {
   render(): ReactNode {
     const { items, isLoading } = this.props;
 
-    return <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />;
+    return (
+      <>
+        <Helmet>
+          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
+        </Helmet>
+        <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />
+      </>
+    );
   }
 }
 

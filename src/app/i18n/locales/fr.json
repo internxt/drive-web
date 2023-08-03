@@ -34,7 +34,8 @@
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
     "cn": "简体中文 (Chinois)",
-    "ru": "Русский (Russe)"
+    "ru": "Русский (Russe)",
+    "de": "Deutsch (Allemand)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -57,10 +58,57 @@
       "encrypting": "Cryptage"
     },
     "forgotPassword": {
-      "title": "Mot de passe oublié",
-      "description": "Comme spécifié dans la section sécurité de l'application, votre mot de passe est utilisé pour le cryptage et le décryptage et vous êtes le seul à y avoir accès. Par conséquent, nous ne pouvons pas restaurer votre compte sans le mot de passe. Vous pouvez vous réinscrire en saisissant votre email ci-dessous afin que nous puissions supprimer votre compte et tous vos fichiers.",
-      "sendInstructions": "Envoyer des instructions",
-      "sending": "Envoi..."
+      "title": "Récupération de compte",
+      "continue": "Continuer",
+      "sending": "Envoi...",
+      "notFound": "L'adresse électronique n'a pas été trouvée, veuillez réessayer",
+      "password": "Rappelez-vous votre mot de passe ?",
+      "login": "Connexion",
+      "successTitle": "Vérifiez votre boîte de réception",
+      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte.",
+      "ivalidEmail": "Adresse e-mail invalide"
+    },
+    "recoverAccount": {
+      "title": "Récupération du compte",
+      "subtitle": "Avez-vous une clé de secours ?",
+      "info": "À quoi ressemble la clé de sauvegarde ?",
+      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La clé de secours fait 24 mots",
+      "haveKeyButton": "Oui, j'ai une clé de secours",
+      "notKeyButton": "Non, je n'en ai pas",
+      "backupKey": {
+        "title": "Vérifier la clé de sauvegarde",
+        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte.",
+        "button": "Télécharger la clé de sauvegarde"
+      },
+      "changePassword": {
+        "title": "Modifier le mot de passe",
+        "newPassword": "Nouveau mot de passe",
+        "repeatNewPassword": "Répéter le mot de passe",
+        "notMatch": "Les mots de passe ne correspondent pas",
+        "submitButton": "Modifier le mot de passe",
+        "notPasswordStrength": "Le mot de passe doit comporter un chiffre",
+        "shortPasswordStrength": "Le mot de passe doit comporter au moins 8 caractères",
+        "warningPasswordStrength": "Le mot de passe est wea",
+        "successPasswordStrength": "Le mot de passe est fort",
+        "serverError": "Un problème s'est produit lors de la modification du mot de passe",
+        "tokenError": "Une erreur s'est produite lors de la validation de la clé de sauvegarde",
+        "backupKeyError": "La clé de sauvegarde téléchargée est invalide",
+        "emailSent": {
+          "title": "Mot de passe modifié",
+          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées.",
+          "redirect": "Redirection vers Internxt Drive in",
+          "button": "Aller à Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Redémarrer le compte",
+      "description": "Grâce à notre politique de cryptage de bout en bout et d'absence de connaissance, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde.",
+      "alert1": "En redémarrant votre compte, vous comprenez que tous vos fichiers, photos et sauvegardes seront définitivement supprimés.",
+      "button": "Envoyer la vérification du redémarrage du compte",
+      "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
+      "error": "Un problème s'est produit lors du redémarrage du compte"
     }
   },
   "general": {
@@ -990,7 +1038,9 @@
     "navigating": "Naviguer...",
     "restoreHere": "Restaurer ici",
     "rename": "Renommer",
-    "restore": "Restaurer"
+    "restore": "Restaurer",
+    "copyLink": "Copier le lien",
+    "report": "Signaler un abus"
   },
   "drive": {
     "usage": "Usage",

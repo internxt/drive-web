@@ -51,7 +51,8 @@
     "fr": "Français (French)",
     "it": "Italiano (Italian)",
     "cn": "简体中文 (Chinese)",
-    "ru": "Русский (Russian)"
+    "ru": "Русский (Russian)",
+    "de": "Deutsch (German)"
   },
   "auth": {
     "email": "Email",
@@ -74,10 +75,57 @@
       "encrypting": "Encrypting"
     },
     "forgotPassword": {
-      "title": "Forgot password",
-      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
-      "sendInstructions": "Send instructions",
-      "sending": "Sending..."
+      "title": "Account recovery",
+      "continue": "Continue",
+      "sending": "Sending...",
+      "notFound": "Email address not found, please try again",
+      "password": "Remember your password?",
+      "login": "Login",
+      "successTitle": "Check your inbox",
+      "successDescription": "We’ve sent you a one-time link to recover you account password",
+      "ivalidEmail": "Invalid email address"
+    },
+    "recoverAccount": {
+      "title": "Account recovery",
+      "subtitle": "Do you have a backup key?",
+      "info": "What does the backup key look like?",
+      "info1": "The backup key file name is 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "The backup key is 24 words long",
+      "haveKeyButton": "Yes, I have a backup key",
+      "notKeyButton": "No, I don't have one",
+      "backupKey": {
+        "title": "Verify backup key",
+        "alert": "If you upload a wrong backup key your data will get corrupted, please make sure your backup key is correct.",
+        "button": "Upload backup key"
+      },
+      "changePassword": {
+        "title": "Change password",
+        "newPassword": "New Password",
+        "repeatNewPassword": "Repeat new password",
+        "notMatch": "Passwords don't match",
+        "submitButton": "Change password",
+        "notPasswordStrength": "Password must have a number",
+        "shortPasswordStrength": "Password must be at least 8 characters",
+        "warningPasswordStrength": "Password is weak",
+        "successPasswordStrength": "Password is strong",
+        "serverError": "Something went wrong while changing the password",
+        "tokenError": "An error occurred while validating the backup key",
+        "backupKeyError": "Uploaded backup key is invalid",
+        "emailSent": {
+          "title": "Password changed",
+          "description": "All your data has been re-encrypted and all your active sessions were logged out.",
+          "redirect": "Redirecting to Internxt Drive in",
+          "button": "Go to Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Restart account",
+      "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
+      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
+      "button": "Send account restart verification",
+      "successDescription": "Your account and password have been reset",
+      "error": "Something went wrong while restarting the account"
     }
   },
   "general": {
@@ -1077,7 +1125,8 @@
     "restoreHere": "Restore here",
     "rename": "Rename",
     "restore": "Restore",
-    "copyLink": "Copy link"
+    "copyLink": "Copy link",
+    "report": "Report abuse"
   },
   "drive": {
     "usage": "Usage",

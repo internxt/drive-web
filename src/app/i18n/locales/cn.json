@@ -51,7 +51,8 @@
     "fr": "Français (法语)",
     "it": "Italiano (意大利语)",
     "cn": "简体中文 (简体中文)",
-    "ru": "Русский (俄语)"
+    "ru": "Русский (俄语)",
+    "de": "Deutsch (德国)"
   },
   "auth": {
     "email": "电子邮件",
@@ -74,10 +75,57 @@
       "encrypting": "正在加密文件"
     },
     "forgotPassword": {
-      "title": "Forgot password",
-      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
-      "sendInstructions": "Send instructions",
-      "sending": "Sending..."
+      "title": "账户恢复",
+      "continue": "继续",
+      "sending": "发送",
+      "notFound": "未找到电子邮件地址 请重试",
+      "password": "记住您的密码",
+      "login": "登录",
+      "successTitle": "检查您的收件箱",
+      "successDescription": "我们已经向您发送了一个一次性链接来恢复您的账户密码",
+      "ivalidEmail": "无效电子邮件地址"
+    },
+    "recoverAccount": {
+      "title": "帐户恢复",
+      "subtitle": "你有备份钥匙吗",
+      "info": "备份密钥是什么样的",
+      "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "备份密钥长度为24个字",
+      "haveKeyButton": "是的 我有備用鑰匙",
+      "notKeyButton": "不 我沒有",
+      "backupKey": {
+        "title": "验证备份密钥",
+        "alert": "如果您上传错误的备份密钥 您的数据将被损坏 请确保您的备份密钥正确",
+        "button": "上传备份密钥"
+      },
+      "changePassword": {
+        "title": "更改密码",
+        "newPassword": "新密码",
+        "repeatNewPassword": "重复新密码",
+        "notMatch": "密码不匹配",
+        "submitButton": "更改密码",
+        "notPasswordStrength": "密码必须有数字",
+        "shortPasswordStrength": "密码必须至少包含 8 个字符",
+        "warningPasswordStrength": "密码无效",
+        "successPasswordStrength": "密码牢固",
+        "serverError": "更改密码时出了问题",
+        "tokenError": "验证备份密钥时发生错误",
+        "backupKeyError": "上传的备份密钥无效",
+        "emailSent": {
+          "title": "密码已更改",
+          "description": "您的所有数据都已重新加密 您的所有活动会话都已注销",
+          "redirect": "重定向",
+          "button": "前往 Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "重启账户",
+      "description": "由于我们采用端到端加密和零知识政策 如果没有密码或备份密钥 您将无法访问您的数据",
+      "alert1": "重启账户后 您了解您的所有文件、照片和备份将被永久删除",
+      "button": "发送账户重启验证",
+      "successDescription": "您的账户和密码已被重置",
+      "error": "重启账户时出了问题"
     }
   },
   "general": {
@@ -1049,7 +1097,8 @@
     "restoreHere": "在这里恢复",
     "rename": "重命名",
     "restore": "恢复",
-    "copyLink": "复制链接"
+    "copyLink": "复制链接",
+    "report": "举报滥用"
   },
   "drive": {
     "usage": "使用情况",

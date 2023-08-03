@@ -10,6 +10,7 @@ import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolder
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
 import errorService from '../../../core/services/error.service';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 type NameCollisionContainerProps = {
   currentFolderId: number;
@@ -128,14 +129,18 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
             root: { ...(itemToUpload as IRoot) },
             currentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       } else {
         dispatch(
           storageThunks.uploadItemsThunkNoCheck({
             files: [itemToUpload] as File[],
             parentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       }
     });
   };
@@ -148,14 +153,18 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
             root: { ...(itemToUpload as IRoot) },
             currentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       } else {
         dispatch(
           storageThunks.uploadItemsThunk({
             files: [itemToUpload as File],
             parentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       }
     });
   };

@@ -51,7 +51,8 @@
     "fr": "Français (Francese)",
     "it": "Italiano (Italiano)",
     "cn": "简体中文 (Cinese)",
-    "ru": "Русский (Russo)"
+    "ru": "Русский (Russo)",
+    "de": "Deutsch (Tedesco)"
   },
   "auth": {
     "email": "Email",
@@ -74,10 +75,57 @@
       "encrypting": "Crittografia"
     },
     "forgotPassword": {
-      "title": "Forgot password",
-      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
-      "sendInstructions": "Send instructions",
-      "sending": "Sending..."
+      "title": "Recupero del conto",
+      "continue": "Continuare",
+      "sending": "Invio...",
+      "notFound": "Indirizzo email non trovato, riprovare",
+      "password": "Ricorda la password?",
+      "login": "Accesso",
+      "successTitle": "Controllare la posta in arrivo",
+      "successDescription": "Vi abbiamo inviato un link unico per recuperare la password del vostro account.",
+      "ivalidEmail": "Indirizzo e-mail non valido"
+    },
+    "recoverAccount": {
+      "title": "Recupero dell'account",
+      "subtitle": "Hai una chiave di backup?",
+      "info": "Che aspetto ha la chiave di backup?",
+      "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La chiave di backup è lunga 24 parole",
+      "haveKeyButton": "Sì, ho una chiave di backup",
+      "notKeyButton": "No, non ne ho uno",
+      "backupKey": {
+        "title": "Carica la chiave di backup",
+        "alert": "Se carichi una chiave di backup errata, i tuoi dati verranno danneggiati, assicurati che la tua chiave di backup sia corretta.",
+        "button": "Carica la chiave di backup"
+      },
+      "changePassword": {
+        "title": "Cambia password",
+        "newPassword": "Nuova password",
+        "repeatNewPassword": "Ripeti la nuova password",
+        "notMatch": "Le password non coincidono",
+        "submitButton": "Cambia password",
+        "notPasswordStrength": "La password deve avere un numero",
+        "shortPasswordStrength": "La password deve essere di almeno 8 caratteri",
+        "warningPasswordStrength": "Password debole",
+        "successPasswordStrength": "La password è forte",
+        "serverError": "Qualcosa è andato storto durante la modifica della password",
+        "tokenError": "Si è verificato un errore durante la convalida della chiave di backup",
+        "backupKeyError": "La chiave di backup caricata non è valida",
+        "emailSent": {
+          "title": "Password cambiata",
+          "description": "Tutti i dati sono stati nuovamente crittografati e tutte le sessioni attive sono state interrotte.",
+          "redirect": "Reindirizzamento a Internxt Drive in",
+          "button": "Vai a Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Riavvia il conto",
+      "description": "Grazie alla nostra crittografia end-to-end e alla politica 'zero-knowledge', non è possibile accedere ai propri dati senza la propria password o una chiave di backup.",
+      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
+      "button": "Inviare la verifica del riavvio dell'account",
+      "successDescription": "L'account e la password sono stati resettati",
+      "error": "Qualcosa è andato storto durante il riavvio dell'account"
     }
   },
   "general": {
@@ -1048,7 +1096,8 @@
     "restoreHere": "Ripristina qui",
     "rename": "Rinominare",
     "restore": "Ripristinare",
-    "copyLink": "Copia link"
+    "copyLink": "Copia link",
+    "report": "Segnala abuso"
   },
   "drive": {
     "usage": "Utilizzo",
