@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -123,6 +123,15 @@ const ShareDialog = (props: ShareDialogProps) => {
   }, [accessRequests]);
 
   // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
+  const getAndUpdateInvitedUsers = useCallback(async () => {
+    try {
+      const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
+      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.roleName }));
+      setInvitedUsers(parsedUsersList);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  }, [selectedFolder]);
   const loadShareInfo = async () => {
     try {
       // TODO -> Load access mode
@@ -159,9 +168,7 @@ const ShareDialog = (props: ShareDialogProps) => {
       const newRoles = await getPrivateSharingRoles();
       setRoles(newRoles.roles);
 
-      const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
-      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.roleName }));
-      setInvitedUsers(parsedUsersList);
+      await getAndUpdateInvitedUsers();
     } catch (error) {
       errorService.reportError(error);
     }
@@ -555,7 +562,12 @@ const ShareDialog = (props: ShareDialogProps) => {
       ),
       invite: (
         <ShareInviteDialog
-          onClose={() => setView('general')}
+          onClose={async () => {
+            setView('general');
+            setTimeout(async () => {
+              getAndUpdateInvitedUsers();
+            }, 500);
+          }}
           onInviteUser={onInviteUser}
           folderUUID={selectedFolder?.uuid as string}
           roles={roles}
