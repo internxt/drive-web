@@ -63,6 +63,8 @@ const ShareDialog = (props: ShareDialogProps) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const roles = useAppSelector((state: RootState) => state.shared.roles);
+
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const owner: InvitedUserProps = {
@@ -81,7 +83,6 @@ const ShareDialog = (props: ShareDialogProps) => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
-  const [roles, setRoles] = useState<PrivateSharingRole[]>([]);
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([
     {
       avatar: '',
@@ -163,9 +164,7 @@ const ShareDialog = (props: ShareDialogProps) => {
       },
     ];
     setAccessRequests(mockedAccessRequests);
-
-    const newRoles = await getPrivateSharingRoles();
-    setRoles(newRoles.roles);
+    dispatch(sharedThunks.getSharedFolderRoles());
   };
 
   const removeRequest = (email: string) => {

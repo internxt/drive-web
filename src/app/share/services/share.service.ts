@@ -202,6 +202,7 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
+  getPrivateSharingRoles,
 };
 
 export default shareService;
