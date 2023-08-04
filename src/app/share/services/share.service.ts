@@ -113,7 +113,7 @@ export function getShareDomains(): Promise<ShareDomainsResponse> {
   });
 }
 
-export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<ShareDomainsResponse> {
+export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.sharePrivateFolderWithUser(payload).catch((error) => {
     throw errorService.castError(error);

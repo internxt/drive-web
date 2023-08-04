@@ -1,10 +1,15 @@
-import * as openpgp from 'openpgp';
+import { WebStream, MaybeStream, Data } from 'openpgp';
 
+export async function getOpenpgp(): Promise<typeof import('openpgp')> {
+  return import('openpgp');
+}
 export async function generateNewKeys(): Promise<{
   privateKeyArmored: string;
   publicKeyArmored: string;
   revocationCertificate: string;
 }> {
+  const openpgp = await getOpenpgp();
+
   const { privateKey, publicKey, revocationCertificate } = await openpgp.generateKey({
     userIDs: [{ email: 'inxt@inxt.com' }],
     curve: 'ed25519',
@@ -23,7 +28,9 @@ export const encryptMessageWithPublicKey = async ({
 }: {
   message: string;
   publicKeyInBase64: string;
-}): Promise<openpgp.WebStream<string>> => {
+}): Promise<WebStream<string>> => {
+  const openpgp = await getOpenpgp();
+
   const publicKeyArmored = Buffer.from(publicKeyInBase64, 'base64').toString();
   const publicKey = await openpgp.readKey({ armoredKey: publicKeyArmored });
 
@@ -39,10 +46,12 @@ export const decryptMessageWithPrivateKey = async ({
   encryptedMessage,
   privateKeyInBase64,
 }: {
-  encryptedMessage: openpgp.WebStream<string>;
+  encryptedMessage: WebStream<string>;
   privateKeyInBase64: string;
-}): Promise<openpgp.MaybeStream<openpgp.Data> & openpgp.WebStream<Uint8Array>> => {
-  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString('ascii');
+}): Promise<MaybeStream<Data> & WebStream<Uint8Array>> => {
+  const openpgp = await getOpenpgp();
+
+  const privateKeyArmored = Buffer.from(privateKeyInBase64, 'base64').toString();
   const privateKey = await openpgp.readPrivateKey({ armoredKey: privateKeyArmored });
 
   const message = await openpgp.readMessage({
