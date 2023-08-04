@@ -217,7 +217,7 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 
 const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: RootState }>(
   'shareds/getRoles',
-  async (payload, { dispatch }): Promise<string | void> => {
+  async (_, { dispatch }): Promise<string | void> => {
     try {
       const newRoles = await shareService.getPrivateSharingRoles();
 

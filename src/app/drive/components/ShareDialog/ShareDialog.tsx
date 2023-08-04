@@ -16,8 +16,6 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
-import { getPrivateSharingRoles } from '../../../share/services/share.service';
-import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
