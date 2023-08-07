@@ -807,7 +807,8 @@
       "copy-to-clipboard": "Copier le lien dans le presse-papiers",
       "link-updated": "Mise à jour des paramètres de lien",
       "link-deleted": "Lien supprimé",
-      "links-deleted": "Lien(s) supprimé"
+      "links-deleted": "Lien(s) supprimé",
+      "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
 
