@@ -6,6 +6,7 @@ import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import SummerBanner from './SummerBanner';
+import Banner from './Banner';
 
 const BannerWrapper = () => {
   const [showBanner, setShowBanner] = useState(false);
@@ -30,7 +31,7 @@ const BannerWrapper = () => {
     handleBannerDisplay();
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
-  return <SummerBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
