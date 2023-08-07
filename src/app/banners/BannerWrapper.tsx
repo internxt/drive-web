@@ -14,11 +14,11 @@ const BannerWrapper = () => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !localStorageService.get('showSummerBanner');
+  const shouldShowBanner = userPlan === 'free' && !localStorageService.get('showLifetimeOffer');
 
   const onCloseBanner = () => {
     setShowBanner(false);
-    localStorage.setItem('showSummerBanner', 'false');
+    localStorage.setItem('showLifetimeOffer', 'false');
   };
 
   function handleBannerDisplay() {
