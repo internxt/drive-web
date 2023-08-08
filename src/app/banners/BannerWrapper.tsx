@@ -5,16 +5,15 @@ import { PlanState } from 'app/store/slices/plan';
 import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import SummerBanner from './SummerBanner';
 import Banner from './Banner';
 
-const BannerWrapper = () => {
+const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !localStorageService.get('showLifetimeOffer');
+  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(STORAGE_KEYS.SHOW_LIFETIME_BANNER);
 
   const onCloseBanner = () => {
     setShowBanner(false);
@@ -22,7 +21,7 @@ const BannerWrapper = () => {
   };
 
   function handleBannerDisplay() {
-    if ((isNewAccount && isTutorialCompleted && shouldShowBanner) || (!isNewAccount && shouldShowBanner)) {
+    if ((isNewAccount && isTutorialCompleted && shouldShowBanner) || shouldShowBanner) {
       setShowBanner(true);
     }
   }
