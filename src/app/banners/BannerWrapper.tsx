@@ -21,7 +21,7 @@ const BannerWrapper = (): JSX.Element => {
   };
 
   function handleBannerDisplay() {
-    if ((isNewAccount && isTutorialCompleted && shouldShowBanner) || shouldShowBanner) {
+    if ((isNewAccount && isTutorialCompleted && shouldShowBanner) || (!isNewAccount && shouldShowBanner)) {
       setShowBanner(true);
     }
   }
