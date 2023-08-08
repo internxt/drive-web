@@ -17,7 +17,7 @@ const BannerWrapper = (): JSX.Element => {
 
   const onCloseBanner = () => {
     setShowBanner(false);
-    localStorage.setItem('showLifetimeOffer', 'false');
+    localStorage.setItem(STORAGE_KEYS.SHOW_LIFETIME_BANNER, 'false');
   };
 
   function handleBannerDisplay() {
