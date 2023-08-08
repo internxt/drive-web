@@ -139,8 +139,37 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
             },
           });
 
-          zip.file(photoName, await photoStreamPromise, { compression: 'DEFLATE' });
+          try {
+            const photoData = await photoStreamPromise;
+
+            const reader = photoData.getReader();
+            const chunks = [] as Uint8Array[];
+
+            let done = false;
+            while (!done) {
+              const { done: readerDone, value } = await reader.read();
+              done = readerDone;
+              if (!done && value) {
+                chunks.push(value);
+              }
+            }
+
+            const totalLength = chunks.reduce((total, chunk) => total + chunk.length, 0);
+            const concatenatedUint8Array = new Uint8Array(totalLength);
+
+            let offset = 0;
+            for (const chunk of chunks) {
+              concatenatedUint8Array.set(chunk, offset);
+              offset += chunk.length;
+            }
+
+            zip.file(photoName, concatenatedUint8Array, { compression: 'DEFLATE' });
+          } catch (error) {
+            errorService.reportError(error);
+            throw new Error('Error generating zip');
+          }
         }
+
         await new Promise<void>((resolve, reject) => {
           const zipStream = zip.generateInternalStream({
             type: 'uint8array',
