@@ -225,11 +225,21 @@ const ShareDialog = (props: ShareDialogProps) => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = (email: string) => {
-    // TODO -> Use API to remove user
-    // Then update frot-end
-    setInvitedUsers((current) => current.filter((user) => user.email !== email));
-    closeSelectedUserPopover();
+  const onRemoveUser = async (email: string) => {
+    const invitedUserUUID = invitedUsers.find((user) => user.email === email)?.uuid;
+    try {
+      if (invitedUserUUID) {
+        const hasBeenRemoved = (
+          await shareService.removeUserFromSharedFolder(selectedFolder.uuid as string, invitedUserUUID)
+        )?.removed;
+        if (hasBeenRemoved) {
+          setInvitedUsers((current) => current.filter((user) => user.email !== email));
+        }
+      }
+      closeSelectedUserPopover();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const changeAccess = (mode: AccessMode) => {
