@@ -194,6 +194,20 @@ export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: Priv
   });
 }
 
+export function stopSharingFolder(folderUUID: string): Promise<{ stoped: boolean }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.stopSharingFolder(folderUUID).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeUserFromSharedFolder(folderUUID: string, userUUID: string): Promise<{ removed: boolean }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeUserFromSharedFolder(folderUUID, userUUID).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 interface SharedDirectoryFoldersPayload {
   token: string;
   directoryId: number;
@@ -275,6 +289,8 @@ const shareService = {
   getShareDomains,
   updateUserRoleOfSharedFolder,
   getPrivateSharedFolder,
+  stopSharingFolder,
+  removeUserFromSharedFolder,
 };
 
 export default shareService;

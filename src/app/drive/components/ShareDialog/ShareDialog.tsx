@@ -253,28 +253,32 @@ const ShareDialog = (props: ShareDialogProps) => {
     }
   };
 
-  const onStopSharing = () => {
+  const onStopSharing = async () => {
     setIsLoading(true);
 
-    // TODO -> Stop sharing
-    const stoppedSharing = true;
-    if (stoppedSharing) {
-      // If success
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.success', {
-          name: cropSharedName(props.selectedItems[0]?.name ?? ''),
-        }),
-        type: ToastType.Success,
-      });
-      setShowStopSharingConfirmation(false);
-      setIsLoading(false);
-      onClose();
-    } else {
-      // If error
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.error'),
-        type: ToastType.Error,
-      });
+    try {
+      const stoppedSharing = (await shareService.stopSharingFolder(selectedFolder?.uuid as string))?.stoped;
+      if (stoppedSharing) {
+        // If success
+        notificationsService.show({
+          text: translate('modals.shareModal.stopSharing.notification.success', {
+            name: cropSharedName(props.selectedItems[0]?.name ?? ''),
+          }),
+          type: ToastType.Success,
+        });
+        setShowStopSharingConfirmation(false);
+        onClose();
+      } else {
+        // If error
+        notificationsService.show({
+          text: translate('modals.shareModal.stopSharing.notification.error'),
+          type: ToastType.Error,
+        });
+      }
+    } catch (error) {
+      errorService.reportError(error);
+      // TODO: Add notification message
+    } finally {
       setIsLoading(false);
     }
   };
