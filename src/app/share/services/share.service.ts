@@ -11,7 +11,7 @@ import {
   PrivateSharingRole,
   ShareDomainsResponse,
   SharePrivateFolderWithUserPayload,
-  UpdateRoleFolderPayload,
+  UpdateUserRolePayload,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -177,12 +177,12 @@ export function getPrivateSharingRoles(): Promise<{ roles: PrivateSharingRole[] 
 }
 
 export function updateUserRoleOfSharedFolder({
-  userEmail,
+  userUUID,
   folderUUID,
   roleId,
-}: UpdateRoleFolderPayload): Promise<{ message: string }> {
+}: UpdateUserRolePayload): Promise<{ message: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.updateRoleFolder({ userEmail, folderUUID, roleId }).catch((error) => {
+  return shareClient.updateUserRole({ userUUID, folderUUID, roleId }).catch((error) => {
     throw errorService.castError(error);
   });
 }

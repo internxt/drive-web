@@ -297,10 +297,10 @@ const ShareDialog = (props: ShareDialogProps) => {
     try {
       setSelectedUserListIndex(null);
       const roleId = roles.find((role) => role.role === roleName)?.id;
-
-      if (email && roleId) {
+      const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
+      if (roleId && userUUID) {
         await shareService.updateUserRoleOfSharedFolder({
-          userEmail: email,
+          userUUID,
           folderUUID: selectedFolder?.uuid as string,
           roleId,
         });
