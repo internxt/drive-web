@@ -14,6 +14,7 @@ import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ReportButton from '../../../share/views/ShareView/ReportButon';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -235,6 +236,12 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
           {/* File container */}
           <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
+          {/* Bottom bar */}
+          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+            <div className="ml-auto px-4">
+              <ReportButton />
+            </div>
+          </div>
         </div>
       </div>
     </>

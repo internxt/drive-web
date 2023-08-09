@@ -7,6 +7,7 @@ import fr from 'dayjs/locale/fr';
 import it from 'dayjs/locale/it';
 import cn from 'dayjs/locale/zh-cn';
 import ru from 'dayjs/locale/ru';
+import de from 'dayjs/locale/de';
 import dayjs from 'dayjs';
 
 const dayJsLocale = {
@@ -15,6 +16,7 @@ const dayJsLocale = {
   it,
   cn,
   ru,
+  de,
 };
 
 const deviceLang = localStorageService.get('language') || navigator.language.split('-')[0];
@@ -42,6 +44,9 @@ i18next
       },
       ru: {
         translation: require('../locales/ru.json'),
+      },
+      de: {
+        translation: require('../locales/de.json'),
       },
     },
     debug: !envService.isProduction(),

@@ -5,4 +5,5 @@ export enum Locale {
   Italian = 'it',
   Chinese = 'cn',
   Russian = 'ru',
+  German = 'de',
 }

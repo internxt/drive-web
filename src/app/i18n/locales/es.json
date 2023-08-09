@@ -34,7 +34,8 @@
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
     "cn": "简体中文 (Chino)",
-    "ru": "Русский (Ruso)"
+    "ru": "Русский (Ruso)",
+    "de": "Deutsch (Alemán)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -57,10 +58,57 @@
       "encrypting": "Encriptando"
     },
     "forgotPassword": {
-      "title": "Contraseña olvidada",
-      "description": "Como se especifica en la sección de seguridad de la aplicación, tu contraseña se utiliza para cifrar y descifrar y sólo tú tienes acceso a ella. Por lo tanto, no podemos restaurar tu cuenta sin la contraseña. Puedes registrarte de nuevo introduciendo tu correo electrónico a continuación para que podamos eliminar tu cuenta y todos tus archivos.",
-      "sendInstructions": "Enviar instrucciones",
-      "sending": "Enviando..."
+      "title": "Recuperación de cuenta",
+      "continue": "Continuar",
+      "sending": "Enviando...",
+      "notFound": "Dirección de correo electrónico no encontrada, inténtalo de nuevo",
+      "password": "¿Recuerdas tu contraseña?",
+      "login": "Iniciar sesión",
+      "successTitle": "Comprueba tu bandeja de entrada",
+      "successDescription": "Te hemos enviado un enlace para recuperar la contraseña de tu cuenta.",
+      "ivalidEmail": "Correo electrónico no válido"
+    },
+    "recoverAccount": {
+      "title": "Recuperar cuenta",
+      "subtitle": "¿Tienes la clave de recuperación?",
+      "info": "¿Cómo es la clave de recuperación?",
+      "info1": "El nombre de la clave de recuperación es 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La clave de recuperación tiene 24 palabras",
+      "haveKeyButton": "Si, tengo la clave de recuperación",
+      "notKeyButton": "No, no tengo clave de recuperación",
+      "backupKey": {
+        "title": "Verificar clave de recuperación",
+        "alert": "Si carga una clave de respaldo incorrecta, sus datos se dañarán, asegúrese de que su clave de respaldo sea correcta.",
+        "button": "Subir clave de recuperación"
+      },
+      "changePassword": {
+        "title": "Cambiar contraseña",
+        "newPassword": "Contraseña nueva",
+        "repeatNewPassword": "Repite contraseña nueva",
+        "notMatch": "Las contraseñas no coinciden",
+        "submitButton": "Cambiar contraseña",
+        "notPasswordStrength": "La contraseña debe tener un numero",
+        "shortPasswordStrength": "La contraseña debe tener al menos 8 caracteres",
+        "warningPasswordStrength": "Contraseña débil",
+        "successPasswordStrength": "Contraseña segura",
+        "serverError": "Algo ha ido mal al cambiar la contraseña",
+        "tokenError": "Se ha producido un error al validar la clave de recuperación",
+        "backupKeyError": "La clave de recuperación subida no es válida",
+        "emailSent": {
+          "title": "Contraseña modificada",
+          "description": "Todos tus datos han sido encriptados de nuevo y todas tus sesiones activas han sido cerradas.",
+          "redirect": "Redirigiendo a Internxt Drive en",
+          "button": "Ir a Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Reiniciar cuenta",
+      "description": "Gracias a nuestra política de cifrado de extremo a extremo y de conocimiento cero, no podrás acceder a tus datos sin tu contraseña o una clave de recuperación.",
+      "alert1": "Al reiniciar tu cuenta, entiendes que todos tus archivos, fotos y copias de seguridad se eliminarán de forma permanente.",
+      "button": "Enviar verificación de reinicio de cuenta",
+      "successDescription": "Tu cuenta y contraseña se han reiniciado",
+      "error": "Algo ha fallado al reiniciar la cuenta"
     }
   },
   "general": {
@@ -829,7 +877,8 @@
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
       "link-deleted": "Enlace eliminado",
-      "links-deleted": "Enlaces eliminados"
+      "links-deleted": "Enlaces eliminados",
+      "error-deleting-links": "Se produjo un error al eliminar enlaces compartidos"
     }
   },
   "trash": {
@@ -1064,7 +1113,8 @@
     "restoreHere": "Restaurar aquí",
     "rename": "Renombrar",
     "restore": "Restaurar",
-    "copyLink": "Copiar enlace"
+    "copyLink": "Copiar enlace",
+    "report": "Reportar abuso"
   },
   "drive": {
     "usage": "Uso",
