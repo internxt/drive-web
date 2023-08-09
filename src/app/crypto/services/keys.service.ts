@@ -69,23 +69,21 @@ export function decryptPrivateKey(privateKey: string, password: string): string 
 
 export async function assertValidateKeys(privateKey: string, publicKey: string): Promise<void> {
   const openpgp = await getOpenpgp();
-  const publicKeyArmored = await openpgp.key.readArmored(publicKey);
-  const privateKeyArmored = await openpgp.key.readArmored(privateKey);
+  const publicKeyArmored = await openpgp.readKey({ armoredKey: publicKey });
+  const privateKeyArmored = await openpgp.readPrivateKey({ armoredKey: privateKey });
 
   const plainMessage = 'validate-keys';
-  const originalText = openpgp.message.fromText(plainMessage);
-  const encryptedMessage = (
-    await openpgp.encrypt({
-      message: originalText,
-      publicKeys: publicKeyArmored.keys,
-    })
-  ).data;
+  const originalText = await openpgp.createMessage({ text: plainMessage });
+  const encryptedMessage = await openpgp.encrypt({
+    message: originalText,
+    encryptionKeys: publicKeyArmored,
+  });
 
   const decryptedMessage = (
     await openpgp.decrypt({
-      message: await openpgp.message.readArmored(encryptedMessage),
-      publicKeys: publicKeyArmored.keys,
-      privateKeys: privateKeyArmored.keys,
+      message: await openpgp.readMessage({ armoredMessage: encryptedMessage }),
+      verificationKeys: publicKeyArmored,
+      decryptionKeys: privateKeyArmored,
     })
   ).data;
 
