@@ -275,6 +275,7 @@ const shareService = {
   getShareDomains,
   updateUserRoleOfSharedFolder,
   getPrivateSharedFolder,
+  getPrivateSharingRoles,
 };
 
 export default shareService;

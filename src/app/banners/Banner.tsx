@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
 import NeonBlur from 'assets/images/banner/infinity.svg';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const Banner = ({ showBanner, onClose }) => {
+const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
 
   return (
@@ -69,11 +68,8 @@ const Banner = ({ showBanner, onClose }) => {
               <button
                 className="focus:outline-none relative flex flex-row items-center justify-center space-x-4 rounded-lg bg-white px-7 py-3 text-base font-medium text-primary transition duration-100 focus-visible:bg-gray-1 active:bg-gray-1 sm:text-lg"
                 onClick={() => {
-                  window.open(
-                    'https://internxt.com/pricing?utm_source=drive&utm_medium=banner&utm_campaign=lifetimeapril',
-                    '_blank',
-                    'noopener,noreferrer',
-                  );
+                  window.open('https://internxt.com/pricing', '_blank', 'noopener,noreferrer');
+                  onClose();
                 }}
               >
                 {translate('lifetimeBanner.cta')}

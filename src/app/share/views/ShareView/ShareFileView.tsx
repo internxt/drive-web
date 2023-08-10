@@ -27,6 +27,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ReportButton from './ReportButon';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{

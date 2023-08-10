@@ -12,15 +12,15 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
 import { useDispatch } from 'react-redux';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
-import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../../../store';
+import { Role } from '../../../store/slices/sharedLinks/types';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
   folderUUID: string;
-  roles: PrivateSharingRole[];
   onClose: () => void;
+  roles: Role[];
 }
 
 interface UsersToInvite {
@@ -34,7 +34,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
-  const [userRole, setUserRole] = useState<string>(props.roles[0]?.role);
+  const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
@@ -70,7 +70,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     }
   };
 
-  const onEditRole = (value: PrivateSharingRole['role'], user: UsersToInvite) => {
+  const onEditRole = (value: Role['name'], user: UsersToInvite) => {
     const newUserToInvite = usersToInvite.map((userToInvite) => {
       if (user.email === userToInvite.email) {
         return { ...userToInvite, userRole: value };
@@ -83,7 +83,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const onInvite = async () => {
     const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
     usersToInvite.forEach((user) => {
-      const userRoleId = props.roles.find((role) => role.role === user.userRole)?.id;
+      const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
       if (!userRoleId) return;
 
       sharingPromises.push(
@@ -120,12 +120,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               {props.roles.map((role) => (
                 <Listbox.Option
                   key={role.id}
-                  value={role.role}
+                  value={role.name}
                   className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                 >
                   {({ selected }) => (
                     <>
-                      <span>{translate(`modals.shareModal.invite.${role.role}`)}</span>
+                      <span>{translate(`modals.shareModal.invite.${role.name}`)}</span>
                       {selected ? <Check size={20} /> : null}
                     </>
                   )}
@@ -163,12 +163,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                       {props.roles.map((role) => (
                         <Listbox.Option
                           key={role.id}
-                          value={role.role}
+                          value={role.name}
                           className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
                         >
                           {({ selected }) => (
                             <>
-                              <span>{translate(`modals.shareModal.invite.${role.role}`)}</span>
+                              <span>{translate(`modals.shareModal.invite.${role.name}`)}</span>
                               {selected ? <Check size={20} /> : null}
                             </>
                           )}

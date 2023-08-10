@@ -23,6 +23,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ReportButton from './ReportButon';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -288,7 +289,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
+        <div className="flex flex-row items-center justify-center">
           <button
             onClick={() => {
               download(itemPassword);

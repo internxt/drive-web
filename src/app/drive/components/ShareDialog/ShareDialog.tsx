@@ -16,8 +16,7 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
-import shareService, { getPrivateSharingRoles } from '../../../share/services/share.service';
-import { PrivateSharingRole } from '@internxt/sdk/dist/drive/share/types';
+import shareService from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 
 type AccessMode = 'public' | 'restricted';
@@ -65,6 +64,8 @@ const ShareDialog = (props: ShareDialogProps) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const roles = useAppSelector((state: RootState) => state.shared.roles);
+
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const selectedFolder = props.selectedItems[0];
 
@@ -82,8 +83,31 @@ const ShareDialog = (props: ShareDialogProps) => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
-  const [roles, setRoles] = useState<PrivateSharingRole[]>([]);
-  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
+  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([
+    {
+      avatar: '',
+      name: 'Juan',
+      lastname: 'Mendes',
+      email: 'juan@inxt.com',
+      message:
+        'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+      status: REQUEST_STATUS.PENDING,
+    },
+    {
+      avatar: '',
+      name: 'Eve',
+      lastname: 'Korn',
+      email: 'eve@inxt.com',
+      status: REQUEST_STATUS.PENDING,
+    },
+    {
+      avatar: '',
+      name: 'Maria',
+      lastname: 'Korn',
+      email: 'maria@inxt.com',
+      status: REQUEST_STATUS.PENDING,
+    },
+  ]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const [view, setView] = useState<Views>('general');
@@ -98,7 +122,6 @@ const ShareDialog = (props: ShareDialogProps) => {
     setShowStopSharingConfirmation(false);
     setIsLoading(false);
     setInvitedUsers([]);
-    setRoles([]);
     setAccessRequests([]);
     setUserOptionsEmail('');
     setUserOptionsY(0);
@@ -138,6 +161,10 @@ const ShareDialog = (props: ShareDialogProps) => {
       const shareAccessMode: AccessMode = 'public';
       setAccessMode(shareAccessMode);
 
+      // TODO -> Load invited users
+      const loadedUsers: InvitedUserProps[] = [];
+      setInvitedUsers(loadedUsers);
+      // TODO -> Load access requests
       const mockedAccessRequests = [
         {
           avatar: '',
@@ -164,10 +191,7 @@ const ShareDialog = (props: ShareDialogProps) => {
         },
       ];
       setAccessRequests(mockedAccessRequests);
-
-      const newRoles = await getPrivateSharingRoles();
-      setRoles(newRoles.roles);
-
+      dispatch(sharedThunks.getSharedFolderRoles());
       await getAndUpdateInvitedUsers();
     } catch (error) {
       errorService.reportError(error);
@@ -282,7 +306,7 @@ const ShareDialog = (props: ShareDialogProps) => {
   const handleUserRoleChange = async (email: string, roleName: string) => {
     try {
       setSelectedUserListIndex(null);
-      const roleId = roles.find((role) => role.role === roleName)?.id;
+      const roleId = roles.find((role) => role.name === roleName)?.id;
       const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
       if (roleId && userUUID) {
         await shareService.updateUserRoleOfSharedFolder({

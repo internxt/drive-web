@@ -1,5 +1,6 @@
+import { DecryptMessageResult, WebStream } from 'openpgp';
 import localStorageService from '../../core/services/local-storage.service';
-import * as openpgp from 'openpgp';
+import { getOpenpgp } from './pgp.service';
 
 export async function isValidBase64(key: string): Promise<boolean> {
   const isPlain = await isValid(key);
@@ -9,6 +10,7 @@ export async function isValidBase64(key: string): Promise<boolean> {
 
 export async function isValid(key: string): Promise<boolean> {
   try {
+    const openpgp = await getOpenpgp();
     await openpgp.readKey({ armoredKey: key });
     return true;
   } catch (error) {
@@ -16,8 +18,9 @@ export async function isValid(key: string): Promise<boolean> {
   }
 }
 
-export async function decryptPGP(armoredMessage: string): Promise<openpgp.DecryptMessageResult> {
+export async function decryptPGP(armoredMessage: string): Promise<DecryptMessageResult> {
   const user = localStorageService.getUser();
+  const openpgp = await getOpenpgp();
 
   if (!user) {
     throw Error('User not found on local storage');
@@ -40,8 +43,9 @@ export async function decryptPGP(armoredMessage: string): Promise<openpgp.Decryp
   });
 }
 
-export async function encryptPGP(message: string): Promise<openpgp.WebStream<string>> {
+export async function encryptPGP(message: string): Promise<WebStream<string>> {
   const user = localStorageService.getUser();
+  const openpgp = await getOpenpgp();
 
   if (!user) {
     throw Error('User not found on local storage');
@@ -61,7 +65,9 @@ export async function encryptPGP(message: string): Promise<openpgp.WebStream<str
   });
 }
 
-export async function encryptPGPInvitations(message: string, key: string): Promise<openpgp.WebStream<string>> {
+export async function encryptPGPInvitations(message: string, key: string): Promise<WebStream<string>> {
+  const openpgp = await getOpenpgp();
+
   // User settings
   const publicKey = Buffer.from(key, 'base64').toString();
 
