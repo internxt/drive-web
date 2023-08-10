@@ -9,9 +9,7 @@ import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
-
 import './DriveExplorerListItem.scss';
-
 import { DriveItemData } from '../../../../types';
 import envService from '../../../../../core/services/env.service';
 
@@ -112,12 +110,21 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       {/* ICON */}
       <div className="box-content flex w-1/12 items-center px-3">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent className="h-full" />
+          <ItemIconComponent
+            className="h-full"
+            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
+          />
           {itemIsShared &&
             (isProduction ? (
-              <Link className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100" />
+              <Link
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              />
             ) : (
-              <Users className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100" />
+              <Users
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              />
             ))}
         </div>
       </div>

@@ -5,6 +5,7 @@ import fr from './fr.json';
 import cn from './cn.json';
 import it from './it.json';
 import ru from './ru.json';
+import de from './de.json';
 
 const locales = {
   [Locale.English]: en,
@@ -13,6 +14,7 @@ const locales = {
   [Locale.Chinese]: cn,
   [Locale.Italian]: it,
   [Locale.Russian]: ru,
+  [Locale.German]: de,
 };
 
 export default locales;

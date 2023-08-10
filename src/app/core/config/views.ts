@@ -12,7 +12,7 @@ import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
 import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/DeactivationTeamsView';
 import ShareFileView from 'app/share/views/ShareView/ShareFileView';
-import RemoveAccountView from 'app/auth/views/RemoveAccountView/RemoveAccountView';
+import RecoveryLinkView from 'app/auth/views/RecoveryLinkView/RecoveryLinkView';
 import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/GuestAcceptInviteView';
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
@@ -21,7 +21,7 @@ import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
-import RecoverView from '../../auth/views/RecoverView/RecoverView';
+import RecoverAccountView from 'app/auth/views/RecoverAccountView/RecoverAccountView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
@@ -46,7 +46,7 @@ const views: Array<{
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
-  { id: AppView.Recover, component: RecoverView },
+  { id: AppView.RecoverAccount, component: RecoverAccountView },
   { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
@@ -64,8 +64,7 @@ const views: Array<{
   { id: AppView.CheckoutCancel, component: CheckoutCancelView },
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
-  { id: AppView.Remove, component: RemoveAccountView },
-  { id: AppView.RemoveDialog, component: RemoveAccountView, componentProps: { displayIframe: true } },
+  { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.SharePhotosToken, component: SharePhotosView },
