@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 
 const localStorageLanguage = localStorageService.get('language');
 
-const languages = ['en', 'es', 'fr', 'it', 'cn', 'ru'];
+const languages = ['en', 'es', 'fr', 'it', 'cn', 'ru', 'de'];
 
 function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) {
   return (

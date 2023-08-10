@@ -34,7 +34,8 @@
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
     "cn": "简体中文 (Chino)",
-    "ru": "Русский (Ruso)"
+    "ru": "Русский (Ruso)",
+    "de": "Deutsch (Alemán)"
   },
   "auth": {
     "email": "Correo electrónico",
@@ -676,7 +677,11 @@
         "invite": "Invitar",
         "editor": "Editor",
         "viewer": "Visualizador",
-        "listUsers": "Usuarios a invitar"
+        "listUsers": "Usuarios a invitar",
+        "successSentInvitation": "Compartido con éxito con {{email}}",
+        "error": {
+          "errorInviting": "Error al enviar la invitación a {{email}}"
+        }
       },
       "requestAccess": {
         "title": "No tienes acceso",
@@ -872,7 +877,8 @@
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
       "link-deleted": "Enlace eliminado",
-      "links-deleted": "Enlaces eliminados"
+      "links-deleted": "Enlaces eliminados",
+      "error-deleting-links": "Se produjo un error al eliminar enlaces compartidos"
     }
   },
   "trash": {

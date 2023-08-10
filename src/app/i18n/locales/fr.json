@@ -34,7 +34,8 @@
     "fr": "Français (Français)",
     "it": "Italiano (Italien)",
     "cn": "简体中文 (Chinois)",
-    "ru": "Русский (Russe)"
+    "ru": "Русский (Russe)",
+    "de": "Deutsch (Allemand)"
   },
   "auth": {
     "email": "Adresse électronique",
@@ -611,7 +612,11 @@
         "invite": "Inviter",
         "editor": "Éditeur",
         "viewer": "Visualiseur",
-        "listUsers": "Utilisateurs à inviter"
+        "listUsers": "Utilisateurs à inviter",
+        "successSentInvitation": "Partage réussi avec {{email}}",
+        "error": {
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}"
+        }
       },
       "requestAccess": {
         "title": "Vous n'avez pas accès",
@@ -806,7 +811,8 @@
       "copy-to-clipboard": "Copier le lien dans le presse-papiers",
       "link-updated": "Mise à jour des paramètres de lien",
       "link-deleted": "Lien supprimé",
-      "links-deleted": "Lien(s) supprimé"
+      "links-deleted": "Lien(s) supprimé",
+      "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
 

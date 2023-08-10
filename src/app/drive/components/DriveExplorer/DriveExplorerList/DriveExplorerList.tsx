@@ -233,6 +233,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             }),
           );
           dispatch(uiActions.setIsShareDialogOpen(true));
+          // Use to share with specific user
+          // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
         },
     [dispatch, storageActions, uiActions, isProduction],
   );

@@ -36,6 +36,7 @@ import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/Edi
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import envService from '../../../core/services/env.service';
 import { domainManager } from '../../services/DomainManager';
+import errorService from '../../../core/services/error.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -44,7 +45,7 @@ function copyShareLink(type: string, code: string, token: string) {
     domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
   const shareDomain = _.sample(domainList);
 
-  copy(`${shareDomain}/s/${type}/${token}/${code}`);
+  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -126,23 +127,35 @@ export default function SharedLinksView(): JSX.Element {
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
-      console.log('selectedItems', selectedItems.length);
+      setHasMoreItems(true);
 
-      const CHUNK_SIZE = 10;
-      const chunks = _.chunk(selectedItems, CHUNK_SIZE);
-      for (const chunk of chunks) {
-        const promises = chunk.map((item) => deleteShareLink(item.id));
-        await Promise.all(promises);
+      try {
+        const CHUNK_SIZE = 10;
+        const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+        for (const chunk of chunks) {
+          const promises = chunk.map((item) => deleteShareLink(item.id));
+          await Promise.all(promises);
+        }
+
+        const stringLinksDeleted =
+          selectedItems.length > 1
+            ? translate('shared-links.toast.links-deleted')
+            : translate('shared-links.toast.link-deleted');
+
+        notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
+
+        setTimeout(async () => {
+          await fetchItems(0, orderBy, 'substitute');
+          setIsLoading(false);
+          closeConfirmDelete();
+        }, 500);
+      } catch (error) {
+        errorService.reportError(error, { extra: { sharedLinksToDelete: selectedItems } });
+        notificationsService.show({
+          text: translate('shared-links.toast.error-deleting-links'),
+          type: ToastType.Error,
+        });
       }
-
-      const stringLinksDeleted =
-        selectedItems.length > 1
-          ? translate('shared-links.toast.links-deleted')
-          : translate('shared-links.toast.link-deleted');
-      notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
-      await fetchItems(0, orderBy, 'substitute');
-      closeConfirmDelete();
-      setIsLoading(false);
     }
   }
 
@@ -435,6 +448,7 @@ export default function SharedLinksView(): JSX.Element {
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction={translate('modals.removeSharedLinkModal.cancel')}
+        isLoading={isLoading}
         title={
           selectedItems.length > 1
             ? translate('shared-links.item-menu.delete-links')

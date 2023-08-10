@@ -3,7 +3,12 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
-import { ListShareLinksItem, ShareDomainsResponse } from '@internxt/sdk/dist/drive/share/types';
+import {
+  ListShareLinksItem,
+  PrivateSharingRole,
+  ShareDomainsResponse,
+  SharePrivateFolderWithUserPayload,
+} from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
 
@@ -108,6 +113,20 @@ export function getShareDomains(): Promise<ShareDomainsResponse> {
   });
 }
 
+export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.sharePrivateFolderWithUser(payload).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPrivateSharingRoles(): Promise<{ roles: PrivateSharingRole[] }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPrivateSharingRoles().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 interface SharedDirectoryFoldersPayload {
   token: string;
   directoryId: number;
@@ -183,6 +202,7 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
+  getPrivateSharingRoles,
 };
 
 export default shareService;
