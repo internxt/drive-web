@@ -614,6 +614,12 @@
           "error": "无法停止分享，请再试一次"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "用户 \"{{name}}\" 已删除",
+          "error": "无法删除用户 \"{{name}}\"，请重试"
+        }
+      },
       "invite": {
         "title": "邀请人们",
         "textarea": "输入你的信息文本（可选）",

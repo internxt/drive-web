@@ -556,6 +556,12 @@
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utilisateur \"{{name}}\" supprimé",
+          "error": "Impossible de supprimer l'utilisateur \"{{name}}\", veuillez réessayer"
+        }
+      },
       "invite": {
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
