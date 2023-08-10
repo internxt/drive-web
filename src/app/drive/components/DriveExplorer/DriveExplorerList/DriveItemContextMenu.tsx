@@ -260,10 +260,7 @@ const contextMenuDriveItemShared = ({
         getOpenPreviewMenuItem(openPreview),
         ...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink }),
       ]
-    : [
-        manageLinkAccessMenuItem(openShareAccessSettings), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING
-        getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
-      ]),
+    : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
   getRenameMenuItem(renameItem),
