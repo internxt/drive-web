@@ -175,10 +175,10 @@ ListProps<T, F>): JSX.Element {
   };
 
   useHotkeys(
-    'ctrl+a, cmd+a',
+    'ctrl+a, meta+a',
     (e) => {
       e.preventDefault();
-      handleKeyPress(selectAllItems);
+      handleKeyPress(selectAllItems)();
     },
     [items, selectedItems, disableKeyboardShortcuts],
   );

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService, { sharePrivateFolderWithUser } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
@@ -18,12 +18,16 @@ import { storageActions } from '../storage';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { decryptMessageWithPrivateKey, encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { Role } from './types';
+import { parseRolesFromBackend } from './utils';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
   isLoadingShareds: boolean;
   isSharingKey: boolean;
   sharedLinks: ListShareLinksItem[] | []; //ShareLink[];
+  isLoadingRoles: boolean;
+  roles: Role[];
   pagination: {
     page: number;
     perPage: number;
@@ -36,6 +40,8 @@ const initialState: ShareLinksState = {
   isLoadingShareds: false,
   isSharingKey: false,
   sharedLinks: [],
+  isLoadingRoles: false,
+  roles: [],
   pagination: {
     page: 1,
     perPage: 50,
@@ -209,6 +215,22 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
   },
 );
 
+const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: RootState }>(
+  'shareds/getRoles',
+  async (_, { dispatch }): Promise<string | void> => {
+    try {
+      const newRoles = await shareService.getPrivateSharingRoles();
+
+      if (newRoles.roles.length > 0) {
+        const parsedRoles = parseRolesFromBackend(newRoles.roles);
+        dispatch(sharedActions.setSharedFolderUserRoles(parsedRoles));
+      }
+    } catch (err: unknown) {
+      errorService.reportError(err, { extra: { thunk: 'getSharedFolderRoles' } });
+    }
+  },
+);
+
 interface DecryptPrivateKeyPayload {
   privateKeyEncrypted: string;
 }
@@ -239,7 +261,11 @@ const decryptPrivateKeyOfSharedItem = createAsyncThunk<string | void, DecryptPri
 export const sharedSlice = createSlice({
   name: 'shared',
   initialState,
-  reducers: {},
+  reducers: {
+    setSharedFolderUserRoles: (state: ShareLinksState, action: PayloadAction<Role[]>) => {
+      state.roles = action.payload;
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(fetchSharedLinksThunk.pending, (state) => {
@@ -253,7 +279,6 @@ export const sharedSlice = createSlice({
       .addCase(fetchSharedLinksThunk.rejected, (state) => {
         state.isLoadingShareds = false;
       })
-
       .addCase(getSharedLinkThunk.pending, (state) => {
         state.isLoadingGeneratingLink = true;
       })
@@ -271,11 +296,25 @@ export const sharedSlice = createSlice({
       })
       .addCase(shareFileWithUser.rejected, (state) => {
         state.isSharingKey = false;
+      })
+      .addCase(getSharedFolderRoles.pending, (state) => {
+        state.isLoadingRoles = true;
+      })
+      .addCase(getSharedFolderRoles.fulfilled, (state) => {
+        state.isLoadingRoles = false;
+      })
+      .addCase(getSharedFolderRoles.rejected, (state) => {
+        state.isLoadingRoles = false;
       });
   },
 });
 
-export const sharedSelectors = {};
+export const sharedSelectors = {
+  getSharedFolderUserRoles(state: RootState): Role[] {
+    const { roles } = state.shared;
+    return roles;
+  },
+};
 
 export const sharedActions = sharedSlice.actions;
 
@@ -285,6 +324,7 @@ export const sharedThunks = {
   deleteLinkThunk,
   shareFileWithUser,
   decryptPrivateKeyOfSharedItem,
+  getSharedFolderRoles,
 };
 
 export default sharedSlice.reducer;
