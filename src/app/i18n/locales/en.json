@@ -218,6 +218,7 @@
     "photos": "Photos",
     "backups": "Backups",
     "sharedLinks": "Shared Links",
+    "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
     "desktop": "Desktop"
@@ -866,10 +867,12 @@
     "shared-links": "Shared links",
     "view": "views",
     "list": {
+      "name": "Name",
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created",
-      "size": "Size"
+      "size": "Size",
+      "owner": "Owner"
     },
     "empty-state": {
       "title": "Nothing shared yet",

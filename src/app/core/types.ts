@@ -116,6 +116,7 @@ export enum AppView {
   Trash = 'trash',
   Backups = 'backups',
   SharedLinks = 'shared-links',
+  Shared = 'shared',
   Photos = 'photos',
   Preferences = 'preferences',
   TeamsJoin = 'teams-join',

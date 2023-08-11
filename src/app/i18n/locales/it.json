@@ -199,6 +199,7 @@
     "photos": "Photos",
     "backups": "Backup",
     "sharedLinks": "Link Condivisi",
+    "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
     "desktop": "Applicazione desktop"
@@ -840,10 +841,12 @@
     "shared-links": "Link condivisi",
     "view": "viste",
     "list": {
+      "name": "Nome",
       "link-content": "Contenuto del link",
       "shared": "Condivisioni",
       "created": "Creato",
-      "size": "Dimensione"
+      "size": "Dimensione",
+      "owner": "Propietario"
     },
     "empty-state": {
       "title": "Niente di condiviso, per ora",

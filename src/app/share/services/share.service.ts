@@ -4,6 +4,8 @@ import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
 import {
+  ListAllSharedFoldersResponse,
+  ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
   PrivateSharingRole,
   ShareDomainsResponse,
@@ -67,6 +69,39 @@ export function incrementShareView(token: string): Promise<{ incremented: boolea
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.updateShareLink(params).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getReceivedSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getReceivedSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSentSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getAllSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllSharedFolders(page, perPage, orderBy).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -197,6 +232,9 @@ const shareService = {
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
+  getSentSharedFolders,
+  getReceivedSharedFolders,
+  getAllSharedFolders,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,

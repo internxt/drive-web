@@ -88,6 +88,13 @@
       "hideSearch": true
     },
     {
+      "id": "shared",
+      "layout": "header-and-sidenav",
+      "path": "/app/shared",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "photos",
       "layout": "header-and-sidenav",
       "path": "/app/photos",

@@ -201,6 +201,7 @@
     "photos": "Photos",
     "backups": "Copias de seguridad",
     "sharedLinks": "Enlaces compartidos",
+    "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
     "desktop": "Aplicación de escritorio"
@@ -848,10 +849,12 @@
     "shared-links": "Enlaces compartidos",
     "view": "visitas",
     "list": {
+      "name": "Nombre",
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
       "created": "Creado",
-      "size": "Tamaño"
+      "size": "Tamaño",
+      "owner": "Propietario"
     },
     "empty-state": {
       "title": "Nada compartido aún",
