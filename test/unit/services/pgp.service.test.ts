@@ -29,8 +29,6 @@ describe('Encryption and Decryption', () => {
   it('should generate keys, encrypt and decrypt a message successfully', async () => {
     // Step 1: Generate new keys
     const keys = await generateNewKeys();
-    expect(keys).toHaveProperty('privateKeyArmored');
-    expect(keys).toHaveProperty('publicKeyArmored');
 
     // Step 2: Prepare the message to be encrypted
     const originalMessage = 'This is a secret message!';
@@ -48,6 +46,8 @@ describe('Encryption and Decryption', () => {
     });
 
     // Step 5: Assert that the decrypted message matches the original message
+    expect(keys).toHaveProperty('privateKeyArmored');
+    expect(keys).toHaveProperty('publicKeyArmored');
     expect(encryptedMessage).not.toEqual(originalMessage);
     expect(decryptedMessage).toEqual(originalMessage);
   });

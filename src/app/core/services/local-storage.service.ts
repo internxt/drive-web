@@ -4,6 +4,7 @@ import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
   SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
+  SHOW_LIFETIME_BANNER: 'showLifetimeOffer',
 };
 
 function get(key: string): string | null {

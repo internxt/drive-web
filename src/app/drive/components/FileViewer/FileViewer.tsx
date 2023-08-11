@@ -279,8 +279,12 @@ const FileViewer = ({
                         } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
                       rounded-xl font-medium`}
                       >
-                        <ItemIconComponent className="mr-3 flex" width={60} height={80} />
-                        <span className="w-96 truncate text-center text-lg">{filename}</span>
+                        <div className="flex h-20 w-20 items-center">
+                          <ItemIconComponent width={80} height={80} />
+                        </div>
+                        <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                          {filename}
+                        </span>
                         <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
                         <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
                           <div
@@ -300,13 +304,16 @@ const FileViewer = ({
                       space-y-6 rounded-xl font-medium"
               >
                 <div className="flex flex-col items-center justify-center">
-                  <ItemIconComponent className="flex" width={80} height={80} />
-                  <span className="w-96 truncate pt-2 text-center text-lg">{filename}</span>
+                  <div className="flex h-20 w-20 items-center">
+                    <ItemIconComponent width={80} height={80} />
+                  </div>
+                  <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                    {filename}
+                  </span>
                   <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
                 </div>
-                <div>
-                  <DownloadFile onDownload={onDownload} translate={translate} />
-                </div>
+
+                <DownloadFile onDownload={onDownload} translate={translate} />
               </div>
             )}
             {fileIndex === totalFolderIndex - 1 ? null : (
@@ -329,7 +336,7 @@ const FileViewer = ({
           {/* Top bar controls */}
           <div
             className="fixed inset-x-0 top-0 z-20 flex h-0 w-screen max-w-full select-none flex-row
-                          items-start justify-between px-4 text-lg font-medium"
+                          items-start justify-between px-4 text-lg"
           >
             {/* Close and title */}
             <div className="mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
@@ -343,8 +350,12 @@ const FileViewer = ({
               </button>
 
               <Dialog.Title className="flex w-11/12 flex-row items-center text-lg">
-                <ItemIconComponent className="mr-3" width={32} height={32} />
-                <p className="w-full truncate">{filename}</p>
+                <div className="mr-3 flex h-8 w-8 items-center">
+                  <ItemIconComponent width={32} height={32} />
+                </div>
+                <p className="w-full truncate" title={filename}>
+                  {filename}
+                </p>
               </Dialog.Title>
             </div>
 

@@ -291,6 +291,7 @@ const shareService = {
   getPrivateSharedFolder,
   stopSharingFolder,
   removeUserFromSharedFolder,
+  getPrivateSharingRoles,
 };
 
 export default shareService;
