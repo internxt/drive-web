@@ -669,6 +669,12 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Usuario \"{{name}}\" eliminado",
+          "error": "No se pudo eliminar al usuario \"{{name}}\", por favor inténtalo nuevamente"
+        }
+      },
       "invite": {
         "title": "Invitar a otros",
         "textarea": "Escribe un mensaje (opcional)",

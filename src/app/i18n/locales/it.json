@@ -661,6 +661,12 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utente \"{{name}}\" rimosso",
+          "error": "Impossibile rimuovere l'utente \"{{name}}\", riprova per favore"
+        }
+      },
       "invite": {
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",

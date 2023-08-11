@@ -23,6 +23,7 @@ type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
 type Views = 'general' | 'invite' | 'requests';
 type RequestStatus = 'pending' | 'accepted' | 'denied';
+
 const REQUEST_STATUS = {
   PENDING: 'pending' as RequestStatus,
   ACCEPTED: 'accepted' as RequestStatus,
@@ -53,6 +54,14 @@ interface ViewProps {
 
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
+
+const cropSharedName = (name: string) => {
+  if (name.length > 32) {
+    return name.substring(0, 32).concat('...');
+  } else {
+    return name;
+  }
+};
 
 type ShareDialogProps = {
   user: any;
@@ -246,10 +255,21 @@ const ShareDialog = (props: ShareDialogProps) => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = (email: string) => {
-    // TODO -> Use API to remove user
-    // Then update frot-end
-    setInvitedUsers((current) => current.filter((user) => user.email !== email));
+  const onRemoveUser = async (email: string) => {
+    const invitedUserUUID = invitedUsers.find((user) => user.email === email)?.uuid;
+
+    if (invitedUserUUID) {
+      const hasBeenRemoved = await dispatch(
+        sharedThunks.removeUserFromSharedFolder({
+          folderUUID: selectedFolder.uuid as string,
+          userUUID: invitedUserUUID,
+          userEmail: email,
+        }),
+      );
+      if (hasBeenRemoved) {
+        setInvitedUsers((current) => current.filter((user) => user.email !== email));
+      }
+    }
     closeSelectedUserPopover();
   };
 
@@ -266,38 +286,15 @@ const ShareDialog = (props: ShareDialogProps) => {
     }
   };
 
-  const cropSharedName = (name: string) => {
-    if (name.length > 32) {
-      return name.substring(0, 32).concat('...');
-    } else {
-      return name;
-    }
-  };
-
-  const onStopSharing = () => {
+  const onStopSharing = async () => {
     setIsLoading(true);
 
-    // TODO -> Stop sharing
-    const stoppedSharing = true;
-    if (stoppedSharing) {
-      // If success
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.success', {
-          name: cropSharedName(props.selectedItems[0]?.name ?? ''),
-        }),
-        type: ToastType.Success,
-      });
-      setShowStopSharingConfirmation(false);
-      setIsLoading(false);
-      onClose();
-    } else {
-      // If error
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.error'),
-        type: ToastType.Error,
-      });
-      setIsLoading(false);
-    }
+    const folderName = cropSharedName(selectedFolder.name);
+    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: selectedFolder?.uuid as string, folderName }));
+
+    setShowStopSharingConfirmation(false);
+    onClose();
+    setIsLoading(false);
   };
 
   const handleUserRoleChange = async (email: string, roleName: string) => {
