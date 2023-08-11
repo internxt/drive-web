@@ -164,7 +164,7 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
   },
 );
 
-interface ShareFileWithUserPayload {
+export interface ShareFileWithUserPayload {
   email: string;
   folderUUID: string;
   roleId: string;
