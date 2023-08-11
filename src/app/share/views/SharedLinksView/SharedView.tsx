@@ -35,6 +35,7 @@ import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Toolti
 import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
+import envService from '../../../core/services/env.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -249,8 +250,10 @@ export default function SharedView(): JSX.Element {
 
   const openShareAccessSettings = (item) => {
     dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
-    const isProduction = process.env.NODE_ENV === 'production';
-    isProduction ? dispatch(uiActions.setIsShareItemDialogOpen(true)) : dispatch(uiActions.setIsShareDialogOpen(true));
+
+    envService.isProduction()
+      ? dispatch(uiActions.setIsShareItemDialogOpen(true))
+      : dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
   const moveSelectedItemsToTrash = async () => {
