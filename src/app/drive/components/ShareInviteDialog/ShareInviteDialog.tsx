@@ -80,18 +80,28 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
+  //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
   const onInvite = async () => {
     const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
-    usersToInvite.forEach((user) => {
-      const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
+    if (usersToInvite.length === 0 && isValidEmail(email)) {
+      const userRoleId = props.roles.find((role) => role.name === userRole)?.id;
       if (!userRoleId) return;
 
       sharingPromises.push(
-        dispatch(
-          sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
-        ),
+        dispatch(sharedThunks.shareFileWithUser({ email: email, roleId: userRoleId, folderUUID: props.folderUUID })),
       );
-    });
+    } else {
+      usersToInvite.forEach((user) => {
+        const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
+        if (!userRoleId) return;
+
+        sharingPromises.push(
+          dispatch(
+            sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
+          ),
+        );
+      });
+    }
     await Promise.all(sharingPromises);
     props.onClose();
   };
