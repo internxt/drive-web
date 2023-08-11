@@ -155,47 +155,44 @@ const ShareDialog = (props: ShareDialogProps) => {
       errorService.reportError(error);
     }
   }, [selectedFolder]);
-  const loadShareInfo = async () => {
-    try {
-      // TODO -> Load access mode
-      const shareAccessMode: AccessMode = 'public';
-      setAccessMode(shareAccessMode);
 
-      // TODO -> Load invited users
-      const loadedUsers: InvitedUserProps[] = [];
-      setInvitedUsers(loadedUsers);
-      // TODO -> Load access requests
-      const mockedAccessRequests = [
-        {
-          avatar: '',
-          name: 'Juan',
-          lastname: 'Mendes',
-          email: 'juan@inxt.com',
-          message:
-            'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
-          status: REQUEST_STATUS.PENDING,
-        },
-        {
-          avatar: '',
-          name: 'Eve',
-          lastname: 'Korn',
-          email: 'eve@inxt.com',
-          status: REQUEST_STATUS.PENDING,
-        },
-        {
-          avatar: '',
-          name: 'Maria',
-          lastname: 'Korn',
-          email: 'maria@inxt.com',
-          status: REQUEST_STATUS.PENDING,
-        },
-      ];
-      setAccessRequests(mockedAccessRequests);
-      dispatch(sharedThunks.getSharedFolderRoles());
-      await getAndUpdateInvitedUsers();
-    } catch (error) {
-      errorService.reportError(error);
-    }
+  const loadShareInfo = async () => {
+    // TODO -> Load access mode
+    const shareAccessMode: AccessMode = 'public';
+    setAccessMode(shareAccessMode);
+
+    // TODO -> Load invited users
+    const loadedUsers: InvitedUserProps[] = [];
+    setInvitedUsers(loadedUsers);
+    // TODO -> Load access requests
+    const mockedAccessRequests = [
+      {
+        avatar: '',
+        name: 'Juan',
+        lastname: 'Mendes',
+        email: 'juan@inxt.com',
+        message:
+          'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
+        status: REQUEST_STATUS.PENDING,
+      },
+      {
+        avatar: '',
+        name: 'Eve',
+        lastname: 'Korn',
+        email: 'eve@inxt.com',
+        status: REQUEST_STATUS.PENDING,
+      },
+      {
+        avatar: '',
+        name: 'Maria',
+        lastname: 'Korn',
+        email: 'maria@inxt.com',
+        status: REQUEST_STATUS.PENDING,
+      },
+    ];
+    setAccessRequests(mockedAccessRequests);
+    dispatch(sharedThunks.getSharedFolderRoles());
+    await getAndUpdateInvitedUsers();
   };
 
   const removeRequest = (email: string) => {
