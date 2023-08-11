@@ -683,7 +683,7 @@
         "email": "Correo electrónico",
         "invite": "Invitar",
         "editor": "Editor",
-        "viewer": "Visualizador",
+        "reader": "Visualizador",
         "listUsers": "Usuarios a invitar",
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "error": {

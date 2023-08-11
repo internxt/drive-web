@@ -675,7 +675,7 @@
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
-        "viewer": "Visualizzatore",
+        "reader": "Visualizzatore",
         "listUsers": "Utenti da invitare",
         "successSentInvitation": "Condivisione riuscita con {{email}}",
         "error": {

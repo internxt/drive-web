@@ -618,7 +618,7 @@
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
-        "viewer": "Visualiseur",
+        "reader": "Visualiseur",
         "listUsers": "Utilisateurs à inviter",
         "successSentInvitation": "Partage réussi avec {{email}}",
         "error": {

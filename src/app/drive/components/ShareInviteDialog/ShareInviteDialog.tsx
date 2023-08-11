@@ -135,7 +135,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 >
                   {({ selected }) => (
                     <>
-                      <span>{translate(`modals.shareModal.invite.${role.name}`)}</span>
+                      <span>{translate(`modals.shareModal.invite.${role.name.toLowerCase()}`)}</span>
                       {selected ? <Check size={20} /> : null}
                     </>
                   )}

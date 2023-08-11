@@ -701,7 +701,7 @@
         "email": "Type email",
         "invite": "Invite",
         "editor": "Editor",
-        "viewer": "Viewer",
+        "reader": "Viewer",
         "listUsers": "Users to invite",
         "successSentInvitation": "Successful sharing with {{email}}",
         "error": {
