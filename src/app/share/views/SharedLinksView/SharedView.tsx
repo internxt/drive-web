@@ -59,8 +59,6 @@ export type SharedLinkItemType = {
   encryptionKey: string;
   createdAt: string;
   updatedAt: string;
-  owner_id: string;
-  shared_with: string;
   folder: {
     id: number;
     uuid: string;
