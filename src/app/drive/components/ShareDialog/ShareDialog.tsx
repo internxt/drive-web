@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -16,11 +16,14 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
+import shareService from '../../../share/services/share.service';
+import errorService from '../../../core/services/error.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'viewer';
 type Views = 'general' | 'invite' | 'requests';
 type RequestStatus = 'pending' | 'accepted' | 'denied';
+
 const REQUEST_STATUS = {
   PENDING: 'pending' as RequestStatus,
   ACCEPTED: 'accepted' as RequestStatus,
@@ -32,7 +35,8 @@ interface InvitedUserProps {
   name: string;
   lastname: string;
   email: string;
-  role: UserRole;
+  roleName: UserRole;
+  uuid: string;
 }
 
 interface RequestProps {
@@ -51,6 +55,14 @@ interface ViewProps {
 const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
+const cropSharedName = (name: string) => {
+  if (name.length > 32) {
+    return name.substring(0, 32).concat('...');
+  } else {
+    return name;
+  }
+};
+
 type ShareDialogProps = {
   user: any;
   selectedItems: DriveItemData[];
@@ -64,19 +76,18 @@ const ShareDialog = (props: ShareDialogProps) => {
   const roles = useAppSelector((state: RootState) => state.shared.roles);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const selectedFolder = props.selectedItems[0];
 
   const owner: InvitedUserProps = {
     avatar: props.user.avatar,
     name: props.user.name,
     lastname: props.user.lastname,
     email: props.user.email,
-    role: 'owner',
+    roleName: 'owner',
+    uuid: '',
   };
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
-
-  const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
-
   const [accessMode, setAccessMode] = useState<AccessMode>('public');
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -112,8 +123,24 @@ const ShareDialog = (props: ShareDialogProps) => {
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
 
+  const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
+
+  const resetDialogData = () => {
+    setSelectedUserListIndex(null);
+    setAccessMode('public');
+    setShowStopSharingConfirmation(false);
+    setIsLoading(false);
+    setInvitedUsers([]);
+    setAccessRequests([]);
+    setUserOptionsEmail('');
+    setUserOptionsY(0);
+    setView('general');
+  };
+
   useEffect(() => {
     if (isOpen) loadShareInfo();
+
+    if (!isOpen) resetDialogData();
   }, [isOpen]);
 
   useEffect(() => {
@@ -126,6 +153,17 @@ const ShareDialog = (props: ShareDialogProps) => {
 
     return () => clearTimeout(timer);
   }, [accessRequests]);
+
+  // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
+  const getAndUpdateInvitedUsers = useCallback(async () => {
+    try {
+      const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
+      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.roleName }));
+      setInvitedUsers(parsedUsersList);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  }, [selectedFolder]);
 
   const loadShareInfo = async () => {
     // TODO -> Load access mode
@@ -163,13 +201,14 @@ const ShareDialog = (props: ShareDialogProps) => {
     ];
     setAccessRequests(mockedAccessRequests);
     dispatch(sharedThunks.getSharedFolderRoles());
+    await getAndUpdateInvitedUsers();
   };
 
   const removeRequest = (email: string) => {
     setAccessRequests((request) => request.filter((request) => request.email !== email));
   };
 
-  const onAcceptRequest = (email: string, role: UserRole) => {
+  const onAcceptRequest = (email: string, roleName: UserRole) => {
     // TODO -> Accept user access request
     setAccessRequests((prevRequests) =>
       prevRequests.map((request) => {
@@ -179,7 +218,6 @@ const ShareDialog = (props: ShareDialogProps) => {
         return request;
       }),
     );
-    // removeRequest(email);
   };
 
   const onDenyrequest = (email: string) => {
@@ -217,10 +255,21 @@ const ShareDialog = (props: ShareDialogProps) => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = (email: string) => {
-    // TODO -> Use API to remove user
-    // Then update frot-end
-    setInvitedUsers((current) => current.filter((user) => user.email !== email));
+  const onRemoveUser = async (email: string) => {
+    const invitedUserUUID = invitedUsers.find((user) => user.email === email)?.uuid;
+
+    if (invitedUserUUID) {
+      const hasBeenRemoved = await dispatch(
+        sharedThunks.removeUserFromSharedFolder({
+          folderUUID: selectedFolder.uuid as string,
+          userUUID: invitedUserUUID,
+          userEmail: email,
+        }),
+      );
+      if (hasBeenRemoved) {
+        setInvitedUsers((current) => current.filter((user) => user.email !== email));
+      }
+    }
     closeSelectedUserPopover();
   };
 
@@ -237,37 +286,40 @@ const ShareDialog = (props: ShareDialogProps) => {
     }
   };
 
-  const cropSharedName = (name: string) => {
-    if (name.length > 32) {
-      return name.substring(0, 32).concat('...');
-    } else {
-      return name;
-    }
-  };
-
-  const onStopSharing = () => {
+  const onStopSharing = async () => {
     setIsLoading(true);
 
-    // TODO -> Stop sharing
-    const stoppedSharing = true;
-    if (stoppedSharing) {
-      // If success
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.success', {
-          name: cropSharedName(props.selectedItems[0]?.name ?? ''),
-        }),
-        type: ToastType.Success,
-      });
-      setShowStopSharingConfirmation(false);
-      setIsLoading(false);
-      onClose();
-    } else {
-      // If error
-      notificationsService.show({
-        text: translate('modals.shareModal.stopSharing.notification.error'),
-        type: ToastType.Error,
-      });
-      setIsLoading(false);
+    const folderName = cropSharedName(selectedFolder.name);
+    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: selectedFolder?.uuid as string, folderName }));
+
+    setShowStopSharingConfirmation(false);
+    onClose();
+    setIsLoading(false);
+  };
+
+  const handleUserRoleChange = async (email: string, roleName: string) => {
+    try {
+      setSelectedUserListIndex(null);
+      const roleId = roles.find((role) => role.name === roleName)?.id;
+      const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
+      if (roleId && userUUID) {
+        await shareService.updateUserRoleOfSharedFolder({
+          userUUID,
+          folderUUID: selectedFolder?.uuid as string,
+          roleId,
+        });
+
+        const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
+          if (invitedUser.email === email) {
+            return { ...invitedUser, roleId, roleName: roleName as UserRole };
+          }
+          return invitedUser;
+        });
+        setInvitedUsers(modifiedInvitedUsers);
+      }
+    } catch (error) {
+      errorService.reportError(error);
+      // TODO: Add notification message
     }
   };
 
@@ -368,6 +420,7 @@ const ShareDialog = (props: ShareDialogProps) => {
                 userOptionsY={userOptionsY}
                 onRemoveUser={onRemoveUser}
                 userOptionsEmail={userOptionsEmail}
+                onChangeRole={handleUserRoleChange}
               />
               {invitedUsers.map((user, index) => (
                 <User
@@ -380,6 +433,7 @@ const ShareDialog = (props: ShareDialogProps) => {
                   userOptionsY={userOptionsY}
                   onRemoveUser={onRemoveUser}
                   userOptionsEmail={userOptionsEmail}
+                  onChangeRole={handleUserRoleChange}
                 />
               ))}
             </div>
@@ -526,8 +580,14 @@ const ShareDialog = (props: ShareDialogProps) => {
       ),
       invite: (
         <ShareInviteDialog
+          onClose={async () => {
+            setView('general');
+            setTimeout(async () => {
+              getAndUpdateInvitedUsers();
+            }, 500);
+          }}
           onInviteUser={onInviteUser}
-          folderUUID={props.selectedItems[0]?.uuid as string}
+          folderUUID={selectedFolder?.uuid as string}
           roles={roles}
         />
       ),
@@ -660,6 +720,8 @@ const UserOptions = ({
   translate,
   onRemoveUser,
   userOptionsEmail,
+  selectedRole,
+  onChangeRole,
 }) => {
   const isUserSelected = selectedUserListIndex === listPosition;
 
@@ -683,18 +745,29 @@ const UserOptions = ({
         static
       >
         {/* Editor */}
-        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+        <button
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          onClick={() => {
+            onChangeRole('editor');
+          }}
+        >
           <p className="w-full text-left text-base font-medium leading-none">
             {translate('modals.shareModal.list.userItem.roles.editor')}
           </p>
-          <Check size={20} />
+          {selectedRole === 'editor' && <Check size={20} />}
         </button>
 
         {/* Viewer */}
-        <button className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5">
+        <button
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          onClick={() => {
+            onChangeRole('viewer');
+          }}
+        >
           <p className="w-full text-left text-base font-medium leading-none">
             {translate('modals.shareModal.list.userItem.roles.viewer')}
           </p>
+          {selectedRole === 'viewer' && <Check size={20} />}
         </button>
 
         <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
@@ -702,7 +775,9 @@ const UserOptions = ({
         {/* Remove */}
         <button
           className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-          onClick={() => onRemoveUser(userOptionsEmail)}
+          onClick={() => {
+            onRemoveUser(userOptionsEmail);
+          }}
         >
           <p className="w-full text-left text-base font-medium leading-none">
             {translate('modals.shareModal.list.userItem.remove')}
@@ -724,6 +799,7 @@ const User = ({
   userOptionsY,
   onRemoveUser,
   userOptionsEmail,
+  onChangeRole,
 }: {
   user: InvitedUserProps;
   listPosition: number | null;
@@ -737,10 +813,11 @@ const User = ({
   userOptionsY;
   onRemoveUser;
   userOptionsEmail;
+  onChangeRole: (email: string, roleName: string) => void;
 }) => (
   <div
     className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
-      user.role === 'owner' ? 'border-transparent' : 'border-gray-5'
+      user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
     }`}
   >
     <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
@@ -754,7 +831,7 @@ const User = ({
       </p>
     </div>
 
-    {user.role === 'owner' ? (
+    {user.roleName === 'owner' ? (
       <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
     ) : (
       <>
@@ -763,7 +840,9 @@ const User = ({
           onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
           tabIndex={-1}
         >
-          <span className="pointer-events-none">{translate(`modals.shareModal.list.userItem.roles.${user.role}`)}</span>
+          <span className="pointer-events-none">
+            {translate(`modals.shareModal.list.userItem.roles.${user.roleName}`)}
+          </span>
           <CaretDown size={16} weight="bold" className="pointer-events-none" />
         </div>
         <UserOptions
@@ -773,6 +852,8 @@ const User = ({
           translate={translate}
           onRemoveUser={onRemoveUser}
           userOptionsEmail={userOptionsEmail}
+          selectedRole={user.roleName}
+          onChangeRole={(roleName) => onChangeRole(user.email, roleName)}
         />
       </>
     )}

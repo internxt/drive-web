@@ -687,6 +687,12 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "User \"{{name}}\" removed",
+          "error": "Couldn't remove user \"{{name}}\", please try again"
+        }
+      },
       "invite": {
         "title": "Invite people",
         "textarea": "Enter your message text (optional)",
@@ -695,7 +701,7 @@
         "email": "Type email",
         "invite": "Invite",
         "editor": "Editor",
-        "viewer": "Viewer",
+        "reader": "Viewer",
         "listUsers": "Users to invite",
         "successSentInvitation": "Successful sharing with {{email}}",
         "error": {

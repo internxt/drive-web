@@ -662,6 +662,12 @@
           "error": "无法停止分享，请再试一次"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "用户 \"{{name}}\" 已删除",
+          "error": "无法删除用户 \"{{name}}\"，请重试"
+        }
+      },
       "invite": {
         "title": "邀请人们",
         "textarea": "输入你的信息文本（可选）",
@@ -670,7 +676,7 @@
         "email": "类型：电子邮件",
         "invite": "邀请",
         "editor": "编辑",
-        "viewer": "浏览者",
+        "reader": "浏览者",
         "listUsers": "要邀请的用户",
         "successSentInvitation": "與 {{email}} 成功分享",
         "error": {

@@ -164,7 +164,7 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
   },
 );
 
-interface ShareFileWithUserPayload {
+export interface ShareFileWithUserPayload {
   email: string;
   folderUUID: string;
   roleId: string;
@@ -214,6 +214,67 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
     }
   },
 );
+
+interface StopSharingFolderPayload {
+  folderUUID: string;
+  folderName: string;
+}
+
+export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload, { state: RootState }>(
+  'shareds/stopSharingFolder',
+  async ({ folderUUID, folderName }: StopSharingFolderPayload) => {
+    try {
+      const stoppedSharing = (await shareService.stopSharingFolder(folderUUID))?.stoped;
+      if (stoppedSharing) {
+        notificationsService.show({
+          text: t('modals.shareModal.stopSharing.notification.success', {
+            name: folderName,
+          }),
+          type: ToastType.Success,
+        });
+        return;
+      }
+    } catch (error) {
+      errorService.reportError(error);
+    }
+
+    notificationsService.show({
+      text: t('modals.shareModal.stopSharing.notification.error'),
+      type: ToastType.Error,
+    });
+  },
+);
+
+interface RemoveUserFromSharedFolderPayload {
+  userEmail: string;
+  userUUID: string;
+  folderUUID: string;
+}
+
+export const removeUserFromSharedFolder = createAsyncThunk<
+  boolean,
+  RemoveUserFromSharedFolderPayload,
+  { state: RootState }
+>('shareds/stopSharingFolder', async ({ userEmail, userUUID, folderUUID }: RemoveUserFromSharedFolderPayload) => {
+  try {
+    const hasBeenRemoved = (await shareService.removeUserFromSharedFolder(folderUUID, userUUID))?.removed;
+    if (hasBeenRemoved) {
+      notificationsService.show({
+        text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),
+        type: ToastType.Success,
+      });
+      return true;
+    }
+  } catch (error) {
+    errorService.reportError(error);
+  }
+
+  notificationsService.show({
+    text: t('modals.shareModal.removeUser.notification.error', { name: userEmail }),
+    type: ToastType.Error,
+  });
+  return false;
+});
 
 const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: RootState }>(
   'shareds/getRoles',
@@ -324,6 +385,8 @@ export const sharedThunks = {
   deleteLinkThunk,
   shareFileWithUser,
   decryptPrivateKeyOfSharedItem,
+  stopSharingFolder,
+  removeUserFromSharedFolder,
   getSharedFolderRoles,
 };
 

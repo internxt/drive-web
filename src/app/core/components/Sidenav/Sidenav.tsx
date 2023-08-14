@@ -25,6 +25,7 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import envService from '../../services/env.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -75,7 +76,7 @@ const Sidenav = (props: SidenavProps) => {
           <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
           <SidenavItem label={translate('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
-          {process.env.NODE_ENV !== 'production' && (
+          {!envService.isProduction() && (
             <SidenavItem label={translate('sideNav.shared')} to="/app/shared" Icon={Users} />
           )}
           <SidenavItem label={translate('sideNav.recents')} to="/app/recents" Icon={Clock} />
