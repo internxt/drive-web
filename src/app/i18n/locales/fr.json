@@ -45,7 +45,7 @@
     "decrypting": "Décryptage...",
     "login": {
       "title": " Connexion ",
-      "forgotPwd": "Vous avez oublié votre mot de passe ?",
+      "forgotPwd": "Mot de passe oublié?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",

@@ -64,7 +64,7 @@
       "title": "Log in",
       "forgotPwd": "Hai dimenticato la password?",
       "dontHaveAccount": "Non hai un account?",
-      "createAccount": "Creare un accountt",
+      "createAccount": "Creare un account",
       "2FA": "Codice a due fattori",
       "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori"
     },
@@ -131,8 +131,8 @@
   "general": {
     "new": "new",
     "of": "di",
-    "terms": "Terms and conditions",
-    "help": "Need help?",
+    "terms": "Termini e condizioni",
+    "help": "Hai bisogno di aiuto?",
     "searchBar": "Cerca in questa cartella",
     "stage": {
       "development": "Development",
