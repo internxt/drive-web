@@ -76,7 +76,7 @@
     },
     "forgotPassword": {
       "title": "Recupero dell'account",
-      "continua": "Continua",
+      "continue": "Continua",
       "sending": "Invio...",
       "notFound": "Indirizzo e-mail non trovato, riprovare",
       "password": "Ricorda la tua password?",

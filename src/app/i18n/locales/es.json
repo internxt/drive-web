@@ -84,7 +84,7 @@
       "changePassword": {
         "title": "Cambiar contraseña",
         "newPassword": "Nueva Contraseña",
-        "repetirContraseñaNueva": "Repetir nueva contraseña",
+        "repeatNewPassword": "Repetir nueva contraseña",
         "notMatch": "Las contraseñas no coinciden",
         "submitButton": "Cambiar contraseña",
         "notPasswordStrength": "La contraseña debe tener un número",

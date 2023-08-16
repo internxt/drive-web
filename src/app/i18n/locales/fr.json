@@ -70,7 +70,7 @@
     },
     "recoverAccount": {
       "title": "Récupération de compte",
-      "sous-titre": "Avez-vous une clé de sauvegarde ?",
+      "subtitle": "Avez-vous une clé de sauvegarde ?",
       "info": "À quoi ressemble la clé de sauvegarde ?",
       "info1": "Le nom du fichier de la clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La clé de sauvegarde comporte 24 mots",
