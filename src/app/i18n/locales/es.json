@@ -626,7 +626,7 @@
           "roles": {
             "owner": "Propietario",
             "editor": "Editor",
-            " viewer": "Visor"
+            "reader": "Visor"
           },
           " remove": "Eliminar"
         }
@@ -655,7 +655,7 @@
           "deny": "Denegar",
           "roles": {
             "editor": "Editor",
-            "viewer": "Espectador"
+            "reader": "Espectador"
           }
         }
       },
