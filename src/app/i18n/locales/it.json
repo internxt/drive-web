@@ -618,7 +618,7 @@
           "roles": {
             "owner": "Propietario",
             "editor": "Editor",
-            "viewer": "Visualizzatore"
+            "reader": "Visualizzatore"
           },
           "remove": "Eliminare"
         }
@@ -647,7 +647,7 @@
           "deny": "Nega",
           "roles": {
             "editor": "Editore",
-            "viewer": "Visualizzatore"
+            "reader": "Visualizzatore"
           }
         }
       },

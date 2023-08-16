@@ -644,7 +644,7 @@
           "roles": {
             "owner": "Owner",
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           },
           "remove": "Remove"
         }
@@ -673,7 +673,7 @@
           "deny": "Deny",
           "roles": {
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           }
         }
       },

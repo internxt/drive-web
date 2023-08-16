@@ -619,7 +619,7 @@
           "roles": {
             "owner": "业主",
             "editor": "编辑",
-            "viewer": "浏览者"
+            "reader": "浏览者"
           },
           "remove": "删除"
         }
@@ -648,7 +648,7 @@
           "deny": "否认",
           "roles": {
             "editor": "编辑器",
-            "viewer": "观众"
+            "reader": "观众"
           }
         }
       },

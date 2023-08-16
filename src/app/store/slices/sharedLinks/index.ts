@@ -172,7 +172,7 @@ export interface ShareFileWithUserPayload {
 
 const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
-  async (payload: ShareFileWithUserPayload, { dispatch, getState }): Promise<string | void> => {
+  async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
     const rootState = getState();
     const user = rootState.user.user;
     try {
@@ -190,9 +190,11 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         publicKeyInBase64: publicKey,
       });
 
+      const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
+
       await sharePrivateFolderWithUser({
         emailToShare: payload.email,
-        encryptionKey: encryptedMnemonic as string,
+        encryptionKey: encryptedMnemonicInBase64,
         privateFolderId: payload.folderUUID,
         roleId: payload.roleId,
       });
@@ -224,16 +226,15 @@ export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload
   'shareds/stopSharingFolder',
   async ({ folderUUID, folderName }: StopSharingFolderPayload) => {
     try {
-      const stoppedSharing = (await shareService.stopSharingFolder(folderUUID))?.stoped;
-      if (stoppedSharing) {
-        notificationsService.show({
-          text: t('modals.shareModal.stopSharing.notification.success', {
-            name: folderName,
-          }),
-          type: ToastType.Success,
-        });
-        return;
-      }
+      await shareService.stopSharingFolder(folderUUID);
+
+      notificationsService.show({
+        text: t('modals.shareModal.stopSharing.notification.success', {
+          name: folderName,
+        }),
+        type: ToastType.Success,
+      });
+      return;
     } catch (error) {
       errorService.reportError(error);
     }
@@ -257,14 +258,13 @@ export const removeUserFromSharedFolder = createAsyncThunk<
   { state: RootState }
 >('shareds/stopSharingFolder', async ({ userEmail, userUUID, folderUUID }: RemoveUserFromSharedFolderPayload) => {
   try {
-    const hasBeenRemoved = (await shareService.removeUserFromSharedFolder(folderUUID, userUUID))?.removed;
-    if (hasBeenRemoved) {
-      notificationsService.show({
-        text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),
-        type: ToastType.Success,
-      });
-      return true;
-    }
+    await shareService.removeUserFromSharedFolder(folderUUID, userUUID);
+
+    notificationsService.show({
+      text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),
+      type: ToastType.Success,
+    });
+    return true;
   } catch (error) {
     errorService.reportError(error);
   }
