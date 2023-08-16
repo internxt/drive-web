@@ -106,6 +106,8 @@ export default function SharedView(): JSX.Element {
   const [shareLinks, setShareLinks] = useState<any[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
+  const [invitedToken, setInvitedToken] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
   function closeConfirmDelete() {
     setIsDeleteDialogModalOpen(false);
@@ -119,34 +121,22 @@ export default function SharedView(): JSX.Element {
     fetchItems(page, orderBy, 'append');
   }, []);
 
+  useEffect(() => {
+    fetchItems(page, orderBy, 'append');
+  }, []);
+
   async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
     setIsLoading(true);
-
     try {
-      let items;
-      if (currentItemFetch === SHARED_LINKS_FETCH_ITEMS.FOLDERS) {
-        let response: ListAllSharedFoldersResponse;
+      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
+        page,
+        ITEMS_PER_PAGE,
+        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+      );
 
-        if (hasMoreFolders) {
-          response = await shareService.getAllSharedFolders(
-            page,
-            ITEMS_PER_PAGE,
-            orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-          );
-          const foldersSharedByMe = response.sharedByMe;
-          const foldersSharedWithMe = response.sharedWithMe;
+      const folders = response.folders;
+      const items = [...folders];
 
-          if (foldersSharedByMe.length < ITEMS_PER_PAGE && foldersSharedWithMe.length < ITEMS_PER_PAGE)
-            setHasMoreFolders(false);
-          if (response) items = [...foldersSharedByMe, ...foldersSharedWithMe];
-        }
-      } else if (currentItemFetch === SHARED_LINKS_FETCH_ITEMS.FILES) {
-        // TODO: Add files fetch
-      }
-
-      if (type === 'append') {
-        items = [...shareLinks, ...items];
-      }
       setShareLinks(items);
       setOrderBy(orderBy);
       setPage(page);
@@ -299,6 +289,47 @@ export default function SharedView(): JSX.Element {
     setEditNameItem(itemToRename);
   };
 
+  const onItemDoubleClicked = async (props) => {
+    const sharedFolderId = props.uuid;
+    const user = props.user;
+
+    if (user) {
+      const userName = props.user.name;
+      const userLastname = props.user.lastname;
+
+      setUserName(`${userName} ${userLastname}`);
+    }
+
+    try {
+      const response: ListAllSharedFoldersResponse = await shareService.getSharedFolderContent(
+        sharedFolderId,
+        invitedToken,
+        page,
+        ITEMS_PER_PAGE,
+        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+      );
+
+      const token = response.token;
+      const folders = response.folders;
+      const files = response.files;
+
+      const items = [...folders, ...files];
+
+      if (items.length > 0) {
+        setShareLinks(items);
+        setInvitedToken(token);
+        setOrderBy(orderBy);
+        setPage(page);
+      }
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const onNameClicked = (props) => {
+    onItemDoubleClicked(props);
+  };
+
   return (
     <div
       className="flex w-full flex-shrink-0 flex-col"
@@ -340,7 +371,7 @@ export default function SharedView(): JSX.Element {
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<SharedLinkItemType, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
+        <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
               label: translate('shared-links.list.name'),
@@ -378,56 +409,55 @@ export default function SharedView(): JSX.Element {
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
           }}
           itemComposition={[
-            (props) => {
-              const Icon = iconService.getItemIcon(!!props.folder, (props.file as DriveFileData)?.type);
+            (shareLinks) => {
+              const Icon = iconService.getItemIcon(shareLinks.type === 'folder', (shareLinks as DriveFileData)?.type);
               return (
-                <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
+                <div className={'flex w-full flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
                       <Link size={12} color="white" />
                     </div>
                   </div>
-                  <span
-                    className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
-                    title={`${props?.folder ? (props as any).folder.plainName : ''}${
-                      !props.folder && (props.file as DriveFileData)?.type
-                        ? `.${(props.file as DriveFileData)?.type}`
-                        : ''
-                    }`}
-                  >
-                    {`${props?.folder ? (props as any).folder.plainName : ''}${
-                      !props.folder && (props.file as DriveFileData)?.type
-                        ? `.${(props.file as DriveFileData)?.type}`
-                        : ''
-                    }`}
-                  </span>
+                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareLinks)}>
+                    <span
+                      onClick={() => onNameClicked(shareLinks)}
+                      className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
+                      title={shareLinks.plainName}
+                    >
+                      {shareLinks.plainName}
+                    </span>
+                  </div>
                 </div>
               );
             },
-            (props) => (
+            (shareLinks) => (
               <div className="flex flex-row items-center justify-center">
                 <div className="mr-2">
                   <Avatar
                     diameter={28}
-                    fullName={`${props.owner?.name} ${props.owner?.lastname}`}
-                    src={props.owner?.avatar ? props.owner?.avatar : null}
+                    fullName={`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}
+                    src={shareLinks.user?.avatar ? shareLinks.user?.avatar : null}
                   />
                 </div>
-                <span
-                  className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}
-                >{`${props.owner?.name} ${props.owner?.lastname}`}</span>
+                <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
+                  {shareLinks.user ? (
+                    <span>{`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}</span>
+                  ) : (
+                    <span>{userName}</span>
+                  )}{' '}
+                </span>
               </div>
             ),
-            (props) =>
-              props.folder ? (
+            (shareLinks) =>
+              shareLinks.folder ? (
                 <span className="opacity-25">—</span>
               ) : (
-                <span>{`${sizeService.bytesToString(props?.fileSize ? props.fileSize : 0, false)}`}</span>
+                <span>{`${sizeService.bytesToString(shareLinks?.fileSize ? shareLinks.fileSize : 0, false)}`}</span>
               ),
-            (props) => (
-              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>
-                {dateService.format(props.createdAt, 'D MMM YYYY')}
+            (shareLinks) => (
+              <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
+                {dateService.format(shareLinks.createdAt, 'D MMM YYYY')}
               </span>
             ),
           ]}

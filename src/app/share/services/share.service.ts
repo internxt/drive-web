@@ -108,6 +108,19 @@ export function getAllSharedFolders(
   });
 }
 
+export function getSharedFolderContent(
+  sharedFolderId: string,
+  childFolderId: string,
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderContent(sharedFolderId, childFolderId, page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getSharedFolderUsers(
   folderUUID: string,
   page: number,
@@ -292,6 +305,7 @@ const shareService = {
   stopSharingFolder,
   removeUserFromSharedFolder,
   getPrivateSharingRoles,
+  getSharedFolderContent,
 };
 
 export default shareService;
