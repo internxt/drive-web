@@ -447,3 +447,12 @@ abbr[title] {
 .mt-22 {
   margin-top: 5.5rem;
 }
+
+.separator {
+  height: 1px;
+  @apply w-full bg-gray-10;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
+}

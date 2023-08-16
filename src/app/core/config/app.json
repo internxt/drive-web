@@ -40,6 +40,13 @@
       "exact": true
     },
     {
+      "id": "universal-link-success",
+      "layout": "empty",
+      "path": "/universal-link-success",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "signup-blog",
       "layout": "empty",
       "path": "/signup-blog",

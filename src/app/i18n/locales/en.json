@@ -126,6 +126,12 @@
       "button": "Send account restart verification",
       "successDescription": "Your account and password have been reset",
       "error": "Something went wrong while restarting the account"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Log in as",
+      "openDesktopApp": "Open the desktop app",
+      "anotherAccount": "Use another account?",
+      "login": "Log in"
     }
   },
   "general": {
