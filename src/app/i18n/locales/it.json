@@ -57,75 +57,75 @@
   "auth": {
     "email": "Email",
     "password": "Password",
-    "terms1": "By creating an account, ",
-    "terms2": "you accept the terms & conditions",
-    "decrypting": "Decrypting...",
+    "terms1": "Creando un account, ",
+    "terms2": "accetti i termini e le condizioni",
+    "decrypting": "Decriptazione...",
     "login": {
       "title": "Log in",
-      "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
-      "createAccount": "Create account",
-      "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "forgotPwd": "Hai dimenticato la password?",
+      "dontHaveAccount": "Non hai un account?",
+      "createAccount": "Creare un accountt",
+      "2FA": "Codice a due fattori",
+      "twoFactorAuthenticationCode": "Codice di autenticazione a due fattori"
     },
     "signup": {
-      "title": "Create account",
-      "haveAccount": "already have an account?",
-      "login": "Log in",
-      "encrypting": "Crittografia"
+      "title": "Creare un account",
+      "haveAccount": "Hai già un account?",
+      "login": "Accedi",
+      "encrypting": "Crittografia in corso"
     },
     "forgotPassword": {
-      "title": "Recupero del conto",
-      "continue": "Continuare",
+      "title": "Recupero dell'account",
+      "continua": "Continua",
       "sending": "Invio...",
-      "notFound": "Indirizzo email non trovato, riprovare",
-      "password": "Ricorda la password?",
-      "login": "Accesso",
-      "successTitle": "Controllare la posta in arrivo",
-      "successDescription": "Vi abbiamo inviato un link unico per recuperare la password del vostro account.",
-      "ivalidEmail": "Indirizzo e-mail non valido"
+      "notFound": "Indirizzo e-mail non trovato, riprovare",
+      "password": "Ricorda la tua password?",
+      "login": "Login",
+      "successTitle": "Controlla la tua casella di posta",
+      "successDescription": "Ti abbiamo inviato un link unico per recuperare la password del tuo account",
+      "ivalidEmail": "Indirizzo e-mail non valido."
     },
     "recoverAccount": {
-      "title": "Recupero dell'account",
+      "title": "Recupero account",
       "subtitle": "Hai una chiave di backup?",
       "info": "Che aspetto ha la chiave di backup?",
       "info1": "Il nome del file della chiave di backup è 'INTERNXT-BACKUP-KEY.txt'",
       "info2": "La chiave di backup è lunga 24 parole",
       "haveKeyButton": "Sì, ho una chiave di backup",
-      "notKeyButton": "No, non ne ho uno",
+      "notKeyButton": "No, non ce l'ho",
       "backupKey": {
-        "title": "Carica la chiave di backup",
-        "alert": "Se carichi una chiave di backup errata, i tuoi dati verranno danneggiati, assicurati che la tua chiave di backup sia corretta.",
-        "button": "Carica la chiave di backup"
+        "title": "Verifica chiave di backup",
+        "alert": "Se si carica una chiave di backup errata i dati verranno danneggiati, si prega di assicurarsi che la chiave di backup sia corretta",
+        "button": "Carica chiave di backup"
       },
       "changePassword": {
         "title": "Cambia password",
-        "newPassword": "Nuova password",
+        "newPassword": "Nuova Password",
         "repeatNewPassword": "Ripeti la nuova password",
-        "notMatch": "Le password non coincidono",
+        "notMatch": "Le password non corrispondono",
         "submitButton": "Cambia password",
         "notPasswordStrength": "La password deve avere un numero",
-        "shortPasswordStrength": "La password deve essere di almeno 8 caratteri",
-        "warningPasswordStrength": "Password debole",
+        "shortPasswordStrength": "La password deve essere composta da almeno 8 caratteri",
+        "warningPasswordStrength": "La password è debole",
         "successPasswordStrength": "La password è forte",
         "serverError": "Qualcosa è andato storto durante la modifica della password",
         "tokenError": "Si è verificato un errore durante la convalida della chiave di backup",
         "backupKeyError": "La chiave di backup caricata non è valida",
         "emailSent": {
-          "title": "Password cambiata",
-          "description": "Tutti i dati sono stati nuovamente crittografati e tutte le sessioni attive sono state interrotte.",
-          "redirect": "Reindirizzamento a Internxt Drive in",
+          "title": "Password modificata",
+          "description": "Tutti i tuoi dati sono stati nuovamente criptati e tutte le tue sessioni attive sono state disconnesse",
+          "redirect": "Reindirizzamento a Internxt Drive",
           "button": "Vai a Internxt Drive"
         }
       }
     },
     "restartAccount": {
-      "title": "Riavvia il conto",
-      "description": "Grazie alla nostra crittografia end-to-end e alla politica 'zero-knowledge', non è possibile accedere ai propri dati senza la propria password o una chiave di backup.",
-      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
-      "button": "Inviare la verifica del riavvio dell'account",
-      "successDescription": "L'account e la password sono stati resettati",
-      "error": "Qualcosa è andato storto durante il riavvio dell'account"
+      "title": "Riavvia account",
+      "description": "A causa della nostra politica di crittografia, non sei in grado di accedere ai tuoi dati senza la tua password o una chiave di backup.",
+      "alert1": "Riavviando il tuo account sei consapevole che tutti i tuoi file, le tue foto e i tuoi backup saranno eliminati definitivamente",
+      "button": "Invia verifica riavvio account",
+      "successDescription": "L'account e la password sono stati ripristinati",
+      "error": "Qualcosa è andato storto durante il riavvio dell'account."
     }
   },
   "general": {

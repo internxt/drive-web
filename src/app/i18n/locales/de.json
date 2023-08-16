@@ -41,26 +41,74 @@
     "email": "E-Mail",
     "password": "Passwort",
     "terms1": "Durch die Erstellung eines Kontos,",
-    "terms2": "akzeptierst du die Allgemeinen Geschäftsbedingungen",
+    "terms2": "Sie akzeptieren die Geschäftsbedingungen",
     "decrypting": "Entschlüsseln...",
     "login": {
-      "title": "Log-in",
-      "forgotPwd": "Passwort vergessen?",
-      "dontHaveAccount": "Du hast kein Konto?",
+      "title": "Anmelden",
+      "forgotPwd": "Haben Sie Ihr Passwort vergessen?",
+      "dontHaveAccount": "Sie haben kein Konto?",
       "createAccount": "Konto erstellen",
-      "2FA": "2FA Code",
+      "2FA": "Zwei-Faktor-Code",
       "twoFactorAuthenticationCode": "Zwei-Faktor-Authentifizierungscode"
     },
     "signup": {
       "title": "Konto erstellen",
-      "haveAccount": "Du hast schon ein Konto?",
-      "login": "Log-in"
+      "haveAccount": "Haben Sie bereits ein Konto?",
+      "login": "Anmelden",
+      "encrypting": "Verschlüsselung im Gange"
     },
     "forgotPassword": {
-      "title": "Passwort vergessen",
-      "description": "Wie im Sicherheitsbereich der App angegeben, wird dein Passwort zur Ver- und Entschlüsselung verwendet und nur du hast Zugriff darauf. Daher können wir dein Konto ohne das Passwort nicht wiederherstellen. Du kannst dich erneut registrieren, indem du unten deine E-Mail-Adresse eingeben, damit wir dein Konto und alle deine Dateien löschen können.",
-      "sendInstructions": "Sende Anweisungen",
-      "sending": "Senden..."
+      "title": "Konto-Wiederherstellung",
+      "continue": "Weiter",
+      "sending": "Senden von...",
+      "notFound": "E-Mail Adresse nicht gefunden, bitte versuchen Sie es erneut",
+      "password": "Erinnern Sie sich an Ihr Passwort?",
+      "login": "Anmelden",
+      "successTitle": "Überprüfen Sie Ihren Posteingang",
+      "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
+      "ivalidEmail": "Ungültige E-Mail Adresse"
+    },
+    "recoverAccount": {
+      "title": "Konto wiederherstellen",
+      "subtitle": "Haben Sie einen Sicherungsschlüssel?",
+      "info": "Wie sieht der Sicherungsschlüssel aus?",
+      "info1": "Der Name der Sicherungsschlüssel-Datei lautet 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "Der Sicherungsschlüssel ist 24 Wörter lang",
+      "haveKeyButton": "Ja, ich habe einen Sicherungsschlüssel",
+      "notKeyButton": "Nein, ich habe keinen",
+      "backupKey": {
+        "title": "Sicherungsschlüssel überprüfen",
+        "alert": "Wenn Sie einen falschen Backup-Schlüssel hochladen, werden Ihre Daten beschädigt, bitte stellen Sie sicher, dass Ihr Backup-Schlüssel korrekt ist.",
+        "button": "Sicherungsschlüssel hochladen"
+      },
+      "changePassword": {
+        "title": "Passwort ändern",
+        "newPassword": "Neues Passwort",
+        "repeatNewPassword": "Neues Kennwort wiederholen",
+        "notMatch": "Kennwörter stimmen nicht überein",
+        "submitButton": "Kennwort ändern",
+        "notPasswordStrength": "Passwort muss eine Zahl enthalten",
+        "shortPasswordStrength": "Passwort muss mindestens 8 Zeichen lang sein",
+        "warningPasswordStrength": "Passwort ist schwach",
+        "successPasswordStrength": "Kennwort ist sicher",
+        "serverError": "Beim Ändern des Passworts ist etwas schief gelaufen",
+        "tokenError": "Bei der Validierung des Sicherungsschlüssels ist ein Fehler aufgetreten",
+        "backupKeyError": "Hochgeladener Sicherungsschlüssel ist ungültig",
+        "emailSent": {
+          "title": "Passwort geändert",
+          "description": "Alle Ihre Daten wurden neu verschlüsselt und alle Ihre aktiven Sitzungen wurden abgemeldet.",
+          "redirect": "Weiterleitung zu Internxt Drive",
+          "button": "Gehe zu Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Konto neu starten",
+      "description": "Aufgrund unserer Verschlüsselungspolitik können Sie ohne Ihr Passwort oder einen Backup-Schlüssel nicht auf Ihre Daten zugreifen",
+      "alert1": "Durch den Neustart Ihres Kontos verstehen Sie, dass alle Ihre Dateien, Fotos und Backups dauerhaft gelöscht werden.",
+      "button": "Bestätigung zum Neustart des Kontos senden",
+      "successDescription": "Ihr Konto und Passwort wurden zurückgesetzt",
+      "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
     }
   },
   "general": {

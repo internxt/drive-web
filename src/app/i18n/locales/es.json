@@ -40,75 +40,75 @@
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",
-    "terms1": "Creando una cuenta, aceptas los",
-    "terms2": "términos y condiciones.",
+    "terms1": "Al crear una cuenta, ",
+    "terms2": "aceptas los términos y condiciones",
     "decrypting": "Descifrando...",
     "login": {
-      "title": "Iniciar sesión",
-      "forgotPwd": "¿Has olvidado tu contraseña?",
-      "dontHaveAccount": "¿No tienes una cuenta?",
-      "createAccount": "Crear una cuenta",
-      "2FA": "Código de autenticación de dos factores",
+      "title": "Log in",
+      "forgotPwd": "¿Olvidaste tu contraseña?",
+      "dontHaveAccount": "¿No tienes cuenta?",
+      "createAccount": "Crear cuenta",
+      "2FA": "Código de dos factores",
       "twoFactorAuthenticationCode": "Código de autenticación de dos factores"
     },
     "signup": {
-      "title": "Crear una cuenta",
+      "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
-      "encrypting": "Encriptando"
+      "encrypting": "Cifrando"
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
       "continue": "Continuar",
-      "sending": "Enviando...",
-      "notFound": "Dirección de correo electrónico no encontrada, inténtalo de nuevo",
+      "sending": "Enviando",
+      "notFound": "Dirección de correo electrónico no encontrada, inténtelo de nuevo",
       "password": "¿Recuerdas tu contraseña?",
       "login": "Iniciar sesión",
       "successTitle": "Comprueba tu bandeja de entrada",
-      "successDescription": "Te hemos enviado un enlace para recuperar la contraseña de tu cuenta.",
-      "ivalidEmail": "Correo electrónico no válido"
+      "successDescription": "Te hemos enviado un enlace de un solo uso para recuperar la contraseña de tu cuenta",
+      "ivalidEmail": "Dirección de correo electrónico no válida"
     },
     "recoverAccount": {
-      "title": "Recuperar cuenta",
-      "subtitle": "¿Tienes la clave de recuperación?",
-      "info": "¿Cómo es la clave de recuperación?",
-      "info1": "El nombre de la clave de recuperación es 'INTERNXT-BACKUP-KEY.txt'",
-      "info2": "La clave de recuperación tiene 24 palabras",
-      "haveKeyButton": "Si, tengo la clave de recuperación",
-      "notKeyButton": "No, no tengo clave de recuperación",
+      "title": "Recuperación de cuenta",
+      "subtitle": "¿Tienes una clave de seguridad?",
+      "info": "¿Cómo es la clave de copia de seguridad?",
+      "info1": "El nombre de archivo de la clave de copia de seguridad es 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La clave de copia de seguridad tiene 24 palabras",
+      "haveKeyButton": "Sí, tengo una clave de copia de seguridad",
+      "notKeyButton": "No, no tengo",
       "backupKey": {
-        "title": "Verificar clave de recuperación",
-        "alert": "Si carga una clave de respaldo incorrecta, sus datos se dañarán, asegúrese de que su clave de respaldo sea correcta.",
-        "button": "Subir clave de recuperación"
+        "title": "Verificar clave de copia de seguridad",
+        "alert": "Si subes una clave de copia de seguridad incorrecta, tus datos se corromperán, por favor asegúrate de que tu clave de copia de seguridad es correcta.",
+        "button": "Subir clave de copia de seguridad"
       },
       "changePassword": {
         "title": "Cambiar contraseña",
-        "newPassword": "Contraseña nueva",
-        "repeatNewPassword": "Repite contraseña nueva",
+        "newPassword": "Nueva Contraseña",
+        "repetirContraseñaNueva": "Repetir nueva contraseña",
         "notMatch": "Las contraseñas no coinciden",
         "submitButton": "Cambiar contraseña",
-        "notPasswordStrength": "La contraseña debe tener un numero",
+        "notPasswordStrength": "La contraseña debe tener un número",
         "shortPasswordStrength": "La contraseña debe tener al menos 8 caracteres",
-        "warningPasswordStrength": "Contraseña débil",
-        "successPasswordStrength": "Contraseña segura",
-        "serverError": "Algo ha ido mal al cambiar la contraseña",
-        "tokenError": "Se ha producido un error al validar la clave de recuperación",
-        "backupKeyError": "La clave de recuperación subida no es válida",
+        "warningPasswordStrength": "La contraseña es débil",
+        "successPasswordStrength": "La contraseña es segura",
+        "serverError": "Algo salió mal al cambiar la contraseña",
+        "tokenError": "Se ha producido un error al validar la clave de copia de seguridad",
+        "backupKeyError": "La clave de copia de seguridad cargada no es válida",
         "emailSent": {
-          "title": "Contraseña modificada",
-          "description": "Todos tus datos han sido encriptados de nuevo y todas tus sesiones activas han sido cerradas.",
-          "redirect": "Redirigiendo a Internxt Drive en",
+          "title": "Contraseña cambiada",
+          "description": "Se han vuelto a encriptar todos tus datos y se han cerrado todas tus sesiones activas",
+          "redirect": "Redirigiendo a Internxt Drive",
           "button": "Ir a Internxt Drive"
         }
       }
     },
     "restartAccount": {
       "title": "Reiniciar cuenta",
-      "description": "Gracias a nuestra política de cifrado de extremo a extremo y de conocimiento cero, no podrás acceder a tus datos sin tu contraseña o una clave de recuperación.",
+      "description": "Debido a nuestra política de cifrado y conocimiento cero, no puedes acceder a sus datos sin tu contraseña o una clave de copia de seguridad.",
       "alert1": "Al reiniciar tu cuenta, entiendes que todos tus archivos, fotos y copias de seguridad se eliminarán de forma permanente.",
       "button": "Enviar verificación de reinicio de cuenta",
-      "successDescription": "Tu cuenta y contraseña se han reiniciado",
-      "error": "Algo ha fallado al reiniciar la cuenta"
+      "successDescription": "Tu cuenta y contraseña han sido reiniciadas",
+      "error": "Algo ha ido mal al reiniciar la cuenta"
     }
   },
   "general": {

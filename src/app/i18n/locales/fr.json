@@ -38,14 +38,14 @@
     "de": "Deutsch (Allemand)"
   },
   "auth": {
-    "email": "Adresse électronique",
-    "password": "Mot de passe",
-    "terms1": "En créant un compte, vous acceptez",
-    "terms2": "les termes et conditions, et la politique de confidentialité",
+    "email": "Email",
+    "password": " Mot de passe ",
+    "terms1": "En créant un compte,",
+    "terms2": "vous acceptez les termes et conditions",
     "decrypting": "Décryptage...",
     "login": {
-      "title": "Connexion",
-      "forgotPwd": "Mot de passe oublié ?",
+      "title": " Connexion ",
+      "forgotPwd": "Vous avez oublié votre mot de passe ?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
@@ -54,61 +54,61 @@
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "login": "Connexion",
-      "encrypting": "Cryptage"
+      "login": " Connexion ",
+      "encrypting": "Encryptant"
     },
     "forgotPassword": {
       "title": "Récupération de compte",
-      "continue": "Continuer",
-      "sending": "Envoi...",
-      "notFound": "L'adresse électronique n'a pas été trouvée, veuillez réessayer",
-      "password": "Rappelez-vous votre mot de passe ?",
-      "login": "Connexion",
-      "successTitle": "Vérifiez votre boîte de réception",
-      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte.",
-      "ivalidEmail": "Adresse e-mail invalide"
+      "continue": "Continue",
+      "sending": "Envoi en cours...",
+      "notFound": " Adresse électronique non trouvée, veuillez réessayer ",
+      "password": "Vous vous souvenez de votre mot de passe ?",
+      "login": " Connexion ",
+      "successTitle": " Vérifier votre boîte de réception ",
+      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
+      "ivalidEmail": "Invalide email"
     },
     "recoverAccount": {
-      "title": "Récupération du compte",
-      "subtitle": "Avez-vous une clé de secours ?",
-      "info": "À quoi ressemble la clé de sauvegarde ?",
-      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
-      "info2": "La clé de secours fait 24 mots",
-      "haveKeyButton": "Oui, j'ai une clé de secours",
+      "title": "Récupération de compte",
+      "sous-titre": "Avez-vous une clé de sauvegarde ?",
+      "info": "À quoi ressemble la clé de sauvegarde ?",
+      "info1": "Le nom du fichier de la clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La clé de sauvegarde comporte 24 mots",
+      "haveKeyButton": "Oui, j'ai une clé de sauvegarde",
       "notKeyButton": "Non, je n'en ai pas",
       "backupKey": {
         "title": "Vérifier la clé de sauvegarde",
-        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte.",
+        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte",
         "button": "Télécharger la clé de sauvegarde"
       },
       "changePassword": {
-        "title": "Modifier le mot de passe",
+        "title": " Changer le mot de passe ",
         "newPassword": "Nouveau mot de passe",
-        "repeatNewPassword": "Répéter le mot de passe",
+        "repeatNewPassword": "Répéter le nouveau mot de passe",
         "notMatch": "Les mots de passe ne correspondent pas",
-        "submitButton": "Modifier le mot de passe",
+        "submitButton": " Changer le mot de passe ",
         "notPasswordStrength": "Le mot de passe doit comporter un chiffre",
         "shortPasswordStrength": "Le mot de passe doit comporter au moins 8 caractères",
-        "warningPasswordStrength": "Le mot de passe est wea",
+        "warningPasswordStrength": "Le mot de passe est faible",
         "successPasswordStrength": "Le mot de passe est fort",
-        "serverError": "Un problème s'est produit lors de la modification du mot de passe",
+        "serverError": "Quelque chose s'est mal passé lors de la modification du mot de passe",
         "tokenError": "Une erreur s'est produite lors de la validation de la clé de sauvegarde",
-        "backupKeyError": "La clé de sauvegarde téléchargée est invalide",
+        "backupKeyError": "La clé de sauvegarde téléchargée n'est pas valide",
         "emailSent": {
-          "title": "Mot de passe modifié",
-          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées.",
-          "redirect": "Redirection vers Internxt Drive in",
-          "button": "Aller à Internxt Drive"
+          "title": " Mot de passe modifié ",
+          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées",
+          "redirect": "Redirection vers Internxt Drive",
+          "button": "Aller sur Internxt Drive"
         }
       }
     },
     "restartAccount": {
       "title": "Redémarrer le compte",
-      "description": "Grâce à notre politique de cryptage de bout en bout et d'absence de connaissance, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde.",
+      "description": "En raison de notre cryptage et de notre politique de connaissance zéro, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde",
       "alert1": "En redémarrant votre compte, vous comprenez que tous vos fichiers, photos et sauvegardes seront définitivement supprimés.",
       "button": "Envoyer la vérification du redémarrage du compte",
       "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
-      "error": "Un problème s'est produit lors du redémarrage du compte"
+      "error": "Quelque chose s'est mal passé lors du redémarrage du compte"
     }
   },
   "general": {
