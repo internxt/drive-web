@@ -66,7 +66,7 @@
       "login": "Iniciar sesión",
       "successTitle": "Comprueba tu bandeja de entrada",
       "successDescription": "Te hemos enviado un enlace de un solo uso para recuperar la contraseña de tu cuenta",
-      "ivalidEmail": "Dirección de correo electrónico no válida"
+      "invalidEmail": "Dirección de correo electrónico no válida"
     },
     "recoverAccount": {
       "title": "Recuperación de cuenta",

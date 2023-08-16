@@ -83,7 +83,7 @@
       "login": "Login",
       "successTitle": "Check your inbox",
       "successDescription": "We’ve sent you a one-time link to recover you account password",
-      "ivalidEmail": "Invalid email address"
+      "invalidEmail": "Invalid email address"
     },
     "recoverAccount": {
       "title": "Account recovery",

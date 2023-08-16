@@ -66,7 +66,7 @@
       "login": "Anmelden",
       "successTitle": "Überprüfen Sie Ihren Posteingang",
       "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
-      "ivalidEmail": "Ungültige E-Mail Adresse"
+      "invalidEmail": "Ungültige E-Mail Adresse"
     },
     "recoverAccount": {
       "title": "Konto wiederherstellen",

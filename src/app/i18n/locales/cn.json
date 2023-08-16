@@ -83,7 +83,7 @@
       "login": "登录",
       "successTitle": "检查您的收件箱",
       "successDescription": "我们已向您发送了恢复账户密码的一次性链接、",
-      "ivalidEmail": "无效电子邮件地址"
+      "invalidEmail": "无效电子邮件地址"
     },
     "recoverAccount": {
       "title": "账户恢复",

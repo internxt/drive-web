@@ -83,7 +83,7 @@
       "login": "Login",
       "successTitle": "Controlla la tua casella di posta",
       "successDescription": "Ti abbiamo inviato un link unico per recuperare la password del tuo account",
-      "ivalidEmail": "Indirizzo e-mail non valido."
+      "invalidEmail": "Indirizzo e-mail non valido."
     },
     "recoverAccount": {
       "title": "Recupero account",
