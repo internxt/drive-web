@@ -2,7 +2,6 @@ import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
@@ -18,9 +17,10 @@ import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
 import shareService from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 type AccessMode = 'public' | 'restricted';
-type UserRole = 'owner' | 'editor' | 'viewer';
+type UserRole = 'owner' | 'editor' | 'reader';
 type Views = 'general' | 'invite' | 'requests';
 type RequestStatus = 'pending' | 'accepted' | 'denied';
 
@@ -31,7 +31,7 @@ const REQUEST_STATUS = {
 };
 
 interface InvitedUserProps {
-  avatar: string;
+  avatar: string | null;
   name: string;
   lastname: string;
   email: string;
@@ -64,7 +64,7 @@ const cropSharedName = (name: string) => {
 };
 
 type ShareDialogProps = {
-  user: any;
+  user: UserSettings;
   selectedItems: DriveItemData[];
 };
 
@@ -78,13 +78,13 @@ const ShareDialog = (props: ShareDialogProps) => {
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const selectedFolder = props.selectedItems[0];
 
-  const owner: InvitedUserProps = {
+  const localUserData: InvitedUserProps = {
     avatar: props.user.avatar,
     name: props.user.name,
     lastname: props.user.lastname,
     email: props.user.email,
     roleName: 'owner',
-    uuid: '',
+    uuid: props.user.uuid,
   };
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
@@ -92,31 +92,8 @@ const ShareDialog = (props: ShareDialogProps) => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
-  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([
-    {
-      avatar: '',
-      name: 'Juan',
-      lastname: 'Mendes',
-      email: 'juan@inxt.com',
-      message:
-        'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
-      status: REQUEST_STATUS.PENDING,
-    },
-    {
-      avatar: '',
-      name: 'Eve',
-      lastname: 'Korn',
-      email: 'eve@inxt.com',
-      status: REQUEST_STATUS.PENDING,
-    },
-    {
-      avatar: '',
-      name: 'Maria',
-      lastname: 'Korn',
-      email: 'maria@inxt.com',
-      status: REQUEST_STATUS.PENDING,
-    },
-  ]);
+
+  const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const [view, setView] = useState<Views>('general');
@@ -158,7 +135,7 @@ const ShareDialog = (props: ShareDialogProps) => {
   const getAndUpdateInvitedUsers = useCallback(async () => {
     try {
       const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
-      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.roleName }));
+      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
       setInvitedUsers(parsedUsersList);
     } catch (error) {
       errorService.reportError(error);
@@ -266,7 +243,8 @@ const ShareDialog = (props: ShareDialogProps) => {
           userEmail: email,
         }),
       );
-      if (hasBeenRemoved) {
+
+      if (hasBeenRemoved.payload) {
         setInvitedUsers((current) => current.filter((user) => user.email !== email));
       }
     }
@@ -411,22 +389,10 @@ const ShareDialog = (props: ShareDialogProps) => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              <User
-                user={owner}
-                listPosition={null}
-                translate={translate}
-                openUserOptions={openUserOptions}
-                selectedUserListIndex={selectedUserListIndex}
-                userOptionsY={userOptionsY}
-                onRemoveUser={onRemoveUser}
-                userOptionsEmail={userOptionsEmail}
-                onChangeRole={handleUserRoleChange}
-              />
-              {invitedUsers.map((user, index) => (
+              {invitedUsers?.length === 0 ? (
                 <User
-                  user={user}
-                  key={user.email}
-                  listPosition={index}
+                  user={localUserData}
+                  listPosition={null}
                   translate={translate}
                   openUserOptions={openUserOptions}
                   selectedUserListIndex={selectedUserListIndex}
@@ -435,7 +401,22 @@ const ShareDialog = (props: ShareDialogProps) => {
                   userOptionsEmail={userOptionsEmail}
                   onChangeRole={handleUserRoleChange}
                 />
-              ))}
+              ) : (
+                invitedUsers.map((user, index) => (
+                  <User
+                    user={user}
+                    key={user.email}
+                    listPosition={index}
+                    translate={translate}
+                    openUserOptions={openUserOptions}
+                    selectedUserListIndex={selectedUserListIndex}
+                    userOptionsY={userOptionsY}
+                    onRemoveUser={onRemoveUser}
+                    userOptionsEmail={userOptionsEmail}
+                    onChangeRole={handleUserRoleChange}
+                  />
+                ))
+              )}
             </div>
           </div>
 
@@ -633,16 +614,16 @@ const ShareDialog = (props: ShareDialogProps) => {
                           >
                             {({ close }) => (
                               <>
-                                {/* Viewer */}
+                                {/* Reader */}
                                 <button
                                   className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                                   onClick={() => {
-                                    onAcceptRequest(request.email, 'viewer');
+                                    onAcceptRequest(request.email, 'reader');
                                     close();
                                   }}
                                 >
                                   <p className="w-full text-left text-base font-medium leading-none">
-                                    {translate('modals.shareModal.requests.actions.roles.viewer')}
+                                    {translate('modals.shareModal.requests.actions.roles.reader')}
                                   </p>
                                 </button>
 
@@ -709,7 +690,7 @@ const ShareDialog = (props: ShareDialogProps) => {
 };
 
 export default connect((state: RootState) => ({
-  user: state.user.user,
+  user: state.user.user as UserSettings,
   selectedItems: state.storage.selectedItems,
 }))(ShareDialog);
 
@@ -757,17 +738,17 @@ const UserOptions = ({
           {selectedRole === 'editor' && <Check size={20} />}
         </button>
 
-        {/* Viewer */}
+        {/* Reader */}
         <button
           className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
           onClick={() => {
-            onChangeRole('viewer');
+            onChangeRole('reader');
           }}
         >
           <p className="w-full text-left text-base font-medium leading-none">
-            {translate('modals.shareModal.list.userItem.roles.viewer')}
+            {translate('modals.shareModal.list.userItem.roles.reader')}
           </p>
-          {selectedRole === 'viewer' && <Check size={20} />}
+          {selectedRole === 'reader' && <Check size={20} />}
         </button>
 
         <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
