@@ -111,7 +111,7 @@ ListProps<T, F>): JSX.Element {
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 
-  const handleNexstPage = () => {
+  const handleNextPage = () => {
     onNextPage?.();
   };
 
@@ -249,7 +249,7 @@ ListProps<T, F>): JSX.Element {
           <>
             <InfiniteScroll
               dataLength={items.length}
-              next={handleNexstPage}
+              next={handleNextPage}
               hasMore={!!hasMoreItems}
               loader={loader}
               scrollThreshold={0.7}

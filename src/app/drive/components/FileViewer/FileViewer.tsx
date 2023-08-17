@@ -78,6 +78,9 @@ const FileViewer = ({
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
+  const driveItemsOrder = useAppSelector((state) => state.storage.driveItemsOrder);
+
+  console.log('driveItemsOrder: ', driveItemsOrder);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);

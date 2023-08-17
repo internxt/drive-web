@@ -313,9 +313,9 @@ const zipExtensions: FileExtensionMap = {
 
 const previewablePdfExtensionGroups: string[] = ['pdf'];
 
-const previewExcelFormatExtensionGroup: string[] = ['csv', 'xls', 'xlsx'];
+const previewExcelFormatExtensionGroup: string[] = ['xls', 'xlsx'];
 
-const previewDocsExptensionsGroup: string[] = ['doc', 'docx'];
+const previewDocsGroup: string[] = ['doc', 'docx'];
 
 const defaultExtensions: FileExtensionMap = {};
 
@@ -367,10 +367,10 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Ppt]: [],
   [FileExtensionGroup.Txt]: [],
   [FileExtensionGroup.Video]: previewVideoExtensionsGroup,
-  [FileExtensionGroup.Word]: previewDocsExptensionsGroup,
+  [FileExtensionGroup.Word]: previewDocsGroup,
   [FileExtensionGroup.Xls]: previewExcelFormatExtensionGroup,
   [FileExtensionGroup.Xml]: [],
-  [FileExtensionGroup.Csv]: previewExcelFormatExtensionGroup,
+  [FileExtensionGroup.Csv]: [],
   [FileExtensionGroup.Zip]: [],
   [FileExtensionGroup.Default]: [],
 };
