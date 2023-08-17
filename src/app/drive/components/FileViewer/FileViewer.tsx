@@ -18,6 +18,7 @@ import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
 import errorService from 'app/core/services/error.service';
+import { OrderDirection } from 'app/core/types';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -79,8 +80,7 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
   const driveItemsOrder = useAppSelector((state) => state.storage.driveItemsOrder);
-
-  console.log('driveItemsOrder: ', driveItemsOrder);
+  const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
   const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
@@ -89,13 +89,8 @@ const FileViewer = ({
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
-        if (a.name < b.name) {
-          return -1;
-        }
-        if (a.name > b.name) {
-          return 1;
-        }
-        return 0;
+        if (driveItemsOrder === OrderDirection.Asc) return a[driveItemsSort] > b[driveItemsSort];
+        else if (driveItemsOrder === OrderDirection.Desc) return a[driveItemsSort] < b[driveItemsSort];
       });
     }
     return [];
