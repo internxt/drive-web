@@ -83,7 +83,7 @@
       "login": "Login",
       "successTitle": "Check your inbox",
       "successDescription": "We’ve sent you a one-time link to recover you account password",
-      "ivalidEmail": "Invalid email address"
+      "invalidEmail": "Invalid email address"
     },
     "recoverAccount": {
       "title": "Account recovery",
@@ -114,7 +114,7 @@
         "emailSent": {
           "title": "Password changed",
           "description": "All your data has been re-encrypted and all your active sessions were logged out.",
-          "redirect": "Redirecting to Internxt Drive in",
+          "redirect": "Redirecting to Internxt Drive",
           "button": "Go to Internxt Drive"
         }
       }

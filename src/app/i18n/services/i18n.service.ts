@@ -52,6 +52,10 @@ i18next
     debug: !envService.isProduction(),
     fallbackLng: 'en',
     lng: deviceLang,
+    detection: {
+      order: ['navigator', 'localStorage'],
+      caches: ['localStorage'],
+    },
     defaultNS: 'translation',
     ns: ['translation'],
     interpolation: {
