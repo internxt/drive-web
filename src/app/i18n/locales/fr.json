@@ -109,6 +109,12 @@
       "button": "Envoyer la vérification du redémarrage du compte",
       "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
       "error": "Un problème s'est produit lors du redémarrage du compte"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Se connecter comme",
+      "openDesktopApp": "Ouvrir l'application de bureau",
+      "anotherAccount": "Utiliser un autre compte ?",
+      "login": "Connexion"
     }
   },
   "general": {

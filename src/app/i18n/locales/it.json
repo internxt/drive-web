@@ -126,6 +126,12 @@
       "button": "Inviare la verifica del riavvio dell'account",
       "successDescription": "L'account e la password sono stati resettati",
       "error": "Qualcosa è andato storto durante il riavvio dell'account"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Accedi come",
+      "openDesktopApp": "Apri l'applicazione desktop",
+      "anotherAccount": "Utilizzare un altro account?",
+      "login": "Accedi"
     }
   },
   "general": {

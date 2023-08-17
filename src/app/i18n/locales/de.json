@@ -61,6 +61,12 @@
       "description": "Wie im Sicherheitsbereich der App angegeben, wird dein Passwort zur Ver- und Entschlüsselung verwendet und nur du hast Zugriff darauf. Daher können wir dein Konto ohne das Passwort nicht wiederherstellen. Du kannst dich erneut registrieren, indem du unten deine E-Mail-Adresse eingeben, damit wir dein Konto und alle deine Dateien löschen können.",
       "sendInstructions": "Sende Anweisungen",
       "sending": "Senden..."
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Anmelden als",
+      "openDesktopApp": "Öffne die Desktop-App",
+      "anotherAccount": "Ein anderes Konto verwenden?",
+      "login": "Log in"
     }
   },
   "general": {

@@ -9,9 +9,7 @@ import bigLogo from 'assets/icons/big-logo.svg';
 import squareLogo from 'assets/icons/square-logo-64.svg';
 import { useEffect, useMemo } from 'react';
 
-import { Link } from 'react-router-dom';
-
-const UNIVERSAL_LINK_SUCCESS_REDIRECT_BASE = 'https://drive.internxt.com/universal-link-auth/success';
+const UNIVERSAL_LINK_SUCCESS_REDIRECT_BASE = 'https://drive.internxt.com/universal-link-auth';
 
 export default function UniversalLinkSuccessView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -22,13 +20,11 @@ export default function UniversalLinkSuccessView(): JSX.Element {
     }
   });
   const getUniversalLinkAuthUrl = (user: UserSettings) => {
-    const payload = {
-      mnemonic: user.mnemonic,
-      token: localStorageService.get('xToken'),
-      newToken: localStorageService.get('xNewToken'),
-    };
-
-    return `${UNIVERSAL_LINK_SUCCESS_REDIRECT_BASE}?payload=${btoa(JSON.stringify(payload))}`;
+    const token = localStorageService.get('xToken');
+    const newToken = localStorageService.get('xNewToken');
+    if (!token) return AppView.Login;
+    if (!newToken) return AppView.Login;
+    return `${UNIVERSAL_LINK_SUCCESS_REDIRECT_BASE}/${btoa(user.mnemonic)}/${btoa(token)}/${btoa(newToken)}`;
   };
 
   // Should redirect to login in the useEffect
