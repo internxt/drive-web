@@ -109,6 +109,12 @@
       "button": "Enviar verificación de reinicio de cuenta",
       "successDescription": "Tu cuenta y contraseña han sido reiniciadas",
       "error": "Algo ha ido mal al reiniciar la cuenta"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Iniciar sesión como",
+      "openDesktopApp": "Abrir Drive Desktop",
+      "anotherAccount": "Usar otra cuenta?",
+      "login": "Iniciar sesión"
     }
   },
   "general": {

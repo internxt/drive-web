@@ -153,9 +153,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey ? 
-        Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64') : 
-        undefined;
+      const privateKey = xUser.privateKey
+        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,
@@ -174,7 +174,10 @@ function SignUp(props: SignUpProps): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
+
+      const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
 
       if (redirectUrl) {
         window.location.replace(redirectUrl);
@@ -186,7 +189,11 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
       } else {
-        navigationService.push(AppView.Drive);
+        if (isUniversalLinkMode) {
+          return navigationService.push(AppView.UniversalLinkSuccess);
+        } else {
+          return navigationService.push(AppView.Drive);
+        }
       }
     } catch (err: unknown) {
       setIsLoading(false);
