@@ -40,9 +40,9 @@
       "exact": true
     },
     {
-      "id": "universal-link-success",
+      "id": "auth-success",
       "layout": "empty",
-      "path": "/universal-link-success",
+      "path": "/auth-success",
       "exact": true,
       "auth": true
     },

@@ -27,6 +27,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
+  const urlParams = new URLSearchParams(window.location.search);
+  const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
   const dispatch = useAppDispatch();
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
@@ -54,9 +56,7 @@ export default function LogIn(): JSX.Element {
     defaultValue: '',
   });
   const mnemonic = localStorageService.get('xMnemonic');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState('');
-  const [registerCompleted, setRegisterCompleted] = useState(true);
+
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
@@ -113,12 +113,7 @@ export default function LogIn(): JSX.Element {
           // PASS
         }
 
-        setIsAuthenticated(true);
-        setToken(token);
         userActions.setUser(user);
-        setRegisterCompleted(user.registerCompleted);
-        const urlParams = new URLSearchParams(window.location.search);
-        const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
 
         const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
@@ -148,8 +143,6 @@ export default function LogIn(): JSX.Element {
 
   useEffect(() => {
     if (user && mnemonic) {
-      const urlParams = new URLSearchParams(window.location.search);
-      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
       dispatch(userActions.setUser(user));
       redirectWithCredentials(
         user,
