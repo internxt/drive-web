@@ -23,7 +23,11 @@ const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsErrorWh
       });
   }, [blob]);
 
-  return <object className="h-screen w-screen bg-white" data={htmlContent}></object>;
+  return (
+    <div className="flex h-screen w-screen overflow-hidden px-20 pt-20">
+      <object className="h-full w-full bg-white" data={htmlContent}></object>
+    </div>
+  );
 };
 
 export default FileXlsxViewer;

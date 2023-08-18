@@ -246,7 +246,7 @@ const FileViewer = ({
             {fileIndex === 0 ? null : (
               <button
                 title={translate('actions.previous')}
-                className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+                className="outline-none absolute top-1/2 left-4 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('prev')}
               >
                 <CaretLeft size={24} />
@@ -317,7 +317,7 @@ const FileViewer = ({
             {fileIndex === totalFolderIndex - 1 ? null : (
               <button
                 title={translate('actions.next')}
-                className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+                className="outline-none absolute top-1/2 right-4 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('next')}
               >
                 <CaretRight size={24} />
