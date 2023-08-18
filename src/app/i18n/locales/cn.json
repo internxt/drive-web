@@ -200,6 +200,7 @@
     "photos": "照片",
     "backups": "备份",
     "sharedLinks": "共享的链接",
+    "shared": "共享的",
     "recents": "最近",
     "trash": "垃圾箱",
     "desktop": "桌面应用程序"
@@ -618,7 +619,7 @@
           "roles": {
             "owner": "业主",
             "editor": "编辑",
-            "viewer": "浏览者"
+            "reader": "浏览者"
           },
           "remove": "删除"
         }
@@ -647,7 +648,7 @@
           "deny": "否认",
           "roles": {
             "editor": "编辑器",
-            "viewer": "观众"
+            "reader": "观众"
           }
         }
       },
@@ -661,6 +662,12 @@
           "error": "无法停止分享，请再试一次"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "用户 \"{{name}}\" 已删除",
+          "error": "无法删除用户 \"{{name}}\"，请重试"
+        }
+      },
       "invite": {
         "title": "邀请人们",
         "textarea": "输入你的信息文本（可选）",
@@ -669,8 +676,12 @@
         "email": "类型：电子邮件",
         "invite": "邀请",
         "editor": "编辑",
-        "viewer": "浏览者",
-        "listUsers": "要邀请的用户"
+        "reader": "浏览者",
+        "listUsers": "要邀请的用户",
+        "successSentInvitation": "與 {{email}} 成功分享",
+        "error": {
+          "errorInviting": "傳送邀請至 {{email}} 時出錯"
+        }
       },
       "requestAccess": {
         "title": "您无权访问",
@@ -837,10 +848,12 @@
     "shared-links": "共享的链接",
     "view": "访问量",
     "list": {
+      "name": "名稱",
       "link-content": "链接内容",
       "shared": "已共享的",
       "created": "已创建的",
-      "size": "大小"
+      "size": "大小",
+      "owner": "业主"
     },
     "empty-state": {
       "title": "暂时没有分享的内容",

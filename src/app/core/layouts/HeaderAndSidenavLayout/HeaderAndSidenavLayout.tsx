@@ -26,7 +26,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
-  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
@@ -46,7 +45,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className="flex h-auto min-h-full flex-col">
-      {isShareDialogOpen && itemToShare && <ShareDialog />}
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}

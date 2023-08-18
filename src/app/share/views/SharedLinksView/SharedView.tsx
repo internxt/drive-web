@@ -2,31 +2,29 @@ import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
 import { Trash, Link } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
-import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from 'app/shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
 import _ from 'lodash';
-import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { ListAllSharedFoldersResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
 import sizeService from 'app/drive/services/size.service';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { t } from 'i18next';
 import {
-  contextMenuDriveFolderShared,
-  contextMenuDriveItemShared,
-  contextMenuMultipleSharedView,
+  contextMenuDriveFolderSharedAFS,
+  contextMenuDriveItemSharedAFS,
+  contextMenuMultipleSharedViewAFS,
 } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -34,44 +32,88 @@ import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItems
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
-import envService from '../../../core/services/env.service';
-import { domainManager } from '../../services/DomainManager';
 import errorService from '../../../core/services/error.service';
+import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
+import Avatar from '../../../shared/components/Avatar';
+import envService from '../../../core/services/env.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
-function copyShareLink(type: string, code: string, token: string) {
-  const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
-  const shareDomain = _.sample(domainList);
+const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
-  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
+function copyShareLink(type: string, code: string, token: string) {
+  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
+const ITEMS_PER_PAGE = 50;
+const SHARED_LINKS_FETCH_ITEMS = { FOLDERS: 'FOLDERS', FILES: 'FILES' };
 
-export default function SharedLinksView(): JSX.Element {
+type SharedLinksFetchItem = typeof SHARED_LINKS_FETCH_ITEMS[keyof typeof SHARED_LINKS_FETCH_ITEMS];
+
+//TODO: TEMPORARY TYPE, COMPLETE WHILE ADVANCING IN AFS
+export type SharedLinkItemType = {
+  id: string;
+  folderId: string;
+  ownerId: string;
+  sharedWith: string;
+  encryptionKey: string;
+  createdAt: string;
+  updatedAt: string;
+  owner_id: string;
+  shared_with: string;
+  folder: {
+    id: number;
+    uuid: string;
+    parentId: number;
+    parentUuid: string | null;
+    name: string;
+    bucket: string | null;
+    userId: number;
+    encryptVersion: string;
+    plainName: string | null;
+    deleted: boolean;
+    removed: boolean;
+    deletedAt: string | null;
+    createdAt: string;
+    updatedAt: string;
+    removedAt: string | null;
+  };
+  owner: {
+    uuid: string;
+    email: string;
+    name: string;
+    lastname: string;
+    avatar: string | null;
+  };
+  file: any;
+  fileSize: number;
+};
+
+// TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
+export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const ITEMS_PER_PAGE = 50;
+  const dispatch = useAppDispatch();
+  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
+  const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
+  const [currentItemFetch, setCurrentItemFetch] = useState<SharedLinksFetchItem>(SHARED_LINKS_FETCH_ITEMS.FOLDERS);
+
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [selectedItems, setSelectedItems] = useState<(ListShareLinksItem & { code: string })[]>([]);
-  const [shareLinks, setShareLinks] = useState<(ListShareLinksItem & { code: string })[]>([]);
+  const [selectedItems, setSelectedItems] = useState<any[]>([]);
+  const [shareLinks, setShareLinks] = useState<any[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
-
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
-
-  const [isUpdateLinkModalOpen, setIsUpdateLinkModalOpen] = useState(false);
-  const [linkToUpdate, setLinkToUpdate] = useState<(ListShareLinksItem & { code: string }) | undefined>(undefined);
-  const dispatch = useAppDispatch();
+  const [invitedToken, setInvitedToken] = useState<string>('');
+  const [userName, setUserName] = useState<string>('');
 
   function closeConfirmDelete() {
     setIsDeleteDialogModalOpen(false);
   }
 
-  function isItemSelected(item: ListShareLinksItem) {
+  function isItemSelected(item: any) {
     return selectedItems.some((i) => item.id === i.id);
   }
 
@@ -79,87 +121,79 @@ export default function SharedLinksView(): JSX.Element {
     fetchItems(page, orderBy, 'append');
   }, []);
 
+  useEffect(() => {
+    fetchItems(page, orderBy, 'append');
+  }, []);
+
   async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
     setIsLoading(true);
+    try {
+      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
+        page,
+        ITEMS_PER_PAGE,
+        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+      );
 
-    const response: ShareTypes.ListShareLinksResponse = await shareService.getAllShareLinks(
-      page,
-      ITEMS_PER_PAGE,
-      orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-    );
-    let items = response.items.filter((shareLink) => {
-      return shareLink.item != null;
-    }) as (ListShareLinksItem & { code: string })[];
-    if (type === 'append') {
-      items = [...shareLinks, ...items];
+      const folders = response.folders;
+      const items = [...folders];
+
+      setShareLinks(items);
+      setOrderBy(orderBy);
+      setPage(page);
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLoading(false);
     }
-    setShareLinks(items);
-    setHasMoreItems(ITEMS_PER_PAGE === response.items.length);
-    setOrderBy(orderBy);
-    setPage(page);
-
-    setIsLoading(false);
   }
 
-  function updateLinkItem(item: ListShareLinksItem & { code: string }) {
-    const index = shareLinks.findIndex((i) => item.id === i.id);
-    const updatedList = shareLinks;
-    updatedList[index] = item;
-    setShareLinks(updatedList);
-    setIsUpdateLinkModalOpen(false);
-  }
+  useEffect(() => {
+    if (!hasMoreFolders) {
+      setCurrentItemFetch(SHARED_LINKS_FETCH_ITEMS.FILES);
+    }
+    // TODO: add files when implement files fetching
+    setHasMoreItems(hasMoreFolders);
+  }, [hasMoreFolders]);
 
   function onNextPage() {
     fetchItems(page + 1, orderBy, 'append');
   }
 
   function onOrderByChanged(newOrderBy: OrderBy) {
+    setPage(0);
     fetchItems(0, newOrderBy, 'substitute');
   }
 
   async function deleteShareLink(shareId: string) {
+    //TODO check if its deleted correctly
     //setShareLinks((items) => items.filter((item) => item.id !== shareId));
     //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
     return await shareService.deleteShareLink(shareId);
-    //TODO check if its deleted correctly
   }
 
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
-      setHasMoreItems(true);
 
-      try {
-        const CHUNK_SIZE = 10;
-        const chunks = _.chunk(selectedItems, CHUNK_SIZE);
-        for (const chunk of chunks) {
-          const promises = chunk.map((item) => deleteShareLink(item.id));
-          await Promise.all(promises);
-        }
-
-        const stringLinksDeleted =
-          selectedItems.length > 1
-            ? translate('shared-links.toast.links-deleted')
-            : translate('shared-links.toast.link-deleted');
-
-        notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
-
-        setTimeout(async () => {
-          await fetchItems(0, orderBy, 'substitute');
-          setIsLoading(false);
-          closeConfirmDelete();
-        }, 500);
-      } catch (error) {
-        errorService.reportError(error, { extra: { sharedLinksToDelete: selectedItems } });
-        notificationsService.show({
-          text: translate('shared-links.toast.error-deleting-links'),
-          type: ToastType.Error,
-        });
+      const CHUNK_SIZE = 10;
+      const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+      for (const chunk of chunks) {
+        const promises = chunk.map((item) => deleteShareLink(item.id));
+        await Promise.all(promises);
       }
+
+      const stringLinksDeleted =
+        selectedItems.length > 1
+          ? translate('shared-links.toast.links-deleted')
+          : translate('shared-links.toast.link-deleted');
+      notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
+      await fetchItems(0, orderBy, 'substitute');
+      closeConfirmDelete();
+      setIsLoading(false);
     }
   }
 
-  function onSelectedItemsChanged(changes: { props: ListShareLinksItem & { code: string }; value: boolean }[]) {
+  function onSelectedItemsChanged(changes: { props: any; value: boolean }[]) {
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
@@ -206,6 +240,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const openShareAccessSettings = (item) => {
     dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
+
     envService.isProduction()
       ? dispatch(uiActions.setIsShareItemDialogOpen(true))
       : dispatch(uiActions.setIsShareDialogOpen(true));
@@ -222,7 +257,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const moveToTrash = async (shareLink) => {
     const itemToTrash = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
@@ -231,7 +266,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const downloadItem = (shareLink) => {
     const itemToDownload = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
@@ -239,7 +274,7 @@ export default function SharedLinksView(): JSX.Element {
 
   const moveItem = (shareLink) => {
     const itemToMove = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageActions.setItemsToMove([itemToMove]));
@@ -248,10 +283,51 @@ export default function SharedLinksView(): JSX.Element {
 
   const renameItem = (shareLink) => {
     const itemToRename = {
-      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      ...((shareLink as any).item as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     setEditNameItem(itemToRename);
+  };
+
+  const onItemDoubleClicked = async (props) => {
+    const sharedFolderId = props.uuid;
+    const user = props.user;
+
+    if (user) {
+      const userName = props.user.name;
+      const userLastname = props.user.lastname;
+
+      setUserName(`${userName} ${userLastname}`);
+    }
+
+    try {
+      const response: ListAllSharedFoldersResponse = await shareService.getSharedFolderContent(
+        sharedFolderId,
+        invitedToken,
+        page,
+        ITEMS_PER_PAGE,
+        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+      );
+
+      const token = response.token;
+      const folders = response.folders;
+      const files = response.files;
+
+      const items = [...folders, ...files];
+
+      if (items.length > 0) {
+        setShareLinks(items);
+        setInvitedToken(token);
+        setOrderBy(orderBy);
+        setPage(page);
+      }
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const onNameClicked = (props) => {
+    onItemDoubleClicked(props);
   };
 
   return (
@@ -295,18 +371,26 @@ export default function SharedLinksView(): JSX.Element {
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
+        <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
-              label: translate('shared-links.list.link-content'),
+              label: translate('shared-links.list.name'),
               width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
-              name: 'item',
+              name: 'folder',
               orderable: false,
             },
             {
-              label: translate('shared-links.list.shared'),
-              width: 'w-40', //w-1/12
-              name: 'views',
+              label: translate('shared-links.list.owner'),
+              width: 'w-80', //w-1/12
+              name: 'ownerId',
+              orderable: true,
+              defaultDirection: 'ASC',
+            },
+
+            {
+              label: translate('shared-links.list.size'),
+              width: 'w-40', //w-1.5/12
+              name: 'fileSize',
               orderable: true,
               defaultDirection: 'ASC',
             },
@@ -317,12 +401,6 @@ export default function SharedLinksView(): JSX.Element {
               orderable: true,
               defaultDirection: 'ASC',
             },
-            {
-              label: translate('shared-links.list.size'),
-              width: 'w-40', //w-1.5/12
-              name: 'fileSize',
-              orderable: false,
-            },
           ]}
           items={shareLinks}
           isLoading={isLoading}
@@ -331,49 +409,57 @@ export default function SharedLinksView(): JSX.Element {
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
           }}
           itemComposition={[
-            (props) => {
-              const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
+            (shareLinks) => {
+              const Icon = iconService.getItemIcon(shareLinks.type === 'folder', (shareLinks as DriveFileData)?.type);
               return (
-                <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
+                <div className={'flex w-full flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
                       <Link size={12} color="white" />
                     </div>
                   </div>
-                  <span
-                    className="w-full max-w-full flex-1 flex-row truncate whitespace-nowrap pr-16"
-                    title={`${(props.item as DriveFileData).name}${
-                      !props.isFolder && (props.item as DriveFileData).type
-                        ? `.${(props.item as DriveFileData).type}`
-                        : ''
-                    }`}
-                  >
-                    {`${(props.item as DriveFileData).name}${
-                      !props.isFolder && (props.item as DriveFileData).type
-                        ? `.${(props.item as DriveFileData).type}`
-                        : ''
-                    }`}
-                  </span>
+                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareLinks)}>
+                    <span
+                      onClick={() => onNameClicked(shareLinks)}
+                      className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
+                      title={shareLinks.plainName}
+                    >
+                      {shareLinks.plainName}
+                    </span>
+                  </div>
                 </div>
               );
             },
-            (props) => (
-              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>{`${
-                props.views
-              } ${translate('shared-links.view')}`}</span>
+            (shareLinks) => (
+              <div className="flex flex-row items-center justify-center">
+                <div className="mr-2">
+                  <Avatar
+                    diameter={28}
+                    fullName={`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}
+                    src={shareLinks.user?.avatar ? shareLinks.user?.avatar : null}
+                  />
+                </div>
+                <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
+                  {shareLinks.user ? (
+                    <span>{`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}</span>
+                  ) : (
+                    <span>{userName}</span>
+                  )}{' '}
+                </span>
+              </div>
             ),
-            (props) => (
-              <span className={`${isItemSelected(props) ? 'text-gray-100' : 'text-gray-60'}`}>
-                {dateService.format(props.createdAt, 'D MMM YYYY')}
-              </span>
-            ),
-            (props) =>
-              props.isFolder ? (
+            (shareLinks) =>
+              shareLinks.folder ? (
                 <span className="opacity-25">—</span>
               ) : (
-                <span>{`${sizeService.bytesToString(props.fileSize ? props.fileSize : 0, false)}`}</span>
+                <span>{`${sizeService.bytesToString(shareLinks?.fileSize ? shareLinks.fileSize : 0, false)}`}</span>
               ),
+            (shareLinks) => (
+              <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
+                {dateService.format(shareLinks.createdAt, 'D MMM YYYY')}
+              </span>
+            ),
           ]}
           skinSkeleton={skinSkeleton}
           emptyState={emptyState}
@@ -381,7 +467,7 @@ export default function SharedLinksView(): JSX.Element {
           hasMoreItems={hasMoreItems}
           menu={
             selectedItems.length > 1
-              ? contextMenuMultipleSharedView({
+              ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: () => {
                     const itemsToDownload = selectedItems.map((selectedShareLink) => ({
@@ -393,7 +479,7 @@ export default function SharedLinksView(): JSX.Element {
                   moveToTrash: moveSelectedItemsToTrash,
                 })
               : selectedItems[0]?.isFolder
-              ? contextMenuDriveFolderShared({
+              ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
@@ -402,10 +488,10 @@ export default function SharedLinksView(): JSX.Element {
                   downloadItem: downloadItem,
                   moveToTrash: moveToTrash,
                 })
-              : contextMenuDriveItemShared({
+              : contextMenuDriveItemSharedAFS({
                   openPreview: (shareLink) => {
                     dispatch(uiActions.setIsFileViewerOpen(true));
-                    dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
+                    dispatch(uiActions.setFileViewerItem((shareLink as any).item as DriveItemData));
                   },
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
@@ -422,7 +508,7 @@ export default function SharedLinksView(): JSX.Element {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
-                  ...((selectedItem as ListShareLinksItem).item as DriveItemData),
+                  ...((selectedItem as any).item as DriveItemData),
                   isFolder: selectedItem.isFolder,
                 };
                 setEditNameItem(itemToRename);
@@ -431,9 +517,9 @@ export default function SharedLinksView(): JSX.Element {
           }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          onOrderByChanged={onOrderByChanged}
-          orderBy={orderBy}
+          //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
+          // onOrderByChanged={onOrderByChanged}
+          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
@@ -442,12 +528,12 @@ export default function SharedLinksView(): JSX.Element {
         isTrash={false}
       />
       <EditFolderNameDialog />
+      {isShareDialogOpen && <ShareDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction={translate('modals.removeSharedLinkModal.cancel')}
-        isLoading={isLoading}
         title={
           selectedItems.length > 1
             ? translate('shared-links.item-menu.delete-links')
@@ -466,129 +552,6 @@ export default function SharedLinksView(): JSX.Element {
         }
         primaryActionColor="danger"
       />
-      {/* <UpdateLinkModal
-        isOpen={isUpdateLinkModalOpen}
-        onClose={() => setIsUpdateLinkModalOpen(false)}
-        onShareUpdated={updateLinkItem}
-        linkToUpdate={linkToUpdate!}
-      /> */}
     </div>
-  );
-}
-
-function UpdateLinkModal({
-  isOpen,
-  onClose,
-  onShareUpdated,
-  linkToUpdate,
-}: {
-  isOpen: boolean;
-  linkToUpdate: ListShareLinksItem & { code: string };
-  onClose: () => void;
-  onShareUpdated: (updatedItem: ListShareLinksItem & { code: string }) => void;
-}) {
-  const { translate } = useTranslationContext();
-  const [savingLinkChanges, setSavingLinkChanges] = useState<boolean>(false);
-
-  const item = linkToUpdate?.item as DriveFileData | undefined;
-
-  useEffect(() => {
-    if (isOpen) {
-      setSavingLinkChanges(false);
-    }
-  }, [isOpen]);
-
-  // Could be used for implementing an update of the Share Link if they have more features
-  // To be deleted:
-  async function updateShareLink(params: ShareTypes.UpdateShareLinkPayload) {
-    setSavingLinkChanges(true);
-    const updatedItem = await shareService.updateShareLink(params);
-    onShareUpdated(updatedItem as ShareTypes.ShareLink & { code: string });
-    setSavingLinkChanges(false);
-    //notificationsService.show({ text: translate('shared-links.toast.link-updated'), type: ToastType.Success });
-  }
-
-  function copyLink() {
-    const mnemonic = localStorageService.getUser()!.mnemonic;
-    const link = shareService.buildLinkFromShare(mnemonic, linkToUpdate);
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    copy(link);
-    notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-  }
-
-  return (
-    <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-50 select-none" open={isOpen} onClose={onClose}>
-        <Transition.Child
-          as={Fragment}
-          enter="ease-out duration-200"
-          enterFrom="opacity-0"
-          enterTo="opacity-100"
-          leave="ease-in duration-150"
-          leaveFrom="opacity-100"
-          leaveTo="opacity-0"
-        >
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-50" />
-        </Transition.Child>
-
-        <div className="fixed inset-0 overflow-y-auto">
-          <div className="flex min-h-full items-center justify-center p-4 text-center">
-            <Transition.Child
-              as={Fragment}
-              enter="ease-out duration-200"
-              enterFrom="opacity-0 scale-95"
-              enterTo="opacity-100 scale-100"
-              leave="ease-in duration-150"
-              leaveFrom="opacity-100 scale-100"
-              leaveTo="opacity-0 scale-95"
-            >
-              <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
-                <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
-                  <span className="font-medium">{translate('shared-links.link-settings.share-settings')}</span>
-                  <span className="truncate whitespace-nowrap text-base text-gray-40">
-                    {`${item?.name}${(item?.type && item?.type !== 'folder' && `.${item?.type}`) || ''}`}
-                  </span>
-                </Dialog.Title>
-
-                <div className="flex flex-col">
-                  <span className="text-lg font-semibold text-gray-80">
-                    {translate('shared-links.link-settings.views')}
-                  </span>
-                  <span className="text-gray-60">{`Link visited ${linkToUpdate?.views} times`}</span>
-                </div>
-
-                <div className="flex flex-row justify-between">
-                  <BaseButton
-                    onClick={copyLink}
-                    disabled={false}
-                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
-                  >
-                    <span>{translate('shared-links.link-settings.copy-link')}</span>
-                    <Link size={24} />
-                  </BaseButton>
-
-                  <div className="flex flex-row space-x-2">
-                    <BaseButton
-                      onClick={() => {
-                        // updateShareLink({
-                        //   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-                        //   itemId: linkToUpdate!.id,
-                        //   // timesValid: -1,
-                        //   // active: true,
-                        // })
-                      }}
-                      isLoading={savingLinkChanges}
-                      className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
-                    >
-                      {translate('shared-links.link-settings.close') as string}
-                    </BaseButton>
-                  </div>
-                </div>
-              </Dialog.Panel>
-            </Transition.Child>
-          </div>
-        </div>
-      </Dialog>
-    </Transition>
   );
 }

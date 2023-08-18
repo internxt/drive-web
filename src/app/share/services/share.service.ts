@@ -3,7 +3,16 @@ import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from 'app/core/services/http.service';
 import { aes } from '@internxt/lib';
-import { ListShareLinksItem, ShareDomainsResponse } from '@internxt/sdk/dist/drive/share/types';
+import {
+  ListAllSharedFoldersResponse,
+  ListPrivateSharedFoldersResponse,
+  ListShareLinksItem,
+  PrivateSharedFolder,
+  PrivateSharingRole,
+  ShareDomainsResponse,
+  SharePrivateFolderWithUserPayload,
+  UpdateUserRolePayload,
+} from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
 
@@ -66,6 +75,64 @@ export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Prom
   });
 }
 
+export function getReceivedSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getReceivedSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSentSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListPrivateSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSentSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getAllSharedFolders(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllSharedFolders(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSharedFolderContent(
+  sharedFolderId: string,
+  childFolderId: string,
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderContent(sharedFolderId, childFolderId, page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSharedFolderUsers(
+  folderUUID: string,
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<{ users: any[] }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderUsers(folderUUID, page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
@@ -104,6 +171,52 @@ export async function getSharedFolderSize(shareId: string, folderId: string): Pr
 export function getShareDomains(): Promise<ShareDomainsResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareDomains().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.sharePrivateFolderWithUser(payload).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPrivateSharingRoles(): Promise<{ roles: PrivateSharingRole[] }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPrivateSharingRoles().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function updateUserRoleOfSharedFolder({
+  userUUID,
+  folderUUID,
+  roleId,
+}: UpdateUserRolePayload): Promise<{ message: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.updateUserRole({ userUUID, folderUUID, roleId }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: PrivateSharedFolder }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPrivateSharedFolder(folderUUID).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function stopSharingFolder(folderUUID: string): Promise<{ message: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.stopSharingFolder(folderUUID).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeUserFromSharedFolder(folderUUID: string, userUUID: string): Promise<{ message: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeUserFromSharedFolder(folderUUID, userUUID).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -178,11 +291,21 @@ const shareService = {
   getSharedFileInfo,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
+  getSentSharedFolders,
+  getReceivedSharedFolders,
+  getAllSharedFolders,
+  getSharedFolderUsers,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
+  updateUserRoleOfSharedFolder,
+  getPrivateSharedFolder,
+  stopSharingFolder,
+  removeUserFromSharedFolder,
+  getPrivateSharingRoles,
+  getSharedFolderContent,
 };
 
 export default shareService;

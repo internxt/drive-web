@@ -183,6 +183,7 @@
     "photos": "Photos",
     "backups": "Sauvegardes",
     "sharedLinks": "Liens partagés",
+    "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
     "desktop": "App de bureau"
@@ -560,7 +561,7 @@
           "roles": {
             "owner": "Propriétaire",
             "editor": "Éditeur",
-            "viewer": " Visualisateur "
+            "reader": " Visualisateur "
           },
           "remove": "Supprimer"
         }
@@ -589,7 +590,7 @@
           "deny": "Refuser",
           "roles": {
             "editor": "Editeur",
-            "viewer": "Lecteur"
+            "reader": "Lecteur"
           }
         }
       },
@@ -603,6 +604,12 @@
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utilisateur \"{{name}}\" supprimé",
+          "error": "Impossible de supprimer l'utilisateur \"{{name}}\", veuillez réessayer"
+        }
+      },
       "invite": {
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
@@ -611,8 +618,12 @@
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
-        "viewer": "Visualiseur",
-        "listUsers": "Utilisateurs à inviter"
+        "reader": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter",
+        "successSentInvitation": "Partage réussi avec {{email}}",
+        "error": {
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}"
+        }
       },
       "requestAccess": {
         "title": "Vous n'avez pas accès",
@@ -778,10 +789,12 @@
     "shared-links": "Liens partagés",
     "view": "Vues",
     "list": {
+      "name": "Nom",
       "link-content": "Contenu du lien",
       "shared": "Partagé",
       "created": "Créé",
-      "size": "Taille"
+      "size": "Taille",
+      "owner": "Propriétaire"
     },
     "empty-state": {
       "title": "Rien n'a encore été partagé",

@@ -199,6 +199,7 @@
     "photos": "Photos",
     "backups": "Backup",
     "sharedLinks": "Link Condivisi",
+    "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
     "desktop": "Applicazione desktop"
@@ -617,7 +618,7 @@
           "roles": {
             "owner": "Propietario",
             "editor": "Editor",
-            "viewer": "Visualizzatore"
+            "reader": "Visualizzatore"
           },
           "remove": "Eliminare"
         }
@@ -646,7 +647,7 @@
           "deny": "Nega",
           "roles": {
             "editor": "Editore",
-            "viewer": "Visualizzatore"
+            "reader": "Visualizzatore"
           }
         }
       },
@@ -660,6 +661,12 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utente \"{{name}}\" rimosso",
+          "error": "Impossibile rimuovere l'utente \"{{name}}\", riprova per favore"
+        }
+      },
       "invite": {
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",
@@ -668,8 +675,12 @@
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
-        "viewer": "Visualizzatore",
-        "listUsers": "Utenti da invitare"
+        "reader": "Visualizzatore",
+        "listUsers": "Utenti da invitare",
+        "successSentInvitation": "Condivisione riuscita con {{email}}",
+        "error": {
+          "errorInviting": "Errore durante l'invio dell'invito a {{email}}"
+        }
       },
       "requestAccess": {
         "title": "Non hai accesso",
@@ -836,10 +847,12 @@
     "shared-links": "Link condivisi",
     "view": "viste",
     "list": {
+      "name": "Nome",
       "link-content": "Contenuto del link",
       "shared": "Condivisioni",
       "created": "Creato",
-      "size": "Dimensione"
+      "size": "Dimensione",
+      "owner": "Propietario"
     },
     "empty-state": {
       "title": "Niente di condiviso, per ora",

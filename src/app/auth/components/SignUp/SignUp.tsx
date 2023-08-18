@@ -153,9 +153,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey ? 
-        Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64') : 
-        undefined;
+      const privateKey = xUser.privateKey
+        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,

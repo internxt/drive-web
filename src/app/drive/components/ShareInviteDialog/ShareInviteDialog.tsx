@@ -10,9 +10,17 @@ import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox'
 import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
+import { useDispatch } from 'react-redux';
+import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
+import { AsyncThunkAction } from '@reduxjs/toolkit';
+import { RootState } from '../../../store';
+import { Role } from '../../../store/slices/sharedLinks/types';
 
-interface ShareInviteDialog {
+interface ShareInviteDialogProps {
   onInviteUser: () => void;
+  folderUUID: string;
+  onClose: () => void;
+  roles: Role[];
 }
 
 interface UsersToInvite {
@@ -20,12 +28,13 @@ interface UsersToInvite {
   userRole: string;
 }
 
-const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
+const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
-  const [userRole, setUserRole] = useState<string>('editor');
+  const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
   const [usersToInvite, setUsersToInvite] = useState<Array<UsersToInvite>>([]);
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
@@ -61,12 +70,40 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
     }
   };
 
-  const onEditRole = () => {
-    //   Edit user role
+  const onEditRole = (value: Role['name'], user: UsersToInvite) => {
+    const newUserToInvite = usersToInvite.map((userToInvite) => {
+      if (user.email === userToInvite.email) {
+        return { ...userToInvite, userRole: value };
+      }
+      return userToInvite;
+    });
+    setUsersToInvite(newUserToInvite);
   };
 
-  const onInvite = () => {
-    // Ivite added users
+  //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
+  const onInvite = async () => {
+    const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
+    if (usersToInvite.length === 0 && isValidEmail(email)) {
+      const userRoleId = props.roles.find((role) => role.name === userRole)?.id;
+      if (!userRoleId) return;
+
+      sharingPromises.push(
+        dispatch(sharedThunks.shareFileWithUser({ email: email, roleId: userRoleId, folderUUID: props.folderUUID })),
+      );
+    } else {
+      usersToInvite.forEach((user) => {
+        const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
+        if (!userRoleId) return;
+
+        sharingPromises.push(
+          dispatch(
+            sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
+          ),
+        );
+      });
+    }
+    await Promise.all(sharingPromises);
+    props.onClose();
   };
 
   return (
@@ -90,30 +127,20 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
               </Button>
             </Listbox.Button>
             <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-              <Listbox.Option
-                key="editor"
-                value="editor"
-                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-              >
-                {({ selected }) => (
-                  <>
-                    <span>{translate('modals.shareModal.invite.editor')}</span>
-                    {selected ? <Check size={20} /> : null}
-                  </>
-                )}
-              </Listbox.Option>
-              <Listbox.Option
-                key="viewer"
-                value="viewer"
-                className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-              >
-                {({ selected }) => (
-                  <>
-                    <span>{translate('modals.shareModal.invite.viewer')}</span>
-                    {selected ? <Check size={20} /> : null}
-                  </>
-                )}
-              </Listbox.Option>
+              {props.roles.map((role) => (
+                <Listbox.Option
+                  key={role.id}
+                  value={role.name}
+                  className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                >
+                  {({ selected }) => (
+                    <>
+                      <span>{translate(`modals.shareModal.invite.${role.name.toLowerCase()}`)}</span>
+                      {selected ? <Check size={20} /> : null}
+                    </>
+                  )}
+                </Listbox.Option>
+              ))}
             </Listbox.Options>
           </div>
         </Listbox>
@@ -134,7 +161,7 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                   <Avatar src="" fullName={`${user.email}`} diameter={40} />
                   <p className="ml-2.5">{user.email}</p>
                 </div>
-                <Listbox value={user.userRole} onChange={onEditRole}>
+                <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                   <div className="relative">
                     <Listbox.Button value={user.userRole} name={user.email}>
                       <Button variant="secondary">
@@ -143,30 +170,20 @@ const ShareInviteDialog = (props: ShareInviteDialog): JSX.Element => {
                       </Button>
                     </Listbox.Button>
                     <Listbox.Options className="absolute right-0 z-10 mt-1 w-40 transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out">
-                      <Listbox.Option
-                        key="editor"
-                        value="editor"
-                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span>{translate('modals.shareModal.invite.editor')}</span>
-                            {selected ? <Check size={20} /> : null}
-                          </>
-                        )}
-                      </Listbox.Option>
-                      <Listbox.Option
-                        key="viewer"
-                        value="viewer"
-                        className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span>{translate('modals.shareModal.invite.viewer')}</span>
-                            {selected ? <Check size={20} /> : null}
-                          </>
-                        )}
-                      </Listbox.Option>
+                      {props.roles.map((role) => (
+                        <Listbox.Option
+                          key={role.id}
+                          value={role.name}
+                          className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                        >
+                          {({ selected }) => (
+                            <>
+                              <span>{translate(`modals.shareModal.invite.${role.name}`)}</span>
+                              {selected ? <Check size={20} /> : null}
+                            </>
+                          )}
+                        </Listbox.Option>
+                      ))}
                     </Listbox.Options>
                   </div>
                 </Listbox>

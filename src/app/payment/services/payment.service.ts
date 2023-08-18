@@ -126,7 +126,7 @@ const paymentService = {
   async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
-    const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
+    const codMnemonicTeam = Buffer.from(encMnemonicTeam).toString('base64');
     const payload: CreateTeamsPaymentSessionPayload = {
       mode,
       priceId,

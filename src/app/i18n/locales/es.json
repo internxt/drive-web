@@ -201,6 +201,7 @@
     "photos": "Photos",
     "backups": "Copias de seguridad",
     "sharedLinks": "Enlaces compartidos",
+    "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
     "desktop": "Aplicación de escritorio"
@@ -625,7 +626,7 @@
           "roles": {
             "owner": "Propietario",
             "editor": "Editor",
-            " viewer": "Visor"
+            "reader": "Visor"
           },
           " remove": "Eliminar"
         }
@@ -654,7 +655,7 @@
           "deny": "Denegar",
           "roles": {
             "editor": "Editor",
-            "viewer": "Espectador"
+            "reader": "Espectador"
           }
         }
       },
@@ -668,6 +669,12 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Usuario \"{{name}}\" eliminado",
+          "error": "No se pudo eliminar al usuario \"{{name}}\", por favor inténtalo nuevamente"
+        }
+      },
       "invite": {
         "title": "Invitar a otros",
         "textarea": "Escribe un mensaje (opcional)",
@@ -676,8 +683,12 @@
         "email": "Correo electrónico",
         "invite": "Invitar",
         "editor": "Editor",
-        "viewer": "Visualizador",
-        "listUsers": "Usuarios a invitar"
+        "reader": "Visualizador",
+        "listUsers": "Usuarios a invitar",
+        "successSentInvitation": "Compartido con éxito con {{email}}",
+        "error": {
+          "errorInviting": "Error al enviar la invitación a {{email}}"
+        }
       },
       "requestAccess": {
         "title": "No tienes acceso",
@@ -844,10 +855,12 @@
     "shared-links": "Enlaces compartidos",
     "view": "visitas",
     "list": {
+      "name": "Nombre",
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
       "created": "Creado",
-      "size": "Tamaño"
+      "size": "Tamaño",
+      "owner": "Propietario"
     },
     "empty-state": {
       "title": "Nada compartido aún",

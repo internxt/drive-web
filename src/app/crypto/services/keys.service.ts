@@ -43,10 +43,7 @@ export class KeysDoNotMatchError extends Error {
  * @throws {CorruptedEncryptedPrivateKeyError} If the ENCRYPTED private key is un-decryptable (corrupted)
  * @async
  */
-export async function assertPrivateKeyIsValid(
-  privateKey: string,
-  password: string,
-): Promise<void> {
+export async function assertPrivateKeyIsValid(privateKey: string, password: string): Promise<void> {
   let privateKeyDecrypted: string;
 
   try {
@@ -72,21 +69,23 @@ export function decryptPrivateKey(privateKey: string, password: string): string 
 
 export async function assertValidateKeys(privateKey: string, publicKey: string): Promise<void> {
   const openpgp = await getOpenpgp();
-  const publicKeyArmored = await openpgp.key.readArmored(publicKey);
-  const privateKeyArmored = await openpgp.key.readArmored(privateKey);
+  const publicKeyArmored = await openpgp.readKey({ armoredKey: publicKey });
+  const privateKeyArmored = await openpgp.readPrivateKey({ armoredKey: privateKey });
 
   const plainMessage = 'validate-keys';
-  const originalText = openpgp.message.fromText(plainMessage);
-  const encryptedMessage = (await openpgp.encrypt({
+  const originalText = await openpgp.createMessage({ text: plainMessage });
+  const encryptedMessage = await openpgp.encrypt({
     message: originalText,
-    publicKeys: publicKeyArmored.keys,
-  })).data;
+    encryptionKeys: publicKeyArmored,
+  });
 
-  const decryptedMessage = (await openpgp.decrypt({
-    message: await openpgp.message.readArmored(encryptedMessage),
-    publicKeys: publicKeyArmored.keys,
-    privateKeys: privateKeyArmored.keys,
-  })).data;
+  const decryptedMessage = (
+    await openpgp.decrypt({
+      message: await openpgp.readMessage({ armoredMessage: encryptedMessage }),
+      verificationKeys: publicKeyArmored,
+      decryptionKeys: privateKeyArmored,
+    })
+  ).data;
 
   if (decryptedMessage !== plainMessage) {
     throw new KeysDoNotMatchError();

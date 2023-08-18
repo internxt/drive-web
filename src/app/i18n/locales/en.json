@@ -218,6 +218,7 @@
     "photos": "Photos",
     "backups": "Backups",
     "sharedLinks": "Shared Links",
+    "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
     "desktop": "Desktop"
@@ -643,7 +644,7 @@
           "roles": {
             "owner": "Owner",
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           },
           "remove": "Remove"
         }
@@ -672,7 +673,7 @@
           "deny": "Deny",
           "roles": {
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           }
         }
       },
@@ -686,6 +687,12 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "User \"{{name}}\" removed",
+          "error": "Couldn't remove user \"{{name}}\", please try again"
+        }
+      },
       "invite": {
         "title": "Invite people",
         "textarea": "Enter your message text (optional)",
@@ -694,8 +701,12 @@
         "email": "Type email",
         "invite": "Invite",
         "editor": "Editor",
-        "viewer": "Viewer",
-        "listUsers": "Users to invite"
+        "reader": "Viewer",
+        "listUsers": "Users to invite",
+        "successSentInvitation": "Successful sharing with {{email}}",
+        "error": {
+          "errorInviting": "Error sending invitation to {{email}}"
+        }
       },
       "requestAccess": {
         "title": "You don't have access",
@@ -862,10 +873,12 @@
     "shared-links": "Shared links",
     "view": "views",
     "list": {
+      "name": "Name",
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created",
-      "size": "Size"
+      "size": "Size",
+      "owner": "Owner"
     },
     "empty-state": {
       "title": "Nothing shared yet",
