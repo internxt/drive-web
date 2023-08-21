@@ -28,6 +28,7 @@ import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from './ReportButon';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -163,14 +164,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     return readable.then(binaryStreamToBlob);
   }
 
-  useEffect(() => {
-    if (info.item) {
-      getBlob(new AbortController()).then((blob) => {
-        setBlob(blob);
-      });
-    }
-  }, [progress, info]);
-
   function onDownloadFromPreview() {
     setOpenPreview(false);
     download();
@@ -284,6 +277,14 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             <button
               onClick={() => {
                 setOpenPreview(true);
+                getBlob(new AbortController())
+                  .then((blob) => {
+                    setBlob(blob);
+                  })
+                  .catch((err) => {
+                    setIsLoaded(true);
+                    setIsError(true);
+                  });
               }}
               className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"

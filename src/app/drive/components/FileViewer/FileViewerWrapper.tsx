@@ -72,6 +72,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const fileIndex = sortFolderFiles?.findIndex((item) => item.id === currentFile?.id);
   const totalFolderIndex = sortFolderFiles?.length;
 
+  //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
     setBlob(null);
     if (direction === 'next') {

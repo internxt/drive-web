@@ -132,10 +132,6 @@ const FileViewer = ({
 
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
 
-  // const [blob, setBlob] = useState<Blob | null>(null);
-
-  //Switch to the next or previous file in the folder
-
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
     'right',
