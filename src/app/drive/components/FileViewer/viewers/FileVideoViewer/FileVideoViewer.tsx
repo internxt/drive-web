@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 const FileVideoViewer = ({
-  file,
   blob,
+  setIsPreviewAvailable,
 }: {
-  file: DriveFileData;
   blob: Blob;
-  setIsErrorWhileDownloading: (isError: boolean) => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
 }): JSX.Element => {
   const [dimensions, setDimensions] = useState({ width: 640, height: 480 });
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
@@ -23,6 +22,14 @@ const FileVideoViewer = ({
 
     // Set the video src.
     videoPlayer.src = URL.createObjectURL(blob);
+
+    // Manage the error
+    videoPlayer.onerror = () => {
+      console.error('Error loading video');
+      setIsPreviewAvailable(false);
+    };
+
+    videoPlayer.play();
 
     // Cleanup.
     return () => {
