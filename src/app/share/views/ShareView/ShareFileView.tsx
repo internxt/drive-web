@@ -28,6 +28,7 @@ import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from './ReportButon';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -66,6 +67,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
+  const [blob, setBlob] = useState<Blob | null>(null);
 
   let body;
 
@@ -113,13 +115,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     }
   };
 
-  const getDecryptedName = (info: ShareTypes.ShareLink): string => {
-    const salt = `${process.env.REACT_APP_CRYPTO_SECRET2}-${info.item.id.toString()}`;
-    const decryptedFilename = aes.decrypt(info.item.name, salt);
-
-    return decryptedFilename;
-  };
-
   const getFormatFileName = (): string => {
     const hasType = info?.item?.type !== null;
     const extension = hasType ? `.${info?.item?.type}` : '';
@@ -157,12 +152,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
     const readable = network.downloadFile({
       bucketId: fileInfo.bucket,
-      fileId: fileInfo.item.fileId,
+      fileId: fileInfo.item?.fileId,
       encryptionKey: Buffer.from(encryptionKey, 'hex'),
       token: (fileInfo as any).fileToken,
       options: {
         abortController,
-        notifyProgress: () => null,
+        notifyProgress: setProgress,
       },
     });
 
@@ -282,6 +277,14 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
             <button
               onClick={() => {
                 setOpenPreview(true);
+                getBlob(new AbortController())
+                  .then((blob) => {
+                    setBlob(blob);
+                  })
+                  .catch((err) => {
+                    setIsLoaded(true);
+                    setIsError(true);
+                  });
               }}
               className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
@@ -332,7 +335,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         file={info['item']}
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
-        downloader={getBlob}
+        progress={progress}
+        blob={blob}
         isAuthenticated={isAuthenticated}
         isShareView
       />

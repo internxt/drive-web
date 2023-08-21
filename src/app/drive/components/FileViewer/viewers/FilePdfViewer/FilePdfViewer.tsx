@@ -90,7 +90,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
   }, [currentPage, numPages]);
 
   return (
-    <div className="flex max-h-full w-full items-center justify-center pt-16">
+    <div className="flex max-h-full w-full items-center justify-center pt-20">
       <Fragment>
         <div>
           <div className="flex items-center justify-center">
