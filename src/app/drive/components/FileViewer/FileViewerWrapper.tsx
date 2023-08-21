@@ -172,7 +172,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
               });
           if (isCacheExpired) {
             fileContent = await downloadFile(currentFile, abortController);
-            console.log('FileViewerWrapper isCacheExpired', fileContent);
             await updateDatabaseFileSourceData({
               folderId: currentFile.folderId,
               sourceBlob: fileContent,
@@ -185,7 +184,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
           }
         } else {
           fileContent = await downloadFile(currentFile, abortController);
-          console.log('FileViewerWrapper isCached', fileContent);
           if (shouldFileBeCached) {
             await updateDatabaseFileSourceData({
               folderId: currentFile.folderId,
@@ -212,7 +210,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       fileContentManager
         .download()
         .then((blob) => {
-          console.log('FileViewerWrapper blob', blob);
           setBlob(blob);
         })
         .catch((error) => {
