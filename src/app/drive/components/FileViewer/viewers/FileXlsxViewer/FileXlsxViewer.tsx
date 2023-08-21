@@ -3,10 +3,10 @@ import xlsxPreview from 'xlsx-preview';
 
 interface FileDocumentsViewerProps {
   blob: Blob;
-  setIsErrorWhileDownloading: (isErrorWhileDownloading: boolean) => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
 }
 
-const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsErrorWhileDownloading }) => {
+const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsPreviewAvailable }) => {
   const [htmlContent, setHtmlContent] = useState<string>('');
 
   useEffect(() => {
@@ -18,7 +18,7 @@ const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsErrorWh
         setHtmlContent(URL.createObjectURL(new Blob([html], { type: 'text/html' })));
       })
       .catch((err) => {
-        setIsErrorWhileDownloading(true);
+        setIsPreviewAvailable(false);
         console.error(err);
       });
   }, [blob]);

@@ -3,10 +3,10 @@ import { useEffect } from 'react';
 
 interface FileDocumentViewerProps {
   blob: Blob;
-  setIsErrorWhileDownloading: (isErrorWhileDownloading: boolean) => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
 }
 
-const FileDocumentViewer = ({ blob, setIsErrorWhileDownloading }: FileDocumentViewerProps): JSX.Element => {
+const FileDocumentViewer = ({ blob, setIsPreviewAvailable }: FileDocumentViewerProps): JSX.Element => {
   useEffect(() => {
     const docxContent = document.getElementById('docxContainer');
     if (docxContent) {
@@ -22,7 +22,7 @@ const FileDocumentViewer = ({ blob, setIsErrorWhileDownloading }: FileDocumentVi
           }
         })
         .catch((err) => {
-          setIsErrorWhileDownloading(true);
+          setIsPreviewAvailable(false);
           console.error(err);
         });
 
