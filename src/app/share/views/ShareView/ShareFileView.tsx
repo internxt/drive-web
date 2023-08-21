@@ -1,13 +1,15 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
+import { aes } from '@internxt/lib';
 import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
 import network from 'app/network';
 import { Link } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../../../app/store/hooks';
+import { useAppSelector } from '../../../../app/store/hooks';
+import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
 import fileExtensionService from '../../../drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
@@ -25,7 +27,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { uiActions } from 'app/store/slices/ui';
+import ReportButton from './ReportButon';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -59,11 +61,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [info, setInfo] = useState<Partial<ShareTypes.ShareLink & { name: string }>>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
-  const dispatch = useAppDispatch();
+  const [blob, setBlob] = useState<Blob | null>(null);
 
   let body;
 
@@ -94,6 +97,10 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </svg>
     </>
   );
+
+  const closePreview = () => {
+    setOpenPreview(false);
+  };
 
   const isTypeAllowed = () => {
     const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
@@ -135,6 +142,38 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
         throw err;
       });
+  }
+
+  function getBlob(abortController: AbortController): Promise<Blob> {
+    const fileInfo = info as unknown as ShareTypes.ShareLink;
+
+    const encryptionKey = fileInfo.encryptionKey;
+
+    const readable = network.downloadFile({
+      bucketId: fileInfo.bucket,
+      fileId: fileInfo.item?.fileId,
+      encryptionKey: Buffer.from(encryptionKey, 'hex'),
+      token: (fileInfo as any).fileToken,
+      options: {
+        abortController,
+        notifyProgress: setProgress,
+      },
+    });
+
+    return readable.then(binaryStreamToBlob);
+  }
+
+  useEffect(() => {
+    if (info.item) {
+      getBlob(new AbortController()).then((blob) => {
+        setBlob(blob);
+      });
+    }
+  }, [progress, info]);
+
+  function onDownloadFromPreview() {
+    setOpenPreview(false);
+    download();
   }
 
   const download = async (): Promise<void> => {
@@ -244,9 +283,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           {isTypeAllowed() && (
             <button
               onClick={() => {
-                dispatch(uiActions.setIsFileViewerOpen(true));
-                dispatch(uiActions.setFileViewerItem(info?.item));
-                dispatch(uiActions.setIsSharedItem(true));
+                setOpenPreview(true);
               }}
               className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
                         font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
@@ -292,6 +329,16 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   return (
     <>
       <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
+      <FileViewer
+        show={openPreview}
+        file={info['item']}
+        onClose={closePreview}
+        onDownload={onDownloadFromPreview}
+        progress={progress}
+        blob={blob}
+        isAuthenticated={isAuthenticated}
+        isShareView
+      />
       {body}
     </>
   );

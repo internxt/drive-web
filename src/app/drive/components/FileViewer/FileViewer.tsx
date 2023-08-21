@@ -201,7 +201,7 @@ const FileViewer = ({
           {/* Content */}
           <>
             {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-            {fileIndex === 0 ? null : (
+            {fileIndex === 0 || isShareView ? null : (
               <button
                 title={translate('actions.previous')}
                 className="outline-none absolute top-1/2 left-4 z-30 rounded-full bg-black p-4 text-white"
@@ -211,7 +211,7 @@ const FileViewer = ({
               </button>
             )}
 
-            {isTypeAllowed && !isPreviewAvailable ? (
+            {isTypeAllowed && isPreviewAvailable ? (
               <div
                 tabIndex={0}
                 className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
@@ -272,7 +272,7 @@ const FileViewer = ({
                 <DownloadFile onDownload={onDownload} translate={translate} />
               </div>
             )}
-            {fileIndex === totalFolderIndex - 1 ? null : (
+            {fileIndex === totalFolderIndex - 1 || isShareView ? null : (
               <button
                 title={translate('actions.next')}
                 className="outline-none absolute top-1/2 right-4 z-30 rounded-full bg-black p-4 text-white"

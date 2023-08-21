@@ -32,10 +32,9 @@ interface FileViewerWrapperProps {
   file: DriveFileData;
   onClose: () => void;
   showPreview: boolean;
-  isSharedItem: boolean;
 }
 
-const FileViewerWrapper = ({ file, onClose, showPreview, isSharedItem }: FileViewerWrapperProps): JSX.Element => {
+const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProps): JSX.Element => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
@@ -243,7 +242,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview, isSharedItem }: FileVie
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
       setBlob={setBlob}
-      isShareView={isSharedItem}
     />
   ) : (
     <div className="hidden" />

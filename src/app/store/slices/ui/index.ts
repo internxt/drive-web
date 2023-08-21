@@ -27,7 +27,6 @@ interface UISliceState {
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: DriveFileData | null;
-  isSharedItem: boolean;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -60,7 +59,6 @@ const initialState: UISliceState = {
   isDeleteBackupDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
-  isSharedItem: false,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -143,9 +141,6 @@ export const uiSlice = createSlice({
     },
     setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
-    },
-    setIsSharedItem: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isSharedItem = action.payload;
     },
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;

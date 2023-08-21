@@ -45,7 +45,6 @@ interface AppProps {
   fileViewerItem: DriveFileData | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
-  isSharedItem: boolean;
 }
 
 class App extends Component<AppProps> {
@@ -132,7 +131,6 @@ class App extends Component<AppProps> {
       isNewsletterDialogOpen,
       isSurveyDialogOpen,
       fileViewerItem,
-      isSharedItem,
       dispatch,
     } = this.props;
     const pathName = window.location.pathname.split('/')[1];
@@ -193,7 +191,6 @@ class App extends Component<AppProps> {
                 file={fileViewerItem}
                 onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
                 showPreview={isFileViewerOpen}
-                isSharedItem={isSharedItem}
               />
             )}
           </Router>
@@ -212,6 +209,5 @@ export default connect((state: RootState) => ({
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
-  isSharedItem: state.ui.isSharedItem,
   user: state.user.user,
 }))(App);
