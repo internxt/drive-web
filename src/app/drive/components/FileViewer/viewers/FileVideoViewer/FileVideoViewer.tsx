@@ -20,16 +20,13 @@ const FileVideoViewer = ({
       setDimensions({ width: videoWidth, height: videoHeight });
     });
 
-    // Set the video src.
     videoPlayer.src = URL.createObjectURL(blob);
 
-    // Manage the error
-    videoPlayer.onerror = () => {
-      console.error('Error loading video');
+    videoPlayer.play().catch((err) => {
+      const error = err as Error;
+      console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack || error.message);
       setIsPreviewAvailable(false);
-    };
-
-    videoPlayer.play();
+    });
 
     // Cleanup.
     return () => {
