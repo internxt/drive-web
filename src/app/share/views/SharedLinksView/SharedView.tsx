@@ -361,6 +361,7 @@ export default function SharedView(): JSX.Element {
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
+          resourceToken={nextResourcesToken}
           onClose={() => {
             setEditNameItem(null);
           }}
