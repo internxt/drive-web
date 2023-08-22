@@ -160,7 +160,8 @@ const FileViewer = ({
     if (show && isTypeAllowed) {
       if (
         (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
-        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile)
+        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile) ||
+        (fileExtensionGroup === FileExtensionGroup.Xls && !largeFile)
       ) {
         setIsPreviewAvailable(false);
         return;

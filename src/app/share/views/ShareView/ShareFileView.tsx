@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
-import { aes } from '@internxt/lib';
 import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
@@ -21,14 +20,13 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
 
-import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import ShareItemPwdView from './ShareItemPwdView';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ReportButton from './ReportButon';
-import notificationsService from 'app/notifications/services/notifications.service';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
+import errorService from 'app/core/services/error.service';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -58,6 +56,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const token = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
+  const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<Partial<ShareTypes.ShareLink & { name: string }>>({});
   const [isLoaded, setIsLoaded] = useState(false);
@@ -157,7 +156,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       token: (fileInfo as any).fileToken,
       options: {
         abortController,
-        notifyProgress: setProgress,
+        notifyProgress: (totalProgress, downloadedBytes) => {
+          const progress = Math.trunc(downloadedBytes / totalProgress);
+
+          console.log('PROGRESS: ', progress);
+          setBlobProgress(progress);
+        },
       },
     });
 
@@ -284,6 +288,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                   .catch((err) => {
                     setIsLoaded(true);
                     setIsError(true);
+                    errorService.reportError(err);
                   });
               }}
               className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
@@ -335,7 +340,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         file={info['item']}
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
-        progress={progress}
+        progress={blobProgress}
         blob={blob}
         isAuthenticated={isAuthenticated}
         isShareView
