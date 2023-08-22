@@ -15,8 +15,6 @@ const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsPreview
         output: 'string',
       })
       .then((html) => {
-        const fragments = html.split('\n');
-        console.log('FRAGMENTS: ', fragments);
         setHtmlContent(URL.createObjectURL(new Blob([html], { type: 'text/html' })));
       })
       .catch((err) => {
