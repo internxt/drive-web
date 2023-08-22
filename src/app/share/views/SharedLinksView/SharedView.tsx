@@ -36,8 +36,7 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-
-type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
+import { AdvancedSharedLink, OrderBy } from '../../../../app/share/types';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -45,49 +44,8 @@ function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
+
 const ITEMS_PER_PAGE = 15;
-const SHARED_LINKS_FETCH_ITEMS = { FOLDERS: 'FOLDERS', FILES: 'FILES' };
-
-type SharedLinksFetchItem = typeof SHARED_LINKS_FETCH_ITEMS[keyof typeof SHARED_LINKS_FETCH_ITEMS];
-
-//TODO: TEMPORARY TYPE, COMPLETE WHILE ADVANCING IN AFS
-export type SharedLinkItemType = {
-  id: string;
-  folderId: string;
-  ownerId: string;
-  sharedWith: string;
-  encryptionKey: string;
-  createdAt: string;
-  updatedAt: string;
-  owner_id: string;
-  shared_with: string;
-  folder: {
-    id: number;
-    uuid: string;
-    parentId: number;
-    parentUuid: string | null;
-    name: string;
-    bucket: string | null;
-    userId: number;
-    encryptVersion: string;
-    plainName: string | null;
-    deleted: boolean;
-    removed: boolean;
-    deletedAt: string | null;
-    createdAt: string;
-    updatedAt: string;
-    removedAt: string | null;
-  };
-  owner: {
-    uuid: string;
-    email: string;
-    name: string;
-    lastname: string;
-    avatar: string | null;
-  };
-  file: any;
-  fileSize: number;
-};
 
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
 export default function SharedView(): JSX.Element {
@@ -98,10 +56,10 @@ export default function SharedView(): JSX.Element {
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
-  const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
+  const [orderBy, setOrderBy] = useState<OrderBy>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
-  const [shareLinks, setShareLinks] = useState<any[]>([]);
+  const [shareLinks, setShareLinks] = useState<AdvancedSharedLink[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
   const [nextInvitedToken, setNextInvitedToken] = useState<string>('');
