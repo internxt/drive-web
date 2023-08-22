@@ -464,7 +464,7 @@ export default function SharedView(): JSX.Element {
                       title={shareLink.plainName}
                     >
                       {shareLink.plainName}
-                      {!shareLink.isFolder && '.' + shareLink.type}
+                      {!shareLink.isFolder && shareLink.type && '.' + shareLink.type}
                     </span>
                   </div>
                 </div>
