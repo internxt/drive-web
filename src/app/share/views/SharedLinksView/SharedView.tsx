@@ -11,7 +11,7 @@ import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService from 'app/share/services/share.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import _ from 'lodash';
-import { ListAllSharedFoldersResponse } from '@internxt/sdk/dist/drive/share/types';
+import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -45,7 +45,7 @@ function copyShareLink(type: string, code: string, token: string) {
   copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
-const ITEMS_PER_PAGE = 50;
+const ITEMS_PER_PAGE = 15;
 const SHARED_LINKS_FETCH_ITEMS = { FOLDERS: 'FOLDERS', FILES: 'FILES' };
 
 type SharedLinksFetchItem = typeof SHARED_LINKS_FETCH_ITEMS[keyof typeof SHARED_LINKS_FETCH_ITEMS];
@@ -97,8 +97,6 @@ export default function SharedView(): JSX.Element {
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
-  const [currentItemFetch, setCurrentItemFetch] = useState<SharedLinksFetchItem>(SHARED_LINKS_FETCH_ITEMS.FOLDERS);
-
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>(undefined);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -106,27 +104,39 @@ export default function SharedView(): JSX.Element {
   const [shareLinks, setShareLinks] = useState<any[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
-  const [invitedToken, setInvitedToken] = useState<string>('');
+  const [nextInvitedToken, setNextInvitedToken] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
-
-  function closeConfirmDelete() {
-    setIsDeleteDialogModalOpen(false);
-  }
-
-  function isItemSelected(item: any) {
-    return selectedItems.some((i) => item.id === i.id);
-  }
+  const [currentFolderId, setCurrentFolderId] = useState<string>('');
 
   useEffect(() => {
-    fetchItems(page, orderBy, 'append');
+    fetchRootItems();
   }, []);
 
   useEffect(() => {
-    fetchItems(page, orderBy, 'append');
-  }, []);
+    fetchFolders();
+  }, [currentFolderId]);
 
-  async function fetchItems(page: number, orderBy: OrderBy, type: 'append' | 'substitute') {
+  useEffect(() => {
+    fetchFiles();
+  }, [hasMoreFolders]);
+
+  useEffect(() => {
+    if (!currentFolderId) {
+      fetchRootItems();
+    }
+
+    if (currentFolderId && hasMoreFolders) {
+      fetchFolders();
+    }
+
+    if (!hasMoreFolders && hasMoreItems) {
+      fetchFiles();
+    }
+  }, [page]);
+
+  const fetchRootItems = async () => {
     setIsLoading(true);
+    localStorageService.set('xInvitedToken', '');
     try {
       const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
         page,
@@ -135,43 +145,131 @@ export default function SharedView(): JSX.Element {
       );
 
       const folders = response.folders;
-      const items = [...folders];
+      const items = [...shareLinks, ...folders];
 
       setShareLinks(items);
-      setOrderBy(orderBy);
-      setPage(page);
+
+      if (folders.length < ITEMS_PER_PAGE) {
+        setHasMoreItems(false);
+      }
     } catch (error) {
       errorService.reportError(error);
     } finally {
       setIsLoading(false);
     }
-  }
+  };
 
-  useEffect(() => {
-    if (!hasMoreFolders) {
-      setCurrentItemFetch(SHARED_LINKS_FETCH_ITEMS.FILES);
+  const fetchFolders = async () => {
+    setIsLoading(true);
+    const InvitedToken = localStorageService.get('xInvitedToken');
+
+    if (currentFolderId) {
+      try {
+        const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
+          currentFolderId,
+          'folders',
+          InvitedToken,
+          page,
+          ITEMS_PER_PAGE,
+          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+        );
+
+        const token = response.token;
+        if (page === 0) {
+          setNextInvitedToken(token);
+        }
+
+        const folders = response.items;
+        const items = [...shareLinks, ...folders];
+        setShareLinks(items);
+
+        if (folders.length < ITEMS_PER_PAGE) {
+          setPage(0);
+          setHasMoreFolders(false);
+        }
+      } catch (error) {
+        errorService.reportError(error);
+      }
     }
-    // TODO: add files when implement files fetching
-    setHasMoreItems(hasMoreFolders);
-  }, [hasMoreFolders]);
+  };
 
-  function onNextPage() {
-    fetchItems(page + 1, orderBy, 'append');
-  }
+  const fetchFiles = async () => {
+    const InvitedToken = localStorageService.get('xInvitedToken');
 
-  function onOrderByChanged(newOrderBy: OrderBy) {
+    if (currentFolderId) {
+      try {
+        const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
+          currentFolderId,
+          'files',
+          InvitedToken,
+          page,
+          ITEMS_PER_PAGE,
+          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+        );
+
+        const files = response.items;
+        const items = [...shareLinks, ...files];
+
+        setShareLinks(items);
+
+        if (files.length < ITEMS_PER_PAGE) {
+          setHasMoreItems(false);
+        }
+      } catch (error) {
+        errorService.reportError(error);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const onItemDoubleClicked = (props) => {
+    const sharedFolderId = props.uuid;
+    const user = props.user;
+
+    if (user) {
+      const userName = props.user.name;
+      const userLastname = props.user.lastname;
+      setUserName(`${userName} ${userLastname}`);
+    }
+
+    localStorageService.set('xInvitedToken', nextInvitedToken);
+
     setPage(0);
-    fetchItems(0, newOrderBy, 'substitute');
-  }
+    setShareLinks([]);
+    setHasMoreFolders(true);
+    setHasMoreItems(true);
+    setCurrentFolderId(sharedFolderId);
+  };
 
-  async function deleteShareLink(shareId: string) {
+  const onNameClicked = (props) => {
+    onItemDoubleClicked(props);
+  };
+
+  const onNextPage = () => {
+    setPage(page + 1);
+  };
+
+  const closeConfirmDelete = () => {
+    setIsDeleteDialogModalOpen(false);
+  };
+
+  const isItemSelected = (item: any) => {
+    return selectedItems.some((i) => item.id === i.id);
+  };
+
+  const onOrderByChanged = (newOrderBy: OrderBy) => {
+    setPage(0);
+  };
+
+  const deleteShareLink = async (shareId: string) => {
     //TODO check if its deleted correctly
     //setShareLinks((items) => items.filter((item) => item.id !== shareId));
     //setSelectedItems((items) => items.filter((item) => item.id !== shareId));
     return await shareService.deleteShareLink(shareId);
-  }
+  };
 
-  async function onDeleteSelectedItems() {
+  const onDeleteSelectedItems = async () => {
     if (selectedItems.length > 0) {
       setIsLoading(true);
 
@@ -187,13 +285,12 @@ export default function SharedView(): JSX.Element {
           ? translate('shared-links.toast.links-deleted')
           : translate('shared-links.toast.link-deleted');
       notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
-      await fetchItems(0, orderBy, 'substitute');
       closeConfirmDelete();
       setIsLoading(false);
     }
-  }
+  };
 
-  function onSelectedItemsChanged(changes: { props: any; value: boolean }[]) {
+  const onSelectedItemsChanged = (changes: { props: any; value: boolean }[]) => {
     let updatedSelectedItems = selectedItems;
 
     for (const change of changes) {
@@ -204,32 +301,7 @@ export default function SharedView(): JSX.Element {
     }
 
     setSelectedItems(updatedSelectedItems);
-  }
-
-  const skinSkeleton = [
-    <div className="flex flex-row items-center space-x-4">
-      <div className="h-8 w-8 rounded-md bg-gray-5" />
-      <div className="h-4 w-40 rounded bg-gray-5" />
-    </div>,
-    <div className="h-4 w-20 rounded bg-gray-5" />,
-    <div className="h-4 w-24 rounded bg-gray-5" />,
-    <div className="h-4 w-20 rounded bg-gray-5" />,
-  ];
-
-  const emptyState = (
-    <Empty
-      icon={
-        <div className="relative">
-          <img className="w-36" alt="" src={emptyStateIcon} />
-          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
-            <Link size={24} />
-          </div>
-        </div>
-      }
-      title={translate('shared-links.empty-state.title')}
-      subtitle={translate('shared-links.empty-state.subtitle')}
-    />
-  );
+  };
 
   const copyLink = (item) => {
     const itemType = item.isFolder ? 'folder' : 'file';
@@ -252,7 +324,6 @@ export default function SharedView(): JSX.Element {
       isFolder: selectedShareLink.isFolder,
     }));
     await moveItemsToTrash(itemsToTrash);
-    fetchItems(page, orderBy, 'substitute');
   };
 
   const moveToTrash = async (shareLink) => {
@@ -261,7 +332,6 @@ export default function SharedView(): JSX.Element {
       isFolder: shareLink.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
-    fetchItems(page, orderBy, 'substitute');
   };
 
   const downloadItem = (shareLink) => {
@@ -289,46 +359,30 @@ export default function SharedView(): JSX.Element {
     setEditNameItem(itemToRename);
   };
 
-  const onItemDoubleClicked = async (props) => {
-    const sharedFolderId = props.uuid;
-    const user = props.user;
+  const skinSkeleton = [
+    <div className="flex flex-row items-center space-x-4">
+      <div className="h-8 w-8 rounded-md bg-gray-5" />
+      <div className="h-4 w-40 rounded bg-gray-5" />
+    </div>,
+    <div className="h-4 w-20 rounded bg-gray-5" />,
+    <div className="h-4 w-24 rounded bg-gray-5" />,
+    <div className="h-4 w-20 rounded bg-gray-5" />,
+  ];
 
-    if (user) {
-      const userName = props.user.name;
-      const userLastname = props.user.lastname;
-
-      setUserName(`${userName} ${userLastname}`);
-    }
-
-    try {
-      const response: ListAllSharedFoldersResponse = await shareService.getSharedFolderContent(
-        sharedFolderId,
-        invitedToken,
-        page,
-        ITEMS_PER_PAGE,
-        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-      );
-
-      const token = response.token;
-      const folders = response.folders;
-      const files = response.files;
-
-      const items = [...folders, ...files];
-
-      if (items.length > 0) {
-        setShareLinks(items);
-        setInvitedToken(token);
-        setOrderBy(orderBy);
-        setPage(page);
+  const emptyState = (
+    <Empty
+      icon={
+        <div className="relative">
+          <img className="w-36" alt="" src={emptyStateIcon} />
+          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
+            <Link size={24} />
+          </div>
+        </div>
       }
-    } catch (error) {
-      errorService.reportError(error);
-    }
-  };
-
-  const onNameClicked = (props) => {
-    onItemDoubleClicked(props);
-  };
+      title={translate('shared-links.empty-state.title')}
+      subtitle={translate('shared-links.empty-state.subtitle')}
+    />
+  );
 
   return (
     <div
@@ -342,7 +396,6 @@ export default function SharedView(): JSX.Element {
           item={editNameItem}
           onClose={() => {
             setEditNameItem(null);
-            fetchItems(0, orderBy, 'substitute');
           }}
         />
       )}
