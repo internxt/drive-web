@@ -16,9 +16,9 @@ import {
 } from '@phosphor-icons/react';
 import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
-import { DriveFolderData, DriveItemData } from '../../../types';
 import envService from '../../../../core/services/env.service';
-import { SharedLinkItemType } from '../../../../share/views/SharedLinksView/SharedView';
+import { DriveFolderData, DriveItemData } from '../../../../drive/types';
+import { SharedLinkItemType } from '../../../../share/types';
 
 const isProduction = envService.isProduction();
 
