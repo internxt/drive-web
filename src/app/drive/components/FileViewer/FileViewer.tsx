@@ -40,6 +40,12 @@ export interface FormatFileViewerProps {
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
+function shouldNotBeRendered(fileExtensionGroup) {
+  const allowedGroups = [FileExtensionGroup.Audio, FileExtensionGroup.Video, FileExtensionGroup.Xls];
+
+  return allowedGroups.includes(fileExtensionGroup);
+}
+
 const DownloadFile = ({ onDownload, translate }) => (
   <div
     className={'z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
@@ -158,10 +164,7 @@ const FileViewer = ({
     const largeFile = isLargeFile(file?.size);
 
     if (show && isTypeAllowed) {
-      if (
-        (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
-        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile)
-      ) {
+      if (shouldNotBeRendered(fileExtensionGroup) && largeFile) {
         setIsPreviewAvailable(false);
         return;
       }

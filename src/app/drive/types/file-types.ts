@@ -295,7 +295,8 @@ const WordExtensions: FileExtensionMap = {
 };
 
 const xlsExtensions: FileExtensionMap = {
-  xls: ['xls', 'xlsx'],
+  xls: ['xls'],
+  xlsx: ['xlsx'],
 };
 
 const xmlExtensions: FileExtensionMap = {
@@ -313,7 +314,7 @@ const zipExtensions: FileExtensionMap = {
 
 const previewablePdfExtensionGroups: string[] = ['pdf'];
 
-const previewExcelFormatExtensionGroup: string[] = ['xls', 'xlsx'];
+const previewExcelFormatExtensionGroup: string[] = ['xlsx'];
 
 const previewDocsGroup: string[] = ['doc', 'docx'];
 
