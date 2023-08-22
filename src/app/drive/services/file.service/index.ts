@@ -10,7 +10,12 @@ import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { t } from 'i18next';
 
-export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
+export function updateMetaData(
+  fileId: string,
+  metadata: DriveFileMetadataPayload,
+  bucketId: string,
+  resourcesToken?: string,
+): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.UpdateFilePayload = {
     fileId: fileId,
@@ -19,7 +24,7 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
     destinationPath: uuid.v4(),
   };
 
-  return storageClient.updateFile(payload).then(() => {
+  return storageClient.updateFile(payload, resourcesToken).then(() => {
     const user = localStorageService.getUser() as UserSettings;
     analyticsService.trackFileRename({
       file_id: fileId,
