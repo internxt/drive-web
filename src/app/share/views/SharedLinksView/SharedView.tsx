@@ -312,7 +312,7 @@ export default function SharedView(): JSX.Element {
 
   const moveToTrash = async (shareLink) => {
     const itemToTrash = {
-      ...((shareLink as any).item as DriveItemData),
+      ...(shareLink as any as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
@@ -320,7 +320,7 @@ export default function SharedView(): JSX.Element {
 
   const downloadItem = (shareLink) => {
     const itemToDownload = {
-      ...((shareLink as any).item as DriveItemData),
+      ...(shareLink as any as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
@@ -328,7 +328,7 @@ export default function SharedView(): JSX.Element {
 
   const moveItem = (shareLink) => {
     const itemToMove = {
-      ...((shareLink as any).item as DriveItemData),
+      ...(shareLink as any as DriveItemData),
       isFolder: shareLink.isFolder,
     };
     dispatch(storageActions.setItemsToMove([itemToMove]));
@@ -447,8 +447,8 @@ export default function SharedView(): JSX.Element {
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
           }}
           itemComposition={[
-            (shareLinks) => {
-              const Icon = iconService.getItemIcon(shareLinks.type === 'folder', (shareLinks as DriveFileData)?.type);
+            (shareLink: AdvancedSharedLink) => {
+              const Icon = iconService.getItemIcon(shareLink.isFolder, (shareLink as any as DriveFileData)?.type);
               return (
                 <div className={'flex w-full flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
@@ -457,45 +457,46 @@ export default function SharedView(): JSX.Element {
                       <Link size={12} color="white" />
                     </div>
                   </div>
-                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareLinks)}>
+                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareLink)}>
                     <span
-                      onClick={() => onNameClicked(shareLinks)}
+                      onClick={() => onNameClicked(shareLink)}
                       className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
-                      title={shareLinks.plainName}
+                      title={shareLink.plainName}
                     >
-                      {shareLinks.plainName}
+                      {shareLink.plainName}
+                      {!shareLink.isFolder && '.' + shareLink.type}
                     </span>
                   </div>
                 </div>
               );
             },
-            (shareLinks) => (
+            (shareLink: AdvancedSharedLink) => (
               <div className="flex flex-row items-center justify-center">
                 <div className="mr-2">
                   <Avatar
                     diameter={28}
-                    fullName={`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}
-                    src={shareLinks.user?.avatar ? shareLinks.user?.avatar : null}
+                    fullName={`${shareLink.user?.name} ${shareLink.user?.lastname}`}
+                    src={shareLink.user?.avatar ? shareLink.user?.avatar : null}
                   />
                 </div>
-                <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
-                  {shareLinks.user ? (
-                    <span>{`${shareLinks.user?.name} ${shareLinks.user?.lastname}`}</span>
+                <span className={`${isItemSelected(shareLink) ? 'text-gray-100' : 'text-gray-60'}`}>
+                  {shareLink.user ? (
+                    <span>{`${shareLink.user?.name} ${shareLink.user?.lastname}`}</span>
                   ) : (
                     <span>{userName}</span>
                   )}{' '}
                 </span>
               </div>
             ),
-            (shareLinks) =>
-              shareLinks.folder ? (
+            (shareLink: AdvancedSharedLink) =>
+              shareLink.isFolder ? (
                 <span className="opacity-25">—</span>
               ) : (
-                <span>{`${sizeService.bytesToString(shareLinks?.fileSize ? shareLinks.fileSize : 0, false)}`}</span>
+                <span>{`${sizeService.bytesToString(shareLink?.size ? shareLink.size : 0, false)}`}</span>
               ),
-            (shareLinks) => (
-              <span className={`${isItemSelected(shareLinks) ? 'text-gray-100' : 'text-gray-60'}`}>
-                {dateService.format(shareLinks.createdAt, 'D MMM YYYY')}
+            (shareLink: AdvancedSharedLink) => (
+              <span className={`${isItemSelected(shareLink) ? 'text-gray-100' : 'text-gray-60'}`}>
+                {dateService.format(shareLink.createdAt, 'D MMM YYYY')}
               </span>
             ),
           ]}
@@ -509,7 +510,7 @@ export default function SharedView(): JSX.Element {
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: () => {
                     const itemsToDownload = selectedItems.map((selectedShareLink) => ({
-                      ...(selectedShareLink.item as DriveItemData),
+                      ...(selectedShareLink as DriveItemData),
                       isFolder: selectedShareLink.isFolder,
                     }));
                     dispatch(storageThunks.downloadItemsThunk(itemsToDownload));
@@ -529,7 +530,7 @@ export default function SharedView(): JSX.Element {
               : contextMenuDriveItemSharedAFS({
                   openPreview: (shareLink) => {
                     dispatch(uiActions.setIsFileViewerOpen(true));
-                    dispatch(uiActions.setFileViewerItem((shareLink as any).item as DriveItemData));
+                    dispatch(uiActions.setFileViewerItem(shareLink as any as DriveItemData));
                   },
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
@@ -562,7 +563,10 @@ export default function SharedView(): JSX.Element {
         />
       </div>
       <MoveItemsDialog
-        items={shareLinks.map((shareLink) => ({ ...(shareLink.item as DriveItemData), isFolder: shareLink.isFolder }))}
+        items={shareLinks.map((shareLink) => ({
+          ...(shareLink as any as DriveItemData),
+          isFolder: shareLink.isFolder,
+        }))}
         isTrash={false}
       />
       <EditFolderNameDialog />
