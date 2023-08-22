@@ -12,22 +12,26 @@ import storageSelectors from '../storage.selectors';
 
 export const updateItemMetadataThunk = createAsyncThunk<
   void,
-  { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload },
+  { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload; resourceToken?: string },
   { state: RootState }
 >(
   'storage/updateItemMetadata',
   async (
-    payload: { item: DriveItemData; metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload },
+    payload: {
+      item: DriveItemData;
+      metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload;
+      resourceToken?: string;
+    },
     { dispatch, getState },
   ) => {
-    const { item, metadata } = payload;
+    const { item, metadata, resourceToken } = payload;
     const namePath = getState().storage.namePath;
     const namePathDestinationArray = namePath.map((level) => level.name);
     namePathDestinationArray[0] = '';
 
     item.isFolder
       ? await folderService.updateMetaData(item.id, metadata)
-      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()));
+      : await fileService.updateMetaData(item.fileId, metadata, storageSelectors.bucket(getState()), resourceToken);
 
     dispatch(
       storageActions.patchItem({
