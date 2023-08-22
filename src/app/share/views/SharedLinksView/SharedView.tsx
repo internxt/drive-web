@@ -337,8 +337,8 @@ export default function SharedView(): JSX.Element {
 
   const renameItem = (shareLink) => {
     const itemToRename = {
-      ...((shareLink as any).item as DriveItemData),
-      isFolder: shareLink.isFolder,
+      ...(shareLink as any as DriveItemData),
+      name: shareLink.plainName ? shareLink.plainName : '',
     };
     setEditNameItem(itemToRename);
   };
@@ -546,8 +546,8 @@ export default function SharedView(): JSX.Element {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
-                  ...((selectedItem as any).item as DriveItemData),
-                  isFolder: selectedItem.isFolder,
+                  ...(selectedItem as any as DriveItemData),
+                  name: selectedItem.plainName ? selectedItem.plainName : '',
                 };
                 setEditNameItem(itemToRename);
               }
