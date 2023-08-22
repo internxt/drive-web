@@ -62,7 +62,8 @@ export default function SharedView(): JSX.Element {
   const [shareLinks, setShareLinks] = useState<AdvancedSharedLink[]>([]);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
-  const [nextInvitedToken, setNextInvitedToken] = useState<string>('');
+  const [currentResourcesToken, setCurrentResourcesToken] = useState<string>('');
+  const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
 
@@ -92,9 +93,16 @@ export default function SharedView(): JSX.Element {
     }
   }, [page]);
 
+  useEffect(() => {
+    localStorageService.set('xResourcesToken', nextResourcesToken);
+  }, [nextResourcesToken]);
+
   const fetchRootItems = async () => {
     setIsLoading(true);
-    localStorageService.set('xInvitedToken', '');
+
+    setCurrentResourcesToken('');
+    setNextResourcesToken('');
+
     try {
       const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
         page,
@@ -119,23 +127,20 @@ export default function SharedView(): JSX.Element {
 
   const fetchFolders = async () => {
     setIsLoading(true);
-    const InvitedToken = localStorageService.get('xInvitedToken');
 
     if (currentFolderId) {
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
           'folders',
-          InvitedToken,
+          currentResourcesToken,
           page,
           ITEMS_PER_PAGE,
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
         const token = response.token;
-        if (page === 0) {
-          setNextInvitedToken(token);
-        }
+        setNextResourcesToken(token);
 
         const folders = response.items;
         const items = [...shareLinks, ...folders];
@@ -152,22 +157,25 @@ export default function SharedView(): JSX.Element {
   };
 
   const fetchFiles = async () => {
-    const InvitedToken = localStorageService.get('xInvitedToken');
+    setIsLoading(true);
 
     if (currentFolderId) {
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
           'files',
-          InvitedToken,
+          currentResourcesToken,
           page,
           ITEMS_PER_PAGE,
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
-        const files = response.items;
-        const items = [...shareLinks, ...files];
+        const token = response.token;
+        setNextResourcesToken(token);
 
+        const files = response.items;
+
+        const items = [...shareLinks, ...files];
         setShareLinks(items);
 
         if (files.length < ITEMS_PER_PAGE) {
@@ -191,7 +199,8 @@ export default function SharedView(): JSX.Element {
       setUserName(`${userName} ${userLastname}`);
     }
 
-    localStorageService.set('xInvitedToken', nextInvitedToken);
+    setCurrentResourcesToken(nextResourcesToken);
+    setNextResourcesToken('');
 
     setPage(0);
     setShareLinks([]);
