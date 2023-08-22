@@ -159,7 +159,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         notifyProgress: (totalProgress, downloadedBytes) => {
           const progress = Math.trunc(downloadedBytes / totalProgress);
 
-          console.log('PROGRESS: ', progress);
           setBlobProgress(progress);
         },
       },

@@ -12,7 +12,7 @@ const FileXlsxViewer: React.FC<FileDocumentsViewerProps> = ({ blob, setIsPreview
   useEffect(() => {
     xlsxPreview
       .xlsx2Html(blob, {
-        output: 'string',
+        output: 'arrayBuffer',
       })
       .then((html) => {
         setHtmlContent(URL.createObjectURL(new Blob([html], { type: 'text/html' })));
