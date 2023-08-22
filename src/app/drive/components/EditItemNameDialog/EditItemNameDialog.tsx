@@ -10,10 +10,11 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 type EditItemNameDialogProps = {
   item: DriveItemData;
+  resourceToken?: string;
   onClose?: () => void;
 };
 
-const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
+const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, resourceToken, onClose }) => {
   const [newItemName, setNewItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -39,7 +40,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
       handleOnClose();
     } else if (newItemName && newItemName.trim().length > 0) {
       setIsLoading(true);
-      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }))
+      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata, resourceToken }))
         .unwrap()
         .then(() => {
           setIsLoading(false);
