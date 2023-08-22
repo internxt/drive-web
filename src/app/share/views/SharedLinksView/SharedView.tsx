@@ -110,7 +110,13 @@ export default function SharedView(): JSX.Element {
         orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
       );
 
-      const folders = response.folders;
+      const folders = response.folders.map((folder) => {
+        const shareLink = folder as AdvancedSharedLink;
+        shareLink.isFolder = true;
+        shareLink.isRootLink = true;
+        return shareLink;
+      });
+
       const items = [...shareLinks, ...folders];
 
       setShareLinks(items);
@@ -142,7 +148,13 @@ export default function SharedView(): JSX.Element {
         const token = response.token;
         setNextResourcesToken(token);
 
-        const folders = response.items;
+        const folders = response.items.map((folder) => {
+          const shareLink = folder as AdvancedSharedLink;
+          shareLink.isFolder = true;
+          shareLink.isRootLink = false;
+          return shareLink;
+        });
+
         const items = [...shareLinks, ...folders];
         setShareLinks(items);
 
@@ -173,7 +185,12 @@ export default function SharedView(): JSX.Element {
         const token = response.token;
         setNextResourcesToken(token);
 
-        const files = response.items;
+        const files = response.items.map((file) => {
+          const shareLink = file as AdvancedSharedLink;
+          shareLink.isFolder = false;
+          shareLink.isRootLink = false;
+          return shareLink;
+        });
 
         const items = [...shareLinks, ...files];
         setShareLinks(items);
