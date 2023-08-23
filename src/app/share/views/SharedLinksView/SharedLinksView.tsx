@@ -264,6 +264,7 @@ export default function SharedLinksView(): JSX.Element {
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
+          isOpen={true}
           onClose={() => {
             setEditNameItem(null);
             fetchItems(0, orderBy, 'substitute');

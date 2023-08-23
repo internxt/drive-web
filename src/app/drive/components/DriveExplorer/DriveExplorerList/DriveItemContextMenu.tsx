@@ -16,9 +16,9 @@ import {
 } from '@phosphor-icons/react';
 import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
-import { DriveFolderData, DriveItemData } from '../../../types';
 import envService from '../../../../core/services/env.service';
-import { SharedLinkItemType } from '../../../../share/views/SharedLinksView/SharedView';
+import { DriveFolderData, DriveItemData } from '../../../../drive/types';
+import { AdvancedSharedItem } from '../../../../share/types';
 
 const isProduction = envService.isProduction();
 
@@ -422,15 +422,15 @@ const contextMenuDriveItemSharedAFS = ({
   downloadItem,
   moveToTrash,
 }: {
-  openPreview: (item: SharedLinkItemType) => void;
-  copyLink: (item: SharedLinkItemType) => void;
-  openShareAccessSettings: (item: SharedLinkItemType) => void;
-  deleteLink: (item: SharedLinkItemType) => void;
-  renameItem: (item: SharedLinkItemType) => void;
-  moveItem: (item: SharedLinkItemType) => void;
-  downloadItem: (item: SharedLinkItemType) => void;
-  moveToTrash: (item: SharedLinkItemType) => void;
-}): ListItemMenu<SharedLinkItemType> => [
+  openPreview: (item: AdvancedSharedItem) => void;
+  copyLink: (item: AdvancedSharedItem) => void;
+  openShareAccessSettings: (item: AdvancedSharedItem) => void;
+  deleteLink: (item: AdvancedSharedItem) => void;
+  renameItem?: (item: AdvancedSharedItem) => void;
+  moveItem?: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => void;
+  moveToTrash?: (item: AdvancedSharedItem) => void;
+}): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
     ? [
         getOpenPreviewMenuItem(openPreview),
@@ -442,11 +442,11 @@ const contextMenuDriveItemSharedAFS = ({
       ]),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
-  getRenameMenuItem(renameItem),
-  getMoveItemMenuItem(moveItem),
+  renameItem && getRenameMenuItem(renameItem),
+  moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
-  getMoveToTrashMenuItem(moveToTrash),
+  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuDriveFolderSharedAFS = ({
@@ -458,23 +458,23 @@ const contextMenuDriveFolderSharedAFS = ({
   downloadItem,
   moveToTrash,
 }: {
-  copyLink: (item: SharedLinkItemType) => void;
-  openShareAccessSettings: (item: SharedLinkItemType) => void;
-  deleteLink: (item: SharedLinkItemType) => void;
-  renameItem: (item: SharedLinkItemType) => void;
-  moveItem: (item: SharedLinkItemType) => void;
-  downloadItem: (item: SharedLinkItemType) => void;
-  moveToTrash: (item: SharedLinkItemType) => void;
-}): ListItemMenu<SharedLinkItemType> => [
+  copyLink: (item: AdvancedSharedItem) => void;
+  openShareAccessSettings: (item: AdvancedSharedItem) => void;
+  deleteLink: (item: AdvancedSharedItem) => void;
+  renameItem?: (item: AdvancedSharedItem) => void;
+  moveItem?: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => void;
+  moveToTrash?: (item: AdvancedSharedItem) => void;
+}): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
     ? [...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink })]
     : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
   { name: '', action: () => false, separator: true },
-  getRenameMenuItem(renameItem),
-  getMoveItemMenuItem(moveItem),
+  renameItem && getRenameMenuItem(renameItem),
+  moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
-  getMoveToTrashMenuItem(moveToTrash),
+  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
 const contextMenuMultipleSharedViewAFS = ({
@@ -482,10 +482,10 @@ const contextMenuMultipleSharedViewAFS = ({
   downloadItem,
   moveToTrash,
 }: {
-  deleteLink: (item: SharedLinkItemType) => void;
-  downloadItem: (item: SharedLinkItemType) => void;
-  moveToTrash: (item: SharedLinkItemType) => void;
-}): ListItemMenu<SharedLinkItemType> => [
+  deleteLink: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => void;
+  moveToTrash: (item: AdvancedSharedItem) => void;
+}): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction ? [getDeleteLinkMenuItem(deleteLink)] : []),
   getDownloadMenuItem(downloadItem),
   { name: '', action: () => false, separator: true },
