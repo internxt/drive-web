@@ -99,11 +99,16 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
   },
 );
 
-type DownloadItemsAsZipThunkType = { items: DriveItemData[]; existingTaskId?: string };
+type DownloadItemsAsZipThunkType = {
+  items: DriveItemData[];
+  credentials?: Record<string, string>;
+  mnemonic?: string;
+  existingTaskId?: string;
+};
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async ({ items, existingTaskId }, { rejectWithValue }) => {
+  async ({ items, credentials, mnemonic, existingTaskId }, { rejectWithValue }) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -210,14 +215,15 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               band_utilization: 0,
             };
             analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+
             const downloadedFileStream = await downloadFile({
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
               creds: {
-                user: user.bridgeUser,
-                pass: user.userId,
+                user: credentials?.user || user.bridgeUser,
+                pass: credentials?.pass || user.userId,
               },
-              mnemonic: user.mnemonic,
+              mnemonic: mnemonic || user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {
@@ -295,7 +301,7 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
         notificationsService.show({ text: t('error.downloadingItems'), type: ToastType.Error });
       } else {
         notificationsService.show({
-          text: t('error.downloadingFile', { reason: action.error.message || '' }),
+          text: t('error.downloadingFile', { message: action.error.message || '' }),
           type: ToastType.Error,
         });
       }

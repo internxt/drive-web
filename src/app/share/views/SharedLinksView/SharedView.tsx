@@ -36,6 +36,11 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
+import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
+import network from 'app/network';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import downloadService from 'app/drive/services/download.service';
+import { downloadItemsAsZipThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
@@ -107,6 +112,8 @@ export default function SharedView(): JSX.Element {
   const [nextInvitedToken, setNextInvitedToken] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
+  const [credentials, setCredentials] = useState<Record<string, string>>();
+  const [encryptionKey, setEncryptionKey] = useState<string>('');
 
   useEffect(() => {
     fetchRootItems();
@@ -181,6 +188,7 @@ export default function SharedView(): JSX.Element {
 
         const folders = response.items;
         const items = [...shareLinks, ...folders];
+
         setShareLinks(items);
 
         if (folders.length < ITEMS_PER_PAGE) {
@@ -207,6 +215,8 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
+        setCredentials(response.credentials);
+
         const files = response.items;
         const items = [...shareLinks, ...files];
 
@@ -231,6 +241,10 @@ export default function SharedView(): JSX.Element {
       const userName = props.user.name;
       const userLastname = props.user.lastname;
       setUserName(`${userName} ${userLastname}`);
+    }
+
+    if (props.encryptionKey) {
+      setEncryptionKey(props.encryptionKey);
     }
 
     localStorageService.set('xInvitedToken', nextInvitedToken);
@@ -311,7 +325,7 @@ export default function SharedView(): JSX.Element {
   };
 
   const openShareAccessSettings = (item) => {
-    dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
+    dispatch(storageActions.setItemToShare({ share: undefined, item: item }));
 
     envService.isProduction()
       ? dispatch(uiActions.setIsShareItemDialogOpen(true))
@@ -334,12 +348,48 @@ export default function SharedView(): JSX.Element {
     await moveItemsToTrash([itemToTrash]);
   };
 
-  const downloadItem = (shareLink) => {
-    const itemToDownload = {
-      ...((shareLink as any).item as DriveItemData),
-      isFolder: shareLink.isFolder,
+  const downloadItem = async () => {
+    let decryptedKey;
+    const ownerCredentials = {
+      user: credentials?.networkUser || '',
+      pass: credentials?.networkPass || '',
     };
-    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+
+    //TODO: DECRYPT ENCRYPTION KEY (WITH USER PRIVATE KEY)
+    try {
+      decryptedKey = await decryptMessageWithPrivateKey({
+        encryptedMessage: atob(encryptionKey),
+        privateKeyInBase64: localStorageService.getUser()!.privateKey,
+      });
+    } catch (err) {
+      decryptedKey = localStorageService.getUser()!.mnemonic;
+    }
+
+    try {
+      if (decryptedKey) {
+        if (selectedItems.length === 1) {
+          shareService.downloadSharedFiles({
+            bucketId: selectedItems[0].bucket,
+            creds: ownerCredentials,
+            fileId: selectedItems[0].fileId,
+            shareLink: selectedItems[0],
+            mnemonic: decryptedKey as string,
+          });
+        } else {
+          dispatch(
+            downloadItemsAsZipThunk({
+              items: selectedItems as DriveItemData[],
+              credentials: ownerCredentials,
+              mnemonic: decryptedKey as string,
+            }),
+          );
+        }
+      }
+    } catch (err) {
+      const error = errorService.castError(err);
+
+      console.error('ERROR DOWNLOADING FILE: ', error);
+    }
   };
 
   const moveItem = (shareLink) => {
@@ -522,13 +572,7 @@ export default function SharedView(): JSX.Element {
             selectedItems.length > 1
               ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  downloadItem: () => {
-                    const itemsToDownload = selectedItems.map((selectedShareLink) => ({
-                      ...(selectedShareLink.item as DriveItemData),
-                      isFolder: selectedShareLink.isFolder,
-                    }));
-                    dispatch(storageThunks.downloadItemsThunk(itemsToDownload));
-                  },
+                  downloadItem: downloadItem,
                   moveToTrash: moveSelectedItemsToTrash,
                 })
               : selectedItems[0]?.isFolder

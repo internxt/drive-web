@@ -134,13 +134,13 @@ const ShareDialog = (props: ShareDialogProps) => {
   // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const getAndUpdateInvitedUsers = useCallback(async () => {
     try {
-      const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
+      const usersList = await shareService.getSharedFolderUsers(itemToShare?.item.uuid as string, 0, 50);
       const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
       setInvitedUsers(parsedUsersList);
     } catch (error) {
       errorService.reportError(error);
     }
-  }, [selectedFolder]);
+  }, [itemToShare]);
 
   const loadShareInfo = async () => {
     // TODO -> Load access mode
@@ -238,7 +238,7 @@ const ShareDialog = (props: ShareDialogProps) => {
     if (invitedUserUUID) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          folderUUID: selectedFolder.uuid as string,
+          folderUUID: itemToShare?.item.uuid as string,
           userUUID: invitedUserUUID,
           userEmail: email,
         }),

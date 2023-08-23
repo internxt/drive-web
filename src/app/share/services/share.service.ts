@@ -16,6 +16,9 @@ import {
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import downloadService from 'app/drive/services/download.service';
+import network from 'app/network';
 
 interface CreateShareResponse {
   created: boolean;
@@ -287,6 +290,45 @@ export function getAllShareLinks(
   });
 }
 
+export async function downloadSharedFiles({
+  bucketId,
+  fileId,
+  creds,
+  mnemonic,
+  shareLink,
+}: {
+  bucketId: string;
+  fileId: string;
+  creds: { user: string; pass: string };
+  mnemonic: string;
+  shareLink: ListShareLinksItem;
+}): Promise<void> {
+  const getFormatFileName = (info): string => {
+    const hasType = info?.type !== null;
+    const extension = hasType ? `.${info?.type}` : '';
+    return `${info.plainName}${extension}`;
+  };
+  try {
+    const readable = await network.downloadFile({
+      bucketId: bucketId,
+      fileId: fileId,
+      creds: {
+        pass: creds.pass,
+        user: creds.user,
+      },
+      mnemonic: mnemonic, // DECRYPTED
+    });
+
+    const fileBlob = await binaryStreamToBlob(readable);
+
+    return downloadService.downloadFileFromBlob(fileBlob, getFormatFileName(shareLink));
+  } catch (err) {
+    const error = errorService.castError(err);
+
+    console.error('ERROR DOWNLOADING FILE: ', error.stack);
+  }
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -310,6 +352,7 @@ const shareService = {
   removeUserFromSharedFolder,
   getPrivateSharingRoles,
   getSharedFolderContent,
+  downloadSharedFiles,
 };
 
 export default shareService;
