@@ -336,11 +336,29 @@ export default function SharedView(): JSX.Element {
   };
 
   const renameItem = (shareLink) => {
-    const itemToRename = {
-      ...(shareLink as any as DriveItemData),
-      name: shareLink.plainName ? shareLink.plainName : '',
-    };
-    setEditNameItem(itemToRename);
+    setEditNameItem(shareLink as any as DriveItemData);
+    setIsEditNameDialogOpen(true);
+  };
+
+  const onCloseEditNameItems = (newItem?: DriveItemData) => {
+    if (newItem) {
+      const editNameItemFileId = newItem.fileId || '';
+      setShareLinks(
+        shareLinks.map((shareLink) => {
+          const shareLinkFileId = (shareLink as any as DriveItemData).fileId || '';
+          if (
+            shareLinkFileId.length > 0 &&
+            editNameItemFileId.length > 0 &&
+            newItem.plainName &&
+            shareLinkFileId === editNameItemFileId
+          ) {
+            shareLink.plainName = newItem.plainName;
+          }
+          return shareLink;
+        }),
+      );
+    }
+    setIsEditNameDialogOpen(false);
   };
 
   const skinSkeleton = [
@@ -375,15 +393,6 @@ export default function SharedView(): JSX.Element {
         e.preventDefault();
       }}
     >
-      {editNameItem && (
-        <EditItemNameDialog
-          item={editNameItem}
-          resourceToken={nextResourcesToken}
-          onClose={() => {
-            setEditNameItem(null);
-          }}
-        />
-      )}
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
@@ -569,7 +578,14 @@ export default function SharedView(): JSX.Element {
         }))}
         isTrash={false}
       />
-      <EditFolderNameDialog />
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          resourceToken={nextResourcesToken}
+          isOpen={isEditNameDialogOpen}
+          onClose={onCloseEditNameItems}
+        />
+      )}
       {isShareDialogOpen && <ShareDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
