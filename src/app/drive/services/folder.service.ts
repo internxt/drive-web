@@ -74,8 +74,8 @@ export interface DownloadFolderAsZipOptions {
   destination: FlatFolderZip;
   closeWhenFinished?: boolean;
   credentials?: {
-    user: string;
-    pass: string;
+    user: string | undefined;
+    pass: string | undefined;
   };
   mnemonic?: string;
 }
@@ -344,14 +344,16 @@ async function downloadFolderAsZip(
           };
           analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
           console.log({ trackingDownloadProperties });
+          const creds = options?.credentials
+            ? (options.credentials as Record<'user' | 'pass', string>)
+            : { user: user.bridgeUser, pass: user.userId };
+
+          const mnemonic = options?.mnemonic ? options?.mnemonic : user.mnemonic;
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
-            creds: {
-              user: options?.credentials?.user || user.bridgeUser,
-              pass: options?.credentials?.pass || user.userId,
-            },
-            mnemonic: options?.mnemonic || user.mnemonic,
+            creds: creds,
+            mnemonic: mnemonic,
           });
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
@@ -395,6 +397,7 @@ async function downloadFolderAsZip(
       error_message: castedError.message,
       stack_trace: castedError.stack ?? '',
     });
+    console.error('ERROR WHILE DOWNLOADING FOLDER', castedError);
     zip.abort();
     throw castedError;
   }

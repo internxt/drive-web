@@ -305,7 +305,7 @@ export async function downloadSharedFiles({
   selectedItems,
   dispatch,
 }: {
-  creds: { user: string; pass: string };
+  creds: { user: string | undefined; pass: string | undefined };
   encryptionKey: string;
   selectedItems: any[];
   dispatch: any;
@@ -326,8 +326,8 @@ export async function downloadSharedFiles({
         bucketId: selectedItems[0].bucket,
         fileId: selectedItems[0].fileId,
         creds: {
-          pass: creds.pass,
-          user: creds.user,
+          pass: creds.pass as string,
+          user: creds.user as string,
         },
         mnemonic: decryptedKey, // DECRYPTED
       });

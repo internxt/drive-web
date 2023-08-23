@@ -102,8 +102,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 type DownloadItemsAsZipThunkType = {
   items: DriveItemData[];
   credentials?: {
-    user: string;
-    pass: string;
+    user: string | undefined;
+    pass: string | undefined;
   };
   mnemonic?: string;
   existingTaskId?: string;
@@ -119,6 +119,11 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
     const folderName = `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
+
+    const moreOptions = {
+      credentials,
+      mnemonic,
+    };
 
     const user = localStorageService.getUser();
     if (!user) throw new Error('User not found');
@@ -193,7 +198,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               downloadProgress[index] = progress;
               updateProgressCallback(calculateProgress());
             },
-            { destination: folder, closeWhenFinished: false, credentials: credentials, mnemonic: mnemonic },
+            { destination: folder, closeWhenFinished: false, ...moreOptions },
           );
           downloadProgress[index] = 1;
         } else {

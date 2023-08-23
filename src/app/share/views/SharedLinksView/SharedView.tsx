@@ -362,8 +362,8 @@ export default function SharedView(): JSX.Element {
 
   const downloadItem = async () => {
     const ownerCredentials = {
-      user: credentials?.networkUser || '',
-      pass: credentials?.networkPass || '',
+      user: credentials?.networkUser || undefined,
+      pass: credentials?.networkPass || undefined,
     };
 
     try {
