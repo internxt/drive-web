@@ -19,6 +19,9 @@ import _ from 'lodash';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import downloadService from 'app/drive/services/download.service';
 import network from 'app/network';
+import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { downloadItemsAsZipThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 
 interface CreateShareResponse {
   created: boolean;
@@ -290,42 +293,61 @@ export function getAllShareLinks(
   });
 }
 
+const getFormatFileName = (info): string => {
+  const hasType = info?.type !== null;
+  const extension = hasType ? `.${info?.type}` : '';
+  return `${info.name}${extension}`;
+};
+
 export async function downloadSharedFiles({
-  bucketId,
-  fileId,
   creds,
-  mnemonic,
-  shareLink,
+  encryptionKey,
+  selectedItems,
+  dispatch,
 }: {
-  bucketId: string;
-  fileId: string;
   creds: { user: string; pass: string };
-  mnemonic: string;
-  shareLink: ListShareLinksItem;
+  encryptionKey: string;
+  selectedItems: any[];
+  dispatch: any;
 }): Promise<void> {
-  const getFormatFileName = (info): string => {
-    const hasType = info?.type !== null;
-    const extension = hasType ? `.${info?.type}` : '';
-    return `${info.plainName}${extension}`;
-  };
+  let decryptedKey;
+
   try {
-    const readable = await network.downloadFile({
-      bucketId: bucketId,
-      fileId: fileId,
-      creds: {
-        pass: creds.pass,
-        user: creds.user,
-      },
-      mnemonic: mnemonic, // DECRYPTED
+    decryptedKey = await decryptMessageWithPrivateKey({
+      encryptedMessage: atob(encryptionKey),
+      privateKeyInBase64: localStorageService.getUser()!.privateKey,
     });
-
-    const fileBlob = await binaryStreamToBlob(readable);
-
-    return downloadService.downloadFileFromBlob(fileBlob, getFormatFileName(shareLink));
   } catch (err) {
-    const error = errorService.castError(err);
+    decryptedKey = localStorageService.getUser()!.mnemonic;
+  }
+  if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
+    try {
+      const readable = await network.downloadFile({
+        bucketId: selectedItems[0].bucket,
+        fileId: selectedItems[0].fileId,
+        creds: {
+          pass: creds.pass,
+          user: creds.user,
+        },
+        mnemonic: decryptedKey, // DECRYPTED
+      });
 
-    console.error('ERROR DOWNLOADING FILE: ', error.stack);
+      const fileBlob = await binaryStreamToBlob(readable);
+
+      return downloadService.downloadFileFromBlob(fileBlob, getFormatFileName(selectedItems[0]));
+    } catch (err) {
+      const error = errorService.castError(err);
+
+      console.error('ERROR DOWNLOADING FILE: ', error.stack);
+    }
+  } else {
+    dispatch(
+      downloadItemsAsZipThunk({
+        items: selectedItems,
+        credentials: creds,
+        mnemonic: decryptedKey as string,
+      }),
+    );
   }
 }
 

@@ -101,7 +101,10 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
 type DownloadItemsAsZipThunkType = {
   items: DriveItemData[];
-  credentials?: Record<string, string>;
+  credentials?: {
+    user: string;
+    pass: string;
+  };
   mnemonic?: string;
   existingTaskId?: string;
 };
@@ -190,7 +193,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               downloadProgress[index] = progress;
               updateProgressCallback(calculateProgress());
             },
-            { destination: folder, closeWhenFinished: false },
+            { destination: folder, closeWhenFinished: false, credentials: credentials, mnemonic: mnemonic },
           );
           downloadProgress[index] = 1;
         } else {

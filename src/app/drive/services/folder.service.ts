@@ -73,6 +73,11 @@ export interface FetchFolderContentResponse {
 export interface DownloadFolderAsZipOptions {
   destination: FlatFolderZip;
   closeWhenFinished?: boolean;
+  credentials?: {
+    user: string;
+    pass: string;
+  };
+  mnemonic?: string;
 }
 
 export function createFolder(
@@ -343,10 +348,10 @@ async function downloadFolderAsZip(
             bucketId: file.bucket,
             fileId: file.fileId,
             creds: {
-              user: user.bridgeUser,
-              pass: user.userId,
+              user: options?.credentials?.user || user.bridgeUser,
+              pass: options?.credentials?.pass || user.userId,
             },
-            mnemonic: user.mnemonic,
+            mnemonic: options?.mnemonic || user.mnemonic,
           });
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 

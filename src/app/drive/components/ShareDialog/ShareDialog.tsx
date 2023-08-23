@@ -267,8 +267,8 @@ const ShareDialog = (props: ShareDialogProps) => {
   const onStopSharing = async () => {
     setIsLoading(true);
 
-    const folderName = cropSharedName(selectedFolder.name);
-    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: selectedFolder?.uuid as string, folderName }));
+    const folderName = cropSharedName(itemToShare?.item.name as string);
+    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: itemToShare?.item.uuid as string, folderName }));
 
     setShowStopSharingConfirmation(false);
     onClose();
@@ -283,7 +283,7 @@ const ShareDialog = (props: ShareDialogProps) => {
       if (roleId && userUUID) {
         await shareService.updateUserRoleOfSharedFolder({
           userUUID,
-          folderUUID: selectedFolder?.uuid as string,
+          folderUUID: itemToShare?.item.uuid as string,
           roleId,
         });
 
@@ -323,9 +323,9 @@ const ShareDialog = (props: ShareDialogProps) => {
         <>
           <span
             className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
-            title={translate('modals.shareModal.title', { name: props.selectedItems[0]?.name ?? '' })}
+            title={translate('modals.shareModal.title', { name: itemToShare?.item.name ?? '' })}
           >
-            {translate('modals.shareModal.title', { name: props.selectedItems[0]?.name ?? '' })}
+            {translate('modals.shareModal.title', { name: itemToShare?.item.name ?? '' })}
           </span>
           <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />

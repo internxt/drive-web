@@ -26,7 +26,7 @@ import {
   contextMenuDriveItemSharedAFS,
   contextMenuMultipleSharedViewAFS,
 } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
+import folderService from 'app/drive/services/folder.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
@@ -141,6 +141,18 @@ export default function SharedView(): JSX.Element {
     }
   }, [page]);
 
+  const modifyItemsName = (items) => {
+    const selectedItemsToDownload = items.map((selectedShareLink) => {
+      return {
+        ...selectedShareLink,
+        name: selectedShareLink.plainName,
+        isFolder: selectedShareLink.type === 'folder',
+      };
+    });
+
+    return selectedItemsToDownload;
+  };
+
   const fetchRootItems = async () => {
     setIsLoading(true);
     localStorageService.set('xInvitedToken', '');
@@ -154,7 +166,7 @@ export default function SharedView(): JSX.Element {
       const folders = response.folders;
       const items = [...shareLinks, ...folders];
 
-      setShareLinks(items);
+      setShareLinks(modifyItemsName(items));
 
       if (folders.length < ITEMS_PER_PAGE) {
         setHasMoreItems(false);
@@ -189,7 +201,7 @@ export default function SharedView(): JSX.Element {
         const folders = response.items;
         const items = [...shareLinks, ...folders];
 
-        setShareLinks(items);
+        setShareLinks(modifyItemsName(items));
 
         if (folders.length < ITEMS_PER_PAGE) {
           setPage(0);
@@ -220,7 +232,7 @@ export default function SharedView(): JSX.Element {
         const files = response.items;
         const items = [...shareLinks, ...files];
 
-        setShareLinks(items);
+        setShareLinks(modifyItemsName(items));
 
         if (files.length < ITEMS_PER_PAGE) {
           setHasMoreItems(false);
@@ -349,42 +361,18 @@ export default function SharedView(): JSX.Element {
   };
 
   const downloadItem = async () => {
-    let decryptedKey;
     const ownerCredentials = {
       user: credentials?.networkUser || '',
       pass: credentials?.networkPass || '',
     };
 
-    //TODO: DECRYPT ENCRYPTION KEY (WITH USER PRIVATE KEY)
     try {
-      decryptedKey = await decryptMessageWithPrivateKey({
-        encryptedMessage: atob(encryptionKey),
-        privateKeyInBase64: localStorageService.getUser()!.privateKey,
+      await shareService.downloadSharedFiles({
+        creds: ownerCredentials,
+        dispatch,
+        selectedItems,
+        encryptionKey,
       });
-    } catch (err) {
-      decryptedKey = localStorageService.getUser()!.mnemonic;
-    }
-
-    try {
-      if (decryptedKey) {
-        if (selectedItems.length === 1) {
-          shareService.downloadSharedFiles({
-            bucketId: selectedItems[0].bucket,
-            creds: ownerCredentials,
-            fileId: selectedItems[0].fileId,
-            shareLink: selectedItems[0],
-            mnemonic: decryptedKey as string,
-          });
-        } else {
-          dispatch(
-            downloadItemsAsZipThunk({
-              items: selectedItems as DriveItemData[],
-              credentials: ownerCredentials,
-              mnemonic: decryptedKey as string,
-            }),
-          );
-        }
-      }
     } catch (err) {
       const error = errorService.castError(err);
 
