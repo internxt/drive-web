@@ -29,7 +29,6 @@ import {
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
-import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import errorService from '../../../core/services/error.service';
@@ -60,7 +59,8 @@ export default function SharedView(): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [shareLinks, setShareLinks] = useState<AdvancedSharedLink[]>([]);
-  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData>();
+  const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
   const [currentResourcesToken, setCurrentResourcesToken] = useState<string>('');
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
