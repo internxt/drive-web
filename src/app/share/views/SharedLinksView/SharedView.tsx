@@ -26,7 +26,6 @@ import {
   contextMenuDriveItemSharedAFS,
   contextMenuMultipleSharedViewAFS,
 } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import folderService from 'app/drive/services/folder.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
@@ -35,11 +34,6 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
-import network from 'app/network';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import downloadService from 'app/drive/services/download.service';
-import { downloadItemsAsZipThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import { AdvancedSharedItem, OrderBy } from '../../../../app/share/types';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
