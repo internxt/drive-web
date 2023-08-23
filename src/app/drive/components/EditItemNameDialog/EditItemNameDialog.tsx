@@ -9,23 +9,27 @@ import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 type EditItemNameDialogProps = {
-  item: DriveItemData;
+  item: DriveItemData | undefined;
   isOpen: boolean;
   resourceToken?: string;
   onClose?: (newItem?: DriveItemData) => void;
 };
 
 const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose }) => {
-  const [newItemName, setNewItemName] = useState(item.plainName || '');
+  const [newItemName, setNewItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
 
+  useEffect(() => {
+    setNewItemName(item?.plainName || '');
+  }, [item]);
+
   const handleOnClose = (newName = ''): void => {
     setIsLoading(false);
-    const newItem = newName.length > 0 ? { ...item, plainName: newName } : undefined;
+    const newItem = newName.length > 0 ? ({ ...item, plainName: newName } as DriveItemData) : undefined;
     onClose?.(newItem);
   };
 
@@ -34,7 +38,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
 
     if (newItemName === item?.name) {
       handleOnClose();
-    } else if (newItemName && newItemName.trim().length > 0) {
+    } else if (item && newItemName && newItemName.trim().length > 0) {
       setIsLoading(true);
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata, resourceToken }))
         .unwrap()
