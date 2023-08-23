@@ -341,15 +341,15 @@ export default function SharedView(): JSX.Element {
 
   const onCloseEditNameItems = (newItem?: DriveItemData) => {
     if (newItem) {
-      const editNameItemFileId = newItem.fileId || '';
+      const editNameItemUuid = newItem.uuid || '';
       setShareItems(
         shareItems.map((shareItem) => {
-          const shareItemFileId = (shareItem as any as DriveItemData).fileId || '';
+          const shareItemUuid = (shareItem as any as DriveItemData).uuid || '';
           if (
-            shareItemFileId.length > 0 &&
-            editNameItemFileId.length > 0 &&
+            shareItemUuid.length > 0 &&
+            editNameItemUuid.length > 0 &&
             newItem.plainName &&
-            shareItemFileId === editNameItemFileId
+            shareItemUuid === editNameItemUuid
           ) {
             shareItem.plainName = newItem.plainName;
           }
@@ -358,6 +358,7 @@ export default function SharedView(): JSX.Element {
       );
     }
     setIsEditNameDialogOpen(false);
+    setEditNameItem(undefined);
   };
 
   const skinSkeleton = [
@@ -581,14 +582,12 @@ export default function SharedView(): JSX.Element {
         }))}
         isTrash={false}
       />
-      {editNameItem && (
-        <EditItemNameDialog
-          item={editNameItem}
-          resourceToken={nextResourcesToken}
-          isOpen={isEditNameDialogOpen}
-          onClose={onCloseEditNameItems}
-        />
-      )}
+      <EditItemNameDialog
+        item={editNameItem}
+        resourceToken={nextResourcesToken}
+        isOpen={isEditNameDialogOpen}
+        onClose={onCloseEditNameItems}
+      />
       {isShareDialogOpen && <ShareDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
