@@ -65,7 +65,7 @@ export default function SharedView(): JSX.Element {
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
   const [currentResourcesToken, setCurrentResourcesToken] = useState<string>('');
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
-  const [userName, setUserName] = useState<string>('');
+  const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [userCredentials, setUserCredentials] = useState<NetworkCredentials>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
@@ -212,28 +212,29 @@ export default function SharedView(): JSX.Element {
     }
   };
 
-  const onItemDoubleClicked = (props) => {
-    const sharedFolderId = props.uuid;
-    const user = props.user;
+  const onItemDoubleClicked = (shareItem: AdvancedSharedItem) => {
+    if (shareItem.isFolder) {
+      const sharedFolderId = shareItem.uuid;
 
-    if (user) {
-      const userName = props.user.name;
-      const userLastname = props.user.lastname;
-      setUserName(`${userName} ${userLastname}`);
+      if (shareItem.user) {
+        setUser(shareItem.user);
+      }
+
+      if (shareItem.encryptionKey) {
+        setEncryptionKey(shareItem.encryptionKey);
+      }
+
+      setCurrentResourcesToken(nextResourcesToken);
+      setNextResourcesToken('');
+
+      setPage(0);
+      setShareItems([]);
+      setHasMoreFolders(true);
+      setHasMoreItems(true);
+      setCurrentFolderId(sharedFolderId);
+    } else {
+      openPreview(shareItem);
     }
-
-    if (props.encryptionKey) {
-      setEncryptionKey(props.encryptionKey);
-    }
-
-    setCurrentResourcesToken(nextResourcesToken);
-    setNextResourcesToken('');
-
-    setPage(0);
-    setShareItems([]);
-    setHasMoreFolders(true);
-    setHasMoreItems(true);
-    setCurrentFolderId(sharedFolderId);
   };
 
   const onNameClicked = (props) => {
@@ -403,6 +404,19 @@ export default function SharedView(): JSX.Element {
     setEditNameItem(undefined);
   };
 
+  const openPreview = (shareItem: AdvancedSharedItem) => {
+    dispatch(uiActions.setIsFileViewerOpen(true));
+    dispatch(uiActions.setFileViewerItem(shareItem as unknown as DriveItemData));
+  };
+
+  const isItemOwnedByCurrentUser = () => {
+    const currentUser = localStorageService.getUser();
+    if (currentUser?.uuid && user?.uuid) {
+      return currentUser.uuid === user.uuid;
+    }
+    return false;
+  };
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -534,7 +548,7 @@ export default function SharedView(): JSX.Element {
                   {shareItem.user ? (
                     <span>{`${shareItem.user?.name} ${shareItem.user?.lastname}`}</span>
                   ) : (
-                    <span>{userName}</span>
+                    <span>{`${user?.name} ${user?.lastname}`}</span>
                   )}{' '}
                 </span>
               </div>
@@ -560,34 +574,27 @@ export default function SharedView(): JSX.Element {
               ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
-                  moveToTrash: moveSelectedItemsToTrash,
+                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  renameItem: renameItem,
-                  moveItem: moveItem,
+                  renameItem: isItemOwnedByCurrentUser() ? renameItem : undefined,
+                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: moveToTrash,
+                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
-                  openPreview: (shareItem: AdvancedSharedItem) => {
-                    const previewItem: DriveFileData = {
-                      ...(shareItem as unknown as DriveItemData),
-                      name: shareItem.plainName,
-                    };
-                    dispatch(uiActions.setIsFileViewerOpen(true));
-                    dispatch(uiActions.setFileViewerItem(previewItem));
-                  },
+                  openPreview: openPreview,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
                   renameItem: renameItem,
-                  moveItem: moveItem,
+                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: moveToTrash,
+                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
                 })
           }
           keyBoardShortcutActions={{

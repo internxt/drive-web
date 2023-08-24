@@ -484,12 +484,12 @@ const contextMenuMultipleSharedViewAFS = ({
 }: {
   deleteLink: (item: AdvancedSharedItem) => void;
   downloadItem: (item: AdvancedSharedItem) => void;
-  moveToTrash: (item: AdvancedSharedItem) => void;
+  moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction ? [getDeleteLinkMenuItem(deleteLink)] : []),
   getDownloadMenuItem(downloadItem),
-  { name: '', action: () => false, separator: true },
-  getMoveToTrashMenuItem(moveToTrash),
+  moveToTrash && { name: '', action: () => false, separator: true },
+  moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
 export {
