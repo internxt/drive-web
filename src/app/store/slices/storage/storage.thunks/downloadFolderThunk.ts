@@ -23,8 +23,8 @@ interface DownloadFolderThunkOptions {
 
 interface DownloadFolderThunkPayload {
   folder: DriveFolderData;
-  fileIterator: Iterator<DriveFileData>;
-  folderIterator: Iterator<DriveFolderData>;
+  fileIterator: (directoryId: number) => Iterator<DriveFileData>;
+  folderIterator: (directoryId: number) => Iterator<DriveFolderData>;
   options: DownloadFolderThunkOptions;
 }
 

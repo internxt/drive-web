@@ -85,8 +85,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
             options: { taskId },
-            fileIterator: createFilesIterator(item.id),
-            folderIterator: createFoldersIterator(item.id),
+            fileIterator: createFilesIterator,
+            folderIterator: createFoldersIterator,
           }),
         );
       } else {
@@ -202,8 +202,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
           await folderService.downloadFolderAsZip(
             driveItem.id,
             driveItem.name,
-            folderIterator(driveItem.id),
-            fileIterator(driveItem.id),
+            folderIterator,
+            fileIterator,
             (progress) => {
               downloadProgress[index] = progress;
               updateProgressCallback(calculateProgress());

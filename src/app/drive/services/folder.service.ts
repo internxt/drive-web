@@ -277,8 +277,8 @@ export async function addAllFoldersToZip(
 async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
-  foldersIterator: Iterator<DriveFolderData>,
-  filesIterator: Iterator<DriveFileData>,
+  foldersIterator: (directoryId: number) => Iterator<DriveFolderData>,
+  filesIterator: (directoryId: number) => Iterator<DriveFileData>,
   updateProgress: (progress: number) => void,
   options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
@@ -367,13 +367,13 @@ async function downloadFolderAsZip(
 
           return sourceBlob.stream();
         },
-        filesIterator,
+        filesIterator(folderToDownload.folderId),
         zip,
       );
 
       totalSize += files.reduce((a, f) => f.size + a, 0);
 
-      const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator, zip);
+      const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator(folderToDownload.folderId), zip);
 
       pendingFolders.push(
         ...folders.map((f) => {
