@@ -428,7 +428,7 @@ const contextMenuDriveItemSharedAFS = ({
   deleteLink: (item: AdvancedSharedItem) => void;
   renameItem?: (item: AdvancedSharedItem) => void;
   moveItem?: (item: AdvancedSharedItem) => void;
-  downloadItem: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => Promise<void>;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
@@ -463,7 +463,7 @@ const contextMenuDriveFolderSharedAFS = ({
   deleteLink: (item: AdvancedSharedItem) => void;
   renameItem?: (item: AdvancedSharedItem) => void;
   moveItem?: (item: AdvancedSharedItem) => void;
-  downloadItem: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => Promise<void>;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
@@ -483,7 +483,7 @@ const contextMenuMultipleSharedViewAFS = ({
   moveToTrash,
 }: {
   deleteLink: (item: AdvancedSharedItem) => void;
-  downloadItem: (item: AdvancedSharedItem) => void;
+  downloadItem: (item: AdvancedSharedItem) => Promise<void>;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction ? [getDeleteLinkMenuItem(deleteLink)] : []),
