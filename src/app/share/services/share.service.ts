@@ -21,11 +21,15 @@ import downloadService from 'app/drive/services/download.service';
 import network from 'app/network';
 import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
 import localStorageService from 'app/core/services/local-storage.service';
-import { downloadItemsAsZipThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
+import {
+  createFilesIterator,
+  createFoldersIterator,
+  downloadItemsAsZipThunk,
+} from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { t } from 'i18next';
 import { DriveFileData, DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import { AdvancedSharedItem } from '../types';
+import { Iterator } from '../../core/collections';
 
 interface CreateShareResponse {
   created: boolean;
@@ -303,28 +307,70 @@ const getFormatFileName = (info): string => {
   return `${info.name}${extension}`;
 };
 
-const createFoldersIterator = (directoryId) => {
-  return new DirectorySharedFolderIterator({ directoryId }, 20, 0);
-};
+class DirectoryFilesIterator implements Iterator<DriveFileData> {
+  private page: number;
+  private perPage: number;
+  private readonly queryValues: { directoryUuid: string; token: string };
 
-const createFilesIterator = (directoryId) => {
-  return new DirectorySharedFilesIterator({ directoryId }, 20, 0);
-};
+  constructor(queryValues: { directoryUuid: string; token: string }, page?: number, perPage?: number) {
+    this.page = page || 0;
+    this.perPage = perPage || 5;
+    this.queryValues = queryValues;
+  }
+
+  async next() {
+    const { items, token, credentials } = await httpService.get<ListSharedItemsResponse>(
+      `private-sharing/items/${this.queryValues.directoryUuid}/files?token=${this.queryValues.token}&page=${this.page}&perPage=${this.perPage}`,
+    );
+
+    return { value: items as unknown as DriveFileData[], done: items.length === 0 };
+  }
+}
+
+class DirectorySharedFoldersIterator implements Iterator<DriveFileData> {
+  private page: number;
+  private perPage: number;
+  private readonly queryValues: { directoryUuid: string; token: string };
+
+  constructor(queryValues: { directoryUuid: string; token: string }, page?: number, perPage?: number) {
+    this.page = page || 0;
+    this.perPage = perPage || 5;
+    this.queryValues = queryValues;
+  }
+
+  async next() {
+    const { items, token, credentials } = await httpService.get<ListSharedItemsResponse>(
+      `private-sharing/items/${this.queryValues.directoryUuid}/files?token=${this.queryValues.token}&page=${this.page}&perPage=${this.perPage}`,
+    );
+
+    return { value: items as unknown as DriveFileData[], done: items.length === 0 };
+  }
+}
+
+// const createFoldersIterator = (directoryUuid: string, token: string) => {
+//   return new DirectorySharedFoldersIterator({ directoryUuid, token }, 0, 20);
+// };
 
 export async function downloadSharedFiles({
   creds,
   encryptionKey,
   selectedItems,
   dispatch,
+  token,
 }: {
   creds: { user: string; pass: string };
   encryptionKey: string;
   selectedItems: any[];
   dispatch: any;
+  token: string;
 }): Promise<void> {
   let decryptedKey;
   const user = localStorageService.getUser();
   if (!user) throw new Error('User not found');
+
+  // const createFilesIterator = (directoryUuid: string, token: string) => {
+  //   return new DirectoryFilesIterator({ directoryUuid, token }, 0, 20);
+  // };
 
   try {
     decryptedKey = await decryptMessageWithPrivateKey({
@@ -365,7 +411,7 @@ export async function downloadSharedFiles({
         items: selectedItems,
         credentials: creds,
         mnemonic: decryptedKey as string,
-        fileIterator: createFoldersIterator,
+        fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
       }),
     );

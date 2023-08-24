@@ -13,6 +13,8 @@ import folderService from 'app/drive/services/folder.service';
 import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../../network/requests';
+import { Iterator } from 'app/core/collections';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -22,6 +24,8 @@ interface DownloadFolderThunkOptions {
 
 interface DownloadFolderThunkPayload {
   folder: DriveFolderData;
+  fileIterator: Iterator<DriveFileData>;
+  folderIterator: Iterator<DriveFolderData>;
   options: DownloadFolderThunkOptions;
 }
 
@@ -81,9 +85,15 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (isFirefox) {
         await downloadFolderUsingBlobs({ folder, updateProgressCallback });
       } else {
-        await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
-          updateProgressCallback(progress);
-        });
+        await folderService.downloadFolderAsZip(
+          folder.id,
+          folder.name,
+          payload.folderIterator,
+          payload.fileIterator,
+          (progress) => {
+            updateProgressCallback(progress);
+          },
+        );
       }
 
       tasksService.updateTask({

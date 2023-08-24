@@ -9,7 +9,10 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import folderService, { DirectoryFolderIterator } from 'app/drive/services/folder.service';
+import folderService, {
+  DirectoryFolderIterator,
+  DirectoryFilesIterator,
+} from '../../../../drive/services/folder.service';
 import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -20,15 +23,14 @@ import { updateDatabaseFileSourceData } from 'app/drive/services/database.servic
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
-
-import { DirectoryFilesIterator } from 'app/drive/services/folder.service';
+import { Iterator } from 'app/core/collections';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
-const createFoldersIterator = (directoryId) => {
+export const createFoldersIterator = (directoryId) => {
   return new DirectoryFolderIterator({ directoryId }, 20, 0);
 };
 
-const createFilesIterator = (directoryId) => {
+export const createFilesIterator = (directoryId) => {
   return new DirectoryFilesIterator({ directoryId }, 20, 0);
 };
 
@@ -92,6 +94,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
             options: { taskId },
+            fileIterator: createFilesIterator,
+            folderIterator: createFoldersIterator,
           }),
         );
       } else {
@@ -112,8 +116,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
 type DownloadItemsAsZipThunkType = {
   items: DriveItemData[];
-  folderIterator: (directoryId: any) => DirectoryFolderIterator;
-  fileIterator: (directoryId: any) => DirectoryFilesIterator;
+  folderIterator: (directoryId: any) => Iterator<DriveFolderData>;
+  fileIterator: (directoryId: any, token?: string) => Iterator<DriveFileData>;
   credentials?: {
     user: string | undefined;
     pass: string | undefined;

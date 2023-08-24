@@ -2,6 +2,8 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { DriveItemData } from '../../drive/types';
 import {
+  createFilesIterator,
+  createFoldersIterator,
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
@@ -19,7 +21,14 @@ export const useRetryDownload = (notification: TaskNotification): RetryDownload 
     const isZipAndMultipleItems = item && 'items' in item && item?.items && item?.type === 'zip';
 
     if (isZipAndMultipleItems) {
-      dispatch(downloadItemsAsZipThunk({ items: item.items as DriveItemData[], existingTaskId: taskId }));
+      dispatch(
+        downloadItemsAsZipThunk({
+          items: item.items as DriveItemData[],
+          existingTaskId: taskId,
+          fileIterator: createFilesIterator,
+          folderIterator: createFoldersIterator,
+        }),
+      );
     } else if (item && taskId) {
       dispatch(downloadItemsThunk([{ ...(item as DriveItemData), taskId }]));
     }

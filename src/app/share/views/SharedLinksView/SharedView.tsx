@@ -45,7 +45,7 @@ function copyShareLink(type: string, code: string, token: string) {
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
-const ITEMS_PER_PAGE = 15;
+export const ITEMS_PER_PAGE = 15;
 
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
 export default function SharedView(): JSX.Element {
@@ -331,7 +331,7 @@ export default function SharedView(): JSX.Element {
   const downloadItem = async (props: AdvancedSharedItem) => {
     try {
       if (props.isRootLink) {
-        const { credentials } = await shareService.getSharedFolderContent(
+        const { credentials, token } = await shareService.getSharedFolderContent(
           props.uuid,
           'files',
           '',
@@ -347,6 +347,7 @@ export default function SharedView(): JSX.Element {
           dispatch,
           selectedItems,
           encryptionKey: props.encryptionKey,
+          token,
         });
       } else {
         if (userCredentials) {
@@ -355,6 +356,7 @@ export default function SharedView(): JSX.Element {
             dispatch,
             selectedItems,
             encryptionKey: encryptionKey,
+            token: '',
           });
         }
       }
