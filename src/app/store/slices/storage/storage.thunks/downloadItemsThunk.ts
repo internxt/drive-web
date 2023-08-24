@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import folderService from 'app/drive/services/folder.service';
+import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
 import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -20,6 +20,7 @@ import { updateDatabaseFileSourceData } from 'app/drive/services/database.servic
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
+import { Iterator } from 'app/core/collections';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
 
@@ -27,7 +28,9 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
   'storage/downloadItems',
   async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
     if (items.length > 1) {
-      await dispatch(downloadItemsAsZipThunk({ items }));
+      await dispatch(
+        downloadItemsAsZipThunk({ items, fileIterator: createFilesIterator, folderIterator: createFoldersIterator }),
+      );
       return;
     }
     const errors: unknown[] = [];
@@ -81,6 +84,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
             options: { taskId },
+            fileIterator: createFilesIterator,
+            folderIterator: createFoldersIterator,
           }),
         );
       } else {
@@ -99,11 +104,21 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
   },
 );
 
-type DownloadItemsAsZipThunkType = { items: DriveItemData[]; existingTaskId?: string };
+type DownloadItemsAsZipThunkType = {
+  items: DriveItemData[];
+  folderIterator: (directoryId: any) => Iterator<DriveFolderData>;
+  fileIterator: (directoryId: any, token?: string) => Iterator<DriveFileData>;
+  credentials?: {
+    user: string | undefined;
+    pass: string | undefined;
+  };
+  mnemonic?: string;
+  existingTaskId?: string;
+};
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async ({ items, existingTaskId }, { rejectWithValue }) => {
+  async ({ items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator }, { rejectWithValue }) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -111,6 +126,11 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
     const folderName = `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
+
+    const moreOptions = {
+      credentials,
+      mnemonic,
+    };
 
     const user = localStorageService.getUser();
     if (!user) throw new Error('User not found');
@@ -181,11 +201,13 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
           await folderService.downloadFolderAsZip(
             driveItem.id,
             driveItem.name,
+            folderIterator,
+            fileIterator,
             (progress) => {
               downloadProgress[index] = progress;
               updateProgressCallback(calculateProgress());
             },
-            { destination: folder, closeWhenFinished: false },
+            { destination: folder, closeWhenFinished: false, ...moreOptions },
           );
           downloadProgress[index] = 1;
         } else {
@@ -210,14 +232,15 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               band_utilization: 0,
             };
             analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+
             const downloadedFileStream = await downloadFile({
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
               creds: {
-                user: user.bridgeUser,
-                pass: user.userId,
+                user: credentials?.user || user.bridgeUser,
+                pass: credentials?.pass || user.userId,
               },
-              mnemonic: user.mnemonic,
+              mnemonic: mnemonic || user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {
@@ -295,7 +318,7 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
         notificationsService.show({ text: t('error.downloadingItems'), type: ToastType.Error });
       } else {
         notificationsService.show({
-          text: t('error.downloadingFile', { reason: action.error.message || '' }),
+          text: t('error.downloadingFile', { message: action.error.message || '' }),
           type: ToastType.Error,
         });
       }
