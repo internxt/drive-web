@@ -22,6 +22,10 @@ import network from 'app/network';
 import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import { downloadItemsAsZipThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t } from 'i18next';
+import { DriveFileData, DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { AdvancedSharedItem } from '../types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -299,26 +303,36 @@ const getFormatFileName = (info): string => {
   return `${info.name}${extension}`;
 };
 
+const createFoldersIterator = (directoryId) => {
+  return new DirectorySharedFolderIterator({ directoryId }, 20, 0);
+};
+
+const createFilesIterator = (directoryId) => {
+  return new DirectorySharedFilesIterator({ directoryId }, 20, 0);
+};
+
 export async function downloadSharedFiles({
   creds,
   encryptionKey,
   selectedItems,
   dispatch,
 }: {
-  creds: { user: string | undefined; pass: string | undefined };
+  creds: { user: string; pass: string };
   encryptionKey: string;
   selectedItems: any[];
   dispatch: any;
 }): Promise<void> {
   let decryptedKey;
+  const user = localStorageService.getUser();
+  if (!user) throw new Error('User not found');
 
   try {
     decryptedKey = await decryptMessageWithPrivateKey({
       encryptedMessage: atob(encryptionKey),
-      privateKeyInBase64: localStorageService.getUser()!.privateKey,
+      privateKeyInBase64: user.privateKey,
     });
   } catch (err) {
-    decryptedKey = localStorageService.getUser()!.mnemonic;
+    decryptedKey = user.mnemonic;
   }
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
     try {
@@ -326,8 +340,8 @@ export async function downloadSharedFiles({
         bucketId: selectedItems[0].bucket,
         fileId: selectedItems[0].fileId,
         creds: {
-          pass: creds.pass as string,
-          user: creds.user as string,
+          pass: creds.pass,
+          user: creds.user,
         },
         mnemonic: decryptedKey, // DECRYPTED
       });
@@ -337,8 +351,13 @@ export async function downloadSharedFiles({
       return downloadService.downloadFileFromBlob(fileBlob, getFormatFileName(selectedItems[0]));
     } catch (err) {
       const error = errorService.castError(err);
+      errorService.reportError(error);
+      const itemError = selectedItems.length > 1 ? 'downloadingFiles' : 'downloadingFile';
 
-      console.error('ERROR DOWNLOADING FILE: ', error.stack);
+      notificationsService.show({
+        text: t(`error.${itemError}`, { message: error.message }),
+        type: ToastType.Error,
+      });
     }
   } else {
     dispatch(
@@ -346,6 +365,8 @@ export async function downloadSharedFiles({
         items: selectedItems,
         credentials: creds,
         mnemonic: decryptedKey as string,
+        fileIterator: createFoldersIterator,
+        folderIterator: createFoldersIterator,
       }),
     );
   }

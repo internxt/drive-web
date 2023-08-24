@@ -36,6 +36,7 @@ import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy } from '../../../../app/share/types';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
+import { NetworkCredentials } from 'app/network/download';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -66,7 +67,7 @@ export default function SharedView(): JSX.Element {
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
   const [userName, setUserName] = useState<string>('');
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
-  const [credentials, setCredentials] = useState<Record<string, string>>();
+  const [userCredentials, setUserCredentials] = useState<NetworkCredentials>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
 
   useEffect(() => {
@@ -181,7 +182,10 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
-        setCredentials(response.credentials);
+        setUserCredentials({
+          user: response.credentials.networkUser,
+          pass: response.credentials.networkPass,
+        });
 
         const token = response.token;
         setNextResourcesToken(token);
@@ -324,19 +328,36 @@ export default function SharedView(): JSX.Element {
     await moveItemsToTrash([itemToTrash]);
   };
 
-  const downloadItem = async () => {
-    const ownerCredentials = {
-      user: credentials?.networkUser || undefined,
-      pass: credentials?.networkPass || undefined,
-    };
-
+  const downloadItem = async (props: AdvancedSharedItem) => {
     try {
-      await shareService.downloadSharedFiles({
-        creds: ownerCredentials,
-        dispatch,
-        selectedItems,
-        encryptionKey,
-      });
+      if (props.isRootLink) {
+        const { credentials } = await shareService.getSharedFolderContent(
+          props.uuid,
+          'files',
+          '',
+          0,
+          ITEMS_PER_PAGE,
+          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+        );
+        await shareService.downloadSharedFiles({
+          creds: {
+            user: credentials.networkUser,
+            pass: credentials.networkPass,
+          },
+          dispatch,
+          selectedItems,
+          encryptionKey: props.encryptionKey,
+        });
+      } else {
+        if (userCredentials) {
+          await shareService.downloadSharedFiles({
+            creds: userCredentials,
+            dispatch,
+            selectedItems,
+            encryptionKey: encryptionKey,
+          });
+        }
+      }
     } catch (err) {
       const error = errorService.castError(err);
 

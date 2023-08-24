@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import folderService from 'app/drive/services/folder.service';
+import folderService, { DirectoryFolderIterator } from 'app/drive/services/folder.service';
 import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -21,13 +21,24 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
 
+import { DirectoryFilesIterator } from 'app/drive/services/folder.service';
+
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
+const createFoldersIterator = (directoryId) => {
+  return new DirectoryFolderIterator({ directoryId }, 20, 0);
+};
+
+const createFilesIterator = (directoryId) => {
+  return new DirectoryFilesIterator({ directoryId }, 20, 0);
+};
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
   async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
     if (items.length > 1) {
-      await dispatch(downloadItemsAsZipThunk({ items }));
+      await dispatch(
+        downloadItemsAsZipThunk({ items, fileIterator: createFilesIterator, folderIterator: createFoldersIterator }),
+      );
       return;
     }
     const errors: unknown[] = [];
@@ -101,6 +112,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
 type DownloadItemsAsZipThunkType = {
   items: DriveItemData[];
+  folderIterator: (directoryId: any) => DirectoryFolderIterator;
+  fileIterator: (directoryId: any) => DirectoryFilesIterator;
   credentials?: {
     user: string | undefined;
     pass: string | undefined;
@@ -111,7 +124,7 @@ type DownloadItemsAsZipThunkType = {
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async ({ items, credentials, mnemonic, existingTaskId }, { rejectWithValue }) => {
+  async ({ items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator }, { rejectWithValue }) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -194,6 +207,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
           await folderService.downloadFolderAsZip(
             driveItem.id,
             driveItem.name,
+            folderIterator(driveItem.id),
+            fileIterator(driveItem.id),
             (progress) => {
               downloadProgress[index] = progress;
               updateProgressCallback(calculateProgress());

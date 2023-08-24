@@ -150,7 +150,7 @@ interface GetDirectoryFoldersResponse {
   last: boolean;
 }
 
-class DirectoryFolderIterator implements Iterator<DriveFolderData> {
+export class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private offset: number;
   private limit: number;
   private readonly queryValues: { directoryId: number };
@@ -177,7 +177,7 @@ interface GetDirectoryFilesResponse {
   files: DriveFileData[];
   last: boolean;
 }
-class DirectoryFilesIterator implements Iterator<DriveFileData> {
+export class DirectoryFilesIterator implements Iterator<DriveFileData> {
   private offset: number;
   private limit: number;
   private readonly queryValues: { directoryId: number };
@@ -268,6 +268,8 @@ export async function addAllFoldersToZip(
 async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
+  foldersIterator: Iterator<DriveFolderData>,
+  filesIterator: Iterator<DriveFileData>,
   updateProgress: (progress: number) => void,
   options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
@@ -307,17 +309,6 @@ async function downloadFolderAsZip(
   try {
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
-
-      const foldersIterator: Iterator<DriveFolderData> = new DirectoryFolderIterator(
-        { directoryId: folderToDownload.folderId },
-        20,
-        0,
-      );
-      const filesIterator: Iterator<DriveFileData> = new DirectoryFilesIterator(
-        { directoryId: folderToDownload.folderId },
-        20,
-        0,
-      );
 
       const files = await addAllFilesToZip(
         folderToDownload.name,
