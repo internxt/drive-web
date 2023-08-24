@@ -9,10 +9,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import folderService, {
-  DirectoryFolderIterator,
-  DirectoryFilesIterator,
-} from '../../../../drive/services/folder.service';
+import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
 import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -26,13 +23,6 @@ import analyticsService from '../../../../analytics/services/analytics.service';
 import { Iterator } from 'app/core/collections';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
-export const createFoldersIterator = (directoryId) => {
-  return new DirectoryFolderIterator({ directoryId }, 20, 0);
-};
-
-export const createFilesIterator = (directoryId) => {
-  return new DirectoryFilesIterator({ directoryId }, 20, 0);
-};
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
@@ -90,12 +80,13 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
       const taskId = tasksIds[index];
 
       if (item.isFolder) {
+        console.log({ item });
         await dispatch(
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
             options: { taskId },
-            fileIterator: createFilesIterator,
-            folderIterator: createFoldersIterator,
+            fileIterator: createFilesIterator(item.id),
+            folderIterator: createFoldersIterator(item.id),
           }),
         );
       } else {

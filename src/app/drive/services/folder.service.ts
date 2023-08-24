@@ -150,7 +150,7 @@ interface GetDirectoryFoldersResponse {
   last: boolean;
 }
 
-export class DirectoryFolderIterator implements Iterator<DriveFolderData> {
+class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private offset: number;
   private limit: number;
   private readonly queryValues: { directoryId: number };
@@ -177,7 +177,8 @@ interface GetDirectoryFilesResponse {
   files: DriveFileData[];
   last: boolean;
 }
-export class DirectoryFilesIterator implements Iterator<DriveFileData> {
+
+class DirectoryFilesIterator implements Iterator<DriveFileData> {
   private offset: number;
   private limit: number;
   private readonly queryValues: { directoryId: number };
@@ -199,6 +200,14 @@ export class DirectoryFilesIterator implements Iterator<DriveFileData> {
     return { value: files, done: last };
   }
 }
+
+export const createFoldersIterator = (directoryId: number): Iterator<DriveFolderData> => {
+  return new DirectoryFolderIterator({ directoryId }, 20, 0);
+};
+
+export const createFilesIterator = (directoryId: number): Iterator<DriveFileData> => {
+  return new DirectoryFilesIterator({ directoryId }, 20, 0);
+};
 
 interface FolderRef {
   name: string;

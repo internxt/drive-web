@@ -2,12 +2,11 @@ import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { DriveItemData } from '../../drive/types';
 import {
-  createFilesIterator,
-  createFoldersIterator,
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { TaskNotification } from '../types';
+import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
 
 interface RetryDownload {
   retryDownload: () => void;

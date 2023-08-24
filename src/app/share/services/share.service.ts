@@ -1,7 +1,7 @@
 import errorService from '../../core/services/error.service';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../core/factory/sdk';
-import httpService from 'app/core/services/http.service';
+import httpService from '../../core/services/http.service';
 import { aes } from '@internxt/lib';
 import {
   ListAllSharedFoldersResponse,
@@ -16,20 +16,17 @@ import {
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import downloadService from 'app/drive/services/download.service';
-import network from 'app/network';
-import { decryptMessageWithPrivateKey } from 'app/crypto/services/pgp.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import {
-  createFilesIterator,
-  createFoldersIterator,
-  downloadItemsAsZipThunk,
-} from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { binaryStreamToBlob } from '../../core/services/stream.service';
+import downloadService from '../../drive/services/download.service';
+import network from '../../network';
+import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import localStorageService from '../../core/services/local-storage.service';
+import { downloadItemsAsZipThunk } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { t } from 'i18next';
-import { DriveFileData, DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { Iterator } from '../../core/collections';
+import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
 
 interface CreateShareResponse {
   created: boolean;
