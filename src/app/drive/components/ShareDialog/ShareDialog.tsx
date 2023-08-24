@@ -65,7 +65,6 @@ const cropSharedName = (name: string) => {
 
 type ShareDialogProps = {
   user: UserSettings;
-  selectedItems: DriveItemData[];
 };
 
 const ShareDialog = (props: ShareDialogProps) => {
@@ -76,7 +75,6 @@ const ShareDialog = (props: ShareDialogProps) => {
   const roles = useAppSelector((state: RootState) => state.shared.roles);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const selectedFolder = props.selectedItems[0];
 
   const localUserData: InvitedUserProps = {
     avatar: props.user.avatar,
@@ -541,7 +539,7 @@ const ShareDialog = (props: ShareDialogProps) => {
           >
             <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
             <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: props.selectedItems[0]?.name ?? '' })}
+              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
             </p>
             <div className="flex items-center justify-end space-x-2">
               <Button
@@ -568,7 +566,7 @@ const ShareDialog = (props: ShareDialogProps) => {
             }, 500);
           }}
           onInviteUser={onInviteUser}
-          folderUUID={selectedFolder?.uuid as string}
+          folderUUID={itemToShare?.item.uuid as string}
           roles={roles}
         />
       ),
@@ -691,7 +689,6 @@ const ShareDialog = (props: ShareDialogProps) => {
 
 export default connect((state: RootState) => ({
   user: state.user.user as UserSettings,
-  selectedItems: state.storage.selectedItems,
 }))(ShareDialog);
 
 const UserOptions = ({
