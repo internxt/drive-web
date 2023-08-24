@@ -80,7 +80,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
       const taskId = tasksIds[index];
 
       if (item.isFolder) {
-        console.log({ item });
         await dispatch(
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
