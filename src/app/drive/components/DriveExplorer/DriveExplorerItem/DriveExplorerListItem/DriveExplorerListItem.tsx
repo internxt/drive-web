@@ -97,7 +97,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </Fragment>
     );
   };
-  const itemIsShared = item.shares?.length || 0 > 0;
+  const itemIsShared = item.shares?.length || 0 > 0 || item.privateShares?.length || 0 > 0;
   const isProduction = envService.isProduction();
 
   const template = (

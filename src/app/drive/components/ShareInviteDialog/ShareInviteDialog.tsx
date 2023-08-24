@@ -15,12 +15,14 @@ import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sh
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../../../store';
 import { Role } from '../../../store/slices/sharedLinks/types';
+import { DriveItemData } from 'app/drive/types';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
   folderUUID: string;
   onClose: () => void;
   roles: Role[];
+  item: DriveItemData;
 }
 
 interface UsersToInvite {
@@ -86,9 +88,15 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     if (usersToInvite.length === 0 && isValidEmail(email)) {
       const userRoleId = props.roles.find((role) => role.name === userRole)?.id;
       if (!userRoleId) return;
-
       sharingPromises.push(
-        dispatch(sharedThunks.shareFileWithUser({ email: email, roleId: userRoleId, folderUUID: props.folderUUID })),
+        dispatch(
+          sharedThunks.shareFileWithUser({
+            email: email,
+            roleId: userRoleId,
+            folderUUID: props.folderUUID,
+            item: props.item,
+          }),
+        ),
       );
     } else {
       usersToInvite.forEach((user) => {
@@ -97,7 +105,12 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
         sharingPromises.push(
           dispatch(
-            sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
+            sharedThunks.shareFileWithUser({
+              email: user.email,
+              roleId: userRoleId,
+              folderUUID: props.folderUUID,
+              item: props.item,
+            }),
           ),
         );
       });

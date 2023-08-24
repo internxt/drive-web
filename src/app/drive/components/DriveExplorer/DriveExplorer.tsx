@@ -956,6 +956,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
+                {/* LIST  */}
                 <ViewModeComponent
                   folderId={currentFolderId}
                   items={items}

@@ -13,7 +13,7 @@ import crypto from 'crypto';
 import { Environment } from '@internxt/inxt-js';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
-import { DriveItemData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import { storageActions } from '../storage';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
@@ -168,11 +168,12 @@ export interface ShareFileWithUserPayload {
   email: string;
   folderUUID: string;
   roleId: string;
+  item: DriveItemData;
 }
 
 const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
-  async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
+  async (payload: ShareFileWithUserPayload, { dispatch, getState }): Promise<string | void> => {
     const rootState = getState();
     const user = rootState.user.user;
     try {
@@ -203,6 +204,18 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         text: t('modals.shareModal.invite.successSentInvitation', { email: payload.email }),
         type: ToastType.Success,
       });
+      const item = payload.item;
+      dispatch(
+        storageActions.patchItem({
+          id: item.id,
+          folderId: item.isFolder ? item.parentId : item.folderId,
+          isFolder: item.isFolder,
+          patch: {
+            // The objective of the following array is for it to be non-empty, as it signals that the item has been shared, and so we can display the icon of a shared file/folder:
+            privateShares: [{ id: '' }],
+          },
+        }),
+      );
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });

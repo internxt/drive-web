@@ -1,7 +1,7 @@
 import { SVGProps } from 'react';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
-import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { PrivateSharedFolder, ShareLink } from '@internxt/sdk/dist/drive/share/types';
 
 export interface DriveFolderData {
   id: number;
@@ -23,6 +23,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  privateShares?: Array<{ id: PrivateSharedFolder['id'] }>; // TODO: add a new type in sdk
   uuid?: string;
 }
 
@@ -52,6 +53,7 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
+  privateShares?: Array<{ id: PrivateSharedFolder['id'] }>; // TODO: add a new type in sdk
   uuid?: string;
 }
 
@@ -88,6 +90,7 @@ export interface DriveItemPatch {
   currentThumbnail?: Thumbnail;
   thumbnails?: Thumbnail[];
   shares?: ShareLink[];
+  privateShares?: Array<{ id: PrivateSharedFolder['id'] }>; // TODO: add a new type in sdk
 }
 
 export interface FileInfoMenuItem {

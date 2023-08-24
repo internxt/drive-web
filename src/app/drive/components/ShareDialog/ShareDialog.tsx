@@ -570,6 +570,7 @@ const ShareDialog = (props: ShareDialogProps) => {
           onInviteUser={onInviteUser}
           folderUUID={selectedFolder?.uuid as string}
           roles={roles}
+          item={selectedFolder}
         />
       ),
       requests: (

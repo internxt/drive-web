@@ -76,8 +76,9 @@ const createDriveListItem = (item: DriveItemData, isTrash?: boolean) => (
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
-  const isSelectedSharedItem = props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0;
-
+  const isSelectedSharedItem =
+    props.selectedItems.length === 1 &&
+    ((props.selectedItems?.[0].shares?.length || 0) > 0 || (props.selectedItems?.[0].privateShares?.length || 0) > 0);
   const { translate } = useTranslationContext();
 
   useEffect(() => {
@@ -394,6 +395,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
                     // WAITING BACKEND ENDPOINTS
                     // openAdvancedShareLinkSettings(item);
+                    console.log('SHARELINK MENU');
                     openLinkSettings(item);
                   },
                   getLink: getLink,
