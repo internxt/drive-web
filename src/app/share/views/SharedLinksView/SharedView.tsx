@@ -130,9 +130,8 @@ export default function SharedView(): JSX.Element {
   };
 
   const fetchFolders = async () => {
-    setIsLoading(true);
-
     if (currentFolderId) {
+      setIsLoading(true);
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
@@ -163,14 +162,15 @@ export default function SharedView(): JSX.Element {
         }
       } catch (error) {
         errorService.reportError(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
 
   const fetchFiles = async () => {
-    setIsLoading(true);
-
     if (currentFolderId) {
+      setIsLoading(true);
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
