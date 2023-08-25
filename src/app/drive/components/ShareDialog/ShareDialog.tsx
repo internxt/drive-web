@@ -3,7 +3,7 @@ import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { setIsShareItemDialogOpen, uiActions } from 'app/store/slices/ui';
+import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
 // import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
@@ -18,7 +18,6 @@ import './ShareDialog.scss';
 import shareService from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';

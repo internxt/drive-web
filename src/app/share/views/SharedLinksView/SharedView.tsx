@@ -1,6 +1,6 @@
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link, Users } from '@phosphor-icons/react';
+import { Trash, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect } from 'react';
