@@ -238,12 +238,12 @@ export const storageSlice = createSlice({
       state.sharedNamePath = [];
     },
     pushSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
-      if (!state.sharedNamePath.map((path) => path.id).includes(action.payload.id)) {
+      if (!state.sharedNamePath.map((path) => path.uuid).includes(action.payload.uuid)) {
         state.sharedNamePath.push(action.payload);
       }
     },
     popSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
-      const folderIndex: number = state.sharedNamePath.map((path) => path.id).indexOf(action.payload.id);
+      const folderIndex: number = state.sharedNamePath.map((path) => path.uuid).indexOf(action.payload.uuid);
 
       state.sharedNamePath = state.sharedNamePath.slice(0, folderIndex + 1);
     },

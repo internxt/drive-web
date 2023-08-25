@@ -133,7 +133,7 @@ async function getFileDownloadStream(
   return getDecryptedStream(encryptedContentParts, decipher);
 }
 
-interface NetworkCredentials {
+export interface NetworkCredentials {
   user: string;
   pass: string;
 }

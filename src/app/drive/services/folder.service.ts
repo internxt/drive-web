@@ -73,6 +73,11 @@ export interface FetchFolderContentResponse {
 export interface DownloadFolderAsZipOptions {
   destination: FlatFolderZip;
   closeWhenFinished?: boolean;
+  credentials?: {
+    user: string | undefined;
+    pass: string | undefined;
+  };
+  mnemonic?: string;
 }
 
 export function createFolder(
@@ -172,6 +177,7 @@ interface GetDirectoryFilesResponse {
   files: DriveFileData[];
   last: boolean;
 }
+
 class DirectoryFilesIterator implements Iterator<DriveFileData> {
   private offset: number;
   private limit: number;
@@ -194,6 +200,14 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
     return { value: files, done: last };
   }
 }
+
+export const createFoldersIterator = (directoryId: number): Iterator<DriveFolderData> => {
+  return new DirectoryFolderIterator({ directoryId }, 20, 0);
+};
+
+export const createFilesIterator = (directoryId: number): Iterator<DriveFileData> => {
+  return new DirectoryFilesIterator({ directoryId }, 20, 0);
+};
 
 interface FolderRef {
   name: string;
@@ -263,6 +277,8 @@ export async function addAllFoldersToZip(
 async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
+  foldersIterator: (directoryId: number) => Iterator<DriveFolderData>,
+  filesIterator: (directoryId: number) => Iterator<DriveFileData>,
   updateProgress: (progress: number) => void,
   options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
@@ -303,17 +319,6 @@ async function downloadFolderAsZip(
     do {
       const folderToDownload = pendingFolders.shift() as FolderRef;
 
-      const foldersIterator: Iterator<DriveFolderData> = new DirectoryFolderIterator(
-        { directoryId: folderToDownload.folderId },
-        20,
-        0,
-      );
-      const filesIterator: Iterator<DriveFileData> = new DirectoryFilesIterator(
-        { directoryId: folderToDownload.folderId },
-        20,
-        0,
-      );
-
       const files = await addAllFilesToZip(
         folderToDownload.name,
         async (file) => {
@@ -339,14 +344,16 @@ async function downloadFolderAsZip(
           };
           analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
           console.log({ trackingDownloadProperties });
+          const creds = options?.credentials
+            ? (options.credentials as Record<'user' | 'pass', string>)
+            : { user: user.bridgeUser, pass: user.userId };
+
+          const mnemonic = options?.mnemonic ? options?.mnemonic : user.mnemonic;
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket,
             fileId: file.fileId,
-            creds: {
-              user: user.bridgeUser,
-              pass: user.userId,
-            },
-            mnemonic: user.mnemonic,
+            creds: creds,
+            mnemonic: mnemonic,
           });
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
@@ -360,13 +367,13 @@ async function downloadFolderAsZip(
 
           return sourceBlob.stream();
         },
-        filesIterator,
+        filesIterator(folderToDownload.folderId),
         zip,
       );
 
       totalSize += files.reduce((a, f) => f.size + a, 0);
 
-      const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator, zip);
+      const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator(folderToDownload.folderId), zip);
 
       pendingFolders.push(
         ...folders.map((f) => {
@@ -390,6 +397,7 @@ async function downloadFolderAsZip(
       error_message: castedError.message,
       stack_trace: castedError.stack ?? '',
     });
+    console.error('ERROR WHILE DOWNLOADING FOLDER', castedError);
     zip.abort();
     throw castedError;
   }

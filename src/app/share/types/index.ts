@@ -9,7 +9,8 @@ export type AdvancedSharedItem = SharedFolders &
 export type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
 export type SharedNamePath = {
-  name: string;
   id: number;
+  name: string;
   token: string | null;
+  uuid: string;
 };

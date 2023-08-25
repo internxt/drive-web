@@ -3,7 +3,7 @@ import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
+import { setIsShareItemDialogOpen, uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
 // import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
@@ -18,6 +18,7 @@ import './ShareDialog.scss';
 import shareService from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -65,10 +66,9 @@ const cropSharedName = (name: string) => {
 
 type ShareDialogProps = {
   user: UserSettings;
-  selectedItems: DriveItemData[];
 };
 
-const ShareDialog = (props: ShareDialogProps) => {
+const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
@@ -76,7 +76,16 @@ const ShareDialog = (props: ShareDialogProps) => {
   const roles = useAppSelector((state: RootState) => state.shared.roles);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const selectedFolder = props.selectedItems[0];
+  if (!itemToShare || !itemToShare.item) {
+    if (isOpen) {
+      dispatch(uiActions.setIsShareDialogOpen(false));
+      notificationsService.show({
+        type: ToastType.Error,
+        text: 'Something went wrong, please try again later',
+      });
+    }
+    return <></>;
+  }
 
   const localUserData: InvitedUserProps = {
     avatar: props.user.avatar,
@@ -134,13 +143,13 @@ const ShareDialog = (props: ShareDialogProps) => {
   // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const getAndUpdateInvitedUsers = useCallback(async () => {
     try {
-      const usersList = await shareService.getSharedFolderUsers(selectedFolder?.uuid as string, 0, 50);
+      const usersList = await shareService.getSharedFolderUsers(itemToShare.item.uuid as string, 0, 50);
       const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
       setInvitedUsers(parsedUsersList);
     } catch (error) {
       errorService.reportError(error);
     }
-  }, [selectedFolder]);
+  }, [itemToShare]);
 
   const loadShareInfo = async () => {
     // TODO -> Load access mode
@@ -219,7 +228,7 @@ const ShareDialog = (props: ShareDialogProps) => {
 
   const onCopyLink = (): void => {
     // TODO -> Copy share link
-    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
+    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare.item }));
     closeSelectedUserPopover();
   };
 
@@ -238,7 +247,7 @@ const ShareDialog = (props: ShareDialogProps) => {
     if (invitedUserUUID) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          folderUUID: selectedFolder.uuid as string,
+          folderUUID: itemToShare.item.uuid as string,
           userUUID: invitedUserUUID,
           userEmail: email,
         }),
@@ -267,8 +276,8 @@ const ShareDialog = (props: ShareDialogProps) => {
   const onStopSharing = async () => {
     setIsLoading(true);
 
-    const folderName = cropSharedName(selectedFolder.name);
-    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: selectedFolder?.uuid as string, folderName }));
+    const folderName = cropSharedName(itemToShare.item.name);
+    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: itemToShare.item.uuid as string, folderName }));
 
     setShowStopSharingConfirmation(false);
     onClose();
@@ -283,7 +292,7 @@ const ShareDialog = (props: ShareDialogProps) => {
       if (roleId && userUUID) {
         await shareService.updateUserRoleOfSharedFolder({
           userUUID,
-          folderUUID: selectedFolder?.uuid as string,
+          folderUUID: itemToShare.item.uuid as string,
           roleId,
         });
 
@@ -323,9 +332,9 @@ const ShareDialog = (props: ShareDialogProps) => {
         <>
           <span
             className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
-            title={translate('modals.shareModal.title', { name: props.selectedItems[0]?.name ?? '' })}
+            title={translate('modals.shareModal.title', { name: itemToShare.item.name })}
           >
-            {translate('modals.shareModal.title', { name: props.selectedItems[0]?.name ?? '' })}
+            {translate('modals.shareModal.title', { name: itemToShare.item.name })}
           </span>
           <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />
@@ -541,7 +550,7 @@ const ShareDialog = (props: ShareDialogProps) => {
           >
             <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
             <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: props.selectedItems[0]?.name ?? '' })}
+              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
             </p>
             <div className="flex items-center justify-end space-x-2">
               <Button
@@ -568,7 +577,7 @@ const ShareDialog = (props: ShareDialogProps) => {
             }, 500);
           }}
           onInviteUser={onInviteUser}
-          folderUUID={selectedFolder?.uuid as string}
+          folderUUID={itemToShare?.item.uuid as string}
           roles={roles}
         />
       ),
@@ -691,7 +700,6 @@ const ShareDialog = (props: ShareDialogProps) => {
 
 export default connect((state: RootState) => ({
   user: state.user.user as UserSettings,
-  selectedItems: state.storage.selectedItems,
 }))(ShareDialog);
 
 const UserOptions = ({
