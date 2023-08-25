@@ -1,6 +1,6 @@
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link } from '@phosphor-icons/react';
+import { Trash, Link, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect } from 'react';
@@ -306,7 +306,9 @@ export default function SharedView(): JSX.Element {
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    {
+      dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    }
 
     envService.isProduction()
       ? dispatch(uiActions.setIsShareItemDialogOpen(true))
@@ -433,7 +435,7 @@ export default function SharedView(): JSX.Element {
         <div className="relative">
           <img className="w-36" alt="" src={emptyStateIcon} />
           <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
-            <Link size={24} />
+            <Users size={24} />
           </div>
         </div>
       }
@@ -519,7 +521,7 @@ export default function SharedView(): JSX.Element {
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
                     <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
-                      <Link size={12} color="white" />
+                      <Users size={12} color="white" weight="fill" />
                     </div>
                   </div>
                   <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareItem)}>

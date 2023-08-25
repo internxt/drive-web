@@ -796,7 +796,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                               <Button
                                 variant="tertiary"
                                 className="aspect-square"
-                                onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}
+                                onClick={() => {
+                                  dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
+                                  dispatch(uiActions.setIsShareDialogOpen(true));
+                                }}
                               >
                                 <Users className="h-6 w-6" />
                               </Button>
