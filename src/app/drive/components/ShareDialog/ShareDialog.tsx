@@ -76,16 +76,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const roles = useAppSelector((state: RootState) => state.shared.roles);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  if (!itemToShare || !itemToShare.item) {
-    if (isOpen) {
-      dispatch(uiActions.setIsShareDialogOpen(false));
-      notificationsService.show({
-        type: ToastType.Error,
-        text: 'Something went wrong, please try again later',
-      });
-    }
-    return <></>;
-  }
 
   const localUserData: InvitedUserProps = {
     avatar: props.user.avatar,
@@ -143,7 +133,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const getAndUpdateInvitedUsers = useCallback(async () => {
     try {
-      const usersList = await shareService.getSharedFolderUsers(itemToShare.item.uuid as string, 0, 50);
+      const usersList = await shareService.getSharedFolderUsers(itemToShare?.item.uuid as string, 0, 50);
       const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
       setInvitedUsers(parsedUsersList);
     } catch (error) {
@@ -228,7 +218,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onCopyLink = (): void => {
     // TODO -> Copy share link
-    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare.item }));
+    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
     closeSelectedUserPopover();
   };
 
@@ -247,7 +237,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (invitedUserUUID) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          folderUUID: itemToShare.item.uuid as string,
+          folderUUID: itemToShare?.item.uuid as string,
           userUUID: invitedUserUUID,
           userEmail: email,
         }),
@@ -276,8 +266,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const onStopSharing = async () => {
     setIsLoading(true);
 
-    const folderName = cropSharedName(itemToShare.item.name);
-    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: itemToShare.item.uuid as string, folderName }));
+    const folderName = cropSharedName(itemToShare?.item.name as string);
+    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: itemToShare?.item.uuid as string, folderName }));
 
     setShowStopSharingConfirmation(false);
     onClose();
@@ -292,7 +282,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       if (roleId && userUUID) {
         await shareService.updateUserRoleOfSharedFolder({
           userUUID,
-          folderUUID: itemToShare.item.uuid as string,
+          folderUUID: itemToShare?.item.uuid as string,
           roleId,
         });
 
@@ -332,9 +322,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         <>
           <span
             className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
-            title={translate('modals.shareModal.title', { name: itemToShare.item.name })}
+            title={translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           >
-            {translate('modals.shareModal.title', { name: itemToShare.item.name })}
+            {translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           </span>
           <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />
