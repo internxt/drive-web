@@ -36,6 +36,8 @@ import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy } from '../../../../app/share/types';
+import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { SharedNamePath } from 'app/share/types';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -68,27 +70,32 @@ export default function SharedView(): JSX.Element {
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
 
   useEffect(() => {
-    fetchRootItems();
+    if (page === 0) {
+      fetchRootItems();
+      dispatch(storageActions.resetSharedNamePath());
+    }
   }, []);
 
   useEffect(() => {
-    fetchFolders();
+    if (page === 0) {
+      fetchFolders();
+    }
   }, [currentFolderId]);
 
   useEffect(() => {
-    fetchFiles();
+    if (page === 0) {
+      fetchFiles();
+    }
   }, [hasMoreFolders]);
 
   useEffect(() => {
-    if (!currentFolderId) {
+    if (!currentFolderId && hasMoreItems && page >= 1) {
       fetchRootItems();
     }
-
-    if (currentFolderId && hasMoreFolders) {
+    if (currentFolderId && hasMoreFolders && hasMoreItems && page >= 1) {
       fetchFolders();
     }
-
-    if (!hasMoreFolders && hasMoreItems) {
+    if (currentFolderId && !hasMoreFolders && hasMoreItems && page >= 1) {
       fetchFiles();
     }
   }, [page]);
@@ -117,7 +124,14 @@ export default function SharedView(): JSX.Element {
         return shareItem;
       });
 
-      const items = [...shareItems, ...folders];
+      let items;
+
+      if (page === 0) {
+        items = [...folders];
+      } else {
+        items = [...shareItems, ...folders];
+      }
+
       setShareItems(items);
 
       if (folders.length < ITEMS_PER_PAGE) {
@@ -133,7 +147,7 @@ export default function SharedView(): JSX.Element {
   const fetchFolders = async () => {
     setIsLoading(true);
 
-    if (currentFolderId) {
+    if (currentFolderId && hasMoreFolders) {
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
@@ -154,7 +168,14 @@ export default function SharedView(): JSX.Element {
           return shareItem;
         });
 
-        const items = [...shareItems, ...folders];
+        let items;
+
+        if (page === 0) {
+          items = [...folders];
+        } else {
+          items = [...shareItems, ...folders];
+        }
+
         setShareItems(items);
 
         if (folders.length < ITEMS_PER_PAGE) {
@@ -170,7 +191,7 @@ export default function SharedView(): JSX.Element {
   const fetchFiles = async () => {
     setIsLoading(true);
 
-    if (currentFolderId) {
+    if (currentFolderId && !hasMoreFolders && hasMoreItems) {
       try {
         const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
           currentFolderId,
@@ -208,6 +229,9 @@ export default function SharedView(): JSX.Element {
   const onItemDoubleClicked = (props) => {
     const sharedFolderId = props.uuid;
     const user = props.user;
+    const token = localStorageService.get('xResourcesToken');
+
+    dispatch(storageActions.pushSharedNamePath({ id: props.uuid, name: props.plainName, token: token }));
 
     if (user) {
       const userName = props.user.name;
@@ -386,6 +410,54 @@ export default function SharedView(): JSX.Element {
     />
   );
 
+  const goToFolderBredcrumb = (id, name, token?) => {
+    setHasMoreFolders(true);
+    setHasMoreItems(true);
+    setShareItems([]);
+    setCurrentResourcesToken(token);
+    if (id === 1) {
+      setCurrentFolderId('');
+    } else {
+      setCurrentFolderId(id);
+    }
+    setPage[0];
+    dispatch(storageActions.popSharedNamePath({ id: id, name: name, token: token }));
+  };
+
+  const breadcrumbItems = (): BreadcrumbItemData[] => {
+    const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
+    const items: BreadcrumbItemData[] = [];
+
+    items.push({
+      id: 1,
+      label: translate('shared-links.shared-links'),
+      icon: null,
+      active: true,
+      isFirstPath: true,
+      onClick: () => {
+        setPage[0];
+        setShareItems([]);
+        setHasMoreFolders(true);
+        setHasMoreItems(true);
+        setCurrentFolderId('');
+        goToFolderBredcrumb(1, translate('shared-links.shared-links'));
+        fetchRootItems();
+      },
+    });
+
+    sharedNamePath.slice().forEach((path: SharedNamePath, i: number, namePath: SharedNamePath[]) => {
+      items.push({
+        id: path.id,
+        label: path.name,
+        icon: null,
+        active: i < namePath.length - 1,
+        onClick: () => goToFolderBredcrumb(path.id, path.name, path.token),
+      });
+    });
+
+    return items;
+  };
+
   return (
     <div
       className="flex w-full flex-shrink-0 flex-col"
@@ -395,7 +467,7 @@ export default function SharedView(): JSX.Element {
     >
       <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
-          <p className="text-lg">{translate('shared-links.shared-links')}</p>
+          <Breadcrumbs items={breadcrumbItems()} />
         </div>
 
         <div

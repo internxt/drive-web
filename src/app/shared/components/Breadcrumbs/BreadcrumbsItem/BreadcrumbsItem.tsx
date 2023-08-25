@@ -51,6 +51,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const currentBreadcrumb = namePath[namePath.length - 1];
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const pathName = window.location.pathname.split('/')[2];
+  const isSharedView = pathName === 'shared';
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
@@ -225,7 +227,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
               <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
                 {breadcrumbDirtyName || props.item.label}
               </span>
-              <CaretDown weight="fill" className="ml-1 h-3 w-3" />
+              <CaretDown weight="fill" className={`ml-1 h-3 w-3 ${isSharedView && 'hidden'}`} />
             </div>
           </Menu.Button>
           <Transition
@@ -238,9 +240,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
             leaveTo="scale-100 opacity-0"
           >
             <Menu.Items
-              className={
-                'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
-              }
+              className={`outline-none absolute z-10 mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard ${
+                isSharedView && 'hidden'
+              }`}
             >
               {!props.item.isBackup ? (
                 <>
