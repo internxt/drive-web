@@ -54,6 +54,8 @@ function clear(): void {
   localStorage.removeItem('language');
   localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   localStorage.removeItem('showSummerBanner');
+  localStorage.removeItem('xInvitedToken');
+  localStorage.removeItem('xResourcesToken');
 }
 
 const localStorageService = {
