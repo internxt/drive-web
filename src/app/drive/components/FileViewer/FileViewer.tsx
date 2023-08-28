@@ -1,4 +1,4 @@
-import { Suspense, Fragment, useState, useEffect, useMemo } from 'react';
+import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
 import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
@@ -17,18 +17,20 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
-import errorService from 'app/core/services/error.service';
 
 interface FileViewerProps {
   file: DriveFileData;
   onClose: () => void;
   onDownload: () => void;
-  downloader: (abortController: AbortController) => Promise<Blob>;
   show: boolean;
-  progress?: number;
-  setCurrentFile?: (file: DriveFileData) => void;
   isAuthenticated: boolean;
+  progress?: number;
   isShareView?: boolean;
+  blob?: Blob | null;
+  setBlob?: (blob: Blob | null) => void;
+  changeFile?;
+  totalFolderIndex?;
+  fileIndex?;
 }
 
 export interface FormatFileViewerProps {
@@ -37,6 +39,12 @@ export interface FormatFileViewerProps {
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
+
+function shouldNotBeRendered(fileExtensionGroup) {
+  const allowedGroups = [FileExtensionGroup.Audio, FileExtensionGroup.Video, FileExtensionGroup.Xls];
+
+  return allowedGroups.includes(fileExtensionGroup);
+}
 
 const DownloadFile = ({ onDownload, translate }) => (
   <div
@@ -61,44 +69,25 @@ const FileViewer = ({
   file,
   onClose,
   onDownload,
-  downloader,
-  setCurrentFile,
   show,
   progress,
   isAuthenticated,
   isShareView,
+  blob,
+  changeFile,
+  totalFolderIndex,
+  fileIndex,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
-  const [isErrorWhileDownloading, setIsErrorWhileDownloading] = useState<boolean>(false);
+  const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
 
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
   const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
-  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
-
-  // Get all files in the current folder, sort the files and find the current file to display the file
-  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
-  const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
-
-  const sortFolderFiles = useMemo(() => {
-    if (folderFiles) {
-      return folderFiles.sort((a, b) => {
-        if (a.name < b.name) {
-          return -1;
-        }
-        if (a.name > b.name) {
-          return 1;
-        }
-        return 0;
-      });
-    }
-    return [];
-  }, [folderFiles]);
-  const totalFolderIndex = sortFolderFiles?.length;
-  const fileIndex = sortFolderFiles?.findIndex((item) => item.id === file?.id);
 
   // To prevent close FileViewer if any of those modal are open
   useEffect(() => {
@@ -135,14 +124,6 @@ const FileViewer = ({
     };
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
-  useEffect(() => {
-    if (dirtyName) {
-      setBlob(null);
-      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
-    }
-    dispatch(uiActions.setCurrentEditingNameDirty(''));
-  }, [dirtyName, file]);
-
   let isTypeAllowed = false;
   let fileExtensionGroup: number | null = null;
 
@@ -156,18 +137,6 @@ const FileViewer = ({
   }
 
   const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
-
-  const [blob, setBlob] = useState<Blob | null>(null);
-
-  //Switch to the next or previous file in the folder
-  function changeFile(direction: 'next' | 'prev') {
-    setBlob(null);
-    if (direction === 'next') {
-      setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
-    } else {
-      setCurrentFile?.(sortFolderFiles[fileIndex - 1]);
-    }
-  }
 
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
@@ -191,30 +160,16 @@ const FileViewer = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setIsErrorWhileDownloading(false);
+    setIsPreviewAvailable(true);
     const largeFile = isLargeFile(file?.size);
 
     if (show && isTypeAllowed) {
-      if (
-        (fileExtensionGroup === FileExtensionGroup.Audio && !largeFile) ||
-        (fileExtensionGroup === FileExtensionGroup.Video && !largeFile)
-      ) {
-        setIsErrorWhileDownloading(true);
+      if (shouldNotBeRendered(fileExtensionGroup) && largeFile) {
+        setIsPreviewAvailable(false);
         return;
       }
-      downloader(new AbortController())
-        .then((blob) => {
-          setBlob(blob);
-        })
-        .catch((err) => {
-          errorService.reportError(err);
-          const error = err as Error;
-          console.error('[DOWNLOAD FILE/ERROR]: ', error.stack || error.message || error);
-          setIsErrorWhileDownloading(true);
-        });
     } else {
-      setBlob(null);
-      setIsErrorWhileDownloading(true);
+      setIsPreviewAvailable(false);
     }
   }, [show, file]);
 
@@ -245,17 +200,17 @@ const FileViewer = ({
           {/* Content */}
           <>
             {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-            {fileIndex === 0 ? null : (
+            {fileIndex === 0 || isShareView ? null : (
               <button
                 title={translate('actions.previous')}
-                className="outline-none absolute top-1/2 left-10 z-30 rounded-full bg-black p-4 text-white"
+                className="outline-none absolute top-1/2 left-4 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('prev')}
               >
                 <CaretLeft size={24} />
               </button>
             )}
 
-            {isTypeAllowed && !isErrorWhileDownloading ? (
+            {isTypeAllowed && isPreviewAvailable ? (
               <div
                 tabIndex={0}
                 className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
@@ -267,7 +222,7 @@ const FileViewer = ({
                         blob={blob}
                         changeFile={changeFile}
                         file={file}
-                        setIsErrorWhileDownloading={setIsErrorWhileDownloading}
+                        setIsPreviewAvailable={setIsPreviewAvailable}
                       />
                     </Suspense>
                   ) : (
@@ -316,10 +271,10 @@ const FileViewer = ({
                 <DownloadFile onDownload={onDownload} translate={translate} />
               </div>
             )}
-            {fileIndex === totalFolderIndex - 1 ? null : (
+            {fileIndex === totalFolderIndex - 1 || isShareView ? null : (
               <button
                 title={translate('actions.next')}
-                className="outline-none absolute top-1/2 right-10 z-30 rounded-full bg-black p-4 text-white"
+                className="outline-none absolute top-1/2 right-4 z-30 rounded-full bg-black p-4 text-white"
                 onClick={() => changeFile('next')}
               >
                 <CaretRight size={24} />

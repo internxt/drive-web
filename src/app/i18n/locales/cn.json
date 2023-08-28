@@ -57,45 +57,45 @@
   "auth": {
     "email": "电子邮件",
     "password": "密码",
-    "terms1": "By creating an account, ",
-    "terms2": "you accept the terms & conditions",
-    "decrypting": "Decrypting...",
+    "terms1": "创建账户后，",
+    "terms2": "您接受条款和条件",
+    "decrypting": "正在解密......",
     "login": {
-      "title": "Log in",
-      "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
-      "createAccount": "Create account",
-      "2FA": "Two factor code",
-      "twoFactorAuthenticationCode": "Two factor authentication code"
+      "title": "登录",
+      "forgotPwd": "忘记密码了？",
+      "dontHaveAccount": "没有账户？",
+      "createAccount": "创建账户",
+      "2FA": "双因素代码",
+      "twoFactorAuthenticationCode": "双因素验证码"
     },
     "signup": {
-      "title": "Create account",
-      "haveAccount": "already have an account?",
-      "login": "Log in",
-      "encrypting": "正在加密文件"
+      "title": "创建账户",
+      "haveAccount": "已有账户？",
+      "login": "登录",
+      "encrypting": "加密中"
     },
     "forgotPassword": {
       "title": "账户恢复",
       "continue": "继续",
-      "sending": "发送",
-      "notFound": "未找到电子邮件地址 请重试",
-      "password": "记住您的密码",
+      "sending": "发送...",
+      "notFound": "未找到电子邮件地址，请重试",
+      "password": "还记得您的密码吗？",
       "login": "登录",
       "successTitle": "检查您的收件箱",
-      "successDescription": "我们已经向您发送了一个一次性链接来恢复您的账户密码",
-      "ivalidEmail": "无效电子邮件地址"
+      "successDescription": "我们已向您发送了恢复账户密码的一次性链接、",
+      "invalidEmail": "无效电子邮件地址"
     },
     "recoverAccount": {
-      "title": "帐户恢复",
-      "subtitle": "你有备份钥匙吗",
-      "info": "备份密钥是什么样的",
-      "info1": "备份密钥文件名为 'INTERNXT-BACKUP-KEY.txt'",
-      "info2": "备份密钥长度为24个字",
-      "haveKeyButton": "是的 我有備用鑰匙",
-      "notKeyButton": "不 我沒有",
+      "title": "账户恢复",
+      "subtitle": "您有备份密钥吗？",
+      "info": "备份密钥是什么样的？",
+      "info1": "备份密钥文件名是'INTERNXT '备份密钥文件名是'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "备份密钥长度为 24 个单词",
+      "haveKeyButton": "是，我有备份密钥",
+      "notKeyButton": "不，我没有",
       "backupKey": {
         "title": "验证备份密钥",
-        "alert": "如果您上传错误的备份密钥 您的数据将被损坏 请确保您的备份密钥正确",
+        "alert": "如果您上传了错误的备份密钥，您的数据将会损坏，请确保您的备份密钥正确无误",
         "button": "上传备份密钥"
       },
       "changePassword": {
@@ -104,35 +104,35 @@
         "repeatNewPassword": "重复新密码",
         "notMatch": "密码不匹配",
         "submitButton": "更改密码",
-        "notPasswordStrength": "密码必须有数字",
-        "shortPasswordStrength": "密码必须至少包含 8 个字符",
-        "warningPasswordStrength": "密码无效",
-        "successPasswordStrength": "密码牢固",
+        "notPasswordStrength": "密码必须为数字",
+        "shortPasswordStrength": "密码必须至少有 8 个字符",
+        "warningPasswordStrength": "密码太弱",
+        "successPasswordStrength": "密码很强",
         "serverError": "更改密码时出了问题",
         "tokenError": "验证备份密钥时发生错误",
         "backupKeyError": "上传的备份密钥无效",
         "emailSent": {
           "title": "密码已更改",
-          "description": "您的所有数据都已重新加密 您的所有活动会话都已注销",
-          "redirect": "重定向",
-          "button": "前往 Internxt Drive"
+          "description": "您的所有数据已重新加密，您的所有活动会话已注销",
+          "redirect": "重定向到 Internxt Drive",
+          "button": "转至 Internxt 驱动器"
         }
       }
     },
     "restartAccount": {
       "title": "重启账户",
-      "description": "由于我们采用端到端加密和零知识政策 如果没有密码或备份密钥 您将无法访问您的数据",
-      "alert1": "重启账户后 您了解您的所有文件、照片和备份将被永久删除",
+      "description": "根据我们的加密政策，如果没有密码或备份密钥，您将无法访问您的数据",
+      "alert1": "重启账户后，您将了解您的所有文件、照片和备份都将被永久删除、",
       "button": "发送账户重启验证",
-      "successDescription": "您的账户和密码已被重置",
-      "error": "重启账户时出了问题"
+      "successDescription": "您的账户和密码已重置",
+      "error": "重启账户时出了问题。"
     }
   },
   "general": {
     "new": "new",
     "of": "/",
-    "terms": "Terms and conditions",
-    "help": "Need help?",
+    "terms": "条款和条件",
+    "help": "需要帮助吗？",
     "searchBar": "搜索此文件夹",
 
     "stage": {

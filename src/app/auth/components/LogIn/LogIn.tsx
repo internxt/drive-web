@@ -27,6 +27,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
+  const urlParams = new URLSearchParams(window.location.search);
+  const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
   const dispatch = useAppDispatch();
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
@@ -54,9 +56,7 @@ export default function LogIn(): JSX.Element {
     defaultValue: '',
   });
   const mnemonic = localStorageService.get('xMnemonic');
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [token, setToken] = useState('');
-  const [registerCompleted, setRegisterCompleted] = useState(true);
+
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showTwoFactor, setShowTwoFactor] = useState(false);
   const [loginError, setLoginError] = useState<string[]>([]);
@@ -69,6 +69,20 @@ export default function LogIn(): JSX.Element {
     }
   }, []);
 
+  const redirectWithCredentials = (user: UserSettings, mnemonic: string, options?: { universalLinkMode: boolean }) => {
+    if (user.registerCompleted == false) {
+      return navigationService.history.push('/appsumo/' + user.email);
+    }
+
+    if (user && user.registerCompleted && mnemonic && !options?.universalLinkMode) {
+      return navigationService.push(AppView.Drive);
+    }
+
+    // This is a redirect for universal link for Desktop MacOS
+    if (user && user.registerCompleted && mnemonic && options?.universalLinkMode) {
+      return navigationService.push(AppView.UniversalLinkSuccess);
+    }
+  };
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -78,7 +92,7 @@ export default function LogIn(): JSX.Element {
       const isTfaEnabled = await is2FANeeded(email);
 
       if (!isTfaEnabled || showTwoFactor) {
-        const { token, user } = await doLogin(email, password, twoFactorCode);
+        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode);
         dispatch(userActions.setUser(user));
 
         window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
@@ -99,15 +113,15 @@ export default function LogIn(): JSX.Element {
           // PASS
         }
 
-        setIsAuthenticated(true);
-        setToken(token);
         userActions.setUser(user);
-        setRegisterCompleted(user.registerCompleted);
-        const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), token);
 
-        if (redirectUrl) {
+        const redirectUrl = authService.getRedirectUrl(urlParams, token);
+
+        if (redirectUrl && !isUniversalLinkMode) {
           window.location.replace(redirectUrl);
         }
+
+        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode });
       } else {
         setShowTwoFactor(true);
       }
@@ -127,28 +141,16 @@ export default function LogIn(): JSX.Element {
     }
   };
 
-  // TODO: remove the unused code below
   useEffect(() => {
-    if (user && user.registerCompleted && mnemonic) {
+    if (user && mnemonic) {
       dispatch(userActions.setUser(user));
-      navigationService.push(AppView.Drive);
-    }
-    if (user && user.registerCompleted === false) {
-      navigationService.history.push('/appsumo/' + user.email);
+      redirectWithCredentials(
+        user,
+        mnemonic,
+        isUniversalLinkMode ? { universalLinkMode: isUniversalLinkMode } : undefined,
+      );
     }
   }, []);
-
-  useEffect(() => {
-    if (isAuthenticated && token && user) {
-      const mnemonic = localStorageService.get('xMnemonic');
-
-      if (!registerCompleted) {
-        navigationService.history.push('/appsumo/' + email);
-      } else if (mnemonic) {
-        navigationService.push(AppView.Drive);
-      }
-    }
-  }, [isAuthenticated, token, user, registerCompleted]);
 
   const getSignupLink = () => {
     const currentParams = new URLSearchParams(window.location.search);

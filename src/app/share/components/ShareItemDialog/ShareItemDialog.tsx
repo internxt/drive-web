@@ -31,7 +31,7 @@ async function copyShareLink(type: string, code: string, token: string, translat
     domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
   const shareDomain = _.sample(domainList);
 
-  copy(`${shareDomain}/s/${type}/${token}/${code}`);
+  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
   notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
