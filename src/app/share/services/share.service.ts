@@ -348,6 +348,30 @@ class DirectorySharedFoldersIterator implements Iterator<DriveFileData> {
 //   return new DirectorySharedFoldersIterator({ directoryUuid, token }, 0, 20);
 // };
 
+export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
+  const user = localStorageService.getUser();
+  if (user) {
+    let decryptedKey;
+    try {
+      decryptedKey = await decryptMessageWithPrivateKey({
+        encryptedMessage: atob(encryptionKey),
+        privateKeyInBase64: user.privateKey,
+      });
+    } catch (err) {
+      decryptedKey = user.mnemonic;
+    }
+    return decryptedKey;
+  } else {
+    const error = errorService.castError('User Not Found');
+    errorService.reportError(error);
+
+    notificationsService.show({
+      text: t('error.decryptMnemonic', { message: error.message }),
+      type: ToastType.Error,
+    });
+  }
+};
+
 export async function downloadSharedFiles({
   creds,
   encryptionKey,
@@ -361,22 +385,8 @@ export async function downloadSharedFiles({
   dispatch: any;
   token: string;
 }): Promise<void> {
-  let decryptedKey;
-  const user = localStorageService.getUser();
-  if (!user) throw new Error('User not found');
+  const decryptedKey = await decryptMnemonic(encryptionKey);
 
-  // const createFilesIterator = (directoryUuid: string, token: string) => {
-  //   return new DirectoryFilesIterator({ directoryUuid, token }, 0, 20);
-  // };
-
-  try {
-    decryptedKey = await decryptMessageWithPrivateKey({
-      encryptedMessage: atob(encryptionKey),
-      privateKeyInBase64: user.privateKey,
-    });
-  } catch (err) {
-    decryptedKey = user.mnemonic;
-  }
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
     try {
       const readable = await network.downloadFile({

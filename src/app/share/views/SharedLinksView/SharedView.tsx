@@ -1,25 +1,25 @@
-import dateService from 'app/core/services/date.service';
-import BaseButton from 'app/shared/components/forms/BaseButton';
+import dateService from '../../../core/services/date.service';
+import BaseButton from '../../../shared/components/forms/BaseButton';
 import { Trash, Users } from '@phosphor-icons/react';
-import List from 'app/shared/components/List';
+import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect } from 'react';
-import iconService from 'app/drive/services/icon.service';
+import iconService from '../../../drive/services/icon.service';
 import copy from 'copy-to-clipboard';
-import Empty from 'app/shared/components/Empty/Empty';
+import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
-import shareService from 'app/share/services/share.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import shareService, { decryptMnemonic } from '../../../share/services/share.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
-import localStorageService from 'app/core/services/local-storage.service';
-import sizeService from 'app/drive/services/size.service';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
-import { uiActions } from 'app/store/slices/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import localStorageService from '../../../core/services/local-storage.service';
+import sizeService from '../../../drive/services/size.service';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { storageActions } from '../../../store/slices/storage';
+import { uiActions } from '../../../store/slices/ui';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { t } from 'i18next';
 import {
   contextMenuDriveFolderSharedAFS,
@@ -34,11 +34,9 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-import { AdvancedSharedItem, OrderBy } from '../../../../app/share/types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { SharedNamePath } from 'app/share/types';
-import { getItemPlainName } from '../../../../app/crypto/services/utils';
-import { NetworkCredentials } from 'app/network/download';
+import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
+import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
+import { getItemPlainName } from '../../../crypto/services/utils';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -69,7 +67,6 @@ export default function SharedView(): JSX.Element {
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
-  const [userCredentials, setUserCredentials] = useState<NetworkCredentials>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
 
   useEffect(() => {
@@ -121,6 +118,7 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = true;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+        shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
         return shareItem;
       });
 
@@ -165,6 +163,7 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = true;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
           return shareItem;
         });
 
@@ -203,11 +202,6 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
-        setUserCredentials({
-          user: response.credentials.networkUser,
-          pass: response.credentials.networkPass,
-        });
-
         const token = response.token;
         setNextResourcesToken(token);
 
@@ -216,6 +210,7 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = false;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
           return shareItem;
         });
 
@@ -361,11 +356,11 @@ export default function SharedView(): JSX.Element {
     await moveItemsToTrash([itemToTrash]);
   };
 
-  const downloadItem = async (props: AdvancedSharedItem) => {
+  const downloadItem = async (shareItem: AdvancedSharedItem) => {
     try {
-      if (props.isRootLink) {
+      if (shareItem.isRootLink) {
         const { credentials, token } = await shareService.getSharedFolderContent(
-          props.uuid,
+          shareItem.uuid,
           'files',
           '',
           0,
@@ -379,19 +374,17 @@ export default function SharedView(): JSX.Element {
           },
           dispatch,
           selectedItems,
-          encryptionKey: props.encryptionKey,
+          encryptionKey: shareItem.encryptionKey,
           token,
         });
       } else {
-        if (userCredentials) {
-          await shareService.downloadSharedFiles({
-            creds: userCredentials,
-            dispatch,
-            selectedItems,
-            encryptionKey: encryptionKey,
-            token: '',
-          });
-        }
+        await shareService.downloadSharedFiles({
+          creds: shareItem.credentials,
+          dispatch,
+          selectedItems,
+          encryptionKey: encryptionKey,
+          token: '',
+        });
       }
     } catch (err) {
       const error = errorService.castError(err);
@@ -436,9 +429,13 @@ export default function SharedView(): JSX.Element {
     setEditNameItem(undefined);
   };
 
-  const openPreview = (shareItem: AdvancedSharedItem) => {
+  const openPreview = async (shareItem: AdvancedSharedItem) => {
+    const previewItem = shareItem as unknown as PreviewFileItem;
+
+    const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
+
+    dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
     dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(shareItem as unknown as DriveItemData));
   };
 
   const isItemOwnedByCurrentUser = () => {
