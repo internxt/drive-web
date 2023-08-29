@@ -1,9 +1,9 @@
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Users } from '@phosphor-icons/react';
+import { Trash, UploadSimple, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from 'app/shared/components/Empty/Empty';
@@ -39,6 +39,11 @@ import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrum
 import { SharedNamePath } from 'app/share/types';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import { NetworkCredentials } from 'app/network/download';
+import Button from 'app/shared/components/Button/Button';
+import { handleRepeatedUploadingFiles } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -54,6 +59,7 @@ export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -69,6 +75,7 @@ export default function SharedView(): JSX.Element {
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
+  const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
   const [userCredentials, setUserCredentials] = useState<NetworkCredentials>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
 
@@ -262,6 +269,7 @@ export default function SharedView(): JSX.Element {
       setHasMoreFolders(true);
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
+      setCurrentParentFolderId(shareItem.id);
     } else {
       openPreview(shareItem);
     }
@@ -359,6 +367,51 @@ export default function SharedView(): JSX.Element {
       isFolder: shareItem.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
+  };
+
+  const onUploadFileButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'File upload button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
+    fileInputRef.current?.click();
+  };
+
+  const onUploadFileInputChanged = (e) => {
+    const files = e.target.files;
+    dispatch(
+      storageActions.setItems({
+        folderId: currentParentFolderId as number,
+        items: shareItems as unknown as DriveItemData[],
+      }),
+    );
+
+    if (files.length < 1000 && currentParentFolderId) {
+      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(
+        Array.from(files),
+        shareItems as unknown as DriveItemData[],
+        dispatch,
+      ) as File[];
+
+      dispatch(
+        storageThunks.uploadItemsThunk({
+          files: Array.from(unrepeatedUploadedFiles),
+          parentFolderId: currentParentFolderId,
+        }),
+      ).then(() => {
+        dispatch(fetchSortedFolderContentThunk(currentParentFolderId));
+      });
+    } else {
+      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+      notificationsService.show({
+        text: 'The maximum is 1000 files per upload.',
+        type: ToastType.Warning,
+      });
+    }
   };
 
   const downloadItem = async (props: AdvancedSharedItem) => {
@@ -540,6 +593,23 @@ export default function SharedView(): JSX.Element {
           data-tooltip-content={translate('shared-links.item-menu.delete-link')}
           data-tooltip-place="bottom"
         >
+          <input
+            className="hidden"
+            ref={fileInputRef}
+            type="file"
+            onChange={onUploadFileInputChanged}
+            multiple={true}
+            data-test="input-file"
+          />
+
+          <Button variant="primary" onClick={onUploadFileButtonClicked} disabled={shareItems[0]?.isRootLink}>
+            <div className="flex items-center justify-center space-x-2.5">
+              <div className="flex items-center space-x-2">
+                <UploadSimple size={24} />
+                <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+              </div>
+            </div>
+          </Button>
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
@@ -558,7 +628,7 @@ export default function SharedView(): JSX.Element {
           header={[
             {
               label: translate('shared-links.list.name'),
-              width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-104 truncate flex-shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'folder',
               orderable: false,
             },
@@ -602,7 +672,10 @@ export default function SharedView(): JSX.Element {
                       <Users size={12} color="white" weight="fill" />
                     </div>
                   </div>
-                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareItem)}>
+                  <div
+                    className="w-full max-w-full truncate pr-16"
+                    onDoubleClick={() => onItemDoubleClicked(shareItem)}
+                  >
                     <span
                       onClick={() => onNameClicked(shareItem)}
                       className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
@@ -711,6 +784,7 @@ export default function SharedView(): JSX.Element {
         isOpen={isEditNameDialogOpen}
         onClose={onCloseEditNameItems}
       />
+      <NameCollisionContainer />
       {isShareDialogOpen && <ShareDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
