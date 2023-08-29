@@ -10437,10 +10437,10 @@ opener@^1.5.2:
   resolved "https://registry.npmjs.org/opener/-/opener-1.5.2.tgz"
   integrity sha512-ur5UIdyw5Y7yEj9wLzhqXiy6GZ3Mwx0yGI+5sMn2r0N0v3cKJvUmFH5yPP+WXh9e0xfyzyJX95D8l088DNFj7A==
 
-openpgp@^4.10.10:
-  version "4.10.10"
-  resolved "https://registry.npmjs.org/openpgp/-/openpgp-4.10.10.tgz"
-  integrity sha512-Ub48OogGPjNsr0G/wnJ/SyAQzt/tfcXZTWVZdjKFpXCQV1Ca+upFdSPPkBlGG3lb9EQGOKZJ2tzYNH6ZyKMkDQ==
+openpgp@^4.10.11:
+  version "4.10.11"
+  resolved "https://registry.yarnpkg.com/openpgp/-/openpgp-4.10.11.tgz#3e005cfadb08e664e0c98be2fe7824af601241a0"
+  integrity sha512-ec8m6xkuBqTaSSoNEr7CK0AepeVvKkgvMxs0KVAtEHlFDd1fA93Q+jYls6vRfrZDl0UEAEmcvRUa4W8VuGey2w==
   dependencies:
     asn1.js "^5.0.0"
     node-fetch "^2.1.2"
