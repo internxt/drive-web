@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService, { sharePrivateFolderWithUser } from 'app/share/services/share.service';
+import shareService, { getSharingRoles, inviteUserToSharedFolder } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -165,8 +165,10 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
 );
 
 export interface ShareFileWithUserPayload {
-  email: string;
-  folderUUID: string;
+  itemId: string;
+  itemType: 'file' | 'folder';
+  sharedWith: string;
+  encryptionAlgorithm: string;
   roleId: string;
 }
 
@@ -182,7 +184,7 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
       const { mnemonic } = user;
 
-      const publicKeyResponse = await userService.getPublicKeyByEmail(payload.email);
+      const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
       const publicKey = publicKeyResponse.publicKey;
 
       const encryptedMnemonic = await encryptMessageWithPublicKey({
@@ -192,25 +194,27 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 
       const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
-      await sharePrivateFolderWithUser({
-        emailToShare: payload.email,
+      await inviteUserToSharedFolder({
+        itemId: payload.itemId,
+        itemType: payload.itemType,
+        sharedWith: payload.sharedWith,
         encryptionKey: encryptedMnemonicInBase64,
-        privateFolderId: payload.folderUUID,
+        encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
       });
 
       notificationsService.show({
-        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.email }),
+        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
       });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });
+      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
       notificationsService.show({
-        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.email }),
+        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
         type: ToastType.Error,
       });
     }
@@ -280,10 +284,10 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   'shareds/getRoles',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const newRoles = await shareService.getPrivateSharingRoles();
+      const newRoles = await getSharingRoles();
 
-      if (newRoles.roles.length > 0) {
-        const parsedRoles = parseRolesFromBackend(newRoles.roles);
+      if (newRoles.length > 0) {
+        const parsedRoles = parseRolesFromBackend(newRoles);
         dispatch(sharedActions.setSharedFolderUserRoles(parsedRoles));
       }
     } catch (err: unknown) {

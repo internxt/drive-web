@@ -5,7 +5,6 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import Button from 'app/shared/components/Button/Button';
-// import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -15,7 +14,7 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
-import shareService from '../../../share/services/share.service';
+import shareService, { getSharingRoles } from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
@@ -72,7 +71,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
-  const roles = useAppSelector((state: RootState) => state.shared.roles);
+  const [roles, setRoles] = useState<any>([]);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
@@ -113,10 +112,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   useEffect(() => {
-    if (isOpen) loadShareInfo();
+    if (isOpen) {
+      getSharingRoles().then((roles) => {
+        setRoles(roles);
+      });
+    }
 
     if (!isOpen) resetDialogData();
   }, [isOpen]);
+
+  useEffect(() => {
+    loadShareInfo();
+  }, [roles]);
 
   useEffect(() => {
     const removeDeniedRequests = () => {
@@ -131,8 +138,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const getAndUpdateInvitedUsers = useCallback(async () => {
+    if (!itemToShare?.item) return;
+
     try {
-      const usersList = await shareService.getSharedFolderUsers(itemToShare?.item.uuid as string, 0, 50);
+      const usersList = await shareService.getSharedFolderInvitations({
+        itemType: 'folder',
+        itemId: itemToShare.item.uuid as string,
+      });
       const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
       setInvitedUsers(parsedUsersList);
     } catch (error) {
@@ -146,8 +158,21 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setAccessMode(shareAccessMode);
 
     // TODO -> Load invited users
-    const loadedUsers: InvitedUserProps[] = [];
-    setInvitedUsers(loadedUsers);
+    if (!itemToShare?.item) return;
+
+    try {
+      const usersList = await shareService.getSharedFolderInvitations({
+        itemType: 'folder',
+        itemId: itemToShare.item.uuid as string,
+      });
+      const parsedUsersList = usersList.map((user) => ({
+        ...user,
+        roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
+      }));
+      setInvitedUsers([localUserData, ...parsedUsersList]);
+    } catch (error) {
+      errorService.reportError(error);
+    }
     // TODO -> Load access requests
     const mockedAccessRequests = [
       {
@@ -174,9 +199,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         status: REQUEST_STATUS.PENDING,
       },
     ];
-    setAccessRequests(mockedAccessRequests);
+    // setAccessRequests(mockedAccessRequests);
     dispatch(sharedThunks.getSharedFolderRoles());
-    await getAndUpdateInvitedUsers();
   };
 
   const removeRequest = (email: string) => {
@@ -274,29 +298,28 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const handleUserRoleChange = async (email: string, roleName: string) => {
-    try {
-      setSelectedUserListIndex(null);
-      const roleId = roles.find((role) => role.name === roleName)?.id;
-      const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
-      if (roleId && userUUID) {
-        await shareService.updateUserRoleOfSharedFolder({
-          userUUID,
-          folderUUID: itemToShare?.item.uuid as string,
-          roleId,
-        });
-
-        const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
-          if (invitedUser.email === email) {
-            return { ...invitedUser, roleId, roleName: roleName as UserRole };
-          }
-          return invitedUser;
-        });
-        setInvitedUsers(modifiedInvitedUsers);
-      }
-    } catch (error) {
-      errorService.reportError(error);
-      // TODO: Add notification message
-    }
+    // try {
+    //   setSelectedUserListIndex(null);
+    //   const roleId = roles.find((role) => role.name === roleName)?.id;
+    //   const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
+    //   if (roleId && userUUID) {
+    //     await shareService.updateUserRoleOfSharedFolder({
+    //       userUUID,
+    //       folderUUID: itemToShare?.item.uuid as string,
+    //       roleId,
+    //     });
+    //     const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
+    //       if (invitedUser.email === email) {
+    //         return { ...invitedUser, roleId, roleName: roleName as UserRole };
+    //       }
+    //       return invitedUser;
+    //     });
+    //     setInvitedUsers(modifiedInvitedUsers);
+    //   }
+    // } catch (error) {
+    //   errorService.reportError(error);
+    //   // TODO: Add notification message
+    // }
   };
 
   const openUserOptions = (e: any, user: InvitedUserProps, selectedIndex: number | null) => {
@@ -561,12 +584,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         <ShareInviteDialog
           onClose={async () => {
             setView('general');
-            setTimeout(async () => {
-              getAndUpdateInvitedUsers();
-            }, 500);
           }}
           onInviteUser={onInviteUser}
-          folderUUID={itemToShare?.item.uuid as string}
+          itemToShare={itemToShare?.item}
           roles={roles}
         />
       ),
@@ -691,7 +711,7 @@ export default connect((state: RootState) => ({
   user: state.user.user as UserSettings,
 }))(ShareDialog);
 
-const UserOptions = ({
+export const UserOptions = ({
   listPosition,
   selectedUserListIndex,
   userOptionsY,
@@ -768,7 +788,7 @@ const UserOptions = ({
   );
 };
 
-const User = ({
+export const User = ({
   user,
   listPosition,
   translate,

@@ -4,6 +4,6 @@ import { Role } from './types';
 export const parseRolesFromBackend = (backendRoles: PrivateSharingRole[]): Role[] => {
   return backendRoles.map((role) => ({
     id: role.id,
-    name: role.role.toLowerCase(),
+    name: role.name.toLowerCase(),
   }));
 };
