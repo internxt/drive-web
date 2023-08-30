@@ -33,6 +33,7 @@ const initialState: StorageState = {
   filesOnTrashLength: 0,
   viewMode: FileViewMode.List,
   namePath: [],
+  currentPath: { id: 0, name: '' },
   filesToRename: [],
   driveFilesToRename: [],
   foldersToRename: [],
@@ -235,6 +236,9 @@ export const storageSlice = createSlice({
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
     },
+    setCurrentPath: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      state.currentPath = action.payload;
+    },
     patchItem: (
       state: StorageState,
       action: PayloadAction<{ id: number; folderId: number; isFolder: boolean; patch: DriveItemPatch }>,
@@ -373,6 +377,7 @@ export const {
   setItemsToMove,
   setViewMode,
   resetNamePath,
+  setCurrentPath,
   pushNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
