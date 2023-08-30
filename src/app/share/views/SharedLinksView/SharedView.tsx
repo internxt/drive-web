@@ -79,6 +79,10 @@ export default function SharedView(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    if (!isShowInvitationsOpen) fetchRootItems();
+  }, [isShowInvitationsOpen]);
+
+  useEffect(() => {
     if (page === 0) {
       fetchFolders();
     }

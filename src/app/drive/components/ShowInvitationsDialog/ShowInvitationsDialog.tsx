@@ -6,7 +6,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { useEffect, useState } from 'react';
-import {
+import shareService, {
   acceptSharedFolderInvite,
   getSharedFolderInvitationsAsInvitedUser,
 } from '../../../share/services/share.service';
@@ -18,7 +18,14 @@ const ShowInvitationsDialog = (): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isInvitationsDialogOpen);
 
   function onClose() {
-    dispatch(uiActions.setIsInvitationsDialogOpen(false));
+    shareService
+      .getAllSharedFolders(0, 15)
+      .then((res) => {
+        dispatch(uiActions.setIsInvitationsDialogOpen(false));
+      })
+      .catch((err) => {
+        console.log('error', err);
+      });
   }
 
   async function onAcceptInvitation(invitationId: string) {
