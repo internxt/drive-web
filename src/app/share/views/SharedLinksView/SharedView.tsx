@@ -394,8 +394,7 @@ export default function SharedView(): JSX.Element {
       }
     } catch (err) {
       const error = errorService.castError(err);
-
-      console.error('ERROR DOWNLOADING FILE: ', error);
+      errorService.castError(error);
     }
   };
 

@@ -235,7 +235,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onRemoveUser = async (user: SharingInvite) => {
     // if (user) {
-    //   console.log('user', user);
     //   const hasBeenRemoved = await dispatch(
     //     sharedThunks.removeUserFromSharedFolder({
     //       itemType: itemToShare?.item.type as string,
@@ -267,7 +266,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onStopSharing = async () => {
     setIsLoading(true);
-    console.log('itemToShare?.item', itemToShare?.item);
     const folderName = cropSharedName(itemToShare?.item.name as string);
     await dispatch(
       sharedThunks.stopSharingFolder({
