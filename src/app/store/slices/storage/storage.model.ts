@@ -38,6 +38,7 @@ export interface StorageState {
   folderPathDialog: FolderPathDialog[];
   driveItemsSort: string;
   driveItemsOrder: string;
+  currentPath: FolderPath;
 }
 
 export interface StorageSetFiltersPayload {
