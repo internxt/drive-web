@@ -19,7 +19,6 @@ import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { Role } from './types';
-import { parseRolesFromBackend } from './utils';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -252,7 +251,7 @@ export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload
 
 interface RemoveUserFromSharedFolderPayload {
   userEmail: string;
-  userUUID: string;
+  roleId: string;
   folderUUID: string;
 }
 
@@ -260,9 +259,9 @@ export const removeUserFromSharedFolder = createAsyncThunk<
   boolean,
   RemoveUserFromSharedFolderPayload,
   { state: RootState }
->('shareds/stopSharingFolder', async ({ userEmail, userUUID, folderUUID }: RemoveUserFromSharedFolderPayload) => {
+>('shareds/stopSharingFolder', async ({ userEmail, roleId, folderUUID }: RemoveUserFromSharedFolderPayload) => {
   try {
-    await shareService.removeUserFromSharedFolder(folderUUID, userUUID);
+    await shareService.removeUserRole({ folderUUID, roleId });
 
     notificationsService.show({
       text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),
@@ -287,8 +286,7 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
       const newRoles = await getSharingRoles();
 
       if (newRoles.length > 0) {
-        const parsedRoles = parseRolesFromBackend(newRoles);
-        dispatch(sharedActions.setSharedFolderUserRoles(parsedRoles));
+        dispatch(sharedActions.setSharedFolderUserRoles(newRoles));
       }
     } catch (err: unknown) {
       errorService.reportError(err, { extra: { thunk: 'getSharedFolderRoles' } });

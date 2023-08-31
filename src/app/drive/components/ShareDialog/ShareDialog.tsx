@@ -91,7 +91,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
-  const [userOptionsEmail, setUserOptionsEmail] = useState<string>('');
+  const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
   const [userOptionsY, setUserOptionsY] = useState<number>(0);
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
@@ -106,7 +106,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(false);
     setInvitedUsers([]);
     setAccessRequests([]);
-    setUserOptionsEmail('');
+    setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
   };
@@ -145,8 +145,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         itemType: 'folder',
         itemId: itemToShare.item.uuid as string,
       });
-      const parsedUsersList = usersList.users.map((user) => ({ ...user, roleName: user.role.name.toLowerCase() }));
-      setInvitedUsers(parsedUsersList);
+      const parsedUsersList = usersList.map((user) => ({
+        ...user,
+        roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
+      }));
+      setInvitedUsers(parsedUsersList as any);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -169,37 +172,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         ...user,
         roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
       }));
-      setInvitedUsers([localUserData, ...parsedUsersList]);
+      setInvitedUsers([localUserData, ...(parsedUsersList as any)]);
     } catch (error) {
       errorService.reportError(error);
     }
-    // TODO -> Load access requests
-    const mockedAccessRequests = [
-      {
-        avatar: '',
-        name: 'Juan',
-        lastname: 'Mendes',
-        email: 'juan@inxt.com',
-        message:
-          'Hey John, \nI am Juan from the sales department. I need this files to design the ads for the new sales campaign.',
-        status: REQUEST_STATUS.PENDING,
-      },
-      {
-        avatar: '',
-        name: 'Eve',
-        lastname: 'Korn',
-        email: 'eve@inxt.com',
-        status: REQUEST_STATUS.PENDING,
-      },
-      {
-        avatar: '',
-        name: 'Maria',
-        lastname: 'Korn',
-        email: 'maria@inxt.com',
-        status: REQUEST_STATUS.PENDING,
-      },
-    ];
-    // setAccessRequests(mockedAccessRequests);
+
     dispatch(sharedThunks.getSharedFolderRoles());
   };
 
@@ -254,20 +231,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = async (email: string) => {
-    const invitedUserUUID = invitedUsers.find((user) => user.email === email)?.uuid;
-
-    if (invitedUserUUID) {
+  const onRemoveUser = async (user: InvitedUserProps) => {
+    if (user) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          folderUUID: itemToShare?.item.uuid as string,
-          userUUID: invitedUserUUID,
-          userEmail: email,
+          folderUUID: (user as any).itemId,
+          roleId: (user as any).roleId,
+          userEmail: (user as any).sharedWith,
         }),
       );
 
       if (hasBeenRemoved.payload) {
-        setInvitedUsers((current) => current.filter((user) => user.email !== email));
+        setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
       }
     }
     closeSelectedUserPopover();
@@ -331,7 +306,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (selectedIndex === selectedUserListIndex) closeSelectedUserPopover();
     else setSelectedUserListIndex(selectedIndex);
 
-    setUserOptionsEmail(user.email);
+    setUserOptionsEmail(user);
 
     if (userOptions.current) {
       userOptions.current.click();
@@ -788,7 +763,7 @@ export const UserOptions = ({
   );
 };
 
-export const User = ({
+const User = ({
   user,
   listPosition,
   translate,
