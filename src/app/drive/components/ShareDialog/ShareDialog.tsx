@@ -233,6 +233,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
+  //TODO: ADD LOGIC TO REMOVE USER FROM SHARED FOLDER
   const onRemoveUser = async (user: SharingInvite) => {
     // if (user) {
     //   const hasBeenRemoved = await dispatch(
@@ -264,18 +265,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
+  // TODO: ADD LOGIC TO STOP SHARING
   const onStopSharing = async () => {
-    setIsLoading(true);
-    const folderName = cropSharedName(itemToShare?.item.name as string);
-    await dispatch(
-      sharedThunks.stopSharingFolder({
-        itemType: (itemToShare?.item as any).type as string,
-        itemId: itemToShare?.item.uuid as string,
-        folderName,
-      }),
-    );
+    // setIsLoading(true);
+    // const folderName = cropSharedName(itemToShare?.item.name as string);
+    // await dispatch(
+    //   sharedThunks.stopSharingFolder({
+    //     itemType: (itemToShare?.item as any).type as string,
+    //     itemId: itemToShare?.item.uuid as string,
+    //     folderName,
+    //   }),
+    // );
 
-    setShowStopSharingConfirmation(false);
+    // setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);
   };

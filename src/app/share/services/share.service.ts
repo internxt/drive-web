@@ -14,7 +14,6 @@ import {
   ListSharedItemsResponse,
   AcceptInvitationToSharedFolderPayload,
   SharingInvite,
-  PrivateSharingRolesResponse,
   UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
