@@ -18,7 +18,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     }
     dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
-    console.log('isInNamePath', isInNamePath);
+
     dispatch(storageActions.clearSelectedItems());
 
     dispatch(storageActions.resetDrivePagination());
