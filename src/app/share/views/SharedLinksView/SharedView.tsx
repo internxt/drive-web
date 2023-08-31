@@ -37,6 +37,7 @@ import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../crypto/services/utils';
+import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -52,6 +53,7 @@ export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
+  const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -75,6 +77,10 @@ export default function SharedView(): JSX.Element {
       dispatch(storageActions.resetSharedNamePath());
     }
   }, []);
+
+  useEffect(() => {
+    if (!isShowInvitationsOpen) fetchRootItems();
+  }, [isShowInvitationsOpen]);
 
   useEffect(() => {
     if (page === 0) {
@@ -388,8 +394,7 @@ export default function SharedView(): JSX.Element {
       }
     } catch (err) {
       const error = errorService.castError(err);
-
-      console.error('ERROR DOWNLOADING FILE: ', error);
+      errorService.castError(error);
     }
   };
 
@@ -537,6 +542,16 @@ export default function SharedView(): JSX.Element {
           data-tooltip-content={translate('shared-links.item-menu.delete-link')}
           data-tooltip-place="bottom"
         >
+          <BaseButton
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(uiActions.setIsInvitationsDialogOpen(true));
+            }}
+            className="tertiary squared"
+            disabled={false}
+          >
+            <Users size={24} />
+          </BaseButton>
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
@@ -709,6 +724,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       {isShareDialogOpen && <ShareDialog />}
+      {isShowInvitationsOpen && <ShowInvitationsDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}

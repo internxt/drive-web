@@ -18,7 +18,7 @@ import { Role } from '../../../store/slices/sharedLinks/types';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
-  folderUUID: string;
+  itemToShare: any;
   onClose: () => void;
   roles: Role[];
 }
@@ -88,7 +88,15 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       if (!userRoleId) return;
 
       sharingPromises.push(
-        dispatch(sharedThunks.shareFileWithUser({ email: email, roleId: userRoleId, folderUUID: props.folderUUID })),
+        dispatch(
+          sharedThunks.shareItemWithUser({
+            encryptionAlgorithm: props.itemToShare.encryptVersion,
+            itemId: props.itemToShare.uuid,
+            itemType: 'folder',
+            roleId: userRoleId,
+            sharedWith: email,
+          }),
+        ),
       );
     } else {
       usersToInvite.forEach((user) => {
@@ -97,7 +105,13 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
         sharingPromises.push(
           dispatch(
-            sharedThunks.shareFileWithUser({ email: user.email, roleId: userRoleId, folderUUID: props.folderUUID }),
+            sharedThunks.shareItemWithUser({
+              encryptionAlgorithm: props.itemToShare.encryptionAlgorithm,
+              itemId: props.itemToShare.uuid,
+              itemType: 'folder',
+              roleId: userRoleId,
+              sharedWith: email,
+            }),
           ),
         );
       });

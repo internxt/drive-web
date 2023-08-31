@@ -1,5 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService, { sharePrivateFolderWithUser } from 'app/share/services/share.service';
+import shareService, { getSharingRoles, inviteUserToSharedFolder } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -19,7 +19,6 @@ import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { Role } from './types';
-import { parseRolesFromBackend } from './utils';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -165,12 +164,14 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
 );
 
 export interface ShareFileWithUserPayload {
-  email: string;
-  folderUUID: string;
+  itemId: string;
+  itemType: 'file' | 'folder';
+  sharedWith: string;
+  encryptionAlgorithm: string;
   roleId: string;
 }
 
-const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
+const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
   async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
     const rootState = getState();
@@ -182,7 +183,7 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       }
       const { mnemonic } = user;
 
-      const publicKeyResponse = await userService.getPublicKeyByEmail(payload.email);
+      const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
       const publicKey = publicKeyResponse.publicKey;
 
       const encryptedMnemonic = await encryptMessageWithPublicKey({
@@ -192,25 +193,27 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 
       const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);
 
-      await sharePrivateFolderWithUser({
-        emailToShare: payload.email,
+      await inviteUserToSharedFolder({
+        itemId: payload.itemId,
+        itemType: payload.itemType,
+        sharedWith: payload.sharedWith,
         encryptionKey: encryptedMnemonicInBase64,
-        privateFolderId: payload.folderUUID,
+        encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
       });
 
       notificationsService.show({
-        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.email }),
+        text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
       });
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.email } });
+      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       }
       notificationsService.show({
-        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.email }),
+        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
         type: ToastType.Error,
       });
     }
@@ -218,15 +221,16 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 );
 
 interface StopSharingFolderPayload {
-  folderUUID: string;
+  itemType: string;
+  itemId: string;
   folderName: string;
 }
 
 export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload, { state: RootState }>(
   'shareds/stopSharingFolder',
-  async ({ folderUUID, folderName }: StopSharingFolderPayload) => {
+  async ({ itemType, itemId, folderName }: StopSharingFolderPayload) => {
     try {
-      await shareService.stopSharingFolder(folderUUID);
+      await shareService.stopSharingFolder(itemType, itemId);
 
       notificationsService.show({
         text: t('modals.shareModal.stopSharing.notification.success', {
@@ -248,17 +252,18 @@ export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload
 
 interface RemoveUserFromSharedFolderPayload {
   userEmail: string;
-  userUUID: string;
-  folderUUID: string;
+  itemType: string;
+  itemId: string;
+  userId: string;
 }
 
 export const removeUserFromSharedFolder = createAsyncThunk<
   boolean,
   RemoveUserFromSharedFolderPayload,
   { state: RootState }
->('shareds/stopSharingFolder', async ({ userEmail, userUUID, folderUUID }: RemoveUserFromSharedFolderPayload) => {
+>('shareds/stopSharingFolder', async ({ userEmail, itemType, itemId, userId }: RemoveUserFromSharedFolderPayload) => {
   try {
-    await shareService.removeUserFromSharedFolder(folderUUID, userUUID);
+    await shareService.removeUserRole({ itemType, itemId, userId });
 
     notificationsService.show({
       text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),
@@ -280,11 +285,10 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   'shareds/getRoles',
   async (_, { dispatch }): Promise<string | void> => {
     try {
-      const newRoles = await shareService.getPrivateSharingRoles();
+      const newRoles = await getSharingRoles();
 
-      if (newRoles.roles.length > 0) {
-        const parsedRoles = parseRolesFromBackend(newRoles.roles);
-        dispatch(sharedActions.setSharedFolderUserRoles(parsedRoles));
+      if (newRoles.length > 0) {
+        dispatch(sharedActions.setSharedFolderUserRoles(newRoles));
       }
     } catch (err: unknown) {
       errorService.reportError(err, { extra: { thunk: 'getSharedFolderRoles' } });
@@ -322,13 +326,13 @@ export const sharedSlice = createSlice({
       .addCase(getSharedLinkThunk.rejected, (state) => {
         state.isLoadingGeneratingLink = false;
       })
-      .addCase(shareFileWithUser.pending, (state) => {
+      .addCase(shareItemWithUser.pending, (state) => {
         state.isSharingKey = true;
       })
-      .addCase(shareFileWithUser.fulfilled, (state) => {
+      .addCase(shareItemWithUser.fulfilled, (state) => {
         state.isSharingKey = false;
       })
-      .addCase(shareFileWithUser.rejected, (state) => {
+      .addCase(shareItemWithUser.rejected, (state) => {
         state.isSharingKey = false;
       })
       .addCase(getSharedFolderRoles.pending, (state) => {
@@ -356,7 +360,7 @@ export const sharedThunks = {
   fetchSharedLinksThunk,
   getSharedLinkThunk,
   deleteLinkThunk,
-  shareFileWithUser,
+  shareItemWithUser,
   stopSharingFolder,
   removeUserFromSharedFolder,
   getSharedFolderRoles,

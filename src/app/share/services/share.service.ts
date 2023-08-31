@@ -8,11 +8,13 @@ import {
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
   PrivateSharedFolder,
-  PrivateSharingRole,
   ShareDomainsResponse,
-  SharePrivateFolderWithUserPayload,
+  ShareFolderWithUserPayload,
   UpdateUserRolePayload,
   ListSharedItemsResponse,
+  AcceptInvitationToSharedFolderPayload,
+  SharingInvite,
+  UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -27,6 +29,7 @@ import { t } from 'i18next';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { Iterator } from '../../core/collections';
 import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
+import { Role } from 'app/store/slices/sharedLinks/types';
 
 interface CreateShareResponse {
   created: boolean;
@@ -136,18 +139,6 @@ export function getSharedFolderContent(
     });
 }
 
-export function getSharedFolderUsers(
-  folderUUID: string,
-  page: number,
-  perPage: number,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-): Promise<{ users: any[] }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getSharedFolderUsers(folderUUID, page, perPage, orderBy).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
@@ -190,27 +181,87 @@ export function getShareDomains(): Promise<ShareDomainsResponse> {
   });
 }
 
-export function sharePrivateFolderWithUser(payload: SharePrivateFolderWithUserPayload): Promise<void> {
+export function getSharingRoles(): Promise<Role[]> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.sharePrivateFolderWithUser(payload).catch((error) => {
+  return shareClient.getSharingRoles().catch((error) => {
     throw errorService.castError(error);
   });
 }
 
-export function getPrivateSharingRoles(): Promise<{ roles: PrivateSharingRole[] }> {
+export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getPrivateSharingRoles().catch((error) => {
+  return shareClient.inviteUserToSharedFolder({ ...props, encryptionAlgorithm: 'ed25519' }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSharedFolderInvitations({
+  itemType,
+  itemId,
+}: {
+  itemType: 'folder';
+  itemId: string;
+}): Promise<any[]> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderInvitations({ itemType, itemId }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSharedFolderInvitationsAsInvitedUser({
+  limit = 10,
+  offset = 0,
+}: {
+  limit?: number;
+  offset?: number;
+}): Promise<{ invites: any }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderInvitationsAsInvitedUser({ limit, offset }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function acceptSharedFolderInvite({
+  invitationId,
+  acceptInvite,
+}: {
+  invitationId: string;
+  acceptInvite?: AcceptInvitationToSharedFolderPayload;
+}): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.acceptSharedFolderInvite({ invitationId, acceptInvite }).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 export function updateUserRoleOfSharedFolder({
-  userUUID,
+  newRoleId,
   folderUUID,
   roleId,
-}: UpdateUserRolePayload): Promise<{ message: string }> {
+}: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.updateUserRole({ userUUID, folderUUID, roleId }).catch((error) => {
+  return shareClient
+    .updateUserRole({
+      newRoleId,
+      folderUUID,
+      roleId,
+    })
+    .catch((error) => {
+      throw errorService.castError(error);
+    });
+}
+
+export function removeUserRole({
+  itemType,
+  itemId,
+  userId,
+}: {
+  itemType: string;
+  itemId: string;
+  userId: string;
+}): Promise<{ message: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -222,18 +273,9 @@ export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: Priv
   });
 }
 
-export function stopSharingFolder(folderUUID: string): Promise<{ message: string }> {
+export function stopSharingFolder(itemType: string, itemId: string): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.stopSharingFolder(folderUUID).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function removeUserFromSharedFolder(folderUUID: string, userUUID: string): Promise<{ message: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.removeUserFromSharedFolder(folderUUID, userUUID).catch((error) => {
-    throw errorService.castError(error);
-  });
+  return shareClient.stopSharingFolder(itemType, itemId);
 }
 
 interface SharedDirectoryFoldersPayload {
@@ -431,22 +473,20 @@ const shareService = {
   updateShareLink,
   deleteShareLink,
   getSharedFileInfo,
+  getSharedFolderInvitations,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getSentSharedFolders,
   getReceivedSharedFolders,
   getAllSharedFolders,
-  getSharedFolderUsers,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
-  updateUserRoleOfSharedFolder,
   getPrivateSharedFolder,
   stopSharingFolder,
-  removeUserFromSharedFolder,
-  getPrivateSharingRoles,
+  removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
 };
