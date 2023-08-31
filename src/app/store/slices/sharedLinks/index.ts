@@ -221,15 +221,16 @@ const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 );
 
 interface StopSharingFolderPayload {
-  folderUUID: string;
+  itemType: string;
+  itemId: string;
   folderName: string;
 }
 
 export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload, { state: RootState }>(
   'shareds/stopSharingFolder',
-  async ({ folderUUID, folderName }: StopSharingFolderPayload) => {
+  async ({ itemType, itemId, folderName }: StopSharingFolderPayload) => {
     try {
-      await shareService.stopSharingFolder(folderUUID);
+      await shareService.stopSharingFolder(itemType, itemId);
 
       notificationsService.show({
         text: t('modals.shareModal.stopSharing.notification.success', {
@@ -251,17 +252,18 @@ export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload
 
 interface RemoveUserFromSharedFolderPayload {
   userEmail: string;
-  roleId: string;
-  folderUUID: string;
+  itemType: string;
+  itemId: string;
+  userId: string;
 }
 
 export const removeUserFromSharedFolder = createAsyncThunk<
   boolean,
   RemoveUserFromSharedFolderPayload,
   { state: RootState }
->('shareds/stopSharingFolder', async ({ userEmail, roleId, folderUUID }: RemoveUserFromSharedFolderPayload) => {
+>('shareds/stopSharingFolder', async ({ userEmail, itemType, itemId, userId }: RemoveUserFromSharedFolderPayload) => {
   try {
-    await shareService.removeUserRole({ folderUUID, roleId });
+    await shareService.removeUserRole({ itemType, itemId, userId });
 
     notificationsService.show({
       text: t('modals.shareModal.removeUser.notification.success', { name: userEmail }),

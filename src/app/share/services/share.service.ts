@@ -8,12 +8,11 @@ import {
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
   PrivateSharedFolder,
-  PrivateSharingRole,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
   UpdateUserRolePayload,
   ListSharedItemsResponse,
-  AcceptInviteToSharedFolderPayload,
+  AcceptInvitationToSharedFolderPayload,
   SharingInvite,
   PrivateSharingRolesResponse,
   UpdateUserRoleResponse,
@@ -215,7 +214,7 @@ export function getSharedFolderInvitations({
 }: {
   itemType: 'folder';
   itemId: string;
-}): Promise<SharingInvite[]> {
+}): Promise<any[]> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderInvitations({ itemType, itemId }).catch((error) => {
     throw errorService.castError(error);
@@ -240,7 +239,7 @@ export function acceptSharedFolderInvite({
   acceptInvite,
 }: {
   invitationId: string;
-  acceptInvite?: AcceptInviteToSharedFolderPayload;
+  acceptInvite?: AcceptInvitationToSharedFolderPayload;
 }): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.acceptSharedFolderInvite({ invitationId, acceptInvite }).catch((error) => {
@@ -266,14 +265,16 @@ export function updateUserRoleOfSharedFolder({
 }
 
 export function removeUserRole({
-  folderUUID,
-  roleId,
+  itemType,
+  itemId,
+  userId,
 }: {
-  folderUUID: string;
-  roleId: string;
+  itemType: string;
+  itemId: string;
+  userId: string;
 }): Promise<{ message: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.removeUserRole({ folderUUID, roleId }).catch((error) => {
+  return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -285,9 +286,9 @@ export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: Priv
   });
 }
 
-export function stopSharingFolder(folderUUID: string): Promise<void> {
+export function stopSharingFolder(itemType: string, itemId: string): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.stopSharingFolder(folderUUID);
+  return shareClient.stopSharingFolder(itemType, itemId);
 }
 
 interface SharedDirectoryFoldersPayload {

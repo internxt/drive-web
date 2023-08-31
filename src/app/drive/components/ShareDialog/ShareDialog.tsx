@@ -150,6 +150,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         ...user,
         roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
       }));
+
       setInvitedUsers(parsedUsersList as any);
     } catch (error) {
       errorService.reportError(error);
@@ -165,15 +166,15 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (!itemToShare?.item) return;
 
     try {
-      const usersList = await shareService.getSharedFolderInvitations({
-        itemType: 'folder',
-        itemId: itemToShare.item.uuid as string,
-      });
-      const parsedUsersList = usersList.map((user) => ({
-        ...user,
-        roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
-      }));
-      setInvitedUsers([localUserData, ...(parsedUsersList as any)]);
+      // const usersList = await shareService.getSharedFolderInvitations({
+      //   itemType: 'folder',
+      //   itemId: itemToShare.item.uuid as string,
+      // });
+      // const parsedUsersList = usersList.map((user) => ({
+      //   ...user,
+      //   roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
+      // }));
+      setInvitedUsers([localUserData]);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -233,19 +234,21 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const onRemoveUser = async (user: SharingInvite) => {
-    if (user) {
-      const hasBeenRemoved = await dispatch(
-        sharedThunks.removeUserFromSharedFolder({
-          folderUUID: user.itemId,
-          roleId: user.roleId,
-          userEmail: user.sharedWith,
-        }),
-      );
+    // if (user) {
+    //   console.log('user', user);
+    //   const hasBeenRemoved = await dispatch(
+    //     sharedThunks.removeUserFromSharedFolder({
+    //       itemType: itemToShare?.item.type as string,
+    //       itemId: itemToShare?.item.uuid as string,
+    //       userId: user.sharedWith,
+    //       userEmail: (user as any).email,
+    //     }),
+    //   );
 
-      if (hasBeenRemoved.payload) {
-        setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
-      }
-    }
+    //   if (hasBeenRemoved.payload) {
+    //     setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
+    //   }
+    // }
     closeSelectedUserPopover();
   };
 
@@ -267,7 +270,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     console.log('itemToShare?.item', itemToShare?.item);
     const folderName = cropSharedName(itemToShare?.item.name as string);
     await dispatch(
-      sharedThunks.stopSharingFolder({ folderUUID: (itemToShare?.item as any).sharingId as string, folderName }),
+      sharedThunks.stopSharingFolder({
+        itemType: (itemToShare?.item as any).type as string,
+        itemId: itemToShare?.item.uuid as string,
+        folderName,
+      }),
     );
 
     setShowStopSharingConfirmation(false);
