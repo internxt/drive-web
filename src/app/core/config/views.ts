@@ -33,6 +33,7 @@ import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 import SharedView from '../../share/views/SharedLinksView/SharedView';
+import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 
 const views: Array<{
   id: string;
@@ -72,6 +73,8 @@ const views: Array<{
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   // { id: AppView.RequestAccess, component: RequestAccess },
+  { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
+
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

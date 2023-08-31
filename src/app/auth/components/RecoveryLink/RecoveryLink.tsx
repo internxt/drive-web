@@ -30,7 +30,7 @@ function RecoveryLink(): JSX.Element {
       }
     } else {
       setShowErrors(true);
-      setEmailErrors(translate('auth.forgotPassword.ivalidEmail'));
+      setEmailErrors(translate('auth.forgotPassword.invalidEmail'));
     }
   };
 

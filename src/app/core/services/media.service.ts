@@ -23,7 +23,7 @@ export function isTypeSupportedByAudioPlayer(type: keyof AudioExtensions): boole
 }
 
 export function isLargeFile(size: number): boolean {
-  return size < 100 * 1024 * 1024;
+  return size > 100 * 1024 * 1024;
 }
 
 export async function loadVideoIntoPlayer(

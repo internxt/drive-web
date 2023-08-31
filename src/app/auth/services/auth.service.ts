@@ -78,6 +78,7 @@ export const doLogin = async (
 ): Promise<{
   user: UserSettings;
   token: string;
+  mnemonic: string;
 }> => {
   const authClient = SdkFactory.getInstance().createAuthClient();
   const loginDetails: LoginDetails = {
@@ -141,6 +142,7 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        mnemonic: clearMnemonic,
       };
     })
     .catch((error) => {
