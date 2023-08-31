@@ -17,6 +17,7 @@ import './ShareDialog.scss';
 import shareService, { getSharingRoles } from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { SharingInvite } from '@internxt/sdk/dist/drive/share/types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -231,13 +232,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = async (user: InvitedUserProps) => {
+  const onRemoveUser = async (user: SharingInvite) => {
     if (user) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          folderUUID: (user as any).itemId,
-          roleId: (user as any).roleId,
-          userEmail: (user as any).sharedWith,
+          folderUUID: user.itemId,
+          roleId: user.roleId,
+          userEmail: user.sharedWith,
         }),
       );
 
@@ -263,9 +264,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const onStopSharing = async () => {
     setIsLoading(true);
-
+    console.log('itemToShare?.item', itemToShare?.item);
     const folderName = cropSharedName(itemToShare?.item.name as string);
-    await dispatch(sharedThunks.stopSharingFolder({ folderUUID: itemToShare?.item.uuid as string, folderName }));
+    await dispatch(
+      sharedThunks.stopSharingFolder({ folderUUID: (itemToShare?.item as any).sharingId as string, folderName }),
+    );
 
     setShowStopSharingConfirmation(false);
     onClose();
