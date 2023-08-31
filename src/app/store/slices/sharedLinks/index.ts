@@ -171,7 +171,7 @@ export interface ShareFileWithUserPayload {
   roleId: string;
 }
 
-const shareFileWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
+const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
   async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
     const rootState = getState();
@@ -326,13 +326,13 @@ export const sharedSlice = createSlice({
       .addCase(getSharedLinkThunk.rejected, (state) => {
         state.isLoadingGeneratingLink = false;
       })
-      .addCase(shareFileWithUser.pending, (state) => {
+      .addCase(shareItemWithUser.pending, (state) => {
         state.isSharingKey = true;
       })
-      .addCase(shareFileWithUser.fulfilled, (state) => {
+      .addCase(shareItemWithUser.fulfilled, (state) => {
         state.isSharingKey = false;
       })
-      .addCase(shareFileWithUser.rejected, (state) => {
+      .addCase(shareItemWithUser.rejected, (state) => {
         state.isSharingKey = false;
       })
       .addCase(getSharedFolderRoles.pending, (state) => {
@@ -360,7 +360,7 @@ export const sharedThunks = {
   fetchSharedLinksThunk,
   getSharedLinkThunk,
   deleteLinkThunk,
-  shareFileWithUser,
+  shareItemWithUser,
   stopSharingFolder,
   removeUserFromSharedFolder,
   getSharedFolderRoles,

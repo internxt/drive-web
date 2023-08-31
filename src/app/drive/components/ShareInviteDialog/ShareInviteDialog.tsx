@@ -89,7 +89,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
       sharingPromises.push(
         dispatch(
-          sharedThunks.shareFileWithUser({
+          sharedThunks.shareItemWithUser({
             encryptionAlgorithm: props.itemToShare.encryptVersion,
             itemId: props.itemToShare.uuid,
             itemType: 'folder',
@@ -105,7 +105,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
         sharingPromises.push(
           dispatch(
-            sharedThunks.shareFileWithUser({
+            sharedThunks.shareItemWithUser({
               encryptionAlgorithm: props.itemToShare.encryptionAlgorithm,
               itemId: props.itemToShare.uuid,
               itemType: 'folder',

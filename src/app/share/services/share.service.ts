@@ -140,18 +140,6 @@ export function getSharedFolderContent(
     });
 }
 
-// export function getSharedFolderUsers(
-//   folderUUID: string,
-//   page: number,
-//   perPage: number,
-//   orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-// ): Promise<{ users: any[] }> {
-//   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-//   return shareClient.getSharedFolderUsers(folderUUID, page, perPage, orderBy).catch((error) => {
-//     throw errorService.castError(error);
-//   });
-// }
-
 export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; shareId: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.deleteShareLink(shareId).catch((error) => {
