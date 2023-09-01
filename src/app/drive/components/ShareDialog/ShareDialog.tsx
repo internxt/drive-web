@@ -265,19 +265,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
-  // TODO: ADD LOGIC TO STOP SHARING
   const onStopSharing = async () => {
-    // setIsLoading(true);
-    // const folderName = cropSharedName(itemToShare?.item.name as string);
-    // await dispatch(
-    //   sharedThunks.stopSharingFolder({
-    //     itemType: (itemToShare?.item as any).type as string,
-    //     itemId: itemToShare?.item.uuid as string,
-    //     folderName,
-    //   }),
-    // );
+    setIsLoading(true);
+    const itemName = cropSharedName(itemToShare?.item.name as string);
+    await dispatch(
+      sharedThunks.stopSharingItem({
+        itemType: itemToShare?.item.isFolder ? 'folder' : 'file',
+        itemId: itemToShare?.item.uuid as string,
+        itemName,
+      }),
+    );
 
-    // setShowStopSharingConfirmation(false);
+    setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);
   };

@@ -273,7 +273,7 @@ export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: Priv
   });
 }
 
-export function stopSharingFolder(itemType: string, itemId: string): Promise<void> {
+export function stopSharingItem(itemType: string, itemId: string): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.stopSharingFolder(itemType, itemId);
 }
@@ -485,7 +485,7 @@ const shareService = {
   incrementShareView,
   getShareDomains,
   getPrivateSharedFolder,
-  stopSharingFolder,
+  stopSharingItem,
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
