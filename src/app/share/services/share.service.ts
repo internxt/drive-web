@@ -221,6 +221,13 @@ export function getSharedFolderInvitationsAsInvitedUser({
   });
 }
 
+export function declineSharedFolderInvite({ invitationId }: { invitationId: string }): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.declineSharedFolderInvite(invitationId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function acceptSharedFolderInvite({
   invitationId,
   acceptInvite,

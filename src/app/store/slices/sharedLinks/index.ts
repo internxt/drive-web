@@ -1,5 +1,10 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
-import shareService, { getSharingRoles, inviteUserToSharedFolder } from 'app/share/services/share.service';
+import shareService, {
+  getSharedFolderInvitations,
+  getSharedFolderInvitationsAsInvitedUser,
+  getSharingRoles,
+  inviteUserToSharedFolder,
+} from 'app/share/services/share.service';
 import { RootState } from '../..';
 
 import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -27,6 +32,7 @@ export interface ShareLinksState {
   sharedLinks: ListShareLinksItem[] | []; //ShareLink[];
   isLoadingRoles: boolean;
   roles: Role[];
+  pendingInvitations: any;
   pagination: {
     page: number;
     perPage: number;
@@ -41,6 +47,7 @@ const initialState: ShareLinksState = {
   sharedLinks: [],
   isLoadingRoles: false,
   roles: [],
+  pendingInvitations: [],
   pagination: {
     page: 1,
     perPage: 50,
@@ -296,12 +303,33 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   },
 );
 
+// Get accepted pending invitation
+const getPendingInvitations = createAsyncThunk<string | void, void, { state: RootState }>(
+  'shareds/getPendingInvitations',
+  async (_, { dispatch }): Promise<string | void> => {
+    try {
+      const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
+
+      if (pendingInvitations.invites.length > 0) {
+        dispatch(sharedActions.setPendingInvitations(pendingInvitations));
+      } else {
+        dispatch(sharedActions.setPendingInvitations([]));
+      }
+    } catch (err: unknown) {
+      errorService.reportError(err, { extra: { thunk: 'getPendingInvitations' } });
+    }
+  },
+);
+
 export const sharedSlice = createSlice({
   name: 'shared',
   initialState,
   reducers: {
     setSharedFolderUserRoles: (state: ShareLinksState, action: PayloadAction<Role[]>) => {
       state.roles = action.payload;
+    },
+    setPendingInvitations: (state: ShareLinksState, action: PayloadAction<any>) => {
+      state.pendingInvitations = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -343,6 +371,15 @@ export const sharedSlice = createSlice({
       })
       .addCase(getSharedFolderRoles.rejected, (state) => {
         state.isLoadingRoles = false;
+      })
+      .addCase(getPendingInvitations.pending, (state) => {
+        state.isLoadingRoles = true;
+      })
+      .addCase(getPendingInvitations.fulfilled, (state) => {
+        state.isLoadingRoles = false;
+      })
+      .addCase(getPendingInvitations.rejected, (state) => {
+        state.isLoadingRoles = false;
       });
   },
 });
@@ -364,6 +401,7 @@ export const sharedThunks = {
   stopSharingFolder,
   removeUserFromSharedFolder,
   getSharedFolderRoles,
+  getPendingInvitations,
 };
 
 export default sharedSlice.reducer;

@@ -14,7 +14,7 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
-import shareService, { getSharingRoles } from '../../../share/services/share.service';
+import shareService from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SharingInvite } from '@internxt/sdk/dist/drive/share/types';
@@ -72,7 +72,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
-  const [roles, setRoles] = useState<any>([]);
+  const roles = useAppSelector((state: RootState) => state.shared.roles);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
@@ -114,17 +114,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   useEffect(() => {
     if (isOpen) {
-      getSharingRoles().then((roles) => {
-        setRoles(roles);
-      });
+      loadShareInfo();
     }
 
     if (!isOpen) resetDialogData();
   }, [isOpen]);
-
-  useEffect(() => {
-    loadShareInfo();
-  }, [roles]);
 
   useEffect(() => {
     const removeDeniedRequests = () => {
@@ -166,15 +160,15 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (!itemToShare?.item) return;
 
     try {
-      // const usersList = await shareService.getSharedFolderInvitations({
-      //   itemType: 'folder',
-      //   itemId: itemToShare.item.uuid as string,
-      // });
-      // const parsedUsersList = usersList.map((user) => ({
-      //   ...user,
-      //   roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
-      // }));
-      setInvitedUsers([localUserData]);
+      const usersList = await shareService.getSharedFolderInvitations({
+        itemType: 'folder',
+        itemId: itemToShare.item.uuid as string,
+      });
+      const parsedUsersList = usersList.map((user) => ({
+        ...user,
+        roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
+      }));
+      setInvitedUsers([localUserData, ...parsedUsersList]);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -235,20 +229,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   //TODO: ADD LOGIC TO REMOVE USER FROM SHARED FOLDER
   const onRemoveUser = async (user: SharingInvite) => {
-    // if (user) {
-    //   const hasBeenRemoved = await dispatch(
-    //     sharedThunks.removeUserFromSharedFolder({
-    //       itemType: itemToShare?.item.type as string,
-    //       itemId: itemToShare?.item.uuid as string,
-    //       userId: user.sharedWith,
-    //       userEmail: (user as any).email,
-    //     }),
-    //   );
+    if (user) {
+      const hasBeenRemoved = await dispatch(
+        sharedThunks.removeUserFromSharedFolder({
+          itemType: itemToShare?.item.type as string,
+          itemId: itemToShare?.item.uuid as string,
+          userId: user.sharedWith,
+          userEmail: (user as any).email,
+        }),
+      );
 
-    //   if (hasBeenRemoved.payload) {
-    //     setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
-    //   }
-    // }
+      if (hasBeenRemoved.payload) {
+        setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
+      }
+    }
     closeSelectedUserPopover();
   };
 
@@ -267,17 +261,17 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   // TODO: ADD LOGIC TO STOP SHARING
   const onStopSharing = async () => {
-    // setIsLoading(true);
-    // const folderName = cropSharedName(itemToShare?.item.name as string);
-    // await dispatch(
-    //   sharedThunks.stopSharingFolder({
-    //     itemType: (itemToShare?.item as any).type as string,
-    //     itemId: itemToShare?.item.uuid as string,
-    //     folderName,
-    //   }),
-    // );
+    setIsLoading(true);
+    const folderName = cropSharedName(itemToShare?.item.name as string);
+    await dispatch(
+      sharedThunks.stopSharingFolder({
+        itemType: (itemToShare?.item as any).type as string,
+        itemId: itemToShare?.item.uuid as string,
+        folderName,
+      }),
+    );
 
-    // setShowStopSharingConfirmation(false);
+    setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);
   };
