@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorerGridItem from '../DriveExplorerItem/DriveExplorerGridItem/DriveExplorerGridItem';
@@ -53,9 +53,17 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
 
   const { isLoading, onEndOfScroll, hasMoreItems } = props;
 
+  const isFirstLoad = useRef(true);
+
+  useEffect(() => {
+    if (!isLoading && isFirstLoad) {
+      isFirstLoad.current = false;
+    }
+  }, [isLoading, isFirstLoad]);
+
   return (
     <>
-      {isLoading ? (
+      {isLoading && isFirstLoad.current ? (
         <div className="files-grid flex-grow">{loadingSkeleton()}</div>
       ) : (
         <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
