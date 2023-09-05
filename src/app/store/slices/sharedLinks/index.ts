@@ -7,7 +7,12 @@ import shareService, {
 } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
-import { ListShareLinksItem, ListShareLinksResponse, ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import {
+  ListShareLinksItem,
+  ListShareLinksResponse,
+  SharedFoldersInvitationsAsInvitedUserResponse,
+  ShareLink,
+} from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
@@ -32,7 +37,7 @@ export interface ShareLinksState {
   sharedLinks: ListShareLinksItem[] | []; //ShareLink[];
   isLoadingRoles: boolean;
   roles: Role[];
-  pendingInvitations: any;
+  pendingInvitations: SharedFoldersInvitationsAsInvitedUserResponse[];
   pagination: {
     page: number;
     perPage: number;
@@ -310,11 +315,7 @@ const getPendingInvitations = createAsyncThunk<string | void, void, { state: Roo
     try {
       const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
 
-      if (pendingInvitations.invites.length > 0) {
-        dispatch(sharedActions.setPendingInvitations(pendingInvitations));
-      } else {
-        dispatch(sharedActions.setPendingInvitations([]));
-      }
+      dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
     } catch (err: unknown) {
       errorService.reportError(err, { extra: { thunk: 'getPendingInvitations' } });
     }

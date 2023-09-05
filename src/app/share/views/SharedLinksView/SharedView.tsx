@@ -81,10 +81,16 @@ export default function SharedView(): JSX.Element {
   useEffect(() => {
     if (page === 0) {
       fetchRootItems();
-      dispatch(sharedThunks.getPendingInvitations());
       dispatch(storageActions.resetSharedNamePath());
     }
   }, []);
+
+  useEffect(() => {
+    if (!isShowInvitationsOpen) {
+      dispatch(sharedThunks.getPendingInvitations());
+      fetchRootItems();
+    }
+  }, [isShowInvitationsOpen]);
 
   useEffect(() => {
     if (page === 0) {
@@ -567,7 +573,7 @@ export default function SharedView(): JSX.Element {
             <p className="space-x-2">
               Pending Invitations{' '}
               <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
-                {pendingInvitations.invites?.length > 0 ? pendingInvitations.invites.length : 0}
+                {pendingInvitations.length > 0 ? pendingInvitations.length : 0}
               </span>
             </p>
           </Button>

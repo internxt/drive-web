@@ -1,3 +1,4 @@
+import { SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
 import { CheckCircle, X } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
 import iconService from 'app/drive/services/icon.service';
@@ -6,13 +7,11 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { uiActions } from 'app/store/slices/ui';
+import dayjs from 'dayjs';
 import { useState } from 'react';
-import {
-  acceptSharedFolderInvite,
-  declineSharedFolderInvite,
-  getReceivedSharedFolders,
-} from '../../../share/services/share.service';
+import { acceptSharedFolderInvite, declineSharedFolderInvite } from '../../../share/services/share.service';
 
 const Header = ({ title, isLoading, onClose }): JSX.Element => {
   return (
@@ -33,14 +32,23 @@ const ShowInvitationsDialog = (): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isOpen = useAppSelector((state: RootState) => state.ui.isInvitationsDialogOpen);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
-  const [invitations, setInvitations] = useState<any>(pendingInvitations);
+  const [invitations, setInvitations] = useState<SharedFoldersInvitationsAsInvitedUserResponse[]>(pendingInvitations);
   const [deletedInvitations, setDeletedInvitations] = useState<string[]>([]);
 
   function onClose() {
-    setTimeout(async () => {
-      await getReceivedSharedFolders(0, 15);
-    }, 1000);
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
+    dispatch(sharedThunks.getPendingInvitations());
+  }
+
+  function formatDate(dateString) {
+    const date = dayjs(dateString);
+    const now = dayjs();
+
+    if (date.isSame(now, 'day')) {
+      return `${translate('modals.sharedInvitationsModal.todayAt')} ${date.format('HH:mm')}`;
+    } else {
+      return date.format('MMMM DD [at] HH:mm');
+    }
   }
 
   async function onAcceptInvitation(invitationId: string) {
@@ -52,9 +60,7 @@ const ShowInvitationsDialog = (): JSX.Element => {
 
       setDeletedInvitations((prevDeletedInvitations) => [...prevDeletedInvitations, invitationId]);
 
-      setInvitations({
-        invites: invitations.invites.filter((invitation) => invitation.id !== invitationId),
-      });
+      setInvitations(invitations.filter((invitation) => invitation.id !== invitationId));
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
@@ -72,9 +78,7 @@ const ShowInvitationsDialog = (): JSX.Element => {
 
       setDeletedInvitations((prevDeletedInvitations) => [...prevDeletedInvitations, invitationId]);
 
-      setInvitations({
-        invites: invitations.invites.filter((invitation) => invitation.id !== invitationId),
-      });
+      setInvitations(invitations.filter((invitation) => invitation.id !== invitationId));
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
@@ -99,7 +103,7 @@ const ShowInvitationsDialog = (): JSX.Element => {
                 </div>
               ) : (
                 <div className="flex flex-col px-5 pt-2">
-                  {invitations?.invites.map((invitation) => {
+                  {invitations.map((invitation) => {
                     const IconComponent = iconService.getItemIcon(
                       invitation.itemType === 'folder',
                       invitation.itemType,
@@ -120,7 +124,10 @@ const ShowInvitationsDialog = (): JSX.Element => {
                             <IconComponent width={40} height={40} />
                             <div className="flex flex-col">
                               <p className="truncate font-medium text-gray-100">{invitation.item.plainName}</p>
-                              <p className="truncate font-medium text-gray-100">{invitation.createdAt}</p>
+                              <p className="truncate text-sm text-gray-50">
+                                {translate('modals.sharedInvitationsModal.sharedWith')}{' '}
+                                {formatDate(invitation.createdAt)}
+                              </p>
                             </div>
                           </div>
                           <div className="flex flex-row items-center space-x-1.5">
