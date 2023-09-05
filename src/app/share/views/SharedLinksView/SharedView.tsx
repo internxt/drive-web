@@ -6,20 +6,20 @@ import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
-import Empty from 'app/shared/components/Empty/Empty';
+import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
-import shareService from 'app/share/services/share.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import shareService, { decryptMnemonic } from '../../../share/services/share.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { aes } from '@internxt/lib';
-import localStorageService from 'app/core/services/local-storage.service';
-import sizeService from 'app/drive/services/size.service';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
-import { uiActions } from 'app/store/slices/ui';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import localStorageService from '../../../core/services/local-storage.service';
+import sizeService from '../../../drive/services/size.service';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { storageActions } from '../../../store/slices/storage';
+import { uiActions } from '../../../store/slices/ui';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { t } from 'i18next';
 import {
   contextMenuDriveFolderSharedAFS,
@@ -34,14 +34,14 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-import { AdvancedSharedItem, OrderBy } from '../../../../app/share/types';
+import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { SharedNamePath } from 'app/share/types';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import { NetworkCredentials } from 'app/network/download';
 import Button from 'app/shared/components/Button/Button';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -58,6 +58,7 @@ export default function SharedView(): JSX.Element {
   const dispatch = useAppDispatch();
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -74,7 +75,6 @@ export default function SharedView(): JSX.Element {
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
-  const [userCredentials, setUserCredentials] = useState<NetworkCredentials>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
 
   useEffect(() => {
@@ -83,6 +83,10 @@ export default function SharedView(): JSX.Element {
       dispatch(storageActions.resetSharedNamePath());
     }
   }, []);
+
+  useEffect(() => {
+    if (!isShowInvitationsOpen) fetchRootItems();
+  }, [isShowInvitationsOpen]);
 
   useEffect(() => {
     if (page === 0) {
@@ -126,6 +130,7 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = true;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+        shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
         return shareItem;
       });
 
@@ -170,6 +175,7 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = true;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
           return shareItem;
         });
 
@@ -208,11 +214,6 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
 
-        setUserCredentials({
-          user: response.credentials.networkUser,
-          pass: response.credentials.networkPass,
-        });
-
         const token = response.token;
         setNextResourcesToken(token);
 
@@ -221,6 +222,7 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = false;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
           return shareItem;
         });
 
@@ -413,11 +415,11 @@ export default function SharedView(): JSX.Element {
     }
   };
 
-  const downloadItem = async (props: AdvancedSharedItem) => {
+  const downloadItem = async (shareItem: AdvancedSharedItem) => {
     try {
-      if (props.isRootLink) {
+      if (shareItem.isRootLink) {
         const { credentials, token } = await shareService.getSharedFolderContent(
-          props.uuid,
+          shareItem.uuid,
           'files',
           '',
           0,
@@ -431,24 +433,21 @@ export default function SharedView(): JSX.Element {
           },
           dispatch,
           selectedItems,
-          encryptionKey: props.encryptionKey,
+          encryptionKey: shareItem.encryptionKey,
           token,
         });
       } else {
-        if (userCredentials) {
-          await shareService.downloadSharedFiles({
-            creds: userCredentials,
-            dispatch,
-            selectedItems,
-            encryptionKey: encryptionKey,
-            token: '',
-          });
-        }
+        await shareService.downloadSharedFiles({
+          creds: shareItem.credentials,
+          dispatch,
+          selectedItems,
+          encryptionKey: encryptionKey,
+          token: '',
+        });
       }
     } catch (err) {
       const error = errorService.castError(err);
-
-      console.error('ERROR DOWNLOADING FILE: ', error);
+      errorService.castError(error);
     }
   };
 
@@ -488,9 +487,13 @@ export default function SharedView(): JSX.Element {
     setEditNameItem(undefined);
   };
 
-  const openPreview = (shareItem: AdvancedSharedItem) => {
+  const openPreview = async (shareItem: AdvancedSharedItem) => {
+    const previewItem = shareItem as unknown as PreviewFileItem;
+
+    const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
+
+    dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
     dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(shareItem as unknown as DriveItemData));
   };
 
   const isItemOwnedByCurrentUser = () => {
@@ -609,6 +612,16 @@ export default function SharedView(): JSX.Element {
               </div>
             </div>
           </Button>
+          <BaseButton
+            onClick={(e) => {
+              e.stopPropagation();
+              dispatch(uiActions.setIsInvitationsDialogOpen(true));
+            }}
+            className="tertiary squared"
+            disabled={false}
+          >
+            <Users size={24} />
+          </BaseButton>
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
@@ -785,6 +798,7 @@ export default function SharedView(): JSX.Element {
       />
       <NameCollisionContainer />
       {isShareDialogOpen && <ShareDialog />}
+      {isShowInvitationsOpen && <ShowInvitationsDialog />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}

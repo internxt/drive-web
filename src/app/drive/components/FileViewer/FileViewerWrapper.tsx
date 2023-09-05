@@ -20,16 +20,17 @@ import {
   setCurrentThumbnail,
   setThumbnails,
   ThumbnailToUpload,
-} from 'app/drive/services/thumbnail.service';
+} from '../../../drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
-import errorService from 'app/core/services/error.service';
-import { OrderDirection } from 'app/core/types';
-import { uiActions } from 'app/store/slices/ui';
-import { RootState } from 'app/store';
+import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
+import { PreviewFileItem } from '../../../share/types';
+import errorService from '../../../core/services/error.service';
+import { OrderDirection } from '../../../core/types';
+import { uiActions } from '../../../store/slices/ui';
+import { RootState } from '../../../store';
 
 interface FileViewerWrapperProps {
-  file: DriveFileData;
+  file: PreviewFileItem;
   onClose: () => void;
   showPreview: boolean;
 }
@@ -41,7 +42,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
 
   const [updateProgress, setUpdateProgress] = useState(0);
-  const [currentFile, setCurrentFile] = useState<DriveFileData>(file);
+  const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const [blob, setBlob] = useState<Blob | null>(null);
 
@@ -82,7 +83,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     }
   }
 
-  function downloadFile(currentFile: DriveFileData, abortController: AbortController) {
+  function downloadFile(currentFile: PreviewFileItem, abortController: AbortController) {
     setBlob(null);
     return downloadService.fetchFileBlob(
       { ...currentFile, bucketId: currentFile.bucket },
@@ -91,10 +92,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         isTeam,
         abortController,
       },
+      currentFile.credentials,
+      currentFile.mnemonic,
     );
   }
 
-  const handleFileThumbnail = async (driveFile: DriveFileData, file: File) => {
+  const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
     const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
 

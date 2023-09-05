@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-import { DriveFileData, DriveItemData, FileInfoMenuItem } from '../../../drive/types';
+import { PreviewFileItem } from '../../../share/types';
+import { DriveItemData, FileInfoMenuItem } from '../../../drive/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -9,6 +9,7 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
   isShareDialogOpen: boolean;
+  isInvitationsDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -26,7 +27,7 @@ interface UISliceState {
   isGuestInviteDialogOpen: boolean;
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
-  fileViewerItem: DriveFileData | null;
+  fileViewerItem: PreviewFileItem | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -41,6 +42,7 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
+  isInvitationsDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -87,6 +89,9 @@ export const uiSlice = createSlice({
     },
     setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareDialogOpen = action.payload;
+    },
+    setIsInvitationsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isInvitationsDialogOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
