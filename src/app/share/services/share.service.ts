@@ -7,7 +7,6 @@ import {
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
-  PrivateSharedFolder,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
   UpdateUserRolePayload,
@@ -15,6 +14,7 @@ import {
   AcceptInvitationToSharedFolderPayload,
   SharingInvite,
   UpdateUserRoleResponse,
+  SharedFoldersInvitationsAsInvitedUserResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -214,7 +214,7 @@ export function getSharedFolderInvitationsAsInvitedUser({
 }: {
   limit?: number;
   offset?: number;
-}): Promise<{ invites: any }> {
+}): Promise<{ invites: SharedFoldersInvitationsAsInvitedUserResponse[] }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderInvitationsAsInvitedUser({ limit, offset }).catch((error) => {
     throw errorService.castError(error);
@@ -243,15 +243,13 @@ export function acceptSharedFolderInvite({
 
 export function updateUserRoleOfSharedFolder({
   newRoleId,
-  folderUUID,
-  roleId,
+  sharedWith,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
-      folderUUID,
-      roleId,
+      sharedWith,
     })
     .catch((error) => {
       throw errorService.castError(error);
@@ -269,13 +267,6 @@ export function removeUserRole({
 }): Promise<{ message: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: PrivateSharedFolder }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getPrivateSharedFolder(folderUUID).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -491,7 +482,6 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
-  getPrivateSharedFolder,
   stopSharingFolder,
   removeUserRole,
   getSharedFolderContent,

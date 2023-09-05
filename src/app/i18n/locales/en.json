@@ -725,6 +725,12 @@
         "confirmation": "You will get an email if the file/folder is shared with you"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline"
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",

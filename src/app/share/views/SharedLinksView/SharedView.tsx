@@ -42,7 +42,7 @@ import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Brea
 import { getItemPlainName } from '../../../crypto/services/utils';
 import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import Button from 'app/shared/components/Button/Button';
-import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { RootState } from 'app/store';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
