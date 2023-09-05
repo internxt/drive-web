@@ -62,7 +62,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
     return (
       <Fragment>
-        {!item.deleted && (
+        {(!item.deleted || item.status === 'EXISTS') && (
           <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
             <input
               className="dense no-ring rect select-text border border-white"
@@ -86,11 +86,11 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
             title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
+            onClick={!item.deleted || !item.isFolder || item.status === 'EXISTS' ? onNameClicked : undefined}
           >
             {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && !item.deleted && (
+          {!isEditingName && (!item.deleted || item.status === 'EXISTS') && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
           )}
         </div>
@@ -104,7 +104,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onClick={onItemClicked}
-      onDoubleClick={!item.deleted || !item.isFolder ? onItemDoubleClicked : undefined}
+      onDoubleClick={!item.deleted || !item.isFolder || item.status === 'EXISTS' ? onItemDoubleClicked : undefined}
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* ICON */}
@@ -137,7 +137,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {
         /* DROPPABLE ZONE */
-        !item.deleted && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
+        (!item.deleted || item.status === 'EXISTS') &&
+          connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}
