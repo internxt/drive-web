@@ -169,12 +169,11 @@ export interface ShareFileWithUserPayload {
   sharedWith: string;
   encryptionAlgorithm: string;
   roleId: string;
-  // item: DriveItemData;
 }
 
 const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
-  async (payload: ShareFileWithUserPayload, { dispatch, getState }): Promise<string | void> => {
+  async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
     const rootState = getState();
     const user = rootState.user.user;
     try {
@@ -207,19 +206,6 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
       });
-      console.log(payload);
-      // const item = payload.item;
-      // dispatch(
-      //   storageActions.patchItem({
-      //     id: item.id,
-      //     folderId: item.isFolder ? item.parentId : item.folderId,
-      //     isFolder: item.isFolder,
-      //     patch: {
-      //       // The objective of the following array is for it to be non-empty, as it signals that the item has been shared, and so we can display the icon of a shared file/folder:
-      //       privateShares: [{ id: '' }],
-      //     },
-      //   }),
-      // );
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });

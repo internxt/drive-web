@@ -15,14 +15,12 @@ import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sh
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../../../store';
 import { Role } from '../../../store/slices/sharedLinks/types';
-import { DriveItemData } from 'app/drive/types';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
   itemToShare: any;
   onClose: () => void;
   roles: Role[];
-  item: DriveItemData;
 }
 
 interface UsersToInvite {

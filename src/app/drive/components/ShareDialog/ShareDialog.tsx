@@ -572,7 +572,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           onInviteUser={onInviteUser}
           itemToShare={itemToShare?.item}
           roles={roles}
-          item={selectedFolder}
         />
       ),
       requests: (
