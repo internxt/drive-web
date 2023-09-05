@@ -208,6 +208,17 @@ export function getSharedFolderInvitations({
   });
 }
 
+export function getUsersOfSharedFolder({
+  folderId,
+}: {
+  folderId: string;
+}): Promise<Record<'users', any[]> | Record<'error', string>> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllAccessUsers({ folderId }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getSharedFolderInvitationsAsInvitedUser({
   limit = 10,
   offset = 0,
@@ -236,15 +247,13 @@ export function acceptSharedFolderInvite({
 
 export function updateUserRoleOfSharedFolder({
   newRoleId,
-  folderUUID,
-  roleId,
+  sharedWith,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
-      folderUUID,
-      roleId,
+      sharedWith,
     })
     .catch((error) => {
       throw errorService.castError(error);
@@ -489,6 +498,8 @@ const shareService = {
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
+  getUsersOfSharedFolder,
+  updateUserRoleOfSharedFolder,
 };
 
 export default shareService;

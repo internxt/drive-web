@@ -37,6 +37,7 @@ interface InvitedUserProps {
   email: string;
   roleName: UserRole;
   uuid: string;
+  sharedWith: string;
 }
 
 interface RequestProps {
@@ -83,6 +84,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     email: props.user.email,
     roleName: 'owner',
     uuid: props.user.uuid,
+    sharedWith: props.user.uuid,
   };
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
@@ -123,7 +125,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [isOpen]);
 
   useEffect(() => {
-    loadShareInfo();
+    if (roles.length === 0) dispatch(sharedThunks.getSharedFolderRoles());
+
+    if (roles.length > 0) loadShareInfo();
   }, [roles]);
 
   useEffect(() => {
@@ -137,25 +141,24 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     return () => clearTimeout(timer);
   }, [accessRequests]);
 
-  // TODO: BEFORE FINISH ALL THE AFS EPIC MOVE THIS LOGIC OUT OF THE VIEW
   const getAndUpdateInvitedUsers = useCallback(async () => {
     if (!itemToShare?.item) return;
 
     try {
-      const usersList = await shareService.getSharedFolderInvitations({
-        itemType: 'folder',
-        itemId: itemToShare.item.uuid as string,
+      const invitedUsersList = await shareService.getUsersOfSharedFolder({
+        folderId: itemToShare.item.uuid as string,
       });
-      const parsedUsersList = usersList.map((user) => ({
+
+      const invitedUsersListParsed = invitedUsersList['users'].map((user) => ({
         ...user,
-        roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
+        roleName: roles.find((role) => role.id === user.role.id)?.name.toLowerCase(),
       }));
 
-      setInvitedUsers(parsedUsersList as any);
+      setInvitedUsers(invitedUsersListParsed);
     } catch (error) {
       errorService.reportError(error);
     }
-  }, [itemToShare]);
+  }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
     // TODO -> Load access mode
@@ -166,20 +169,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (!itemToShare?.item) return;
 
     try {
-      // const usersList = await shareService.getSharedFolderInvitations({
-      //   itemType: 'folder',
-      //   itemId: itemToShare.item.uuid as string,
-      // });
-      // const parsedUsersList = usersList.map((user) => ({
-      //   ...user,
-      //   roleName: roles.find((role) => role.id === user.roleId)?.name.toLowerCase(),
-      // }));
-      setInvitedUsers([localUserData]);
+      getAndUpdateInvitedUsers();
     } catch (error) {
       errorService.reportError(error);
     }
-
-    dispatch(sharedThunks.getSharedFolderRoles());
   };
 
   const removeRequest = (email: string) => {
@@ -233,22 +226,21 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  //TODO: ADD LOGIC TO REMOVE USER FROM SHARED FOLDER
   const onRemoveUser = async (user: SharingInvite) => {
-    // if (user) {
-    //   const hasBeenRemoved = await dispatch(
-    //     sharedThunks.removeUserFromSharedFolder({
-    //       itemType: itemToShare?.item.type as string,
-    //       itemId: itemToShare?.item.uuid as string,
-    //       userId: user.sharedWith,
-    //       userEmail: (user as any).email,
-    //     }),
-    //   );
+    if (user) {
+      const hasBeenRemoved = await dispatch(
+        sharedThunks.removeUserFromSharedFolder({
+          itemType: itemToShare?.item.type as string,
+          itemId: itemToShare?.item.uuid as string,
+          userId: user.sharedWith,
+          userEmail: (user as any).email,
+        }),
+      );
 
-    //   if (hasBeenRemoved.payload) {
-    //     setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
-    //   }
-    // }
+      if (hasBeenRemoved.payload) {
+        setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
+      }
+    }
     closeSelectedUserPopover();
   };
 
@@ -284,13 +276,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const handleUserRoleChange = async (email: string, roleName: string) => {
     // try {
     //   setSelectedUserListIndex(null);
-    //   const roleId = roles.find((role) => role.name === roleName)?.id;
-    //   const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.uuid;
+    //   const roleId = roles.find((role) => role.name.toLowerCase() === roleName.toLowerCase())?.id;
+    //   const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.sharedWith;
     //   if (roleId && userUUID) {
     //     await shareService.updateUserRoleOfSharedFolder({
-    //       userUUID,
-    //       folderUUID: itemToShare?.item.uuid as string,
-    //       roleId,
+    //       sharedWith: userUUID,
+    //       newRoleId: roleId,
     //     });
     //     const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
     //       if (invitedUser.email === email) {
@@ -394,10 +385,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {invitedUsers?.length === 0 ? (
+              {invitedUsers.map((user, index) => (
                 <User
-                  user={localUserData}
-                  listPosition={null}
+                  user={user}
+                  key={user.email}
+                  listPosition={index}
                   translate={translate}
                   openUserOptions={openUserOptions}
                   selectedUserListIndex={selectedUserListIndex}
@@ -406,22 +398,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   userOptionsEmail={userOptionsEmail}
                   onChangeRole={handleUserRoleChange}
                 />
-              ) : (
-                invitedUsers.map((user, index) => (
-                  <User
-                    user={user}
-                    key={user.email}
-                    listPosition={index}
-                    translate={translate}
-                    openUserOptions={openUserOptions}
-                    selectedUserListIndex={selectedUserListIndex}
-                    userOptionsY={userOptionsY}
-                    onRemoveUser={onRemoveUser}
-                    userOptionsEmail={userOptionsEmail}
-                    onChangeRole={handleUserRoleChange}
-                  />
-                ))
-              )}
+              ))}
             </div>
           </div>
 
