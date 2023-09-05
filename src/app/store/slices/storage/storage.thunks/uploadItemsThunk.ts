@@ -14,6 +14,8 @@ import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { t } from 'i18next';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
+import shareService from '../../../../share/services/share.service';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -122,6 +124,135 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     await uploadFileWithManager(filesToUploadData);
+
+    options.onSuccess?.();
+
+    setTimeout(() => {
+      dispatch(planThunks.fetchUsageThunk());
+    }, 1000);
+
+    if (errors.length > 0) {
+      for (const error of errors) {
+        notificationsService.show({ text: error.message, type: ToastType.Error });
+      }
+
+      throw new Error(t('error.uploadingItems') as string);
+    }
+  },
+);
+
+interface UploadSharedItemsPayload {
+  files: File[];
+  parentFolderId: number;
+  options?: Partial<UploadItemsThunkOptions>;
+  filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
+  currentFolderId: string;
+  token: string;
+}
+/**
+ * @description
+ *  1. Prepare files to upload
+ *  2. Schedule tasks
+ */
+export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPayload, { state: RootState }>(
+  'storage/uploadItems',
+  async (
+    { files, parentFolderId, options, token, currentFolderId }: UploadSharedItemsPayload,
+    { getState, dispatch },
+  ) => {
+    const user = getState().user.user as UserSettings;
+    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
+    const filesToUpload: FileToUpload[] = [];
+    const errors: Error[] = [];
+
+    options = Object.assign(DEFAULT_OPTIONS, options || {});
+
+    try {
+      const planLimit = getState().plan.planLimit;
+      const planUsage = getState().plan.planUsage;
+      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+      const totalItemsSize = uploadItemsSize + planUsage;
+
+      if (planLimit && totalItemsSize >= planLimit) {
+        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+        return;
+      }
+    } catch (err: unknown) {
+      console.error(err);
+    }
+
+    if (showSizeWarning) {
+      notificationsService.show({
+        text: t('error.maxSizeUploadLimitError'),
+        type: ToastType.Warning,
+      });
+      return;
+    }
+
+    let zeroLengthFilesNumber = 0;
+    for (const file of files) {
+      if (file.size === 0) {
+        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+        continue;
+      }
+      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+
+      let page = 0;
+      const offset = 50;
+      let allItems: SharedFiles[] = [];
+
+      let hasMoreItems = true;
+
+      while (hasMoreItems) {
+        const parentFolderContent = await shareService.getSharedFolderContent(
+          currentFolderId,
+          'files',
+          '',
+          page,
+          offset,
+        );
+        const parentFolderFiles = parentFolderContent.items;
+
+        if (parentFolderFiles.length === 0 || parentFolderFiles.length < offset) hasMoreItems = false;
+
+        allItems = allItems.concat(parentFolderFiles as SharedFiles[]);
+        page++;
+      }
+
+      const [, , finalFilename] = itemUtils.renameIfNeeded(
+        allItems.map((item) => ({ ...item, name: item.plainName })),
+        filename,
+        extension,
+      );
+      const fileContent = renameFile(file, finalFilename);
+
+      filesToUpload.push({
+        name: finalFilename,
+        size: file.size,
+        type: extension,
+        content: fileContent,
+        parentFolderId,
+      });
+    }
+    showEmptyFilesNotification(zeroLengthFilesNumber);
+
+    const filesToUploadData = filesToUpload.map((file) => ({
+      filecontent: file,
+      userEmail: user.email,
+      parentFolderId,
+      onFinishUploadFile: (driveItemData: DriveFileData) => {
+        dispatch(
+          storageActions.pushItems({
+            updateRecents: true,
+            folderIds: [parentFolderId],
+            items: [driveItemData as DriveItemData],
+          }),
+        );
+      },
+      abortController: new AbortController(),
+    }));
+
+    await uploadFileWithManager(filesToUploadData, undefined, { resourcesToken: token });
 
     options.onSuccess?.();
 

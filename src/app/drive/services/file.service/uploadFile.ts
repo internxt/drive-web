@@ -28,6 +28,7 @@ export async function uploadFile(
   updateProgressCallback: (progress: number) => void,
   trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string },
   abortController?: AbortController,
+  resourcesToken?: string,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } = getEnvironmentConfig(isTeam);
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
@@ -90,7 +91,7 @@ export async function uploadFile(
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
-    let response = await storageClient.createFileEntry(fileEntry);
+    let response = await storageClient.createFileEntry(fileEntry, resourcesToken);
     if (!response.thumbnails) {
       response = {
         ...response,

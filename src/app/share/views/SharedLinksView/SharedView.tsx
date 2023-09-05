@@ -40,9 +40,7 @@ import { SharedNamePath } from 'app/share/types';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import { NetworkCredentials } from 'app/network/download';
 import Button from 'app/shared/components/Button/Button';
-import { handleRepeatedUploadingFiles } from 'app/store/slices/storage/storage.thunks/renameItemsThunk';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
@@ -390,22 +388,23 @@ export default function SharedView(): JSX.Element {
       }),
     );
 
-    if (files.length < 1000 && currentParentFolderId) {
-      const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(
-        Array.from(files),
-        shareItems as unknown as DriveItemData[],
-        dispatch,
-      ) as File[];
+    if (files.length < 1000 && currentParentFolderId)
+      // TODO: handleRepeatedUploadingFiles ONLY WORK ON DRIVE
+      // const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(
+      //   Array.from(files),
+      //   shareItems as unknown as DriveItemData[],
+      //   dispatch,
+      // ) as File[];
 
       dispatch(
-        storageThunks.uploadItemsThunk({
-          files: Array.from(unrepeatedUploadedFiles),
+        storageThunks.uploadSharedItemsThunk({
+          files: Array.from(files),
           parentFolderId: currentParentFolderId,
+          currentFolderId,
+          token: nextResourcesToken,
         }),
-      ).then(() => {
-        dispatch(fetchSortedFolderContentThunk(currentParentFolderId));
-      });
-    } else {
+      );
+    else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
