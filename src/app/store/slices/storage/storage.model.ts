@@ -1,6 +1,7 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
+import { SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 export interface StorageFilters {
@@ -38,6 +39,8 @@ export interface StorageState {
   folderPathDialog: FolderPathDialog[];
   driveItemsSort: string;
   driveItemsOrder: string;
+  sharedNamePath: SharedNamePath[];
+  currentPath: FolderPath;
 }
 
 export interface StorageSetFiltersPayload {

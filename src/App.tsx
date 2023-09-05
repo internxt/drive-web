@@ -16,11 +16,10 @@ import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
 import { uiActions } from './app/store/slices/ui';
-import { DriveFileData } from './app/drive/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
@@ -30,11 +29,12 @@ import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 import { t } from 'i18next';
-import authService from 'app/auth/services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import Mobile from 'app/drive/views/MobileView/MobileView';
+import authService from './app/auth/services/auth.service';
+import localStorageService from './app/core/services/local-storage.service';
+import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
+import { PreviewFileItem } from './app/share/types';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -42,7 +42,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
-  fileViewerItem: DriveFileData | null;
+  fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
 }

@@ -33,6 +33,7 @@ import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 import SharedView from '../../share/views/SharedLinksView/SharedView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 
 const views: Array<{
