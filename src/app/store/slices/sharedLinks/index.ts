@@ -308,7 +308,7 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
   },
 );
 
-// Get accepted pending invitation
+// Get pending invitations
 const getPendingInvitations = createAsyncThunk<string | void, void, { state: RootState }>(
   'shareds/getPendingInvitations',
   async (_, { dispatch }): Promise<string | void> => {

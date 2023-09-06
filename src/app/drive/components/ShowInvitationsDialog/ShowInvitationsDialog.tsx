@@ -6,9 +6,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { RootState } from 'app/store';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { uiActions } from 'app/store/slices/ui';
+import { useAppSelector } from 'app/store/hooks';
 import dayjs from 'dayjs';
 import { useState } from 'react';
 import { acceptSharedFolderInvite, declineSharedFolderInvite } from '../../../share/services/share.service';
@@ -26,19 +24,13 @@ const Header = ({ title, isLoading, onClose }): JSX.Element => {
   );
 };
 
-const ShowInvitationsDialog = (): JSX.Element => {
-  const dispatch = useAppDispatch();
+const ShowInvitationsDialog = ({ onClose }): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const isOpen = useAppSelector((state: RootState) => state.ui.isInvitationsDialogOpen);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const [invitations, setInvitations] = useState<SharedFoldersInvitationsAsInvitedUserResponse[]>(pendingInvitations);
   const [deletedInvitations, setDeletedInvitations] = useState<string[]>([]);
-
-  function onClose() {
-    dispatch(uiActions.setIsInvitationsDialogOpen(false));
-    dispatch(sharedThunks.getPendingInvitations());
-  }
 
   function formatDate(dateString) {
     const date = dayjs(dateString);

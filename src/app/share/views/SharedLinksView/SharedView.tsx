@@ -86,13 +86,6 @@ export default function SharedView(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!isShowInvitationsOpen) {
-      dispatch(sharedThunks.getPendingInvitations());
-      fetchRootItems();
-    }
-  }, [isShowInvitationsOpen]);
-
-  useEffect(() => {
     if (page === 0) {
       fetchFolders();
     }
@@ -115,6 +108,11 @@ export default function SharedView(): JSX.Element {
       fetchFiles();
     }
   }, [page]);
+
+  function onShowInvitationsModalClose() {
+    dispatch(sharedThunks.getPendingInvitations());
+    fetchRootItems();
+  }
 
   const fetchRootItems = async () => {
     setIsLoading(true);
@@ -738,7 +736,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       {isShareDialogOpen && <ShareDialog />}
-      {isShowInvitationsOpen && <ShowInvitationsDialog />}
+      {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
