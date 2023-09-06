@@ -707,6 +707,14 @@
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "No quedan invitaciones",
+      "title": "Invitaciones pendientes",
+      "accept": "Aceptar",
+      "deny": "Rechazar",
+      "sharedWith": "Compartido contigo ",
+      "todayAt": "hoy a las "
+    },
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
       "singleToolBar": "archivo seleccionado",
