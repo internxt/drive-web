@@ -51,6 +51,19 @@ function copyShareLink(type: string, code: string, token: string) {
 
 export const ITEMS_PER_PAGE = 15;
 
+const removeDuplicates = (list: AdvancedSharedItem[]) => {
+  const hash = {};
+  return list.filter((obj) => {
+    const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;
+
+    if (hash[key]) {
+      return false;
+    }
+    hash[key] = true;
+    return true;
+  });
+};
+
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
 export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -206,8 +219,8 @@ export default function SharedView(): JSX.Element {
     }
   };
 
-  const fetchFiles = async () => {
-    if (currentFolderId && !hasMoreFolders && hasMoreItems) {
+  const fetchFiles = async (forceFetch?: boolean) => {
+    if (currentFolderId && !hasMoreFolders && (hasMoreItems || forceFetch)) {
       setIsLoading(true);
       try {
         const response: ListSharedItemsResponse & { bucket: string; encryptionKey: string } =
@@ -241,7 +254,8 @@ export default function SharedView(): JSX.Element {
         });
 
         const items = [...shareItems, ...files];
-        setShareItems(items);
+        const itemsWithoutDuplicates = removeDuplicates(items);
+        setShareItems(itemsWithoutDuplicates);
 
         if (files.length < ITEMS_PER_PAGE) {
           setHasMoreItems(false);
@@ -429,7 +443,7 @@ export default function SharedView(): JSX.Element {
           };
       }
 
-      dispatch(
+      await dispatch(
         storageThunks.uploadSharedItemsThunk({
           files: Array.from(files),
           parentFolderId: currentParentFolderId,
@@ -437,6 +451,9 @@ export default function SharedView(): JSX.Element {
           ownerUserAuthenticationData,
         }),
       );
+
+      setHasMoreItems(true);
+      fetchFiles(true);
     } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
