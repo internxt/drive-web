@@ -90,10 +90,10 @@ const ShowInvitationsDialog = (): JSX.Element => {
   return (
     <div>
       <div>
-        <Modal isOpen={isOpen} onClose={onClose} className="p-0">
+        <Modal isOpen={isOpen} onClose={onClose} className="p-0" maxWidth="max-w-xl">
           <div className="flex w-full flex-col">
             <Header isLoading={isLoading} onClose={onClose} title={translate('modals.sharedInvitationsModal.title')} />
-            <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '640px' }}>
+            <div className="relative flex flex-col space-y-3 pb-24" style={{ minHeight: '377px', maxHeight: '700px' }}>
               {invitations.length === 0 ? (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="flex flex-col items-center justify-center space-y-1 rounded-2xl bg-gray-5 p-6 text-lg font-medium text-gray-50">

@@ -14,11 +14,11 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
-import shareService from '../../../share/services/share.service';
+import shareService, { getSharingRoles } from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { SharingInvite } from '@internxt/sdk/dist/drive/share/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { Role } from 'app/store/slices/sharedLinks/types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -74,7 +74,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
-  const roles = useAppSelector((state: RootState) => state.shared.roles);
+  const [roles, setRoles] = useState<Role[]>([]);
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
