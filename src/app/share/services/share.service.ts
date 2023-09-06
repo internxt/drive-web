@@ -243,13 +243,13 @@ export function acceptSharedFolderInvite({
 
 export function updateUserRoleOfSharedFolder({
   newRoleId,
-  sharedWith,
+  sharingId,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
-      sharedWith,
+      sharingId,
     })
     .catch((error) => {
       throw errorService.castError(error);
