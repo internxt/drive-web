@@ -218,19 +218,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  const onRemoveUser = async (user: SharingInvite) => {
+  const onRemoveUser = async (user: any) => {
     if (user) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
           itemType: itemToShare?.item.type as string,
           itemId: itemToShare?.item.uuid as string,
-          userId: user.sharedWith,
+          userId: user.uuid,
           userEmail: (user as any).email,
         }),
       );
 
       if (hasBeenRemoved.payload) {
-        setInvitedUsers((current) => current.filter((user) => (user as any).sharedWith !== (user as any).sharedWith));
+        setInvitedUsers((current) => current.filter((currentUser) => (currentUser as any).uuid !== (user as any).uuid));
       }
     }
     closeSelectedUserPopover();
