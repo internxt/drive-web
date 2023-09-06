@@ -83,7 +83,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
-  const [isCurrentFolderOwner, setIsCurrentFolderOwner] = useState<boolean>(false);
+  const [currentUserFolderRole, setCurrentUserFolderRole] = useState<string | undefined>('');
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -135,8 +135,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [accessRequests]);
 
   useEffect(() => {
-    const folderOwner = invitedUsers.find((user) => user.roleName === 'owner');
-    folderOwner?.email === props.user.email && setIsCurrentFolderOwner(folderOwner?.email === props.user.email);
+    const currentInvitedUser = invitedUsers.find((user) => user.email === props.user.email);
+    setCurrentUserFolderRole(currentInvitedUser?.roleName);
   }, [invitedUsers]);
 
   const getAndUpdateInvitedUsers = useCallback(async () => {
@@ -370,10 +370,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                <Button variant="secondary" onClick={onInviteUser}>
-                  <UserPlus size={24} />
-                  <span>{translate('modals.shareModal.list.invite')}</span>
-                </Button>
+                {(currentUserFolderRole === 'owner' || currentUserFolderRole === 'editor') && (
+                  <Button variant="secondary" onClick={onInviteUser}>
+                    <UserPlus size={24} />
+                    <span>{translate('modals.shareModal.list.invite')}</span>
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -486,7 +488,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             </div>
                           </button>
                           {/* Stop sharing */}
-                          {isCurrentFolderOwner && (
+                          {currentUserFolderRole === 'owner' && (
                             <button
                               className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
                               onClick={() => {
