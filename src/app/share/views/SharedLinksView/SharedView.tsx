@@ -112,6 +112,7 @@ export default function SharedView(): JSX.Element {
   function onShowInvitationsModalClose() {
     dispatch(sharedThunks.getPendingInvitations());
     fetchRootItems();
+    dispatch(uiActions.setIsInvitationsDialogOpen(false));
   }
 
   const fetchRootItems = async () => {
