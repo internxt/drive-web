@@ -7,7 +7,6 @@ import {
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
-  PrivateSharedFolder,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
   UpdateUserRolePayload,
@@ -247,13 +246,13 @@ export function acceptSharedFolderInvite({
 
 export function updateUserRoleOfSharedFolder({
   newRoleId,
-  sharedWith,
+  sharingId,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
-      sharedWith,
+      sharingId,
     })
     .catch((error) => {
       throw errorService.castError(error);
@@ -271,13 +270,6 @@ export function removeUserRole({
 }): Promise<{ message: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: PrivateSharedFolder }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getPrivateSharedFolder(folderUUID).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -493,7 +485,6 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
-  getPrivateSharedFolder,
   stopSharingItem,
   removeUserRole,
   getSharedFolderContent,

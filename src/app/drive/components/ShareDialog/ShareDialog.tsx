@@ -18,6 +18,7 @@ import shareService, { getSharingRoles } from '../../../share/services/share.ser
 import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SharingInvite } from '@internxt/sdk/dist/drive/share/types';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -37,7 +38,7 @@ interface InvitedUserProps {
   email: string;
   roleName: UserRole;
   uuid: string;
-  sharedWith: string;
+  sharingId: string;
 }
 
 interface RequestProps {
@@ -77,16 +78,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
-  const localUserData: InvitedUserProps = {
-    avatar: props.user.avatar,
-    name: props.user.name,
-    lastname: props.user.lastname,
-    email: props.user.email,
-    roleName: 'owner',
-    uuid: props.user.uuid,
-    sharedWith: props.user.uuid,
-  };
-
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('public');
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
@@ -115,9 +106,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   useEffect(() => {
+    const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles(roles);
+        setRoles([...roles, OWNER_ROLE]);
       });
     }
 
@@ -274,27 +266,27 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const handleUserRoleChange = async (email: string, roleName: string) => {
-    // try {
-    //   setSelectedUserListIndex(null);
-    //   const roleId = roles.find((role) => role.name.toLowerCase() === roleName.toLowerCase())?.id;
-    //   const userUUID = invitedUsers.find((invitedUser) => invitedUser.email === email)?.sharedWith;
-    //   if (roleId && userUUID) {
-    //     await shareService.updateUserRoleOfSharedFolder({
-    //       sharedWith: userUUID,
-    //       newRoleId: roleId,
-    //     });
-    //     const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
-    //       if (invitedUser.email === email) {
-    //         return { ...invitedUser, roleId, roleName: roleName as UserRole };
-    //       }
-    //       return invitedUser;
-    //     });
-    //     setInvitedUsers(modifiedInvitedUsers);
-    //   }
-    // } catch (error) {
-    //   errorService.reportError(error);
-    //   // TODO: Add notification message
-    // }
+    try {
+      setSelectedUserListIndex(null);
+      const roleId = roles.find((role) => role.name.toLowerCase() === roleName.toLowerCase())?.id;
+      const sharingId = invitedUsers.find((invitedUser) => invitedUser.email === email)?.sharingId;
+      if (roleId && sharingId) {
+        await shareService.updateUserRoleOfSharedFolder({
+          sharingId: sharingId,
+          newRoleId: roleId,
+        });
+        const modifiedInvitedUsers = invitedUsers.map((invitedUser) => {
+          if (invitedUser.email === email) {
+            return { ...invitedUser, roleId, roleName: roleName as UserRole };
+          }
+          return invitedUser;
+        });
+        setInvitedUsers(modifiedInvitedUsers);
+      }
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({ text: translate('modals.shareModal.errors.updatingRole'), type: ToastType.Error });
+    }
   };
 
   const openUserOptions = (e: any, user: InvitedUserProps, selectedIndex: number | null) => {
