@@ -624,6 +624,9 @@
           "remove": "删除"
         }
       },
+      "errors": {
+        "updatingRole": "无法更新角色，请稍后重试."
+      },
       "general": {
         "generalAccess": "一般访问",
         "accessOptions": {

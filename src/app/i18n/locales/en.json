@@ -655,6 +655,9 @@
           "remove": "Remove"
         }
       },
+      "errors": {
+        "updatingRole": "The role could not be updated, please try again later."
+      },
       "general": {
         "generalAccess": "General access",
         "accessOptions": {

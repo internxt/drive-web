@@ -610,6 +610,9 @@
           "remove": "Удалить"
         }
       },
+      "errors": {
+        "updatingRole": "Роль не может быть обновлена, пожалуйста, попробуйте позже."
+      },
       "general": {
         "generalAccess": "Общий доступ",
         "accessOptions": {

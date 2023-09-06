@@ -629,6 +629,9 @@
           "remove": "Eliminare"
         }
       },
+      "errors": {
+        "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi."
+      },
       "general": {
         "generalAccess": "Accesso generale",
         "accessOptions": {
