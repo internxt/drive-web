@@ -51,6 +51,7 @@ export interface DriveFileData {
   updatedAt: string;
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
+  status: string;
   shares?: Array<ShareLink>;
   uuid?: string;
 }
