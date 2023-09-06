@@ -8,7 +8,10 @@ import iconService from '../../../drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
-import shareService, { decryptMnemonic } from '../../../share/services/share.service';
+import shareService, {
+  decryptMnemonic,
+  getSharedFolderInvitationsAsInvitedUser,
+} from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
@@ -38,6 +41,9 @@ import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '..
 import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../crypto/services/utils';
 import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import Button from 'app/shared/components/Button/Button';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { RootState } from 'app/store';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -70,6 +76,7 @@ export default function SharedView(): JSX.Element {
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [encryptionKey, setEncryptionKey] = useState<string>('');
+  const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
   useEffect(() => {
     if (page === 0) {
@@ -77,10 +84,6 @@ export default function SharedView(): JSX.Element {
       dispatch(storageActions.resetSharedNamePath());
     }
   }, []);
-
-  useEffect(() => {
-    if (!isShowInvitationsOpen) fetchRootItems();
-  }, [isShowInvitationsOpen]);
 
   useEffect(() => {
     if (page === 0) {
@@ -105,6 +108,12 @@ export default function SharedView(): JSX.Element {
       fetchFiles();
     }
   }, [page]);
+
+  function onShowInvitationsModalClose() {
+    dispatch(sharedThunks.getPendingInvitations());
+    fetchRootItems();
+    dispatch(uiActions.setIsInvitationsDialogOpen(false));
+  }
 
   const fetchRootItems = async () => {
     setIsLoading(true);
@@ -545,16 +554,6 @@ export default function SharedView(): JSX.Element {
           <BaseButton
             onClick={(e) => {
               e.stopPropagation();
-              dispatch(uiActions.setIsInvitationsDialogOpen(true));
-            }}
-            className="tertiary squared"
-            disabled={false}
-          >
-            <Users size={24} />
-          </BaseButton>
-          <BaseButton
-            onClick={(e) => {
-              e.stopPropagation();
               setIsDeleteDialogModalOpen(true);
             }}
             className="tertiary squared"
@@ -563,6 +562,20 @@ export default function SharedView(): JSX.Element {
             <Trash size={24} />
           </BaseButton>
           <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
+
+          <Button
+            variant="secondary"
+            onClick={() => {
+              dispatch(uiActions.setIsInvitationsDialogOpen(true));
+            }}
+          >
+            <p className="space-x-2">
+              Pending Invitations{' '}
+              <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+                {pendingInvitations.length > 0 ? pendingInvitations.length : 0}
+              </span>
+            </p>
+          </Button>
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
@@ -724,7 +737,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       {isShareDialogOpen && <ShareDialog />}
-      {isShowInvitationsOpen && <ShowInvitationsDialog />}
+      {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
