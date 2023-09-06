@@ -271,7 +271,7 @@ export function removeUserRole({
   });
 }
 
-export function stopSharingFolder(itemType: string, itemId: string): Promise<void> {
+export function stopSharingItem(itemType: string, itemId: string): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.stopSharingFolder(itemType, itemId);
 }
@@ -482,7 +482,7 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
-  stopSharingFolder,
+  stopSharingItem,
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,

@@ -40,6 +40,7 @@ export interface StorageState {
   driveItemsSort: string;
   driveItemsOrder: string;
   sharedNamePath: SharedNamePath[];
+  currentPath: FolderPath;
 }
 
 export interface StorageSetFiltersPayload {

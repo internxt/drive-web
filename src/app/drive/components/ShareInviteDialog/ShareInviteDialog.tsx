@@ -1,14 +1,14 @@
 import { useEffect, useState } from 'react';
-import { IFormValues } from 'app/core/types';
+import { IFormValues } from '../../../core/types';
 import { Listbox } from '@headlessui/react';
 import { CaretDown, Check } from '@phosphor-icons/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { useForm } from 'react-hook-form';
-import Button from 'app/shared/components/Button/Button';
-import Avatar from 'app/shared/components/Avatar';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import Input from 'app/shared/components/Input';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Avatar from '../../../shared/components/Avatar';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
+import Input from '../../../shared/components/Input';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
 import { useDispatch } from 'react-redux';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
@@ -110,7 +110,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               itemId: props.itemToShare.uuid,
               itemType: 'folder',
               roleId: userRoleId,
-              sharedWith: email,
+              sharedWith: user.email,
             }),
           ),
         );

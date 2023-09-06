@@ -232,21 +232,21 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
   },
 );
 
-interface StopSharingFolderPayload {
+interface StopSharingItemPayload {
   itemType: string;
   itemId: string;
-  folderName: string;
+  itemName: string;
 }
 
-export const stopSharingFolder = createAsyncThunk<void, StopSharingFolderPayload, { state: RootState }>(
-  'shareds/stopSharingFolder',
-  async ({ itemType, itemId, folderName }: StopSharingFolderPayload) => {
+export const stopSharingItem = createAsyncThunk<void, StopSharingItemPayload, { state: RootState }>(
+  'shareds/stopSharingItem',
+  async ({ itemType, itemId, itemName }: StopSharingItemPayload) => {
     try {
-      await shareService.stopSharingFolder(itemType, itemId);
+      await shareService.stopSharingItem(itemType, itemId);
 
       notificationsService.show({
         text: t('modals.shareModal.stopSharing.notification.success', {
-          name: folderName,
+          name: itemName,
         }),
         type: ToastType.Success,
       });
@@ -399,7 +399,7 @@ export const sharedThunks = {
   getSharedLinkThunk,
   deleteLinkThunk,
   shareItemWithUser,
-  stopSharingFolder,
+  stopSharingItem,
   removeUserFromSharedFolder,
   getSharedFolderRoles,
   getPendingInvitations,
