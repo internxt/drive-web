@@ -37,7 +37,6 @@ import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
-import { NetworkCredentials } from 'app/network/download';
 import Button from 'app/shared/components/Button/Button';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
@@ -76,6 +75,12 @@ export default function SharedView(): JSX.Element {
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
+  const [filesOwnerCredentials, setFilesOwnerCredentials] = useState<{
+    networkPass: string;
+    networkUser: string;
+  }>();
+  const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
+  const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
 
   useEffect(() => {
     if (page === 0) {
@@ -205,17 +210,26 @@ export default function SharedView(): JSX.Element {
     if (currentFolderId && !hasMoreFolders && hasMoreItems) {
       setIsLoading(true);
       try {
-        const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
-          currentFolderId,
-          'files',
-          currentResourcesToken,
-          page,
-          ITEMS_PER_PAGE,
-          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-        );
+        const response: ListSharedItemsResponse & { bucket: string; encryptionKey: string } =
+          (await shareService.getSharedFolderContent(
+            currentFolderId,
+            'files',
+            currentResourcesToken,
+            page,
+            ITEMS_PER_PAGE,
+            orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+          )) as ListSharedItemsResponse & { bucket: string; encryptionKey: string };
 
         const token = response.token;
         setNextResourcesToken(token);
+
+        const networkPass = response.credentials.networkPass;
+        const networkUser = response.credentials.networkUser;
+        setFilesOwnerCredentials({ networkPass, networkUser });
+        const bucket = response.bucket;
+        setOwnerBucket(bucket);
+        const ownerMnemonincEncrypted = response.encryptionKey;
+        setOwnerEncryptionKey(ownerMnemonincEncrypted);
 
         const files = response.items.map((file) => {
           const shareItem = file as AdvancedSharedItem;
@@ -381,7 +395,7 @@ export default function SharedView(): JSX.Element {
     fileInputRef.current?.click();
   };
 
-  const onUploadFileInputChanged = (e) => {
+  const onUploadFileInputChanged = async (e) => {
     const files = e.target.files;
     dispatch(
       storageActions.setItems({
@@ -390,23 +404,40 @@ export default function SharedView(): JSX.Element {
       }),
     );
 
-    if (files.length < 1000 && currentParentFolderId)
-      // TODO: handleRepeatedUploadingFiles ONLY WORK ON DRIVE
-      // const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(
-      //   Array.from(files),
-      //   shareItems as unknown as DriveItemData[],
-      //   dispatch,
-      // ) as File[];
+    if (files.length < 1000 && currentParentFolderId) {
+      const currentUser = localStorageService.getUser();
+      let ownerUserAuthenticationData;
+
+      const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
+      if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
+        ownerUserAuthenticationData = {
+          bridgeUser: filesOwnerCredentials?.networkUser,
+          bridgePass: filesOwnerCredentials?.networkPass,
+          encryptionKey: currentUser?.mnemonic,
+          bucketId: currentUser.bucket,
+          token: nextResourcesToken,
+        };
+      } else {
+        const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
+        if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket)
+          ownerUserAuthenticationData = {
+            bridgeUser: filesOwnerCredentials?.networkUser,
+            bridgePass: filesOwnerCredentials?.networkPass,
+            encryptionKey: mnemonicDecrypted,
+            bucketId: ownerBucket,
+            token: nextResourcesToken,
+          };
+      }
 
       dispatch(
         storageThunks.uploadSharedItemsThunk({
           files: Array.from(files),
           parentFolderId: currentParentFolderId,
           currentFolderId,
-          token: nextResourcesToken,
+          ownerUserAuthenticationData,
         }),
       );
-    else {
+    } else {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
@@ -599,7 +630,7 @@ export default function SharedView(): JSX.Element {
             className="hidden"
             ref={fileInputRef}
             type="file"
-            onChange={onUploadFileInputChanged}
+            onChange={(e) => onUploadFileInputChanged(e)}
             multiple={true}
             data-test="input-file"
           />

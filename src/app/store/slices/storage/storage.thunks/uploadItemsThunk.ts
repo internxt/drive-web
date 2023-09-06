@@ -147,7 +147,13 @@ interface UploadSharedItemsPayload {
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
   currentFolderId: string;
-  token: string;
+  ownerUserAuthenticationData?: {
+    token: string;
+    bridgeUser: string;
+    bridgePass: string;
+    encryptionKey: string;
+    bucketId: string;
+  };
 }
 /**
  * @description
@@ -157,7 +163,7 @@ interface UploadSharedItemsPayload {
 export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async (
-    { files, parentFolderId, options, token, currentFolderId }: UploadSharedItemsPayload,
+    { files, parentFolderId, options, ownerUserAuthenticationData, currentFolderId }: UploadSharedItemsPayload,
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
@@ -252,7 +258,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData, undefined, { resourcesToken: token });
+    await uploadFileWithManager(filesToUploadData, undefined, { ownerUserAuthenticationData });
 
     options.onSuccess?.();
 

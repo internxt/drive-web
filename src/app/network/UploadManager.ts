@@ -20,7 +20,18 @@ enum FileSizeType {
   Small = 'small',
 }
 
-type Options = { relatedTaskId?: string; showNotifications?: boolean; showErrors?: boolean; resourcesToken?: string };
+type Options = {
+  relatedTaskId?: string;
+  showNotifications?: boolean;
+  showErrors?: boolean;
+  ownerUserAuthenticationData?: {
+    token: string;
+    bridgeUser: string;
+    bridgePass: string;
+    encryptionKey: string;
+    bucketId: string;
+  };
+};
 
 type UploadManagerFileParams = {
   filecontent: FileToUpload;
@@ -120,7 +131,7 @@ class UploadManager {
           },
           { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
           this.abortController ?? fileData.abortController,
-          this.options?.resourcesToken,
+          this.options?.ownerUserAuthenticationData,
         )
           .then((driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
