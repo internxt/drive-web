@@ -11,9 +11,10 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 type EditItemNameDialogProps = {
   item: DriveItemData;
   onClose?: () => void;
+  onSuccess?: () => void;
 };
 
-const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
+const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose, onSuccess }) => {
   const [newItemName, setNewItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -44,6 +45,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
         .then(() => {
           setIsLoading(false);
           handleOnClose();
+          onSuccess?.();
         })
         .catch((e) => {
           const errorMessage = e?.message?.includes('already exists') && translate('error.creatingFolder');
