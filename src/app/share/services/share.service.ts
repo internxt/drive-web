@@ -7,7 +7,6 @@ import {
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
   ListShareLinksItem,
-  PrivateSharedFolder,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
   UpdateUserRolePayload,
@@ -208,6 +207,17 @@ export function getSharedFolderInvitations({
   });
 }
 
+export function getUsersOfSharedFolder({
+  folderId,
+}: {
+  folderId: string;
+}): Promise<Record<'users', any[]> | Record<'error', string>> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllAccessUsers({ folderId }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getSharedFolderInvitationsAsInvitedUser({
   limit = 10,
   offset = 0,
@@ -236,15 +246,13 @@ export function acceptSharedFolderInvite({
 
 export function updateUserRoleOfSharedFolder({
   newRoleId,
-  folderUUID,
-  roleId,
+  sharingId,
 }: UpdateUserRolePayload): Promise<UpdateUserRoleResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .updateUserRole({
       newRoleId,
-      folderUUID,
-      roleId,
+      sharingId,
     })
     .catch((error) => {
       throw errorService.castError(error);
@@ -262,13 +270,6 @@ export function removeUserRole({
 }): Promise<{ message: string }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.removeUserRole({ itemType, itemId, userId }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getPrivateSharedFolder(folderUUID: string): Promise<{ data: PrivateSharedFolder }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getPrivateSharedFolder(folderUUID).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -484,11 +485,12 @@ const shareService = {
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
-  getPrivateSharedFolder,
   stopSharingItem,
   removeUserRole,
   getSharedFolderContent,
   downloadSharedFiles,
+  getUsersOfSharedFolder,
+  updateUserRoleOfSharedFolder,
 };
 
 export default shareService;

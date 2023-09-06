@@ -637,6 +637,9 @@
           " remove": "Eliminar"
         }
       },
+      "errors": {
+        "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde."
+      },
       "general": {
         "generalAccess": "Acceso general",
         "accessOptions": {
