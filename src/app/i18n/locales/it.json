@@ -702,6 +702,14 @@
         "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "Nessun invito rimasto",
+      "title": "Inviti in sospeso",
+      "accept": "Accetta",
+      "deny": "Rifiuta",
+      "sharedWith": "Condiviso con te ",
+      "todayAt": "oggi alle "
+    },
     "deletePhotosModal": {
       "multiToolBar": "file selezionati",
       "singleToolBar": "file selezionati",
