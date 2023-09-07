@@ -668,7 +668,12 @@ export default function SharedView(): JSX.Element {
             data-test="input-file"
           />
 
-          <Button variant="primary" onClick={onUploadFileButtonClicked} disabled={shareItems[0]?.isRootLink}>
+          <Button
+            variant="primary"
+            className="mr-2"
+            onClick={onUploadFileButtonClicked}
+            disabled={shareItems[0]?.isRootLink}
+          >
             <div className="flex items-center justify-center space-x-2.5">
               <div className="flex items-center space-x-2">
                 <UploadSimple size={24} />
@@ -676,18 +681,6 @@ export default function SharedView(): JSX.Element {
               </div>
             </div>
           </Button>
-          <BaseButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsDeleteDialogModalOpen(true);
-            }}
-            className="tertiary squared"
-            disabled={!(selectedItems.length > 0)}
-          >
-            <Trash size={24} />
-          </BaseButton>
-          <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
-
           <Button
             variant="secondary"
             onClick={() => {
