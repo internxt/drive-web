@@ -697,6 +697,14 @@
         "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "没有剩余邀请",
+      "title": "待处理的邀请",
+      "accept": "接受",
+      "deny": "拒绝",
+      "sharedWith": "与您共享 ",
+      "todayAt": "今天在 "
+    },
     "deletePhotosModal": {
       "multiToolBar": "个文件 已选择 ",
       "singleToolBar": "个文件 已选择 ",

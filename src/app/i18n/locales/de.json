@@ -562,6 +562,14 @@
         "copyLink": "Kopiere Link"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "Keine Einladungen mehr",
+      "title": "Ausstehende Einladungen",
+      "accept": "Akzeptieren",
+      "deny": "Ablehnen",
+      "sharedWith": "Geteilt mit Ihnen ",
+      "todayAt": "heute um "
+    },
     "friendsInvitedModal": {
       "title": "Eingeladene Freunde",
       "email": "E-Mail",
