@@ -8,10 +8,7 @@ import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
-import shareService, {
-  decryptMnemonic,
-  getSharedFolderInvitationsAsInvitedUser,
-} from '../../../share/services/share.service';
+import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
@@ -102,6 +99,7 @@ export default function SharedView(): JSX.Element {
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
   useEffect(() => {
+    dispatch(sharedThunks.getPendingInvitations());
     if (page === 0) {
       fetchRootItems();
       dispatch(storageActions.resetSharedNamePath());

@@ -75,7 +75,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
   const [roles, setRoles] = useState<Role[]>([]);
-
+  const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
@@ -111,6 +111,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (isOpen) {
       getSharingRoles().then((roles) => {
         setRoles([...roles, OWNER_ROLE]);
+        setInviteDialogRoles(roles);
       });
     }
 
@@ -550,7 +551,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           }}
           onInviteUser={onInviteUser}
           itemToShare={itemToShare?.item}
-          roles={roles}
+          roles={inviteDialogRoles}
         />
       ),
       requests: (
