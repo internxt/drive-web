@@ -6,14 +6,14 @@ const CrowdcubeBanner = ({ onCloseBanner, showBanner }): JSX.Element => {
   return (
     <section
       className={`${
-        showBanner ? 'hidden' : 'flex'
+        showBanner ? 'flex' : 'hidden'
       }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-5 lg:px-0`}
     >
       <div
-        className={`${showBanner ? 'hidden' : 'flex'} absolute top-1/2 left-1/2 flex w-full
+        className={`${showBanner ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex w-full
         -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl bg-primary-dark md:max-w-3.5xl`}
       >
-        <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onCloseBanner()}>
+        <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onCloseBanner}>
           <X size={32} />
         </button>
         <div className="flex w-full flex-row justify-between">
@@ -28,7 +28,7 @@ const CrowdcubeBanner = ({ onCloseBanner, showBanner }): JSX.Element => {
             <button
               className="flex w-max items-center justify-center rounded-lg bg-white px-5 py-3 text-center font-medium text-primary"
               onClick={() => {
-                window.open('https://www.crowdcube.eu/early-access/internxt', '_self');
+                window.open('https://www.crowdcube.eu/early-access/internxt', '_blank', 'noopener');
                 onCloseBanner();
               }}
             >
