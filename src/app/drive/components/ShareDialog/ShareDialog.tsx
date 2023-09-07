@@ -509,10 +509,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               </Popover>
             </div>
 
-            <Button variant="primary" onClick={onCopyLink}>
+            {/* <Button variant="primary" onClick={onCopyLink}>
               <Link size={24} />
               <span>{translate('modals.shareModal.general.copyLink')}</span>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Stop sharing confirmation dialog */}
