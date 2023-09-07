@@ -79,10 +79,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
-  const [accessMode, setAccessMode] = useState<AccessMode>('public');
+  const [accessMode, setAccessMode] = useState<AccessMode>('restricted');
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
+  const [currentUserFolderRole, setCurrentUserFolderRole] = useState<string | undefined>('');
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -133,6 +134,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     return () => clearTimeout(timer);
   }, [accessRequests]);
 
+  useEffect(() => {
+    const currentInvitedUser = invitedUsers.find((user) => user.email === props.user.email);
+    setCurrentUserFolderRole(currentInvitedUser?.roleName);
+  }, [invitedUsers]);
+
   const getAndUpdateInvitedUsers = useCallback(async () => {
     if (!itemToShare?.item) return;
 
@@ -154,7 +160,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const loadShareInfo = async () => {
     // TODO -> Load access mode
-    const shareAccessMode: AccessMode = 'public';
+    const shareAccessMode: AccessMode = 'restricted';
     setAccessMode(shareAccessMode);
 
     // TODO -> Load invited users
@@ -364,10 +370,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                <Button variant="secondary" onClick={onInviteUser}>
-                  <UserPlus size={24} />
-                  <span>{translate('modals.shareModal.list.invite')}</span>
-                </Button>
+                {currentUserFolderRole != 'viewer' && (
+                  <Button variant="secondary" onClick={onInviteUser}>
+                    <UserPlus size={24} />
+                    <span>{translate('modals.shareModal.list.invite')}</span>
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -405,11 +413,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   <>
                     <Popover.Button as="div" className="outline-none z-1">
                       <Button variant="secondary" disabled={isLoading}>
-                        {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
+                        {/* {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />} */}
+                        <Users size={24} />
                         <span>
-                          {accessMode === 'public'
+                          {translate('modals.shareModal.general.accessOptions.restricted.title')}
+                          {/* {accessMode === 'public'
                             ? translate('modals.shareModal.general.accessOptions.public.title')
-                            : translate('modals.shareModal.general.accessOptions.restricted.title')}
+                            : translate('modals.shareModal.general.accessOptions.restricted.title')} */}
                         </span>
                         {isLoading ? (
                           <div className="flex h-6 w-6 items-center justify-center">
@@ -430,7 +440,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                       {({ close }) => (
                         <>
                           {/* Public */}
-                          <button
+                          {/* <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                             onClick={() => changeAccess('public')}
                           >
@@ -452,8 +462,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                                 )
                               ) : null}
                             </div>
-                          </button>
-
+                          </button> */}
                           {/* Restricted */}
                           <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
@@ -478,19 +487,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               ) : null}
                             </div>
                           </button>
-
                           {/* Stop sharing */}
-                          <button
-                            className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
-                            onClick={() => {
-                              setShowStopSharingConfirmation(true);
-                              close();
-                            }}
-                          >
-                            <p className="text-base font-medium">
-                              {translate('modals.shareModal.general.accessOptions.stopSharing')}
-                            </p>
-                          </button>
+                          {currentUserFolderRole === 'owner' && (
+                            <button
+                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                              onClick={() => {
+                                setShowStopSharingConfirmation(true);
+                                close();
+                              }}
+                            >
+                              <p className="text-base font-medium">
+                                {translate('modals.shareModal.general.accessOptions.stopSharing')}
+                              </p>
+                            </button>
+                          )}
                         </>
                       )}
                     </Popover.Panel>
@@ -499,10 +509,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               </Popover>
             </div>
 
-            <Button variant="primary" onClick={onCopyLink}>
+            {/* <Button variant="primary" onClick={onCopyLink}>
               <Link size={24} />
               <span>{translate('modals.shareModal.general.copyLink')}</span>
-            </Button>
+            </Button> */}
           </div>
 
           {/* Stop sharing confirmation dialog */}

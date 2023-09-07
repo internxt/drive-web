@@ -109,6 +109,14 @@ export default function SharedView(): JSX.Element {
   }, []);
 
   useEffect(() => {
+    if (!currentFolderId && !isShareDialogOpen) {
+      fetchRootItems();
+    } else if (currentFolderId && !isShareDialogOpen) {
+      fetchFolders();
+    }
+  }, [isShareDialogOpen]);
+
+  useEffect(() => {
     if (page === 0) {
       fetchFolders();
     }
