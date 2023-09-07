@@ -426,49 +426,51 @@ export default function SharedView(): JSX.Element {
       }),
     );
 
-    if (files.length < 1000 && currentParentFolderId) {
-      const currentUser = localStorageService.getUser();
-      let ownerUserAuthenticationData;
-
-      const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
-      if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
-        ownerUserAuthenticationData = {
-          bridgeUser: filesOwnerCredentials?.networkUser,
-          bridgePass: filesOwnerCredentials?.networkPass,
-          encryptionKey: currentUser?.mnemonic,
-          bucketId: currentUser.bucket,
-          token: nextResourcesToken,
-        };
-      } else {
-        const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
-        if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket)
-          ownerUserAuthenticationData = {
-            bridgeUser: filesOwnerCredentials?.networkUser,
-            bridgePass: filesOwnerCredentials?.networkPass,
-            encryptionKey: mnemonicDecrypted,
-            bucketId: ownerBucket,
-            token: nextResourcesToken,
-          };
-      }
-
-      await dispatch(
-        storageThunks.uploadSharedItemsThunk({
-          files: Array.from(files),
-          parentFolderId: currentParentFolderId,
-          currentFolderId,
-          ownerUserAuthenticationData,
-        }),
-      );
-
-      setHasMoreItems(true);
-      fetchFiles(true);
-    } else {
+    if (files.length >= 1000 || !currentParentFolderId) {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
         type: ToastType.Warning,
       });
+      return; // Exit the function if the condition fails
     }
+
+    const currentUser = localStorageService.getUser();
+    let ownerUserAuthenticationData;
+
+    const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
+    if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
+      ownerUserAuthenticationData = {
+        bridgeUser: filesOwnerCredentials?.networkUser,
+        bridgePass: filesOwnerCredentials?.networkPass,
+        encryptionKey: currentUser?.mnemonic,
+        bucketId: currentUser.bucket,
+        token: nextResourcesToken,
+      };
+    } else {
+      const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
+      if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
+        ownerUserAuthenticationData = {
+          bridgeUser: filesOwnerCredentials?.networkUser,
+          bridgePass: filesOwnerCredentials?.networkPass,
+          encryptionKey: mnemonicDecrypted,
+          bucketId: ownerBucket,
+          token: nextResourcesToken,
+        };
+      }
+    }
+
+    await dispatch(
+      storageThunks.uploadSharedItemsThunk({
+        files: Array.from(files),
+        parentFolderId: currentParentFolderId,
+        currentFolderId,
+        ownerUserAuthenticationData,
+      }),
+    );
+
+    setHasMoreItems(true);
+    fetchFiles(true);
   };
 
   const downloadItem = async (shareItem: AdvancedSharedItem) => {
