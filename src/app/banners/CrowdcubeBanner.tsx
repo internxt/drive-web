@@ -25,15 +25,18 @@ const CrowdcubeBanner = ({ onCloseBanner, showBanner }): JSX.Element => {
                 Don't just use it, own it. Let's shape a brighter future together!
               </p>
             </div>
-            <button
-              className="flex w-max items-center justify-center rounded-lg bg-white px-5 py-3 text-center font-medium text-primary"
-              onClick={() => {
-                window.open('https://www.crowdcube.eu/early-access/internxt', '_blank', 'noopener');
-                onCloseBanner();
-              }}
-            >
-              Secure your stake
-            </button>
+            <div className="flex flex-col space-y-3">
+              <button
+                className="flex w-max items-center justify-center rounded-lg bg-white px-5 py-3 text-center font-medium text-primary"
+                onClick={() => {
+                  window.open('https://www.crowdcube.eu/early-access/internxt', '_blank', 'noopener');
+                  onCloseBanner();
+                }}
+              >
+                Secure your stake
+              </button>
+              <p className="text-xs font-medium text-gray-5">Capital at Risk</p>
+            </div>
           </div>
           <div className="hidden w-full max-w-xs flex-col items-center justify-center space-y-3 rounded-r-2xl bg-primary md:flex">
             <CrowdcubeInternxt />
