@@ -7,6 +7,7 @@ export type AdvancedSharedItem = SharedFolders &
     isFolder: boolean;
     isRootLink: boolean;
     credentials: NetworkCredentials;
+    sharingId?: string;
   };
 
 export type PreviewFileItem = DriveFileData & {

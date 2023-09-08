@@ -43,6 +43,8 @@ export interface ShareLinksState {
     perPage: number;
     //totalItems: number;
   };
+  currentShareId: string | null;
+  currentSharingRole: Role['name'] | null;
 }
 
 const initialState: ShareLinksState = {
@@ -58,6 +60,8 @@ const initialState: ShareLinksState = {
     perPage: 50,
     //totalItems: 0,
   },
+  currentShareId: null,
+  currentSharingRole: null,
 };
 
 export const fetchSharedLinksThunk = createAsyncThunk<ListShareLinksResponse, void, { state: RootState }>(
@@ -322,6 +326,20 @@ const getPendingInvitations = createAsyncThunk<string | void, void, { state: Roo
   },
 );
 
+// Get role of the user in a sharing folder
+const getCurrentSharingRole = createAsyncThunk<string | void, void, { state: RootState }>(
+  'shareds/getUserSharingRole',
+  async (_, { dispatch }): Promise<string | void> => {
+    try {
+      const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
+
+      dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
+    } catch (err: unknown) {
+      errorService.reportError(err, { extra: { thunk: 'getPendingInvitations' } });
+    }
+  },
+);
+
 export const sharedSlice = createSlice({
   name: 'shared',
   initialState,
@@ -331,6 +349,12 @@ export const sharedSlice = createSlice({
     },
     setPendingInvitations: (state: ShareLinksState, action: PayloadAction<any>) => {
       state.pendingInvitations = action.payload;
+    },
+    setCurrentShareId: (state: ShareLinksState, action: PayloadAction<any>) => {
+      state.currentShareId = action.payload;
+    },
+    setCurrentSharingRole: (state: ShareLinksState, action: PayloadAction<any>) => {
+      state.currentSharingRole = action.payload;
     },
   },
   extraReducers: (builder) => {
