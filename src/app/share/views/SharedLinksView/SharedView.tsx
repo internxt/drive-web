@@ -1,6 +1,5 @@
 import dateService from 'app/core/services/date.service';
-import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, UploadSimple, Users } from '@phosphor-icons/react';
+import { UploadSimple, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef } from 'react';
@@ -29,7 +28,6 @@ import {
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
-import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
@@ -71,8 +69,9 @@ export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
+  const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -444,14 +443,16 @@ export default function SharedView(): JSX.Element {
     const currentUser = localStorageService.getUser();
     let ownerUserAuthenticationData;
 
+    const isSecondLevelOfFoldersOrMore = sharedNamePath.length > 2;
     const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
+    const token = isSecondLevelOfFoldersOrMore ? currentResourcesToken : nextResourcesToken;
     if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
       ownerUserAuthenticationData = {
         bridgeUser: filesOwnerCredentials?.networkUser,
         bridgePass: filesOwnerCredentials?.networkPass,
         encryptionKey: currentUser?.mnemonic,
         bucketId: currentUser.bucket,
-        token: nextResourcesToken,
+        token,
       };
     } else {
       const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
@@ -461,7 +462,7 @@ export default function SharedView(): JSX.Element {
           bridgePass: filesOwnerCredentials?.networkPass,
           encryptionKey: mnemonicDecrypted,
           bucketId: ownerBucket,
-          token: nextResourcesToken,
+          token,
         };
       }
     }
@@ -472,6 +473,7 @@ export default function SharedView(): JSX.Element {
         parentFolderId: currentParentFolderId,
         currentFolderId,
         ownerUserAuthenticationData,
+        isDeepFolder: isSecondLevelOfFoldersOrMore,
       }),
     );
 
@@ -616,7 +618,6 @@ export default function SharedView(): JSX.Element {
   };
 
   const breadcrumbItems = (): BreadcrumbItemData[] => {
-    const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
     const items: BreadcrumbItemData[] = [];
 
     items.push({
