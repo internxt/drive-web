@@ -365,7 +365,8 @@ export default function SharedView(): JSX.Element {
   const downloadItem = async (shareItem: AdvancedSharedItem) => {
     try {
       if (shareItem.isRootLink) {
-        const { credentials, token } = await shareService.getSharedFolderContent(
+        const { credentials } = await shareService.getSharedFolderContent(
+          // folderUUID
           shareItem.uuid,
           'files',
           '',
@@ -381,15 +382,22 @@ export default function SharedView(): JSX.Element {
           dispatch,
           selectedItems,
           encryptionKey: shareItem.encryptionKey,
-          token,
         });
       } else {
+        const { token } = await shareService.getSharedFolderContent(
+          currentFolderId,
+          'files',
+          currentResourcesToken,
+          0,
+          ITEMS_PER_PAGE,
+          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+        );
         await shareService.downloadSharedFiles({
           creds: shareItem.credentials,
           dispatch,
           selectedItems,
           encryptionKey: encryptionKey,
-          token: '',
+          token,
         });
       }
     } catch (err) {

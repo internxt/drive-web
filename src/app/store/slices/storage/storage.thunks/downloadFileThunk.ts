@@ -16,6 +16,7 @@ import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 import { ConnectionLostError } from '../../../../network/requests';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -38,7 +39,7 @@ export const checkIfCachedSourceIsOlder = ({
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
-  file: DriveFileData;
+  file: DriveFileData | SharedFiles;
 }): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
