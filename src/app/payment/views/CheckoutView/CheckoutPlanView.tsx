@@ -103,7 +103,8 @@ export default function CheckoutPlanView(): JSX.Element {
         }
       } else {
         try {
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(planId);
+          const couponCode = coupon === 'null' ? undefined : coupon;
+          const updatedSubscription = await paymentService.updateSubscriptionPrice(planId, couponCode);
           dispatch(planActions.setSubscription(updatedSubscription));
           navigationService.push(AppView.Preferences);
         } catch (err) {
