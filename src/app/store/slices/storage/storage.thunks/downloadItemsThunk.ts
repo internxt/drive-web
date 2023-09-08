@@ -21,6 +21,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
 import { Iterator } from 'app/core/collections';
+import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 
 type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
 
@@ -106,8 +107,8 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
 
 type DownloadItemsAsZipThunkType = {
   items: DriveItemData[];
-  folderIterator: (directoryId: any) => Iterator<DriveFolderData>;
-  fileIterator: (directoryId: any, token?: string) => Iterator<DriveFileData>;
+  folderIterator: FolderIterator | SharedFolderIterator;
+  fileIterator: FileIterator | SharedFileIterator;
   credentials?: {
     user: string | undefined;
     pass: string | undefined;
@@ -115,6 +116,12 @@ type DownloadItemsAsZipThunkType = {
   mnemonic?: string;
   existingTaskId?: string;
 };
+
+type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
+type FileIterator = (directoryId: number) => Iterator<DriveFileData>;
+
+type SharedFolderIterator = (directoryId: string, resourcesToken) => Iterator<SharedFolders>;
+type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<SharedFiles>;
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
@@ -195,20 +202,37 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       file_name: '',
       parent_folder_id: 0,
     };
+
     for (const [index, driveItem] of items.entries()) {
       try {
         if (driveItem.isFolder) {
-          await folderService.downloadFolderAsZip(
-            driveItem.id,
-            driveItem.name,
-            folderIterator,
-            fileIterator,
-            (progress) => {
-              downloadProgress[index] = progress;
-              updateProgressCallback(calculateProgress());
-            },
-            { destination: folder, closeWhenFinished: false, ...moreOptions },
-          );
+          const isSharedFolder = !!driveItem.uuid;
+          if (isSharedFolder) {
+            await folderService.downloadSharedFolderAsZip(
+              driveItem.id,
+              driveItem.name,
+              folderIterator as SharedFolderIterator,
+              fileIterator as SharedFileIterator,
+              (progress) => {
+                downloadProgress[index] = progress;
+                updateProgressCallback(calculateProgress());
+              },
+              driveItem.uuid as string,
+              { destination: folder, closeWhenFinished: false, ...moreOptions },
+            );
+          } else {
+            await folderService.downloadFolderAsZip(
+              driveItem.id,
+              driveItem.name,
+              folderIterator as FolderIterator,
+              fileIterator as FileIterator,
+              (progress) => {
+                downloadProgress[index] = progress;
+                updateProgressCallback(calculateProgress());
+              },
+              { destination: folder, closeWhenFinished: false, ...moreOptions },
+            );
+          }
           downloadProgress[index] = 1;
         } else {
           let fileStream: ReadableStream<Uint8Array> | null = null;

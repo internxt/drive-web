@@ -14,6 +14,8 @@ import {
   AcceptInvitationToSharedFolderPayload,
   SharingInvite,
   UpdateUserRoleResponse,
+  SharedFolders,
+  SharedFiles,
   SharedFoldersInvitationsAsInvitedUserResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
@@ -26,9 +28,7 @@ import localStorageService from '../../core/services/local-storage.service';
 import { downloadItemsAsZipThunk } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { t } from 'i18next';
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 import { Iterator } from '../../core/collections';
-import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
 import { Role } from 'app/store/slices/sharedLinks/types';
 
 interface CreateShareResponse {
@@ -355,49 +355,63 @@ const getFormatFileName = (info): string => {
   return `${info.name}${extension}`;
 };
 
-class DirectoryFilesIterator implements Iterator<DriveFileData> {
+class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
-  private perPage: number;
-  private readonly queryValues: { directoryUuid: string; token: string };
+  private itemsPerPage: number;
+  private readonly queryValues: { directoryId: string; resourcesToken?: string };
 
-  constructor(queryValues: { directoryUuid: string; token: string }, page?: number, perPage?: number) {
+  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
     this.page = page || 0;
-    this.perPage = perPage || 5;
+    this.itemsPerPage = itemsPerPage || 5;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { items, token, credentials } = await httpService.get<ListSharedItemsResponse>(
-      `private-sharing/items/${this.queryValues.directoryUuid}/files?token=${this.queryValues.token}&page=${this.page}&perPage=${this.perPage}`,
+    const { directoryId, resourcesToken } = this.queryValues;
+    const items = await getSharedFolderContent(
+      directoryId,
+      'folders',
+      resourcesToken ?? '',
+      this.page,
+      this.itemsPerPage,
     );
+    const folders = items.items.map((folder) => ({ ...folder, name: folder?.plainName ?? folder.name }));
+    this.page += 1;
 
-    return { value: items as unknown as DriveFileData[], done: items.length === 0 };
+    const done = folders.length < this.itemsPerPage;
+
+    return { value: folders as SharedFolders[], done: done, token: items.token };
   }
 }
 
-class DirectorySharedFoldersIterator implements Iterator<DriveFileData> {
+class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
   private page: number;
-  private perPage: number;
-  private readonly queryValues: { directoryUuid: string; token: string };
+  private itemsPerPage: number;
+  private readonly queryValues: { directoryId: string; resourcesToken?: string };
 
-  constructor(queryValues: { directoryUuid: string; token: string }, page?: number, perPage?: number) {
+  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
     this.page = page || 0;
-    this.perPage = perPage || 5;
+    this.itemsPerPage = itemsPerPage || 15;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { items, token, credentials } = await httpService.get<ListSharedItemsResponse>(
-      `private-sharing/items/${this.queryValues.directoryUuid}/files?token=${this.queryValues.token}&page=${this.page}&perPage=${this.perPage}`,
-    );
+    const { directoryId, resourcesToken } = this.queryValues;
 
-    return { value: items as unknown as DriveFileData[], done: items.length === 0 };
+    const items = await getSharedFolderContent(
+      directoryId,
+      'files',
+      resourcesToken ?? '',
+      this.page,
+      this.itemsPerPage,
+    );
+    const files = items.items.map((file) => ({ ...file, name: file?.plainName ?? file.name }));
+    this.page += 1;
+    const done = files.length < this.itemsPerPage;
+
+    return { value: files, done: done, token: items.token };
   }
 }
-
-// const createFoldersIterator = (directoryUuid: string, token: string) => {
-//   return new DirectorySharedFoldersIterator({ directoryUuid, token }, 0, 20);
-// };
 
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
   const user = localStorageService.getUser();
@@ -434,7 +448,7 @@ export async function downloadSharedFiles({
   encryptionKey: string;
   selectedItems: any[];
   dispatch: any;
-  token: string;
+  token?: string;
 }): Promise<void> {
   const decryptedKey = await decryptMnemonic(encryptionKey);
 
@@ -447,7 +461,7 @@ export async function downloadSharedFiles({
           pass: creds.pass,
           user: creds.user,
         },
-        mnemonic: decryptedKey, // DECRYPTED
+        mnemonic: decryptedKey,
       });
 
       const fileBlob = await binaryStreamToBlob(readable);
@@ -464,6 +478,24 @@ export async function downloadSharedFiles({
       });
     }
   } else {
+    const initPage = 0;
+    const itemsPerPage = 15;
+
+    const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
+      return new DirectorySharedFolderIterator(
+        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+        initPage,
+        itemsPerPage,
+      );
+    };
+
+    const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
+      return new DirectorySharedFilesIterator(
+        { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+        initPage,
+        itemsPerPage,
+      );
+    };
     dispatch(
       downloadItemsAsZipThunk({
         items: selectedItems,
