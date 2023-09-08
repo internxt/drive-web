@@ -2,7 +2,7 @@ import dateService from 'app/core/services/date.service';
 import { UploadSimple, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from '../../../shared/components/Empty/Empty';
@@ -32,7 +32,7 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
+import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import Button from 'app/shared/components/Button/Button';
@@ -302,7 +302,6 @@ export default function SharedView(): JSX.Element {
     if (currentShareId) {
       getSharingUserRole(currentShareId);
     } else {
-      console.log('condition', currentShareId);
       resetCurrentSharingStatus();
     }
   }, [currentShareId]);
@@ -608,6 +607,10 @@ export default function SharedView(): JSX.Element {
     return false;
   };
 
+  const isCurrentUserViewer = useCallback(() => {
+    return currentUserRole === UserRoles.Reader;
+  }, [currentUserRole]);
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -706,23 +709,21 @@ export default function SharedView(): JSX.Element {
             multiple={true}
             data-test="input-file"
           />
-          {!shareItems[0]?.isRootLink &&
-            currentUserRole &&
-            !(currentUserRole !== 'owner' && currentUserRole !== 'editor') && (
-              <Button
-                variant="primary"
-                className="mr-2"
-                onClick={onUploadFileButtonClicked}
-                disabled={shareItems[0]?.isRootLink}
-              >
-                <div className="flex items-center justify-center space-x-2.5">
-                  <div className="flex items-center space-x-2">
-                    <UploadSimple size={24} />
-                    <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
-                  </div>
+          {!shareItems[0]?.isRootLink && currentUserRole && !isCurrentUserViewer() && (
+            <Button
+              variant="primary"
+              className="mr-2"
+              onClick={onUploadFileButtonClicked}
+              disabled={shareItems[0]?.isRootLink}
+            >
+              <div className="flex items-center justify-center space-x-2.5">
+                <div className="flex items-center space-x-2">
+                  <UploadSimple size={24} />
+                  <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
                 </div>
-              </Button>
-            )}
+              </div>
+            </Button>
+          )}
           <Button
             variant="secondary"
             onClick={() => {
@@ -859,7 +860,7 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  renameItem: renameItem,
+                  renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
                   downloadItem: downloadItem,
                   moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,

@@ -438,7 +438,7 @@ const contextMenuDriveItemSharedAFS = ({
       ]
     : [
         manageLinkAccessMenuItem(openShareAccessSettings), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING
-        getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
+        //  getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
       ]),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
@@ -468,7 +468,8 @@ const contextMenuDriveFolderSharedAFS = ({
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
     ? [...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink })]
-    : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
+    : // TODO: UNCOMMENT getGetLinkMenuItem to enable get-link AFS
+      [manageLinkAccessMenuItem(openShareAccessSettings) /* getGetLinkMenuItem(copyLink) */]),
   { name: '', action: () => false, separator: true },
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),

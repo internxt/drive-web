@@ -23,3 +23,9 @@ export type SharedNamePath = {
   token: string | null;
   uuid: string;
 };
+
+export enum UserRoles {
+  Editor = 'editor',
+  Reader = 'reader',
+  Owner = 'owner',
+}

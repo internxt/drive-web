@@ -29,6 +29,7 @@ import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { Role } from './types';
+import { UserRoles } from 'app/share/types';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -44,7 +45,7 @@ export interface ShareLinksState {
     //totalItems: number;
   };
   currentShareId: string | null;
-  currentSharingRole: Role['name'] | null;
+  currentSharingRole: UserRoles | null;
 }
 
 const initialState: ShareLinksState = {
@@ -315,20 +316,6 @@ const getSharedFolderRoles = createAsyncThunk<string | void, void, { state: Root
 // Get pending invitations
 const getPendingInvitations = createAsyncThunk<string | void, void, { state: RootState }>(
   'shareds/getPendingInvitations',
-  async (_, { dispatch }): Promise<string | void> => {
-    try {
-      const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
-
-      dispatch(sharedActions.setPendingInvitations(pendingInvitations.invites));
-    } catch (err: unknown) {
-      errorService.reportError(err, { extra: { thunk: 'getPendingInvitations' } });
-    }
-  },
-);
-
-// Get role of the user in a sharing folder
-const getCurrentSharingRole = createAsyncThunk<string | void, void, { state: RootState }>(
-  'shareds/getUserSharingRole',
   async (_, { dispatch }): Promise<string | void> => {
     try {
       const pendingInvitations = await getSharedFolderInvitationsAsInvitedUser({});
