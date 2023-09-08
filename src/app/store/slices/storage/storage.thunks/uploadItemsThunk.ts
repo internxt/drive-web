@@ -154,6 +154,7 @@ interface UploadSharedItemsPayload {
     encryptionKey: string;
     bucketId: string;
   };
+  isDeepFolder: boolean;
 }
 /**
  * @description
@@ -163,7 +164,14 @@ interface UploadSharedItemsPayload {
 export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async (
-    { files, parentFolderId, options, ownerUserAuthenticationData, currentFolderId }: UploadSharedItemsPayload,
+    {
+      files,
+      parentFolderId,
+      options,
+      ownerUserAuthenticationData,
+      currentFolderId,
+      isDeepFolder,
+    }: UploadSharedItemsPayload,
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
@@ -213,7 +221,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         const parentFolderContent = await shareService.getSharedFolderContent(
           currentFolderId,
           'files',
-          '',
+          isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
           page,
           offset,
         );
