@@ -136,7 +136,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           <div className="relative">
             <Listbox.Button value={userRole} name="userRole">
               <Button variant="secondary">
-                <span className="capitalize">{userRole}</span>
+                <span>{translate(`modals.shareModal.invite.${userRole.toLowerCase()}`)}</span>
                 <CaretDown size={24} />
               </Button>
             </Listbox.Button>

@@ -16,6 +16,7 @@ import {
   UpdateUserRoleResponse,
   SharedFolders,
   SharedFiles,
+  SharedFoldersInvitationsAsInvitedUserResponse,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -224,9 +225,16 @@ export function getSharedFolderInvitationsAsInvitedUser({
 }: {
   limit?: number;
   offset?: number;
-}): Promise<{ invites: any }> {
+}): Promise<{ invites: SharedFoldersInvitationsAsInvitedUserResponse[] }> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharedFolderInvitationsAsInvitedUser({ limit, offset }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function declineSharedFolderInvite({ invitationId }: { invitationId: string }): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.declineSharedFolderInvite(invitationId).catch((error) => {
     throw errorService.castError(error);
   });
 }

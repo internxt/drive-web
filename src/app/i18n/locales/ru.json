@@ -683,6 +683,14 @@
         "confirmation": "Вы получите электронное письмо, если файл/папка открыта для вас"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "Нет доступных приглашений",
+      "title": "В ожидании приглашений",
+      "accept": "Принять",
+      "deny": "Отклонить",
+      "sharedWith": "Доступно для вас ",
+      "todayAt": "сегодня в "
+    },
     "deletePhotosModal": {
       "multiToolBar": "выбранные файлы",
       "singleToolBar": "выбранный файл",

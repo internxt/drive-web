@@ -645,6 +645,14 @@
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
       }
     },
+    "sharedInvitationsModal": {
+      "empty": "Aucune invitation restante",
+      "title": "Invitations en attente",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "sharedWith": "Partagé avec vous ",
+      "todayAt": "aujourd'hui à "
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",

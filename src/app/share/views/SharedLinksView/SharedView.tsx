@@ -1,10 +1,10 @@
-import dateService from '../../../core/services/date.service';
-import BaseButton from '../../../shared/components/forms/BaseButton';
-import { Trash, Users } from '@phosphor-icons/react';
-import List from '../../../shared/components/List';
+import dateService from 'app/core/services/date.service';
+import BaseButton from 'app/shared/components/forms/BaseButton';
+import { Trash, UploadSimple, Users } from '@phosphor-icons/react';
+import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, useEffect } from 'react';
-import iconService from '../../../drive/services/icon.service';
+import { useState, useEffect, useRef } from 'react';
+import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from '../../../shared/components/Empty/Empty';
 import emptyStateIcon from 'assets/icons/file-types/default.svg';
@@ -35,9 +35,14 @@ import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
-import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
-import { getItemPlainName } from '../../../crypto/services/utils';
+import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { getItemPlainName } from '../../../../app/crypto/services/utils';
+import Button from 'app/shared/components/Button/Button';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { RootState } from 'app/store';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -48,11 +53,25 @@ function copyShareLink(type: string, code: string, token: string) {
 
 export const ITEMS_PER_PAGE = 15;
 
+const removeDuplicates = (list: AdvancedSharedItem[]) => {
+  const hash = {};
+  return list.filter((obj) => {
+    const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;
+
+    if (hash[key]) {
+      return false;
+    }
+    hash[key] = true;
+    return true;
+  });
+};
+
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
 export default function SharedView(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
@@ -69,9 +88,18 @@ export default function SharedView(): JSX.Element {
   const [nextResourcesToken, setNextResourcesToken] = useState<string>('');
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
+  const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
   const [encryptionKey, setEncryptionKey] = useState<string>('');
+  const [filesOwnerCredentials, setFilesOwnerCredentials] = useState<{
+    networkPass: string;
+    networkUser: string;
+  }>();
+  const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
+  const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
+  const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
   useEffect(() => {
+    dispatch(sharedThunks.getPendingInvitations());
     if (page === 0) {
       fetchRootItems();
       dispatch(storageActions.resetSharedNamePath());
@@ -79,8 +107,12 @@ export default function SharedView(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    if (!isShowInvitationsOpen) fetchRootItems();
-  }, [isShowInvitationsOpen]);
+    if (!currentFolderId && !isShareDialogOpen) {
+      fetchRootItems();
+    } else if (currentFolderId && !isShareDialogOpen) {
+      fetchFolders();
+    }
+  }, [isShareDialogOpen]);
 
   useEffect(() => {
     if (page === 0) {
@@ -105,6 +137,12 @@ export default function SharedView(): JSX.Element {
       fetchFiles();
     }
   }, [page]);
+
+  function onShowInvitationsModalClose() {
+    dispatch(sharedThunks.getPendingInvitations());
+    fetchRootItems();
+    dispatch(uiActions.setIsInvitationsDialogOpen(false));
+  }
 
   const fetchRootItems = async () => {
     setIsLoading(true);
@@ -195,21 +233,30 @@ export default function SharedView(): JSX.Element {
     }
   };
 
-  const fetchFiles = async () => {
-    if (currentFolderId && !hasMoreFolders && hasMoreItems) {
+  const fetchFiles = async (forceFetch?: boolean) => {
+    if (currentFolderId && !hasMoreFolders && (hasMoreItems || forceFetch)) {
       setIsLoading(true);
       try {
-        const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
-          currentFolderId,
-          'files',
-          currentResourcesToken,
-          page,
-          ITEMS_PER_PAGE,
-          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-        );
+        const response: ListSharedItemsResponse & { bucket: string; encryptionKey: string } =
+          (await shareService.getSharedFolderContent(
+            currentFolderId,
+            'files',
+            currentResourcesToken,
+            page,
+            ITEMS_PER_PAGE,
+            orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+          )) as ListSharedItemsResponse & { bucket: string; encryptionKey: string };
 
         const token = response.token;
         setNextResourcesToken(token);
+
+        const networkPass = response.credentials.networkPass;
+        const networkUser = response.credentials.networkUser;
+        setFilesOwnerCredentials({ networkPass, networkUser });
+        const bucket = response.bucket;
+        setOwnerBucket(bucket);
+        const ownerMnemonincEncrypted = response.encryptionKey;
+        setOwnerEncryptionKey(ownerMnemonincEncrypted);
 
         const files = response.items.map((file) => {
           const shareItem = file as AdvancedSharedItem;
@@ -221,7 +268,8 @@ export default function SharedView(): JSX.Element {
         });
 
         const items = [...shareItems, ...files];
-        setShareItems(items);
+        const itemsWithoutDuplicates = removeDuplicates(items);
+        setShareItems(itemsWithoutDuplicates);
 
         if (files.length < ITEMS_PER_PAGE) {
           setHasMoreItems(false);
@@ -263,6 +311,7 @@ export default function SharedView(): JSX.Element {
       setHasMoreFolders(true);
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
+      setCurrentParentFolderId(shareItem.id);
     } else {
       openPreview(shareItem);
     }
@@ -360,6 +409,74 @@ export default function SharedView(): JSX.Element {
       isFolder: shareItem.isFolder,
     };
     await moveItemsToTrash([itemToTrash]);
+  };
+
+  const onUploadFileButtonClicked = (): void => {
+    errorService.addBreadcrumb({
+      level: 'info',
+      category: 'button',
+      message: 'File upload button clicked',
+      data: {
+        currentFolderId: currentFolderId,
+      },
+    });
+    fileInputRef.current?.click();
+  };
+
+  const onUploadFileInputChanged = async (e) => {
+    const files = e.target.files;
+    dispatch(
+      storageActions.setItems({
+        folderId: currentParentFolderId as number,
+        items: shareItems as unknown as DriveItemData[],
+      }),
+    );
+
+    if (files.length >= 1000 || !currentParentFolderId) {
+      dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
+      notificationsService.show({
+        text: 'The maximum is 1000 files per upload.',
+        type: ToastType.Warning,
+      });
+      return; // Exit the function if the condition fails
+    }
+
+    const currentUser = localStorageService.getUser();
+    let ownerUserAuthenticationData;
+
+    const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
+    if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {
+      ownerUserAuthenticationData = {
+        bridgeUser: filesOwnerCredentials?.networkUser,
+        bridgePass: filesOwnerCredentials?.networkPass,
+        encryptionKey: currentUser?.mnemonic,
+        bucketId: currentUser.bucket,
+        token: nextResourcesToken,
+      };
+    } else {
+      const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
+      if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
+        ownerUserAuthenticationData = {
+          bridgeUser: filesOwnerCredentials?.networkUser,
+          bridgePass: filesOwnerCredentials?.networkPass,
+          encryptionKey: mnemonicDecrypted,
+          bucketId: ownerBucket,
+          token: nextResourcesToken,
+        };
+      }
+    }
+
+    await dispatch(
+      storageThunks.uploadSharedItemsThunk({
+        files: Array.from(files),
+        parentFolderId: currentParentFolderId,
+        currentFolderId,
+        ownerUserAuthenticationData,
+      }),
+    );
+
+    setHasMoreItems(true);
+    fetchFiles(true);
   };
 
   const downloadItem = async (shareItem: AdvancedSharedItem) => {
@@ -550,27 +667,41 @@ export default function SharedView(): JSX.Element {
           data-tooltip-content={translate('shared-links.item-menu.delete-link')}
           data-tooltip-place="bottom"
         >
-          <BaseButton
-            onClick={(e) => {
-              e.stopPropagation();
+          <input
+            className="hidden"
+            ref={fileInputRef}
+            type="file"
+            onChange={(e) => onUploadFileInputChanged(e)}
+            multiple={true}
+            data-test="input-file"
+          />
+
+          <Button
+            variant="primary"
+            className="mr-2"
+            onClick={onUploadFileButtonClicked}
+            disabled={shareItems[0]?.isRootLink}
+          >
+            <div className="flex items-center justify-center space-x-2.5">
+              <div className="flex items-center space-x-2">
+                <UploadSimple size={24} />
+                <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+              </div>
+            </div>
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={() => {
               dispatch(uiActions.setIsInvitationsDialogOpen(true));
             }}
-            className="tertiary squared"
-            disabled={false}
           >
-            <Users size={24} />
-          </BaseButton>
-          <BaseButton
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsDeleteDialogModalOpen(true);
-            }}
-            className="tertiary squared"
-            disabled={!(selectedItems.length > 0)}
-          >
-            <Trash size={24} />
-          </BaseButton>
-          <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
+            <p className="space-x-2">
+              Pending Invitations{' '}
+              <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+                {pendingInvitations.length > 0 ? pendingInvitations.length : 0}
+              </span>
+            </p>
+          </Button>
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
@@ -578,7 +709,7 @@ export default function SharedView(): JSX.Element {
           header={[
             {
               label: translate('shared-links.list.name'),
-              width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-104 truncate flex-shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'folder',
               orderable: false,
             },
@@ -622,7 +753,10 @@ export default function SharedView(): JSX.Element {
                       <Users size={12} color="white" weight="fill" />
                     </div>
                   </div>
-                  <div className="w-full max-w-full pr-16" onDoubleClick={() => onItemDoubleClicked(shareItem)}>
+                  <div
+                    className="w-full max-w-full truncate pr-16"
+                    onDoubleClick={() => onItemDoubleClicked(shareItem)}
+                  >
                     <span
                       onClick={() => onNameClicked(shareItem)}
                       className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
@@ -731,8 +865,9 @@ export default function SharedView(): JSX.Element {
         isOpen={isEditNameDialogOpen}
         onClose={onCloseEditNameItems}
       />
+      <NameCollisionContainer />
       {isShareDialogOpen && <ShareDialog />}
-      {isShowInvitationsOpen && <ShowInvitationsDialog />}
+      {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
         onClose={closeConfirmDelete}
