@@ -157,7 +157,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction);
+        // TODO:  change function name or separate logic to prevent confusions between moving and restoring
+        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
       props.onItemsMoved && props.onItemsMoved();
