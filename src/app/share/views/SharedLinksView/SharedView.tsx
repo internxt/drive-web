@@ -2,7 +2,7 @@ import dateService from 'app/core/services/date.service';
 import { UploadSimple, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from '../../../shared/components/Empty/Empty';
@@ -32,14 +32,14 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import envService from '../../../core/services/env.service';
-import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath } from '../../../share/types';
+import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import Button from 'app/shared/components/Button/Button';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
 import { RootState } from 'app/store';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
@@ -71,6 +71,9 @@ export default function SharedView(): JSX.Element {
   const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
   const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
   const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
+  const currentShareId = useAppSelector((state) => state.shared.currentShareId);
+  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
@@ -145,7 +148,7 @@ export default function SharedView(): JSX.Element {
 
   const fetchRootItems = async () => {
     setIsLoading(true);
-
+    resetCurrentSharingStatus();
     setCurrentResourcesToken('');
     setNextResourcesToken('');
 
@@ -281,6 +284,28 @@ export default function SharedView(): JSX.Element {
     }
   };
 
+  const getSharingUserRole = async (sharingId: string) => {
+    try {
+      const role = await shareService.getUserRoleOfSharedRolder(sharingId);
+      if (role.name) dispatch(sharedActions.setCurrentSharingRole(role.name.toLowerCase()));
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const resetCurrentSharingStatus = () => {
+    dispatch(sharedActions.setCurrentShareId(null));
+    dispatch(sharedActions.setCurrentSharingRole(null));
+  };
+
+  useEffect(() => {
+    if (currentShareId) {
+      getSharingUserRole(currentShareId);
+    } else {
+      resetCurrentSharingStatus();
+    }
+  }, [currentShareId]);
+
   const onItemDoubleClicked = (shareItem: AdvancedSharedItem) => {
     dispatch(
       storageActions.pushSharedNamePath({
@@ -290,6 +315,10 @@ export default function SharedView(): JSX.Element {
         uuid: shareItem.uuid,
       }),
     );
+
+    if (shareItem.sharingId) {
+      dispatch(sharedActions.setCurrentShareId(shareItem.sharingId));
+    }
 
     if (shareItem.isFolder) {
       const sharedFolderId = shareItem.uuid;
@@ -578,6 +607,10 @@ export default function SharedView(): JSX.Element {
     return false;
   };
 
+  const isCurrentUserViewer = useCallback(() => {
+    return currentUserRole === UserRoles.Reader;
+  }, [currentUserRole]);
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -676,20 +709,21 @@ export default function SharedView(): JSX.Element {
             multiple={true}
             data-test="input-file"
           />
-
-          <Button
-            variant="primary"
-            className="mr-2"
-            onClick={onUploadFileButtonClicked}
-            disabled={shareItems[0]?.isRootLink}
-          >
-            <div className="flex items-center justify-center space-x-2.5">
-              <div className="flex items-center space-x-2">
-                <UploadSimple size={24} />
-                <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+          {!shareItems[0]?.isRootLink && currentUserRole && !isCurrentUserViewer() && (
+            <Button
+              variant="primary"
+              className="mr-2"
+              onClick={onUploadFileButtonClicked}
+              disabled={shareItems[0]?.isRootLink}
+            >
+              <div className="flex items-center justify-center space-x-2.5">
+                <div className="flex items-center space-x-2">
+                  <UploadSimple size={24} />
+                  <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
+                </div>
               </div>
-            </div>
-          </Button>
+            </Button>
+          )}
           <Button
             variant="secondary"
             onClick={() => {
@@ -826,7 +860,7 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  renameItem: renameItem,
+                  renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
                   downloadItem: downloadItem,
                   moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,

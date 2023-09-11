@@ -252,6 +252,13 @@ export function acceptSharedFolderInvite({
   });
 }
 
+export function getUserRoleOfSharedRolder(sharingId: string): Promise<Role> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getUserRole(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function updateUserRoleOfSharedFolder({
   newRoleId,
   sharingId,
@@ -531,6 +538,7 @@ const shareService = {
   downloadSharedFiles,
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
+  getUserRoleOfSharedRolder,
 };
 
 export default shareService;

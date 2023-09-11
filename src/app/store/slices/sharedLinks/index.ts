@@ -29,6 +29,7 @@ import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { Role } from './types';
+import { UserRoles } from 'app/share/types';
 
 export interface ShareLinksState {
   isLoadingGeneratingLink: boolean;
@@ -43,6 +44,8 @@ export interface ShareLinksState {
     perPage: number;
     //totalItems: number;
   };
+  currentShareId: string | null;
+  currentSharingRole: UserRoles | null;
 }
 
 const initialState: ShareLinksState = {
@@ -58,6 +61,8 @@ const initialState: ShareLinksState = {
     perPage: 50,
     //totalItems: 0,
   },
+  currentShareId: null,
+  currentSharingRole: null,
 };
 
 export const fetchSharedLinksThunk = createAsyncThunk<ListShareLinksResponse, void, { state: RootState }>(
@@ -331,6 +336,12 @@ export const sharedSlice = createSlice({
     },
     setPendingInvitations: (state: ShareLinksState, action: PayloadAction<any>) => {
       state.pendingInvitations = action.payload;
+    },
+    setCurrentShareId: (state: ShareLinksState, action: PayloadAction<any>) => {
+      state.currentShareId = action.payload;
+    },
+    setCurrentSharingRole: (state: ShareLinksState, action: PayloadAction<any>) => {
+      state.currentSharingRole = action.payload;
     },
   },
   extraReducers: (builder) => {

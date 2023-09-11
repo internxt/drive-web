@@ -7,6 +7,7 @@ export type AdvancedSharedItem = SharedFolders &
     isFolder: boolean;
     isRootLink: boolean;
     credentials: NetworkCredentials;
+    sharingId?: string;
   };
 
 export type PreviewFileItem = DriveFileData & {
@@ -22,3 +23,9 @@ export type SharedNamePath = {
   token: string | null;
   uuid: string;
 };
+
+export enum UserRoles {
+  Editor = 'editor',
+  Reader = 'reader',
+  Owner = 'owner',
+}

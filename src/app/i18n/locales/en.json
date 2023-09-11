@@ -1104,6 +1104,7 @@
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
+    "moveItems": "{{itemsToMove}} moved successfully",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
