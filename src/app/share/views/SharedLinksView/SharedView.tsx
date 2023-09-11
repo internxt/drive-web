@@ -423,12 +423,20 @@ export default function SharedView(): JSX.Element {
       : dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
+  const removeItemsFromList = () => {
+    const selectedItemsIDs = new Set(selectedItems.map((selectedItem) => selectedItem.id));
+    const newShareList = shareItems.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
+
+    setShareItems(newShareList);
+  };
+
   const moveSelectedItemsToTrash = async () => {
     const itemsToTrash = selectedItems.map((selectedShareItem) => ({
       ...(selectedShareItem as DriveItemData),
       isFolder: selectedShareItem.isFolder,
     }));
-    await moveItemsToTrash(itemsToTrash);
+
+    await moveItemsToTrash(itemsToTrash, removeItemsFromList);
   };
 
   const moveToTrash = async (shareItem: AdvancedSharedItem) => {
@@ -436,7 +444,8 @@ export default function SharedView(): JSX.Element {
       ...(shareItem as unknown as DriveItemData),
       isFolder: shareItem.isFolder,
     };
-    await moveItemsToTrash([itemToTrash]);
+
+    await moveItemsToTrash([itemToTrash], removeItemsFromList);
   };
 
   const onUploadFileButtonClicked = (): void => {
