@@ -95,6 +95,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             itemType: 'folder',
             roleId: userRoleId,
             sharedWith: email,
+            notifyUser,
+            notificationMessage: messageText,
           }),
         ),
       );
@@ -111,6 +113,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               itemType: 'folder',
               roleId: userRoleId,
               sharedWith: user.email,
+              notifyUser,
+              notificationMessage: messageText,
             }),
           ),
         );
