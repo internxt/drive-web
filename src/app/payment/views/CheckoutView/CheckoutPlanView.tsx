@@ -105,7 +105,7 @@ export default function CheckoutPlanView(): JSX.Element {
         try {
           const couponCode = coupon === 'null' ? undefined : coupon;
           const updatedSubscription = await paymentService.updateSubscriptionPrice(planId, couponCode);
-          dispatch(planActions.setSubscription(updatedSubscription));
+          dispatch(planActions.setSubscription(updatedSubscription.userSubscription));
           navigationService.push(AppView.Preferences);
         } catch (err) {
           console.error(err);
