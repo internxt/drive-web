@@ -183,6 +183,8 @@ export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state
 export interface ShareFileWithUserPayload {
   itemId: string;
   itemType: 'file' | 'folder';
+  notifyUser: boolean;
+  notificationMessage?: string;
   sharedWith: string;
   encryptionAlgorithm: string;
   roleId: string;
@@ -214,6 +216,8 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         itemId: payload.itemId,
         itemType: payload.itemType,
         sharedWith: payload.sharedWith,
+        notifyUser: payload.notifyUser,
+        notificationMessage: payload.notificationMessage,
         encryptionKey: encryptedMnemonicInBase64,
         encryptionAlgorithm: payload.encryptionAlgorithm,
         roleId: payload.roleId,
