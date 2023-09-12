@@ -115,6 +115,7 @@ type DownloadItemsAsZipThunkType = {
   };
   mnemonic?: string;
   existingTaskId?: string;
+  areSharedItems?: boolean;
 };
 
 type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
@@ -125,7 +126,10 @@ type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<Shar
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async ({ items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator }, { rejectWithValue }) => {
+  async (
+    { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems },
+    { rejectWithValue },
+  ) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -206,7 +210,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     for (const [index, driveItem] of items.entries()) {
       try {
         if (driveItem.isFolder) {
-          const isSharedFolder = !!driveItem.uuid;
+          const isSharedFolder = areSharedItems;
           if (isSharedFolder) {
             await folderService.downloadSharedFolderAsZip(
               driveItem.id,
