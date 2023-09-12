@@ -102,7 +102,10 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(priceId: string, coupon?: string): Promise<UserSubscription> {
+  async updateSubscriptionPrice(
+    priceId: string,
+    coupon?: string,
+  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.updateSubscriptionPrice(priceId, coupon);
