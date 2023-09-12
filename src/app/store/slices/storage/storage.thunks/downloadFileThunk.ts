@@ -22,6 +22,10 @@ interface DownloadFileThunkOptions {
   taskId: string;
   showNotifications?: boolean;
   showErrors?: boolean;
+  sharingOptions?: {
+    credentials: any;
+    mnemonic: string;
+  };
 }
 
 interface DownloadFileThunkPayload {
@@ -94,7 +98,13 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
         saveAs(cachedFile?.source, completeFileName);
       } else {
-        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+        await downloadService.downloadFile(
+          file,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+          options.sharingOptions,
+        );
       }
 
       tasksService.updateTask({
