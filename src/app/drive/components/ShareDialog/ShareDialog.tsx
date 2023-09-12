@@ -8,7 +8,7 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
+import { ArrowLeft, CaretDown, Check, CheckCircle, UserPlus, Users, X } from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -74,6 +74,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
@@ -398,6 +399,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   onRemoveUser={onRemoveUser}
                   userOptionsEmail={userOptionsEmail}
                   onChangeRole={handleUserRoleChange}
+                  disableUserOptionsPanel={currentUserFolderRole !== 'owner'}
                 />
               ))}
             </div>
@@ -762,6 +764,7 @@ const User = ({
   onRemoveUser,
   userOptionsEmail,
   onChangeRole,
+  disableUserOptionsPanel,
 }: {
   user: InvitedUserProps;
   listPosition: number | null;
@@ -776,6 +779,7 @@ const User = ({
   onRemoveUser;
   userOptionsEmail;
   onChangeRole: (email: string, roleName: string) => void;
+  disableUserOptionsPanel: boolean;
 }) => (
   <div
     className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
@@ -793,8 +797,8 @@ const User = ({
       </p>
     </div>
 
-    {user.roleName === 'owner' ? (
-      <div className="px-3 text-gray-50">{translate('modals.shareModal.list.userItem.roles.owner')}</div>
+    {user.roleName === 'owner' || disableUserOptionsPanel ? (
+      <div className="px-3 text-gray-50">{translate(`modals.shareModal.list.userItem.roles.${user.roleName}`)}</div>
     ) : (
       <>
         <div

@@ -7,7 +7,6 @@ import {
   Copy,
   DownloadSimple,
   Eye,
-  Gear,
   Link,
   LinkBreak,
   PencilSimple,
@@ -51,25 +50,15 @@ const getDeleteLinkMenuItem = (deleteLink: (target?) => void) => ({
 
 const getSharedLinkMenuItems = ({
   copyLink,
-  openLinkSettings,
   deleteLink,
 }: {
   copyLink: (target?) => void;
-  openLinkSettings: (target?) => void;
   deleteLink: (target?) => void;
 }) => [
   {
     name: t('drive.dropdown.copyLink'),
     icon: Copy,
     action: copyLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  {
-    name: t('drive.dropdown.linkSettings'),
-    icon: Gear,
-    action: openLinkSettings,
     disabled: () => {
       return false;
     },
@@ -199,7 +188,7 @@ const contextMenuDriveNotSharedLink = ({
 }): ListItemMenu<DriveItemData> => [
   ...(isProduction ? [getOpenPreviewMenuItem(openPreview)] : []),
   // TODO: REMOVE isProduction values when release ADVANCED SHARING
-  ...(isProduction ? [] : [shareLinkMenuItem(shareLink)]),
+  // ...(isProduction ? [] : [shareLinkMenuItem(shareLink)]),
   getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
@@ -256,11 +245,11 @@ const contextMenuDriveItemShared = ({
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
   ...(isProduction
-    ? [
-        getOpenPreviewMenuItem(openPreview),
-        ...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink }),
-      ]
-    : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
+    ? [getOpenPreviewMenuItem(openPreview), ...getSharedLinkMenuItems({ copyLink, deleteLink })]
+    : [
+        //manageLinkAccessMenuItem(openShareAccessSettings),
+        getGetLinkMenuItem(copyLink),
+      ]),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
   getRenameMenuItem(renameItem),
@@ -288,7 +277,7 @@ const contextMenuDriveFolderShared = ({
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
   ...(isProduction
-    ? [...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink })]
+    ? [...getSharedLinkMenuItems({ copyLink, deleteLink })]
     : [manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)]),
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
@@ -405,7 +394,6 @@ const contextMenuDriveItemSharedsView = ({
     ? [
         ...getSharedLinkMenuItems({
           copyLink: copyShareLink,
-          openLinkSettings: openShareAccessSettings,
           deleteLink: () => deleteLink(true),
         }),
       ]
@@ -424,7 +412,7 @@ const contextMenuDriveItemSharedAFS = ({
 }: {
   openPreview: (item: AdvancedSharedItem) => void;
   copyLink: (item: AdvancedSharedItem) => void;
-  openShareAccessSettings: (item: AdvancedSharedItem) => void;
+  openShareAccessSettings?: (item: AdvancedSharedItem) => void;
   deleteLink: (item: AdvancedSharedItem) => void;
   renameItem?: (item: AdvancedSharedItem) => void;
   moveItem?: (item: AdvancedSharedItem) => void;
@@ -432,15 +420,11 @@ const contextMenuDriveItemSharedAFS = ({
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   ...(isProduction
-    ? [
-        getOpenPreviewMenuItem(openPreview),
-        ...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink }),
-      ]
+    ? [getOpenPreviewMenuItem(openPreview), ...getSharedLinkMenuItems({ copyLink, deleteLink })]
     : [
-        manageLinkAccessMenuItem(openShareAccessSettings), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING
         //  getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
       ]),
-  { name: '', action: () => false, separator: true },
+  isProduction ? { name: '', action: () => false, separator: true } : undefined,
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
@@ -466,11 +450,9 @@ const contextMenuDriveFolderSharedAFS = ({
   downloadItem: (item: AdvancedSharedItem) => Promise<void>;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
-  ...(isProduction
-    ? [...getSharedLinkMenuItems({ copyLink, openLinkSettings: openShareAccessSettings, deleteLink })]
-    : // TODO: UNCOMMENT getGetLinkMenuItem to enable get-link AFS
-      [manageLinkAccessMenuItem(openShareAccessSettings) /* getGetLinkMenuItem(copyLink) */]),
-  { name: '', action: () => false, separator: true },
+  manageLinkAccessMenuItem(openShareAccessSettings),
+  // TODO: UNCOMMENT getGetLinkMenuItem to enable get-link AFS
+  /* getGetLinkMenuItem(copyLink) */ { name: '', action: () => false, separator: true },
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
