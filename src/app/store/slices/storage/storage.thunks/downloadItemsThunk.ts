@@ -23,7 +23,13 @@ import analyticsService from '../../../../analytics/services/analytics.service';
 import { Iterator } from 'app/core/collections';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 
-type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
+type DownloadItemsThunkPayload = (DriveItemData & {
+  taskId?: string;
+  sharingOptions?: {
+    credentials: { pass: string; user: string };
+    mnemonic: string;
+  };
+})[];
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
@@ -90,12 +96,22 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
           }),
         );
       } else {
-        await dispatch(
-          storageThunks.downloadFileThunk({
-            file: item as DriveFileData,
-            options: { taskId },
-          }),
-        );
+        const isSharedFile = !!item.sharingOptions;
+        if (isSharedFile && item.sharingOptions) {
+          await dispatch(
+            storageThunks.downloadFileThunk({
+              file: item as DriveFileData,
+              options: { taskId, sharingOptions: item.sharingOptions },
+            }),
+          );
+        } else {
+          await dispatch(
+            storageThunks.downloadFileThunk({
+              file: item as DriveFileData,
+              options: { taskId },
+            }),
+          );
+        }
       }
     }
 

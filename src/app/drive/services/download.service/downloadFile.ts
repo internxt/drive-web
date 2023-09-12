@@ -8,6 +8,7 @@ import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
+import { downloadFile as networkDownloadFile } from 'app/network/download';
 
 interface BlobWritable {
   getWriter: () => {
@@ -82,6 +83,7 @@ export default async function downloadFile(
   isTeam: boolean,
   updateProgressCallback: (progress: number) => void,
   abortController?: AbortController,
+  sharingOptions?: { credentials: { user: string; pass: string }; mnemonic: string },
 ): Promise<void> {
   const fileId = itemData.fileId;
   const completeFilename = itemData.type ? `${itemData.name}.${itemData.type}` : `${itemData.name}`;
@@ -119,10 +121,24 @@ export default async function downloadFile(
   };
   analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
 
-  const fileStreamPromise = fetchFileStream(
-    { ...itemData, bucketId: itemData.bucket },
-    { isTeam, updateProgressCallback, abortController },
-  );
+  const fileStreamPromise = !sharingOptions
+    ? fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback, abortController })
+    : // TODO: Move this to another file...
+      networkDownloadFile({
+        fileId: itemData.fileId,
+        bucketId: itemData.bucket,
+        creds: {
+          user: sharingOptions.credentials.user,
+          pass: sharingOptions.credentials.pass,
+        },
+        mnemonic: sharingOptions.mnemonic,
+        options: {
+          notifyProgress: (totalBytes, downloadedBytes) => {
+            const progress = downloadedBytes / totalBytes;
+            updateProgressCallback(progress);
+          },
+        },
+      });
 
   let connectionLost = false;
   try {

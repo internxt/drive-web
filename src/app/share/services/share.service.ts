@@ -25,7 +25,10 @@ import downloadService from '../../drive/services/download.service';
 import network from '../../network';
 import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import localStorageService from '../../core/services/local-storage.service';
-import { downloadItemsAsZipThunk } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import {
+  downloadItemsAsZipThunk,
+  downloadItemsThunk,
+} from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
@@ -461,19 +464,12 @@ export async function downloadSharedFiles({
 
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
     try {
-      const readable = await network.downloadFile({
-        bucketId: selectedItems[0].bucket,
-        fileId: selectedItems[0].fileId,
-        creds: {
-          pass: creds.pass,
-          user: creds.user,
-        },
+      const sharingOptions = {
+        credentials: { ...creds },
         mnemonic: decryptedKey,
-      });
+      };
 
-      const fileBlob = await binaryStreamToBlob(readable);
-
-      return downloadService.downloadFileFromBlob(fileBlob, getFormatFileName(selectedItems[0]));
+      dispatch(downloadItemsThunk([{ ...selectedItems[0], sharingOptions }]));
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
