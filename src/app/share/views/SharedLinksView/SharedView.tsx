@@ -868,7 +868,6 @@ export default function SharedView(): JSX.Element {
                   openPreview: openPreview,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  openShareAccessSettings,
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
                   downloadItem: downloadItem,
