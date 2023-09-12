@@ -8,7 +8,7 @@ import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
-import { downloadFile as networkDownloadFile } from 'app/network/download';
+import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
 
 interface BlobWritable {
   getWriter: () => {
@@ -123,22 +123,18 @@ export default async function downloadFile(
 
   const fileStreamPromise = !sharingOptions
     ? fetchFileStream({ ...itemData, bucketId: itemData.bucket }, { isTeam, updateProgressCallback, abortController })
-    : // TODO: Move this to another file...
-      networkDownloadFile({
-        fileId: itemData.fileId,
-        bucketId: itemData.bucket,
-        creds: {
-          user: sharingOptions.credentials.user,
-          pass: sharingOptions.credentials.pass,
-        },
-        mnemonic: sharingOptions.mnemonic,
-        options: {
-          notifyProgress: (totalBytes, downloadedBytes) => {
-            const progress = downloadedBytes / totalBytes;
-            updateProgressCallback(progress);
+    : fetchFileStreamWithCreds(
+        { ...itemData, bucketId: itemData.bucket },
+        {
+          updateProgressCallback,
+          abortController,
+          creds: {
+            user: sharingOptions.credentials.user,
+            pass: sharingOptions.credentials.pass,
           },
+          mnemonic: sharingOptions.mnemonic,
         },
-      });
+      );
 
   let connectionLost = false;
   try {
