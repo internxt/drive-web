@@ -510,6 +510,7 @@ export async function downloadSharedFiles({
         mnemonic: decryptedKey as string,
         fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
+        areSharedItems: true,
       }),
     );
   }

@@ -533,7 +533,7 @@ async function downloadFolderAsZip(
             updateProgress(1);
             return cachedFile.source.stream();
           }
-          console.log({ file });
+
           trackingDownloadProperties = {
             process_identifier: analyticsProcessIdentifier,
             file_id: typeof file.id === 'string' ? parseInt(file.id) : file.id,
@@ -546,7 +546,7 @@ async function downloadFolderAsZip(
             band_utilization: 0,
           };
           analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
-          console.log({ trackingDownloadProperties });
+
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
             : { user: user.bridgeUser, pass: user.userId };
