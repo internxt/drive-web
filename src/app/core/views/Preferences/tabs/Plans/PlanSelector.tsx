@@ -10,9 +10,11 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { planActions, PlanState } from '../../../../../store/slices/plan';
+import { planActions, PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
+import { useStripe } from '@stripe/react-stripe-js';
+import { loadStripe, Stripe } from '@stripe/stripe-js';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -35,6 +37,16 @@ export default function PlanSelector({ className = '' }: { className?: string })
   useEffect(() => {
     paymentService.getPrices().then(setPrices);
   }, []);
+
+  let stripe;
+
+  async function getStripe(): Promise<Stripe> {
+    if (!stripe) {
+      stripe = (await loadStripe(process.env.REACT_APP_STRIPE_TEST_PK)) as Stripe;
+    }
+
+    return stripe;
+  }
 
   const pricesFilteredAndSorted = prices
     ?.filter((price) => price.interval === interval)
@@ -100,9 +112,33 @@ export default function PlanSelector({ className = '' }: { className?: string })
         }
       } else {
         try {
+          const stripe = await getStripe();
           const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-          dispatch(planActions.setSubscription(updatedSubscription));
-          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+          if (updatedSubscription.request3DSecure) {
+            stripe
+              .confirmCardPayment(updatedSubscription.clientSecret)
+              .then(async (result) => {
+                if (result.error) {
+                  notificationsService.show({
+                    type: ToastType.Error,
+                    text: result.error.message as string,
+                  });
+                } else {
+                  notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+                  dispatch(planThunks.initializeThunk()).unwrap();
+                }
+              })
+              .catch((err) => {
+                console.error(err);
+                notificationsService.show({
+                  text: translate('notificationMessages.errorCancelSubscription'),
+                  type: ToastType.Error,
+                });
+              });
+          } else {
+            notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+            dispatch(planThunks.initializeThunk()).unwrap();
+          }
         } catch (err) {
           console.error(err);
           notificationsService.show({
@@ -110,6 +146,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
             type: ToastType.Error,
           });
         } finally {
+          dispatch(planThunks.initializeThunk()).unwrap();
           setLoadingPlanAction(null);
           setIsDialogOpen(false);
         }

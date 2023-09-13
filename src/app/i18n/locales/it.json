@@ -687,8 +687,12 @@
         "reader": "Visualizzatore",
         "listUsers": "Utenti da invitare",
         "successSentInvitation": "Condivisione riuscita con {{email}}",
+        "acceptedSuccessfully": "Invito a cartella condivisa accettato con successo",
+        "declinedSuccessfully": "Invito a cartella condivisa rifiutato con successo",
         "error": {
-          "errorInviting": "Errore durante l'invio dell'invito a {{email}}"
+          "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
+          "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
+          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
         }
       },
       "requestAccess": {

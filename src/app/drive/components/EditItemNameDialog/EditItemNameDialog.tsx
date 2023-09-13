@@ -13,9 +13,10 @@ type EditItemNameDialogProps = {
   isOpen: boolean;
   resourceToken?: string;
   onClose?: (newItem?: DriveItemData) => void;
+  onSuccess?: () => void;
 };
 
-const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose }) => {
+const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
   const [newItemName, setNewItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -45,6 +46,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
         .then(() => {
           setIsLoading(false);
           handleOnClose(newItemName);
+          onSuccess?.();
         })
         .catch((e) => {
           const errorMessage = e?.message?.includes('already exists') && translate('error.creatingFolder');
