@@ -269,6 +269,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         {editNameItem && (
           <EditItemNameDialog
             item={editNameItem}
+            isOpen={true}
             onSuccess={() => {
               dispatch(fetchSortedFolderContentThunk(currentFolderId));
             }}
