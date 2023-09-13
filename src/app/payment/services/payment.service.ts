@@ -102,14 +102,13 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(priceId: string): Promise<{
-    userSubscription: UserSubscription;
-    request3DSecure: boolean;
-    clientSecret: string;
-  }> {
+  async updateSubscriptionPrice(
+    priceId: string,
+    coupon?: string,
+  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.updateSubscriptionPrice(priceId);
+    return paymentsClient.updateSubscriptionPrice(priceId, coupon);
   },
 
   async cancelSubscription(): Promise<void> {

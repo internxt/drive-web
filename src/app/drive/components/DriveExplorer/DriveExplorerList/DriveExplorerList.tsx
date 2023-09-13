@@ -25,6 +25,7 @@ import {
   contextMenuDriveFolderShared,
   contextMenuDriveFolderNotSharedLink,
 } from './DriveItemContextMenu';
+import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import envService from '../../../../core/services/env.service';
 
@@ -75,6 +76,7 @@ const createDriveListItem = (item: DriveItemData, isTrash?: boolean) => (
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
   const isSelectedSharedItem = props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0;
 
@@ -159,11 +161,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   }
 
   const renameItem = useCallback(
-    (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setCurrentEditingNameDirty((item as DriveItemData).name));
-      dispatch(uiActions.setCurrentEditingNameDriveItem(item as DriveItemData));
+    (item) => {
+      setEditNameItem(item as DriveItemData);
     },
-    [dispatch, uiActions],
+    [setEditNameItem],
   );
 
   const moveItem = useCallback(
@@ -265,6 +266,17 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   return (
     <div className="flex h-full flex-grow flex-col">
       <div className="h-full overflow-y-auto">
+        {editNameItem && (
+          <EditItemNameDialog
+            item={editNameItem}
+            onSuccess={() => {
+              dispatch(fetchSortedFolderContentThunk(currentFolderId));
+            }}
+            onClose={() => {
+              setEditNameItem(null);
+            }}
+          />
+        )}
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
