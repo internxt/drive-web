@@ -146,6 +146,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     try {
       const invitedUsersList = await shareService.getUsersOfSharedFolder({
+        itemType: itemToShare.item.isFolder ? 'folder' : 'file',
         folderId: itemToShare.item.uuid as string,
       });
 

@@ -212,12 +212,14 @@ export function getSharedFolderInvitations({
 }
 
 export function getUsersOfSharedFolder({
+  itemType,
   folderId,
 }: {
+  itemType: string;
   folderId: string;
 }): Promise<Record<'users', any[]> | Record<'error', string>> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getAllAccessUsers({ folderId }).catch((error) => {
+  return shareClient.getAllAccessUsers({ itemType, folderId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
