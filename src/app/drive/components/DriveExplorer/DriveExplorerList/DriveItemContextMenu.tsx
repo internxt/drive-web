@@ -188,7 +188,7 @@ const contextMenuDriveNotSharedLink = ({
 }): ListItemMenu<DriveItemData> => [
   ...(isProduction ? [getOpenPreviewMenuItem(openPreview)] : []),
   // TODO: REMOVE isProduction values when release ADVANCED SHARING
-  // ...(isProduction ? [] : [shareLinkMenuItem(shareLink)]),
+  ...(isProduction ? [] : [shareLinkMenuItem(shareLink)]),
   getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   ...(isProduction ? [] : [getOpenPreviewMenuItem(openPreview)]),
