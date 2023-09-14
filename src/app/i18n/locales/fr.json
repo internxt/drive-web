@@ -630,8 +630,12 @@
         "reader": "Visualiseur",
         "listUsers": "Utilisateurs à inviter",
         "successSentInvitation": "Partage réussi avec {{email}}",
+        "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
+        "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
         "error": {
-          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}"
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+          "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
         }
       },
       "requestAccess": {

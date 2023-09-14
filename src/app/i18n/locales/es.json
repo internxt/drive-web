@@ -695,8 +695,12 @@
         "reader": "Visualizador",
         "listUsers": "Usuarios a invitar",
         "successSentInvitation": "Compartido con éxito con {{email}}",
+        "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
+        "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
         "error": {
-          "errorInviting": "Error al enviar la invitación a {{email}}"
+          "errorInviting": "Error al enviar la invitación a {{email}}",
+          "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
+          "declinedError": "Error al rechazar la invitación a la carpeta compartida"
         }
       },
       "requestAccess": {

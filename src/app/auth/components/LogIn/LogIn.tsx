@@ -24,10 +24,17 @@ import TextInput from '../TextInput/TextInput';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import shareService from '../../../share/services/share.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const urlParams = new URLSearchParams(window.location.search);
+
+  const sharingId = urlParams.get('sharingId');
+  const sharingToken = urlParams.get('token');
+  const sharingAction = urlParams.get('action');
+  const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
   const dispatch = useAppDispatch();
   const autoSubmit = useMemo(
@@ -67,11 +74,43 @@ export default function LogIn(): JSX.Element {
     if (autoSubmit.enabled && autoSubmit.credentials) {
       onSubmit(getValues());
     }
+
+    if (isSharingInvitation && sharingId && sharingToken) {
+      const isDeclineAction = sharingAction === 'decline';
+
+      shareService
+        .processInvitation(isDeclineAction, sharingId, sharingToken)
+        .then(() => {
+          navigationService.push(AppView.Login);
+          notificationsService.show({
+            text: isDeclineAction
+              ? translate('modals.shareModal.invite.declinedSuccessfully')
+              : translate('modals.shareModal.invite.acceptedSuccessfully'),
+            type: ToastType.Success,
+          });
+        })
+        .catch(() =>
+          notificationsService.show({
+            text: isDeclineAction
+              ? translate('modals.shareModal.invite.error.declinedError')
+              : translate('modals.shareModal.invite.error.acceptedError'),
+            type: ToastType.Error,
+          }),
+        );
+    }
   }, []);
 
-  const redirectWithCredentials = (user: UserSettings, mnemonic: string, options?: { universalLinkMode: boolean }) => {
+  const redirectWithCredentials = (
+    user: UserSettings,
+    mnemonic: string,
+    options?: { universalLinkMode: boolean; isSharingInvitation: boolean },
+  ) => {
     if (user.registerCompleted == false) {
       return navigationService.history.push('/appsumo/' + user.email);
+    }
+
+    if (user && user.registerCompleted && mnemonic && options?.isSharingInvitation) {
+      return navigationService.push(AppView.Shared);
     }
 
     if (user && user.registerCompleted && mnemonic && !options?.universalLinkMode) {
@@ -83,6 +122,7 @@ export default function LogIn(): JSX.Element {
       return navigationService.push(AppView.UniversalLinkSuccess);
     }
   };
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -117,11 +157,10 @@ export default function LogIn(): JSX.Element {
 
         const redirectUrl = authService.getRedirectUrl(urlParams, token);
 
-        if (redirectUrl && !isUniversalLinkMode) {
+        if (redirectUrl && !isUniversalLinkMode && !isSharingInvitation) {
           window.location.replace(redirectUrl);
         }
-
-        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode });
+        redirectWithCredentials(user, mnemonic, { universalLinkMode: isUniversalLinkMode, isSharingInvitation });
       } else {
         setShowTwoFactor(true);
       }
@@ -147,7 +186,9 @@ export default function LogIn(): JSX.Element {
       redirectWithCredentials(
         user,
         mnemonic,
-        isUniversalLinkMode ? { universalLinkMode: isUniversalLinkMode } : undefined,
+        isUniversalLinkMode || isSharingInvitation
+          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+          : undefined,
       );
     }
   }, []);

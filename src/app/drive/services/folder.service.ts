@@ -214,6 +214,7 @@ interface FolderRef {
   name: string;
   folderId: number;
   folderUuid?: string;
+  folderToken?: string;
 }
 
 async function addAllFilesToZip(
@@ -435,7 +436,7 @@ async function downloadSharedFolderAsZip(
 
           return sourceBlob.stream();
         },
-        filesIterator(folderToDownload.folderUuid as string, nextFilesToken),
+        filesIterator(folderToDownload.folderUuid as string, folderToDownload.folderToken ?? nextFilesToken),
         zip,
       );
       nextFilesToken = token;
@@ -443,7 +444,7 @@ async function downloadSharedFolderAsZip(
 
       const { folders, token: folderToken } = await addAllSharedFoldersToZip(
         folderToDownload.name,
-        foldersIterator(folderToDownload.folderUuid as string, nextFolderToken),
+        foldersIterator(folderToDownload.folderUuid as string, folderToDownload.folderToken ?? nextFolderToken),
         zip,
       );
 
@@ -454,6 +455,7 @@ async function downloadSharedFolderAsZip(
             name: folderToDownload.name + '/' + f.name,
             folderId: f.id,
             folderUuid: f.uuid,
+            folderToken,
           };
         }),
       );

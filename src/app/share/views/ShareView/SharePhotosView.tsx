@@ -16,12 +16,10 @@ import { GetPhotoShareResponse, PhotoId } from '@internxt/sdk/dist/photos';
 import { SdkFactory } from '../../../core/factory/sdk';
 import network from 'app/network';
 import downloadService from '../../../drive/services/download.service';
-import JSZip from 'jszip';
-import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip, binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-
+import dateService from 'app/core/services/date.service';
 interface SharePhotosProps {
   match: match<{
     token: string;
@@ -106,11 +104,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
         if (!canUseReadableStreamMethod) {
           await loadWritableStreamPonyfill();
         }
-
-        const zip = new JSZip();
-
-        const writableStream = streamSaver.createWriteStream('photos.zip', {});
-        const writer = writableStream.getWriter();
+        const folderName = `photos_${Date.now()}`;
+        const zip = new FlatFolderZip(folderName, {});
 
         const generalProgress: Record<PhotoId, number> = {};
 
@@ -139,27 +134,16 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
             },
           });
 
-          zip.file(photoName, await photoStreamPromise, { compression: 'DEFLATE' });
+          try {
+            const photoData = await photoStreamPromise;
+            zip.addFile(photoName, photoData);
+          } catch (error) {
+            errorService.reportError(error);
+            throw new Error('Error generating zip');
+          }
         }
-        await new Promise<void>((resolve, reject) => {
-          const zipStream = zip.generateInternalStream({
-            type: 'uint8array',
-            streamFiles: true,
-            compression: 'DEFLATE',
-          }) as Readable;
-          zipStream
-            ?.on('data', (chunk: Buffer) => {
-              writer.write(chunk);
-            })
-            .on('end', () => {
-              writer.close();
-              resolve();
-            })
-            .on('error', (err) => {
-              reject(err);
-            });
-          zipStream.resume();
-        });
+
+        zip.close();
       }
     } catch (err) {
       setIsError(true);

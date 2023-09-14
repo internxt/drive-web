@@ -682,8 +682,12 @@
         "reader": "浏览者",
         "listUsers": "要邀请的用户",
         "successSentInvitation": "與 {{email}} 成功分享",
+        "acceptedSuccessfully": "成功接受共享文件夹邀请",
+        "declinedSuccessfully": "成功拒绝共享文件夹邀请",
         "error": {
-          "errorInviting": "傳送邀請至 {{email}} 時出錯"
+          "errorInviting": "傳送邀請至 {{email}} 時出錯",
+          "acceptedError": "接受共享文件夹邀请时出错",
+          "declinedError": "拒绝共享文件夹邀请时出错"
         }
       },
       "requestAccess": {

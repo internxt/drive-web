@@ -14,6 +14,7 @@ import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
 import { referralsThunks } from 'app/store/slices/referrals';
 
+import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
 import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';

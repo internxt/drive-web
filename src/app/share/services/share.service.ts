@@ -237,9 +237,15 @@ export function getSharedFolderInvitationsAsInvitedUser({
   });
 }
 
-export function declineSharedFolderInvite({ invitationId }: { invitationId: string }): Promise<void> {
+export function declineSharedFolderInvite({
+  invitationId,
+  token,
+}: {
+  invitationId: string;
+  token?: string;
+}): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.declineSharedFolderInvite(invitationId).catch((error) => {
+  return shareClient.declineSharedFolderInvite(invitationId, token).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -247,12 +253,14 @@ export function declineSharedFolderInvite({ invitationId }: { invitationId: stri
 export function acceptSharedFolderInvite({
   invitationId,
   acceptInvite,
+  token,
 }: {
   invitationId: string;
   acceptInvite?: AcceptInvitationToSharedFolderPayload;
+  token?: string;
 }): Promise<void> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.acceptSharedFolderInvite({ invitationId, acceptInvite }).catch((error) => {
+  return shareClient.acceptSharedFolderInvite({ invitationId, acceptInvite, token }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -514,6 +522,23 @@ export async function downloadSharedFiles({
   }
 }
 
+export const processInvitation = async (
+  isDeclineAction: boolean,
+  invitationId: string,
+  token: string,
+): Promise<void> => {
+  const invitationData = {
+    invitationId,
+    token,
+  };
+
+  const response = isDeclineAction
+    ? await shareService.declineSharedFolderInvite(invitationData)
+    : await shareService.acceptSharedFolderInvite(invitationData);
+
+  return response;
+};
+
 const shareService = {
   createShare,
   createShareLink,
@@ -538,6 +563,9 @@ const shareService = {
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
   getUserRoleOfSharedRolder,
+  acceptSharedFolderInvite,
+  declineSharedFolderInvite,
+  processInvitation,
 };
 
 export default shareService;
