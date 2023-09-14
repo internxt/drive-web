@@ -78,6 +78,7 @@ export default function SharedView(): JSX.Element {
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
+  const [hasMoreRootFolders, setHasMoreRootFolders] = useState<boolean>(true);
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -103,14 +104,14 @@ export default function SharedView(): JSX.Element {
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
     if (page === 0) {
-      fetchRootItems();
+      fetchRootFolders();
       dispatch(storageActions.resetSharedNamePath());
     }
   }, []);
 
   useEffect(() => {
     if (!currentFolderId && !isShareDialogOpen) {
-      setTimeout(fetchRootItems, 200);
+      setTimeout(fetchRootFolders, 200);
     } else if (currentFolderId && !isShareDialogOpen) {
       setTimeout(fetchFolders, 200);
     }
@@ -123,14 +124,23 @@ export default function SharedView(): JSX.Element {
   }, [currentFolderId]);
 
   useEffect(() => {
-    if (page === 0) {
+    if (page === 0 && !hasMoreFolders) {
       fetchFiles();
     }
   }, [hasMoreFolders]);
 
   useEffect(() => {
-    if (!currentFolderId && hasMoreItems && page >= 1) {
-      fetchRootItems();
+    if (page === 0 && !hasMoreRootFolders) {
+      fetchRootFiles();
+    }
+  }, [hasMoreRootFolders]);
+
+  useEffect(() => {
+    if (!currentFolderId && hasMoreItems && hasMoreRootFolders && page >= 1) {
+      fetchRootFolders();
+    }
+    if (!currentFolderId && hasMoreItems && !hasMoreRootFolders && page >= 1) {
+      fetchRootFiles();
     }
     if (currentFolderId && hasMoreFolders && hasMoreItems && page >= 1) {
       fetchFolders();
@@ -142,11 +152,11 @@ export default function SharedView(): JSX.Element {
 
   function onShowInvitationsModalClose() {
     dispatch(sharedThunks.getPendingInvitations());
-    fetchRootItems();
+    fetchRootFolders();
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   }
 
-  const fetchRootItems = async () => {
+  const fetchRootFolders = async () => {
     setIsLoading(true);
     resetCurrentSharingStatus();
     setCurrentResourcesToken('');
@@ -168,6 +178,37 @@ export default function SharedView(): JSX.Element {
         return shareItem;
       });
 
+      let items;
+
+      if (page === 0) {
+        items = [...folders];
+      } else {
+        items = [...shareItems, ...folders];
+      }
+
+      setShareItems(items);
+
+      if (folders.length < ITEMS_PER_PAGE) {
+        setPage(0);
+        setHasMoreRootFolders(false);
+      }
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const fetchRootFiles = async () => {
+    setIsLoading(true);
+
+    try {
+      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFiles(
+        page,
+        ITEMS_PER_PAGE,
+        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
+      );
+
       const files = response.files.map((file) => {
         const shareItem = file as AdvancedSharedItem;
         shareItem.isFolder = false;
@@ -180,17 +221,11 @@ export default function SharedView(): JSX.Element {
         return shareItem;
       });
 
-      let items;
-
-      if (page === 0) {
-        items = [...folders, ...files];
-      } else {
-        items = [...shareItems, ...folders, ...files];
-      }
+      const items = [...shareItems, ...files];
 
       setShareItems(items);
 
-      if (folders.length < ITEMS_PER_PAGE) {
+      if (files.length < ITEMS_PER_PAGE) {
         setHasMoreItems(false);
       }
     } catch (error) {
@@ -319,20 +354,20 @@ export default function SharedView(): JSX.Element {
   }, [currentShareId]);
 
   const onItemDoubleClicked = (shareItem: AdvancedSharedItem) => {
-    dispatch(
-      storageActions.pushSharedNamePath({
-        id: shareItem.id,
-        name: shareItem.plainName,
-        token: nextResourcesToken,
-        uuid: shareItem.uuid,
-      }),
-    );
-
     if (shareItem.sharingId) {
       dispatch(sharedActions.setCurrentShareId(shareItem.sharingId));
     }
 
     if (shareItem.isFolder) {
+      dispatch(
+        storageActions.pushSharedNamePath({
+          id: shareItem.id,
+          name: shareItem.plainName,
+          token: nextResourcesToken,
+          uuid: shareItem.uuid,
+        }),
+      );
+
       const sharedFolderId = shareItem.uuid;
 
       if (shareItem.user) {
@@ -683,11 +718,12 @@ export default function SharedView(): JSX.Element {
       onClick: () => {
         setPage[0];
         setShareItems([]);
+        setHasMoreRootFolders(true);
         setHasMoreFolders(true);
         setHasMoreItems(true);
         setCurrentFolderId('');
         goToFolderBredcrumb(1, translate('shared-links.shared-links'), '');
-        fetchRootItems();
+        fetchRootFolders();
       },
     });
 

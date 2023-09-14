@@ -126,6 +126,17 @@ export function getAllSharedFolders(
   });
 }
 
+export function getAllSharedFiles(
+  page: number,
+  perPage: number,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListAllSharedFoldersResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getAllSharedFiles(page, perPage, orderBy).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function getSharedFolderContent(
   sharedFolderId: string,
   type: 'folders' | 'files',
@@ -551,6 +562,7 @@ const shareService = {
   getSentSharedFolders,
   getReceivedSharedFolders,
   getAllSharedFolders,
+  getAllSharedFiles,
   getLinkFromShare,
   getAllShareLinks,
   buildLinkFromShare,
