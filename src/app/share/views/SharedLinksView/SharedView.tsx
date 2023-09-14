@@ -168,12 +168,24 @@ export default function SharedView(): JSX.Element {
         return shareItem;
       });
 
+      const files = response.files.map((file) => {
+        const shareItem = file as AdvancedSharedItem;
+        shareItem.isFolder = false;
+        shareItem.isRootLink = true;
+        shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
+        shareItem.credentials = {
+          user: response.credentials.networkUser,
+          pass: response.credentials.networkPass,
+        };
+        return shareItem;
+      });
+
       let items;
 
       if (page === 0) {
-        items = [...folders];
+        items = [...folders, ...files];
       } else {
-        items = [...shareItems, ...folders];
+        items = [...shareItems, ...folders, ...files];
       }
 
       setShareItems(items);
