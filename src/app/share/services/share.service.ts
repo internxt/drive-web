@@ -138,7 +138,7 @@ export function getSharedFolderContent(
   return shareClient
     .getSharedFolderContent(sharedFolderId, type, invitedToken, page, perPage, orderBy)
     .catch((error) => {
-      throw errorService.castError(error);
+      throw error;
     });
 }
 

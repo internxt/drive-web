@@ -41,6 +41,9 @@ import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/Nam
 import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
 import { RootState } from 'app/store';
+import { useHistory } from 'react-router-dom';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
 
 const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
 
@@ -75,6 +78,10 @@ export default function SharedView(): JSX.Element {
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const history = useHistory();
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const folderUUID = urlParams.get('folderuuid');
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -102,16 +109,19 @@ export default function SharedView(): JSX.Element {
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
-    if (page === 0) {
+
+    if (page === 0 && !folderUUID) {
       fetchRootItems();
       dispatch(storageActions.resetSharedNamePath());
     }
+
+    if (folderUUID) handleFolderAccess();
   }, []);
 
   useEffect(() => {
-    if (!currentFolderId && !isShareDialogOpen) {
+    if (!currentFolderId && !isShareDialogOpen && !folderUUID) {
       setTimeout(fetchRootItems, 200);
-    } else if (currentFolderId && !isShareDialogOpen) {
+    } else if (currentFolderId && !isShareDialogOpen && !folderUUID) {
       setTimeout(fetchFolders, 200);
     }
   }, [isShareDialogOpen]);
@@ -411,6 +421,36 @@ export default function SharedView(): JSX.Element {
     const encryptedCode = item.code || item.encryptedCode;
     const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
     copyShareLink(itemType, plainCode, item.token);
+  };
+
+  const handleFolderAccess = () => {
+    if (folderUUID)
+      try {
+        shareService
+          .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
+          .then((item) => {
+            const shareItem = { plainName: (item as any).parent.name, uuid: folderUUID, isFolder: true };
+            onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
+          })
+          .catch((error) => {
+            if (error.status === 403) {
+              notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+            } else if (error.status === 404) {
+              notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
+            } else {
+              notificationsService.show({ text: translate('shared.errors.generic'), type: ToastType.Error });
+            }
+            navigationService.push(AppView.Shared);
+            fetchRootItems();
+          })
+          .finally(() => {
+            const currentURL = history.location.pathname;
+            const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
+            history.replace(nuevaURL);
+          });
+      } catch (error) {
+        notificationsService.show({ text: 'This folder is not shared with you', type: ToastType.Error });
+      }
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
