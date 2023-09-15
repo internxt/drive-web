@@ -478,32 +478,28 @@ export default function SharedView(): JSX.Element {
 
   const handleFolderAccess = () => {
     if (folderUUID)
-      try {
-        shareService
-          .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
-          .then((item) => {
-            const shareItem = { plainName: (item as any).parent.name, uuid: folderUUID, isFolder: true };
-            onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
-          })
-          .catch((error) => {
-            if (error.status === 403) {
-              notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
-            } else if (error.status === 404) {
-              notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
-            } else {
-              notificationsService.show({ text: translate('shared.errors.generic'), type: ToastType.Error });
-            }
-            navigationService.push(AppView.Shared);
-            fetchRootFolders();
-          })
-          .finally(() => {
-            const currentURL = history.location.pathname;
-            const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
-            history.replace(nuevaURL);
-          });
-      } catch (error) {
-        notificationsService.show({ text: 'This folder is not shared with you', type: ToastType.Error });
-      }
+      shareService
+        .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
+        .then((item) => {
+          const shareItem = { plainName: (item as any).parent.name, uuid: folderUUID, isFolder: true };
+          onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
+        })
+        .catch((error) => {
+          if (error.status === 403) {
+            notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+          } else if (error.status === 404) {
+            notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
+          } else {
+            notificationsService.show({ text: translate('shared.errors.generic'), type: ToastType.Error });
+          }
+          navigationService.push(AppView.Shared);
+          fetchRootFolders();
+        })
+        .finally(() => {
+          const currentURL = history.location.pathname;
+          const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
+          history.replace(nuevaURL);
+        });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
