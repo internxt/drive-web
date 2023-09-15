@@ -890,6 +890,13 @@
       "delete": "Delete"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "This folder is not shared with you",
+      "folderNotExists": "This folder not exists",
+      "generic": "The folder could not be accessed"
+    }
+  },
   "shared-links": {
     "shared-links": "Shared links",
     "view": "views",

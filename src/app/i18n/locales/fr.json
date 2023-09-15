@@ -806,6 +806,13 @@
       "delete": "Supprimer"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Ce dossier n'est pas partagé avec vous",
+      "folderNotExists": "Ce dossier n'existe pas",
+      "generic": "Impossible d'accéder au dossier"
+    }
+  },
   "shared-links": {
     "shared-links": "Liens partagés",
     "view": "Vues",

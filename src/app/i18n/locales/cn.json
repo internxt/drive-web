@@ -859,6 +859,13 @@
       "delete": "删除"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "此文件夹未与您共享",
+      "folderNotExists": "此文件夹不存在",
+      "generic": "无法访问文件夹"
+    }
+  },
   "shared-links": {
     "shared-links": "共享的链接",
     "view": "访问量",

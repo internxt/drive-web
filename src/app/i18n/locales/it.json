@@ -864,6 +864,13 @@
       "delete": "Elimina"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Questa cartella non è condivisa con te",
+      "folderNotExists": "Questa cartella non esiste",
+      "generic": "Impossibile accedere alla cartella"
+    }
+  },
   "shared-links": {
     "shared-links": "Link condivisi",
     "view": "viste",

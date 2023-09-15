@@ -8,7 +8,7 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowLeft, CaretDown, Check, CheckCircle, UserPlus, Users, X } from '@phosphor-icons/react';
+import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -19,6 +19,7 @@ import errorService from '../../../core/services/error.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { Role } from 'app/store/slices/sharedLinks/types';
+import copy from 'copy-to-clipboard';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -213,8 +214,15 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const onCopyLink = (): void => {
-    // TODO -> Copy share link
+    if (accessMode === 'restricted') {
+      copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+      closeSelectedUserPopover();
+      return;
+    }
+
     dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
+
     closeSelectedUserPopover();
   };
 
@@ -373,7 +381,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole != 'viewer' && (
+                {currentUserFolderRole !== 'viewer' && (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
@@ -417,13 +425,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   <>
                     <Popover.Button as="div" className="outline-none z-1">
                       <Button variant="secondary" disabled={isLoading}>
-                        {/* {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />} */}
-                        <Users size={24} />
+                        {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
-                          {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                          {/* {accessMode === 'public'
+                          {accessMode === 'public'
                             ? translate('modals.shareModal.general.accessOptions.public.title')
-                            : translate('modals.shareModal.general.accessOptions.restricted.title')} */}
+                            : translate('modals.shareModal.general.accessOptions.restricted.title')}
                         </span>
                         {isLoading ? (
                           <div className="flex h-6 w-6 items-center justify-center">
@@ -513,10 +519,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               </Popover>
             </div>
 
-            {/* <Button variant="primary" onClick={onCopyLink}>
+            <Button variant="primary" onClick={onCopyLink}>
               <Link size={24} />
               <span>{translate('modals.shareModal.general.copyLink')}</span>
-            </Button> */}
+            </Button>
           </div>
 
           {/* Stop sharing confirmation dialog */}

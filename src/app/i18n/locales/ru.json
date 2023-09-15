@@ -794,6 +794,13 @@
       "delete": "Удалить"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Эта папка не с вами поделена",
+      "folderNotExists": "Этой папки не существует",
+      "generic": "Не удалось получить доступ к папке"
+    }
+  },
   "shared-links": {
     "shared-links": "Ссылки с общим доступом",
     "view": "Просмотры",
