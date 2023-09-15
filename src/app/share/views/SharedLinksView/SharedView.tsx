@@ -151,8 +151,14 @@ export default function SharedView(): JSX.Element {
   }, [page]);
 
   function onShowInvitationsModalClose() {
-    dispatch(sharedThunks.getPendingInvitations());
+    setPage[0];
+    setShareItems([]);
+    setHasMoreRootFolders(true);
+    setHasMoreFolders(true);
+    setHasMoreItems(true);
+    setCurrentFolderId('');
     fetchRootFolders();
+    dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   }
 
