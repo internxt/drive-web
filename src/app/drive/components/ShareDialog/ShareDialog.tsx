@@ -147,6 +147,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     try {
       const invitedUsersList = await shareService.getUsersOfSharedFolder({
+        itemType: itemToShare.item.isFolder ? 'folder' : 'file',
         folderId: itemToShare.item.uuid as string,
       });
 
@@ -238,7 +239,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (user) {
       const hasBeenRemoved = await dispatch(
         sharedThunks.removeUserFromSharedFolder({
-          itemType: itemToShare?.item.type as string,
+          itemType: itemToShare?.item.isFolder ? 'folder' : 'file',
           itemId: itemToShare?.item.uuid as string,
           userId: user.uuid,
           userEmail: user.email,
