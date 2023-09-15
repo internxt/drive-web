@@ -450,7 +450,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                       {({ close }) => (
                         <>
                           {/* Public */}
-                          <button
+                          {/* <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                             onClick={() => changeAccess('public')}
                           >
@@ -472,7 +472,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                                 )
                               ) : null}
                             </div>
-                          </button>
+                          </button> */}
                           {/* Restricted */}
                           <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
