@@ -47,21 +47,21 @@ export default function Toolbar({
           dataTest="photos-download-selected"
           toolTipProps={createToolTipsProps('photos-download-tooltip', translate('actions.download'), 'bottom')}
         />
-        <TooltipElement id={'photos-download-tooltip'} />
+        <TooltipElement id={'photos-download-tooltip'} className="z-40" />
         <Icon
           Target={Share}
           onClick={onShareClick}
           dataTest="photos-share-selected"
           toolTipProps={createToolTipsProps('photos-share-tooltip', translate('actions.share'), 'bottom')}
         />
-        <TooltipElement id={'photos-share-tooltip'} />
+        <TooltipElement id={'photos-share-tooltip'} className="z-40" />
         <Icon
           Target={Trash}
           onClick={onDeleteClick}
           dataTest="photos-delete-selected"
           toolTipProps={createToolTipsProps('photos-delete-tooltip', translate('actions.delete'), 'bottom')}
         />
-        <TooltipElement id={'photos-delete-tooltip'} />
+        <TooltipElement id={'photos-delete-tooltip'} className="z-40" />
       </div>
     </div>
   );
