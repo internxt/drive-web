@@ -823,19 +823,21 @@ export default function SharedView(): JSX.Element {
               </div>
             </Button>
           )}
-          <Button
-            variant="secondary"
-            onClick={() => {
-              dispatch(uiActions.setIsInvitationsDialogOpen(true));
-            }}
-          >
-            <p className="space-x-2">
-              Pending Invitations{' '}
-              <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
-                {pendingInvitations.length > 0 ? pendingInvitations.length : 0}
-              </span>
-            </p>
-          </Button>
+          {pendingInvitations.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(uiActions.setIsInvitationsDialogOpen(true));
+              }}
+            >
+              <p className="space-x-2">
+                Pending Invitations{' '}
+                <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+                  {pendingInvitations.length}
+                </span>
+              </p>
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
