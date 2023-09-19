@@ -908,7 +908,11 @@ export default function SharedView(): JSX.Element {
                 <div className="mr-2">
                   <Avatar
                     diameter={28}
-                    fullName={`${shareItem.user?.name} ${shareItem.user?.lastname}`}
+                    fullName={
+                      shareItem.user?.name
+                        ? `${shareItem.user?.name} ${shareItem.user?.lastname}`
+                        : `${user?.name} ${user?.lastname}`
+                    }
                     src={shareItem.user?.avatar ? shareItem.user?.avatar : null}
                   />
                 </div>
