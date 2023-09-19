@@ -3,6 +3,8 @@ name: CI run (BUILD) Test Suite Execution
 
 on: 
     push:
+        branches:
+            - feat/E2E-Testing-automation-internxt
 
 jobs:
     Build-Cypress-TestSuite-AfterPush:
