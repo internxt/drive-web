@@ -15,6 +15,7 @@ import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
 import { useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
+import envService from 'app/core/services/env.service';
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -42,7 +43,9 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   async function getStripe(): Promise<Stripe> {
     if (!stripe) {
-      stripe = (await loadStripe(process.env.REACT_APP_STRIPE_TEST_PK)) as Stripe;
+      stripe = (await loadStripe(
+        envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK,
+      )) as Stripe;
     }
 
     return stripe;
