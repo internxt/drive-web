@@ -121,7 +121,14 @@ export default function SharedView(): JSX.Element {
 
   useEffect(() => {
     if (!currentFolderId && !isShareDialogOpen && !folderUUID) {
-      setTimeout(fetchRootFolders, 200);
+      setTimeout(() => {
+        setPage[0];
+        setShareItems([]);
+        setHasMoreRootFolders(true);
+        setHasMoreFolders(true);
+        setHasMoreItems(true);
+        fetchRootFolders();
+      }, 200);
     } else if (currentFolderId && !isShareDialogOpen && !folderUUID) {
       setTimeout(fetchFolders, 200);
     }
