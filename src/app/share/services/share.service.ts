@@ -160,10 +160,40 @@ export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; sh
   });
 }
 
-export function getSharedFileInfo(token: string, code: string, password?: string): Promise<ShareTypes.ShareLink> {
+export function getSharedFileInfo(
+  sharingId: string,
+  code: string,
+  password?: string,
+): Promise<{
+  id: string;
+  itemId: string;
+  itemType: string;
+  ownerId: string;
+  sharedWith: string;
+  encryptionKey: string;
+  encryptionAlgorithm: string;
+  createdAt: string;
+  updatedAt: string;
+  type: string;
+  item: any;
+  itemToken: string;
+}> {
   const newApiURL = SdkFactory.getNewApiInstance().getApiUrl();
   return httpService
-    .get<ShareTypes.ShareLink>(newApiURL + '/storage/share/' + token + '?code=' + code, {
+    .get<{
+      id: string;
+      itemId: string;
+      itemType: string;
+      ownerId: string;
+      sharedWith: string;
+      encryptionKey: string;
+      encryptionAlgorithm: string;
+      createdAt: string;
+      updatedAt: string;
+      type: string;
+      item: ShareTypes.ShareLink['item'];
+      itemToken: string;
+    }>(newApiURL + '/sharings/' + sharingId + '/meta?code=' + code, {
       headers: {
         'x-share-password': password,
       },
