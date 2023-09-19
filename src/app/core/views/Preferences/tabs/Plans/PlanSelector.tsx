@@ -114,6 +114,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
         try {
           const stripe = await getStripe();
           const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+          console.log({ updatedSubscription });
           if (updatedSubscription.request3DSecure) {
             stripe
               .confirmCardPayment(updatedSubscription.clientSecret)
