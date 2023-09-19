@@ -396,13 +396,13 @@ export default function SharedView(): JSX.Element {
 
       setCurrentResourcesToken(nextResourcesToken);
       setNextResourcesToken('');
-
       setPage(0);
       setShareItems([]);
       setHasMoreFolders(true);
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
+      setSelectedItems([]);
     } else {
       openPreview(shareItem);
     }
@@ -465,7 +465,6 @@ export default function SharedView(): JSX.Element {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
     }
-
     setSelectedItems(updatedSelectedItems);
   };
 
@@ -892,7 +891,10 @@ export default function SharedView(): JSX.Element {
                     onDoubleClick={() => onItemDoubleClicked(shareItem)}
                   >
                     <span
-                      onClick={() => onNameClicked(shareItem)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onNameClicked(shareItem);
+                      }}
                       className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
                       title={shareItem.plainName}
                     >
