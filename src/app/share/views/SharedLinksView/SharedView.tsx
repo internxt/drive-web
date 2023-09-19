@@ -955,6 +955,7 @@ export default function SharedView(): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
+                  openShareAccessSettings,
                   openPreview: openPreview,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
