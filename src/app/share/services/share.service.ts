@@ -17,12 +17,11 @@ import {
   SharedFolders,
   SharedFiles,
   SharedFoldersInvitationsAsInvitedUserResponse,
+  CreateSharingPayload,
+  SharingMeta,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
-import { binaryStreamToBlob } from '../../core/services/stream.service';
-import downloadService from '../../drive/services/download.service';
-import network from '../../network';
 import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import localStorageService from '../../core/services/local-storage.service';
 import {
@@ -580,6 +579,20 @@ export const processInvitation = async (
   return response;
 };
 
+export function createPublicSharingItem(publicSharingPayload: CreateSharingPayload): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.createSharing(publicSharingPayload).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -608,6 +621,8 @@ const shareService = {
   acceptSharedFolderInvite,
   declineSharedFolderInvite,
   processInvitation,
+  createPublicSharingItem,
+  getPublicSharingMeta,
 };
 
 export default shareService;

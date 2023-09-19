@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
-import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
+import shareService from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -27,6 +27,7 @@ import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -58,24 +59,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState<
-    | {
-        id: string;
-        itemId: string;
-        itemType: string;
-        ownerId: string;
-        sharedWith: string;
-        encryptionKey: string;
-        encryptionAlgorithm: string;
-        createdAt: string;
-        updatedAt: string;
-        type: string;
-        item: any;
-        itemToken: string;
-        name: string;
-      }
-    | Record<string, any>
-  >({});
+  const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -142,7 +126,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   function loadInfo(password?: string) {
-    return getSharedFileInfo(sharingId, code, password)
+    return shareService
+      .getPublicSharingMeta(sharingId, code, password)
       .then((res) => {
         setIsLoaded(true);
         setRequiresPassword(false);
