@@ -1,0 +1,15 @@
+{
+  "name": "automation-drive-web",
+  "version": "1.0.0",
+  "description": "automation for internxt",
+  "main": "index.js",
+  "repository": "https://github.com/internxt/drive-web",
+  "license": "MIT",
+  "scripts":{
+    "test": "cypress open",
+    "file": "cypress run --browser chrome --record --key c635d3f7-b323-4e3b-bcf4-722c1484fd18 --spec cypress/e2e/**/*"
+  },
+  "dependencies": {
+    "cypress": "^13.2.0"
+  }
+}
