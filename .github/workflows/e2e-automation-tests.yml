@@ -36,8 +36,9 @@ jobs:
                   CI=true yarn
 
             - name: Cypress Run
-              uses: cypress-io/github-action@v5
+              uses: cypress-io/github-action@v6
               with:
-                  browser: chrome
-                  start: yarn start
-                  command: yarn file "cypress/e2e/spec.cy.js" 
+                working-directory: automation-web-drive
+                browser: chrome
+                start: yarn start
+                command: yarn file "cypress/e2e/spec.cy.js" 
