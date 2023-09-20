@@ -39,5 +39,4 @@ jobs:
                 project: automation-drive-web
                 config-file: cypress-config.json
                 browser: chrome
-                start: yarn start
-                command: yarn file "cypress/e2e/spec.cy.js" 
+                command: yarn cypress run --spec "cypress/e2e/spec.cy.js" 
