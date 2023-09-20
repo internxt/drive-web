@@ -8,6 +8,7 @@ export type AdvancedSharedItem = SharedFolders &
     isRootLink: boolean;
     credentials: NetworkCredentials;
     sharingId?: string;
+    sharingType: 'public' | 'private';
   };
 
 export type PreviewFileItem = DriveFileData & {

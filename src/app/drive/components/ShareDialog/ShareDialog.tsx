@@ -22,6 +22,7 @@ import copy from 'copy-to-clipboard';
 
 import crypto from 'crypto';
 import { aes } from '@internxt/lib';
+import { AdvancedSharedItem } from '../../../share/types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -165,8 +166,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
-    // TODO -> Load access mode
-    const shareAccessMode: AccessMode = 'restricted';
+    // Change object type of itemToShare to AdvancedSharedItem
+    let shareAccessMode: AccessMode = 'public';
+    if ((itemToShare?.item as unknown as AdvancedSharedItem)?.sharingType) {
+      shareAccessMode = 'restricted';
+    }
     setAccessMode(shareAccessMode);
 
     // TODO -> Load invited users
