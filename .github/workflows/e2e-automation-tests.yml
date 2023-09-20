@@ -39,6 +39,7 @@ jobs:
               uses: cypress-io/github-action@v6
               with:
                 working-directory: /home/runner/work/drive-web/drive-web/automation-web-drive
+                install-command: yarn install
                 browser: chrome
                 start: yarn start
                 command: yarn file "cypress/e2e/spec.cy.js" 
