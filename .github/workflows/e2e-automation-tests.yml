@@ -37,6 +37,6 @@ jobs:
               uses: cypress-io/github-action@v6
               with:
                 project: automation-drive-web
-                config-file: cypress-config.json
+                config-file: automation-drive-web/cypress-config.json
                 browser: chrome
                 command: yarn cypress run --spec "cypress/e2e/spec.cy.js" 
