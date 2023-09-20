@@ -39,7 +39,7 @@ jobs:
               uses: cypress-io/github-action@v6
               with:
                 working-directory: automation-drive-web
-                config-file: automation-drive-web/cypress.config.js
+                config-file: cypress.config.js
                 browser: chrome
                 start: yarn start
                 command: yarn cypress run --spec "cypress/e2e/spec.cy.js" 
