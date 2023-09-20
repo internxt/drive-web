@@ -26,9 +26,7 @@ jobs:
 
             - name: Install All Dependencies
               run: |
-                  echo `//npm.pkg.github.com/:_authToken=${Cypress.env('PAT')}` > ~/.npmrc
                   yarn
-
 
             - name: Cypress Run Test Coverage in Chrome
               uses: cypress-io/github-action@v4
