@@ -27,7 +27,13 @@ import {
 } from './DriveItemContextMenu';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import envService from '../../../../core/services/env.service';
+import localStorageService from '../../../../core/services/local-storage.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import crypto from 'crypto';
+import { aes } from '@internxt/lib';
+import shareService from '../../../../share/services/share.service';
+import copy from 'copy-to-clipboard';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -198,46 +204,62 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     },
     [dispatch, uiActions],
   );
+  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
+  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
+    const user = localStorageService.getUser() as UserSettings;
+    const { mnemonic } = user;
+    const code = crypto.randomBytes(32).toString('hex');
+
+    const encryptedMnemonic = aes.encrypt(mnemonic, code);
+
+    try {
+      const publicSharingItemData = await shareService.createPublicSharingItem({
+        encryptionAlgorithm: 'inxt-v2',
+        encryptionKey: encryptedMnemonic,
+        itemType,
+        itemId: uuid,
+      });
+      const { id: sharingId } = publicSharingItemData;
+
+      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
+  };
 
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+      const driveItem = item as DriveItemData;
+      getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(sharedThunks.getSharedLinkThunk({ item: item as DriveItemData }));
+      const driveItem = item as DriveItemData;
+      getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
-  const isProduction = envService.isProduction();
-
   const openLinkSettings = useCallback(
-    isProduction
-      ? (item) => {
-          dispatch(
-            storageActions.setItemToShare({
-              share: (item as DriveItemData)?.shares?.[0],
-              item: item as DriveItemData,
-            }),
-          );
-          dispatch(uiActions.setIsShareItemDialogOpen(true));
-        }
-      : (item: ContextMenuDriveItem) => {
-          dispatch(
-            storageActions.setItemToShare({
-              share: (item as DriveItemData)?.shares?.[0],
-              item: item as DriveItemData,
-            }),
-          );
-          dispatch(uiActions.setIsShareDialogOpen(true));
-          // Use to share with specific user
-          // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
-        },
-    [dispatch, storageActions, uiActions, isProduction],
+    (item: ContextMenuDriveItem) => {
+      dispatch(
+        storageActions.setItemToShare({
+          share: (item as DriveItemData)?.shares?.[0],
+          item: item as DriveItemData,
+        }),
+      );
+      dispatch(uiActions.setIsShareDialogOpen(true));
+      // Use to share with specific user
+      // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
+    },
+    [dispatch, storageActions, uiActions],
   );
 
   const downloadItem = useCallback(
