@@ -12,7 +12,6 @@ import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users,
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
-import { DriveItemData } from '../../types';
 import './ShareDialog.scss';
 import shareService, { getSharingRoles } from '../../../share/services/share.service';
 import errorService from '../../../core/services/error.service';
@@ -20,6 +19,9 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import copy from 'copy-to-clipboard';
+
+import crypto from 'crypto';
+import { aes } from '@internxt/lib';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -213,17 +215,55 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
-  const onCopyLink = (): void => {
-    if (accessMode === 'restricted') {
+  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
+    const user = props.user;
+    const { mnemonic } = user;
+    const code = crypto.randomBytes(32).toString('hex');
+
+    const encryptedMnemonic = aes.encrypt(mnemonic, code);
+
+    try {
+      const publicSharingItemData = await shareService.createPublicSharingItem({
+        encryptionAlgorithm: 'inxt-v2',
+        encryptionKey: encryptedMnemonic,
+        itemType,
+        itemId: uuid,
+      });
+      const { id: sharingId } = publicSharingItemData;
+
+      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
+  };
+
+  const getPrivateShareLink = () => {
+    try {
       copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
+  };
+
+  const onCopyLink = (): void => {
+    if (accessMode === 'restricted') {
+      getPrivateShareLink();
       closeSelectedUserPopover();
       return;
     }
 
-    dispatch(sharedThunks.getSharedLinkThunk({ item: itemToShare?.item as DriveItemData }));
-
-    closeSelectedUserPopover();
+    if (itemToShare?.item.uuid) {
+      getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+      closeSelectedUserPopover();
+    }
   };
 
   const onInviteUser = () => {
@@ -450,7 +490,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                       {({ close }) => (
                         <>
                           {/* Public */}
-                          {/* <button
+                          <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
                             onClick={() => changeAccess('public')}
                           >
@@ -472,7 +512,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                                 )
                               ) : null}
                             </div>
-                          </button> */}
+                          </button>
                           {/* Restricted */}
                           <button
                             className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"

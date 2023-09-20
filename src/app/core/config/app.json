@@ -188,7 +188,7 @@
     {
       "id": "share-token",
       "layout": "share",
-      "path": "/sh/file/:token([a-z0-9]{20})/:code?",
+      "path": "/sh/file/:token/:code?",
       "exact": false
     },
     {

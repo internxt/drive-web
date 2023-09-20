@@ -17,12 +17,11 @@ import {
   SharedFolders,
   SharedFiles,
   SharedFoldersInvitationsAsInvitedUserResponse,
+  CreateSharingPayload,
+  SharingMeta,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
-import { binaryStreamToBlob } from '../../core/services/stream.service';
-import downloadService from '../../drive/services/download.service';
-import network from '../../network';
 import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
 import localStorageService from '../../core/services/local-storage.service';
 import {
@@ -160,10 +159,40 @@ export function deleteShareLink(shareId: string): Promise<{ deleted: boolean; sh
   });
 }
 
-export function getSharedFileInfo(token: string, code: string, password?: string): Promise<ShareTypes.ShareLink> {
+export function getSharedFileInfo(
+  sharingId: string,
+  code: string,
+  password?: string,
+): Promise<{
+  id: string;
+  itemId: string;
+  itemType: string;
+  ownerId: string;
+  sharedWith: string;
+  encryptionKey: string;
+  encryptionAlgorithm: string;
+  createdAt: string;
+  updatedAt: string;
+  type: string;
+  item: any;
+  itemToken: string;
+}> {
   const newApiURL = SdkFactory.getNewApiInstance().getApiUrl();
   return httpService
-    .get<ShareTypes.ShareLink>(newApiURL + '/storage/share/' + token + '?code=' + code, {
+    .get<{
+      id: string;
+      itemId: string;
+      itemType: string;
+      ownerId: string;
+      sharedWith: string;
+      encryptionKey: string;
+      encryptionAlgorithm: string;
+      createdAt: string;
+      updatedAt: string;
+      type: string;
+      item: ShareTypes.ShareLink['item'];
+      itemToken: string;
+    }>(newApiURL + '/sharings/' + sharingId + '/meta?code=' + code, {
       headers: {
         'x-share-password': password,
       },
@@ -550,6 +579,20 @@ export const processInvitation = async (
   return response;
 };
 
+export function createPublicSharingItem(publicSharingPayload: CreateSharingPayload): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.createSharing(publicSharingPayload).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -578,6 +621,8 @@ const shareService = {
   acceptSharedFolderInvite,
   declineSharedFolderInvite,
   processInvitation,
+  createPublicSharingItem,
+  getPublicSharingMeta,
 };
 
 export default shareService;

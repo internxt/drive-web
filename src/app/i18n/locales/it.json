@@ -630,7 +630,8 @@
         }
       },
       "errors": {
-        "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi."
+        "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi.",
+        "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi."
       },
       "general": {
         "generalAccess": "Accesso generale",
