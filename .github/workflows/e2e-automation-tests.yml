@@ -38,4 +38,4 @@ jobs:
               with:
                   browser: chrome
                   start: yarn start
-                  command: yarn file automation-drive-web/cypress/e2e/spec.cy.js
+                  command: yarn automation-drive-web/cypress/e2e/spec.cy.js
