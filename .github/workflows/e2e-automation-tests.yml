@@ -5,6 +5,9 @@ on:
         branches:
             - feat/E2E-Testing-automation-internxt
 
+defaults:
+   run:
+    working-directory: ./automation-drive-web
 jobs:
     Build-Cypress-TestSuite-AfterPush:
         runs-on: ubuntu-latest
@@ -36,6 +39,5 @@ jobs:
             - name: Cypress Run
               uses: cypress-io/github-action@v6
               with:
-                project: ./automation-drive-web
                 browser: chrome
-                command: yarn cypress run --spec "cypress/e2e/spec.cy.js" 
+                command: yarn file "cypress/e2e/spec.cy.js" 
