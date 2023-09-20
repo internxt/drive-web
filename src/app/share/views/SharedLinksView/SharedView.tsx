@@ -737,6 +737,7 @@ export default function SharedView(): JSX.Element {
     setHasMoreFolders(true);
     setHasMoreItems(true);
     setShareItems([]);
+    setSelectedItems([]);
     setCurrentResourcesToken(token);
     if (id === 1) {
       setCurrentFolderId('');
