@@ -32,6 +32,7 @@ import notificationsService, { ToastType } from '../../notifications/services/no
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { Role } from 'app/store/slices/sharedLinks/types';
+import folderService from 'app/drive/services/folder.service';
 
 interface CreateShareResponse {
   created: boolean;
@@ -147,6 +148,23 @@ export function getSharedFolderContent(
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient
     .getSharedFolderContent(sharedFolderId, type, invitedToken, page, perPage, orderBy)
+    .catch((error) => {
+      throw error;
+    });
+}
+
+export function getPublicSharedFolderContent(
+  sharedFolderId: string,
+  type: 'folders' | 'files',
+  token: string | null,
+  page: number,
+  perPage: number,
+  code?: string,
+  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
+): Promise<ListSharedItemsResponse> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient
+    .getPublicSharedFolderContent(sharedFolderId, type, token, page, perPage, code, orderBy)
     .catch((error) => {
       throw error;
     });
@@ -473,6 +491,69 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
   }
 }
 
+class DirectoryPublicSharedFolderIterator implements Iterator<SharedFolders> {
+  private page: number;
+  private itemsPerPage: number;
+  private readonly queryValues: { directoryId: string; resourcesToken?: string };
+
+  constructor(queryValues: { directoryId: string; resourcesToken?: string }, page?: number, itemsPerPage?: number) {
+    this.page = page || 0;
+    this.itemsPerPage = itemsPerPage || 5;
+    this.queryValues = queryValues;
+  }
+
+  async next() {
+    const { directoryId, resourcesToken } = this.queryValues;
+    const items = await getPublicSharedFolderContent(
+      directoryId,
+      'folders',
+      resourcesToken ?? '',
+      this.page,
+      this.itemsPerPage,
+    );
+    const folders = items.items.map((folder) => ({ ...folder, name: folder?.plainName ?? folder.name }));
+    this.page += 1;
+
+    const done = folders.length < this.itemsPerPage;
+
+    return { value: folders as SharedFolders[], done: done, token: items.token };
+  }
+}
+
+class DirectoryPublicSharedFilesIterator implements Iterator<SharedFiles> {
+  private page: number;
+  private itemsPerPage: number;
+  private readonly queryValues: { directoryId: string; resourcesToken?: string; code?: string };
+
+  constructor(
+    queryValues: { directoryId: string; resourcesToken?: string; code?: string },
+    page?: number,
+    itemsPerPage?: number,
+  ) {
+    this.page = page || 0;
+    this.itemsPerPage = itemsPerPage || 15;
+    this.queryValues = queryValues;
+  }
+
+  async next() {
+    const { directoryId, resourcesToken, code } = this.queryValues;
+
+    const items = await getPublicSharedFolderContent(
+      directoryId,
+      'files',
+      resourcesToken ?? '',
+      this.page,
+      this.itemsPerPage,
+      code,
+    );
+    const files = items.items.map((file) => ({ ...file, name: file?.plainName ?? file.name }));
+    this.page += 1;
+    const done = files.length < this.itemsPerPage;
+
+    return { value: files, done: done, token: items.token };
+  }
+}
+
 export const decryptMnemonic = async (encryptionKey: string): Promise<string | undefined> => {
   const user = localStorageService.getUser();
   if (user) {
@@ -562,6 +643,72 @@ export async function downloadSharedFiles({
   }
 }
 
+export async function downloadPublicSharedFolder({
+  encryptionKey,
+  item,
+  token,
+  code,
+}: {
+  encryptionKey: string;
+  item;
+  token?: string;
+  code: string;
+}): Promise<void> {
+  const initPage = 0;
+  const itemsPerPage = 15;
+
+  const decrypted = aes.decrypt(encryptionKey, code);
+
+  const { credentials } = await shareService.getPublicSharedFolderContent(
+    // folderUUID
+    item.uuid,
+    'files',
+    '',
+    0,
+    15,
+    code,
+  );
+
+  if (!credentials) {
+    throw Error('No Credentials!');
+  }
+
+  const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
+    return new DirectoryPublicSharedFolderIterator(
+      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const createFilesIterator = (directoryUuid: string, resourcesToken?: string) => {
+    return new DirectoryPublicSharedFilesIterator(
+      { directoryId: directoryUuid, resourcesToken: resourcesToken ?? token, code: code },
+      initPage,
+      itemsPerPage,
+    );
+  };
+
+  const options = {
+    credentials: {
+      user: credentials.networkUser,
+      pass: credentials.networkPass,
+    },
+    mnemonic: decrypted,
+    isPublicShare: true,
+  };
+
+  return folderService.downloadSharedFolderAsZip(
+    item.id,
+    item.plainName,
+    createFoldersIterator,
+    createFilesIterator,
+    (progress) => ({}),
+    item.uuid,
+    options,
+  );
+}
+
 export const processInvitation = async (
   isDeclineAction: boolean,
   invitationId: string,
@@ -623,6 +770,7 @@ const shareService = {
   processInvitation,
   createPublicSharingItem,
   getPublicSharingMeta,
+  getPublicSharedFolderContent,
 };
 
 export default shareService;

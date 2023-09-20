@@ -194,7 +194,7 @@
     {
       "id": "share-folder-token",
       "layout": "share",
-      "path": "/sh/folder/:token([a-z0-9]{20})/:code",
+      "path": "/sh/folder/:token/:code?",
       "exact": false
     },
     {
