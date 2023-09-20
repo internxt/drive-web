@@ -15,8 +15,6 @@ jobs:
         steps:
             - name: Checkout
               uses: actions/checkout@v3
-              with:
-                path: automation-drive-web
               
 
             - name: Install Node.js
@@ -32,14 +30,12 @@ jobs:
             - run: echo "always-auth=true" >> .npmrc
 
             - name: Install All Dependencies
-              working-directory: automation-drive-web
               run: |
                   yarn
 
             - name: Cypress Run
               uses: cypress-io/github-action@v6
               with:
-                project: automation-drive-web
-                config-file: automation-drive-web/cypress.config.json
+                project: ./automation-drive-web
                 browser: chrome
                 command: yarn cypress run --spec "cypress/e2e/spec.cy.js" 
