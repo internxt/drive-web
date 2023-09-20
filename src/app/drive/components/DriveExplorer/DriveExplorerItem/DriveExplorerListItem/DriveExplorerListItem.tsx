@@ -102,7 +102,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     );
   };
   const itemIsShared = item.shares?.length || 0 > 0;
-  const isProduction = envService.isProduction();
 
   const template = (
     <div
@@ -122,18 +121,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             className="h-full"
             data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
           />
-          {itemIsShared &&
-            (isProduction ? (
-              <Link
-                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
-              />
-            ) : (
-              <Users
-                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
-              />
-            ))}
+          {itemIsShared && (
+            <Users
+              className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+            />
+          )}
         </div>
       </div>
 

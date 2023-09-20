@@ -215,6 +215,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
+  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
   const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
     const user = props.user;
     const { mnemonic } = user;

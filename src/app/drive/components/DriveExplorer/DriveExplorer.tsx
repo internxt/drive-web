@@ -658,7 +658,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      {!envService.isProduction() && <ShareDialog />}
+      <ShareDialog />
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
@@ -784,26 +784,24 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     <div className="flex items-center justify-center">
                       {selectedItems.length === 1 && (
                         <>
-                          {!envService.isProduction() && (
-                            <div
-                              className="flex items-center justify-center"
-                              data-tooltip-id="share-tooltip"
-                              data-tooltip-content={translate('drive.dropdown.share')}
-                              data-tooltip-place="bottom"
+                          <div
+                            className="flex items-center justify-center"
+                            data-tooltip-id="share-tooltip"
+                            data-tooltip-content={translate('drive.dropdown.share')}
+                            data-tooltip-place="bottom"
+                          >
+                            <Button
+                              variant="tertiary"
+                              className="aspect-square"
+                              onClick={() => {
+                                dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
+                                dispatch(uiActions.setIsShareDialogOpen(true));
+                              }}
                             >
-                              <Button
-                                variant="tertiary"
-                                className="aspect-square"
-                                onClick={() => {
-                                  dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
-                                  dispatch(uiActions.setIsShareDialogOpen(true));
-                                }}
-                              >
-                                <Users className="h-6 w-6" />
-                              </Button>
-                              <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
-                            </div>
-                          )}
+                              <Users className="h-6 w-6" />
+                            </Button>
+                            <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
+                          </div>
                           {isSelectedItemShared && (
                             <div
                               className="flex items-center justify-center"

@@ -31,7 +31,6 @@ import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/Edi
 import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
-import envService from '../../../core/services/env.service';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
@@ -44,13 +43,8 @@ import { RootState } from 'app/store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
-
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
-
-function copyShareLink(type: string, code: string, token: string) {
-  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
-  notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-}
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import crypto from 'crypto';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -475,12 +469,39 @@ export default function SharedView(): JSX.Element {
     setSelectedItems(updatedSelectedItems);
   };
 
-  const copyLink = (item) => {
-    const itemType = item.isFolder ? 'folder' : 'file';
-    const encryptedCode = item.code || item.encryptedCode;
-    const plainCode = aes.decrypt(encryptedCode, localStorageService.getUser()!.mnemonic);
-    copyShareLink(itemType, plainCode, item.token);
+  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
+  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
+    const user = localStorageService.getUser() as UserSettings;
+    const { mnemonic } = user;
+    const code = crypto.randomBytes(32).toString('hex');
+
+    const encryptedMnemonic = aes.encrypt(mnemonic, code);
+
+    try {
+      const publicSharingItemData = await shareService.createPublicSharingItem({
+        encryptionAlgorithm: 'inxt-v2',
+        encryptionKey: encryptedMnemonic,
+        itemType,
+        itemId: uuid,
+      });
+      const { id: sharingId } = publicSharingItemData;
+
+      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
   };
+
+  const copyLink = useCallback(
+    (item: AdvancedSharedItem) => {
+      getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+    },
+    [dispatch, sharedThunks],
+  );
 
   const handleFolderAccess = () => {
     if (folderUUID)
@@ -512,10 +533,7 @@ export default function SharedView(): JSX.Element {
     {
       dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
     }
-
-    envService.isProduction()
-      ? dispatch(uiActions.setIsShareItemDialogOpen(true))
-      : dispatch(uiActions.setIsShareDialogOpen(true));
+    dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
   const removeItemsFromList = () => {
