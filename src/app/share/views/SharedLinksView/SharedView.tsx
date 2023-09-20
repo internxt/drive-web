@@ -122,11 +122,7 @@ export default function SharedView(): JSX.Element {
   useEffect(() => {
     if (!currentFolderId && !isShareDialogOpen && !folderUUID) {
       setTimeout(() => {
-        setPage[0];
-        setShareItems([]);
-        setHasMoreRootFolders(true);
-        setHasMoreFolders(true);
-        setHasMoreItems(true);
+        resetSharedViewState();
         fetchRootFolders();
       }, 200);
     } else if (currentFolderId && !isShareDialogOpen && !folderUUID) {
@@ -167,12 +163,16 @@ export default function SharedView(): JSX.Element {
     }
   }, [page]);
 
-  function onShowInvitationsModalClose() {
-    setPage[0];
+  const resetSharedViewState = () => {
+    setPage(0);
     setShareItems([]);
     setHasMoreRootFolders(true);
     setHasMoreFolders(true);
     setHasMoreItems(true);
+  };
+
+  function onShowInvitationsModalClose() {
+    resetSharedViewState();
     setCurrentFolderId('');
     fetchRootFolders();
     dispatch(sharedThunks.getPendingInvitations());
@@ -751,7 +751,7 @@ export default function SharedView(): JSX.Element {
     } else {
       setCurrentFolderId(uuid);
     }
-    setPage[0];
+    setPage(0);
     dispatch(storageActions.popSharedNamePath({ id: id, name: name, token: token, uuid: uuid }));
   };
 
@@ -765,7 +765,7 @@ export default function SharedView(): JSX.Element {
       active: true,
       isFirstPath: true,
       onClick: () => {
-        setPage[0];
+        setPage(0);
         setShareItems([]);
         setHasMoreRootFolders(true);
         setHasMoreFolders(true);
