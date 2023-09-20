@@ -256,17 +256,19 @@ export default function SharedView(): JSX.Element {
     if (currentFolderId && hasMoreFolders) {
       setIsLoading(true);
       try {
-        const response: ListSharedItemsResponse = await shareService.getSharedFolderContent(
+        const response: ListSharedItemsResponse & { role: string } = (await shareService.getSharedFolderContent(
           currentFolderId,
           'folders',
           currentResourcesToken,
           page,
           ITEMS_PER_PAGE,
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-        );
+        )) as ListSharedItemsResponse & { role: string };
 
         const token = response.token;
         setNextResourcesToken(token);
+
+        if (response.role) dispatch(sharedActions.setCurrentSharingRole(response.role.toLowerCase()));
 
         const folders = response.items.map((folder) => {
           const shareItem = folder as AdvancedSharedItem;
@@ -371,10 +373,6 @@ export default function SharedView(): JSX.Element {
   }, [currentShareId]);
 
   const onItemDoubleClicked = (shareItem: AdvancedSharedItem) => {
-    if (shareItem.sharingId) {
-      dispatch(sharedActions.setCurrentShareId(shareItem.sharingId));
-    }
-
     if (shareItem.isFolder) {
       dispatch(
         storageActions.pushSharedNamePath({
