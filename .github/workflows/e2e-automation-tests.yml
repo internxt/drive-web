@@ -18,11 +18,7 @@ jobs:
               uses: actions/setup-node@v3
               with:
                   node-version: 16
-
-            - name: Yarn Setup
-              uses: DerYeger/yarn-setup-action@master
-              with:
-                  node-version: 16
+            - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
 
             - name: Install All Dependencies
               run: |

@@ -5,11 +5,14 @@
   "main": "index.js",
   "repository": "https://github.com/internxt/drive-web",
   "license": "MIT",
-  "scripts":{
+  "scripts": {
     "test": "cypress open",
     "file": "cypress run --browser chrome --record --key c635d3f7-b323-4e3b-bcf4-722c1484fd18 --spec cypress/e2e/**/*"
   },
   "dependencies": {
     "cypress": "^13.2.0"
+  },
+  "devDependencies": {
+    "@cypress-audit/lighthouse": "^1.4.2"
   }
 }
