@@ -121,7 +121,10 @@ export default function SharedView(): JSX.Element {
 
   useEffect(() => {
     if (!currentFolderId && !isShareDialogOpen && !folderUUID) {
-      setTimeout(fetchRootFolders, 200);
+      setTimeout(() => {
+        resetSharedViewState();
+        fetchRootFolders();
+      }, 200);
     } else if (currentFolderId && !isShareDialogOpen && !folderUUID) {
       setTimeout(fetchFolders, 200);
     }
@@ -160,12 +163,16 @@ export default function SharedView(): JSX.Element {
     }
   }, [page]);
 
-  function onShowInvitationsModalClose() {
-    setPage[0];
+  const resetSharedViewState = () => {
+    setPage(0);
     setShareItems([]);
     setHasMoreRootFolders(true);
     setHasMoreFolders(true);
     setHasMoreItems(true);
+  };
+
+  function onShowInvitationsModalClose() {
+    resetSharedViewState();
     setCurrentFolderId('');
     fetchRootFolders();
     dispatch(sharedThunks.getPendingInvitations());
@@ -744,7 +751,7 @@ export default function SharedView(): JSX.Element {
     } else {
       setCurrentFolderId(uuid);
     }
-    setPage[0];
+    setPage(0);
     dispatch(storageActions.popSharedNamePath({ id: id, name: name, token: token, uuid: uuid }));
   };
 
@@ -758,7 +765,7 @@ export default function SharedView(): JSX.Element {
       active: true,
       isFirstPath: true,
       onClick: () => {
-        setPage[0];
+        setPage(0);
         setShareItems([]);
         setHasMoreRootFolders(true);
         setHasMoreFolders(true);
@@ -823,19 +830,21 @@ export default function SharedView(): JSX.Element {
               </div>
             </Button>
           )}
-          <Button
-            variant="secondary"
-            onClick={() => {
-              dispatch(uiActions.setIsInvitationsDialogOpen(true));
-            }}
-          >
-            <p className="space-x-2">
-              Pending Invitations{' '}
-              <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
-                {pendingInvitations.length > 0 ? pendingInvitations.length : 0}
-              </span>
-            </p>
-          </Button>
+          {pendingInvitations.length > 0 && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(uiActions.setIsInvitationsDialogOpen(true));
+              }}
+            >
+              <p className="space-x-2">
+                Pending Invitations{' '}
+                <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+                  {pendingInvitations.length}
+                </span>
+              </p>
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex h-full w-full flex-col overflow-y-auto">
@@ -959,6 +968,7 @@ export default function SharedView(): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
+                  openShareAccessSettings,
                   openPreview: openPreview,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
