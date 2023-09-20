@@ -31,10 +31,11 @@ jobs:
             - name: Install All Dependencies
               run: |
                   yarn
+                  CI=true yarn
 
             - name: Cypress Run
               uses: cypress-io/github-action@v5
               with:
                   browser: chrome
-                  command: | 
-                      yarn file automation-drive-web/cypress/e2e/spec.cy.js
+                  start: yarn start
+                  command: yarn file automation-drive-web/cypress/e2e/spec.cy.js
