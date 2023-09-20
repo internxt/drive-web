@@ -1,4 +1,4 @@
-name: CI run (BUILD) Test Suite Execution
+name: Drive Web CI Automation Test
 
 on: 
     push:
@@ -8,25 +8,32 @@ on:
 jobs:
     Build-Cypress-TestSuite-AfterPush:
         runs-on: ubuntu-latest
+        strategy:
+          matrix:
+            node-version: [14.x]
 
         steps:
             - name: Checkout
               uses: actions/checkout@v3
 
-            - name: Install Node.js
-              uses: actions/setup-node@v3
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: actions/setup-node@v1
               with:
-                  node-version: 16
+                node-version: ${{ matrix.node-version }}
+                registry-url: 'https://npm.pkg.github.com'
 
-            - name: Set .npmrc with Personal Access Token
-              run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+            - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+            - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+
+            - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+            - run: echo "always-auth=true" >> .npmrc
 
             - name: Install All Dependencies
               run: |
-                  npm install
+                  yarn
 
-            - name: Cypress Run Test Coverage in Chrome
-              uses: cypress-io/github-action@v4
+            - name: Cypress Run
+              uses: cypress-io/github-action@v5
               with:
                   browser: chrome
                   command: | 
