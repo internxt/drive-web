@@ -23,7 +23,7 @@ jobs:
 
             - name: Install All Dependencies
               run: |
-                  yarn
+                  npm install
 
             - name: Cypress Run Test Coverage in Chrome
               uses: cypress-io/github-action@v4
