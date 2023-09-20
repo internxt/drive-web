@@ -72,13 +72,14 @@ export interface FetchFolderContentResponse {
 }
 
 export interface DownloadFolderAsZipOptions {
-  destination: FlatFolderZip;
+  destination?: FlatFolderZip;
   closeWhenFinished?: boolean;
   credentials?: {
     user: string | undefined;
     pass: string | undefined;
   };
   mnemonic?: string;
+  isPublicShare?: boolean;
 }
 
 export function createFolder(
@@ -363,7 +364,7 @@ async function downloadSharedFolderAsZip(
 
   const user = localStorageService.getUser();
 
-  if (!user) {
+  if (!user && !options?.isPublicShare) {
     throw new Error('user null');
   }
 
@@ -413,9 +414,9 @@ async function downloadSharedFolderAsZip(
 
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
-            : { user: user.bridgeUser, pass: user.userId };
+            : { user: user?.bridgeUser || '', pass: user?.userId || '' };
 
-          const mnemonic = options?.mnemonic ? options?.mnemonic : user.mnemonic;
+          const mnemonic = options?.mnemonic ? options?.mnemonic : user?.mnemonic || '';
 
           const downloadedFileStream = await downloadFile({
             bucketId: file.bucket as string,

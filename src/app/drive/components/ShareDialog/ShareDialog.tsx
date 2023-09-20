@@ -230,7 +230,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     });
     const { id: sharingId } = publicSharingItemData;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/file/${sharingId}/${code}`);
+    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
     notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   };
 
