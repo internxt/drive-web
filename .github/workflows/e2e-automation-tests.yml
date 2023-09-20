@@ -38,7 +38,7 @@ jobs:
             - name: Cypress Run
               uses: cypress-io/github-action@v6
               with:
-                working-directory: automation-web-drive
+                working-directory: automation-drive-web
                 browser: chrome
                 start: yarn start
                 command: yarn file "cypress/e2e/spec.cy.js" 
