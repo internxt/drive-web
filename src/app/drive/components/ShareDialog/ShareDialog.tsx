@@ -222,30 +222,48 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     const encryptedMnemonic = aes.encrypt(mnemonic, code);
 
-    const publicSharingItemData = await shareService.createPublicSharingItem({
-      encryptionAlgorithm: 'inxt-v2',
-      encryptionKey: encryptedMnemonic,
-      itemType,
-      itemId: uuid,
-    });
-    const { id: sharingId } = publicSharingItemData;
+    try {
+      const publicSharingItemData = await shareService.createPublicSharingItem({
+        encryptionAlgorithm: 'inxt-v2',
+        encryptionKey: encryptedMnemonic,
+        itemType,
+        itemId: uuid,
+      });
+      const { id: sharingId } = publicSharingItemData;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/file/${sharingId}/${code}`);
-    notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
+  };
+
+  const getPrivateShareLink = () => {
+    try {
+      copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    } catch (error) {
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
+    }
   };
 
   const onCopyLink = (): void => {
     if (accessMode === 'restricted') {
-      copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+      getPrivateShareLink();
       closeSelectedUserPopover();
       return;
     }
 
-    if (itemToShare?.item.uuid)
+    if (itemToShare?.item.uuid) {
       getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
-
-    closeSelectedUserPopover();
+      closeSelectedUserPopover();
+    }
   };
 
   const onInviteUser = () => {
