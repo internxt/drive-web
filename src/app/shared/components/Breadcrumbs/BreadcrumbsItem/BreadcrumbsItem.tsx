@@ -12,6 +12,7 @@ import {
   Gear,
   ArrowsOutCardinal,
   DownloadSimple,
+  Users,
 } from '@phosphor-icons/react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
@@ -215,6 +216,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
   };
 
+  const onShareLinkButtonClicked = () => {
+    const item = currentFolder[0];
+    dispatch(storageActions.setItemToShare({ item: item as unknown as DriveItemData }));
+    dispatch(uiActions.setIsShareDialogOpen(true));
+  };
+
   return (
     <>
       {!props.item.active && !props.item.dialog ? (
@@ -260,6 +267,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     )}
                   </Menu.Item>
                   <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onShareLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Users size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.shareLink')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
                   {!isBreadcrumbItemShared ? (
                     <Menu.Item>
                       {({ active }) => (
