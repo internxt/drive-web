@@ -82,7 +82,7 @@ const FileViewer = ({
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
 
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
-  const filename = file ? `${file.name}${file.type ? `.${file.type}` : ''}` : '';
+  const filename = file ? `${file?.plainName ?? file.name}${file.type ? `.${file.type}` : ''}` : '';
 
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
