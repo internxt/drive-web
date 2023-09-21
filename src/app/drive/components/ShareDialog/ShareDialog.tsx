@@ -536,7 +536,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <p className="text-base font-medium leading-none">
                                 {translate('modals.shareModal.general.accessOptions.public.title')}
                               </p>
-                              <p className="text-sm leading-tight text-gray-60">
+                              <p className="text-left text-sm leading-tight text-gray-60">
                                 {translate('modals.shareModal.general.accessOptions.public.subtitle')}
                               </p>
                             </div>
@@ -560,7 +560,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <p className="text-base font-medium leading-none">
                                 {translate('modals.shareModal.general.accessOptions.restricted.title')}
                               </p>
-                              <p className="text-sm leading-tight text-gray-60">
+                              <p className="text-left text-sm leading-tight text-gray-60">
                                 {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
                               </p>
                             </div>

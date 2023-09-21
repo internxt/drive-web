@@ -537,7 +537,7 @@
       "untitled": "Unbenannter Ordner"
     },
     "shareModal": {
-      "title": "Aktie \"{{mame}}\"",
+      "title": "Aktie \"{{name}}\"",
       "list": {
         "peopleWithAccess": "Personen mit Zugang",
         "invite": "Einladen",
