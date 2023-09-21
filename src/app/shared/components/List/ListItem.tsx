@@ -4,17 +4,20 @@ import { DotsThree } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-export type ListItemMenu<T> = Array<{
-  separator?: boolean;
-  name: string;
-  icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
-  keyboardShortcutOptions?: {
-    keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
-    keyboardShortcutText?: string;
-  };
-  action: (target: T) => void;
-  disabled?: (target: T) => boolean;
-}>;
+export type ListItemMenu<T> = Array<
+  | {
+      separator?: boolean;
+      name: string;
+      icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+      keyboardShortcutOptions?: {
+        keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+        keyboardShortcutText?: string;
+      };
+      action: (target: T) => void;
+      disabled?: (target: T) => boolean;
+    }
+  | undefined
+>;
 
 interface ItemProps<T> {
   item: T;
@@ -111,25 +114,27 @@ export default function ListItem<T extends { id: string }>({
     >
       {menu?.map((option, i) => (
         <div key={i}>
-          {option.separator ? (
+          {option && option.separator ? (
             <div className="my-0.5 flex w-full flex-row px-4">
               <div className="h-px w-full bg-gray-10" />
             </div>
           ) : (
-            <div>
-              <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
-                <div className="flex flex-row items-center space-x-2">
-                  {option.icon && <option.icon size={20} />}
-                  <span>{option.name}</span>
+            option && (
+              <div>
+                <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
+                  <div className="flex flex-row items-center space-x-2">
+                    {option.icon && <option.icon size={20} />}
+                    <span>{option.name}</span>
+                  </div>
+                  <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                    {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                      <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                    )}
+                    {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                  </span>
                 </div>
-                <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
-                  {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
-                    <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
-                  )}
-                  {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
-                </span>
               </div>
-            </div>
+            )
           )}
         </div>
       ))}
@@ -255,41 +260,43 @@ export default function ListItem<T extends { id: string }>({
                     >
                       {menu?.map((option, i) => (
                         <div key={i}>
-                          {option.separator ? (
+                          {option && option.separator ? (
                             <div className="my-0.5 flex w-full flex-row px-4">
                               <div className="h-px w-full bg-gray-10" />
                             </div>
                           ) : (
-                            <Menu.Item disabled={option.disabled?.(item)}>
-                              {({ active, disabled }) => {
-                                return (
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      option.action?.(item);
-                                    }}
-                                    className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
-                                      active
-                                        ? 'bg-gray-5 text-gray-100'
-                                        : disabled
-                                        ? 'pointer-events-none font-medium text-gray-100'
-                                        : 'text-gray-80'
-                                    }`}
-                                  >
-                                    <div className="flex flex-row items-center space-x-2">
-                                      {option.icon && <option.icon size={20} />}
-                                      <span>{option.name}</span>
+                            option && (
+                              <Menu.Item disabled={option.disabled?.(item)}>
+                                {({ active, disabled }) => {
+                                  return (
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        option.action?.(item);
+                                      }}
+                                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
+                                        active
+                                          ? 'bg-gray-5 text-gray-100'
+                                          : disabled
+                                          ? 'pointer-events-none font-medium text-gray-100'
+                                          : 'text-gray-80'
+                                      }`}
+                                    >
+                                      <div className="flex flex-row items-center space-x-2">
+                                        {option.icon && <option.icon size={20} />}
+                                        <span>{option.name}</span>
+                                      </div>
+                                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                        {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                                          <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                                        )}
+                                        {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                                      </span>
                                     </div>
-                                    <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
-                                      {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
-                                        <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
-                                      )}
-                                      {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
-                                    </span>
-                                  </div>
-                                );
-                              }}
-                            </Menu.Item>
+                                  );
+                                }}
+                              </Menu.Item>
+                            )
                           )}
                         </div>
                       ))}

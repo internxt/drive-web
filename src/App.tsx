@@ -1,5 +1,5 @@
-import { Component, createElement } from 'react';
-import { Switch, Route, Redirect, Router, RouteProps } from 'react-router-dom';
+import { Component, createElement, useEffect } from 'react';
+import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -16,11 +16,10 @@ import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
 import { uiActions } from './app/store/slices/ui';
-import { DriveFileData } from './app/drive/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import views from './app/core/config/views';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from 'app/survey/components/SurveyDialog/SurveyDialog';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import { pdfjs } from 'react-pdf';
@@ -30,11 +29,12 @@ import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 import { t } from 'i18next';
-import authService from 'app/auth/services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import Mobile from 'app/drive/views/MobileView/MobileView';
+import authService from './app/auth/services/auth.service';
+import localStorageService from './app/core/services/local-storage.service';
+import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
+import { PreviewFileItem } from './app/share/types';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -42,7 +42,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
-  fileViewerItem: DriveFileData | null;
+  fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   dispatch: AppDispatch;
 }
@@ -168,6 +168,7 @@ class App extends Component<AppProps> {
               <Route exact path="/">
                 <Redirect to="/login" />
               </Route>
+              <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
               <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
               <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
@@ -201,6 +202,22 @@ class App extends Component<AppProps> {
     return template;
   }
 }
+
+const SharingRedirect = () => {
+  const params = useParams();
+  const history = useHistory();
+
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get('token');
+    const sharingId = (params as any).sharingId;
+    const action = (params as any).action;
+    const redirectURL = `/login?sharingId=${sharingId}&action=${action}&token=${token}`;
+
+    history.push(redirectURL);
+  }, [params, history]);
+
+  return null;
+};
 
 export default connect((state: RootState) => ({
   isAuthenticated: state.user.isAuthenticated,

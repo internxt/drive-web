@@ -17,7 +17,6 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
-import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -32,6 +31,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
+import SharedView from '../../share/views/SharedLinksView/SharedView';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 
@@ -52,7 +52,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
-  { id: AppView.SharedLinks, component: SharedLinksView },
+  { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },

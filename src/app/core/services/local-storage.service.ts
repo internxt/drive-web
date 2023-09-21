@@ -54,6 +54,9 @@ function clear(): void {
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
   localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+  localStorage.removeItem('showSummerBanner');
+  localStorage.removeItem('xInvitedToken');
+  localStorage.removeItem('xResourcesToken');
   localStorage.removeItem(STORAGE_KEYS.SHOW_LIFETIME_BANNER);
   localStorage.removeItem(STORAGE_KEYS.SHOW_CROWDCUBE_BANNER);
 }

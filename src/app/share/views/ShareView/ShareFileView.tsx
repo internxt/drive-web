@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { useState, useEffect } from 'react';
 import { match } from 'react-router';
-import shareService, { getSharedFileInfo } from 'app/share/services/share.service';
+import shareService from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -27,6 +27,7 @@ import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -53,12 +54,12 @@ interface ShareViewState {
 
 export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const token = props.match.params.token;
+  const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState<Partial<ShareTypes.ShareLink & { name: string }>>({});
+  const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -117,7 +118,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const getFormatFileName = (): string => {
     const hasType = info?.item?.type !== null;
     const extension = hasType ? `.${info?.item?.type}` : '';
-    return `${info?.item?.name}${extension}`;
+    return `${info?.item?.plainName}${extension}`;
   };
 
   const getFormatFileSize = (): string => {
@@ -125,13 +126,14 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   };
 
   function loadInfo(password?: string) {
-    return getSharedFileInfo(token, code, password)
-      .then((info) => {
+    return shareService
+      .getPublicSharingMeta(sharingId, code, password)
+      .then((res) => {
         setIsLoaded(true);
         setRequiresPassword(false);
         setInfo({
-          ...info,
-          name: info.item.name,
+          ...res,
+          name: res.item.plainName,
         });
       })
       .catch((err) => {
@@ -150,10 +152,10 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     const encryptionKey = fileInfo.encryptionKey;
 
     const readable = network.downloadFile({
-      bucketId: fileInfo.bucket,
+      bucketId: fileInfo.item.bucket,
       fileId: fileInfo.item?.fileId,
       encryptionKey: Buffer.from(encryptionKey, 'hex'),
-      token: (fileInfo as any).fileToken,
+      token: fileInfo.itemToken,
       options: {
         abortController,
         notifyProgress: (totalProgress, downloadedBytes) => {
@@ -174,7 +176,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   const download = async (): Promise<void> => {
     if (!isDownloading) {
-      const fileInfo = info as unknown as ShareTypes.ShareLink;
+      const fileInfo = info;
       const MIN_PROGRESS = 0;
 
       if (fileInfo) {
@@ -183,16 +185,15 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         setProgress(MIN_PROGRESS);
         setIsDownloading(true);
         const readable = await network.downloadFile({
-          bucketId: fileInfo.bucket,
+          bucketId: fileInfo.item.bucket,
           fileId: fileInfo.item.fileId,
           encryptionKey: Buffer.from(encryptionKey, 'hex'),
-          token: (fileInfo as any).fileToken,
+          token: fileInfo.itemToken,
           options: {
             notifyProgress: (totalProgress, downloadedBytes) => {
               const progress = Math.trunc((downloadedBytes / totalProgress) * 100);
               setProgress(progress);
               if (progress == 100) {
-                shareService.incrementShareView(fileInfo.token);
                 setIsDownloading(false);
               }
             },
@@ -336,7 +337,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       <SendBanner sendBannerVisible={sendBannerVisible} setIsSendBannerVisible={setIsSendBannerVisible} />
       <FileViewer
         show={openPreview}
-        file={info['item']}
+        file={info!['item']}
         onClose={closePreview}
         onDownload={onDownloadFromPreview}
         progress={blobProgress}

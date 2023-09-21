@@ -95,6 +95,13 @@
       "hideSearch": true
     },
     {
+      "id": "shared",
+      "layout": "header-and-sidenav",
+      "path": "/app/shared",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "photos",
       "layout": "header-and-sidenav",
       "path": "/app/photos",
@@ -181,13 +188,13 @@
     {
       "id": "share-token",
       "layout": "share",
-      "path": "/sh/file/:token([a-z0-9]{20})/:code?",
+      "path": "/sh/file/:token/:code?",
       "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "share",
-      "path": "/sh/folder/:token([a-z0-9]{20})/:code",
+      "path": "/sh/folder/:token/:code?",
       "exact": false
     },
     {

@@ -8,11 +8,12 @@ import { t } from 'i18next';
 import { TaskStatus } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import AppError from 'app/core/types';
-import { DriveFolderData } from 'app/drive/types';
+import { DriveFileData, DriveFolderData } from '../../../../drive/types';
 import folderService from 'app/drive/services/folder.service';
 import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../../network/requests';
+import { Iterator } from 'app/core/collections';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
@@ -22,6 +23,8 @@ interface DownloadFolderThunkOptions {
 
 interface DownloadFolderThunkPayload {
   folder: DriveFolderData;
+  fileIterator: (directoryId: number) => Iterator<DriveFileData>;
+  folderIterator: (directoryId: number) => Iterator<DriveFolderData>;
   options: DownloadFolderThunkOptions;
 }
 
@@ -81,9 +84,15 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (isFirefox) {
         await downloadFolderUsingBlobs({ folder, updateProgressCallback });
       } else {
-        await folderService.downloadFolderAsZip(folder.id, folder.name, (progress) => {
-          updateProgressCallback(progress);
-        });
+        await folderService.downloadFolderAsZip(
+          folder.id,
+          folder.name,
+          payload.folderIterator,
+          payload.fileIterator,
+          (progress) => {
+            updateProgressCallback(progress);
+          },
+        );
       }
 
       tasksService.updateTask({

@@ -206,7 +206,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Copias de seguridad",
-    "sharedLinks": "Enlaces compartidos",
+    "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
     "desktop": "Aplicación de escritorio"
@@ -631,10 +631,14 @@
           "roles": {
             "owner": "Propietario",
             "editor": "Editor",
-            " viewer": "Visor"
+            "reader": "Visor"
           },
           " remove": "Eliminar"
         }
+      },
+      "errors": {
+        "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde.",
+        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde."
       },
       "general": {
         "generalAccess": "Acceso general",
@@ -660,7 +664,7 @@
           "deny": "Denegar",
           "roles": {
             "editor": "Editor",
-            "viewer": "Espectador"
+            "reader": "Espectador"
           }
         }
       },
@@ -674,6 +678,12 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Usuario \"{{name}}\" eliminado",
+          "error": "No se pudo eliminar al usuario \"{{name}}\", por favor inténtalo nuevamente"
+        }
+      },
       "invite": {
         "title": "Invitar a otros",
         "textarea": "Escribe un mensaje (opcional)",
@@ -682,8 +692,16 @@
         "email": "Correo electrónico",
         "invite": "Invitar",
         "editor": "Editor",
-        "viewer": "Visualizador",
-        "listUsers": "Usuarios a invitar"
+        "reader": "Visualizador",
+        "listUsers": "Usuarios a invitar",
+        "successSentInvitation": "Compartido con éxito con {{email}}",
+        "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
+        "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
+        "error": {
+          "errorInviting": "Error al enviar la invitación a {{email}}",
+          "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
+          "declinedError": "Error al rechazar la invitación a la carpeta compartida"
+        }
       },
       "requestAccess": {
         "title": "No tienes acceso",
@@ -695,6 +713,14 @@
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
       }
+    },
+    "sharedInvitationsModal": {
+      "empty": "No quedan invitaciones",
+      "title": "Invitaciones pendientes",
+      "accept": "Aceptar",
+      "deny": "Rechazar",
+      "sharedWith": "Compartido contigo ",
+      "todayAt": "hoy a las "
     },
     "deletePhotosModal": {
       "multiToolBar": "archivos seleccionados",
@@ -846,18 +872,27 @@
       "delete": "Eliminar"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Esta carpeta no está compartida contigo",
+      "folderNotExists": "Esta carpeta no existe",
+      "generic": "No se pudo acceder a la carpeta"
+    }
+  },
   "shared-links": {
-    "shared-links": "Enlaces compartidos",
+    "shared-links": "Compartido",
     "view": "visitas",
     "list": {
+      "name": "Nombre",
       "link-content": "Contenido del enlace",
       "shared": "Compartido",
       "created": "Creado",
-      "size": "Tamaño"
+      "size": "Tamaño",
+      "owner": "Propietario"
     },
     "empty-state": {
-      "title": "Nada compartido aún",
-      "subtitle": "Comparte un archivo o una carpeta para comenzar"
+      "title": "Nada compartido contigo todavía",
+      "subtitle": "Las carpetas que otras personas compartan contigo aparecerán aquí"
     },
     "item-menu": {
       "copy-link": "Copiar link",
@@ -1047,6 +1082,7 @@
     "linkUpdated": "Enlace actualizado",
     "itemsMovedToTrash": "{{item}} movid{{s}} a la papelera",
     "restoreItems": "{{itemsToRecover}} restaurad{{s}} con éxito",
+    "moveItems": "{{itemsToMove}} movid{{s}} con éxito",
     "itemDeleted": "{{item}} eliminado",
     "itemsDeleted": "Archivos eliminados",
     "emailNotEmpty": "El correo no debe estar vacío",

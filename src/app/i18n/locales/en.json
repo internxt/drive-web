@@ -223,7 +223,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backups",
-    "sharedLinks": "Shared Links",
+    "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
     "desktop": "Desktop"
@@ -649,10 +649,14 @@
           "roles": {
             "owner": "Owner",
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           },
           "remove": "Remove"
         }
+      },
+      "errors": {
+        "updatingRole": "The role could not be updated, please try again later.",
+        "copy-to-clipboard": "Error sharing item, try again later."
       },
       "general": {
         "generalAccess": "General access",
@@ -678,7 +682,7 @@
           "deny": "Deny",
           "roles": {
             "editor": "Editor",
-            "viewer": "Viewer"
+            "reader": "Viewer"
           }
         }
       },
@@ -692,6 +696,12 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "User \"{{name}}\" removed",
+          "error": "Couldn't remove user \"{{name}}\", please try again"
+        }
+      },
       "invite": {
         "title": "Invite people",
         "textarea": "Enter your message text (optional)",
@@ -700,8 +710,16 @@
         "email": "Type email",
         "invite": "Invite",
         "editor": "Editor",
-        "viewer": "Viewer",
-        "listUsers": "Users to invite"
+        "reader": "Viewer",
+        "listUsers": "Users to invite",
+        "successSentInvitation": "Successful sharing with {{email}}",
+        "acceptedSuccessfully": "Shared folder invitation successfully accepted",
+        "declinedSuccessfully": "Shared folder invitation successfully declined",
+        "error": {
+          "errorInviting": "Error sending invitation to {{email}}",
+          "acceptedError": "Error accepting invitation to shared folder",
+          "declinedError": "Error declining invitation to shared folder"
+        }
       },
       "requestAccess": {
         "title": "You don't have access",
@@ -713,6 +731,14 @@
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
       }
+    },
+    "sharedInvitationsModal": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline",
+      "sharedWith": "Shared with you ",
+      "todayAt": "today at "
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
@@ -864,18 +890,27 @@
       "delete": "Delete"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "This folder is not shared with you",
+      "folderNotExists": "This folder not exists",
+      "generic": "The folder could not be accessed"
+    }
+  },
   "shared-links": {
-    "shared-links": "Shared links",
+    "shared-links": "Shared",
     "view": "views",
     "list": {
+      "name": "Name",
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created",
-      "size": "Size"
+      "size": "Size",
+      "owner": "Owner"
     },
     "empty-state": {
-      "title": "Nothing shared yet",
-      "subtitle": "Share a folder or a file to get started"
+      "title": "Nothing shared with you yet",
+      "subtitle": "Folders that other people share with you will appear here"
     },
     "item-menu": {
       "copy-link": "Copy link",
@@ -1080,6 +1115,7 @@
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
     "restoreItems": "{{itemsToRecover}} restored successfully",
+    "moveItems": "{{itemsToMove}} moved successfully",
     "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",

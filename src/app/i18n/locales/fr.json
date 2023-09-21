@@ -188,7 +188,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Sauvegardes",
-    "sharedLinks": "Liens partagés",
+    "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
     "desktop": "App de bureau"
@@ -566,10 +566,14 @@
           "roles": {
             "owner": "Propriétaire",
             "editor": "Éditeur",
-            "viewer": " Visualisateur "
+            "reader": " Visualisateur "
           },
           "remove": "Supprimer"
         }
+      },
+      "errors": {
+        "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
+        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard."
       },
       "general": {
         "generalAccess": "Accès général",
@@ -595,7 +599,7 @@
           "deny": "Refuser",
           "roles": {
             "editor": "Editeur",
-            "viewer": "Lecteur"
+            "reader": "Lecteur"
           }
         }
       },
@@ -609,6 +613,12 @@
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utilisateur \"{{name}}\" supprimé",
+          "error": "Impossible de supprimer l'utilisateur \"{{name}}\", veuillez réessayer"
+        }
+      },
       "invite": {
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
@@ -617,8 +627,16 @@
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
-        "viewer": "Visualiseur",
-        "listUsers": "Utilisateurs à inviter"
+        "reader": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter",
+        "successSentInvitation": "Partage réussi avec {{email}}",
+        "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
+        "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
+        "error": {
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+          "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
+        }
       },
       "requestAccess": {
         "title": "Vous n'avez pas accès",
@@ -630,6 +648,14 @@
         "requestSent": "Demande envoyée",
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
       }
+    },
+    "sharedInvitationsModal": {
+      "empty": "Aucune invitation restante",
+      "title": "Invitations en attente",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "sharedWith": "Partagé avec vous ",
+      "todayAt": "aujourd'hui à "
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
@@ -780,18 +806,27 @@
       "delete": "Supprimer"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Ce dossier n'est pas partagé avec vous",
+      "folderNotExists": "Ce dossier n'existe pas",
+      "generic": "Impossible d'accéder au dossier"
+    }
+  },
   "shared-links": {
-    "shared-links": "Liens partagés",
+    "shared-links": "Partagé",
     "view": "Vues",
     "list": {
+      "name": "Nom",
       "link-content": "Contenu du lien",
       "shared": "Partagé",
       "created": "Créé",
-      "size": "Taille"
+      "size": "Taille",
+      "owner": "Propriétaire"
     },
     "empty-state": {
-      "title": "Rien n'a encore été partagé",
-      "subtitle": "Partagez un fichier ou un dossier pour commencer"
+      "title": "Rien n'a encore été partagé avec vous",
+      "subtitle": "Les dossiers que d'autres personnes partagent avec vous apparaîtront ici"
     },
     "item-menu": {
       "copy-link": "Copier le lien",

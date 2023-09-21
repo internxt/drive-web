@@ -204,7 +204,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backup",
-    "sharedLinks": "Link Condivisi",
+    "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
     "desktop": "Applicazione desktop"
@@ -622,11 +622,15 @@
         "userItem": {
           "roles": {
             "owner": "Propietario",
-            "editor": "Editor",
-            "viewer": "Visualizzatore"
+            "editor": "Editore",
+            "reader": "Visualizzatore"
           },
           "remove": "Eliminare"
         }
+      },
+      "errors": {
+        "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi.",
+        "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi."
       },
       "general": {
         "generalAccess": "Accesso generale",
@@ -652,7 +656,7 @@
           "deny": "Nega",
           "roles": {
             "editor": "Editore",
-            "viewer": "Visualizzatore"
+            "reader": "Visualizzatore"
           }
         }
       },
@@ -666,6 +670,12 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utente \"{{name}}\" rimosso",
+          "error": "Impossibile rimuovere l'utente \"{{name}}\", riprova per favore"
+        }
+      },
       "invite": {
         "title": "Invita le persone",
         "textarea": "Inserire il testo del messaggio (opzionale)",
@@ -674,8 +684,16 @@
         "email": "Tipo e-mail",
         "invite": "Invitare",
         "editor": "Editore",
-        "viewer": "Visualizzatore",
-        "listUsers": "Utenti da invitare"
+        "reader": "Visualizzatore",
+        "listUsers": "Utenti da invitare",
+        "successSentInvitation": "Condivisione riuscita con {{email}}",
+        "acceptedSuccessfully": "Invito a cartella condivisa accettato con successo",
+        "declinedSuccessfully": "Invito a cartella condivisa rifiutato con successo",
+        "error": {
+          "errorInviting": "Errore durante l'invio dell'invito a {{email}}",
+          "acceptedError": "Errore nell'accettazione dell'invito alla cartella condivisa",
+          "declinedError": "Errore nel rifiuto dell'invito alla cartella condivisa"
+        }
       },
       "requestAccess": {
         "title": "Non hai accesso",
@@ -687,6 +705,14 @@
         "requestSent": "Richiesta inviata",
         "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
       }
+    },
+    "sharedInvitationsModal": {
+      "empty": "Nessun invito rimasto",
+      "title": "Inviti in sospeso",
+      "accept": "Accetta",
+      "deny": "Rifiuta",
+      "sharedWith": "Condiviso con te ",
+      "todayAt": "oggi alle "
     },
     "deletePhotosModal": {
       "multiToolBar": "file selezionati",
@@ -838,18 +864,27 @@
       "delete": "Elimina"
     }
   },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Questa cartella non è condivisa con te",
+      "folderNotExists": "Questa cartella non esiste",
+      "generic": "Impossibile accedere alla cartella"
+    }
+  },
   "shared-links": {
-    "shared-links": "Link condivisi",
+    "shared-links": "Condiviso",
     "view": "viste",
     "list": {
+      "name": "Nome",
       "link-content": "Contenuto del link",
       "shared": "Condivisioni",
       "created": "Creato",
-      "size": "Dimensione"
+      "size": "Dimensione",
+      "owner": "Propietario"
     },
     "empty-state": {
-      "title": "Niente di condiviso, per ora",
-      "subtitle": "Condividi un file o una cartella, per iniziare"
+      "title": "Non è stato ancora condiviso nulla con te",
+      "subtitle": "Le cartelle che altre persone condividono con voi appariranno qui"
     },
     "item-menu": {
       "copy-link": "Copia link",

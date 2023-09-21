@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import errorService from 'app/core/services/error.service';
-import folderService from 'app/drive/services/folder.service';
+import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
 import { downloadFile } from 'app/network/download';
 import localStorageService from 'app/core/services/local-storage.service';
 import { FlatFolderZip } from 'app/core/services/zip.service';
@@ -20,14 +20,24 @@ import { updateDatabaseFileSourceData } from 'app/drive/services/database.servic
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
+import { Iterator } from 'app/core/collections';
+import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 
-type DownloadItemsThunkPayload = (DriveItemData & { taskId?: string })[];
+type DownloadItemsThunkPayload = (DriveItemData & {
+  taskId?: string;
+  sharingOptions?: {
+    credentials: { pass: string; user: string };
+    mnemonic: string;
+  };
+})[];
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
   async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
     if (items.length > 1) {
-      await dispatch(downloadItemsAsZipThunk({ items }));
+      await dispatch(
+        downloadItemsAsZipThunk({ items, fileIterator: createFilesIterator, folderIterator: createFoldersIterator }),
+      );
       return;
     }
     const errors: unknown[] = [];
@@ -81,15 +91,27 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
           storageThunks.downloadFolderThunk({
             folder: item as DriveFolderData,
             options: { taskId },
+            fileIterator: createFilesIterator,
+            folderIterator: createFoldersIterator,
           }),
         );
       } else {
-        await dispatch(
-          storageThunks.downloadFileThunk({
-            file: item as DriveFileData,
-            options: { taskId },
-          }),
-        );
+        const isSharedFile = !!item.sharingOptions;
+        if (isSharedFile && item.sharingOptions) {
+          await dispatch(
+            storageThunks.downloadFileThunk({
+              file: item as DriveFileData,
+              options: { taskId, sharingOptions: item.sharingOptions },
+            }),
+          );
+        } else {
+          await dispatch(
+            storageThunks.downloadFileThunk({
+              file: item as DriveFileData,
+              options: { taskId },
+            }),
+          );
+        }
       }
     }
 
@@ -99,11 +121,31 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
   },
 );
 
-type DownloadItemsAsZipThunkType = { items: DriveItemData[]; existingTaskId?: string };
+type DownloadItemsAsZipThunkType = {
+  items: DriveItemData[];
+  folderIterator: FolderIterator | SharedFolderIterator;
+  fileIterator: FileIterator | SharedFileIterator;
+  credentials?: {
+    user: string | undefined;
+    pass: string | undefined;
+  };
+  mnemonic?: string;
+  existingTaskId?: string;
+  areSharedItems?: boolean;
+};
+
+type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
+type FileIterator = (directoryId: number) => Iterator<DriveFileData>;
+
+type SharedFolderIterator = (directoryId: string, resourcesToken) => Iterator<SharedFolders>;
+type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<SharedFiles>;
 
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
-  async ({ items, existingTaskId }, { rejectWithValue }) => {
+  async (
+    { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems },
+    { rejectWithValue },
+  ) => {
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -111,6 +153,11 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
     const folderName = `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
+
+    const moreOptions = {
+      credentials,
+      mnemonic,
+    };
 
     const user = localStorageService.getUser();
     if (!user) throw new Error('User not found');
@@ -175,18 +222,37 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
       file_name: '',
       parent_folder_id: 0,
     };
+
     for (const [index, driveItem] of items.entries()) {
       try {
         if (driveItem.isFolder) {
-          await folderService.downloadFolderAsZip(
-            driveItem.id,
-            driveItem.name,
-            (progress) => {
-              downloadProgress[index] = progress;
-              updateProgressCallback(calculateProgress());
-            },
-            { destination: folder, closeWhenFinished: false },
-          );
+          const isSharedFolder = areSharedItems;
+          if (isSharedFolder) {
+            await folderService.downloadSharedFolderAsZip(
+              driveItem.id,
+              driveItem.name,
+              folderIterator as SharedFolderIterator,
+              fileIterator as SharedFileIterator,
+              (progress) => {
+                downloadProgress[index] = progress;
+                updateProgressCallback(calculateProgress());
+              },
+              driveItem.uuid as string,
+              { destination: folder, closeWhenFinished: false, ...moreOptions },
+            );
+          } else {
+            await folderService.downloadFolderAsZip(
+              driveItem.id,
+              driveItem.name,
+              folderIterator as FolderIterator,
+              fileIterator as FileIterator,
+              (progress) => {
+                downloadProgress[index] = progress;
+                updateProgressCallback(calculateProgress());
+              },
+              { destination: folder, closeWhenFinished: false, ...moreOptions },
+            );
+          }
           downloadProgress[index] = 1;
         } else {
           let fileStream: ReadableStream<Uint8Array> | null = null;
@@ -210,14 +276,15 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               band_utilization: 0,
             };
             analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+
             const downloadedFileStream = await downloadFile({
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
               creds: {
-                user: user.bridgeUser,
-                pass: user.userId,
+                user: credentials?.user || user.bridgeUser,
+                pass: credentials?.pass || user.userId,
               },
-              mnemonic: user.mnemonic,
+              mnemonic: mnemonic || user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {
@@ -295,7 +362,7 @@ export const downloadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder
         notificationsService.show({ text: t('error.downloadingItems'), type: ToastType.Error });
       } else {
         notificationsService.show({
-          text: t('error.downloadingFile', { reason: action.error.message || '' }),
+          text: t('error.downloadingFile', { message: action.error.message || '' }),
           type: ToastType.Error,
         });
       }
