@@ -23,6 +23,7 @@ import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { aes } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../../share/types';
+import { DriveItemData } from '../../types';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -71,6 +72,7 @@ const cropSharedName = (name: string) => {
 
 type ShareDialogProps = {
   user: UserSettings;
+  isDriveItem?: boolean;
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
@@ -180,7 +182,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const loadShareInfo = async () => {
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    if ((itemToShare?.item as unknown as AdvancedSharedItem)?.sharingType) {
+    const sharingType = props.isDriveItem
+      ? (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]?.type
+      : (itemToShare?.item as unknown as AdvancedSharedItem)?.sharingType;
+    if (sharingType === 'private') {
       shareAccessMode = 'restricted';
     }
     setAccessMode(shareAccessMode);
