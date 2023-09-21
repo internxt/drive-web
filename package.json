@@ -34,7 +34,7 @@
     "jszip": "=3.2.2",
     "lint-staged": "^13.1.0",
     "lodash": "^4.17.21",
-    "openpgp": "^5.9.0",
+    "openpgp": "^5.10.1",
     "prettysize": "^2.0.0",
     "query-string": "^6.13.8",
     "react": "^17.0.1",
