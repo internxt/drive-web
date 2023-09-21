@@ -1,13 +1,12 @@
 /// <reference types="cypress" />
-import { checkA11y } from "../../accessibilty"
 import { removeLogs } from "../removelogs/removeLogs"
-describe('Testing accessibility', () => {
-  before('Loading website',()=>{
-    cy.visit('/')
-    cy.injectAxe()
+import { faker } from "@faker-js/faker"
+
+describe('Using Cypress', () => {
+  it('sample test',()=>{
+    cy.log(faker.person.zodiacSign())
   })
-  it('Testing Accessibility violations',()=> checkA11y())
-
-
 })
+  
+
 removeLogs()

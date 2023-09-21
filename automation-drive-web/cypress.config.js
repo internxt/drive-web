@@ -1,6 +1,5 @@
 const { defineConfig } = require("cypress");
-const { lighthouse, prepareAudit } = require("@cypress-audit/lighthouse");
-const fs = require('fs');
+
 
 module.exports = defineConfig({
   projectId: "hcgjvq",
