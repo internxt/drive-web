@@ -505,7 +505,7 @@ export default function SharedView(): JSX.Element {
       shareService
         .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
         .then((item) => {
-          const shareItem = { plainName: (item as any).parent.name, uuid: folderUUID, isFolder: true };
+          const shareItem = { plainName: (item as any).name, uuid: folderUUID, isFolder: true };
           onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
         })
         .catch((error) => {
