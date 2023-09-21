@@ -99,7 +99,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const isUserOwner = (itemToShare?.item as any)?.user.email === props.user.email;
+  const itemOwnerEmail = (itemToShare?.item as any)?.user?.email;
+  const isUserOwner = !!itemOwnerEmail && itemOwnerEmail === props?.user?.email;
 
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
