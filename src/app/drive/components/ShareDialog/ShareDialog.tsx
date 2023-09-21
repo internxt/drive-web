@@ -153,7 +153,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     return () => clearTimeout(timer);
   }, [accessRequests]);
-
+  console.log({ currentUserFolderRole });
   useEffect(() => {
     const currentInvitedUser = invitedUsers.find((user) => user.email === props.user.email);
     setCurrentUserFolderRole(currentInvitedUser?.roleName);
@@ -444,7 +444,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole !== 'viewer' && accessMode !== 'public' ? (
+                {currentUserFolderRole !== 'reader' && accessMode !== 'public' ? (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
