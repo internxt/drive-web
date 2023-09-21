@@ -188,7 +188,6 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Sauvegardes",
-    "sharedLinks": "Liens partagés",
     "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
@@ -815,7 +814,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "Liens partagés",
+    "shared-links": "Partagés",
     "view": "Vues",
     "list": {
       "name": "Nom",
@@ -826,8 +825,8 @@
       "owner": "Propriétaire"
     },
     "empty-state": {
-      "title": "Rien n'a encore été partagé",
-      "subtitle": "Partagez un fichier ou un dossier pour commencer"
+      "title": "Rien n'a encore été partagé avec vous",
+      "subtitle": "Les dossiers que d'autres personnes partagent avec vous apparaîtront ici"
     },
     "item-menu": {
       "copy-link": "Copier le lien",

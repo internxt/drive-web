@@ -223,7 +223,6 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backups",
-    "sharedLinks": "Shared Links",
     "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
@@ -899,7 +898,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "Shared links",
+    "shared-links": "Shared",
     "view": "views",
     "list": {
       "name": "Name",
@@ -910,8 +909,8 @@
       "owner": "Owner"
     },
     "empty-state": {
-      "title": "Nothing shared yet",
-      "subtitle": "Share a folder or a file to get started"
+      "title": "Nothing shared with you yet",
+      "subtitle": "Folders that other people share with you will appear here"
     },
     "item-menu": {
       "copy-link": "Copy link",
