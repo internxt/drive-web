@@ -184,7 +184,7 @@ const contextMenuDriveNotSharedLink = ({
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
-  getGetLinkMenuItem(getLink),
+  // getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getOpenPreviewMenuItem(openPreview),
   getRenameMenuItem(renameItem),
@@ -210,7 +210,7 @@ const contextMenuDriveFolderNotSharedLink = ({
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
-  getGetLinkMenuItem(getLink),
+  // getGetLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
