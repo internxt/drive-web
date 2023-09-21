@@ -741,18 +741,17 @@ export default function SharedView(): JSX.Element {
   ];
 
   const emptyState = (
-    <Empty
-      icon={
-        <div className="relative">
-          <img className="w-36" alt="" src={emptyStateIcon} />
-          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
-            <Users size={24} />
-          </div>
+    <div className="h-full w-full p-8">
+      <div className="flex h-full flex-col items-center justify-center pb-20">
+        <div className="pointer-events-none mx-auto mb-10 w-max">
+          <Users size={80} weight="thin" />
         </div>
-      }
-      title={translate('shared-links.empty-state.title')}
-      subtitle={translate('shared-links.empty-state.subtitle')}
-    />
+        <div className="pointer-events-none text-center">
+          <p className="mb-1 block text-2xl font-medium text-gray-100">{translate('shared-links.empty-state.title')}</p>
+          <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
+        </div>
+      </div>
+    </div>
   );
 
   const goToFolderBredcrumb = (id, name, uuid, token?) => {

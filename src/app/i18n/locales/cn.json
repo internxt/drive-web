@@ -199,7 +199,6 @@
     "drive": "云盘",
     "photos": "照片",
     "backups": "备份",
-    "sharedLinks": "共享的链接",
     "shared": "共享的",
     "recents": "最近",
     "trash": "垃圾箱",
@@ -868,7 +867,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "共享的链接",
+    "shared-links": "共享的",
     "view": "访问量",
     "list": {
       "name": "名稱",
@@ -879,8 +878,8 @@
       "owner": "业主"
     },
     "empty-state": {
-      "title": "暂时没有分享的内容",
-      "subtitle": "分享一个文件或文件夹来开始"
+      "title": "尚未与您分享任何内容",
+      "subtitle": "其他人与您共享的文件夹将显示在此处"
     },
     "item-menu": {
       "copy-link": "复制链接",

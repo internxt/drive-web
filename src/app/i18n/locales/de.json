@@ -181,7 +181,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backups",
-    "sharedLinks": "Geteilte Links",
+    "shared": "Geteilt",
     "recents": "Neueste",
     "trash": "Papierkorb",
     "desktop": "Desktop"
@@ -690,7 +690,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "Geteilte Links",
+    "shared-links": "Geteilt",
     "view": "Ansichten",
     "list": {
       "link-content": "Link-Inhalt",
@@ -699,8 +699,8 @@
       "size": "Größe"
     },
     "empty-state": {
-      "title": "Noch nichts geteilt",
-      "subtitle": "Gib einen Ordner oder eine Datei frei, um loszulegen"
+      "title": "Noch nichts mit Ihnen geteilt",
+      "subtitle": "Ordner, die andere Personen mit Ihnen teilen, werden hier angezeigt"
     },
     "item-menu": {
       "copy-link": "Kopiere Link",

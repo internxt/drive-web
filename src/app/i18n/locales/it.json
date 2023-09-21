@@ -204,7 +204,6 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backup",
-    "sharedLinks": "Link Condivisi",
     "shared": "Condiviso",
     "recents": "Recenti",
     "trash": "Cestino",
@@ -873,7 +872,7 @@
     }
   },
   "shared-links": {
-    "shared-links": "Link condivisi",
+    "shared-links": "Condiviso",
     "view": "viste",
     "list": {
       "name": "Nome",
@@ -884,8 +883,8 @@
       "owner": "Propietario"
     },
     "empty-state": {
-      "title": "Niente di condiviso, per ora",
-      "subtitle": "Condividi un file o una cartella, per iniziare"
+      "title": "Non è stato ancora condiviso nulla con te",
+      "subtitle": "Le cartelle che altre persone condividono con voi appariranno qui"
     },
     "item-menu": {
       "copy-link": "Copia link",
