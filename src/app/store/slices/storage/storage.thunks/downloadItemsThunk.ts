@@ -132,6 +132,7 @@ type DownloadItemsAsZipThunkType = {
   mnemonic?: string;
   existingTaskId?: string;
   areSharedItems?: boolean;
+  sharedFolderName?: string;
 };
 
 type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
@@ -143,7 +144,7 @@ type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<Shar
 export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZipThunkType, { state: RootState }>(
   'storage/downloadItemsAsZip',
   async (
-    { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems },
+    { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems, sharedFolderName },
     { rejectWithValue },
   ) => {
     const errors: unknown[] = [];
@@ -151,7 +152,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const downloadProgress: number[] = [];
     const abortController = new AbortController();
     const formattedDate = date.format(new Date(), 'DD/MM/YYYY - HH:mm');
-    const folderName = `Internxt (${formattedDate})`;
+    const folderName = sharedFolderName ?? `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
 
     const moreOptions = {
