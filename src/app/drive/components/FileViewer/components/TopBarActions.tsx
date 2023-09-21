@@ -107,7 +107,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
       className={`${background} z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
       <div className="flex flex-row items-center justify-center space-x-2 px-5">
-        {!isAuthenticated && isShareView && (
+        {isShareView && (
           <button
             onClick={copyNavigatorLink}
             title={translate('actions.copyLink')}
