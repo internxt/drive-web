@@ -3,7 +3,7 @@ name: Drive Web CI Automation Test
 on: 
     push:
         branches:
-            - feat/E2E-Testing-automation-internxt
+            - feature/AFS-E2E-Testing-Automation-Internxt
 
 jobs:
     Build-Cypress-TestSuite-AfterPush:
