@@ -12,18 +12,6 @@ module.exports = defineConfig({
     specPattern: ['cypress/e2e/**/*.cy.{js,jsx,ts,tsx,}'],
 		baseUrl: 'https://internxt.com/es',
 		watchForFileChanges:false,
-    setupNodeEvents(on, config) {
-      on("before:browser:launch", (browser = {}, launchOptions) => {
-        prepareAudit(launchOptions);
-      });
-
-      on("task", {
-        lighthouse: lighthouse((lighthouseReport)=>{
-          const reportHtml = lighthouseReport.report;
-          fs.writeFileSync('lhreport.html', reportHtml);
-        }),
-      });
-    },
   },
 });
 

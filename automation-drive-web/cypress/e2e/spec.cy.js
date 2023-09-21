@@ -1,12 +1,12 @@
-
+/// <reference types="cypress" />
+import { checkA11y } from "../../accessibilty"
 import { removeLogs } from "../removelogs/removeLogs"
-describe('Sample test', () => {
+describe('Testing accessibility', () => {
   before('Loading website',()=>{
     cy.visit('/')
+    cy.injectAxe()
   })
-  it('Spec',()=>{
-    expect(1).to.equal(1)
-  })
+  it('Testing Accessibility violations',()=> checkA11y())
 
 
 })
