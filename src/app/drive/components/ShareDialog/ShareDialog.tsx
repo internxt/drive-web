@@ -153,7 +153,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     return () => clearTimeout(timer);
   }, [accessRequests]);
-  console.log({ currentUserFolderRole });
+
   useEffect(() => {
     const currentInvitedUser = invitedUsers.find((user) => user.email === props.user.email);
     setCurrentUserFolderRole(currentInvitedUser?.roleName);
