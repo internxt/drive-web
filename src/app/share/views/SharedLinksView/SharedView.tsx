@@ -19,7 +19,6 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { t } from 'i18next';
 import {
   contextMenuDriveFolderSharedAFS,
   contextMenuDriveItemSharedAFS,

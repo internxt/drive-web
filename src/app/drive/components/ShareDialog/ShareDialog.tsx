@@ -78,10 +78,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
-  const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const [showLoader, setShowLoader] = useState(true);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('restricted');
@@ -109,7 +110,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
+    setShowLoader(true);
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      const timer = setTimeout(() => {
+        setShowLoader(false);
+      }, 2000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
@@ -402,6 +414,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     return headers[headerProps.view];
   };
+
   const View = (viewProps: ViewProps): JSX.Element => {
     const view = {
       general: (
@@ -434,28 +447,35 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 )}
               </div>
             </div>
-
             {/* List of users invited to the shared item */}
             <div
               ref={userList}
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {invitedUsers.map((user, index) => (
-                <User
-                  user={user}
-                  key={user.email}
-                  listPosition={index}
-                  translate={translate}
-                  openUserOptions={openUserOptions}
-                  selectedUserListIndex={selectedUserListIndex}
-                  userOptionsY={userOptionsY}
-                  onRemoveUser={onRemoveUser}
-                  userOptionsEmail={userOptionsEmail}
-                  onChangeRole={handleUserRoleChange}
-                  disableUserOptionsPanel={currentUserFolderRole !== 'owner'}
-                />
-              ))}
+              {invitedUsers.length === 0 && showLoader ? (
+                <>
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <InvitedUsersSkeletonLoader key={`loader-${i}`} />
+                  ))}
+                </>
+              ) : (
+                invitedUsers.map((user, index) => (
+                  <User
+                    user={user}
+                    key={user.email}
+                    listPosition={index}
+                    translate={translate}
+                    openUserOptions={openUserOptions}
+                    selectedUserListIndex={selectedUserListIndex}
+                    userOptionsY={userOptionsY}
+                    onRemoveUser={onRemoveUser}
+                    userOptionsEmail={userOptionsEmail}
+                    onChangeRole={handleUserRoleChange}
+                    disableUserOptionsPanel={currentUserFolderRole !== 'owner'}
+                  />
+                ))
+              )}
             </div>
           </div>
 
@@ -877,3 +897,39 @@ const User = ({
     )}
   </div>
 );
+
+const InvitedUsersSkeletonLoader = () => {
+  const skinSkeleton = [
+    <div className="flex flex-row items-center space-x-4">
+      <div className="h-9 w-9 rounded-md bg-gray-5" />
+    </div>,
+    <div className="h-4 w-72 rounded bg-gray-5" />,
+    <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,
+  ];
+
+  const columnsWidth = [
+    {
+      width: 'flex w-1/12 cursor-pointer items-center',
+    },
+    {
+      width: 'flex flex-grow cursor-pointer items-center pl-4',
+    },
+    {
+      width: 'hidden w-3/12 lg:flex pl-4',
+    },
+  ].map((column) => column.width);
+
+  return (
+    <div className="group relative flex h-14 w-full flex-shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
+      {new Array(5).fill(0).map((col, i) => (
+        <div
+          key={`${col}-${i}`}
+          className={`relative flex h-full flex-shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
+        >
+          {skinSkeleton?.[i]}
+        </div>
+      ))}
+      <div className="h-full w-12" />
+    </div>
+  );
+};
