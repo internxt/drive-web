@@ -477,7 +477,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     onRemoveUser={onRemoveUser}
                     userOptionsEmail={userOptionsEmail}
                     onChangeRole={handleUserRoleChange}
-                    disableUserOptionsPanel={currentUserFolderRole !== 'owner'}
+                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                    disableRoleChange={currentUserFolderRole !== 'owner'}
                   />
                 ))
               )}
@@ -763,7 +764,8 @@ export const UserOptions = ({
   userOptionsEmail,
   selectedRole,
   onChangeRole,
-}) => {
+  disableRoleChange,
+}): JSX.Element => {
   const isUserSelected = selectedUserListIndex === listPosition;
 
   return isUserSelected ? (
@@ -785,34 +787,39 @@ export const UserOptions = ({
         }}
         static
       >
-        {/* Editor */}
-        <button
-          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-          onClick={() => {
-            onChangeRole('editor');
-          }}
-        >
-          <p className="w-full text-left text-base font-medium leading-none">
-            {translate('modals.shareModal.list.userItem.roles.editor')}
-          </p>
-          {selectedRole === 'editor' && <Check size={20} />}
-        </button>
+        {disableRoleChange ? (
+          <></>
+        ) : (
+          <>
+            {/* Editor */}
+            <button
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              onClick={() => {
+                onChangeRole('editor');
+              }}
+            >
+              <p className="w-full text-left text-base font-medium leading-none">
+                {translate('modals.shareModal.list.userItem.roles.editor')}
+              </p>
+              {selectedRole === 'editor' && <Check size={20} />}
+            </button>
 
-        {/* Reader */}
-        <button
-          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
-          onClick={() => {
-            onChangeRole('reader');
-          }}
-        >
-          <p className="w-full text-left text-base font-medium leading-none">
-            {translate('modals.shareModal.list.userItem.roles.reader')}
-          </p>
-          {selectedRole === 'reader' && <Check size={20} />}
-        </button>
+            {/* Reader */}
+            <button
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              onClick={() => {
+                onChangeRole('reader');
+              }}
+            >
+              <p className="w-full text-left text-base font-medium leading-none">
+                {translate('modals.shareModal.list.userItem.roles.reader')}
+              </p>
+              {selectedRole === 'reader' && <Check size={20} />}
+            </button>
 
-        <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
-
+            <div className="mx-3 my-0.5 flex h-px bg-gray-10" />
+          </>
+        )}
         {/* Remove */}
         <button
           className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
@@ -842,6 +849,7 @@ const User = ({
   userOptionsEmail,
   onChangeRole,
   disableUserOptionsPanel,
+  disableRoleChange,
 }: {
   user: InvitedUserProps;
   listPosition: number | null;
@@ -857,6 +865,7 @@ const User = ({
   userOptionsEmail;
   onChangeRole: (email: string, roleName: string) => void;
   disableUserOptionsPanel: boolean;
+  disableRoleChange: boolean;
 }) => (
   <div
     className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
@@ -897,6 +906,7 @@ const User = ({
           userOptionsEmail={userOptionsEmail}
           selectedRole={user.roleName}
           onChangeRole={(roleName) => onChangeRole(user.email, roleName)}
+          disableRoleChange={disableRoleChange}
         />
       </>
     )}
