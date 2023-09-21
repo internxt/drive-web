@@ -80,7 +80,6 @@ import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.se
 import ShareDialog from '../ShareDialog/ShareDialog';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import envService from '../../../core/services/env.service';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
