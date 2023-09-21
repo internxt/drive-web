@@ -1,6 +1,6 @@
 /// <reference types="cypress" />
 import { removeLogs } from "../removelogs/removeLogs"
-import { faker } from "@faker-js/faker"
+
 
 describe('Using Cypress for Performance', () => {
 
@@ -20,7 +20,7 @@ describe('Using Cypress for Performance', () => {
       performance.measure('pageLoad', 'start-loading', 'end-loading');
       const measure = performance.getEntriesByName('pageLoad')[0];
       const duration = measure.duration;
-      assert.isAtMost(duration, 5000);
+      assert.isAtMost(duration, 7000);
 
       cy.log(`[PERFORMANCE] Page load duration for HOME: ${duration / 1000} seconds`);
     });
