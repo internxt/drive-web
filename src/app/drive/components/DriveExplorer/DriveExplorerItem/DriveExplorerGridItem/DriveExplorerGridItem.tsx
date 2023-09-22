@@ -14,6 +14,7 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
+import { getItemPlainNameWithExtension } from '../DriveExplorerListItem/DriveExplorerListItem';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
@@ -69,7 +70,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           onClick={onNameClicked}
           title={items.getItemDisplayName(item)}
         >
-          {items.getItemDisplayName(item)}
+          {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
         </span>
       </Fragment>
     );

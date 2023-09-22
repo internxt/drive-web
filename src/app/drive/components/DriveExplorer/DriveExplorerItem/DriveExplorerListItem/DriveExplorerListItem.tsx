@@ -11,9 +11,8 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 import { DriveItemData } from '../../../../types';
-import envService from '../../../../../core/services/env.service';
 
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
+export const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
   const type = item.type;
 
