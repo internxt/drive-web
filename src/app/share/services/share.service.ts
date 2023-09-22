@@ -33,6 +33,9 @@ import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import folderService from 'app/drive/services/folder.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import crypto from 'crypto';
+import copy from 'copy-to-clipboard';
 
 interface CreateShareResponse {
   created: boolean;
@@ -365,6 +368,32 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
   return shareClient.stopSharingFolder(itemType, itemId);
 }
 
+export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+  const user = localStorageService.getUser() as UserSettings;
+  const { mnemonic } = user;
+  const code = crypto.randomBytes(32).toString('hex');
+
+  const encryptedMnemonic = aes.encrypt(mnemonic, code);
+
+  try {
+    const publicSharingItemData = await shareService.createPublicSharingItem({
+      encryptionAlgorithm: 'inxt-v2',
+      encryptionKey: encryptedMnemonic,
+      itemType,
+      itemId: uuid,
+    });
+    const { id: sharingId } = publicSharingItemData;
+
+    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+    notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  } catch (error) {
+    notificationsService.show({
+      text: t('modals.shareModal.errors.copy-to-clipboard'),
+      type: ToastType.Error,
+    });
+  }
+};
+
 interface SharedDirectoryFoldersPayload {
   token: string;
   directoryId: number;
@@ -614,6 +643,10 @@ export async function downloadSharedFiles({
   } else {
     const initPage = 0;
     const itemsPerPage = 15;
+    let folderName;
+    if (selectedItems.length === 1 && selectedItems[0].isFolder) {
+      folderName = selectedItems[0].name;
+    }
 
     const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFolderIterator(
@@ -638,6 +671,7 @@ export async function downloadSharedFiles({
         fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
         areSharedItems: true,
+        sharedFolderName: folderName,
       }),
     );
   }
@@ -771,6 +805,7 @@ const shareService = {
   createPublicSharingItem,
   getPublicSharingMeta,
   getPublicSharedFolderContent,
+  getPublicShareLink,
 };
 
 export default shareService;
