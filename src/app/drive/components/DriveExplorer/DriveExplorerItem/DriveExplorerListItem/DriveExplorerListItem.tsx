@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { Link, PencilSimple, Users } from '@phosphor-icons/react';
+import { PencilSimple, Users } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -11,7 +11,6 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 import { DriveItemData } from '../../../../types';
-import envService from '../../../../../core/services/env.service';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
@@ -101,7 +100,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </Fragment>
     );
   };
-  const itemIsShared = item.shares?.length || 0 > 0;
+  const isItemShared = (item.sharings?.length ?? 0) > 0;
 
   const template = (
     <div
@@ -121,7 +120,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             className="h-full"
             data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
           />
-          {itemIsShared && (
+          {isItemShared && (
             <Users
               className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
               data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}

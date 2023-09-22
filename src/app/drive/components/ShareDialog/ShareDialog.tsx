@@ -19,9 +19,6 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import copy from 'copy-to-clipboard';
-
-import crypto from 'crypto';
-import { aes } from '@internxt/lib';
 import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 
@@ -236,33 +233,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     dispatch(uiActions.setIsShareDialogOpen(false));
   };
 
-  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
-  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
-    const user = props.user;
-    const { mnemonic } = user;
-    const code = crypto.randomBytes(32).toString('hex');
-
-    const encryptedMnemonic = aes.encrypt(mnemonic, code);
-
-    try {
-      const publicSharingItemData = await shareService.createPublicSharingItem({
-        encryptionAlgorithm: 'inxt-v2',
-        encryptionKey: encryptedMnemonic,
-        itemType,
-        itemId: uuid,
-      });
-      const { id: sharingId } = publicSharingItemData;
-
-      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch (error) {
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    }
-  };
-
   const getPrivateShareLink = () => {
     try {
       copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
@@ -283,7 +253,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
 
     if (itemToShare?.item.uuid) {
-      getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
       closeSelectedUserPopover();
     }
   };
