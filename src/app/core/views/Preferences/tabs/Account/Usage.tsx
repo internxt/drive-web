@@ -1,4 +1,5 @@
 import { SdkFactory } from 'app/core/factory/sdk';
+import usageService, { UsageDetailsProps } from 'app/drive/services/usage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 
@@ -11,35 +12,13 @@ import { PlanState } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
 
-interface UsageDetailsProps {
-  drive: number;
-  photos: number;
-  backups: number;
-}
-
-async function getUsageDetails(): Promise<UsageDetailsProps> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const photosClient = await SdkFactory.getInstance().createPhotosClient();
-
-  const [{ drive, backups }, { usage: photosUsage }] = await Promise.all([
-    storageClient.spaceUsage(),
-    photosClient.photos.getUsage(),
-  ]);
-
-  return {
-    drive,
-    photos: photosUsage,
-    backups,
-  };
-}
-
 export default function Usage({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
   const [planUsage, setPlanUsage] = useState<UsageDetailsProps | null>(null);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   useEffect(() => {
-    getUsageDetails().then((usageDetails) => {
+    usageService.getUsageDetails().then((usageDetails) => {
       setPlanUsage(usageDetails);
     });
   }, []);
