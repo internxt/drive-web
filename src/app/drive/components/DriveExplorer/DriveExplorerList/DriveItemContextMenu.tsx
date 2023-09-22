@@ -380,7 +380,6 @@ const contextMenuDriveItemSharedAFS = ({
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
-  //  getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
   ...[getOpenPreviewMenuItem(openPreview)],
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
@@ -407,8 +406,7 @@ const contextMenuDriveFolderSharedAFS = ({
   moveToTrash?: (item: any) => void;
 }): ListItemMenu<any> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
-  // TODO: UNCOMMENT getGetLinkMenuItem to enable get-link AFS
-  /* getGetLinkMenuItem(copyLink) */ { name: '', action: () => false, separator: true },
+  { name: '', action: () => false, separator: true },
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
