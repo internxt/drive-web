@@ -22,7 +22,7 @@ export interface StorageState {
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
-  itemToShare: { share?: ShareLink; item: DriveItemData } | null;
+  itemToShare: { share?: ShareLink; sharings?: { type: string; id: string }[]; item: DriveItemData } | null;
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];
   itemToRename: DriveItemData | null;

@@ -189,7 +189,10 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<{ share?: ShareLink; item: DriveItemData } | null>) => {
+    setItemToShare: (
+      state: StorageState,
+      action: PayloadAction<{ share?: ShareLink; sharing?: { type: string; id: string }; item: DriveItemData } | null>,
+    ) => {
       state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
