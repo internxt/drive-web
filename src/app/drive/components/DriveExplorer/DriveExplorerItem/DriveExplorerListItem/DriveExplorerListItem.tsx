@@ -12,6 +12,7 @@ import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 import { DriveItemData } from '../../../../types';
 import envService from '../../../../../core/services/env.service';
+import usersIcon from 'assets/icons/users.svg';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
@@ -122,9 +123,11 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
           />
           {itemIsShared && (
-            <Users
+            <img
               className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              src={usersIcon}
+              width={13}
+              alt="shared users"
             />
           )}
         </div>
