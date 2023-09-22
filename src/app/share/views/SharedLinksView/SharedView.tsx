@@ -873,7 +873,7 @@ export default function SharedView(): JSX.Element {
             },
             {
               label: translate('shared-links.list.owner'),
-              width: 'w-80', //w-1/12
+              width: 'w-64', //w-1/12
               name: 'ownerId',
               orderable: true,
               defaultDirection: 'ASC',
@@ -904,11 +904,11 @@ export default function SharedView(): JSX.Element {
             (shareItem: AdvancedSharedItem) => {
               const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
               return (
-                <div className={'flex w-full flex-row items-center space-x-6 overflow-hidden'}>
-                  <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
-                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
-                      <img src={usersIcon} width={12} alt="shared users" />
+                <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
+                  <div className="relative flex h-10 w-10 flex-shrink items-center justify-center">
+                    <Icon className="flex h-full justify-center drop-shadow-soft filter" />
+                    <div className="absolute -right-1.5 -bottom-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                      <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>
                   <div
