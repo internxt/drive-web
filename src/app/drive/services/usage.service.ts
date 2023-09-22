@@ -25,7 +25,7 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
-  const [{ drive, backups, total }, { usage: photosUsage }] = await Promise.all([
+  const [{ drive, backups }, { usage: photosUsage }] = await Promise.all([
     storageClient.spaceUsage(),
     photosClient.photos.getUsage(),
   ]);
