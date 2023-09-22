@@ -69,7 +69,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           onClick={onNameClicked}
           title={items.getItemDisplayName(item)}
         >
-          {items.getItemDisplayName(item)}
+          {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
         </span>
       </Fragment>
     );

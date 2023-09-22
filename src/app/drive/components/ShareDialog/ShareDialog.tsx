@@ -99,6 +99,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
+  const itemOwnerEmail = (itemToShare?.item as any)?.user?.email;
+  const isUserOwner = !!itemOwnerEmail && itemOwnerEmail === props?.user?.email;
 
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
@@ -180,6 +182,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
+    setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
     const sharingType = props.isDriveItem
@@ -194,9 +197,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (!itemToShare?.item) return;
 
     try {
-      getAndUpdateInvitedUsers();
+      await getAndUpdateInvitedUsers();
     } catch (error) {
       errorService.reportError(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -536,7 +541,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <p className="text-base font-medium leading-none">
                                 {translate('modals.shareModal.general.accessOptions.public.title')}
                               </p>
-                              <p className="text-sm leading-tight text-gray-60">
+                              <p className="text-left text-sm leading-tight text-gray-60">
                                 {translate('modals.shareModal.general.accessOptions.public.subtitle')}
                               </p>
                             </div>
@@ -560,7 +565,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                               <p className="text-base font-medium leading-none">
                                 {translate('modals.shareModal.general.accessOptions.restricted.title')}
                               </p>
-                              <p className="text-sm leading-tight text-gray-60">
+                              <p className="text-left text-sm leading-tight text-gray-60">
                                 {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
                               </p>
                             </div>
@@ -575,7 +580,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             </div>
                           </button>
                           {/* Stop sharing */}
-                          {currentUserFolderRole === 'owner' && (
+                          {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button
                               className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
                               onClick={() => {
