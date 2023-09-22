@@ -22,6 +22,11 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
           color: 'primary',
         },
         {
+          name: translate('sideNav.photos'),
+          usageInBytes: plan.usageDetails.photos,
+          color: 'orange',
+        },
+        {
           name: translate('views.account.tabs.account.view.backups'),
           usageInBytes: plan.usageDetails.backups,
           color: 'indigo',
