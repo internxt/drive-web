@@ -1,7 +1,7 @@
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 
-export async function fetchUsage(): Promise<UsageResponse & { photos: number }> {
+export async function fetchUsage(): Promise<UsageResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
@@ -10,7 +10,9 @@ export async function fetchUsage(): Promise<UsageResponse & { photos: number }> 
     photosClient.photos.getUsage(),
   ]);
 
-  return { ...driveUsage, photos: photosUsage };
+  driveUsage.total += photosUsage;
+
+  return driveUsage;
 }
 
 function getUsagePercent(usage: number, limit: number): number {

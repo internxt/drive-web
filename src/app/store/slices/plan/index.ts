@@ -18,7 +18,7 @@ export interface PlanState {
   teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
-  usageDetails: (UsageResponse & { photos: number }) | null;
+  usageDetails: UsageResponse | null;
   subscription: UserSubscription | null;
 }
 
@@ -87,19 +87,18 @@ export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState
   },
 );
 
-export const fetchUsageThunk = createAsyncThunk<
-  (UsageResponse & { photos: number }) | null,
-  void,
-  { state: RootState }
->('plan/fetchUsage', async (payload: void, { getState }) => {
-  const isAuthenticated = getState().user.isAuthenticated;
+export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { state: RootState }>(
+  'plan/fetchUsage',
+  async (payload: void, { getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
 
-  if (isAuthenticated) {
-    return await usageService.fetchUsage();
-  } else {
-    return null;
-  }
-});
+    if (isAuthenticated) {
+      return await usageService.fetchUsage();
+    } else {
+      return null;
+    }
+  },
+);
 
 export const fetchSubscriptionThunk = createAsyncThunk<UserSubscription | null, void, { state: RootState }>(
   'plan/fetchSubscription',
