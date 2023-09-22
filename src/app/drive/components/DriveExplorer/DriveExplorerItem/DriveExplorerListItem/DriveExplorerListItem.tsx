@@ -10,17 +10,6 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
-import { DriveItemData } from '../../../../types';
-
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
-  const plainName = item?.plainName ?? item?.plain_name;
-  const type = item.type;
-
-  if (!plainName || !type) return;
-  else if (type === 'folder') return plainName;
-
-  return plainName + '.' + type;
-};
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
@@ -84,14 +73,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             onClick={
               (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
                 ? onNameClicked
                 : undefined
             }
           >
-            {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           </span>
           {!isEditingName && ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
@@ -118,7 +107,9 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
           <ItemIconComponent
             className="h-full"
-            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
+            data-test={`file-list-${
+              item.isFolder ? 'folder' : 'file'
+            }-${transformItemService.getItemPlainNameWithExtension(item)}`}
           />
           {isItemShared && (
             <Users

@@ -536,6 +536,98 @@
       "placeholder": "Unbenannter Ordner",
       "untitled": "Unbenannter Ordner"
     },
+    "shareModal": {
+      "title": "Aktie \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "Personen mit Zugang",
+        "invite": "Einladen",
+        "userItem": {
+          "roles": {
+            "owner": "Besitzer",
+            "editor": "Herausgeber",
+            "reader": "Betrachter"
+          },
+          "remove": "Entfernen"
+        }
+      },
+      "error": {
+        "updatingRole": "Die Rolle konnte nicht aktualisiert werden, bitte versuchen Sie es später noch einmal.",
+        "copy-to-clipboard": "Fehler beim Teilen des Elements, versuchen Sie es später noch einmal."
+      },
+      "general": {
+        "generalAccess": "Allgemeiner Zugriff",
+        "accessOptions": {
+          "public": {
+            "title": "Öffentlich",
+            "subtitle": "Jeder, der den Link hat, kann darauf zugreifen"
+          },
+          "restricted": {
+            "title": "Eingeschränkt",
+            "subtitle": "Nur hinzugefügte Personen haben Zugriff"
+          },
+          "stopSharing": "Freigabe stoppen"
+        },
+        "copyLink": "Link kopieren"
+      },
+      "requests": {
+        "title": "Zugriffsanfragen",
+        "button": "Anfragen",
+        "empty": "Keine Anfragen mehr",
+        "actions": {
+          "accept": "Akzeptieren",
+          "deny": "Ablehnen",
+          "roles": {
+            "editor": "Redakteur",
+            "reader": "Betrachter"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Teilen aufhören?",
+        "subtitle": "Niemand wird auf \"{{name}}\" zugreifen können",
+        "cancel": "Abbrechen",
+        "confirm": "Freigabe beenden",
+        "notification": {
+          "success": "Nicht mehr teilen \"{{name}}",
+          "error": "Die Freigabe konnte nicht beendet werden, bitte versuchen Sie es erneut"
+        }
+      },
+      "removeUser": {
+        "notification": {
+          "success": "Benutzer \"{{name}}\" entfernt",
+          "error": "Konnte Benutzer \"{{name}}\" nicht entfernen, bitte versuchen Sie es erneut"
+        }
+      },
+      "invite": {
+        "title": "Leute einladen",
+        "textarea": "Geben Sie Ihren Nachrichtentext ein (optional)",
+        "notifyUsers": "Benutzer benachrichtigen",
+        "instructions": "Drücken Sie die Eingabetaste oder ein Leerzeichen, um E-Mails zu trennen",
+        "email": "E-Mail eingeben",
+        "invite": "Einladen",
+        "editor": "Redakteur",
+        "reader": "Betrachter",
+        "listUsers": "einzuladende Benutzer",
+        "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
+        "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
+        "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
+        "error": {
+          "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
+          "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
+          "declinedError": "Fehler beim Ablehnen der Einladung zu einem gemeinsamen Ordner"
+        }
+      },
+      "requestAccess": {
+        "title": "Sie haben keinen Zugang",
+        "description": "Beantragen Sie den Zugriff auf den Eigentümer oder wechseln Sie zu einem Konto mit Zugriff.",
+        "textarea": "Nachricht (optional)",
+        "requestButton": "Zugang beantragen",
+        "logged": "Eingeloggt als",
+        "change": "Ändern",
+        "requestSent": "Anfrage gesendet",
+        "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+      }
+    },
     "deletePhotosModal": {
       "multiToolBar": "Elemente ausgewählt ",
       "singleToolBar": "Element ausgewählt",
@@ -977,6 +1069,7 @@
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
       "download": "Download",
+      "manageLinkAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",
       "copyLink": "Kopiere Link",
       "linkSettings": "Link Einstellungen",

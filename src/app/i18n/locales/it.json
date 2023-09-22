@@ -622,7 +622,7 @@
         "userItem": {
           "roles": {
             "owner": "Propietario",
-            "editor": "Editor",
+            "editor": "Editore",
             "reader": "Visualizzatore"
           },
           "remove": "Eliminare"

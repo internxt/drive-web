@@ -183,7 +183,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                   <div className="relative">
                     <Listbox.Button value={user.userRole} name={user.email}>
                       <Button variant="secondary">
-                        <span className="capitalize">{user.userRole}</span>
+                        <span>{translate(`modals.shareModal.list.userItem.roles.${user.userRole.toLowerCase()}`)}</span>
                         <CaretDown size={24} />
                       </Button>
                     </Listbox.Button>
@@ -196,7 +196,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                         >
                           {({ selected }) => (
                             <>
-                              <span>{translate(`modals.shareModal.invite.${role.name}`)}</span>
+                              <span>
+                                {translate(`modals.shareModal.list.userItem.roles.${role.name.toLowerCase()}`)}
+                              </span>
                               {selected ? <Check size={20} /> : null}
                             </>
                           )}
