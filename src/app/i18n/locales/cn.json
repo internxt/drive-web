@@ -1064,6 +1064,8 @@
       "uploadFiles": "上传文件",
       "uploadFolder": "上传文件夹"
     },
+    "delete": "删除",
+    "share": "分享",
     "change": "更改",
     "download": "下载",
     "downloading": "正在下载",
