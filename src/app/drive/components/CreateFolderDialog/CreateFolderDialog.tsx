@@ -59,7 +59,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
             dispatch(fetchSortedFolderContentThunk(currentFolderId));
             setIsLoading(false);
             onClose();
-          }, 1000);
+          }, 500);
         })
         .catch((e) => {
           errorService.reportError(e, { extra: { folderName, parentFolderId: currentFolderId } });
