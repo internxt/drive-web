@@ -466,36 +466,9 @@ export default function SharedView(): JSX.Element {
     setSelectedItems(updatedSelectedItems);
   };
 
-  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
-  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
-    const user = localStorageService.getUser() as UserSettings;
-    const { mnemonic } = user;
-    const code = crypto.randomBytes(32).toString('hex');
-
-    const encryptedMnemonic = aes.encrypt(mnemonic, code);
-
-    try {
-      const publicSharingItemData = await shareService.createPublicSharingItem({
-        encryptionAlgorithm: 'inxt-v2',
-        encryptionKey: encryptedMnemonic,
-        itemType,
-        itemId: uuid,
-      });
-      const { id: sharingId } = publicSharingItemData;
-
-      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch (error) {
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    }
-  };
-
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
