@@ -376,21 +376,25 @@ export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'fil
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
 
   try {
-    const publicSharingItemData = await shareService.createPublicSharingItem({
+    const publicSharingItemData = await createPublicSharingItem({
       encryptionAlgorithm: 'inxt-v2',
       encryptionKey: encryptedMnemonic,
       itemType,
       itemId: uuid,
+      encryptedCode: code,
     });
-    const { id: sharingId } = publicSharingItemData;
+    const { id: sharingId, encryptedCode } = publicSharingItemData;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+    if (encryptedCode) copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${encryptedCode}`);
+    else copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
+
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   } catch (error) {
     notificationsService.show({
       text: t('modals.shareModal.errors.copy-to-clipboard'),
       type: ToastType.Error,
     });
+    errorService.reportError(error);
   }
 };
 
