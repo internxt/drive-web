@@ -27,13 +27,7 @@ import {
 } from './DriveItemContextMenu';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import localStorageService from '../../../../core/services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import crypto from 'crypto';
-import { aes } from '@internxt/lib';
 import shareService from '../../../../share/services/share.service';
-import copy from 'copy-to-clipboard';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -204,37 +198,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     },
     [dispatch, uiActions],
   );
-  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
-  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
-    const user = localStorageService.getUser() as UserSettings;
-    const { mnemonic } = user;
-    const code = crypto.randomBytes(32).toString('hex');
-
-    const encryptedMnemonic = aes.encrypt(mnemonic, code);
-
-    try {
-      const publicSharingItemData = await shareService.createPublicSharingItem({
-        encryptionAlgorithm: 'inxt-v2',
-        encryptionKey: encryptedMnemonic,
-        itemType,
-        itemId: uuid,
-      });
-      const { id: sharingId } = publicSharingItemData;
-
-      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch (error) {
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    }
-  };
 
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
@@ -242,7 +210,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );

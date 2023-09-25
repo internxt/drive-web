@@ -33,6 +33,9 @@ import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
 import { Role } from 'app/store/slices/sharedLinks/types';
 import folderService from 'app/drive/services/folder.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import crypto from 'crypto';
+import copy from 'copy-to-clipboard';
 
 interface CreateShareResponse {
   created: boolean;
@@ -364,6 +367,37 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.stopSharingFolder(itemType, itemId);
 }
+
+export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+  const user = localStorageService.getUser() as UserSettings;
+  const { mnemonic } = user;
+  const code = crypto.randomBytes(32).toString('hex');
+
+  const encryptedMnemonic = aes.encrypt(mnemonic, code);
+  const encryptedCode = aes.encrypt(code, mnemonic);
+
+  try {
+    const publicSharingItemData = await createPublicSharingItem({
+      encryptionAlgorithm: 'inxt-v2',
+      encryptionKey: encryptedMnemonic,
+      itemType,
+      itemId: uuid,
+      encryptedCode,
+    });
+    const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+    const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
+
+    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
+
+    notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+  } catch (error) {
+    notificationsService.show({
+      text: t('modals.shareModal.errors.copy-to-clipboard'),
+      type: ToastType.Error,
+    });
+    errorService.reportError(error);
+  }
+};
 
 interface SharedDirectoryFoldersPayload {
   token: string;
@@ -771,6 +805,7 @@ const shareService = {
   createPublicSharingItem,
   getPublicSharingMeta,
   getPublicSharedFolderContent,
+  getPublicShareLink,
 };
 
 export default shareService;

@@ -4,15 +4,11 @@ import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
-import copy from 'copy-to-clipboard';
-import Empty from '../../../shared/components/Empty/Empty';
-import emptyStateIcon from 'assets/icons/file-types/default.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
-import { aes } from '@internxt/lib';
 import localStorageService from '../../../core/services/local-storage.service';
 import sizeService from '../../../drive/services/size.service';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -466,36 +462,9 @@ export default function SharedView(): JSX.Element {
     setSelectedItems(updatedSelectedItems);
   };
 
-  // TODO: DUPLICATED - EXTRACT AND REMOVE FROM HERE
-  const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file') => {
-    const user = localStorageService.getUser() as UserSettings;
-    const { mnemonic } = user;
-    const code = crypto.randomBytes(32).toString('hex');
-
-    const encryptedMnemonic = aes.encrypt(mnemonic, code);
-
-    try {
-      const publicSharingItemData = await shareService.createPublicSharingItem({
-        encryptionAlgorithm: 'inxt-v2',
-        encryptionKey: encryptedMnemonic,
-        itemType,
-        itemId: uuid,
-      });
-      const { id: sharingId } = publicSharingItemData;
-
-      copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${code}`);
-      notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    } catch (error) {
-      notificationsService.show({
-        text: translate('modals.shareModal.errors.copy-to-clipboard'),
-        type: ToastType.Error,
-      });
-    }
-  };
-
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
