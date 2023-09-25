@@ -67,7 +67,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
           className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
           onClick={onNameClicked}
-          title={items.getItemDisplayName(item)}
+          title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
         >
           {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
         </span>
