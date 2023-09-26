@@ -65,7 +65,7 @@ function excludeHiddenItems(items: DriveItemData[]): DriveItemData[] {
 }
 
 function renameFile(file: File, newName: string): File {
-  return new File([file], newName);
+  return new File([file], newName, { lastModified: file.lastModified });
 }
 
 const getItemPlainName = (item: DriveItemData) => {
