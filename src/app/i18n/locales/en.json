@@ -1135,6 +1135,7 @@
       "uploadFolder": "Upload folder"
     },
     "change": "Change",
+    "delete": "Delete",
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
@@ -1155,6 +1156,7 @@
     "dismiss": "Dismiss",
     "save": "Save",
     "saving": "Saving",
+    "share": "Share",
     "back": "Back",
     "edit": "Edit",
     "submit": "Submit",
