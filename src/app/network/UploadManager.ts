@@ -10,13 +10,12 @@ import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
 import { uiActions } from '../store/slices/ui';
 import { Dispatch } from '@reduxjs/toolkit';
+import { HTTP_CODES } from '../core/services/http.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
 
 const MAX_UPLOAD_ATTEMPS = 2;
-
-const MAX_SPACED_USED_ERROR_CODE = 420;
 
 enum FileSizeType {
   Big = 'big',
@@ -220,7 +219,7 @@ class UploadManager {
                   extra: fileInfoToReport,
                 });
 
-                if (err?.status === MAX_SPACED_USED_ERROR_CODE) {
+                if (err?.status === HTTP_CODES.MAX_SPACE_USED) {
                   this.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
                 }
               }
