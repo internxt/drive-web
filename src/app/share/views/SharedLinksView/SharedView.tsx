@@ -185,7 +185,6 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = true;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-        shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
         return shareItem;
       });
 
@@ -225,10 +224,6 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = false;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-        shareItem.credentials = {
-          user: response.credentials.networkUser,
-          pass: response.credentials.networkPass,
-        };
         return shareItem;
       });
 
@@ -269,7 +264,10 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = true;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
+          shareItem.credentials = {
+            networkUser: response.credentials.networkUser,
+            networkPass: response.credentials.networkPass,
+          };
           return shareItem;
         });
 
@@ -325,7 +323,10 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = false;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
+          shareItem.credentials = {
+            networkUser: response.credentials.networkUser,
+            networkPass: response.credentials.networkPass,
+          };
           return shareItem;
         });
 
@@ -600,19 +601,10 @@ export default function SharedView(): JSX.Element {
   const downloadItem = async (shareItem: AdvancedSharedItem) => {
     try {
       if (shareItem.isRootLink) {
-        const { credentials } = await shareService.getSharedFolderContent(
-          // folderUUID
-          shareItem.uuid,
-          'files',
-          '',
-          0,
-          ITEMS_PER_PAGE,
-          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-        );
         await shareService.downloadSharedFiles({
           creds: {
-            user: credentials.networkUser,
-            pass: credentials.networkPass,
+            user: shareItem.credentials.networkUser,
+            pass: shareItem.credentials.networkPass,
           },
           dispatch,
           selectedItems,
@@ -628,7 +620,10 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
         await shareService.downloadSharedFiles({
-          creds: shareItem.credentials,
+          creds: {
+            user: shareItem.credentials.networkUser,
+            pass: shareItem.credentials.networkPass,
+          },
           dispatch,
           selectedItems,
           encryptionKey: encryptionKey,
@@ -679,6 +674,7 @@ export default function SharedView(): JSX.Element {
 
   const openPreview = async (shareItem: AdvancedSharedItem) => {
     const previewItem = shareItem as unknown as PreviewFileItem;
+    previewItem.credentials = { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass };
 
     const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
 
