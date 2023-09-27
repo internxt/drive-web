@@ -843,6 +843,7 @@
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "storageIsFull": "Your storage is full",
+    "storageIsFullDescription": "You can’t upload, sync or backup files.",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
     "titleSharedFolderTooBig": "Unsupported Action",

@@ -123,7 +123,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData);
+    await uploadFileWithManager(filesToUploadData, dispatch);
 
     options.onSuccess?.();
 
@@ -266,7 +266,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData, undefined, { ownerUserAuthenticationData });
+    await uploadFileWithManager(filesToUploadData, dispatch, undefined, { ownerUserAuthenticationData });
 
     options.onSuccess?.();
 
@@ -351,7 +351,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       abortController: new AbortController(),
     }));
 
-    await uploadFileWithManager(filesToUploadData);
+    await uploadFileWithManager(filesToUploadData, dispatch);
 
     options.onSuccess?.();
 
@@ -438,7 +438,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       parentFolderId,
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
+    await uploadFileWithManager(filesToUploadData, dispatch, abortController, options, filesProgress);
 
     options.onSuccess?.();
 
@@ -511,7 +511,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       parentFolderId,
     }));
 
-    await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
+    await uploadFileWithManager(filesToUploadData, dispatch, abortController, options, filesProgress);
 
     options.showNotifications = true;
     options.onSuccess?.();

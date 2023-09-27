@@ -737,6 +737,7 @@
     "linkExpired": "Dieser sichere Link ist abgelaufen",
     "teamInvitation": "Die Einladungs-E-Mail konnte nicht gesendet werden",
     "storageIsFull": "Dein Speicher ist voll",
+    "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noSpaceAvailable": "Du hast die Grenzen deines aktuellen Plans erreicht und die Synchronisierung wurde gestoppt. Führe jetzt ein Upgrade durch, damit deine Dateien sicher synchronisiert bleiben.",
     "sharedFolderTooBig": "Internxt Drive unterstützt das Teilen von Ordnern mit mehr als 1 GB nicht.",
     "titleSharedFolderTooBig": "Nicht unterstützte Aktion",

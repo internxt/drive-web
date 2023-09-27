@@ -34,7 +34,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
             {translate('error.storageIsFull')}
           </h2>
         </div>
-        <p className="mb-5 text-center leading-tight text-gray-80">{translate('error.noSpaceAvailable')}</p>
+        <p className="mb-5 text-center leading-tight text-gray-80">{translate('error.storageIsFullDescription')}</p>
 
         <div className="flex flex-row justify-end">
           <Button variant="secondary" className="mr-2" onClick={() => onClose()}>

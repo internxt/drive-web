@@ -39,6 +39,7 @@ import { RootState } from 'app/store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -829,6 +830,7 @@ export default function SharedView(): JSX.Element {
           )}
         </div>
       </div>
+      <WarningMessageWrapper />
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[

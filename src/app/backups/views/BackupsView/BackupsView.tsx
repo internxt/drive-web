@@ -14,6 +14,7 @@ import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.servi
 import Dialog from '../../../shared/components/Dialog/Dialog';
 import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -165,6 +166,7 @@ export default function BackupsView(): JSX.Element {
       <div className="z-50 flex h-14 flex-shrink-0 items-center px-5">
         {currentDevice ? backupsBreadcrumbs : <p className="text-lg"> {translate('backups.your-devices')}</p>}
       </div>
+      <WarningMessageWrapper />
       {body}
     </div>
   );
