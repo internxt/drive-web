@@ -1,5 +1,5 @@
-const { defineConfig } = require("cypress");
-
+const { defineConfig } = require('cypress')
+const {downloadFile} = require('cypress-downloadfile/lib/addPlugin')
 
 module.exports = defineConfig({
  
@@ -9,10 +9,12 @@ module.exports = defineConfig({
   watchForFileChanges: false,
   chromeWebSecurity: false,
   e2e: {
-    
     specPattern: ['cypress/e2e/**/*.cy.{js,jsx,ts,tsx,}'],
-		baseUrl: 'https://internxt.com/es',
+		baseUrl: 'https://drive.internxt.com/',
 		watchForFileChanges:false,
+    setupNodeEvents(on, config) {
+      on('task', {downloadFile})
+   }
   },
   plugins: (on, config) => {
     const logOptions = {

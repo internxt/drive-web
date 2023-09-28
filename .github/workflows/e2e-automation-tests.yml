@@ -45,4 +45,4 @@ jobs:
               with:
                 working-directory: automation-drive-web
                 browser: chrome
-                command: yarn file "cypress/e2e/spec.cy.js" 
+                command: yarn file "cypress/e2e/feature/AFS-E2E-Testing-Automation-Internxt.cy.js" 
