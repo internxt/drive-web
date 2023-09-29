@@ -27,7 +27,6 @@ export default function BackupsView(): JSX.Element {
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
-    console.log('ondeviceclicked');
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
