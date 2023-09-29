@@ -1,5 +1,5 @@
 import { Upload } from '@phosphor-icons/react';
-import { MouseEventHandler, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface EmptyProps {
   icon: JSX.Element;
