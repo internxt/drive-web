@@ -87,6 +87,7 @@ export default function SharedView(): JSX.Element {
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
+  const [currentShareOwnerAvatar, setCurrentShareOwnerAvatar] = useState<string>('');
   const [encryptionKey, setEncryptionKey] = useState<string>('');
   const [filesOwnerCredentials, setFilesOwnerCredentials] = useState<{
     networkPass: string;
@@ -172,6 +173,7 @@ export default function SharedView(): JSX.Element {
     resetCurrentSharingStatus();
     setCurrentResourcesToken('');
     setNextResourcesToken('');
+    setCurrentShareOwnerAvatar('');
 
     try {
       const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
@@ -396,6 +398,7 @@ export default function SharedView(): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
+      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -694,6 +697,16 @@ export default function SharedView(): JSX.Element {
     return currentUserRole === UserRoles.Reader;
   }, [currentUserRole]);
 
+  const getOwnerAvatarSrc = useCallback(
+    (shareItem) => {
+      if (currentShareOwnerAvatar) {
+        return currentShareOwnerAvatar;
+      }
+      return shareItem.user?.avatar ? shareItem.user?.avatar : null;
+    },
+    [currentShareOwnerAvatar],
+  );
+
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -903,7 +916,7 @@ export default function SharedView(): JSX.Element {
                         ? `${shareItem.user?.name} ${shareItem.user?.lastname}`
                         : `${user?.name} ${user?.lastname}`
                     }
-                    src={shareItem.user?.avatar ? shareItem.user?.avatar : null}
+                    src={getOwnerAvatarSrc(shareItem)}
                   />
                 </div>
                 <span className={`${isItemSelected(shareItem) ? 'text-gray-100' : 'text-gray-60'}`}>
