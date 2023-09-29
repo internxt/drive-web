@@ -6,6 +6,7 @@ export const STORAGE_KEYS = {
   SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
   SHOW_LIFETIME_BANNER: 'showLifetimeOffer',
   SHOW_CROWDCUBE_BANNER: 'showCrowdcubeBanner',
+  SHOW_CYBER_AWARENESS_BANNER: 'showCyberAwarenessBanner',
 };
 
 function get(key: string): string | null {
