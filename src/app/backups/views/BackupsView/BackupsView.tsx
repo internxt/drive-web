@@ -24,8 +24,10 @@ export default function BackupsView(): JSX.Element {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
+  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
+    console.log('ondeviceclicked');
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
@@ -71,10 +73,11 @@ export default function BackupsView(): JSX.Element {
   };
 
   useEffect(() => {
+    dispatch(backupsActions.setCurrentDevice(null));
+    setBackupsAsFoldersPath([]);
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
 
-  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
   useEffect(() => {
     if (currentDevice && !('mac' in currentDevice)) setBackupsAsFoldersPath([currentDevice]);
   }, [currentDevice]);

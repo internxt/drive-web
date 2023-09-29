@@ -682,10 +682,12 @@ export default function SharedView(): JSX.Element {
     dispatch(uiActions.setIsFileViewerOpen(true));
   };
 
-  const isItemOwnedByCurrentUser = () => {
+  const isItemOwnedByCurrentUser = (userUUid?: string) => {
     const currentUser = localStorageService.getUser();
-    if (currentUser?.uuid && user?.uuid) {
-      return currentUser.uuid === user.uuid;
+
+    if (currentUser?.uuid && (user?.uuid || userUUid)) {
+      if (userUUid) return currentUser.uuid === userUUid;
+      else currentUser.uuid == user?.uuid;
     }
     return false;
   };
@@ -943,10 +945,10 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  renameItem: isItemOwnedByCurrentUser() ? renameItem : undefined,
-                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
+                  renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
+                  moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings,
@@ -954,9 +956,9 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
-                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
+                  moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
           }
           keyBoardShortcutActions={{

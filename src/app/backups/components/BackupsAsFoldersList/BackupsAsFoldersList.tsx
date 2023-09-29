@@ -68,9 +68,12 @@ export default function BackupsAsFoldersList({
     dispatch(deleteItemsThunk(selectedItems));
   }
 
-  const onDoubleClick = (item: DriveItemData) => {
+  const onClick = (item: DriveItemData) => {
     if (item.isFolder) {
-      onFolderPush(item as DriveFolderData);
+      if (!isLoading) {
+        setIsloading(true);
+        onFolderPush(item as DriveFolderData);
+      }
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));
@@ -91,71 +94,69 @@ export default function BackupsAsFoldersList({
   return (
     <div className={`${className} flex min-h-0 flex-grow flex-col`}>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
-          header={[
-            {
-              label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow cursor-pointer items-center pl-6',
-              name: 'name',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
-              name: 'updatedAt',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.size'),
-              width: 'flex w-2/12 cursor-pointer items-center',
-              name: 'size',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-          ]}
-          items={currentItems}
-          isLoading={isLoading}
-          itemComposition={[
-            (item) => (
-              <BackupsAsFoldersListItem
-                key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
-                item={item}
-                onClick={(item) => {
-                  const unselectedDevices = selectedItems.map((deviceSelected) => {
-                    return { device: deviceSelected, isSelected: false };
-                  });
-                  onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
-                }}
-                onDoubleClick={onDoubleClick}
-                dataTest="backup-list-folder"
+        {isLoading ? (
+          Skeleton
+        ) : (
+          <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
+            header={[
+              {
+                label: translate('drive.list.columns.name'),
+                width: 'flex flex-grow cursor-pointer items-center pl-6',
+                name: 'name',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+              {
+                label: translate('drive.list.columns.modified'),
+                width: 'hidden w-3/12 lg:flex pl-4',
+                name: 'updatedAt',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+              {
+                label: translate('drive.list.columns.size'),
+                width: 'flex w-2/12 cursor-pointer items-center',
+                name: 'size',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+            ]}
+            items={currentItems}
+            isLoading={isLoading}
+            itemComposition={[
+              (item) => (
+                <BackupsAsFoldersListItem
+                  key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
+                  item={item}
+                  onClick={onClick}
+                  dataTest="backup-list-folder"
+                />
+              ),
+            ]}
+            skinSkeleton={Skeleton}
+            emptyState={
+              <Empty
+                icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                title="This folder is empty"
+                subtitle="Use Internxt Desktop to upload your data"
               />
-            ),
-          ]}
-          skinSkeleton={Skeleton}
-          emptyState={
-            <Empty
-              icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-              title="This folder is empty"
-              subtitle="Use Internxt Desktop to upload your data"
-            />
-          }
-          menu={contextMenuSelectedBackupItems({
-            onDownloadSelectedItems,
-            onDeleteSelectedItems,
-          })}
-          selectedItems={selectedItems}
-          keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          onSelectedItemsChanged={(changes) => {
-            const selectedDevicesParsed = changes.map((change) => ({
-              device: change.props,
-              isSelected: change.value,
-            }));
-            onItemSelected(selectedDevicesParsed);
-          }}
-          disableItemCompositionStyles={true}
-        />
+            }
+            menu={contextMenuSelectedBackupItems({
+              onDownloadSelectedItems,
+              onDeleteSelectedItems,
+            })}
+            selectedItems={selectedItems}
+            keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+            onSelectedItemsChanged={(changes) => {
+              const selectedDevicesParsed = changes.map((change) => ({
+                device: change.props,
+                isSelected: change.value,
+              }));
+              onItemSelected(selectedDevicesParsed);
+            }}
+            disableItemCompositionStyles={true}
+          />
+        )}
       </div>
     </div>
   );

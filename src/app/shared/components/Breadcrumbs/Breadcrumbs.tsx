@@ -34,7 +34,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     const hiddenItemsList = [] as JSX.Element[];
     const breadcrumbSeparator = (key) => {
       return (
-        <div key={key} className="flex items-center text-gray-50">
+        <div key={key} className="text-dgray-50 flex items-center">
           <CaretRight weight="bold" className="h-4 w-4" />
         </div>
       );

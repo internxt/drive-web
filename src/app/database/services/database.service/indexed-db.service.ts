@@ -5,6 +5,7 @@ import { AppDatabase, DatabaseService } from '.';
 const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatabase>> => {
   return idb.openDB<AppDatabase>(name, version, {
     upgrade: (db, oldVersion) => {
+      console.log({ oldVersion });
       if (oldVersion === 0) db.createObjectStore('levels');
       if (oldVersion <= 1) db.createObjectStore('photos');
       if (oldVersion <= 2) {
@@ -14,6 +15,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       }
       if (oldVersion <= 3) {
         db.createObjectStore('account_settings');
+      }
+      if (oldVersion <= 4) {
+        db.createObjectStore('move_levels');
       }
     },
     blocked: () => undefined,

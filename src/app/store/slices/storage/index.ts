@@ -15,6 +15,7 @@ const initialState: StorageState = {
   loadingFolders: {},
   isDeletingItems: false,
   levels: {},
+  moveDialogLevels: {},
   levelsFoldersLength: {},
   levelsFilesLength: {},
   hasMoreDriveFolders: true,
@@ -74,6 +75,9 @@ export const storageSlice = createSlice({
     },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
+    },
+    setMoveDialogItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+      state.moveDialogLevels[action.payload.folderId] = action.payload.items;
     },
     addItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);

@@ -68,13 +68,7 @@ const DeviceList = (props: Props): JSX.Element => {
             (props) => (
               <DeviceListItem
                 device={props}
-                onClick={(device) => {
-                  const unselectedDevices = selectedItems.map((deviceSelected) => {
-                    return { device: deviceSelected, isSelected: false };
-                  });
-
-                  onDeviceSelected([...unselectedDevices, { device, isSelected: true }]);
-                }}
+                onClick={(device) => onDeviceClicked(device)}
                 onDoubleClick={(device) => onDeviceClicked(device)}
                 dataTest="device-list-item"
               />

@@ -1,5 +1,5 @@
 import { Upload } from '@phosphor-icons/react';
-import { ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from 'react';
 
 interface EmptyProps {
   icon: JSX.Element;
@@ -11,9 +11,10 @@ interface EmptyProps {
     style: 'plain' | 'elevated';
     onClick: () => void;
   };
+  contextMenuClick?: (event: any) => void;
 }
 
-export default function Empty({ icon, title, subtitle, action }: EmptyProps): JSX.Element {
+export default function Empty({ icon, title, subtitle, action, contextMenuClick }: EmptyProps): JSX.Element {
   let button: ReactNode = null;
 
   if (action) {
@@ -31,7 +32,7 @@ export default function Empty({ icon, title, subtitle, action }: EmptyProps): JS
   }
 
   return (
-    <div className="h-full w-full p-8">
+    <div className="h-full w-full p-8" onContextMenu={contextMenuClick}>
       <div className="flex h-full flex-col items-center justify-center pb-20">
         <div className="pointer-events-none mx-auto mb-10 w-max">{icon}</div>
         <div className="pointer-events-none text-center">

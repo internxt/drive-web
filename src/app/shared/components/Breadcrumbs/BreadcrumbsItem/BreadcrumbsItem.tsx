@@ -429,7 +429,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         <div
           ref={drop}
           className={`flex ${props.isHiddenInList ? 'w-full' : 'max-w-fit'} ${
-            props.item.isFirstPath ? 'flex-shrink-0 p-1' : 'min-w-breadcrumb flex-1 py-1.5 px-3'
+            props.item.isFirstPath ? 'flex-shrink-0' : 'min-w-breadcrumb flex-1 py-1.5 px-3'
           } cursor-pointer flex-row items-center truncate font-medium ${isDraggingOverClassNames}
         ${
           !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)

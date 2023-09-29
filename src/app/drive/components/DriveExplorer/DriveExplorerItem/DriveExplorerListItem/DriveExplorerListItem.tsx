@@ -104,7 +104,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* ICON */}
-      <div className="box-content flex w-1/12 items-center px-3">
+      <div className="box-content flex items-center pr-4">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
           <ItemIconComponent
             className="h-full"
@@ -124,10 +124,22 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </div>
 
       {/* NAME */}
-      <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
-
-      {/* HOVER ACTIONS */}
-      <div className="hidden w-2/12 items-center pl-3 xl:flex"></div>
+      <div className="flex w-1 flex-grow items-center pr-2">
+        <div className="flex max-w-full items-center">
+          <span
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className={'file-list-item-name-span'}
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            onClick={
+              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                ? onNameClicked
+                : undefined
+            }
+          >
+            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+          </span>
+        </div>
+      </div>
 
       {
         /* DROPPABLE ZONE */
@@ -136,12 +148,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
 
       {/* DATE */}
-      <div className="hidden w-3/12 items-center overflow-ellipsis whitespace-nowrap lg:flex">
+      <div className="w-3/12 min-w-date items-center overflow-ellipsis whitespace-nowrap lg:flex">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="flex w-1/12 items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-1/12 min-w-breadcrumb items-center overflow-ellipsis whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (

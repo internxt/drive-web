@@ -187,6 +187,7 @@ ListProps<T, F>): JSX.Element {
   useHotkeys('enter', handleKeyPress(executeClickOnSelectedItem), [selectedItems, disableKeyboardShortcuts]);
   useHotkeys('r', handleKeyPress(handleRKeyPressed), [selectedItems, disableKeyboardShortcuts]);
   useHotkeys('backspace', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('delete', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
 
   function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
@@ -206,11 +207,11 @@ ListProps<T, F>): JSX.Element {
   return (
     <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
       {/* HEAD */}
-      <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
+      <div className="flex h-12 flex-shrink-0 flex-row px-5">
         {/* COLUMN */}
-        <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+        <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
           {/* SELECTION CHECKBOX */}
-          <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+          <div className="flex h-full flex-row items-center justify-between pr-4">
             <BaseCheckbox
               checked={selectedItems.length > 0}
               indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
@@ -242,7 +243,7 @@ ListProps<T, F>): JSX.Element {
       </div>
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
+      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto overflow-x-hidden" ref={ref}>
         {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (

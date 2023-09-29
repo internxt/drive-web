@@ -15,13 +15,14 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
   async (folderId, { dispatch }) => {
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const [responsePromise] = storageClient.getFolderContent(folderId);
-    const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
-
-    dispatch(storageActions.resetOrder());
+    const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(
+      DatabaseCollection.MoveDialogLevels,
+      folderId,
+    );
 
     if (databaseContent) {
       dispatch(
-        storageActions.setItems({
+        storageActions.setMoveDialogItems({
           folderId,
           items: databaseContent,
         }),
@@ -34,12 +35,12 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
-        storageActions.setItems({
+        storageActions.setMoveDialogItems({
           folderId,
           items,
         }),
       );
-      databaseService.put(DatabaseCollection.Levels, folderId, items);
+      databaseService.put(DatabaseCollection.MoveDialogLevels, folderId, items);
     });
   },
 );

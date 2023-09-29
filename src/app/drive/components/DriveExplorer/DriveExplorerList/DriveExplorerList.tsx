@@ -274,28 +274,22 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
-              label: translate('drive.list.columns.type'),
-              width: 'flex w-1/12 items-center px-6',
-              name: 'type',
-              orderable: false,
-            },
-            {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center pl-6',
+              width: 'flex flex-grow items-center',
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
+              width: 'w-3/12 lg:flex pl-7 min-w-date',
               name: 'updatedAt',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-1/12 items-center',
+              width: 'flex w-1/12 items-center min-w-breadcrumb',
               name: 'size',
               orderable: false,
             },
@@ -423,8 +417,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             onRKeyPressed: () => {
               if (props.selectedItems.length === 1) {
                 const selectedItem = props.selectedItems[0];
-                dispatch(uiActions.setCurrentEditingNameDirty(selectedItem.name));
-                dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItem));
+                renameItem(selectedItem);
               }
             },
           }}
