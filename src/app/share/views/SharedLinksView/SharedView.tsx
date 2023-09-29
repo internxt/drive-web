@@ -687,7 +687,7 @@ export default function SharedView(): JSX.Element {
 
     if (currentUser?.uuid && (user?.uuid || userUUid)) {
       if (userUUid) return currentUser.uuid === userUUid;
-      else currentUser.uuid == user?.uuid;
+      else return currentUser.uuid == user?.uuid;
     }
     return false;
   };
