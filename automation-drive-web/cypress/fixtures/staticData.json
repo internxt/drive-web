@@ -1,8 +1,8 @@
 {
-    "accounts":{
-        "main": "maintestaccount@inxt.com",
-        "editor": "editoraccount@inxt.com",
-        "reader": "readeraccount@inxt.com"
-    },
-    "password": "test123."
+  "accounts": {
+    "main": "maintestaccount@inxt.com",
+    "editor": "editoraccount@inxt.com",
+    "reader": "readeraccount@inxt.com"
+  },
+  "password": "test123."
 }
