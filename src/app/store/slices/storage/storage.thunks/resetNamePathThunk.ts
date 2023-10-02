@@ -29,7 +29,9 @@ export const resetNamePathThunkExtraReducers = (builder: ActionReducerMapBuilder
   builder
     .addCase(resetNamePathThunk.pending, () => undefined)
     .addCase(resetNamePathThunk.fulfilled, (state, { payload }) => {
-      state.currentPath = payload[0];
+      if (payload.length > 0) {
+        state.currentPath = payload[0];
+      }
     })
     .addCase(resetNamePathThunk.rejected, () => undefined);
 };
