@@ -90,6 +90,8 @@ ListProps<T, F>): JSX.Element {
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
+  const container = document.getElementById('scrollableList');
+  const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
 
   const loader = new Array(25)
     .fill(0)
@@ -236,7 +238,7 @@ ListProps<T, F>): JSX.Element {
                 ))}
             </div>
           ))}
-
+          {isVerticalScrollbarVisible && <div className="mr-15px" />}
           {menu && <div className="flex h-full w-12 flex-shrink-0" />}
         </div>
       </div>

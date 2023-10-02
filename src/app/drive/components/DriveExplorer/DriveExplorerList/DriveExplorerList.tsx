@@ -282,14 +282,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
             {
               label: translate('drive.list.columns.modified'),
-              width: 'w-3/12 lg:flex pl-7 min-w-date',
+              width: 'w-date',
               name: 'updatedAt',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-1/12 items-center min-w-breadcrumb',
+              width: 'w-size',
               name: 'size',
               orderable: false,
             },

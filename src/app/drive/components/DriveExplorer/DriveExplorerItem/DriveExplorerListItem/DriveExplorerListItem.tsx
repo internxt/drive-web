@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { PencilSimple, Users } from '@phosphor-icons/react';
+import { PencilSimple } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -103,41 +103,43 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      {/* ICON */}
-      <div className="box-content flex items-center pr-4">
-        <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent
-            className="h-full"
-            data-test={`file-list-${
-              item.isFolder ? 'folder' : 'file'
-            }-${transformItemService.getItemPlainNameWithExtension(item)}`}
-          />
-          {isItemShared && (
-            <img
-              className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-              src={usersIcon}
-              width={13}
-              alt="shared users"
+      <div className="flex flex-grow items-center">
+        {/* ICON */}
+        <div className="box-content flex items-center pr-4">
+          <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
+            <ItemIconComponent
+              className="h-full"
+              data-test={`file-list-${
+                item.isFolder ? 'folder' : 'file'
+              }-${transformItemService.getItemPlainNameWithExtension(item)}`}
             />
-          )}
+            {isItemShared && (
+              <img
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                src={usersIcon}
+                width={13}
+                alt="shared users"
+              />
+            )}
+          </div>
         </div>
-      </div>
 
-      {/* NAME */}
-      <div className="flex w-1 flex-grow items-center pr-2">
-        <div className="flex max-w-full items-center">
-          <span
-            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-            className={'file-list-item-name-span'}
-            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            onClick={
-              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
-                ? onNameClicked
-                : undefined
-            }
-          >
-            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-          </span>
+        {/* NAME */}
+        <div className="flex flex-grow items-center pr-2">
+          <div className="flex max-w-full items-center">
+            <span
+              data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+              className={'file-list-item-name-span'}
+              title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+              onClick={
+                (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                  ? onNameClicked
+                  : undefined
+              }
+            >
+              {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -148,12 +150,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
 
       {/* DATE */}
-      <div className="w-3/12 min-w-date items-center overflow-ellipsis whitespace-nowrap lg:flex">
+      <div className="w-date items-center overflow-ellipsis whitespace-nowrap">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="w-1/12 min-w-breadcrumb items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-size items-center overflow-ellipsis whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (

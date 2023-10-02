@@ -97,6 +97,7 @@ module.exports = {
       margin: {
         '20px': '20px',
         '24px': '24px',
+        '15px': '15px',
       },
       minWidth: {
         104: '26rem',
