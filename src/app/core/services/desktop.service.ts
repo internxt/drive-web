@@ -10,12 +10,13 @@ async function getDownloadAppUrl() {
   });
 
   switch (operatingSystemService.getOperatingSystem()) {
-    case 'LinuxOS' || 'UNIXOS':
-      return app.data.platforms.Linux || 'https://internxt.com/downloads/drive.deb';
+    case 'LinuxOS':
+    case 'UNIXOS':
+      return app.data.platforms.Linux || `${INTERNXT_BASE_URL}/downloads/drive.deb`;
     case 'WindowsOS':
-      return app.data.platforms.Windows || 'https://internxt.com/downloads/drive.exe';
+      return app.data.platforms.Windows || `${INTERNXT_BASE_URL}/downloads/drive.exe`;
     case 'MacOS':
-      return app.data.platforms.MacOS || 'https://internxt.com/downloads/drive.dmg';
+      return app.data.platforms.MacOS || `${INTERNXT_BASE_URL}/downloads/drive.dmg`;
     default:
       break;
   }
