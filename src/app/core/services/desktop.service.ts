@@ -1,4 +1,3 @@
-import axios from 'axios';
 import operatingSystemService from './operating-system.service';
 
 const INTERNXT_BASE_URL = 'https://internxt.com';
