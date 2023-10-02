@@ -1049,7 +1049,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             </>
           )}
         </div>
-        Ba
       </div>
     </div>
   );
