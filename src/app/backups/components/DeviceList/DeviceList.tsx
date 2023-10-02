@@ -1,4 +1,3 @@
-import DeviceListItem from './DeviceListItem';
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
@@ -10,6 +9,12 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import List from '../../../shared/components/List';
 import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import UilApple from '@iconscout/react-unicons/icons/uil-apple';
+import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
+import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
+import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
+import dateService from '../../../core/services/date.service';
+import sizeService from '../../../drive/services/size.service';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -42,21 +47,21 @@ const DeviceList = (props: Props): JSX.Element => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow cursor-pointer items-center pl-6',
+              width: 'flex-1 min-w-activity truncate flex-shrink-0 cursor-pointer items-center',
               name: 'name',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
+              width: 'w-date',
               name: 'updatedAt',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-2/12 cursor-pointer items-center',
+              width: 'flex cursor-pointer items-center w-size',
               name: 'size',
               orderable: true,
               defaultDirection: 'ASC',
@@ -65,15 +70,38 @@ const DeviceList = (props: Props): JSX.Element => {
           items={props.items as Device[] | (DriveFolderData & { size: number })[]}
           isLoading={isLoading}
           itemComposition={[
-            (props) => (
-              <DeviceListItem
-                device={props}
-                onClick={(device) => onDeviceClicked(device)}
-                onDoubleClick={(device) => onDeviceClicked(device)}
-                dataTest="device-list-item"
-              />
-            ),
+            (device) => {
+              let Icon;
+
+              if ('platform' in device) {
+                switch (device.platform) {
+                  case 'darwin':
+                    Icon = UilApple;
+                    break;
+                  case 'linux':
+                    Icon = UilLinux;
+                    break;
+                  case 'win32':
+                    Icon = UilWindows;
+                    break;
+                  default:
+                    Icon = UilDesktop;
+                }
+              } else Icon = UilDesktop;
+              return (
+                <div className="flex flex-row items-center justify-center">
+                  <Icon className="mr-3 h-8 w-8" />
+                  <p className="flex-grow">{device.name}</p>
+                </div>
+              );
+            },
+            (device) => <div>{dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}</div>,
+            (device) => {
+              const size = 'size' in device ? sizeService.bytesToString(device.size) : '';
+              return <div>{size}</div>;
+            },
           ]}
+          onClick={onDeviceClicked}
           skinSkeleton={getLoadingSkeleton()}
           emptyState={
             <Empty
@@ -109,7 +137,7 @@ const DeviceList = (props: Props): JSX.Element => {
             const selectedDevicesParsed = changes.map((change) => ({ device: change.props, isSelected: change.value }));
             onDeviceSelected(selectedDevicesParsed);
           }}
-          disableItemCompositionStyles={true}
+          // disableItemCompositionStyles={true}
         />
       </div>
     </div>

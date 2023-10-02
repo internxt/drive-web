@@ -88,7 +88,9 @@ module.exports = {
         sidenav: '210px',
         'sidenav-collapsed': '64px',
         activity: '296px',
-
+        date: '220px',
+        breadcrumb: 'min(128px, 2ch)',
+        size: '130px',
         contextmenu: '128px',
         '0.5/12': '4.166667%',
       },

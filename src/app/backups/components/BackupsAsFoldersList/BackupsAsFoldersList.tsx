@@ -9,13 +9,15 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
-import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import List from '../../../shared/components/List';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import iconService from '../../../drive/services/icon.service';
+import dateService from '../../../core/services/date.service';
+import sizeService from '../../../drive/services/size.service';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -101,21 +103,21 @@ export default function BackupsAsFoldersList({
             header={[
               {
                 label: translate('drive.list.columns.name'),
-                width: 'flex flex-grow cursor-pointer items-center pl-6',
+                width: 'flex-1 min-w-activity truncate flex-shrink-0 cursor-pointer items-center',
                 name: 'name',
                 orderable: true,
                 defaultDirection: 'ASC',
               },
               {
                 label: translate('drive.list.columns.modified'),
-                width: 'hidden w-3/12 lg:flex pl-4',
+                width: 'w-date',
                 name: 'updatedAt',
                 orderable: true,
                 defaultDirection: 'ASC',
               },
               {
                 label: translate('drive.list.columns.size'),
-                width: 'flex w-2/12 cursor-pointer items-center',
+                width: 'flex cursor-pointer items-center w-size',
                 name: 'size',
                 orderable: true,
                 defaultDirection: 'ASC',
@@ -124,15 +126,26 @@ export default function BackupsAsFoldersList({
             items={currentItems}
             isLoading={isLoading}
             itemComposition={[
-              (item) => (
-                <BackupsAsFoldersListItem
-                  key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
-                  item={item}
-                  onClick={onClick}
-                  dataTest="backup-list-folder"
-                />
-              ),
+              (item) => {
+                const displayName = item.type ? `${item.name}.${item.type}` : item.name;
+                const Icon = iconService.getItemIcon(item.isFolder, item.type);
+
+                return (
+                  <div className="flex flex-grow cursor-pointer items-center justify-center">
+                    <Icon className="mr-3 h-8 w-8" />
+                    <p className="flex-grow">{displayName}</p>
+                  </div>
+                );
+              },
+              (item) => {
+                return <div>{dateService.format(item.createdAt, 'DD MMMM YYYY. HH:mm')}</div>;
+              },
+              (item) => {
+                const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
+                return <div>{size}</div>;
+              },
             ]}
+            onClick={onClick}
             skinSkeleton={Skeleton}
             emptyState={
               <Empty
@@ -154,7 +167,6 @@ export default function BackupsAsFoldersList({
               }));
               onItemSelected(selectedDevicesParsed);
             }}
-            disableItemCompositionStyles={true}
           />
         )}
       </div>

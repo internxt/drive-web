@@ -92,7 +92,8 @@ export default function BackupsView(): JSX.Element {
     {
       id: -1,
       label: `${translate('backups.your-devices')}`,
-      icon: <UilHdd className="mr-1 h-4 w-4" />,
+      icon: null,
+      isFirstPath: true,
       active: true,
       onClick: () => goBack(),
     },

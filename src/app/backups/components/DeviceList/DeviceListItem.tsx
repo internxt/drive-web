@@ -45,15 +45,15 @@ export default function DeviceListItem({
       onDoubleClick={() => onDoubleClick?.(device)}
       data-test={dataTest}
     >
-      <div className="box-content flex w-0.5/12 items-center justify-center px-3">
-        <Icon className="h-8 w-8" />
+      <div className="box-content flex flex-grow items-center justify-center">
+        <Icon className="mr-3 h-8 w-8" />
+        <p className="flex-grow">{device.name}</p>
       </div>
-      <p className="flex-grow pr-3">{device.name}</p>
-      <div className="hidden w-2/12 items-center xl:flex"></div>
-      <div className="hidden w-3/12 items-center lg:flex">
+      {/* <div className="hidden w-2/12 items-center xl:flex"></div> */}
+      <div className="w-3/12 min-w-date items-center lg:flex">
         {dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
-      <div className="flex w-2/12 items-center">{size}</div>
+      <div className="flex w-2/12 min-w-breadcrumb items-center">{size}</div>
     </div>
   );
 }
