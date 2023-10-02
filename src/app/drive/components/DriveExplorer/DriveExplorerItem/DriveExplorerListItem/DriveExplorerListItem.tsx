@@ -103,7 +103,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      <div className="flex flex-grow items-center">
+      <div className="flex min-w-activity flex-grow items-center">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
@@ -150,12 +150,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
 
       {/* DATE */}
-      <div className="w-date items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-date items-center whitespace-nowrap">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="w-size items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-size items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (

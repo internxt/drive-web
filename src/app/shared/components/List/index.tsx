@@ -206,7 +206,10 @@ ListProps<T, F>): JSX.Element {
   }
 
   return (
-    <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
+    <div
+      id="generic-list-component"
+      className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
+    >
       {/* HEAD */}
       <div className="flex h-12 flex-shrink-0 flex-row px-5">
         {/* COLUMN */}
@@ -244,7 +247,7 @@ ListProps<T, F>): JSX.Element {
       </div>
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto overflow-x-hidden" ref={ref}>
+      <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
         {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (

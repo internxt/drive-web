@@ -275,7 +275,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center',
+              width: 'flex flex-grow items-center min-w-activity',
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
