@@ -1,10 +1,6 @@
-import { useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
-import paymentService from 'app/payment/services/payment.service';
-import { bytesToString } from 'app/drive/services/size.service';
 import BackgroundImage from 'assets/images/banner/banner_internal_cs_month_800x450_bg.webp';
 import { ReactComponent as InternxtLogo } from 'assets/images/banner/inxt-logo.svg';
-import errorService from 'app/core/services/error.service';
 
 const redirectURL = 'https://internxt.com/pricing#priceTable';
 
@@ -48,7 +44,7 @@ const CyberAwarenessBanner = ({ showBanner, onClose }: { showBanner: boolean; on
               <button
                 className="focus:outline-none flex flex-row items-center justify-center space-x-4 rounded-lg bg-white py-3 px-5 text-base font-medium text-gray-80 transition duration-100 focus-visible:bg-gray-10 active:bg-gray-10 sm:text-lg"
                 onClick={() => {
-                  window.open(redirectURL, '_blank');
+                  window.open(redirectURL, '_blank', 'noopener noreferrer');
                 }}
               >
                 Get the deal!
