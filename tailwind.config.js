@@ -190,6 +190,7 @@ module.exports = {
       primary: 'rgb(0,102,255)',
       'primary-dark': 'rgb(0,88,219)',
       'red-std': 'rgb(255,13,0)',
+      'red-std-transparent': 'rgba(255, 13, 0, 0.08)',
       'red-dark': 'rgb(230,11,0)',
       'pcComponentes-orange': '#F26122',
       orange: 'rgb(255,149,0)',

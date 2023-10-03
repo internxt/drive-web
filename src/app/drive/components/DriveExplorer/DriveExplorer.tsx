@@ -80,6 +80,7 @@ import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.se
 import ShareDialog from '../ShareDialog/ShareDialog';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import shareService from '../../../share/services/share.service';
+import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -955,6 +956,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           </div>
 
           <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+            <WarningMessageWrapper />
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
