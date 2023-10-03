@@ -103,7 +103,7 @@ export default function BackupsAsFoldersList({
             header={[
               {
                 label: translate('drive.list.columns.name'),
-                width: 'flex-1 min-w-activity truncate flex-shrink-0 cursor-pointer items-center',
+                width: 'flex-1 min-w-activity truncate cursor-pointer',
                 name: 'name',
                 orderable: true,
                 defaultDirection: 'ASC',
@@ -117,7 +117,7 @@ export default function BackupsAsFoldersList({
               },
               {
                 label: translate('drive.list.columns.size'),
-                width: 'flex cursor-pointer items-center w-size',
+                width: 'cursor-pointer items-center w-size',
                 name: 'size',
                 orderable: true,
                 defaultDirection: 'ASC',
@@ -131,9 +131,11 @@ export default function BackupsAsFoldersList({
                 const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
                 return (
-                  <div className="flex flex-grow cursor-pointer items-center justify-center">
-                    <Icon className="mr-3 h-8 w-8" />
-                    <p className="flex-grow">{displayName}</p>
+                  <div className="flex min-w-activity flex-grow cursor-pointer items-center justify-start pr-3">
+                    <div className="mr-3 h-8 w-8">
+                      <Icon className="h-8 w-8" />
+                    </div>
+                    <p className="flex-grow truncate">{displayName}</p>
                   </div>
                 );
               },
