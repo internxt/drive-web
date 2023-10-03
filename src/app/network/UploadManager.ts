@@ -8,8 +8,6 @@ import errorService from '../core/services/error.service';
 import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
-import { uiActions } from '../store/slices/ui';
-import { Dispatch } from '@reduxjs/toolkit';
 import { HTTP_CODES } from '../core/services/http.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
@@ -46,12 +44,18 @@ type UploadManagerFileParams = {
 
 export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
-  dispatch: Dispatch,
+  maxSpaceOccupiedCallback: () => void,
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
 ): Promise<DriveFileData[]> => {
-  const uploadManager = new UploadManager(files, dispatch, abortController, options, relatedTaskProgress);
+  const uploadManager = new UploadManager(
+    files,
+    maxSpaceOccupiedCallback,
+    abortController,
+    options,
+    relatedTaskProgress,
+  );
   return uploadManager.run();
 };
 
@@ -179,8 +183,6 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            console.log({ err });
-
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
             const isLostConnectionError = err instanceof ConnectionLostError;
 
@@ -220,7 +222,7 @@ class UploadManager {
                 });
 
                 if (err?.status === HTTP_CODES.MAX_SPACE_USED) {
-                  this.dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+                  this.maxSpaceOccupiedCallback();
                 }
               }
 
@@ -252,11 +254,11 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private uploadUUIDV4: string;
-  private dispatch: Dispatch;
+  private maxSpaceOccupiedCallback: () => void;
 
   constructor(
     items: UploadManagerFileParams[],
-    dispatch: Dispatch,
+    maxSpaceOccupiedCallback: () => void,
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
@@ -266,7 +268,7 @@ class UploadManager {
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
     this.uploadUUIDV4 = analyticsService.getTrackingActionId();
-    this.dispatch = dispatch;
+    this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
   }
 
   private classifyFilesBySize(
