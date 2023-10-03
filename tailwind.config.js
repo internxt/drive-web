@@ -88,6 +88,7 @@ module.exports = {
         sidenav: '210px',
         'sidenav-collapsed': '64px',
         activity: '296px',
+        driveNameHeader: '364px',
         date: '220px',
         breadcrumb: 'min(128px, 2ch)',
         size: '96px',
@@ -102,6 +103,7 @@ module.exports = {
       minWidth: {
         104: '26rem',
         activity: '296px',
+        driveNameHeader: '364px',
         date: '200px',
         breadcrumb: 'min(128px, 2ch)',
       },

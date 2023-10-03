@@ -832,13 +832,13 @@ export default function SharedView(): JSX.Element {
           header={[
             {
               label: translate('shared-links.list.name'),
-              width: 'flex-1 min-w-104 truncate flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-activity truncate whitespace-nowrap',
               name: 'folder',
               orderable: false,
             },
             {
               label: translate('shared-links.list.owner'),
-              width: 'w-64', //w-1/12
+              width: 'w-64',
               name: 'ownerId',
               orderable: true,
               defaultDirection: 'ASC',
@@ -846,14 +846,14 @@ export default function SharedView(): JSX.Element {
 
             {
               label: translate('shared-links.list.size'),
-              width: 'w-40', //w-1.5/12
+              width: 'w-40',
               name: 'fileSize',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('shared-links.list.created'),
-              width: 'w-40', //w-2/12
+              width: 'w-40',
               name: 'createdAt',
               orderable: true,
               defaultDirection: 'ASC',

@@ -103,7 +103,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      <div className="flex min-w-activity flex-grow items-center">
+      <div className="flex min-w-activity flex-grow items-center pr-3">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
@@ -125,21 +125,21 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         </div>
 
         {/* NAME */}
-        <div className="flex flex-grow items-center pr-2">
-          <div className="flex max-w-full items-center">
-            <span
-              data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-              className={'file-list-item-name-span'}
-              title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-              onClick={
-                (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
-                  ? onNameClicked
-                  : undefined
-              }
-            >
+        <div className="flex w-activity flex-grow cursor-pointer items-center truncate pr-2">
+          <span
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className="truncate"
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            onClick={
+              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                ? onNameClicked
+                : undefined
+            }
+          >
+            <p className="truncate">
               {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            </span>
-          </div>
+            </p>
+          </span>
         </div>
       </div>
 
@@ -150,7 +150,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
 
       {/* DATE */}
-      <div className="w-date items-center whitespace-nowrap">
+      <div className="block w-date items-center whitespace-nowrap">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
