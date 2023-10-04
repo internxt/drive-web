@@ -90,8 +90,6 @@ ListProps<T, F>): JSX.Element {
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
-  const container = document.getElementById('scrollableList');
-  const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
 
   const loader = new Array(25)
     .fill(0)
@@ -208,10 +206,10 @@ ListProps<T, F>): JSX.Element {
   return (
     <div
       id="generic-list-component"
-      className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
+      className={`relative flex h-full flex-col overflow-x-auto overflow-y-auto ${className}`}
     >
       {/* HEAD */}
-      <div className="flex h-12 flex-shrink-0 flex-row px-5">
+      <div className="sticky top-0 left-0 z-50 flex h-12 w-full flex-shrink-0 flex-row bg-white px-5">
         {/* COLUMN */}
         <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
           {/* SELECTION CHECKBOX */}
@@ -241,13 +239,12 @@ ListProps<T, F>): JSX.Element {
                 ))}
             </div>
           ))}
-          {isVerticalScrollbarVisible && <div className="mr-15px" />}
           {menu && <div className="flex h-full w-12 flex-shrink-0" />}
         </div>
       </div>
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
+      <div id="scrollableList" className="flex h-full flex-col" ref={ref}>
         {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (
@@ -258,7 +255,7 @@ ListProps<T, F>): JSX.Element {
               hasMore={!!hasMoreItems}
               loader={loader}
               scrollThreshold={0.7}
-              scrollableTarget="scrollableList"
+              scrollableTarget="generic-list-component"
               className="h-full"
               style={{ overflow: 'visible' }}
             >
