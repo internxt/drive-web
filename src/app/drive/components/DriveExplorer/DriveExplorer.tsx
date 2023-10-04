@@ -1012,6 +1012,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
+                    contextMenuClick={handleContextMenuClick}
                   />
                 ))
             }

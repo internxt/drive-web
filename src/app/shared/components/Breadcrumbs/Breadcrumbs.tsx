@@ -34,7 +34,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     const hiddenItemsList = [] as JSX.Element[];
     const breadcrumbSeparator = (key) => {
       return (
-        <div key={key} className="flex items-center text-gray-50">
+        <div key={key} className="text-dgray-50 flex items-center">
           <CaretRight weight="bold" className="h-4 w-4" />
         </div>
       );
@@ -76,7 +76,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         <Dropdown
           key="breadcrumbDropdownItems"
           openDirection="left"
-          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-black border-opacity-8 bg-white py-1.5 shadow-subtle-hard z-10"
+          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-black border-opacity-8 bg-white pr-1.5 shadow-subtle-hard z-10"
           menuItems={hiddenItemsList}
         >
           {({ open }) => {

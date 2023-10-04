@@ -25,8 +25,10 @@ export default function BackupsView(): JSX.Element {
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDevices, setSelectedDevices] = useState<(Device | DriveFolderData)[]>([]);
+  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
+    setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
@@ -34,6 +36,7 @@ export default function BackupsView(): JSX.Element {
   };
 
   const goBack = () => {
+    setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(null));
   };
 
@@ -72,10 +75,11 @@ export default function BackupsView(): JSX.Element {
   };
 
   useEffect(() => {
+    dispatch(backupsActions.setCurrentDevice(null));
+    setBackupsAsFoldersPath([]);
     dispatch(backupsThunks.fetchDevicesThunk());
   }, []);
 
-  const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
   useEffect(() => {
     if (currentDevice && !('mac' in currentDevice)) setBackupsAsFoldersPath([currentDevice]);
   }, [currentDevice]);
@@ -91,7 +95,8 @@ export default function BackupsView(): JSX.Element {
     {
       id: -1,
       label: `${translate('backups.your-devices')}`,
-      icon: <UilHdd className="mr-1 h-4 w-4" />,
+      icon: null,
+      isFirstPath: true,
       active: true,
       onClick: () => goBack(),
     },
@@ -146,7 +151,7 @@ export default function BackupsView(): JSX.Element {
 
   return (
     <div
-      className="flex flex-grow flex-col"
+      className="flex w-full flex-shrink-0 flex-grow flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
