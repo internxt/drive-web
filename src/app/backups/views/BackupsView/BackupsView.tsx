@@ -27,6 +27,7 @@ export default function BackupsView(): JSX.Element {
   const [backupsAsFoldersPath, setBackupsAsFoldersPath] = useState<DriveFolderData[]>([]);
 
   const onDeviceClicked = (target: Device | DriveFolderData) => {
+    setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(target));
     if ('mac' in target) {
       dispatch(backupsThunks.fetchDeviceBackupsThunk(target.mac));
@@ -34,6 +35,7 @@ export default function BackupsView(): JSX.Element {
   };
 
   const goBack = () => {
+    setSelectedDevices([]);
     dispatch(backupsActions.setCurrentDevice(null));
   };
 

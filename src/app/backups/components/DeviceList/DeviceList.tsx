@@ -89,9 +89,15 @@ const DeviceList = (props: Props): JSX.Element => {
                 }
               } else Icon = UilDesktop;
               return (
-                <div className="flex flex-row items-center justify-center">
-                  <Icon className="mr-3 h-8 w-8" />
-                  <p className="flex-grow">{device.name}</p>
+                <div className="flex min-w-activity cursor-default flex-row items-center justify-center">
+                  <div className="mr-3 h-8 w-8">
+                    <Icon className="h-8 w-8" />
+                  </div>
+                  <div className="flex-grow cursor-default truncate pr-3">
+                    <span className="z-10 flex-shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
+                      {device.name}
+                    </span>
+                  </div>
                 </div>
               );
             },
@@ -101,7 +107,14 @@ const DeviceList = (props: Props): JSX.Element => {
               return <div>{size}</div>;
             },
           ]}
-          onClick={onDeviceClicked}
+          onClick={(item) => {
+            const unselectedDevices = selectedItems.map((deviceSelected) => ({
+              device: deviceSelected,
+              isSelected: false,
+            }));
+            onDeviceSelected([...unselectedDevices, { device: item, isSelected: true }]);
+          }}
+          onDoubleClick={onDeviceClicked}
           skinSkeleton={getLoadingSkeleton()}
           emptyState={
             <Empty

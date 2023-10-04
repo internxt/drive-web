@@ -41,6 +41,7 @@ export default function BackupsAsFoldersList({
 
   async function refreshFolderContent() {
     setIsloading(true);
+    setSelectedItems([]);
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const [responsePromise] = storageClient.getFolderContent(folderId);
     const response = await responsePromise;
@@ -131,11 +132,15 @@ export default function BackupsAsFoldersList({
                 const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
                 return (
-                  <div className="flex min-w-activity flex-grow cursor-pointer items-center justify-start pr-3">
+                  <div className="flex min-w-activity flex-grow items-center justify-start pr-3">
                     <div className="mr-3 h-8 w-8">
                       <Icon className="h-8 w-8" />
                     </div>
-                    <p className="flex-grow truncate">{displayName}</p>
+                    <div className="flex-grow cursor-default truncate">
+                      <span className="z-10 flex-shrink cursor-pointer truncate" onClick={() => onClick(item)}>
+                        {displayName}
+                      </span>
+                    </div>
                   </div>
                 );
               },
@@ -147,7 +152,14 @@ export default function BackupsAsFoldersList({
                 return <div>{size}</div>;
               },
             ]}
-            onClick={onClick}
+            onClick={(item) => {
+              const unselectedDevices = selectedItems.map((deviceSelected) => ({
+                device: deviceSelected,
+                isSelected: false,
+              }));
+              onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
+            }}
+            onDoubleClick={onClick}
             skinSkeleton={Skeleton}
             emptyState={
               <Empty
