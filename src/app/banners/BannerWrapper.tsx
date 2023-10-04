@@ -13,7 +13,7 @@ const BannerWrapper = (): JSX.Element => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = !localStorageService.get(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER);
+  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER);
 
   const onCloseBanner = () => {
     setShowBanner(false);
