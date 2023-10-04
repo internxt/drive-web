@@ -967,10 +967,10 @@ export default function SharedView(): JSX.Element {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
-                  ...(selectedItem as unknown as DriveItemData),
+                  ...selectedItem,
                   name: selectedItem.plainName ? selectedItem.plainName : '',
                 };
-                setEditNameItem(itemToRename);
+                renameItem(itemToRename);
               }
             },
           }}
