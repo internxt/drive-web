@@ -865,6 +865,7 @@ export default function SharedView(): JSX.Element {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
           }}
+          onDoubleClick={onItemDoubleClicked}
           itemComposition={[
             (shareItem: AdvancedSharedItem) => {
               const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
