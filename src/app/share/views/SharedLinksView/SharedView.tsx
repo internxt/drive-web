@@ -95,6 +95,7 @@ export default function SharedView(): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+  const currentUser = localStorageService.getUser();
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -557,7 +558,6 @@ export default function SharedView(): JSX.Element {
       return; // Exit the function if the condition fails
     }
 
-    const currentUser = localStorageService.getUser();
     let ownerUserAuthenticationData;
 
     const isSecondLevelOfFoldersOrMore = sharedNamePath.length > 2;
@@ -683,9 +683,8 @@ export default function SharedView(): JSX.Element {
   };
 
   const isItemOwnedByCurrentUser = () => {
-    const currentUser = localStorageService.getUser();
-    if (currentUser?.uuid && user?.uuid) {
-      return currentUser.uuid === user.uuid;
+    if (selectedItems[0]?.credentials.networkUser === currentUser?.email) {
+      return selectedItems[0].credentials.networkUser === currentUser?.email;
     }
     return false;
   };
