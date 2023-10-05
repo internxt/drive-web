@@ -3,10 +3,23 @@ import { RootState } from '../../../store';
 import { planSelectors } from '../../../store/slices/plan';
 import { WarningMessage } from './WarningMessage';
 
-const WarningMessageWrapper = ({ planLimit, planUsage }: { planLimit: number; planUsage: number }): JSX.Element => {
-  const isLimitReached = planUsage >= planLimit;
+type WarningMessageWrapperProps = {
+  planLimit: number;
+  planUsage: number;
+  isLoadingPlanLimit: boolean;
+  isLoadingPlanUsage: boolean;
+};
 
-  if (!isLimitReached) return <></>;
+const WarningMessageWrapper = ({
+  planLimit,
+  planUsage,
+  isLoadingPlanLimit,
+  isLoadingPlanUsage,
+}: WarningMessageWrapperProps): JSX.Element => {
+  const isLimitReached = planUsage >= planLimit;
+  const isLoading = isLoadingPlanLimit || isLoadingPlanUsage;
+
+  if (!isLimitReached || isLoading) return <></>;
 
   return <WarningMessage />;
 };
@@ -14,4 +27,6 @@ const WarningMessageWrapper = ({ planLimit, planUsage }: { planLimit: number; pl
 export default connect((state: RootState) => ({
   planUsage: state.plan.planUsage,
   planLimit: planSelectors.planLimitToShow(state),
+  isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
+  isLoadingPlanUsage: state.plan.isLoadingPlanUsage,
 }))(WarningMessageWrapper);
