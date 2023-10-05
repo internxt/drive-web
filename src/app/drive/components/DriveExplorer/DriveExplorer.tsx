@@ -661,7 +661,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog isDriveItem />
+      <ShareDialog
+        isDriveItem
+        onShareItem={() => {
+          resetPaginationState();
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+        }}
+      />
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
