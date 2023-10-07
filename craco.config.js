@@ -1,16 +1,8 @@
 const { when } = require('@craco/craco');
-
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
-
 const webpack = require('webpack');
 
 module.exports = {
-  style: {
-    postcss: {
-      plugins: [require('tailwindcss'), require('autoprefixer')],
-    },
-  },
-
   webpack: {
     configure: {
       resolve: {
@@ -28,11 +20,9 @@ module.exports = {
           zlib: require.resolve('browserify-zlib'),
           util: require.resolve('util'),
           url: require.resolve('url'),
-
         },
       },
     },
-
     plugins: {
       add: [
         new webpack.ProvidePlugin({
