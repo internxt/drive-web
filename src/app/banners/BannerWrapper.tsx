@@ -5,7 +5,7 @@ import { PlanState } from 'app/store/slices/plan';
 import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Banner from './Banner';
+import CyberAwarenessBanner from './CyberAwarenessBanner';
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -13,11 +13,11 @@ const BannerWrapper = (): JSX.Element => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(STORAGE_KEYS.SHOW_LIFETIME_BANNER);
+  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER);
 
   const onCloseBanner = () => {
     setShowBanner(false);
-    localStorage.setItem(STORAGE_KEYS.SHOW_LIFETIME_BANNER, 'false');
+    localStorage.setItem(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER, 'false');
   };
 
   function handleBannerDisplay() {
@@ -30,7 +30,7 @@ const BannerWrapper = (): JSX.Element => {
     handleBannerDisplay();
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <CyberAwarenessBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
