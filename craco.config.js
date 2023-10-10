@@ -29,6 +29,7 @@ module.exports = {
           Buffer: ['buffer', 'Buffer'],
           process: require.resolve('process/browser'),
         }),
+        ...when(Boolean(process.env.ANALYZE), () => [new BundleAnalyzerPlugin()], []),
       ],
     },
   },
