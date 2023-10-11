@@ -1,6 +1,6 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { createRoot } from 'react-dom/client';
 
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -36,7 +36,10 @@ store.dispatch(planThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());
 store.dispatch(referralsThunks.initializeThunk());
 
-ReactDOM.render(
+const rootElement = document.getElementById('root');
+const root = createRoot(rootElement!); // createRoot(container!) if you use TypeScript
+
+root.render(
   <React.StrictMode>
     <HelmetProvider>
       <Provider store={store}>
@@ -46,7 +49,6 @@ ReactDOM.render(
       </Provider>
     </HelmetProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function

@@ -152,7 +152,7 @@ class App extends Component<AppProps> {
 
     if (!isAuthenticated || isInitialized) {
       template = (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider backend={HTML5Backend} context={window}>
           <Router history={navigationService.history}>
             {isDev && configService.getAppConfig().debug.enabled && (
               <span
