@@ -9,6 +9,8 @@ import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
+import { uiActions } from 'app/store/slices/ui';
+import { DotsThree } from '@phosphor-icons/react';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -16,6 +18,7 @@ export interface DriveViewProps {
   items: DriveItemData[];
   currentFolderId: number;
   dispatch: AppDispatch;
+  isGlobalSearch: boolean;
 }
 
 class DriveView extends Component<DriveViewProps> {
@@ -37,6 +40,7 @@ class DriveView extends Component<DriveViewProps> {
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
+    const { isGlobalSearch } = this.props;
     const { namePath, dispatch } = this.props;
     const items: BreadcrumbItemData[] = [];
 
@@ -46,11 +50,24 @@ class DriveView extends Component<DriveViewProps> {
       items.push({
         id: firstPath.id,
         label: t('sideNav.drive'),
-        icon: null, //<UilHdd className="w-4 h-4 mr-1" />
+        icon: null,
         active: true,
         isFirstPath: true,
-        onClick: () => dispatch(storageThunks.goToFolderThunk(firstPath)),
+        onClick: () => {
+          dispatch(uiActions.setIsGlobalSearch(false));
+          dispatch(storageThunks.goToFolderThunk(firstPath));
+        },
       });
+
+      isGlobalSearch &&
+        items.push({
+          id: firstPath.id,
+          label: '',
+          icon: <DotsThree className="ml-0.5" />,
+          active: true,
+          isFirstPath: true,
+        });
+
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
           id: path.id,
@@ -92,5 +109,6 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
     items: sortedItems,
+    isGlobalSearch: state.ui.isGlobalSearch,
   };
 })(DriveView);
