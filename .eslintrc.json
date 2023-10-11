@@ -4,6 +4,7 @@
     "no-console": "off",
     "max-len": "off",
     // This is throwing error on App.tsx even with no code changes on CRA 5.
-    "@typescript-eslint/no-empty-function": "off"
+    "@typescript-eslint/no-empty-function": "off",
+    "cypress/unsafe-to-chain-command": "off"
   }
 }

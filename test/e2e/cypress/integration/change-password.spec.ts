@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 import * as path from 'path';
 import { randomBytes } from 'crypto';
 import { join } from 'path';
