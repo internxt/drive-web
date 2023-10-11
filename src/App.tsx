@@ -1,5 +1,7 @@
 import { Component, createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
+import { CompatRouter } from 'react-router-dom-v5-compat';
+
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -154,46 +156,48 @@ class App extends Component<AppProps> {
       template = (
         <DndProvider backend={HTML5Backend} context={window}>
           <Router history={navigationService.history}>
-            {isDev && configService.getAppConfig().debug.enabled && (
-              <span
-                className="\ \ pointer-events-none absolute top-5 -right-7
+            <CompatRouter>
+              {isDev && configService.getAppConfig().debug.enabled && (
+                <span
+                  className="\ \ pointer-events-none absolute top-5 -right-7
                z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white opacity-80 drop-shadow-2xl"
-              >
-                {t('general.stage.development')}
-              </span>
-            )}
-
-            <Switch>
-              <Route exact path="/">
-                <Redirect to="/login" />
-              </Route>
-              <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
-              <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/account" to="/preferences" />
-              {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
-                <Route path="*">
-                  <Mobile user={this.props.user} />
-                </Route>
-              ) : (
-                this.routes
+                >
+                  {t('general.stage.development')}
+                </span>
               )}
-            </Switch>
 
-            <Toaster position="bottom-center" />
+              <Switch>
+                <Route exact path="/">
+                  <Redirect to="/login" />
+                </Route>
+                <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
+                <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+                <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+                <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
+                <Redirect from="/account" to="/preferences" />
+                {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+                  <Route path="*">
+                    <Mobile user={this.props.user} />
+                  </Route>
+                ) : (
+                  this.routes
+                )}
+              </Switch>
 
-            <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-            {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
+              <Toaster position="bottom-center" />
 
-            {isFileViewerOpen && fileViewerItem && (
-              <FileViewerWrapper
-                file={fileViewerItem}
-                onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
-                showPreview={isFileViewerOpen}
-              />
-            )}
+              <NewsletterDialog isOpen={isNewsletterDialogOpen} />
+              {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
+
+              {isFileViewerOpen && fileViewerItem && (
+                <FileViewerWrapper
+                  file={fileViewerItem}
+                  onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+                  showPreview={isFileViewerOpen}
+                />
+              )}
+            </CompatRouter>
           </Router>
         </DndProvider>
       );
