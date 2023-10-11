@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
 import _ from 'lodash';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../../core/factory/sdk';
@@ -16,6 +15,7 @@ import { deleteFile } from '../../../drive/services/file.service';
 import List from '../../../shared/components/List';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { useAppDispatch } from '../../../../app/store/hooks';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -26,7 +26,7 @@ export default function BackupsAsFoldersList({
   folderId: number;
   onFolderPush: (folder: DriveFolderData) => void;
 }): JSX.Element {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
   const [isLoading, setIsloading] = useState(true);

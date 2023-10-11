@@ -1,5 +1,4 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
 import { DriveItemData } from '../../drive/types';
 import {
   downloadItemsAsZipThunk,
@@ -7,13 +6,14 @@ import {
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { TaskNotification } from '../types';
 import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
+import { useAppDispatch } from 'app/store/hooks';
 
 interface RetryDownload {
   retryDownload: () => void;
 }
 
 export const useRetryDownload = (notification: TaskNotification): RetryDownload => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const retryDownload = useCallback(() => {
     const { item, taskId } = notification;

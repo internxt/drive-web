@@ -1,6 +1,6 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import Empty from '../../shared/components/Empty/Empty';
 import { getPhotoPreview } from 'app/network/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
@@ -15,10 +15,11 @@ import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppDispatch } from '../../../app/store/hooks';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const photosState = useSelector<RootState, PhotosState>((state) => state.photos);
 
   function fetchPhotos() {
@@ -175,7 +176,7 @@ function Grid({
   isMorePhotos: boolean;
   onUserScrolledToTheEnd: () => void;
 }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const elementRef = useRef<HTMLDivElement>(null);
 

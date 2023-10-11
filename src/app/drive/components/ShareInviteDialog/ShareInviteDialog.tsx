@@ -10,11 +10,11 @@ import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseChec
 import Input from '../../../shared/components/Input';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import './ShareInviteDialog.scss';
-import { useDispatch } from 'react-redux';
 import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../../../store';
 import { Role } from '../../../store/slices/sharedLinks/types';
+import { useAppDispatch } from '../../../../app/store/hooks';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -31,7 +31,7 @@ interface UsersToInvite {
 const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [email, setEmail] = useState<string>('');
   const [emailAccent, setEmailAccent] = useState<string>('');
   const [userRole, setUserRole] = useState<string>(props.roles[0]?.name);
@@ -98,7 +98,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             notifyUser,
             notificationMessage: messageText,
           }),
-        ),
+        ) as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>,
       );
     } else {
       usersToInvite.forEach((user) => {

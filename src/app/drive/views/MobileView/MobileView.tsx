@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { getDatabaseProfileAvatar } from '../../services/database.service';
 import { userThunks } from '../../../store/slices/user';
@@ -9,13 +8,14 @@ import devices from 'assets/images/mobile-app/devices.png';
 import Avatar from 'app/shared/components/Avatar';
 import appStore from 'assets/images/mobile-app/app-store.jpg';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';
+import { useAppDispatch } from '../../../../app/store/hooks';
 
 interface MobileProps {
   user: UserSettings | undefined;
 }
 
 const Mobile = (props: MobileProps): JSX.Element => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const [osMobile, setOsMobile] = useState('');
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
