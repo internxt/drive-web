@@ -15,6 +15,10 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { useAppDispatch } from 'app/store/hooks';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { uiActions } from 'app/store/slices/ui';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -42,6 +46,7 @@ const Navbar = (props: NavbarProps) => {
   const { user, hideSearch } = props;
   if (!user) throw new Error('User is not defined');
 
+  const dispatch = useAppDispatch();
   const searchInput = useRef<HTMLInputElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
@@ -49,7 +54,7 @@ const Navbar = (props: NavbarProps) => {
   const [filters, setFilters] = useState<FilterType[]>([]);
 
   const [query, setQuery] = useState('');
-  const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
+  const [searchResult, setSearchResult] = useState<any[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
@@ -74,23 +79,14 @@ const Navbar = (props: NavbarProps) => {
     search();
   }, [filters]);
 
-  // TODO -> Add the function to search
   const search = async () => {
     const query = searchInput.current?.value ?? '';
     if (query.length > 0) {
-      //! setSearchResult of the real results
-      setSearchResult([
-        { name: 'Test folder 1', type: 'folder', id: '1' },
-        { name: 'Test file 2', type: 'pdf', id: '2' },
-        { name: 'Test file 3', type: 'pdf', id: '3' },
-        { name: 'Test file 4', type: 'pdf', id: '4' },
-        { name: 'Test file 5', type: 'pdf', id: '5' },
-        { name: 'Test file 6', type: 'pdf', id: '6' },
-        { name: 'Test file 7', type: 'pdf', id: '7' },
-        { name: 'Test file 8', type: 'pdf', id: '8' },
-        { name: 'Test file 9', type: 'pdf', id: '9' },
-        { name: 'Test file 10', type: 'pdf', id: '10' },
-      ]);
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
+      const items = await itemsPromise;
+      setSearchResult(items.data);
+      console.log(items.data);
     } else {
       setSearchResult([]);
     }
@@ -107,11 +103,19 @@ const Navbar = (props: NavbarProps) => {
     }
   };
 
-  const openItem = (id: string) => {
-    searchInput.current?.blur();
-    // TODO -> Open file/folder by id
-    // Open file/folder in the same tab
-    alert(`Open item with ID ${id}`);
+  const openItem = (item) => {
+    if (item.itemType === 'folder' || item.itemType === 'FOLDER') {
+      dispatch(uiActions.setIsGlobalSearch(true));
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.item.id }));
+      searchInput.current?.blur();
+      setQuery('');
+      setSearchResult([]);
+      setOpenSeachBox(false);
+      setPreventBlur(false);
+    } else {
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item));
+    }
   };
 
   const handleSearch = () => {
@@ -129,7 +133,7 @@ const Navbar = (props: NavbarProps) => {
     e.preventDefault();
     if (searchResult.length > 0) {
       setPreventBlur(false);
-      openItem(searchResult[selectedResult].id);
+      openItem(searchResult[selectedResult]);
     } else {
       setLoadingSearch(true);
       search();
@@ -313,7 +317,8 @@ const Navbar = (props: NavbarProps) => {
             {searchResult.length > 0 ? (
               <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
                 {searchResult.map((item, index) => {
-                  const Icon = iconService.getItemIcon(item.type === 'folder', item.type);
+                  const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
+                  const Icon = iconService.getItemIcon(isFolder, item.item.type);
                   return (
                     <li
                       key={item.id}
@@ -324,7 +329,7 @@ const Navbar = (props: NavbarProps) => {
                         selectedResult === index && 'bg-gray-5'
                       } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
                       onMouseEnter={() => setSelectedResult(index)}
-                      onClickCapture={() => openItem(item.id)}
+                      onClickCapture={() => openItem(item)}
                     >
                       <Icon className="h-7 w-7 drop-shadow-soft filter" />
                       <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
