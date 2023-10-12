@@ -19,6 +19,7 @@ import { SdkFactory } from 'app/core/factory/sdk';
 import { useAppDispatch } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
+import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -40,6 +41,23 @@ interface SearchResult {
 
 type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
 
+const fileExtension = {
+  image: fileExtensionGroups[FileExtensionGroup.Image],
+  audio: fileExtensionGroups[FileExtensionGroup.Audio],
+  pdf: fileExtensionGroups[FileExtensionGroup.Pdf],
+  video: fileExtensionGroups[FileExtensionGroup.Video],
+  default: fileExtensionGroups[FileExtensionGroup.Default],
+};
+
+const isSelectedType = (extension: string, extensionMap: FileExtensionMap) => {
+  for (const fileType in extensionMap) {
+    if (extensionMap[fileType].includes(extension.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+};
+
 // TODO: SUBSTITUE THE NAVBAR WITH THIS ONE WITH NEW SEARCH BAR WHEN BACKED IS READY
 const Navbar = (props: NavbarProps) => {
   const { translate } = useTranslationContext();
@@ -55,6 +73,7 @@ const Navbar = (props: NavbarProps) => {
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<any[]>([]);
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
@@ -76,8 +95,22 @@ const Navbar = (props: NavbarProps) => {
   );
 
   useEffect(() => {
-    search();
-  }, [filters]);
+    setFilteredResults([]);
+
+    if (filters.length > 0) {
+      const filteredSearchResults = searchResult.filter((result) => {
+        for (const filter of filters) {
+          if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
+            return true;
+          }
+          if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
+            return true;
+          }
+        }
+      });
+      setFilteredResults(filteredSearchResults);
+    }
+  }, [filters, searchResult]);
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
@@ -114,7 +147,7 @@ const Navbar = (props: NavbarProps) => {
       setPreventBlur(false);
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item));
+      dispatch(uiActions.setFileViewerItem(item.item));
     }
   };
 
@@ -316,26 +349,28 @@ const Navbar = (props: NavbarProps) => {
 
             {searchResult.length > 0 ? (
               <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                {searchResult.map((item, index) => {
-                  const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
-                  const Icon = iconService.getItemIcon(isFolder, item.item.type);
-                  return (
-                    <li
-                      key={item.id}
-                      id={`searchResult_${item.id}`}
-                      role="option"
-                      aria-selected={selectedResult === index}
-                      className={`${
-                        selectedResult === index && 'bg-gray-5'
-                      } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
-                      onMouseEnter={() => setSelectedResult(index)}
-                      onClickCapture={() => openItem(item)}
-                    >
-                      <Icon className="h-7 w-7 drop-shadow-soft filter" />
-                      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
-                    </li>
-                  );
-                })}
+                {(filters.length > 0 || filteredResults.length > 0 ? filteredResults : searchResult).map(
+                  (item, index) => {
+                    const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
+                    const Icon = iconService.getItemIcon(isFolder, item.item.type);
+                    return (
+                      <li
+                        key={item.id}
+                        id={`searchResult_${item.id}`}
+                        role="option"
+                        aria-selected={selectedResult === index}
+                        className={`${
+                          selectedResult === index && 'bg-gray-5'
+                        } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
+                        onMouseEnter={() => setSelectedResult(index)}
+                        onClickCapture={() => openItem(item)}
+                      >
+                        <Icon className="h-7 w-7 drop-shadow-soft filter" />
+                        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
+                      </li>
+                    );
+                  },
+                )}
               </ul>
             ) : query.length > 0 && !loadingSearch ? (
               <NotFoundState />
