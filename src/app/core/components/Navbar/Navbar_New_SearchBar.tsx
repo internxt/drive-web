@@ -95,8 +95,6 @@ const Navbar = (props: NavbarProps) => {
   );
 
   useEffect(() => {
-    setFilteredResults([]);
-
     if (filters.length > 0) {
       const filteredSearchResults = searchResult.filter((result) => {
         for (const filter of filters) {
@@ -111,6 +109,12 @@ const Navbar = (props: NavbarProps) => {
       setFilteredResults(filteredSearchResults);
     }
   }, [filters, searchResult]);
+
+  useEffect(() => {
+    if (filters.length === 0) {
+      setFilteredResults([]);
+    }
+  }, [filters]);
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
@@ -347,30 +351,28 @@ const Navbar = (props: NavbarProps) => {
               </button>
             </div>
 
-            {searchResult.length > 0 ? (
+            {(filters.length === 0 && searchResult.length > 0) || (filters.length > 0 && filteredResults.length > 0) ? (
               <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                {(filters.length > 0 || filteredResults.length > 0 ? filteredResults : searchResult).map(
-                  (item, index) => {
-                    const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
-                    const Icon = iconService.getItemIcon(isFolder, item.item.type);
-                    return (
-                      <li
-                        key={item.id}
-                        id={`searchResult_${item.id}`}
-                        role="option"
-                        aria-selected={selectedResult === index}
-                        className={`${
-                          selectedResult === index && 'bg-gray-5'
-                        } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
-                        onMouseEnter={() => setSelectedResult(index)}
-                        onClickCapture={() => openItem(item)}
-                      >
-                        <Icon className="h-7 w-7 drop-shadow-soft filter" />
-                        <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
-                      </li>
-                    );
-                  },
-                )}
+                {(filteredResults.length > 0 ? filteredResults : searchResult).map((item, index) => {
+                  const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
+                  const Icon = iconService.getItemIcon(isFolder, item.item.type);
+                  return (
+                    <li
+                      key={item.id}
+                      id={`searchResult_${item.id}`}
+                      role="option"
+                      aria-selected={selectedResult === index}
+                      className={`${
+                        selectedResult === index && 'bg-gray-5'
+                      } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
+                      onMouseEnter={() => setSelectedResult(index)}
+                      onClickCapture={() => openItem(item)}
+                    >
+                      <Icon className="h-7 w-7 drop-shadow-soft filter" />
+                      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
+                    </li>
+                  );
+                })}
               </ul>
             ) : query.length > 0 && !loadingSearch ? (
               <NotFoundState />
