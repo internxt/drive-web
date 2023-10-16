@@ -66,7 +66,7 @@ class DriveView extends Component<DriveViewProps> {
           label: '',
           icon: <DotsThree className="ml-0.5" />,
           active: true,
-          isFirstPath: true,
+          isFirstPath: false,
         });
 
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {

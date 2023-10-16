@@ -17,7 +17,7 @@ import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
 import { SdkFactory } from 'app/core/factory/sdk';
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
@@ -76,6 +76,7 @@ const Navbar = (props: NavbarProps) => {
 
   const PdfIcon = iconService.getItemIcon(false, 'pdf');
   const FolderIcon = iconService.getItemIcon(true);
+  const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
 
   useHotkeys(
     ['Meta+F', 'Control+F'],
@@ -136,6 +137,7 @@ const Navbar = (props: NavbarProps) => {
 
   const openItem = (item) => {
     if (item.itemType === 'folder' || item.itemType === 'FOLDER') {
+      isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.item.id }));
       searchInput.current?.blur();
