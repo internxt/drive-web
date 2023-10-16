@@ -6,6 +6,7 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { TeamsSettings } from '../../../teams/types';
 import { Binoculars, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
@@ -31,12 +32,6 @@ interface NavbarProps {
   dispatch: AppDispatch;
   hideSearch?: boolean;
   plan: PlanState;
-}
-
-interface SearchResult {
-  name: string;
-  type: string;
-  id: string;
 }
 
 type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
@@ -72,8 +67,8 @@ const Navbar = (props: NavbarProps) => {
   const [filters, setFilters] = useState<FilterType[]>([]);
 
   const [query, setQuery] = useState('');
-  const [searchResult, setSearchResult] = useState<any[]>([]);
-  const [filteredResults, setFilteredResults] = useState<any[]>([]);
+  const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
+  const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
@@ -123,7 +118,6 @@ const Navbar = (props: NavbarProps) => {
       const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
       const items = await itemsPromise;
       setSearchResult(items.data);
-      console.log(items.data);
     } else {
       setSearchResult([]);
     }
