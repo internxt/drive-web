@@ -205,11 +205,11 @@
   "sideNav": {
     "drive": "Drive",
     "photos": "Photos",
-    "backups": "Copias de seguridad",
+    "backups": "Backups",
     "shared": "Compartido",
     "recents": "Recientes",
     "trash": "Papelera",
-    "desktop": "Aplicación de escritorio"
+    "desktop": "Escritorio"
   },
   "views": {
     "recents": {
@@ -870,7 +870,7 @@
     },
     "dropdown": {
       "download": "Descargar",
-      "delete": "Eliminar"
+      "delete": "Eliminar permanentemente"
     }
   },
   "shared": {
@@ -1119,6 +1119,7 @@
       "uploadFolder": "Subir carpeta"
     },
     "change": "Cambiar",
+    "delete": "Eliminar",
     "download": "Descargar",
     "downloading": "Descargando",
     "downloaded": "Descargado",
@@ -1139,6 +1140,7 @@
     "dismiss": "Dismiss",
     "save": "Guardar",
     "saving": "Guardando",
+    "share": "Compartir",
     "back": "Atrás",
     "edit": "Editar",
     "submit": "Enviar",

@@ -1,85 +1,25 @@
 import operatingSystemService from './operating-system.service';
 
-interface AssetInfo {
-  browser_download_url: string;
-}
+const INTERNXT_BASE_URL = 'https://internxt.com';
 
-interface LatestReleaseInfo {
-  id: number;
-  name: string;
-  published_at: Date;
-  assets: AssetInfo[];
-}
-
-export async function getLatestReleaseInfo(user: string, repo: string) {
-  const fetchUrl = `https://api.github.com/repos/${user}/${repo}/releases/latest`;
-  const res = await fetch(fetchUrl);
-
-  if (res.status !== 200) {
-    throw Error('Release not found');
-  }
-
-  const info: LatestReleaseInfo = await res.json();
-
-  let windows;
-  let linux;
-  let macos;
-
-  info.assets.forEach((asset) => {
-    const match: any = asset.browser_download_url.match(/\.(\w+)$/);
-
-    switch (match[1]) {
-      case 'exe':
-        windows = asset.browser_download_url;
-        break;
-      case 'dmg':
-        macos = asset.browser_download_url;
-        break;
-      case 'deb':
-        linux = asset.browser_download_url;
-        break;
-      default:
-        break;
-    }
+async function getDownloadAppUrl() {
+  const app = await fetch(`${INTERNXT_BASE_URL}/api/download`, {
+    method: 'GET',
   });
 
-  const url = {
-    version: info.name,
-    links: {
-      windows,
-      linux,
-      macos,
-    },
-    cached: false,
-  };
-
-  return url;
-}
-
-async function getDownloadAppUrl(): Promise<string> {
-  const release = await getLatestReleaseInfo('internxt', 'drive-desktop').catch(() => ({
-    cached: false,
-    links: { linux: null, windows: null, macos: null },
-  }));
-
-  let url: string;
+  const platforms = await app.json();
 
   switch (operatingSystemService.getOperatingSystem()) {
-    case 'WindowsOS':
-      url = release.links.windows || '';
-      break;
-    case 'MacOS':
-      url = release.links.macos || '';
-      break;
     case 'LinuxOS':
-      url = release.links.linux || '';
-      break;
+    case 'UNIXOS':
+      return platforms.platforms.Linux || `${INTERNXT_BASE_URL}/downloads/drive.deb`;
+    case 'WindowsOS':
+      return platforms.platforms.Windows || `${INTERNXT_BASE_URL}/downloads/drive.exe`;
+    case 'MacOS':
+      return platforms.platforms.MacOS || `${INTERNXT_BASE_URL}/downloads/drive.dmg`;
     default:
-      url = '';
       break;
   }
-
-  return url;
 }
 
 const desktopService = {
