@@ -24,6 +24,7 @@ export interface DriveViewProps {
 class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
     const { dispatch } = this.props;
+    dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     this.fetchItems();
   }
