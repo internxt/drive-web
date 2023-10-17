@@ -1,4 +1,4 @@
-import { IconProps } from 'phosphor-react';
+import { IconProps } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 import { matchPath, NavLink } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';

@@ -4,6 +4,8 @@ import { useState } from 'react';
 import Input from '../Input';
 import PasswordStrengthIndicator from '../PasswordStrengthIndicator';
 
+export const MAX_PASSWORD_LENGTH = 50;
+
 export default function ValidPassword({
   className = '',
   label,
@@ -27,7 +29,13 @@ export default function ValidPassword({
   const [showIndicator, setShowIndicator] = useState(false);
 
   function onChangeHandler(input: string) {
+    if (input.length > MAX_PASSWORD_LENGTH) {
+      setState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
+      onChange({ valid: false, password: input });
+      return;
+    }
     const result = testPasswordStrength(input, username);
+
     if (!result.valid) {
       setState({
         tag: 'error',
@@ -41,7 +49,6 @@ export default function ValidPassword({
     } else {
       setState({ tag: 'success', label: translate('modals.changePasswordModal.strongPassword') });
     }
-
     onChange({ valid: result.valid, password: input });
   }
 

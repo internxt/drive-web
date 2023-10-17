@@ -17,12 +17,11 @@ import { storeTeamsInfo } from '../../../teams/services/teams.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { deleteDatabaseProfileAvatar, updateDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { extractAvatarURLID } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import dayjs from 'dayjs';
 
-interface UserState {
+export interface UserState {
   isInitializing: boolean;
   isAuthenticated: boolean;
   isInitialized: boolean;
@@ -129,12 +128,7 @@ export const updateUserAvatarThunk = createAsyncThunk<void, { avatar: Blob }, { 
 
     const { avatar } = await userService.updateUserAvatar(payload);
 
-    const uuid = extractAvatarURLID(avatar);
-    await updateDatabaseProfileAvatar({
-      sourceURL: avatar,
-      avatarBlob: payload.avatar,
-      uuid: uuid ?? '',
-    });
+    await saveAvatarToDatabase(avatar, payload.avatar);
     dispatch(userActions.setUser({ ...currentUser, avatar }));
   },
 );
@@ -169,7 +163,6 @@ export const userSlice = createSlice({
       localStorageService.set(LocalStorageItem.User, JSON.stringify(action.payload));
     },
     setToken: (state: UserState, action: PayloadAction<string>) => {
-      RealtimeService.getInstance().init();
       localStorageService.set(LocalStorageItem.UserToken, action.payload);
     },
     resetState: (state: UserState) => {

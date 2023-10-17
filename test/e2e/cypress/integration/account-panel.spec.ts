@@ -1,3 +1,4 @@
+// ONLY WORKS WHEN POINTING TO PRODUCTION
 describe('Account panel', () => {
   const firstName = 'Name';
   const lastName = 'Lastname';

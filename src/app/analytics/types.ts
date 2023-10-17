@@ -16,6 +16,7 @@ export enum AnalyticsTrackNames {
   FileUploadBucketIdUndefined = 'file-upload-bucketid-undefined',
   ShareLinkBucketIdUndefined = 'share-link-bucketid-undefined',
   PaymentConversionEvent = 'Payment Conversion',
+  CancelPaymentConversionEvent = 'Cancel Payment Conversion',
 }
 
 export interface PriceMetadata {

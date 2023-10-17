@@ -2,7 +2,7 @@ import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
 import { FriendInvite } from '@internxt/sdk/dist/drive/users/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppSelector } from 'app/store/hooks';
-import { CheckCircle, Info, Question } from 'phosphor-react';
+import { CheckCircle, Info, Question } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import userService from '../../../../../auth/services/user.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
@@ -147,7 +147,9 @@ function InviteListModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => 
               <Info size={20} />
               <p className="ml-2">{translate('modals.friendsInvitedModal.email')}</p>
             </div>
-            <p>Total: {invites.length}</p>
+            <p>
+              {translate('modals.friendsInvitedModal.total')}: {invites.length}
+            </p>
           </div>
           {invites.map((invite) => (
             <div className="group flex h-9 items-center justify-between rounded-md px-3 hover:bg-gray-5">

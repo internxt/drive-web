@@ -14,6 +14,7 @@ import { uiActions } from '../../ui';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
 import storageThunks from '.';
+import errorService from '../../../../core/services/error.service';
 
 const checkRepeatedNameFiles = (destinationFolderFiles: DriveItemData[], files: (DriveItemData | File)[]) => {
   const repeatedFilesInDrive: DriveItemData[] = [];
@@ -160,7 +161,8 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
             },
           });
         })
-        .catch(() => {
+        .catch((e) => {
+          errorService.reportError(e);
           tasksService.updateTask({
             taskId,
             merge: {

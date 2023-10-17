@@ -19,7 +19,6 @@ const TrashView = (props: TrashViewProps) => {
 
   useEffect(() => {
     const { dispatch } = props;
-
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
   }, []);

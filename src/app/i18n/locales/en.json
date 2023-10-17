@@ -8,10 +8,51 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "lifetimeBanner": {
+    "title": "Lifetime deal!",
+    "description": "Buy once and get privacy forever.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Get the deal"
+  },
+  "notFound": {
+    "header": "Error 404",
+    "title": "Nothing to see here...",
+    "description": "The page you are looking for could not be found.",
+    "card1": {
+      "title": "Return Home",
+      "description": "Go back to Internxt Drive."
+    },
+    "card2": {
+      "title": "Visit Help Center",
+      "description": "Troubleshoot common issues and browse our FAQ."
+    },
+    "card3": {
+      "title": "Contact Support",
+      "description": "Reach out to our Support Team at hello@internxt.com."
+    }
+  },
   "lang": {
     "title": "Language",
-    "es": "Spanish (ES)",
-    "en": "English (EN)"
+    "en": "English (English)",
+    "es": "Español (Spanish)",
+    "fr": "Français (French)",
+    "it": "Italiano (Italian)",
+    "cn": "简体中文 (Chinese)",
+    "ru": "Русский (Russian)",
+    "de": "Deutsch (German)"
   },
   "auth": {
     "email": "Email",
@@ -29,14 +70,68 @@
     },
     "signup": {
       "title": "Create account",
-      "haveAccount": "already have an account?",
-      "login": "Log in"
+      "haveAccount": "Already have an account?",
+      "login": "Log in",
+      "encrypting": "Encrypting"
     },
     "forgotPassword": {
-      "title": "Forgot password",
-      "description": "As specified in the security section of the app, your password is used for encryption and decryption and only you have access to it. Therefore, we can't restore your account without the password. You can register again by entering your email below so we can delete your account and all your files.",
-      "sendInstructions": "Send instructions",
-      "sending": "Sending..."
+      "title": "Account recovery",
+      "continue": "Continue",
+      "sending": "Sending...",
+      "notFound": "Email address not found, please try again",
+      "password": "Remember your password?",
+      "login": "Login",
+      "successTitle": "Check your inbox",
+      "successDescription": "We’ve sent you a one-time link to recover you account password",
+      "invalidEmail": "Invalid email address"
+    },
+    "recoverAccount": {
+      "title": "Account recovery",
+      "subtitle": "Do you have a backup key?",
+      "info": "What does the backup key look like?",
+      "info1": "The backup key file name is 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "The backup key is 24 words long",
+      "haveKeyButton": "Yes, I have a backup key",
+      "notKeyButton": "No, I don't have one",
+      "backupKey": {
+        "title": "Verify backup key",
+        "alert": "If you upload a wrong backup key your data will get corrupted, please make sure your backup key is correct.",
+        "button": "Upload backup key"
+      },
+      "changePassword": {
+        "title": "Change password",
+        "newPassword": "New Password",
+        "repeatNewPassword": "Repeat new password",
+        "notMatch": "Passwords don't match",
+        "submitButton": "Change password",
+        "notPasswordStrength": "Password must have a number",
+        "shortPasswordStrength": "Password must be at least 8 characters",
+        "warningPasswordStrength": "Password is weak",
+        "successPasswordStrength": "Password is strong",
+        "serverError": "Something went wrong while changing the password",
+        "tokenError": "An error occurred while validating the backup key",
+        "backupKeyError": "Uploaded backup key is invalid",
+        "emailSent": {
+          "title": "Password changed",
+          "description": "All your data has been re-encrypted and all your active sessions were logged out.",
+          "redirect": "Redirecting to Internxt Drive",
+          "button": "Go to Internxt Drive"
+        }
+      }
+    },
+    "restartAccount": {
+      "title": "Restart account",
+      "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
+      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
+      "button": "Send account restart verification",
+      "successDescription": "Your account and password have been reset",
+      "error": "Something went wrong while restarting the account"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Log in as",
+      "openDesktopApp": "Open the desktop app",
+      "anotherAccount": "Use another account?",
+      "login": "Log in"
     }
   },
   "general": {
@@ -44,8 +139,26 @@
     "of": "of",
     "terms": "Terms and conditions",
     "help": "Need help?",
-    "searchBar": "Search in this folder",
-
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Search this folder",
+      "placeholder": "Search in Drive",
+      "filters": {
+        "folder": "Folder",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Clear"
+      },
+      "emptyState": {
+        "title": "Find files and folders",
+        "subtitle": "Search by name and type"
+      },
+      "notFoundState": {
+        "title": "No results found",
+        "subtitle": "No files or folders match the search"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -110,7 +223,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Backups",
-    "sharedLinks": "Shared Links",
+    "shared": "Shared",
     "recents": "Recents",
     "trash": "Trash",
     "desktop": "Desktop"
@@ -119,10 +232,10 @@
     "recents": {
       "head": "Recents",
       "empty": {
-        "title": "No recents files to show",
-        "description": "Recent uploads or files you recently interacted with will show up here automatically",
+        "title": "No recent files available",
+        "description": "New uploads and recently opened files will appear here automatically",
         "folderEmpty": "This folder is empty",
-        "folderEmptySubtitle": "Drag and drop files or click to select files and upload",
+        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
         "uploadFiles": "Upload files",
         "noResults": "There are no results for this search",
         "dragNDrop": "Drag and drop here or click on upload button"
@@ -130,8 +243,8 @@
     },
     "photos": {
       "empty": {
-        "title": "Your gallery is empty",
-        "description": "Start using Internxt mobile app to sync all your photos"
+        "title": "Your photo gallery is empty",
+        "description": "Use the Internxt mobile app to sync all your photos from your device"
       }
     },
     "account": {
@@ -192,13 +305,28 @@
               "description": "Check your inbox"
             },
             "editProfile": {
+              "title": "Edit account details",
               "name": "Name",
-              "lastname": "Lastname"
+              "lastname": "Lastname",
+              "updatedProfile": "Profile updated successfully",
+              "errorUpdatingProfile": "We could not update your profile"
+            },
+            "changeEmail": {
+              "title": "Change email",
+              "email": "Email",
+              "newEmail": "New email",
+              "password": "Password",
+              "errorSameEmail": "New email should be different from the current one",
+              "errorPassword": "Wrong password, try again",
+              "sendVerification": "Send verification",
+              "sendingVerification": "Sending verification",
+              "sucessSendingVerification": "Email verification sent to {{email}}",
+              "errorSendingVerification": "Error sending verification"
             }
           },
           "deleteAccount": {
             "head": "Delete account",
-            "description": "If you delete your account, your data will be gone forever. This action cannot be undone.",
+            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
             "isSubscribed": "Please, cancel your subscription first",
             "confirmationEmail": "Confirmation email has been sent"
           }
@@ -207,7 +335,33 @@
           "label": "Billing",
           "currentPlan": "Current plan",
           "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
-          "cancelSubscription": "Cancel subscription",
+          "cancelSubscriptionModal": {
+            "title": "Cancel subscription",
+            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
+            "keepSubscription": "Keep subscription",
+            "continue": "Continue",
+            "cancelSubscription": "Cancel subscription",
+            "infoBox": {
+              "titleCurrent": "Current",
+              "titleNew": "New",
+              "year": "year",
+              "month": "month",
+              "free": "Free",
+              "reachedFreeLimit": "You are over {{freePlanName}}",
+              "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
+            },
+            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "feedback": {
+              "placeholder": "Give us some feedback"
+            },
+            "coupon": {
+              "title": "3 MONTHS",
+              "subtitle": "FREE",
+              "text1": "By keeping your",
+              "text2": "subscription you will get the next 3 months for free. This is a one-time deal.",
+              "continue": "Get 3 months FREE"
+            }
+          },
           "billed": "Billed {{interval}} {{renewDate}}",
           "paymentMethod": {
             "head": "Payment method",
@@ -215,11 +369,16 @@
               "title": "You are on free plan",
               "subtitle": "Credit card information will appear here automatically when you have a paid subscription plan."
             },
-            "title": "Add new payment method"
+            "title": "Add new payment method",
+            "contactUs": {
+              "description": "Contact us to update your payment method",
+              "contact": "Contact"
+            }
           },
           "invoices": {
             "head": "Invoices",
             "billingDate": "Billing date",
+            "plan": "Plan",
             "empty": {
               "title": "You are in free plan",
               "subtitle": "Issued invoices will appear here automatically when you have a paid subscription plan."
@@ -248,11 +407,11 @@
             "business": "Change to Plans for Business"
           },
           "viewAllFeatures": "View all features",
-
           "card": {
             "annually": "€{{amount}} billed annually",
             "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}"
+            "lifetime": "€{{amount}}",
+            "oneTimePayment": "One-time payment"
           },
           "features": {
             "title": "Features included in all plans",
@@ -275,6 +434,29 @@
                 "point2": "Sync with unlimited bandwidth.",
                 "point3": "Backup any folder on your computer."
               }
+            }
+          },
+          "dialog": {
+            "title": "Change plan",
+            "subtitle1": "You are about to change your Internxt plan from ",
+            "subtitle2": " to ",
+            "subtitle3": ". Confirm your choice to proceed, please.",
+            "plan": {
+              "current": "Current",
+              "new": "New",
+              "interval": "month"
+            },
+            "alert": {
+              "title": "You are over ",
+              "text1": "Because you are using ",
+              "text2": ", your Internxt Drive will stop syncing your files and you won’t be able to add new files"
+            },
+            "message": {
+              "text": "You'll be charged now and for each payment period until further change."
+            },
+            "button": {
+              "back": "Keep current plan",
+              "continue": "Change plan"
             }
           }
         },
@@ -311,14 +493,15 @@
           },
           "changePassword": {
             "title": "Change password",
-            "description": "Remember that if you forget the password, you will lose access to all your files. We recommend using a password manager.",
+            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
             "button": "Change password"
           },
           "2FA": {
-            "title": "Two Factor Authentication (2FA)",
+            "title": "Two-factor authentication (2FA)",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security, requiring an extra verification when you log in. In addition to your password, you'll also need a generated code.",
-            "button": "Enable",
+            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
+            "button": "Enable 2FA",
+            "disable": "Disable 2FA",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
@@ -357,7 +540,7 @@
           },
           "backupKey": {
             "title": "Backup key",
-            "description": "In case you forget your password, you can use your backup key to recover your account. Never share this code with anyone.",
+            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
             "button": "Export backup key",
             "success": "Backup key downloaded successfully",
             "error": "We could not generate your backup key"
@@ -365,23 +548,59 @@
           "faq": {
             "title": "Did you miss anything?",
             "faq1": {
-              "title": "Why do I lose all my files if I lose my password?",
-              "description": "Your password is the only way to access your account, the Internxt team cannot access your account or change your password. This is to prevent anyone from accessing your account or stealing your information. <br/><br/>Among other things, your password is used to encrypt your encryption key so not even Internxt has access to it. Every time you log in, you need your password to decrypt this encryption key, that way we ensure you are the only one holding the encryption keys."
+              "title": "Why do I lose all my files if I forget my password?",
+              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
             },
             "faq2": {
-              "title": "How can I keep safe my credentials?",
-              "description": "We recommend you use a password manager to store your credentials safely, not just for accessing the Internxt platform, but to keep yourself safe and productive while browsing."
+              "title": "How can I keep my credentials safe?",
+              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
             },
             "faq3": {
-              "title": "Can I recover my account with the backup key?",
-              "description": "If you keep your encryption key somewhere safe, recover your data following the steps outlined in the email you will receive when clicking “forgot password”."
+              "title": "Can I recover my account with a backup key?",
+              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
             },
             "faq4": {
               "title": "Do I lose all my files if I change my password?",
-              "description": "No, since you are already logged in, you can change your password without losing anything. Make sure you have chosen a strong password which is not found in any data breach."
+              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
             }
           }
         }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "Email verified successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
+        "cta": "Go to Account"
+      }
+    },
+    "emailChange": {
+      "password": "Password",
+      "auth": {
+        "title": "Verify email change",
+        "subtitle": "Your account email will be changed to {{email}}",
+        "wrongPassword": "Wrong password, please try again",
+        "cta": "Continue"
+      },
+      "success": {
+        "title": "Email changed successfully",
+        "subtitle": "You can close this tab now",
+        "cta": "Open Internxt Drive"
+      },
+      "error": {
+        "title": "Something went wrong",
+        "subtitle": "Check if the link is correct or request email change again in Settings > Account",
+        "cta": "Go to Account"
+      },
+      "expired": {
+        "title": "Verification link expired",
+        "subtitle": "You can request email change again in Settings > Account",
+        "cta": "Go to Account"
       }
     },
     "redirectToApp": {
@@ -421,6 +640,106 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "shareModal": {
+      "title": "Share \"{{name}}\"",
+      "list": {
+        "peopleWithAccess": "People with access",
+        "invite": "Invite",
+        "userItem": {
+          "roles": {
+            "owner": "Owner",
+            "editor": "Editor",
+            "reader": "Viewer"
+          },
+          "remove": "Remove"
+        }
+      },
+      "errors": {
+        "updatingRole": "The role could not be updated, please try again later.",
+        "copy-to-clipboard": "Error sharing item, try again later."
+      },
+      "general": {
+        "generalAccess": "General access",
+        "accessOptions": {
+          "public": {
+            "title": "Public",
+            "subtitle": "Anyone with the link can access"
+          },
+          "restricted": {
+            "title": "Restricted",
+            "subtitle": "Only people added can access"
+          },
+          "stopSharing": "Stop sharing"
+        },
+        "copyLink": "Copy link"
+      },
+      "requests": {
+        "title": "Access requests",
+        "button": "Requests",
+        "empty": "No requests left",
+        "actions": {
+          "accept": "Accept",
+          "deny": "Deny",
+          "roles": {
+            "editor": "Editor",
+            "reader": "Viewer"
+          }
+        }
+      },
+      "stopSharing": {
+        "title": "Stop sharing?",
+        "subtitle": "No one will be able to access \"{{name}}\"",
+        "cancel": "Cancel",
+        "confirm": "Stop sharing",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "error": "Couldn't stop sharing, please try again"
+        }
+      },
+      "removeUser": {
+        "notification": {
+          "success": "User \"{{name}}\" removed",
+          "error": "Couldn't remove user \"{{name}}\", please try again"
+        }
+      },
+      "invite": {
+        "title": "Invite people",
+        "textarea": "Enter your message text (optional)",
+        "notifyUsers": "Notify users",
+        "instructions": "Press enter or space to separate emails",
+        "email": "Type email",
+        "invite": "Invite",
+        "editor": "Editor",
+        "reader": "Viewer",
+        "listUsers": "Users to invite",
+        "successSentInvitation": "Successful sharing with {{email}}",
+        "acceptedSuccessfully": "Shared folder invitation successfully accepted",
+        "declinedSuccessfully": "Shared folder invitation successfully declined",
+        "error": {
+          "errorInviting": "Error sending invitation to {{email}}",
+          "acceptedError": "Error accepting invitation to shared folder",
+          "declinedError": "Error declining invitation to shared folder"
+        }
+      },
+      "requestAccess": {
+        "title": "You don't have access",
+        "description": "Request access to the owner or switch to an account with access.",
+        "textarea": "Message (optional)",
+        "requestButton": "Request access",
+        "logged": "Logged in as",
+        "change": "Change",
+        "requestSent": "Request Sent",
+        "confirmation": "You will get an email if the file/folder is shared with you"
+      }
+    },
+    "sharedInvitationsModal": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline",
+      "sharedWith": "Shared with you ",
+      "todayAt": "today at "
+    },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
       "singleToolBar": "item selected",
@@ -450,6 +769,7 @@
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
+      "total": "Total",
       "pending": "Pending",
       "accepted": "Accepted",
       "empty": "You have not invited anyone yet",
@@ -469,6 +789,7 @@
       "confirmPassword": "Confirm new password",
       "strongPassword": "Password is strong",
       "errors": {
+        "longPassword": "The password can have a maximum of 50 characters",
         "shortPassword": "Password has to be at least 8 characters long",
         "notComplex": "Password is not complex enough",
         "weakPassword": "Password is weak",
@@ -534,15 +855,19 @@
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads."
+    "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
+    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
+    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "connectionLostError": "Internet connection lost",
+    "errorLoadingTrashItems": "Error loading trash items"
   },
   "backups": {
     "backups-from": "Backups from {{deviceName}}",
     "your-devices": "Your devices",
     "back-to-devices": "Go back to devices",
     "empty": {
-      "title": "You don't have backups yet",
-      "subtitle": "Set up your backups on the desktop app",
+      "title": "No backups available",
+      "subtitle": "Set up and manage your backups on the Internxt desktop app",
       "downloadApp": "Download desktop app"
     },
     "devices-list": {
@@ -562,21 +887,30 @@
     },
     "dropdown": {
       "download": "Download",
-      "delete": "Delete"
+      "delete": "Delete permanently"
+    }
+  },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "This folder is not shared with you",
+      "folderNotExists": "This folder not exists",
+      "generic": "The folder could not be accessed"
     }
   },
   "shared-links": {
-    "shared-links": "Shared links",
+    "shared-links": "Shared",
     "view": "views",
     "list": {
+      "name": "Name",
       "link-content": "Link content",
       "shared": "Shared",
       "created": "Created",
-      "size": "Size"
+      "size": "Size",
+      "owner": "Owner"
     },
     "empty-state": {
-      "title": "Nothing shared yet",
-      "subtitle": "Share a folder or a file to get started"
+      "title": "Nothing shared with you yet",
+      "subtitle": "Folders that other people share with you will appear here"
     },
     "item-menu": {
       "copy-link": "Copy link",
@@ -598,10 +932,10 @@
       "copy-to-clipboard": "Link copied to clipboard",
       "link-updated": "Link settings updated",
       "link-deleted": "Link deleted",
-      "links-deleted": "Link(s) deleted"
+      "links-deleted": "Link(s) deleted",
+      "error-deleting-links": "An error occurred deleting links"
     }
   },
-
   "trash": {
     "trash": "Trash",
     "clearTrash": "Trash has been cleared",
@@ -662,7 +996,7 @@
         "decrypting": "Decrypting file",
         "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -692,8 +1026,9 @@
         "pending": "Pending to download",
         "decrypting": "Decrypting files",
         "in-process": "{{progress}}% Downloading folder",
+        "in-process-without-progress": "Downloading folder",
         "success": "Folder downloaded",
-        "error": "Error during download",
+        "error": "Download failed, click ↻ to retry",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -779,13 +1114,17 @@
     "copyLink": "Shared link copied to clipboard",
     "linkUpdated": "Link updated",
     "itemsMovedToTrash": "{{item}} moved to trash",
-    "restoreItems": "{{itemsToRecover}} moved to {{destination}}",
-    "itemDeleted": "{{itemsToDelete}} deleted",
+    "restoreItems": "{{itemsToRecover}} restored successfully",
+    "moveItems": "{{itemsToMove}} moved successfully",
+    "itemDeleted": "{{item}} deleted",
     "itemsDeleted": "Files deleted",
     "emailNotEmpty": "Email must not be empty",
     "verificationEmail": "Verification email has been sent",
     "successCancelSubscription": "Your subscription has been cancelled",
-    "errorCancelSubscription": "Something went wrong while cancelling your subscription"
+    "errorCancelSubscription": "Something went wrong while cancelling your subscription",
+    "successApplyCoupon": "3 months free of charge applied",
+    "errorApplyCoupon": "An error occurred while applying the discount",
+    "alreadyAppliedCoupon": "The coupon has been already applied"
   },
   "actions": {
     "undo": "Undo",
@@ -796,6 +1135,7 @@
       "uploadFolder": "Upload folder"
     },
     "change": "Change",
+    "delete": "Delete",
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
@@ -815,6 +1155,8 @@
     "moreInfo": "More info",
     "dismiss": "Dismiss",
     "save": "Save",
+    "saving": "Saving",
+    "share": "Share",
     "back": "Back",
     "edit": "Edit",
     "submit": "Submit",
@@ -827,7 +1169,9 @@
     "navigating": "Navigating...",
     "restoreHere": "Restore here",
     "rename": "Rename",
-    "restore": "Restore"
+    "restore": "Restore",
+    "copyLink": "Copy link",
+    "report": "Report abuse"
   },
   "drive": {
     "usage": "Usage",
@@ -850,8 +1194,12 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "shareLink": "Share",
+      "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
+      "share": "Share",
+      "manageAccess": "Manage access",
       "download": "Download",
       "moveToTrash": "Move to trash",
       "copyLink": "Copy link",
@@ -878,7 +1226,9 @@
       "title": "Maximum file upload",
       "advice": "The maximum is 1000 files per upload.",
       "close": "Close"
-    }
+    },
+    "movingToTrash": "Moving items to trash",
+    "deletingItems": "Deleting items from trash"
   },
   "appSumo": {
     "tiers": {
@@ -944,8 +1294,8 @@
   "tutorial": {
     "signUpTutorial": {
       "stepOne": {
-        "title": "Get the most out of Interxnt Drive",
-        "description": "Download desktop app to sync and backup all your folders and files"
+        "title": "Get the most out of Internxt Drive",
+        "description": "Download desktop app to sync and backup all your folders and files."
       },
       "stepTwo": {
         "title": "Let's get started...",

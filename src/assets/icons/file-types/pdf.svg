@@ -1,4 +1,5 @@
-<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+<svg data-testid="pdf-svg" width="128" height="128" viewBox="0 0 128 128" fill="none"
+    xmlns="http://www.w3.org/2000/svg">
 <g filter="url(#filter0_i_1403_2201)">
 <path d="M16 6C16 2.68629 18.6863 0 22 0H106C109.314 0 112 2.68629 112 6V122C112 125.314 109.314 128 106 128H22C18.6863 128 16 125.314 16 122V6Z" fill="#FCFCFD"/>
 </g>

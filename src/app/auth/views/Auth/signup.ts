@@ -10,7 +10,7 @@ const postMessage = (data: Record<string, unknown>) => {
   window.top?.postMessage(data, CampaignLinks.PcComponentes);
 };
 
-const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
+const signup = async (data, dispatch, doRegister, setLoading, appRedirect?, setError?) => {
   if ((data.email === '' && data.password === '') || data.email === null || data.password === null) {
     postMessage({ action: 'autoScroll' });
     setLoading(false);
@@ -39,11 +39,13 @@ const signup = async (data, dispatch, doRegister, setLoading, setError?) => {
     localStorage.removeItem('email');
     localStorage.removeItem('password');
     setLoading(false);
-    window.open(
-      `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=g3S2TZFZ&freeTrials=30&mode=subscription`,
-      '_parent',
-      'noopener',
-    );
+    appRedirect
+      ? window.open(`${process.env.REACT_APP_HOSTNAME}/app`, '_parent', 'noopener')
+      : window.open(
+          `${process.env.REACT_APP_HOSTNAME}/checkout-plan?planId=plan_F7ptyrVRmyL8Gn&couponCode=g3S2TZFZ&freeTrials=30&mode=subscription`,
+          '_parent',
+          'noopener',
+        );
   } catch (err: unknown) {
     setError(errorService.castError(err).message);
     setLoading(false);

@@ -32,7 +32,9 @@ export const fetchDevicesThunk = createAsyncThunk<Array<Device | DriveFolderData
       backupsService.getAllDevices(),
       backupsService.getAllDevicesAsFolders(),
     ]);
-    return [...devices, ...folders];
+    const backupFoldersNotDeleted = folders.filter((folder) => !folder.deleted);
+
+    return [...devices, ...backupFoldersNotDeleted];
   },
 );
 
@@ -109,7 +111,7 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
       tasksService.updateTask({
         taskId,
         merge: {
-          stop: async () => abortController.abort()
+          stop: async () => abortController.abort(),
         },
       });
 
@@ -117,14 +119,14 @@ export const downloadBackupThunk = createAsyncThunk<void, DeviceBackup, { state:
         progressCallback: onProgress,
         finishedCallback: onFinished,
         errorCallback: onError,
-        abortController
+        abortController,
       });
     } catch (err) {
       if (abortController.signal.aborted) {
         return tasksService.updateTask({
           taskId,
           merge: {
-            status: TaskStatus.Cancelled
+            status: TaskStatus.Cancelled,
           },
         });
       }

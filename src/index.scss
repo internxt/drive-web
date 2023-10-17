@@ -2,7 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+@import url('./assets/fonts/InstrumentSans/font.css');
+
 #root {
+  font-family: 'Instrument Sans', sans-serif;
+
   --footer-height: 1rem;
 
   height: 100%;
@@ -12,7 +16,6 @@
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
-  overflow: scroll;
 }
 
 body {
@@ -50,160 +53,11 @@ code {
   aspect-ratio: 1 / 1;
 }
 
-/* TEXT */
-@font-face {
-  font-family: 'NeueEinstellung';
-  font-weight: 400;
-  font-style: normal;
-  font-display: auto;
-  src:
-    // local("NeueEinstellung-Regular"),
-    url(./assets/fonts/NeueEinstellung-Regular.ttf) format('truetype'),
-    url(./assets/fonts/NeueEinstellung-Regular.woff) format('woff'),
-    url(./assets/fonts/NeueEinstellung-Regular.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: 'NeueEinstellung';
-  font-weight: 500;
-  font-style: normal;
-  font-display: auto;
-  src:
-    // local("NeueEinstellung-Medium"),
-    url(./assets/fonts/NeueEinstellung-Medium.ttf) format('truetype'),
-    url(./assets/fonts/NeueEinstellung-Medium.woff) format('woff'),
-    url(./assets/fonts/NeueEinstellung-Medium.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: 'NeueEinstellung';
-  font-weight: 600;
-  font-style: normal;
-  font-display: auto;
-  src:
-    // local("NeueEinstellung-Semibold"),
-    url(./assets/fonts/NeueEinstellung-Semibold.ttf) format('truetype'),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff) format('woff'),
-    url(./assets/fonts/NeueEinstellung-Semibold.woff2) format('woff2');
-}
-
-@font-face {
-  font-family: 'NeueEinstellung';
-  font-weight: 700;
-  font-style: normal;
-  font-display: auto;
-  src:
-    // local("NeueEinstellung-Bold"),
-    url(./assets/fonts/NeueEinstellung-Bold.ttf) format('truetype'),
-    url(./assets/fonts/NeueEinstellung-Bold.woff) format('woff'),
-    url(./assets/fonts/NeueEinstellung-Bold.woff2) format('woff2');
-}
-
-* {
-  font-family: 'NeueEinstellung', sans-serif;
-}
-
-// .text-6xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 60px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.5;
-//   letter-spacing: normal;
-// }
-
-// .text-5xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 48px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.5;
-//   letter-spacing: normal;
-// }
-
-// .text-4xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 36px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.11;
-//   letter-spacing: normal;
-// }
-
-// .text-3xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 30px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.2;
-//   letter-spacing: normal;
-// }
-
-// .text-2xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 24px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.33;
-//   letter-spacing: normal;
-// }
-
-// .text-xl {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 20px; // font-family: Gotham;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.4;
-// }
-
-// .text-lg {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 18px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.56;
-//   letter-spacing: normal;
-// }
-
-// .text-base {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 16px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.5;
-//   letter-spacing: normal;
-// }
-
-// .text-sm {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 14px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.43;
-// }
-
-// .text-xs {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 12px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.33;
-// }
-
 .text-supporting-2 {
-  font-family: 'NeueEinstellung', sans-serif;
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
 }
-
-// .text-supporting-1 {
-//   font-family: 'NeueEinstellung', sans-serif;
-//   font-size: 8px;
-//   font-stretch: normal;
-//   font-style: normal;
-//   line-height: 1.25;
-// }
 
 .ratio-auto {
   aspect-ratio: auto;
@@ -272,10 +126,6 @@ code {
   input[type='password']:not(.inxt-input) {
     @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
 
-    &:disabled {
-      @apply bg-neutral-30;
-    }
-
     &:focus {
       outline: none !important;
     }
@@ -302,6 +152,10 @@ code {
 
     &.right-icon {
       @apply pr-8;
+    }
+
+    &.left-icon {
+      @apply pl-9;
     }
 
     &.no-ring {
@@ -447,4 +301,14 @@ abbr[title] {
 
 .mt-22 {
   margin-top: 5.5rem;
+}
+
+.separator {
+  height: 1px;
+
+  @apply w-full bg-gray-10;
+}
+
+.text-ellipsis {
+  text-overflow: ellipsis;
 }

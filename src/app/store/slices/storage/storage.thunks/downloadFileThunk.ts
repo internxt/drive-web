@@ -15,11 +15,17 @@ import { saveAs } from 'file-saver';
 import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
+import { ConnectionLostError } from '../../../../network/requests';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 
 interface DownloadFileThunkOptions {
   taskId: string;
   showNotifications?: boolean;
   showErrors?: boolean;
+  sharingOptions?: {
+    credentials: any;
+    mnemonic: string;
+  };
 }
 
 interface DownloadFileThunkPayload {
@@ -37,7 +43,7 @@ export const checkIfCachedSourceIsOlder = ({
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
-  file: DriveFileData;
+  file: DriveFileData | SharedFiles;
 }): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
@@ -88,11 +94,17 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
       if (cachedFile?.source && !isCachedFileOlder) {
-        updateProgressCallback(100);
+        updateProgressCallback(1);
         const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
         saveAs(cachedFile?.source, completeFileName);
       } else {
-        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+        await downloadService.downloadFile(
+          file,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+          options.sharingOptions,
+        );
       }
 
       tasksService.updateTask({
@@ -108,6 +120,17 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
           merge: {
             status: TaskStatus.Cancelled,
           },
+        });
+      }
+
+      errorService.reportError(err, {
+        extra: { fileName: file.name, bucket: file.bucket, fileSize: file.size, fileType: file.type },
+      });
+
+      if (err instanceof ConnectionLostError) {
+        return tasksService.updateTask({
+          taskId: options.taskId,
+          merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
         });
       }
 

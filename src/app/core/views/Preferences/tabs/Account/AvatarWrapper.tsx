@@ -1,8 +1,10 @@
 import { memo, useEffect, useState } from 'react';
-import { deleteDatabaseProfileAvatar, getDatabaseProfileAvatar } from '../../../../../drive/services/database.service';
+import {
+  deleteDatabaseProfileAvatar,
+  getDatabaseProfileAvatar,
+  updateDatabaseProfileAvatar,
+} from '../../../../../drive/services/database.service';
 import Avatar from '../../../../../shared/components/Avatar';
-import { useAppDispatch } from '../../../../../store/hooks';
-import { updateUserAvatarThunk } from '../../../../../store/slices/user';
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 
@@ -18,6 +20,15 @@ const showUpdateProfilePhotoErrorToast = () =>
     type: ToastType.Error,
   });
 
+export const saveAvatarToDatabase = async (url: string, avatar: Blob): Promise<void> => {
+  const uuid = extractAvatarURLID(url);
+  return await updateDatabaseProfileAvatar({
+    sourceURL: url,
+    avatarBlob: avatar,
+    uuid: uuid ?? '',
+  });
+};
+
 const AvatarWrapper = memo(
   ({
     avatarSrcURL,
@@ -29,8 +40,6 @@ const AvatarWrapper = memo(
     diameter: number;
   }): JSX.Element => {
     const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-
-    const dispatch = useAppDispatch();
 
     useEffect(() => {
       const handleAvatarData = async () => {
@@ -59,7 +68,7 @@ const AvatarWrapper = memo(
       const response = await fetch(url);
       const data = await response.blob();
       setAvatarBlob(data);
-      await dispatch(updateUserAvatarThunk({ avatar: data })).unwrap();
+      await saveAvatarToDatabase(url, data);
     };
 
     const handleDownload = async (url: string) => {

@@ -41,20 +41,19 @@ const MB_400_IN_BYTES = 419430400;
 export class LRUPhotosCacheManager {
   private static instance: LRUCache<PhotosData>;
 
-  public static getInstance(): LRUCache<PhotosData> {
+  public static async getInstance(): Promise<LRUCache<PhotosData>> {
     if (!LRUPhotosCacheManager.instance) {
       const photosCache = new PhotosCache();
 
-      databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosSource).then((lruCacheState) => {
-        if (lruCacheState) {
-          LRUPhotosCacheManager.instance = new LRUCache<PhotosData>(photosCache, MB_400_IN_BYTES, {
-            lruKeyList: lruCacheState.lruKeyList,
-            itemsListSize: lruCacheState.itemsListSize,
-          });
-        } else {
-          LRUPhotosCacheManager.instance = new LRUCache<PhotosData>(photosCache, MB_400_IN_BYTES);
-        }
-      });
+      const lruCacheState = await databaseService.get(DatabaseCollection.LRU_cache, LRUCacheTypes.PhotosSource);
+      if (lruCacheState) {
+        LRUPhotosCacheManager.instance = new LRUCache<PhotosData>(photosCache, MB_400_IN_BYTES, {
+          lruKeyList: lruCacheState.lruKeyList,
+          itemsListSize: lruCacheState.itemsListSize,
+        });
+      } else {
+        LRUPhotosCacheManager.instance = new LRUCache<PhotosData>(photosCache, MB_400_IN_BYTES);
+      }
     }
     return LRUPhotosCacheManager.instance;
   }

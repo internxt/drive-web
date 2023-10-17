@@ -1,6 +1,10 @@
 import io, { Socket } from 'socket.io-client';
 import localStorageService from './local-storage.service';
 
+export const SOCKET_EVENTS = {
+  FILE_CREATED: 'FILE_CREATED',
+};
+
 export default class RealtimeService {
   private socket?: Socket;
   private static instance: RealtimeService;
@@ -52,9 +56,10 @@ export default class RealtimeService {
     return this.socket.id;
   }
 
-  onEvent(cb: (data: any) => void): void {
+  onEvent(cb: (data: any) => void): boolean {
     if (this.socket?.disconnected) {
-      return console.log('[REALTIME] SOCKET IS DISCONNECTED');
+      console.log('[REALTIME] SOCKET IS DISCONNECTED');
+      return false;
     }
 
     this.socket?.on('event', (data) => {
@@ -64,6 +69,7 @@ export default class RealtimeService {
 
       cb(data);
     });
+    return true;
   }
 
   stop(): void {

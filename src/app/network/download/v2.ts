@@ -5,30 +5,30 @@ import { NetworkFacade } from '../NetworkFacade';
 type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 type FileStream = ReadableStream<Uint8Array>;
 type DownloadFileResponse = Promise<FileStream>;
-type DownloadFileOptions = { notifyProgress: DownloadProgressCallback, abortController?: AbortController };
+type DownloadFileOptions = { notifyProgress: DownloadProgressCallback; abortController?: AbortController };
 interface NetworkCredentials {
   user: string;
   pass: string;
 }
 
 interface DownloadFileParams {
-  bucketId: string
-  fileId: string
-  options?: DownloadFileOptions
+  bucketId: string;
+  fileId: string;
+  options?: DownloadFileOptions;
 }
 
-interface DownloadOwnFileParams extends DownloadFileParams {
-  creds: NetworkCredentials
-  mnemonic: string
-  token?: never
-  encryptionKey?: never
+export interface DownloadOwnFileParams extends DownloadFileParams {
+  creds: NetworkCredentials;
+  mnemonic: string;
+  token?: never;
+  encryptionKey?: never;
 }
 
 interface DownloadSharedFileParams extends DownloadFileParams {
-  creds?: never
-  mnemonic?: never
-  token: string
-  encryptionKey: string
+  creds?: never;
+  mnemonic?: never;
+  token: string;
+  encryptionKey: string;
 }
 
 type DownloadSharedFileFunction = (params: DownloadSharedFileParams) => DownloadFileResponse;
@@ -43,24 +43,22 @@ const downloadSharedFile: DownloadSharedFileFunction = (params) => {
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
-        clientVersion: '1.0'
+        clientVersion: '1.0',
       },
       {
         bridgeUser: '',
-        userId: ''
-      }
-    )
+        userId: '',
+      },
+    ),
   ).download(bucketId, fileId, '', {
     key: Buffer.from(encryptionKey, 'hex'),
     token,
     downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController
+    abortController: options?.abortController,
   });
 };
 
-
-
-function getAuthFromCredentials(creds: NetworkCredentials): { username: string, password: string } {
+function getAuthFromCredentials(creds: NetworkCredentials): { username: string; password: string } {
   return {
     username: creds.user,
     password: sha256(Buffer.from(creds.pass)).toString('hex'),
@@ -76,16 +74,16 @@ const downloadOwnFile: DownloadOwnFileFunction = (params) => {
       process.env.REACT_APP_STORJ_BRIDGE as string,
       {
         clientName: 'drive-web',
-        clientVersion: '1.0'
+        clientVersion: '1.0',
       },
       {
         bridgeUser: auth.username,
-        userId: auth.password
-      }
-    )
+        userId: auth.password,
+      },
+    ),
   ).download(bucketId, fileId, mnemonic, {
     downloadingCallback: options?.notifyProgress,
-    abortController: options?.abortController
+    abortController: options?.abortController,
   });
 };
 

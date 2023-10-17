@@ -2,7 +2,7 @@ import { FieldError, Path, UseFormRegister, ValidationRule } from 'react-hook-fo
 import { IFormValues } from 'app/core/types';
 
 import './PasswordInput.scss';
-import { Eye, EyeSlash } from 'phosphor-react';
+import { Eye, EyeSlash } from '@phosphor-icons/react';
 import { useState } from 'react';
 
 interface InputProps {

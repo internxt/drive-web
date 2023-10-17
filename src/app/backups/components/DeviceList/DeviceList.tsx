@@ -4,7 +4,7 @@ import { Device } from '../../types';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
-import { DownloadSimple } from 'phosphor-react';
+import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -76,6 +76,7 @@ const DeviceList = (props: Props): JSX.Element => {
                   onDeviceSelected([...unselectedDevices, { device, isSelected: true }]);
                 }}
                 onDoubleClick={(device) => onDeviceClicked(device)}
+                dataTest="device-list-item"
               />
             ),
           ]}

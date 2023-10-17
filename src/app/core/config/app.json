@@ -40,15 +40,28 @@
       "exact": true
     },
     {
+      "id": "auth-success",
+      "layout": "empty",
+      "path": "/auth-success",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "signup-blog",
+      "layout": "empty",
+      "path": "/signup-blog",
+      "exact": true
+    },
+    {
       "id": "buttonAuth",
       "layout": "empty",
       "path": "/buttonAuth",
       "exact": true
     },
     {
-      "id": "recover",
+      "id": "recover-account",
       "layout": "empty",
-      "path": "/recover",
+      "path": "/recover-account/:token",
       "exact": true
     },
     {
@@ -70,12 +83,21 @@
       "layout": "header-and-sidenav",
       "path": "/app/backups",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "shared-links",
       "layout": "header-and-sidenav",
       "path": "/app/shared-links",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
+      "id": "shared",
+      "layout": "header-and-sidenav",
+      "path": "/app/shared",
       "exact": true,
       "auth": true
     },
@@ -87,6 +109,7 @@
       "auth": true,
       "hideSearch": true
     },
+
     {
       "id": "trash",
       "layout": "header-and-sidenav",
@@ -136,6 +159,13 @@
       "auth": true
     },
     {
+      "id": "checkout-cancel",
+      "layout": "empty",
+      "path": "/checkout/cancel",
+      "exact": false,
+      "auth": true
+    },
+    {
       "id": "checkout",
       "layout": "empty",
       "path": "/checkout/:sessionId",
@@ -150,27 +180,21 @@
       "auth": true
     },
     {
-      "id": "remove",
+      "id": "recovery-link",
       "layout": "empty",
-      "path": "/remove",
-      "exact": true
-    },
-    {
-      "id": "removedialog",
-      "layout": "empty",
-      "path": "/removedialog",
+      "path": "/recovery-link",
       "exact": true
     },
     {
       "id": "share-token",
       "layout": "share",
-      "path": "/sh/file/:token([a-z0-9]{20})/:code?",
+      "path": "/sh/file/:token/:code?",
       "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "share",
-      "path": "/sh/folder/:token([a-z0-9]{20})/:code",
+      "path": "/sh/folder/:token/:code?",
       "exact": false
     },
     {
@@ -199,10 +223,23 @@
       "exact": true
     },
     {
+      "id": "change-email",
+      "layout": "empty",
+      "path": "/change-email/:token",
+      "exact": false
+    },
+    {
       "id": "verify-email",
       "layout": "empty",
       "path": "/verify-email/:token",
       "exact": false
+    },
+    {
+      "id": "request-access",
+      "layout": "empty",
+      "path": "/request-access",
+      "exact": true,
+      "auth": true
     },
     {
       "id": "not-found",

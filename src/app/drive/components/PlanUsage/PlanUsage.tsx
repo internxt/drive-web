@@ -1,3 +1,6 @@
+import { useSelector } from 'react-redux';
+import { RootState } from 'app/store';
+import { PlanState } from 'app/store/slices/plan';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
@@ -18,6 +21,8 @@ export default function PlanUsage({
 }): JSX.Element {
   const { translate } = useTranslationContext();
   const usagePercent = usageService.getUsagePercent(usage, limit);
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const subscriptionType = plan.subscription?.type;
 
   const onUpgradeButtonClicked = () => {
     navigationService.push(AppView.Preferences, { tab: 'plans' });
@@ -35,9 +40,11 @@ export default function PlanUsage({
       <div className="mt-1 flex h-1.5 w-full justify-start overflow-hidden rounded-lg bg-gray-5">
         <div className="h-full bg-primary" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
-      <p onClick={onUpgradeButtonClicked} className="mt-3 cursor-pointer text-sm font-medium text-blue-60">
-        {translate('actions.upgradeNow')}
-      </p>
+      {subscriptionType === 'free' && (
+        <p onClick={onUpgradeButtonClicked} className="mt-3 cursor-pointer text-sm font-medium text-blue-60">
+          {translate('actions.upgradeNow')}
+        </p>
+      )}
     </div>
   );
 }

@@ -1,6 +1,6 @@
 import dateService from 'app/core/services/date.service';
 import BaseButton from 'app/shared/components/forms/BaseButton';
-import { Trash, Link } from 'phosphor-react';
+import { Trash, Link } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
@@ -34,13 +34,18 @@ import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItems
 import EditFolderNameDialog from '../../../drive/components/EditFolderNameDialog/EditFolderNameDialog';
 import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
+import envService from '../../../core/services/env.service';
+import { domainManager } from '../../services/DomainManager';
+import errorService from '../../../core/services/error.service';
 
 type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;
 
-const REACT_APP_SHARE_LINKS_DOMAIN = process.env.REACT_APP_SHARE_LINKS_DOMAIN || window.location.origin;
-
 function copyShareLink(type: string, code: string, token: string) {
-  copy(`${REACT_APP_SHARE_LINKS_DOMAIN}/s/${type}/${token}/${code}`);
+  const domainList =
+    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
+  const shareDomain = _.sample(domainList);
+
+  copy(`${shareDomain}/sh/${type}/${token}/${code}`);
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
@@ -122,23 +127,35 @@ export default function SharedLinksView(): JSX.Element {
   async function onDeleteSelectedItems() {
     if (selectedItems.length > 0) {
       setIsLoading(true);
-      console.log('selectedItems', selectedItems.length);
+      setHasMoreItems(true);
 
-      const CHUNK_SIZE = 10;
-      const chunks = _.chunk(selectedItems, CHUNK_SIZE);
-      for (const chunk of chunks) {
-        const promises = chunk.map((item) => deleteShareLink(item.id));
-        await Promise.all(promises);
+      try {
+        const CHUNK_SIZE = 10;
+        const chunks = _.chunk(selectedItems, CHUNK_SIZE);
+        for (const chunk of chunks) {
+          const promises = chunk.map((item) => deleteShareLink(item.id));
+          await Promise.all(promises);
+        }
+
+        const stringLinksDeleted =
+          selectedItems.length > 1
+            ? translate('shared-links.toast.links-deleted')
+            : translate('shared-links.toast.link-deleted');
+
+        notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
+
+        setTimeout(async () => {
+          await fetchItems(0, orderBy, 'substitute');
+          setIsLoading(false);
+          closeConfirmDelete();
+        }, 500);
+      } catch (error) {
+        errorService.reportError(error, { extra: { sharedLinksToDelete: selectedItems } });
+        notificationsService.show({
+          text: translate('shared-links.toast.error-deleting-links'),
+          type: ToastType.Error,
+        });
       }
-
-      const stringLinksDeleted =
-        selectedItems.length > 1
-          ? translate('shared-links.toast.links-deleted')
-          : translate('shared-links.toast.link-deleted');
-      notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
-      await fetchItems(0, orderBy, 'substitute');
-      closeConfirmDelete();
-      setIsLoading(false);
     }
   }
 
@@ -180,12 +197,6 @@ export default function SharedLinksView(): JSX.Element {
     />
   );
 
-  function onOpenLinkUpdateModal(item: ListShareLinksItem & { code: string }) {
-    const mnemonic = localStorageService.getUser()!.mnemonic;
-    setLinkToUpdate(item);
-    setIsUpdateLinkModalOpen(true);
-  }
-
   const copyLink = (item) => {
     const itemType = item.isFolder ? 'folder' : 'file';
     const encryptedCode = item.code || item.encryptedCode;
@@ -193,9 +204,54 @@ export default function SharedLinksView(): JSX.Element {
     copyShareLink(itemType, plainCode, item.token);
   };
 
-  const openLinkSettings = (item) => {
+  const openShareAccessSettings = (item) => {
     dispatch(storageActions.setItemToShare({ share: item, item: item.item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
+    envService.isProduction()
+      ? dispatch(uiActions.setIsShareItemDialogOpen(true))
+      : dispatch(uiActions.setIsShareDialogOpen(true));
+  };
+
+  const moveSelectedItemsToTrash = async () => {
+    const itemsToTrash = selectedItems.map((selectedShareLink) => ({
+      ...(selectedShareLink.item as DriveItemData),
+      isFolder: selectedShareLink.isFolder,
+    }));
+    await moveItemsToTrash(itemsToTrash);
+    fetchItems(page, orderBy, 'substitute');
+  };
+
+  const moveToTrash = async (shareLink) => {
+    const itemToTrash = {
+      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      isFolder: shareLink.isFolder,
+    };
+    await moveItemsToTrash([itemToTrash]);
+    fetchItems(page, orderBy, 'substitute');
+  };
+
+  const downloadItem = (shareLink) => {
+    const itemToDownload = {
+      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      isFolder: shareLink.isFolder,
+    };
+    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
+  };
+
+  const moveItem = (shareLink) => {
+    const itemToMove = {
+      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      isFolder: shareLink.isFolder,
+    };
+    dispatch(storageActions.setItemsToMove([itemToMove]));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  };
+
+  const renameItem = (shareLink) => {
+    const itemToRename = {
+      ...((shareLink as ListShareLinksItem).item as DriveItemData),
+      isFolder: shareLink.isFolder,
+    };
+    setEditNameItem(itemToRename);
   };
 
   return (
@@ -208,6 +264,7 @@ export default function SharedLinksView(): JSX.Element {
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
+          isOpen={true}
           onClose={() => {
             setEditNameItem(null);
             fetchItems(0, orderBy, 'substitute');
@@ -238,7 +295,6 @@ export default function SharedLinksView(): JSX.Element {
           <TooltipElement id="delete-link-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       </div>
-
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <List<ListShareLinksItem & { code: string }, 'views' | 'createdAt'>
           header={[
@@ -335,50 +391,17 @@ export default function SharedLinksView(): JSX.Element {
                     }));
                     dispatch(storageThunks.downloadItemsThunk(itemsToDownload));
                   },
-                  moveToTrash: async () => {
-                    const itemsToTrash = selectedItems.map((selectedShareLink) => ({
-                      ...(selectedShareLink.item as DriveItemData),
-                      isFolder: selectedShareLink.isFolder,
-                    }));
-                    await moveItemsToTrash(itemsToTrash);
-                    fetchItems(page, orderBy, 'substitute');
-                  },
+                  moveToTrash: moveSelectedItemsToTrash,
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderShared({
                   copyLink,
-                  openLinkSettings,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  renameItem: (shareLink) => {
-                    const itemToRename = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    setEditNameItem(itemToRename);
-                  },
-                  moveItem: (shareLink) => {
-                    const itemToMove = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    dispatch(storageActions.setItemsToMove([itemToMove]));
-                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                  },
-                  downloadItem: (shareLink) => {
-                    const itemToDownload = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
-                  },
-                  moveToTrash: async (shareLink) => {
-                    const itemToTrash = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    await moveItemsToTrash([itemToTrash]);
-                    fetchItems(page, orderBy, 'substitute');
-                  },
+                  openShareAccessSettings,
+                  renameItem: renameItem,
+                  moveItem: moveItem,
+                  downloadItem: downloadItem,
+                  moveToTrash: moveToTrash,
                 })
               : contextMenuDriveItemShared({
                   openPreview: (shareLink) => {
@@ -386,49 +409,16 @@ export default function SharedLinksView(): JSX.Element {
                     dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
                   },
                   copyLink,
-                  openLinkSettings,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  renameItem: (shareLink) => {
-                    const itemToRename = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    setEditNameItem(itemToRename);
-                  },
-                  moveItem: (shareLink) => {
-                    const itemToMove = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    dispatch(storageActions.setItemsToMove([itemToMove]));
-                    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-                  },
-                  downloadItem: (shareLink) => {
-                    const itemToDownload = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    dispatch(storageThunks.downloadItemsThunk([itemToDownload]));
-                  },
-                  moveToTrash: async (shareLink) => {
-                    const itemToTrash = {
-                      ...((shareLink as ListShareLinksItem).item as DriveItemData),
-                      isFolder: shareLink.isFolder,
-                    };
-                    await moveItemsToTrash([itemToTrash]);
-                    fetchItems(page, orderBy, 'substitute');
-                  },
+                  openShareAccessSettings,
+                  renameItem: renameItem,
+                  moveItem: moveItem,
+                  downloadItem: downloadItem,
+                  moveToTrash: moveToTrash,
                 })
           }
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: async () => {
-              const itemsToTrash = selectedItems.map((selectedShareLink) => ({
-                ...(selectedShareLink.item as DriveItemData),
-                isFolder: selectedShareLink.isFolder,
-              }));
-              await moveItemsToTrash(itemsToTrash);
-              fetchItems(page, orderBy, 'substitute');
-            },
+            onBackspaceKeyPressed: moveSelectedItemsToTrash,
             onRKeyPressed: () => {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
@@ -458,6 +448,7 @@ export default function SharedLinksView(): JSX.Element {
         onClose={closeConfirmDelete}
         onSecondaryAction={closeConfirmDelete}
         secondaryAction={translate('modals.removeSharedLinkModal.cancel')}
+        isLoading={isLoading}
         title={
           selectedItems.length > 1
             ? translate('shared-links.item-menu.delete-links')

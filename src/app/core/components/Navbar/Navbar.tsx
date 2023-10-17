@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
@@ -9,11 +9,10 @@ import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import sessionThunks from '../../../store/slices/session/session.thunks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
-import navigationService from '../../services/navigation.service';
-import { AppView, Workspace } from '../../types';
+import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
-import { Gear, MagnifyingGlass } from 'phosphor-react';
+import { Gear, MagnifyingGlass } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';
@@ -82,8 +81,8 @@ const Navbar = (props: NavbarProps) => {
             value={storageFilters.text}
             onChange={onSearchInputChange}
             type="text"
-            placeholder={translate('general.searchBar') as string}
-            className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:w-full focus:ring-0"
+            placeholder={translate('general.searchBar.oldSearchBarPlaceholder') as string}
+            className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:ring-0"
           />
           <MagnifyingGlass
             onClick={onSearchButtonClicked}

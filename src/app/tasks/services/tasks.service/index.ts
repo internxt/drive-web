@@ -17,6 +17,7 @@ import {
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
 import { t } from 'i18next';
+import { isFirefox } from 'react-device-detect';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -83,6 +84,7 @@ class TaskManagerService {
     return {
       taskId: task.id,
       status: task.status,
+      item: task.file || task.folder,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
@@ -194,6 +196,19 @@ class TaskManagerService {
   }
 
   private getTaskNotificationSubtitle(task: TaskData): string {
+    if (task.status === TaskStatus.Error && task.subtitle) {
+      return task.subtitle;
+    }
+
+    const notExistProgress = task.progress && task.progress === Infinity;
+    if (
+      isFirefox &&
+      task.action === TaskType.DownloadFolder &&
+      task.status === TaskStatus.InProcess &&
+      notExistProgress
+    )
+      return t(`tasks.${task.action}.status.in-process-without-progress`);
+
     return t(`tasks.${task.action}.status.${task.status}`, {
       progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
     });

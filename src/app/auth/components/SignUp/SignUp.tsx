@@ -3,10 +3,9 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { WarningCircle } from 'phosphor-react';
-
-import localStorageService from 'app/core/services/local-storage.service';
-// import analyticsService, { signupDevicesource, signupCampaignSource } from 'app/analytics/services/analytics.service';
+import { WarningCircle } from '@phosphor-icons/react';
+import { Helmet } from 'react-helmet-async';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { userActions, userThunks } from 'app/store/slices/user';
@@ -16,19 +15,19 @@ import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
 import { referralsThunks } from 'app/store/slices/referrals';
-import TextInput from '../../components/TextInput/TextInput';
-import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import Button from '../../components/Button/Button';
+import TextInput from '../TextInput/TextInput';
+import PasswordInput from '../PasswordInput/PasswordInput';
+import Button from '../Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
-import { validateFormat } from 'app/crypto/services/keys.service';
-import { decryptTextWithKey } from 'app/crypto/services/utils';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import authService from 'app/auth/services/auth.service';
-
-const MAX_PASSWORD_LENGTH = 20;
+import authService, { getNewToken } from 'app/auth/services/auth.service';
+import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import paymentService from 'app/payment/services/payment.service';
+import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
+import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 
 export interface SignUpProps {
   location: {
@@ -39,6 +38,8 @@ export interface SignUpProps {
 
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
+  const [isValidPassword, setIsValidPassword] = useState(false);
+
   const qs = queryString.parse(navigationService.history.location.search);
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
@@ -74,9 +75,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     },
   });
   const dispatch = useAppDispatch();
-  const [planId, setPlanId] = useState<string>();
-  const [mode, setMode] = useState<string>();
-  const [coupon, setCouponCode] = useState<string>();
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
@@ -85,8 +83,8 @@ function SignUp(props: SignUpProps): JSX.Element {
     tag: 'error' | 'warning' | 'success';
     label: string;
   } | null>(null);
-
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
+  const showPreparingWorkspaceAnimation = useMemo(() => autoSubmit.enabled && !showError, [autoSubmit, showError]);
 
   const formInputError = Object.values(errors)[0];
 
@@ -108,20 +106,16 @@ function SignUp(props: SignUpProps): JSX.Element {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(navigationService.history.location.search);
-    setPlanId(params.get('planId') !== undefined ? (params.get('planId') as string) : '');
-    setMode(params.get('mode') !== undefined ? (params.get('mode') as string) : '');
-    setCouponCode(params.get('couponCode') !== undefined ? (params.get('couponCode') as string) : '');
-  }, []);
-
   function onChangeHandler(input: string) {
+    setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
-      setPasswordState({ tag: 'error', label: 'Password is too long' });
+      setPasswordState({ tag: 'error', label: translate('modals.changePasswordModal.errors.longPassword') });
       return;
     }
 
     const result = testPasswordStrength(input, (qs.email as string) === undefined ? '' : (qs.email as string));
+
+    setIsValidPassword(result.valid);
     if (!result.valid) {
       setPasswordState({
         tag: 'error',
@@ -137,13 +131,9 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
-  async function clearKey(privateKey: string, password: string) {
-    const { privkeyDecrypted } = await validateFormat(privateKey, password);
-
-    return Buffer.from(privkeyDecrypted).toString('base64');
-  }
-
-  const onSubmit: SubmitHandler<IFormValues> = async (formData) => {
+  const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
+    event?.preventDefault();
     setIsLoading(true);
 
     try {
@@ -153,10 +143,19 @@ function SignUp(props: SignUpProps): JSX.Element {
         ? await doRegister(email, password, token)
         : await updateInfo(email, password);
 
+      localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+
+      localStorageService.clear();
+
       localStorageService.set('xToken', xToken);
       localStorageService.set('xMnemonic', mnemonic);
 
-      const privateKey = xUser.privateKey ? await clearKey(xUser.privateKey, password) : undefined;
+      const xNewToken = await getNewToken();
+      localStorageService.set('xNewToken', xNewToken);
+
+      const privateKey = xUser.privateKey
+        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,
@@ -175,55 +174,30 @@ function SignUp(props: SignUpProps): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      // analyticsService.trackPaymentConversion();
-      // analyticsService.trackSignUp({
-      //   userId: xUser.uuid,
-      //   properties: {
-      //     email: xUser.email,
-      //     signup_source: signupCampaignSource(window.location.search),
-      //   },
-      //   traits: {
-      //     email: xUser.email,
-      //     first_name: xUser.name,
-      //     last_name: xUser.lastname,
-      //     usage: 0,
-      //     createdAt: new Date().toISOString(),
-      //     signup_device_source: signupDevicesource(window.navigator.userAgent),
-      //     acquisition_channel: signupCampaignSource(window.location.search),
-      //   },
-      // });
+      const urlParams = new URLSearchParams(window.location.search);
+      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
 
-      // adtrack script
-      // window._adftrack = Array.isArray(window._adftrack)
-      //   ? window._adftrack
-      //   : window._adftrack
-      //   ? [window._adftrack]
-      //   : [];
-      // window._adftrack.push({
-      //   HttpHost: 'track.adform.net',
-      //   pm: 2370627,
-      //   divider: encodeURIComponent('|'),
-      //   pagename: encodeURIComponent('New'),
-      // });
-
-      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+      const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
 
       if (redirectUrl) {
         window.location.replace(redirectUrl);
         return;
-      }
-      if (planId && mode) {
-        coupon
-          ? window.location.replace(
-              `https://drive.internxt.com/checkout-plan?planId=${planId}&couponCode=${coupon}&mode=${mode}`,
-            )
-          : window.location.replace(`https://drive.internxt.com/checkout-plan?planId=${planId}&mode=${mode}`);
-      } else {
+      } else if (redeemCodeObject) {
+        await paymentService.redeemCode(redeemCodeObject).catch((err) => {
+          errorService.reportError(err);
+        });
+        dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
+      } else {
+        if (isUniversalLinkMode) {
+          return navigationService.push(AppView.UniversalLinkSuccess);
+        } else {
+          return navigationService.push(AppView.Drive);
+        }
       }
     } catch (err: unknown) {
-      console.log(err);
       setIsLoading(false);
+      errorService.reportError(err);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
     } finally {
@@ -231,98 +205,110 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   };
 
-  // async function getReCaptcha(formValues: IFormValues) {
-  //   const grecaptcha = window.grecaptcha;
-
-  //   grecaptcha.ready(() => {
-  //     grecaptcha.execute(process.env.REACT_APP_RECAPTCHA_V3, { action: 'register' }).then((token) => {
-  //       // Can'translate wait or token will expire
-  //       formValues.token = token;
-  //       if (passwordState != null && passwordState.tag != 'error') onSubmit(formValues);
-  //     });
-  //   });
-  // }
-
   const getLoginLink = () => {
     const currentParams = new URLSearchParams(window.location.search);
 
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
-
   return (
-    <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-      <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-        <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
+    <>
+      <Helmet>
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/new`} />
+      </Helmet>
+      <div
+        className={`flex ${
+          showPreparingWorkspaceAnimation
+            ? 'h-full w-full'
+            : 'h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft'
+        }`}
+      >
+        {showPreparingWorkspaceAnimation ? (
+          <PreparingWorkspaceAnimation />
+        ) : (
+          <>
+            <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
+              <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
 
-        <div className="flex flex-col space-y-3">
-          <label className="space-y-0.5">
-            <span>{translate('auth.email')}</span>
-            <TextInput
-              placeholder={translate('auth.email') as string}
-              label="email"
-              type="email"
-              disabled={hasEmailParam}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              error={errors.email}
-            />
-          </label>
+              <div className="flex flex-col space-y-3">
+                <label className="space-y-0.5">
+                  <span>{translate('auth.email')}</span>
+                  <TextInput
+                    placeholder={translate('auth.email') as string}
+                    label="email"
+                    type="email"
+                    disabled={hasEmailParam}
+                    register={register}
+                    required={true}
+                    minLength={{ value: 1, message: 'Email must not be empty' }}
+                    error={errors.email}
+                  />
+                </label>
 
-          <label className="space-y-0.5">
-            <span>{translate('auth.password')}</span>
-            <PasswordInput
-              className={passwordState ? passwordState.tag : ''}
-              placeholder={translate('auth.password')}
-              label="password"
-              maxLength={MAX_PASSWORD_LENGTH}
-              register={register}
-              onFocus={() => setShowPasswordIndicator(true)}
-              required={true}
-              error={errors.password}
-            />
-            {showPasswordIndicator && passwordState && (
-              <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
-            )}
-            {bottomInfoError && (
-              <div className="flex flex-row items-start pt-1">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                </div>
-                <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
+                <label className="space-y-0.5">
+                  <span>{translate('auth.password')}</span>
+                  <PasswordInput
+                    className={passwordState ? passwordState.tag : ''}
+                    placeholder={translate('auth.password')}
+                    label="password"
+                    maxLength={MAX_PASSWORD_LENGTH}
+                    register={register}
+                    onFocus={() => setShowPasswordIndicator(true)}
+                    required={true}
+                    error={errors.password}
+                  />
+                  {showPasswordIndicator && passwordState && (
+                    <PasswordStrengthIndicator
+                      className="pt-1"
+                      strength={passwordState.tag}
+                      label={passwordState.label}
+                    />
+                  )}
+                  {bottomInfoError && (
+                    <div className="flex flex-row items-start pt-1">
+                      <div className="flex h-5 flex-row items-center">
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                      </div>
+                      <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
+                    </div>
+                  )}
+                </label>
+
+                <Button
+                  disabled={isLoading || !isValidPassword}
+                  text={translate('auth.signup.title')}
+                  disabledText={
+                    isValid && isValidPassword
+                      ? `${translate('auth.signup.encrypting')}...`
+                      : translate('auth.signup.title')
+                  }
+                  loading={isLoading}
+                  style="button-primary"
+                  className="w-full"
+                />
               </div>
-            )}
-          </label>
+            </form>
+            <span className="mt-2 w-full text-xs text-gray-50">
+              {translate('auth.terms1')}{' '}
+              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
+                {translate('auth.terms2')}
+              </a>
+            </span>
 
-          <Button
-            disabled={isLoading}
-            text={translate('auth.signup.title')}
-            disabledText={isValid ? 'Encrypting...' : 'Create account'}
-            loading={isLoading}
-            style="button-primary"
-            className="w-full"
-          />
-        </div>
-      </form>
-      <span className="mt-2 w-full text-xs text-gray-50">
-        {translate('auth.terms1')}{' '}
-        <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-          {translate('auth.terms2')}
-        </a>
-      </span>
-
-      <div className="mt-4 flex w-full items-center justify-center">
-        <span className="select-none text-sm text-gray-80">
-          {translate('auth.signup.haveAccount')}{' '}
-          <Link
-            to={getLoginLink()}
-            className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-          >
-            {translate('auth.signup.login')}
-          </Link>
-        </span>
+            <div className="mt-4 flex w-full items-center justify-center">
+              <span className="select-none text-sm text-gray-80">
+                {translate('auth.signup.haveAccount')}{' '}
+                <Link
+                  to={getLoginLink()}
+                  className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+                >
+                  {translate('auth.signup.login')}
+                </Link>
+              </span>
+            </div>
+          </>
+        )}
       </div>
-    </div>
+    </>
   );
 }
 

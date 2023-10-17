@@ -16,7 +16,11 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
 
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = plan.usageDetails
     ? [
-        { name: 'Drive', usageInBytes: plan.usageDetails.drive, color: 'primary' },
+        {
+          name: translate('sideNav.drive'),
+          usageInBytes: plan.usageDetails.drive,
+          color: 'primary',
+        },
         {
           name: translate('views.account.tabs.account.view.backups'),
           usageInBytes: plan.usageDetails.backups,

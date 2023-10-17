@@ -3,3 +3,4 @@
 /src/app/network/ @sg-gs
 /src/app/crypto/ @sg-gs
 /src/app/core/services/stream.service.ts @sg-gs
+/src/app/crypto/services/pgp.service.ts @sg-gs

@@ -55,6 +55,7 @@ function moveFile(
     .moveFile(payload)
     .then((response) => trackMove(response, 'file'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });
@@ -75,6 +76,7 @@ function moveFolder(
     .moveFolder(payload)
     .then((response) => trackMove(response, 'folder'))
     .catch((error) => {
+      errorService.reportError(error);
       failedItems.push(item);
       handleError(error);
     });
@@ -85,6 +87,7 @@ async function afterMoving(
   destinationId: number,
   failedItems: DriveItemData[],
   t: TFunction,
+  isTrash = false,
 ): Promise<void> {
   itemsToRecover = itemsToRecover.filter((el) => !failedItems.includes(el));
 
@@ -100,26 +103,18 @@ async function afterMoving(
     store.dispatch(storageActions.popItemsToDelete(itemsToRecover));
     store.dispatch(storageActions.clearSelectedItems());
 
-    const toastText = !itemsToRecover[0].deleted
-      ? t('notificationMessages.restoreItems', {
-          itemsToRecover:
-            itemsToRecover.length > 1
-              ? t('general.files')
-              : itemsToRecover[0].isFolder
-              ? t('general.folder')
-              : t('general.file'),
-          s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
-          destination: destinationLevelDatabaseContent?.[0].name,
-        })
-      : t('notificationMessages.itemsMovedToTrash', {
-          item:
-            itemsToRecover.length > 1
-              ? t('general.files')
-              : itemsToRecover[0].isFolder
-              ? t('general.folder')
-              : t('general.file'),
-          s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
-        });
+    const translationKey = isTrash ? 'notificationMessages.restoreItems' : 'notificationMessages.moveItems';
+
+    const toastText = t(translationKey, {
+      [isTrash ? 'itemsToRecover' : 'itemsToMove']:
+        itemsToRecover.length > 1
+          ? t('general.files')
+          : itemsToRecover[0].isFolder
+          ? t('general.folder')
+          : t('general.file'),
+      s: itemsToRecover.length > 1 ? 'os' : itemsToRecover[0].isFolder ? 'a' : 'o',
+    });
+
     notificationsService.show({
       type: ToastType.Success,
       text: toastText,
@@ -136,6 +131,7 @@ const recoverItemsFromTrash = async (
   itemsToRecover: DriveItemData[],
   destinationId: number,
   t: TFunction,
+  isTrash = true,
 ): Promise<void> => {
   const failedItems: DriveItemData[] = [];
   for (const item of itemsToRecover) {
@@ -145,7 +141,7 @@ const recoverItemsFromTrash = async (
       await moveFile(item, item.fileId, destinationId, item.bucket, failedItems);
     }
   }
-  return afterMoving(itemsToRecover, destinationId, failedItems, t);
+  return afterMoving(itemsToRecover, destinationId, failedItems, t, isTrash);
 };
 
 export default recoverItemsFromTrash;

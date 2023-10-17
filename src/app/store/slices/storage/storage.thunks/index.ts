@@ -3,7 +3,12 @@ import { ActionReducerMapBuilder } from '@reduxjs/toolkit';
 import { StorageState } from '../storage.model';
 import { initializeThunk, initializeThunkExtraReducers } from './initializeThunk';
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
-import { uploadItemsThunk, uploadItemsThunkNoCheck, uploadItemsThunkExtraReducers } from './uploadItemsThunk';
+import {
+  uploadItemsThunk,
+  uploadItemsThunkNoCheck,
+  uploadItemsThunkExtraReducers,
+  uploadSharedItemsThunk,
+} from './uploadItemsThunk';
 import { downloadItemsThunk, downloadItemsThunkExtraReducers } from './downloadItemsThunk';
 import { downloadFileThunk, downloadFileThunkExtraReducers } from './downloadFileThunk';
 import { downloadFolderThunk, downloadFolderThunkExtraReducers } from './downloadFolderThunk';
@@ -37,6 +42,7 @@ const storageThunks = {
   moveItemsThunk,
   fetchDeletedThunk,
   renameItemsThunk,
+  uploadSharedItemsThunk,
 };
 
 export const storageExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {

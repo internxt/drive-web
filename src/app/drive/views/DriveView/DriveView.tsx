@@ -7,6 +7,8 @@ import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { t } from 'i18next';
+import { Helmet } from 'react-helmet-async';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -18,17 +20,21 @@ export interface DriveViewProps {
 
 class DriveView extends Component<DriveViewProps> {
   componentDidMount(): void {
-    const { dispatch } = this.props;
-
+    const { namePath, dispatch } = this.props;
     dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageActions.setCurrentPath(namePath[0]));
     this.fetchItems();
   }
 
+  componentWillUnmount(): void {
+    const { dispatch } = this.props;
+    dispatch(storageActions.resetDrivePagination());
+  }
+
   fetchItems = (): void => {
-    const { dispatch, currentFolderId } = this.props;
+    const { dispatch } = this.props;
 
     dispatch(storageActions.clearSelectedItems());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
   };
 
   get breadcrumbItems(): BreadcrumbItemData[] {
@@ -40,7 +46,7 @@ class DriveView extends Component<DriveViewProps> {
 
       items.push({
         id: firstPath.id,
-        label: 'Drive',
+        label: t('sideNav.drive'),
         icon: null, //<UilHdd className="w-4 h-4 mr-1" />
         active: true,
         isFirstPath: true,
@@ -63,11 +69,17 @@ class DriveView extends Component<DriveViewProps> {
   render(): ReactNode {
     const { items, isLoading } = this.props;
 
-    return <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />;
+    return (
+      <>
+        <Helmet>
+          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
+        </Helmet>
+        <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />
+      </>
+    );
   }
 }
 
-// TODO: THIS IS TEMPORARY, REMOVE WHEN FALSE PAGINATION IS REMOVED
 const sortFoldersFirst = (items: DriveItemData[]) =>
   items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
 

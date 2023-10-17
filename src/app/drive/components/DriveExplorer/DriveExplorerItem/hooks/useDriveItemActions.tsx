@@ -16,6 +16,7 @@ import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumb
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -48,6 +49,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const currentFolderPath = useAppSelector(storageSelectors.currentFolderPath);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
+  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
 
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -64,6 +66,9 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
       await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
       onNameBlurred();
       setNameEditPending(false);
+      dispatch(storageActions.setHasMoreDriveFolders(true));
+      dispatch(storageActions.setHasMoreDriveFiles(true));
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
     }
 
     nameInputRef?.current?.blur();

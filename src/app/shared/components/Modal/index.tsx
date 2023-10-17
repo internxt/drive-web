@@ -6,15 +6,19 @@ export default function Modal({
   onClose,
   children,
   maxWidth,
+  className,
+  preventClosing = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   maxWidth?: string;
+  className?: string;
+  preventClosing?: boolean;
 }): JSX.Element {
   return (
     <Transition show={isOpen} as={Fragment}>
-      <Dialog onClose={onClose}>
+      <Dialog onClose={() => (preventClosing ? null : onClose())} static={preventClosing}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-150"
@@ -38,9 +42,9 @@ export default function Modal({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`w-full ${
-                  maxWidth ?? 'max-w-lg'
-                } transform rounded-2xl bg-white p-5 shadow-subtle-hard transition-all duration-100 ease-out`}
+                className={`w-full text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
+                  className ?? 'p-5'
+                } transform rounded-2xl bg-white shadow-subtle-hard transition-all duration-100 ease-out`}
               >
                 {children}
               </Dialog.Panel>

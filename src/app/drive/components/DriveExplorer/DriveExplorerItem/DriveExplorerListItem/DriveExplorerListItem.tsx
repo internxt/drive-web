@@ -1,15 +1,27 @@
 import { Fragment, useEffect } from 'react';
-import { PencilSimple, Link, Trash, DownloadSimple } from 'phosphor-react';
+import { Link, PencilSimple, Users } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
 import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
-
 import './DriveExplorerListItem.scss';
+import { DriveItemData } from '../../../../types';
+import envService from '../../../../../core/services/env.service';
+
+const getItemPlainNameWithExtension = (item: DriveItemData) => {
+  const plainName = item?.plainName ?? item?.plain_name;
+  const type = item.type;
+
+  if (!plainName || !type) return;
+  else if (type === 'folder') return plainName;
+
+  return plainName + '.' + type;
+};
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
@@ -50,7 +62,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
     return (
       <Fragment>
-        {!item.deleted && (
+        {((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
           <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
             <input
               className="dense no-ring rect select-text border border-white"
@@ -66,19 +78,23 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
               autoFocus
               name="fileName"
             />
-            <span className="ml-1">{item.type ? '.' + item.type : ''}</span>
+            <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
           </div>
         )}
         <div className="file-list-item-name flex max-w-full items-center">
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={item?.plainName ?? items.getItemDisplayName(item)}
-            onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
+            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            onClick={
+              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                ? onNameClicked
+                : undefined
+            }
           >
-            {item?.plainName ?? items.getItemDisplayName(item)}
+            {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           </span>
-          {!isEditingName && !item.deleted && (
+          {!isEditingName && ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
           )}
         </div>
@@ -91,15 +107,25 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     <div
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onClick={onItemClicked}
-      onDoubleClick={!item.deleted || !item.isFolder ? onItemDoubleClicked : undefined}
+      onDoubleClick={
+        (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+          ? onItemDoubleClicked
+          : undefined
+      }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
       {/* ICON */}
       <div className="box-content flex w-1/12 items-center px-3">
         <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent className="h-full" />
+          <ItemIconComponent
+            className="h-full"
+            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
+          />
           {itemIsShared && (
-            <Link className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full rounded-full border-2 border-white bg-primary p-0.5 text-white group-active:border-blue-100" />
+            <Users
+              className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+            />
           )}
         </div>
       </div>
@@ -112,7 +138,8 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
       {
         /* DROPPABLE ZONE */
-        !item.deleted && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
+        ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) &&
+          connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}

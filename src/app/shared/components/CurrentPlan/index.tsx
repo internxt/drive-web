@@ -12,11 +12,12 @@ export default function CurrentPlan({
   className?: string;
   bytesInPlan: number;
   planName: string;
-  planSubtitle?: { mainLabel: string; beforeMainLabelCrossed?: string };
+  planSubtitle?: { mainLabel: string; beforeMainLabelCrossed?: string; amount: number; amountAfterCoupon?: number };
   button?: string;
   onButtonClick?: () => void;
 }): JSX.Element {
   const showInfinite = bytesInPlan >= 108851651149824;
+
   return (
     <div className={`${className} flex items-center justify-between`}>
       <div className="flex items-center">
@@ -32,21 +33,19 @@ export default function CurrentPlan({
           <h1 className="text-lg font-medium text-gray-80">{planName}</h1>
           {planSubtitle && (
             <h2 className="-mt-1 text-sm">
-              {planSubtitle.beforeMainLabelCrossed && (
+              {planSubtitle.amount === planSubtitle.amountAfterCoupon ? (
                 <span className="text-gray-50">{planSubtitle.beforeMainLabelCrossed + ' '}</span>
+              ) : (
+                <>
+                  <span className="text-gray-50">{planSubtitle.beforeMainLabelCrossed + ' '}</span>
+                  <span className="text-gray-40 line-through">{planSubtitle.mainLabel}</span>
+                </>
               )}
-              <span className={planSubtitle.beforeMainLabelCrossed ? 'text-gray-40 line-through' : 'text-gray-50'}>
-                {planSubtitle.mainLabel}
-              </span>
             </h2>
           )}
         </div>
       </div>
-      {button && (
-        <Button size="medium" onClick={onButtonClick}>
-          {button}
-        </Button>
-      )}
+      {button && <Button onClick={onButtonClick}>{button}</Button>}
     </div>
   );
 }

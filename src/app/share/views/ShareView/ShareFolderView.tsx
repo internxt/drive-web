@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react';
 import { WritableStream } from 'streamsaver';
 import { match } from 'react-router';
-import { getSharedFolderInfo, getSharedFolderSize } from 'app/share/services/share.service';
+import {
+  downloadPublicSharedFolder,
+  getPublicSharingMeta,
+  getSharedFolderSize,
+} from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -13,7 +17,7 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import shareService from 'app/share/services/share.service';
 import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
 import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
@@ -23,6 +27,7 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ReportButton from './ReportButon';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -46,11 +51,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
   const FOLDERS_LIMIT_BY_REQUEST = 16;
   const FILES_LIMIT_BY_REQUEST = 128;
-  const token = props.match.params.token;
+  const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
-  const [info, setInfo] = useState<Partial<ShareLink>>({});
+  const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -104,9 +109,9 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
-    return getSharedFolderInfo(token, password)
-      .then((sharedFolderInfo) => {
-        setInfo(sharedFolderInfo);
+    return getPublicSharingMeta(sharingId, code)
+      .then((res) => {
+        setInfo({ ...res });
         setIsLoaded(true);
         setRequiresPassword(false);
         // TODO: Commented until apply some fixes to the endpoint
@@ -140,40 +145,14 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       if (folderInfo) {
         setIsDownloading(true);
 
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        let downloadFolder: (...args: any) => Promise<void>;
-
-        if (canUseReadableStreamMethod) {
-          /* CHROMIUM: Brave, Safari, Edge */
-          downloadFolder = downloadSharedFolderUsingReadableStream;
-        } else {
-          /* FIREFOX or OLD BROWSERS */
-          downloadFolder = downloadSharedFolderUsingBlobs;
-        }
-
-        downloadFolder(
-          {
-            name: folderInfo.item.name,
-            code: code,
-            id: folderInfo.item.id,
-            token: token,
-            password,
-          },
-          folderInfo.bucket,
-          (folderInfo as any).fileToken,
-          {
-            filesLimit: FILES_LIMIT_BY_REQUEST,
-            foldersLimit: FOLDERS_LIMIT_BY_REQUEST,
-            progressCallback: (downloadedBytes) => {
-              if (size && size > 0) {
-                updateProgress(downloadedBytes / size);
-              }
-            },
-          },
-        )
+        downloadPublicSharedFolder({
+          encryptionKey: folderInfo.encryptionKey,
+          item: folderInfo.item,
+          code,
+        })
           .then(() => {
             updateProgress(1);
-            shareService.incrementShareView(folderInfo.token);
+            //shareService.incrementShareView(folderInfo.token);
             setTimeout(() => {
               setIsSendBannerVisible(true);
             }, 3000);
@@ -279,8 +258,8 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
           <div className="flex flex-col items-center justify-center space-y-2">
             <div className="flex flex-col items-center justify-center text-center font-medium">
-              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.name}>
-                {info?.item?.name}
+              <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.plainName}>
+                {info?.item?.plainName}
               </abbr>
               <span className="text-cool-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
             </div>
@@ -288,7 +267,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
+        <div className="flex flex-row items-center justify-center">
           <button
             onClick={() => {
               download(itemPassword);

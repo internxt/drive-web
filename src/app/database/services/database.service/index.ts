@@ -89,6 +89,7 @@ export interface DatabaseService {
       index: Index,
       key: number,
     ) => Promise<AppDatabase[Name]['value'][] | undefined>;
+    isAvailable: () => Promise<boolean>;
   };
 }
 

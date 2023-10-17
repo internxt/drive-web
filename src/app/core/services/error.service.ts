@@ -12,9 +12,12 @@ const errorService = {
    */
   reportError(exception: unknown, context?: CaptureContext): void {
     if (process.env.NODE_ENV === 'development') {
-      console.info('[ERROR_CATCHED]: This error has been catched and is being reported to Sentry');
+      console.error('[ERROR_CATCHED]: This error has been catched and is being reported to Sentry', exception);
     }
     Sentry.captureException(exception, context);
+  },
+  addBreadcrumb(breadcrumbProps: Sentry.Breadcrumb): void {
+    Sentry.addBreadcrumb(breadcrumbProps);
   },
   castError(err: unknown): AppError {
     let castedError: AppError = new AppError('Unknown error');

@@ -2,6 +2,8 @@
 
 declare namespace Cypress {
   interface Chainable {
-    login(): Chainable;
+    login(enableOnboarding?: boolean): Chainable;
+    removeExampleFile(): Chainable;
+    uploadExampleFile(): Chainable;
   }
 }

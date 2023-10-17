@@ -1,0 +1,47 @@
+{
+  "id": 130,
+  "parentId": null,
+  "name": "",
+  "bucket": "3dc92d82eb044b10cd83f863",
+  "user_id": 19,
+  "encrypt_version": null,
+  "deleted": false,
+  "deletedAt": null,
+  "createdAt": "2022-11-18T10:04:42.383Z",
+  "updatedAt": "2022-11-18T10:04:42.383Z",
+  "userId": 19,
+  "parent_id": null,
+  "children": [
+    {
+      "id": 131,
+      "parentId": 130,
+      "name": "backup_folder",
+      "bucket": null,
+      "user_id": 19,
+      "encrypt_version": null,
+      "deleted": false,
+      "deletedAt": null,
+      "createdAt": "2022-11-18T10:04:53.131Z",
+      "updatedAt": "2022-11-18T10:04:53.131Z",
+      "userId": 19,
+      "parent_id": 130,
+      "shares": []
+    },
+    {
+      "id": 132,
+      "parentId": 130,
+      "name": "empty_folder",
+      "bucket": null,
+      "user_id": 19,
+      "encrypt_version": null,
+      "deleted": false,
+      "deletedAt": null,
+      "createdAt": "2022-11-19T10:04:53.131Z",
+      "updatedAt": "2022-11-19T10:04:53.131Z",
+      "userId": 19,
+      "parent_id": 130,
+      "shares": []
+    }
+  ],
+  "files": []
+}

@@ -2,6 +2,8 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../Tooltip';
+import { RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
 
 export default function UsageDetails({
   className = '',
@@ -48,8 +50,9 @@ export default function UsageDetails({
     gray: 'bg-gray-40',
   };
 
-  const totalUsedInBytes = products.reduce((prev, current) => prev + current.usageInBytes, 0);
-  const percentageUsed = Math.round((totalUsedInBytes / planLimitInBytes) * 100);
+  const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
+  const maxBytesLimit = Math.max(planUsage, planLimitInBytes);
+  const percentageUsed = Math.round((planUsage / planLimitInBytes) * 100);
 
   products.sort((a, b) => b.usageInBytes - a.usageInBytes);
 
@@ -60,7 +63,7 @@ export default function UsageDetails({
       <div className="flex justify-between">
         <p className="text-gray-80">
           {translate('views.account.tabs.account.usage', {
-            totalUsed: bytesToString(totalUsedInBytes),
+            totalUsed: bytesToString(planUsage),
             totalSpace: bytesToString(planLimitInBytes),
           })}
         </p>
@@ -76,13 +79,13 @@ export default function UsageDetails({
             popsFrom="top"
           >
             <div
-              style={{ width: `${Math.max((product.usageInBytes / planLimitInBytes) * barWidth, 12)}px` }}
+              style={{ width: `${Math.max((product.usageInBytes / maxBytesLimit) * barWidth, 12)}px` }}
               className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
             />
           </Tooltip>
         ))}
       </div>
-      <div className="mt-2 flex space-x-4 ">
+      <div className="mt-2 flex space-x-4">
         {products.map((product) => (
           <div key={product.name} className="flex items-center">
             <div className={`${colorMapping[product.color]} h-2.5 w-2.5 rounded-full`} />

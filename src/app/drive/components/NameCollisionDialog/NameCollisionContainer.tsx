@@ -9,6 +9,8 @@ import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
+import errorService from '../../../core/services/error.service';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 type NameCollisionContainerProps = {
   currentFolderId: number;
@@ -71,19 +73,20 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
   const onCancelRenameDialogButtonPressed = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen(false));
-    resetPendintToRenameFolders();
-    resetPendintToRenameItems();
+    resetPendingToRenameFolders();
+    resetPendingToRenameItems();
   };
 
-  const resetPendintToRenameItems = () => {
+  const resetPendingToRenameItems = () => {
     dispatch(storageActions.setFilesToRename([]));
     dispatch(storageActions.setDriveFilesToRename([]));
   };
 
-  const resetPendintToRenameFolders = () => {
+  const resetPendingToRenameFolders = () => {
     dispatch(storageActions.setFoldersToRename([]));
     dispatch(storageActions.setDriveFoldersToRename([]));
   };
+
   const replaceAndMoveItem = async ({
     itemsToReplace,
     itemsToMove,
@@ -126,14 +129,18 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
             root: { ...(itemToUpload as IRoot) },
             currentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       } else {
         dispatch(
           storageThunks.uploadItemsThunkNoCheck({
             files: [itemToUpload] as File[],
             parentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       }
     });
   };
@@ -146,14 +153,18 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
             root: { ...(itemToUpload as IRoot) },
             currentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       } else {
         dispatch(
           storageThunks.uploadItemsThunk({
             files: [itemToUpload as File],
             parentFolderId: folderId,
           }),
-        );
+        ).then(() => {
+          dispatch(fetchSortedFolderContentThunk(folderId));
+        });
       }
     });
   };
@@ -166,18 +177,54 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   }: OnSubmitPressed) => {
     switch (operationType + operation) {
       case 'move' + 'keep':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Move and rename items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await keepAndMoveItem(itemsToUpload as DriveItemData[]);
         break;
       case 'move' + 'replace':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Move and replace items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await replaceAndMoveItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToMove: itemsToUpload as DriveItemData[],
         });
         break;
       case 'upload' + 'keep':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Upload and rename items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await keepAndUploadItem(itemsToUpload as (File | IRoot)[]);
         break;
       case 'upload' + 'replace':
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'select-option',
+          message: 'Upload and replace items',
+          data: {
+            currentFolderId: folderId,
+            itemsToUpload: itemsToUpload,
+          },
+        });
         await replaceAndUploadItem({
           itemsToReplace: itemsToReplace as DriveItemData[],
           itemsToUpload: itemsToUpload as (File | IRoot)[],

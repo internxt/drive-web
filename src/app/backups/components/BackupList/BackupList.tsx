@@ -81,6 +81,7 @@ const BackupList = (props: Props): JSX.Element => {
                 (props) => (
                   <BackupListItem
                     key={props.id}
+                    dataTest="backup-list-item"
                     backup={props}
                     onDownloadBackupClicked={onDownloadBackupClicked}
                     onDeleteBackupClicked={onDeleteBackupClicked}

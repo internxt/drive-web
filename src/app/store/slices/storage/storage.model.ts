@@ -1,6 +1,7 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
+import { SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 export interface StorageFilters {
@@ -11,6 +12,10 @@ export interface StorageState {
   loadingFolders: Record<number, boolean>;
   isDeletingItems: boolean;
   levels: Record<number, DriveItemData[]>;
+  levelsFoldersLength: Record<number, number>;
+  levelsFilesLength: Record<number, number>;
+  hasMoreDriveFolders: boolean;
+  hasMoreDriveFiles: boolean;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   isLoadingDeleted: boolean;
@@ -32,6 +37,10 @@ export interface StorageState {
   viewMode: FileViewMode;
   namePath: FolderPath[];
   folderPathDialog: FolderPathDialog[];
+  driveItemsSort: string;
+  driveItemsOrder: string;
+  sharedNamePath: SharedNamePath[];
+  currentPath: FolderPath;
 }
 
 export interface StorageSetFiltersPayload {

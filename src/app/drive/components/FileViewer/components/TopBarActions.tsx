@@ -10,7 +10,7 @@ import {
   LinkBreak,
   PencilSimple,
   Trash,
-} from 'phosphor-react';
+} from '@phosphor-icons/react';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from 'app/store/slices/storage';
@@ -19,26 +19,29 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { DriveItemData } from 'app/drive/types';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import Button from '../../../../shared/components/Button/Button';
+import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
 interface TopBarActionsProps {
   background?: string;
   onDownload: () => void;
   file: DriveItemData;
+  isAuthenticated: boolean;
+  isShareView?: boolean;
 }
 
 const TopBarActions: FC<TopBarActionsProps> = ({
   background,
   onDownload,
   file,
-}: {
-  background?: string;
-  onDownload: () => void;
-  file: DriveItemData;
-}) => {
+  isAuthenticated,
+  isShareView,
+}: TopBarActionsProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
 
-  const isFileShared = useMemo(() => file?.shares?.length ?? 0 > 0, [file]);
+  const isFileShared = useMemo(() => (file?.shares?.length ?? 0) > 0, [file]);
 
   const onMoveToTrashButtonClicked = async () => {
     await moveItemsToTrash([file]);
@@ -74,18 +77,54 @@ const TopBarActions: FC<TopBarActionsProps> = ({
     dispatch(uiActions.setIsEditFolderNameDialog(true));
   };
 
+  const copyNavigatorLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    notificationsService.show({ text: translate('success.linkCopied'), type: ToastType.Success });
+  };
+
+  const MenuItem = ({
+    onClick,
+    active,
+    text,
+    icon,
+  }: {
+    onClick: () => void;
+    active: boolean;
+    text: string;
+    icon: React.ReactNode;
+  }) => (
+    <div
+      onClick={onClick}
+      className={`${active && 'bg-gray-5'} flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+    >
+      {icon}
+      <p className="ml-3">{text}</p>
+    </div>
+  );
+
   return (
     <div
       className={`${background} z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
-      <button
-        onClick={onDownload}
-        title={translate('actions.download')}
-        className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
-      >
-        <UilImport size={20} />
-      </button>
-      {file ? (
+      <div className="flex flex-row items-center justify-center space-x-2 px-5">
+        {!isAuthenticated && isShareView && (
+          <button
+            onClick={copyNavigatorLink}
+            title={translate('actions.copyLink')}
+            className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+          >
+            <Link size={20} />
+          </button>
+        )}
+        <button
+          onClick={onDownload}
+          title={translate('actions.download')}
+          className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+        >
+          <UilImport size={20} />
+        </button>
+      </div>
+      {file && isAuthenticated && (
         <Menu as="div" className="relative inline-block text-left">
           <Menu.Button className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5">
             <DotsThree weight="bold" size={20} />
@@ -108,56 +147,44 @@ const TopBarActions: FC<TopBarActionsProps> = ({
                 {!isFileShared ? (
                   <Menu.Item>
                     {({ active }) => (
-                      <div
+                      <MenuItem
                         onClick={onCreateLinkButtonClicked}
-                        className={`${
-                          active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                      >
-                        <Link size={20} />
-                        <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
-                      </div>
+                        icon={<Link size={20} />}
+                        text={translate('drive.dropdown.getLink')}
+                        active={active}
+                      />
                     )}
                   </Menu.Item>
                 ) : (
                   <>
                     <Menu.Item>
                       {({ active }) => (
-                        <div
+                        <MenuItem
                           onClick={onCopyLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Copy size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                        </div>
+                          icon={<Copy size={20} />}
+                          text={translate('drive.dropdown.copyLink')}
+                          active={active}
+                        />
                       )}
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <div
+                        <MenuItem
                           onClick={onLinkSettingsButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Gear size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
-                        </div>
+                          icon={<Gear size={20} />}
+                          text={translate('drive.dropdown.linkSettings')}
+                          active={active}
+                        />
                       )}
                     </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
-                        <div
+                        <MenuItem
                           onClick={onDeleteLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <LinkBreak size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
-                        </div>
+                          icon={<LinkBreak size={20} />}
+                          text={translate('drive.dropdown.deleteLink')}
+                          active={active}
+                        />
                       )}
                     </Menu.Item>
                   </>
@@ -165,62 +192,62 @@ const TopBarActions: FC<TopBarActionsProps> = ({
                 <div className="my-0.5 mx-3 border-t border-gray-10" />
                 <Menu.Item>
                   {({ active }) => (
-                    <div
+                    <MenuItem
                       onClick={onEditButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <PencilSimple size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.rename')}</p>
-                    </div>
+                      icon={<PencilSimple size={20} />}
+                      text={translate('drive.dropdown.rename')}
+                      active={active}
+                    />
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <div
+                    <MenuItem
                       onClick={onMoveButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <ArrowsOutCardinal size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.move')}</p>
-                    </div>
+                      icon={<ArrowsOutCardinal size={20} />}
+                      text={translate('drive.dropdown.move')}
+                      active={active}
+                    />
                   )}
                 </Menu.Item>
                 <Menu.Item>
                   {({ active }) => (
-                    <div
+                    <MenuItem
                       onClick={onDownload}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <DownloadSimple size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.download')}</p>
-                    </div>
+                      icon={<DownloadSimple size={20} />}
+                      text={translate('drive.dropdown.download')}
+                      active={active}
+                    />
                   )}
                 </Menu.Item>
                 <div className="my-0.5 mx-3 border-t border-gray-10" />
                 <Menu.Item>
                   {({ active }) => (
-                    <div
+                    <MenuItem
                       onClick={onMoveToTrashButtonClicked}
-                      className={`${
-                        active && 'bg-gray-5'
-                      } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                    >
-                      <Trash size={20} />
-                      <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
-                    </div>
+                      icon={<Trash size={20} />}
+                      text={translate('drive.dropdown.moveToTrash')}
+                      active={active}
+                    />
                   )}
                 </Menu.Item>
               </>
             </Menu.Items>
           </Transition>
         </Menu>
-      ) : null}
+      )}
+      {!isAuthenticated && (
+        <Button
+          variant="secondary"
+          type="button"
+          onClick={() => {
+            window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
+          }}
+          className="px-5"
+        >
+          {t('auth.login.title')}
+        </Button>
+      )}
     </div>
   );
 };

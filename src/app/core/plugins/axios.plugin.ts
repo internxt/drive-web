@@ -17,17 +17,13 @@ const axiosPlugin: AppPlugin = {
         Sentry.setUser({
           id: user.uuid,
           email: user.email,
-          sharedWorkspace: user.sharedWorkspace
+          sharedWorkspace: user.sharedWorkspace,
         });
       }
 
       const tokenByWorkspace: { [key in Workspace]: string } = {
         [Workspace.Individuals]: localStorageService.get('xToken') || '',
         [Workspace.Business]: localStorageService.get('xTokenTeam') || '',
-      };
-      const mnemonicByWorkspace: { [key in Workspace]: string } = {
-        [Workspace.Individuals]: localStorageService.get('xMnemonic') || '',
-        [Workspace.Business]: localStorageService.getTeams()?.bridge_mnemonic || '',
       };
       const workspace =
         requestConfig.authWorkspace ||
@@ -39,7 +35,6 @@ const axiosPlugin: AppPlugin = {
         'internxt-version': packageJson.version,
         'internxt-client': 'drive-web',
         Authorization: `Bearer ${tokenByWorkspace[workspace]}`,
-        'internxt-mnemonic': mnemonicByWorkspace[workspace],
         ...requestConfig.headers,
       };
 

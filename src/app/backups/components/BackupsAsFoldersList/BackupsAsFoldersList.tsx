@@ -129,6 +129,7 @@ export default function BackupsAsFoldersList({
                   onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
                 }}
                 onDoubleClick={onDoubleClick}
+                dataTest="backup-list-folder"
               />
             ),
           ]}

@@ -5,7 +5,7 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import usersReferralsService from 'app/referrals/services/users-referrals.service';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import sizeService from 'app/drive/services/size.service';
-import { CaretDown, CaretUp } from 'phosphor-react';
+import { CaretDown, CaretUp } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const ReferralsWidget = (props: { className?: string }): JSX.Element => {

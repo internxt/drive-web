@@ -12,7 +12,8 @@ import {
   Gear,
   ArrowsOutCardinal,
   DownloadSimple,
-} from 'phosphor-react';
+  Users,
+} from '@phosphor-icons/react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -51,6 +52,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const currentBreadcrumb = namePath[namePath.length - 1];
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
+  const pathName = window.location.pathname.split('/')[2];
+  const isSharedView = pathName === 'shared';
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
@@ -213,6 +216,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(downloadItemsThunk([currentDevice as DriveItemData]));
   };
 
+  const onShareLinkButtonClicked = () => {
+    const item = currentFolder[0];
+    dispatch(storageActions.setItemToShare({ item: item as unknown as DriveItemData }));
+    dispatch(uiActions.setIsShareDialogOpen(true));
+  };
+
   return (
     <>
       {!props.item.active && !props.item.dialog ? (
@@ -225,7 +234,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
               <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
                 {breadcrumbDirtyName || props.item.label}
               </span>
-              <CaretDown weight="fill" className="ml-1 h-3 w-3" />
+              <CaretDown weight="fill" className={`ml-1 h-3 w-3 ${isSharedView && 'hidden'}`} />
             </div>
           </Menu.Button>
           <Transition
@@ -238,9 +247,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
             leaveTo="scale-100 opacity-0"
           >
             <Menu.Items
-              className={
-                'outline-none absolute mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
-              }
+              className={`outline-none absolute z-10 mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard ${
+                isSharedView && 'hidden'
+              }`}
             >
               {!props.item.isBackup ? (
                 <>
@@ -258,6 +267,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                     )}
                   </Menu.Item>
                   <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onShareLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Users size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.shareLink')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
                   {!isBreadcrumbItemShared ? (
                     <Menu.Item>
                       {({ active }) => (

@@ -8,17 +8,22 @@ import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {
   loadingFolders: {},
   isDeletingItems: false,
   levels: {},
+  levelsFoldersLength: {},
+  levelsFilesLength: {},
+  hasMoreDriveFolders: true,
+  hasMoreDriveFiles: true,
   recents: [],
   isLoadingRecents: false,
   isLoadingDeleted: false,
   filters: filtersFactory(),
-  order: orderFactory('updatedAt', OrderDirection.Desc),
+  order: orderFactory('name', OrderDirection.Asc),
   selectedItems: [],
   itemToShare: null,
   itemsToDelete: [],
@@ -29,12 +34,29 @@ const initialState: StorageState = {
   filesOnTrashLength: 0,
   viewMode: FileViewMode.List,
   namePath: [],
+  currentPath: { id: 0, name: '' },
   filesToRename: [],
   driveFilesToRename: [],
   foldersToRename: [],
   driveFoldersToRename: [],
   moveDestinationFolderId: null,
   folderPathDialog: [],
+  driveItemsSort: 'plainName',
+  driveItemsOrder: 'ASC',
+  sharedNamePath: [],
+};
+
+export const removeDuplicates = (list: DriveItemData[]) => {
+  const hash = {};
+  return list.filter((obj) => {
+    const key = obj.uuid ?? `${obj.id}-${obj.name}-${obj.updatedAt}-${obj.type}`;
+
+    if (hash[key]) {
+      return false;
+    }
+    hash[key] = true;
+    return true;
+  });
 };
 
 export const storageSlice = createSlice({
@@ -53,6 +75,46 @@ export const storageSlice = createSlice({
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
     },
+    addItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+      const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);
+      const removedDuplicates = removeDuplicates(newFolderContent);
+      state.levels[action.payload.folderId] = removedDuplicates;
+    },
+    setFolderFoldersLength: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+    ) => {
+      state.levelsFoldersLength[action.payload.folderId] = action.payload.foldersLength;
+    },
+    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+      state.levelsFilesLength[action.payload.folderId] = action.payload.filesLength;
+    },
+    addFolderFoldersLength: (
+      state: StorageState,
+      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+    ) => {
+      const foldersLength = state.levelsFoldersLength[action.payload.folderId] ?? 0;
+      state.levelsFoldersLength[action.payload.folderId] = foldersLength + action.payload.foldersLength;
+    },
+    addFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+      const filesLength = state.levelsFilesLength[action.payload.folderId] ?? 0;
+      state.levelsFilesLength[action.payload.folderId] = filesLength + action.payload.filesLength;
+    },
+    resetLevelsFoldersLength: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
+      state.levelsFoldersLength[action.payload.folderId] = 0;
+      state.levelsFilesLength[action.payload.folderId] = 0;
+      state.levels[action.payload.folderId] = [];
+    },
+    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreDriveFolders = action.payload;
+    },
+    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.hasMoreDriveFiles = action.payload;
+    },
+    resetDrivePagination: (state: StorageState) => {
+      state.hasMoreDriveFiles = true;
+      state.hasMoreDriveFolders = true;
+    },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
     },
@@ -60,7 +122,9 @@ export const storageSlice = createSlice({
       state.itemsOnTrash = action.payload;
     },
     addItemsOnTrash: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
-      state.itemsOnTrash = state.itemsOnTrash.concat(action.payload);
+      const trashItems = state.itemsOnTrash.concat(action.payload);
+      const trashItemsWithoutDuplicates = removeDuplicates(trashItems);
+      state.itemsOnTrash = trashItemsWithoutDuplicates;
     },
     setFoldersOnTrashLength: (state: StorageState, action: PayloadAction<number>) => {
       state.folderOnTrashLength = action.payload;
@@ -171,8 +235,24 @@ export const storageSlice = createSlice({
         state.folderPathDialog.push(action.payload);
       }
     },
+    resetSharedNamePath: (state: StorageState) => {
+      state.sharedNamePath = [];
+    },
+    pushSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
+      if (!state.sharedNamePath.map((path) => path.uuid).includes(action.payload.uuid)) {
+        state.sharedNamePath.push(action.payload);
+      }
+    },
+    popSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
+      const folderIndex: number = state.sharedNamePath.map((path) => path.uuid).indexOf(action.payload.uuid);
+
+      state.sharedNamePath = state.sharedNamePath.slice(0, folderIndex + 1);
+    },
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
+    },
+    setCurrentPath: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      state.currentPath = action.payload;
     },
     patchItem: (
       state: StorageState,
@@ -282,6 +362,14 @@ export const storageSlice = createSlice({
     resetState(state: StorageState) {
       Object.assign(state, initialState);
     },
+
+    setDriveItemsSort: (state: StorageState, action: PayloadAction<string>) => {
+      state.driveItemsSort = action.payload;
+    },
+
+    setDriveItemsOrder: (state: StorageState, action: PayloadAction<string>) => {
+      state.driveItemsOrder = action.payload;
+    },
   },
   extraReducers: storageExtraReducers,
 });
@@ -304,12 +392,14 @@ export const {
   setItemsToMove,
   setViewMode,
   resetNamePath,
+  setCurrentPath,
   pushNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
   patchItem,
   pushItems,
   clearCurrentThumbnailItems,
+  resetSharedNamePath,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

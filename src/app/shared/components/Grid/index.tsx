@@ -1,7 +1,7 @@
 import GridItem from './GridItem';
 import SkinSkeletonItem from './SkinSketelonItem';
 import { useEffect, useState } from 'react';
-import { ArrowUp, ArrowDown } from 'phosphor-react';
+import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 
 interface HeaderProps {
@@ -271,7 +271,7 @@ export default function List({
 
         {/* BODY */}
         <div
-          className={`grid h-full grid-flow-row grid-cols-1 content-start gap-3 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 ${
+          className={`2xl:grid-cols-7 grid h-full grid-flow-row grid-cols-1 content-start gap-3 p-5 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 ${
             !isLoading && 'overflow-y-auto'
           }`}
         >

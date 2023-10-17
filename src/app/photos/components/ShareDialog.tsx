@@ -1,5 +1,5 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
-import { Copy, Link, XCircle } from 'phosphor-react';
+import { Copy, Link, XCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { SdkFactory } from '../../core/factory/sdk';
@@ -17,10 +17,12 @@ export default function ShareDialog({
   onClose,
   photos,
   isOpen,
+  zIndex,
 }: {
   onClose: () => void;
   photos: PhotoId[];
   isOpen: boolean;
+  zIndex?: number;
 }): JSX.Element {
   const { translate } = useTranslationContext();
 
@@ -97,6 +99,9 @@ export default function ShareDialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
+        style={{
+          zIndex,
+        }}
         className={'absolute inset-0 bg-black bg-opacity-40'}
         onClick={onClose}
       ></Transition.Child>
@@ -107,6 +112,9 @@ export default function ShareDialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100 scale-100"
         leaveTo="opacity-0 scale-95"
+        style={{
+          zIndex,
+        }}
         className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
       >
         <XCircle

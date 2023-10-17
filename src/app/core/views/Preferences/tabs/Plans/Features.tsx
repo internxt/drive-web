@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowsClockwise, Check, LockKey, Shield } from 'phosphor-react';
+import { ArrowsClockwise, Check, LockKey, Shield } from '@phosphor-icons/react';
 
 export default function Features({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();

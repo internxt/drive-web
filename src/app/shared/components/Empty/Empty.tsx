@@ -1,4 +1,4 @@
-import { Upload } from 'phosphor-react';
+import { Upload } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 
 interface EmptyProps {

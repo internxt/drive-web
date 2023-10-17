@@ -12,6 +12,7 @@ import storageSelectors from '../storage.selectors';
 import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import tasksService from 'app/tasks/services/tasks.service';
 import { t } from 'i18next';
+import errorService from '../../../../core/services/error.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
@@ -81,7 +82,8 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             );
           }
         })
-        .catch(() => {
+        .catch((e) => {
+          errorService.reportError(e);
           tasksService.updateTask({
             taskId,
             merge: {

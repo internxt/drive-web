@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { WarningCircle } from 'phosphor-react';
+import { WarningCircle } from '@phosphor-icons/react';
 import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
 import { ReactComponent as LockLogo } from 'assets/icons/Lock.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

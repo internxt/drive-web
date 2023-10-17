@@ -16,9 +16,12 @@ describe('Unauthorized user', () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(WAIT_MILLISECONDS);
     cy.clearLocalStorage();
-
-    cy.get('.file-list-item:first-child .file-list-item-name-span')
-      .click({ force: true })
+    // To not show the after signup onboarding
+    cy.window().then((win) => {
+      win.localStorage.setItem('signUpTutorialCompleted', 'true');
+    });
+    cy.get(':nth-child(1) > .flex-grow-1 > [data-test="file-list-folder"] > .absolute')
+      .dblclick({ force: true })
       .then(() => {
         cy.url().should('include', '/login');
       });

@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Camera, Image } from 'phosphor-react';
+import { Camera, Image } from '@phosphor-icons/react';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Button from '../../../../../shared/components/Button/Button';

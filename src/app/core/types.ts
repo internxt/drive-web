@@ -22,6 +22,7 @@ export interface IFormValues {
   createFolder: string;
   teamMembers: number;
   token: string;
+  userRole: string;
 }
 
 export interface AppConfig {
@@ -106,14 +107,16 @@ export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
   Login = 'login',
+  SignupBlog = 'signup-blog',
   Auth = 'auth',
   ButtonAuth = 'buttonAuth',
-  Recover = 'recover',
+  RecoverAccount = 'recover-account',
   Drive = 'drive',
   Recents = 'recents',
   Trash = 'trash',
   Backups = 'backups',
   SharedLinks = 'shared-links',
+  Shared = 'shared',
   Photos = 'photos',
   Preferences = 'preferences',
   TeamsJoin = 'teams-join',
@@ -121,10 +124,10 @@ export enum AppView {
   TeamsDeactivation = 'teams-deactivation',
   TeamSuccess = 'team-success',
   CheckoutSuccess = 'checkout-success',
+  CheckoutCancel = 'checkout-cancel',
   CheckoutPlan = 'checkout-plan',
   Checkout = 'checkout',
-  Remove = 'remove',
-  RemoveDialog = 'removedialog',
+  RecoveryLink = 'recovery-link',
   ShareFileToken = 'share-token',
   ShareFolderToken = 'share-folder-token',
   SharePhotosToken = 'share-photos-token',
@@ -132,6 +135,9 @@ export enum AppView {
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
   VerifyEmail = 'verify-email',
+  ChangeEmail = 'change-email',
+  RequestAccess = 'request-access',
+  UniversalLinkSuccess = 'auth-success',
 }
 
 export enum SignupDeviceSource {
