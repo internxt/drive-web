@@ -58,7 +58,7 @@ const Navbar = (props: NavbarProps) => {
   const searchInput = useRef<HTMLInputElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
-  const [openSeachBox, setOpenSeachBox] = useState<boolean>(false);
+  const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterType[]>([]);
 
   const [query, setQuery] = useState('');
@@ -79,7 +79,7 @@ const Navbar = (props: NavbarProps) => {
         searchInput.current?.focus();
       }
     },
-    [hideSearch, openSeachBox],
+    [hideSearch, openSearchBox],
     { enableOnFormTags: ['INPUT'] },
   );
 
@@ -129,7 +129,7 @@ const Navbar = (props: NavbarProps) => {
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);
-      setOpenSeachBox(false);
+      setOpenSearchBox(false);
       setPreventBlur(false);
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
@@ -213,7 +213,7 @@ const Navbar = (props: NavbarProps) => {
         <form className="relative flex h-full w-full items-center" onSubmitCapture={handleSubmit}>
           <label
             className={`${
-              openSeachBox ? 'max-w-screen-sm' : 'max-w-sm'
+              openSearchBox ? 'max-w-screen-sm' : 'max-w-sm'
             } relative flex w-full items-center rounded-lg transition-all duration-150 ease-out`}
             htmlFor="globalSearchInput"
           >
@@ -245,22 +245,22 @@ const Navbar = (props: NavbarProps) => {
                 if (preventBlur) {
                   e.currentTarget.focus();
                 } else {
-                  setOpenSeachBox(false);
+                  setOpenSearchBox(false);
                 }
               }}
-              onFocusCapture={() => setOpenSeachBox(true)}
+              onFocusCapture={() => setOpenSearchBox(true)}
               placeholder={translate('general.searchBar.placeholder')}
             />
             <div
               className={`${
-                openSeachBox && 'opacity-0'
+                openSearchBox && 'opacity-0'
               } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transform rounded-md bg-gray-10 py-1 px-2 text-sm text-gray-50`}
             >
               {isMacOs ? '⌘F' : 'Ctrl F'}
             </div>
             <X
               className={`${
-                (query.length === 0 || !openSeachBox) && 'pointer-events-none opacity-0'
+                (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
               } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 transform cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
               onMouseDownCapture={() => {
                 setQuery('');
@@ -273,7 +273,7 @@ const Navbar = (props: NavbarProps) => {
 
           <div
             className={`${
-              openSeachBox
+              openSearchBox
                 ? 'translate-y-1.5 scale-100 opacity-100'
                 : 'pointer-events-none -translate-y-0.5 scale-98 opacity-0'
             } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top transform flex-col overflow-hidden rounded-xl bg-white text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out`}
