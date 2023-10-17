@@ -91,16 +91,6 @@ const Navbar = (props: NavbarProps) => {
 
   useEffect(() => {
     if (filters.length > 0) {
-      const filteredSearchResults = searchResult.filter((result) => {
-        for (const filter of filters) {
-          if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
-            return true;
-          }
-          if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
-            return true;
-          }
-        }
-      });
       setFilteredResults(filteredSearchResults);
     }
   }, [filters, searchResult]);
@@ -110,6 +100,17 @@ const Navbar = (props: NavbarProps) => {
       setFilteredResults([]);
     }
   }, [filters]);
+
+  const filteredSearchResults = searchResult.filter((result) => {
+    for (const filter of filters) {
+      if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
+        return true;
+      }
+      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
+        return true;
+      }
+    }
+  });
 
   const search = async () => {
     const query = searchInput.current?.value ?? '';
@@ -135,7 +136,7 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const openItem = (item) => {
-    if (item.itemType === 'folder' || item.itemType === 'FOLDER') {
+    if (item.itemType.toLowerCase() === 'folder') {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
       dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.item.id }));
