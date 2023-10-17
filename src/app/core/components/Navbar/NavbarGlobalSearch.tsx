@@ -28,9 +28,7 @@ interface NavbarProps {
   plan: PlanState;
 }
 
-export interface FilterType {
-  type: 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
-}
+type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
 
 const fileExtension = {
   image: fileExtensionGroups[FileExtensionGroup.Image],
@@ -97,10 +95,10 @@ const Navbar = (props: NavbarProps) => {
 
   const filteredSearchResults = searchResult.filter((result) => {
     for (const filter of filters) {
-      if (filter.type === 'folder' && result.itemType?.toLowerCase() === 'folder') {
+      if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
         return true;
       }
-      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter.type || 'default'])) {
+      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
         return true;
       }
     }
