@@ -53,7 +53,6 @@ const isSelectedType = (extension: string, extensionMap: FileExtensionMap) => {
   return false;
 };
 
-// TODO: SUBSTITUE THE NAVBAR WITH THIS ONE WITH NEW SEARCH BAR WHEN BACKED IS READY
 const Navbar = (props: NavbarProps) => {
   const { translate } = useTranslationContext();
   const { user, hideSearch } = props;
