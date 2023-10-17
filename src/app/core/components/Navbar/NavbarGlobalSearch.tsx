@@ -27,12 +27,6 @@ import FilterItem from './FilterItem';
 
 interface NavbarProps {
   user: UserSettings | undefined;
-  team: TeamsSettings | undefined | null;
-  workspace: Workspace;
-  isTeam: boolean;
-  storageFilters: StorageFilters;
-  currentFolderId: number;
-  dispatch: AppDispatch;
   hideSearch?: boolean;
   plan: PlanState;
 }

@@ -1,6 +1,5 @@
 import { FilterType } from './NavbarGlobalSearch';
 
-// const FilterItem = ({ id, Icon, name, filters, setFilters }: FilterItemProps): JSX.Element => {
 const FilterItem = ({ id, Icon, name, filters, setFilters }): JSX.Element => {
   const toggleFilter = (filter: FilterType) => {
     if (filters.includes(filter)) {
