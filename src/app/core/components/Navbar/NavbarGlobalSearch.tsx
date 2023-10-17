@@ -8,7 +8,7 @@ import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { TeamsSettings } from '../../../teams/types';
-import { Binoculars, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';
@@ -21,6 +21,9 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
+import NotFoundState from './NotFoundState';
+import EmptyState from './EmptyState';
+import FilterItem from './FilterItem';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -34,7 +37,9 @@ interface NavbarProps {
   plan: PlanState;
 }
 
-type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
+export interface FilterType {
+  type: 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
+}
 
 const fileExtension = {
   image: fileExtensionGroups[FileExtensionGroup.Image],
@@ -73,8 +78,6 @@ const Navbar = (props: NavbarProps) => {
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
   const doneTypingInterval = 200;
 
-  const PdfIcon = iconService.getItemIcon(false, 'pdf');
-  const FolderIcon = iconService.getItemIcon(true);
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
 
   useHotkeys(
@@ -103,10 +106,10 @@ const Navbar = (props: NavbarProps) => {
 
   const filteredSearchResults = searchResult.filter((result) => {
     for (const filter of filters) {
-      if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
+      if (filter.type === 'folder' && result.itemType?.toLowerCase() === 'folder') {
         return true;
       }
-      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
+      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter.type || 'default'])) {
         return true;
       }
     }
@@ -125,14 +128,6 @@ const Navbar = (props: NavbarProps) => {
     searchResultList.current?.scrollTo(0, 0);
     setSelectedResult(0);
     setLoadingSearch(false);
-  };
-
-  const toggleFilter = (filter: FilterType) => {
-    if (filters.includes(filter)) {
-      setFilters((currentFilters) => currentFilters.filter((currentFilter) => currentFilter !== filter));
-    } else {
-      setFilters((currentFilters) => [...currentFilters, filter]);
-    }
   };
 
   const openItem = (item) => {
@@ -191,20 +186,6 @@ const Navbar = (props: NavbarProps) => {
     if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
 
-  const FilterItem = ({ id, Icon, name }) => (
-    <div
-      className={`${
-        filters.includes(id)
-          ? 'bg-primary bg-opacity-10 text-primary ring-primary ring-opacity-20'
-          : 'bg-white text-gray-80 ring-gray-10 hover:bg-gray-1 hover:shadow-sm hover:ring-gray-20 active:bg-gray-5 active:ring-gray-30'
-      } flex h-8 cursor-pointer items-center space-x-2 rounded-full px-3 font-medium shadow-sm ring-1 transition-all duration-100 ease-out`}
-      onClick={() => toggleFilter(id)}
-    >
-      <Icon className="h-5 w-5 drop-shadow-sm filter" />
-      <span className="text-sm">{name}</span>
-    </div>
-  );
-
   const filterItems = [
     {
       id: 'folder',
@@ -232,27 +213,6 @@ const Navbar = (props: NavbarProps) => {
       name: translate('general.searchBar.filters.audio'),
     },
   ];
-
-  const NotFoundState = () => (
-    <div className="flex h-full flex-col items-center justify-center space-y-4">
-      <Binoculars weight="thin" className="text-gray-100" size={64} />
-      <div className="flex flex-col items-center space-y-1">
-        <p className="text-xl font-medium text-gray-100">{translate('general.searchBar.notFoundState.title')}</p>
-        <p className="text-sm font-normal text-gray-60">{translate('general.searchBar.notFoundState.subtitle')}</p>
-      </div>
-    </div>
-  );
-
-  const EmptyState = () => (
-    <div className="flex h-full flex-col items-center justify-center">
-      <div className="relative h-20 w-28">
-        <FolderIcon className="absolute top-0 left-11 h-16 w-16 rotate-10 transform drop-shadow-soft filter" />
-        <PdfIcon className="absolute top-0 left-2 h-16 w-16 rotate-10- transform drop-shadow-soft filter" />
-      </div>
-      <p className="text-xl font-medium text-gray-100">{translate('general.searchBar.emptyState.title')}</p>
-      <p className="text-sm font-normal text-gray-60">{translate('general.searchBar.emptyState.subtitle')}</p>
-    </div>
-  );
 
   return (
     <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40">
@@ -332,7 +292,14 @@ const Navbar = (props: NavbarProps) => {
             <div className="flex w-full flex-shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5">
               <button type="button" className="flex items-center space-x-2">
                 {filterItems.map((item) => (
-                  <FilterItem key={item.id} {...item} />
+                  <FilterItem
+                    key={item.id}
+                    id={item.id}
+                    Icon={item.Icon}
+                    name={item.name}
+                    filters={filters}
+                    setFilters={setFilters}
+                  />
                 ))}
               </button>
 
