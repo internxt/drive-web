@@ -33,6 +33,7 @@ interface UISliceState {
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
   isToastNotificacionOpen: boolean;
+  isGlobalSearch: boolean;
 }
 
 const initialState: UISliceState = {
@@ -66,6 +67,7 @@ const initialState: UISliceState = {
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
   isToastNotificacionOpen: false,
+  isGlobalSearch: false,
 };
 
 export const uiSlice = createSlice({
@@ -174,6 +176,9 @@ export const uiSlice = createSlice({
     setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isToastNotificacionOpen = action.payload;
     },
+    setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isGlobalSearch = action.payload;
+    },
   },
 });
 
@@ -201,6 +206,7 @@ export const {
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
   setIsToastNotificacionOpen,
+  setIsGlobalSearch,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;
