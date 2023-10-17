@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
+import { RootState } from '../../../store';
 import { storageSelectors } from '../../../store/slices/storage';
-import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
-import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
-import { TeamsSettings } from '../../../teams/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
