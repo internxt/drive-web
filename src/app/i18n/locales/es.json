@@ -177,10 +177,10 @@
   },
   "shareLayout": {
     "title": "",
-    "subtitle": "Almacenamiento seguro en la nube",
+    "subtitle": "Almacenamiento seguro en la nube con privacidad inigualable",
     "labels": {
       "privacy": "Privado por diseño",
-      "end-to-end": "Cifrado de extremo a extremo",
+      "open-source": "Código abierto y transparente",
       "military-grade": "Cifrado de grado militar",
       "zero-knowledge": "Conocimiento cero"
     },
@@ -1123,7 +1123,7 @@
     "download": "Descargar",
     "downloading": "Descargando",
     "downloaded": "Descargado",
-    "view": "Ver",
+    "view": "Previsualizar",
     "accessFile": "Acceder al archivo",
     "upgradeNow": "Comprar espacio",
     "purchasePlan": "Comprar plan",

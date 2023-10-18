@@ -175,10 +175,10 @@
   },
   "shareLayout": {
     "title": "INTERNXT",
-    "subtitle": "Archiviazione cloud sicura",
+    "subtitle": "Archiviazione cloud sicura con privacy senza pari",
     "labels": {
       "privacy": "Privato by design",
-      "end-to-end": "Crittografia end-to-end",
+      "open-source": "Open source e trasparente",
       "military-grade": "Crittografia di livello militare",
       "zero-knowledge": "Zero Knowledge"
     },
@@ -1111,7 +1111,7 @@
     "downloaded": "Scaricato",
     "delete": "Elimina",
     "share": "Condividi",
-    "view": "Visualizza",
+    "view": "Anteprima",
     "accessFile": "Accesso al file",
     "upgradeNow": "Aggiornare ora",
     "purchasePlan": "Aggiornare ora",

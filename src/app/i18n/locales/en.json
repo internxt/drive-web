@@ -194,10 +194,10 @@
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
-    "subtitle": "Private and secure cloud storage",
+    "subtitle": "Secure cloud storage with unmatched privacy",
     "labels": {
       "privacy": "Privacy by design",
-      "end-to-end": "End-to-end encryption",
+      "open-source": "Open source and transparent",
       "military-grade": "Military-grade encryption",
       "zero-knowledge": "Zero-knowledge technology"
     },
@@ -1140,7 +1140,7 @@
     "download": "Download",
     "downloading": "Downloading",
     "downloaded": "Downloaded",
-    "view": "View",
+    "view": "Preview",
     "accessFile": "Access File",
     "upgradeNow": "Upgrade now",
     "purchasePlan": "Upgrade now",

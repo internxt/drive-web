@@ -152,10 +152,10 @@
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
-    "subtitle": "Privater und sicherer Cloud-Speicher",
+    "subtitle": "Sicherer Cloud-Speicher mit unübertroffener Privatsphäre",
     "labels": {
       "privacy": "Datenschutz durch Design",
-      "end-to-end": "End-to-end Verschlüsselung",
+      "open-source": "Open Source und transparent",
       "military-grade": "Verschlüsselung auf Militärniveau",
       "zero-knowledge": "Zero-Knowledge Technologie"
     },
@@ -1017,7 +1017,7 @@
     "downloaded": "Runtergeladen",
     "delete": "Löschen",
     "share": "Teilen",
-    "view": "Ansicht",
+    "view": "Vorschau",
     "accessFile": "Zugriff auf Datei",
     "upgradeNow": "Upgrade jetzt",
     "purchasePlan": "Upgrade jetzt",
@@ -1046,7 +1046,8 @@
     "restoreHere": "Hier wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
-    "copyLink": "Kopiere Link"
+    "copyLink": "Kopiere Link",
+    "report": "Missbrauch melden"
   },
   "drive": {
     "usage": "Verwendung",
