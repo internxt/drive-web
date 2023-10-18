@@ -28,6 +28,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import Button from '../../../shared/components/Button/Button';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -76,10 +77,6 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       if (err.message !== 'Forbidden') {
         setIsLoaded(true);
         setIsError(true);
-        /**
-         * TODO: Check that the server returns proper error message instead
-         * of assuming that everything means that the link has expired
-         */
         throw new Error(translate('error.linkExpired') as string);
       }
     });
@@ -278,7 +275,8 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         {/* Actions */}
         <div className="flex flex-row items-center justify-center space-x-3">
           {isTypeAllowed() && (
-            <button
+            <Button
+              variant="secondary"
               onClick={() => {
                 setOpenPreview(true);
                 getBlob(new AbortController())
@@ -291,12 +289,10 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                     errorService.reportError(err);
                   });
               }}
-              className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-10 px-6
-                        font-medium text-blue-60 active:bg-blue-20 active:bg-opacity-65"
             >
-              <UilEye height="20" width="20" />
-              <span>{translate('actions.view')}</span>
-            </button>
+              <UilEye height={24} width={24} color="text-gray-80" />
+              <span className="ml-2">{translate('actions.view')}</span>
+            </Button>
           )}
 
           <button
