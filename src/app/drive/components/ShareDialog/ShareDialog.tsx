@@ -292,15 +292,24 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  const changeAccess = (mode: AccessMode) => {
+  const changeAccess = async (mode: AccessMode) => {
     closeSelectedUserPopover();
     if (mode != accessMode) {
       setIsLoading(true);
-      setAccessMode(mode);
+      try {
+        const sharingType = accessMode === 'restricted' ? 'private' : 'public';
+        const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+        const itemId = itemToShare?.item.uuid || '';
 
-      // TODO -> Change access
-      // If error change back to the previous mode
-
+        await shareService.updateSharingType(itemId, itemType, sharingType);
+        setAccessMode(mode);
+      } catch (error) {
+        errorService.reportError(error);
+        notificationsService.show({
+          text: 'Error Updating Sharing Type',
+          type: ToastType.Error,
+        });
+      }
       setIsLoading(false);
     }
   };
@@ -421,7 +430,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole !== 'reader' && accessMode !== 'public' ? (
+                {currentUserFolderRole !== 'reader' ? (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
@@ -437,33 +446,29 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {accessMode !== 'public' ? (
-                invitedUsers.length === 0 && showLoader ? (
-                  <>
-                    {Array.from({ length: 4 }, (_, i) => (
-                      <InvitedUsersSkeletonLoader key={`loader-${i}`} />
-                    ))}
-                  </>
-                ) : (
-                  invitedUsers.map((user, index) => (
-                    <User
-                      user={user}
-                      key={user.email}
-                      listPosition={index}
-                      translate={translate}
-                      openUserOptions={openUserOptions}
-                      selectedUserListIndex={selectedUserListIndex}
-                      userOptionsY={userOptionsY}
-                      onRemoveUser={onRemoveUser}
-                      userOptionsEmail={userOptionsEmail}
-                      onChangeRole={handleUserRoleChange}
-                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                      disableRoleChange={currentUserFolderRole !== 'owner'}
-                    />
-                  ))
-                )
+              {invitedUsers.length === 0 && showLoader ? (
+                <>
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <InvitedUsersSkeletonLoader key={`loader-${i}`} />
+                  ))}
+                </>
               ) : (
-                <></>
+                invitedUsers.map((user, index) => (
+                  <User
+                    user={user}
+                    key={user.email}
+                    listPosition={index}
+                    translate={translate}
+                    openUserOptions={openUserOptions}
+                    selectedUserListIndex={selectedUserListIndex}
+                    userOptionsY={userOptionsY}
+                    onRemoveUser={onRemoveUser}
+                    userOptionsEmail={userOptionsEmail}
+                    onChangeRole={handleUserRoleChange}
+                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                    disableRoleChange={currentUserFolderRole !== 'owner'}
+                  />
+                ))
               )}
             </div>
           </div>

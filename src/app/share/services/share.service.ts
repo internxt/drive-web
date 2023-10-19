@@ -368,7 +368,11 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
   return shareClient.stopSharingFolder(itemType, itemId);
 }
 
-export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+export const createPublicShareFromOwnerUser = async (
+  uuid: string,
+  itemType: 'folder' | 'file',
+  encryptionAlgorithm?: string,
+): Promise<SharingMeta> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic } = user;
   const code = crypto.randomBytes(32).toString('hex');
@@ -376,14 +380,22 @@ export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'fil
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
   const encryptedCode = aes.encrypt(code, mnemonic);
 
+  return createPublicSharingItem({
+    encryptionAlgorithm: encryptionAlgorithm || 'inxt-v2',
+    encryptionKey: encryptedMnemonic,
+    itemType,
+    itemId: uuid,
+    encryptedCode,
+  });
+};
+
+export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+  const user = localStorageService.getUser() as UserSettings;
+  const { mnemonic } = user;
+  const code = crypto.randomBytes(32).toString('hex');
+
   try {
-    const publicSharingItemData = await createPublicSharingItem({
-      encryptionAlgorithm: 'inxt-v2',
-      encryptionKey: encryptedMnemonic,
-      itemType,
-      itemId: uuid,
-      encryptedCode,
-    });
+    const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
     const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
@@ -779,6 +791,13 @@ export function getPublicSharingMeta(sharingId: string, code: string, password?:
   });
 }
 
+export function updateSharingType(itemId: string, itemType: 'file' | 'folder', sharingType: string): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.updateSharingType({ itemId, itemType, sharingType }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -808,6 +827,8 @@ const shareService = {
   declineSharedFolderInvite,
   processInvitation,
   createPublicSharingItem,
+  createPublicShareFromOwnerUser,
+  updateSharingType,
   getPublicSharingMeta,
   getPublicSharedFolderContent,
   getPublicShareLink,
