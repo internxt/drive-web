@@ -183,9 +183,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    const sharingType = props.isDriveItem
-      ? (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]?.type
-      : (itemToShare?.item as unknown as AdvancedSharedItem)?.sharingType;
+    let sharingType: string;
+
+    if (props.isDriveItem) {
+      sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
+        ?.type;
+    } else {
+      const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+      const itemId = itemToShare?.item.uuid || '';
+      const sharingData = await shareService.getSharingType(itemId, itemType);
+      sharingType = sharingData.type;
+    }
+
     if (sharingType === 'private') {
       shareAccessMode = 'restricted';
     }

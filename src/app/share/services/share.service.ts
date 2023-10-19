@@ -798,6 +798,13 @@ export function updateSharingType(itemId: string, itemType: 'file' | 'folder', s
   });
 }
 
+export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharingType({ itemId, itemType }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -813,6 +820,7 @@ const shareService = {
   getAllSharedFiles,
   getLinkFromShare,
   getAllShareLinks,
+  getSharingType,
   buildLinkFromShare,
   incrementShareView,
   getShareDomains,
