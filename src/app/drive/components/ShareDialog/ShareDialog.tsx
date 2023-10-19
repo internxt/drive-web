@@ -306,7 +306,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       } catch (error) {
         errorService.reportError(error);
         notificationsService.show({
-          text: 'Error Updating Sharing Type',
+          text: translate('modals.shareModal.errors.update-sharing-acces'),
           type: ToastType.Error,
         });
       }
