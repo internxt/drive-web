@@ -34,6 +34,30 @@ interface UploadItemsPayload {
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
 
+// const webWorker = new WebWorker(appWorker);
+
+// (webWorker as Worker).onmessage = function (e) {
+//   const result = e.data;
+//   console.log('upload worder 2 on message ');
+//   console.log({ e });
+//   if (result?.error) {
+//     // Maneja el error
+//     console.error(result.error);
+//   } else {
+//     // Maneja el resultado exitoso de la carga
+//     console.log('Carga completada:', result);
+//   }
+// };
+
+// // Define la función para iniciar la carga
+// function uploadFilesWithWorker(files, abortController?, options?, relatedTaskProgress?) {
+//   console.log('upload with woerker ');
+//   const parsedObject = JSON.parse(JSON.stringify({ files, abortController, options, relatedTaskProgress }));
+//   console.log({ parsedObject });
+//   (webWorker as Worker).postMessage({ parsedObject });
+//   console.log('after upload with worker ');
+// }
+
 const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   if (zeroLengthFilesNumber > 0) {
     const fileText = zeroLengthFilesNumber === 1 ? 'file' : 'files';
@@ -124,7 +148,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     await uploadFileWithManager(filesToUploadData);
-
     options.onSuccess?.();
 
     setTimeout(() => {
@@ -439,11 +462,13 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
+    // await uploadFilesWithWorker(filesToUploadData);
 
     options.onSuccess?.();
 
     if (errors.length > 0) {
       for (const error of errors) {
+        console.log({ error });
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
@@ -512,12 +537,14 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     }));
 
     await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
+    // await uploadFilesWithWorker(filesToUploadData, abortController, options, filesProgress);
 
     options.showNotifications = true;
     options.onSuccess?.();
 
     if (errors.length > 0) {
       for (const error of errors) {
+        console.log({ error });
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
@@ -532,7 +559,8 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.fulfilled, () => undefined)
     .addCase(uploadItemsThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options || {});
-
+      console.log({ error: requestOptions });
+      console.log({ errormessage: action.error.message });
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message || '' }),

@@ -11,8 +11,11 @@ import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
-import { TrackingPlan } from '../analytics/TrackingPlan';
-import analyticsService from '../analytics/services/analytics.service';
+import { createWebWorker } from '../../WebWorker';
+import appWorker from '../store/slices/storage/storage.thunks/app.worker';
+import { generateFileKey } from '../drive/services/network.service';
+
+const worker: Worker = createWebWorker(appWorker);
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -107,7 +110,7 @@ export class NetworkFacade {
     const uploadsAbortController = new AbortController();
     options.abortController?.signal.addEventListener('abort', () => uploadsAbortController.abort());
 
-    let realError: Error | null = null;
+    const realError: Error | null = null;
     let fileReadable: ReadableStream<Uint8Array>;
     const fileParts: { PartNumber: number; ETag: string }[] = [];
 
@@ -116,38 +119,68 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
+    const worker2 = async (upload: UploadTask): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        const uploadIndexToworker = upload.index + 1;
+        console.log('index to send to worker', uploadIndexToworker);
+
+        const messageHandler = (event) => {
+          const { result, etag, size, uploadIndex } = event.data;
+          if (result === 'success') {
+            console.log({ uploadIndex: uploadIndex });
+            console.log({ data: event.data });
+            const ETag = etag;
+            if (!ETag) {
+              reject(new Error('ETag header was not returned'));
+            }
+            fileParts.push({
+              ETag,
+              PartNumber: uploadIndex,
+            });
+            console.log({ fileParts });
+            resolve(uploadIndex);
+            // callback();
+          } else if (result === 'notifyProgress') {
+            notifyProgress(upload.index, size);
+          }
+          // worker.removeEventListener('message', messageHandler);
+        };
+        worker.onmessage = messageHandler;
+
+        worker.postMessage({
+          content: upload.contentToUpload,
+          url: upload.urlToUpload,
+          uploadIndex: uploadIndexToworker,
+          // opts: {
+          //   progressCallback: (_, uploadedBytes) => {
+          //     notifyProgress(upload.index, uploadedBytes);
+          //   },
+          //   abortController: uploadsAbortController,
+          // },
+        });
+
+        // worker.addEventListener('message', messageHandler);
+      });
+    };
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
 
-      const worker = async (upload: UploadTask) => {
-        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
-          progressCallback: (_, uploadedBytes) => {
-            notifyProgress(upload.index, uploadedBytes);
-          },
-          abortController: uploadsAbortController,
-        });
-
-        const ETag = etag;
-
-        if (!ETag) {
-          throw new Error('ETag header was not returned');
-        }
-        fileParts.push({
-          ETag,
-          PartNumber: upload.index + 1,
-        });
-      };
-
       const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
-        worker(task)
-          .then(() => {
+        console.log({ taskIndex: task.index });
+        worker2(task)
+          .then((uploadIndex) => {
+            console.log('finished task', { task: task.index });
+            console.log('finished task', { uploadIndex: uploadIndex });
             callback();
           })
           .catch((e) => {
+            console.log('error task', { task });
+
             callback(e);
           });
       }, limitConcurrency);
+      const uploadPromises: Promise<void>[] = [];
 
       const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
         if (uploadQueue.running() === limitConcurrency) {
@@ -159,29 +192,30 @@ export class NetworkFacade {
           else throw new Error('Upload cancelled by user');
         }
 
-        let errorAlreadyThrown = false;
+        const errorAlreadyThrown = false;
 
-        uploadQueue
-          .pushAsync({
-            contentToUpload: blob,
-            urlToUpload: urls[partIndex],
-            index: partIndex++,
-          })
-          .catch((err) => {
-            if (errorAlreadyThrown) return;
+        // uploadQueue
+        //   .pushAsync({
+        //     contentToUpload: blob,
+        //     urlToUpload: urls[partIndex],
+        //     index: partIndex++,
+        //   })
+        //   .catch((err) => {
+        //     if (errorAlreadyThrown) return;
 
-            errorAlreadyThrown = true;
-            if (err) {
-              uploadQueue.kill();
-              if (!uploadsAbortController?.signal.aborted) {
-                // Failed due to other reason, so abort requests
-                uploadsAbortController.abort();
-                // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
-                // https://github.com/node-fetch/node-fetch/issues/1462
-                realError = err;
-              }
-            }
-          });
+        //     errorAlreadyThrown = true;
+        //     if (err) {
+        //       uploadQueue.kill();
+        //       if (!uploadsAbortController?.signal.aborted) {
+        //         // Failed due to other reason, so abort requests
+        //         uploadsAbortController.abort();
+        //         // TODO: Do it properly with ```options.abortController?.abort(err.message);``` available from Node 17.2.0 in advance
+        //         // https://github.com/node-fetch/node-fetch/issues/1462
+        //         realError = err;
+        //       }
+        //     }
+        //   });
+        uploadPromises.push(worker2({ contentToUpload: blob, urlToUpload: urls[partIndex], index: partIndex++ }));
 
         // TODO: Remove
         blob = new Blob([]);
