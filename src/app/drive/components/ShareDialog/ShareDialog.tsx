@@ -306,7 +306,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (mode != accessMode) {
       setIsLoading(true);
       try {
-        const sharingType = accessMode === 'restricted' ? 'private' : 'public';
+        const sharingType = mode === 'restricted' ? 'private' : 'public';
         const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
         const itemId = itemToShare?.item.uuid || '';
 
