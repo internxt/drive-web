@@ -389,14 +389,24 @@ export const createPublicShareFromOwnerUser = async (
   });
 };
 
-export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+export const getPublicShareLink = async (
+  uuid: string,
+  itemType: 'folder' | 'file',
+  encriptedMnemonic?: string,
+): Promise<void> => {
   const user = localStorageService.getUser() as UserSettings;
-  const { mnemonic } = user;
+  let { mnemonic } = user;
   const code = crypto.randomBytes(32).toString('hex');
 
   try {
     const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
     const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+    const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
+
+    if (isUserInvited && encriptedMnemonic) {
+      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
+      if (ownerMnemonic) mnemonic = ownerMnemonic;
+    }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
     copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
