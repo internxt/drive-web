@@ -120,7 +120,7 @@ export class NetworkFacade {
     };
 
     const worker2 = async (upload: UploadTask): Promise<void> => {
-      return new Promise((resolve, reject) => {
+      return await new Promise((resolve, reject) => {
         const uploadIndexToworker = upload.index + 1;
         console.log('index to send to worker', uploadIndexToworker);
 
@@ -139,7 +139,6 @@ export class NetworkFacade {
             });
             console.log({ fileParts });
             resolve(uploadIndex);
-            // callback();
           } else if (result === 'notifyProgress') {
             notifyProgress(upload.index, size);
           }
@@ -165,9 +164,13 @@ export class NetworkFacade {
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
+      const uploadPromises: Promise<void>[] = [];
 
       const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
         console.log({ taskIndex: task.index });
+        console.log({ queueLength: uploadQueue.length() });
+        console.log({ queuerunning: uploadQueue.running() });
+
         worker2(task)
           .then((uploadIndex) => {
             console.log('finished task', { task: task.index });
@@ -180,7 +183,6 @@ export class NetworkFacade {
             callback(e);
           });
       }, limitConcurrency);
-      const uploadPromises: Promise<void>[] = [];
 
       const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
         if (uploadQueue.running() === limitConcurrency) {
@@ -216,7 +218,7 @@ export class NetworkFacade {
         //     }
         //   });
         uploadPromises.push(worker2({ contentToUpload: blob, urlToUpload: urls[partIndex], index: partIndex++ }));
-
+        await Promise.all(uploadPromises);
         // TODO: Remove
         blob = new Blob([]);
       });
