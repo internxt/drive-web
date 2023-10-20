@@ -1,4 +1,5 @@
 const EXAMPLE_FILENAME = 'example.txt';
+const EXAMPLE_FOLDERNAME = 'folder example';
 
 const MENU_ITEM_SELECTOR = 'div[id*="headlessui-menu-item"] div';
 const FILE_ITEM_SELECTOR = '[data-test=file-list-file]';
@@ -9,4 +10,11 @@ const PAGINATION_ENDPOINT_REGEX = {
   FILES: /\/folders\/\d+\/files\/\?offset=\d+&limit=\d+/,
 };
 
-export { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR, FILE_ITEM_SELECTOR, FOLDER_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX };
+export {
+  EXAMPLE_FILENAME,
+  EXAMPLE_FOLDERNAME,
+  MENU_ITEM_SELECTOR,
+  FILE_ITEM_SELECTOR,
+  FOLDER_ITEM_SELECTOR,
+  PAGINATION_ENDPOINT_REGEX,
+};

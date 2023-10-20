@@ -26,7 +26,7 @@
 
 import 'cypress-file-upload';
 import * as path from 'path';
-import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../constans';
+import { EXAMPLE_FILENAME, EXAMPLE_FOLDERNAME, FOLDER_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
 
 Cypress.Commands.add('login', (enableOnboarding?: boolean) => {
   const fixturesFolder = Cypress.config('fixturesFolder');
@@ -58,6 +58,12 @@ Cypress.Commands.add('removeExampleFile', () => {
   cy.contains(EXAMPLE_FILENAME).should('not.exist');
 });
 
+Cypress.Commands.add('removeExampleFolder', () => {
+  cy.contains(EXAMPLE_FOLDERNAME).rightclick({ force: true });
+  cy.contains(MENU_ITEM_SELECTOR, 'Move to trash').click({ force: true });
+  cy.contains(EXAMPLE_FOLDERNAME).should('not.exist');
+});
+
 Cypress.Commands.add('uploadExampleFile', () => {
   cy.get('.infinite-scroll-component').then((element) => {
     if (element.text().includes(EXAMPLE_FILENAME)) {
@@ -67,4 +73,25 @@ Cypress.Commands.add('uploadExampleFile', () => {
       cy.get('[data-test=file-name]').should('have.text', EXAMPLE_FILENAME);
     }
   });
+});
+
+Cypress.Commands.add('createFolder', (itemName: string) => {
+  cy.get('[data-test=create-folder-button]').click({ force: true });
+  cy.get('[data-test=create-folder-input]').clear().type(itemName);
+  cy.get('button[type="submit"]').click({ force: true });
+});
+
+Cypress.Commands.add('moveFolder', (itemName: string) => {
+  cy.contains(FOLDER_ITEM_SELECTOR, itemName).rightclick();
+  cy.get(MENU_ITEM_SELECTOR).contains('Move').click({ force: true });
+  cy.get('[data-test=folder-list]').click('top', { force: true });
+  cy.get('[data-test=move-items-dialog-accept-button]').click({ force: true });
+});
+
+Cypress.Commands.add('shouldNotFindFolder', (itemName: string) => {
+  cy.get('.infinite-scroll-component').contains(itemName).should('not.exist');
+});
+
+Cypress.Commands.add('shouldFindLoggerText', (itemName: string) => {
+  cy.get('[data-test=task-logger]').contains(itemName).should('eq', itemName);
 });

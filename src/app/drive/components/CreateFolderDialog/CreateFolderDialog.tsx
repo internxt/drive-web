@@ -99,6 +99,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
           accent={error ? 'error' : undefined}
           message={error}
           autofocus
+          dataTest="create-folder-input"
         />
 
         <div className="flex flex-row items-center justify-end space-x-2">
