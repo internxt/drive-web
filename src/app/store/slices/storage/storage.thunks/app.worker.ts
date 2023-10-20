@@ -32,8 +32,8 @@ export default () => {
       }
 
       // opts.progressCallback(content.size, content.size);
-      // provoca condiciones de carrera, revisar como hacer esto
-      // postMessage({ result: 'notifyProgress', size: content.size });
+      // WITH QUEUE NOT WORKING WELL
+      postMessage({ result: 'notifyProgress', size: content.size });
       return { etag };
     } catch (err) {
       if ((err as any).name === 'AbortError') {
