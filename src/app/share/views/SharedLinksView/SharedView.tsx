@@ -4,6 +4,7 @@ import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
+import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
@@ -38,8 +39,7 @@ import { RootState } from 'app/store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import crypto from 'crypto';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -88,6 +88,7 @@ export default function SharedView(): JSX.Element {
   const [user, setUser] = useState<AdvancedSharedItem['user']>();
   const [currentFolderId, setCurrentFolderId] = useState<string>('');
   const [currentParentFolderId, setCurrentParentFolderId] = useState<number>();
+  const [currentShareOwnerAvatar, setCurrentShareOwnerAvatar] = useState<string>('');
   const [encryptionKey, setEncryptionKey] = useState<string>('');
   const [filesOwnerCredentials, setFilesOwnerCredentials] = useState<{
     networkPass: string;
@@ -173,6 +174,7 @@ export default function SharedView(): JSX.Element {
     resetCurrentSharingStatus();
     setCurrentResourcesToken('');
     setNextResourcesToken('');
+    setCurrentShareOwnerAvatar('');
 
     try {
       const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
@@ -186,7 +188,6 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = true;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-        shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
         return shareItem;
       });
 
@@ -226,10 +227,6 @@ export default function SharedView(): JSX.Element {
         shareItem.isFolder = false;
         shareItem.isRootLink = true;
         shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-        shareItem.credentials = {
-          user: response.credentials.networkUser,
-          pass: response.credentials.networkPass,
-        };
         return shareItem;
       });
 
@@ -270,7 +267,10 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = true;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
+          shareItem.credentials = {
+            networkUser: response.credentials.networkUser,
+            networkPass: response.credentials.networkPass,
+          };
           return shareItem;
         });
 
@@ -326,7 +326,10 @@ export default function SharedView(): JSX.Element {
           shareItem.isFolder = false;
           shareItem.isRootLink = false;
           shareItem.name = getItemPlainName(shareItem as unknown as DriveItemData);
-          shareItem.credentials = { user: response.credentials.networkUser, pass: response.credentials.networkPass };
+          shareItem.credentials = {
+            networkUser: response.credentials.networkUser,
+            networkPass: response.credentials.networkPass,
+          };
           return shareItem;
         });
 
@@ -396,6 +399,7 @@ export default function SharedView(): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
+      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -601,19 +605,10 @@ export default function SharedView(): JSX.Element {
   const downloadItem = async (shareItem: AdvancedSharedItem) => {
     try {
       if (shareItem.isRootLink) {
-        const { credentials } = await shareService.getSharedFolderContent(
-          // folderUUID
-          shareItem.uuid,
-          'files',
-          '',
-          0,
-          ITEMS_PER_PAGE,
-          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-        );
         await shareService.downloadSharedFiles({
           creds: {
-            user: credentials.networkUser,
-            pass: credentials.networkPass,
+            user: shareItem.credentials.networkUser,
+            pass: shareItem.credentials.networkPass,
           },
           dispatch,
           selectedItems,
@@ -629,7 +624,10 @@ export default function SharedView(): JSX.Element {
           orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         );
         await shareService.downloadSharedFiles({
-          creds: shareItem.credentials,
+          creds: {
+            user: shareItem.credentials.networkUser,
+            pass: shareItem.credentials.networkPass,
+          },
           dispatch,
           selectedItems,
           encryptionKey: encryptionKey,
@@ -680,6 +678,7 @@ export default function SharedView(): JSX.Element {
 
   const openPreview = async (shareItem: AdvancedSharedItem) => {
     const previewItem = shareItem as unknown as PreviewFileItem;
+    previewItem.credentials = { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass };
 
     const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
 
@@ -687,10 +686,12 @@ export default function SharedView(): JSX.Element {
     dispatch(uiActions.setIsFileViewerOpen(true));
   };
 
-  const isItemOwnedByCurrentUser = () => {
+  const isItemOwnedByCurrentUser = (userUUid?: string) => {
     const currentUser = localStorageService.getUser();
-    if (currentUser?.uuid && user?.uuid) {
-      return currentUser.uuid === user.uuid;
+
+    if (currentUser?.uuid && (user?.uuid || userUUid)) {
+      if (userUUid) return currentUser.uuid === userUUid;
+      else return currentUser.uuid == user?.uuid;
     }
     return false;
   };
@@ -698,6 +699,16 @@ export default function SharedView(): JSX.Element {
   const isCurrentUserViewer = useCallback(() => {
     return currentUserRole === UserRoles.Reader;
   }, [currentUserRole]);
+
+  const getOwnerAvatarSrc = useCallback(
+    (shareItem) => {
+      if (currentShareOwnerAvatar) {
+        return currentShareOwnerAvatar;
+      }
+      return shareItem.user?.avatar ? shareItem.user?.avatar : null;
+    },
+    [currentShareOwnerAvatar],
+  );
 
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
@@ -830,18 +841,19 @@ export default function SharedView(): JSX.Element {
           )}
         </div>
       </div>
+      <WarningMessageWrapper />
       <div className="flex h-full w-full flex-col overflow-y-auto">
         <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
               label: translate('shared-links.list.name'),
-              width: 'flex-1 min-w-104 truncate flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-activity truncate whitespace-nowrap',
               name: 'folder',
               orderable: false,
             },
             {
               label: translate('shared-links.list.owner'),
-              width: 'w-80', //w-1/12
+              width: 'w-64',
               name: 'ownerId',
               orderable: true,
               defaultDirection: 'ASC',
@@ -849,14 +861,14 @@ export default function SharedView(): JSX.Element {
 
             {
               label: translate('shared-links.list.size'),
-              width: 'w-40', //w-1.5/12
+              width: 'w-40',
               name: 'fileSize',
               orderable: true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('shared-links.list.created'),
-              width: 'w-40', //w-2/12
+              width: 'w-40',
               name: 'createdAt',
               orderable: true,
               defaultDirection: 'ASC',
@@ -868,15 +880,16 @@ export default function SharedView(): JSX.Element {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
           }}
+          onDoubleClick={onItemDoubleClicked}
           itemComposition={[
             (shareItem: AdvancedSharedItem) => {
               const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
               return (
-                <div className={'flex w-full flex-row items-center space-x-6 overflow-hidden'}>
-                  <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
-                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
-                      <Users size={12} color="white" weight="fill" />
+                <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
+                  <div className="relative flex h-10 w-10 flex-shrink items-center justify-center">
+                    <Icon className="flex h-full justify-center drop-shadow-soft filter" />
+                    <div className="absolute -right-1.5 -bottom-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                      <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>
                   <div
@@ -908,7 +921,7 @@ export default function SharedView(): JSX.Element {
                         ? `${shareItem.user?.name} ${shareItem.user?.lastname}`
                         : `${user?.name} ${user?.lastname}`
                     }
-                    src={shareItem.user?.avatar ? shareItem.user?.avatar : null}
+                    src={getOwnerAvatarSrc(shareItem)}
                   />
                 </div>
                 <span className={`${isItemSelected(shareItem) ? 'text-gray-100' : 'text-gray-60'}`}>
@@ -948,10 +961,10 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  renameItem: isItemOwnedByCurrentUser() ? renameItem : undefined,
-                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
+                  renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
+                  moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings,
@@ -959,9 +972,9 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
-                  moveItem: isItemOwnedByCurrentUser() ? moveItem : undefined,
+                  moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
           }
           keyBoardShortcutActions={{
@@ -970,10 +983,10 @@ export default function SharedView(): JSX.Element {
               if (selectedItems.length === 1) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
-                  ...(selectedItem as unknown as DriveItemData),
+                  ...selectedItem,
                   name: selectedItem.plainName ? selectedItem.plainName : '',
                 };
-                setEditNameItem(itemToRename);
+                renameItem(itemToRename);
               }
             },
           }}
