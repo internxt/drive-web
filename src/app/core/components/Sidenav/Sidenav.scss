@@ -1,4 +1,3 @@
-@layer components {
   .side-nav {
     @apply w-sidenav flex-none flex flex-col justify-between;
 
@@ -16,7 +15,6 @@
       @apply left-2.5;
     }
   }
-}
 
 .account-state-container {
   box-shadow: 0 4px 30px rgba(122, 134, 154, 0.12);

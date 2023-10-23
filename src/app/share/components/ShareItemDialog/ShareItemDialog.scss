@@ -1,18 +1,16 @@
-@layer components {
-  .copy-effect {
-    animation-duration: 1s;
-    animation-name: fadeOutTop;
+.copy-effect {
+  animation-duration: 1s;
+  animation-name: fadeOutTop;
+}
+
+@keyframes fadeOutTop {
+  from {
+    opacity: 1;
+    top: 0;
   }
 
-  @keyframes fadeOutTop {
-    from {
-      opacity: 1;
-      top: 0;
-    }
-
-    to {
-      opacity: 0;
-      bottom: 10px;
-    }
+  to {
+    opacity: 0;
+    bottom: 10px;
   }
 }

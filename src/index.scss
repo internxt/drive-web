@@ -71,7 +71,7 @@ code {
   aspect-ratio: 16 / 9;
 }
 
-@layer components {
+
   html {
     margin: 0;
     padding: 0;
@@ -280,7 +280,6 @@ code {
 
     @apply rounded-6px bg-blue-50 bg-opacity-30;
   }
-}
 
 /* RECAPTCHA */
 .grecaptcha-badge {

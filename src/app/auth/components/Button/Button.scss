@@ -1,8 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
-@layer components {
   .button-primary {
     @apply h-11 cursor-pointer rounded-lg bg-primary px-5 font-medium text-white duration-100 ease-in-out hover:bg-primary-dark;
 
@@ -38,4 +33,4 @@
   .button-loading-spinner {
     @apply inline h-5 w-5 animate-spin;
   }
-}
+
