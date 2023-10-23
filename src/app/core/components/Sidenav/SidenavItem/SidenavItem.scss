@@ -1,30 +1,29 @@
-  a.nav-link.active {
-    @apply text-blue-60;
-  }
+a.nav-link.active {
+  @apply text-blue-60;
+}
 
-  .side-navigator-item {
-    @apply relative cursor-pointer hover:text-blue-60 mb-1;
+.side-navigator-item {
+  @apply relative cursor-pointer hover:text-blue-60 mb-1;
 
-    &.collapsed {
-      @apply hover:shadow-b;
+  &.collapsed {
+    @apply hover:shadow-b;
 
-      a.nav-link.active {
-        @apply bg-neutral-20;
+    a.nav-link.active {
+      @apply bg-neutral-20;
 
-        &::after {
-          content: "";
-          width: 1px;
-          height: 16px;
-          bottom: 12;
-          right: 0%;
+      &::after {
+        content: "";
+        width: 1px;
+        height: 16px;
+        bottom: 12;
+        right: 0%;
 
-          @apply absolute bg-blue-60;
-        }
+        @apply absolute bg-blue-60;
       }
     }
   }
+}
 
-  a.nav-link {
-    @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
-  }
-
+a.nav-link {
+  @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
+}

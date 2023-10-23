@@ -1,8 +1,7 @@
-  .input-primary {
-    @apply focus:outline-none h-11 appearance-none rounded-md border-gray-40 bg-white px-4 text-lg focus:border-primary;
-  }
+.input-primary {
+  @apply focus:outline-none h-11 appearance-none rounded-md border-gray-40 bg-white px-4 text-lg focus:border-primary;
+}
 
-  .input-error {
-    @apply h-11 appearance-none rounded-md border-red-std bg-white px-4 text-lg;
-  }
-
+.input-error {
+  @apply h-11 appearance-none rounded-md border-red-std bg-white px-4 text-lg;
+}

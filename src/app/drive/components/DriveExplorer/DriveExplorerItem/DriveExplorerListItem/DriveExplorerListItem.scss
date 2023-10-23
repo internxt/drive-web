@@ -1,41 +1,41 @@
-  .file-list-item {
-    @apply relative flex flex-grow w-full flex-row items-center text-base;
+.file-list-item {
+  @apply relative flex flex-grow w-full flex-row items-center text-base;
 
-    &.selected {
-      @apply border-blue-20 border-opacity-65;
+  &.selected {
+    @apply border-blue-20 border-opacity-65;
+  }
+
+  &.is-dragging {
+    @apply opacity-50;
+  }
+}
+
+.hover-action {
+  @apply invisible text-primary transition group-hover:visible;
+
+  img {
+    width: 14px;
+  }
+}
+
+.file-list-item-edit-name-button {
+  min-width: 20px;
+
+  @apply ml-1 h-5 w-5 cursor-pointer text-primary opacity-0;
+}
+
+.file-list-item-name {
+  &:hover {
+    .file-list-item-edit-name-button {
+      @apply opacity-100;
     }
-
-    &.is-dragging {
-      @apply opacity-50;
-    }
   }
+}
 
-  .hover-action {
-    @apply invisible text-primary transition group-hover:visible;
+.file-list-item-name-span {
+  @apply flex-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-gray-80;
+}
 
-    img {
-      width: 14px;
-    }
-  }
-
-  .file-list-item-edit-name-button {
-    min-width: 20px;
-
-    @apply ml-1 h-5 w-5 cursor-pointer text-primary opacity-0;
-  }
-
-  .file-list-item-name {
-    &:hover {
-      .file-list-item-edit-name-button {
-        @apply opacity-100;
-      }
-    }
-  }
-
-  .file-list-item-name-span {
-    @apply flex-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-gray-80;
-  }
-
-  .file-list-item-actions-button {
-    @apply h-5 w-5 rounded-1/2 bg-neutral-20 p-0.5 font-bold text-primary;
-  }
+.file-list-item-actions-button {
+  @apply h-5 w-5 rounded-1/2 bg-neutral-20 p-0.5 font-bold text-primary;
+}

@@ -1,20 +1,20 @@
-  .side-nav {
-    @apply w-sidenav flex-none flex flex-col justify-between;
+.side-nav {
+  @apply w-sidenav flex-none flex flex-col justify-between;
 
-    .collapse-button {
-      left: 11.8rem;
+  .collapse-button {
+    left: 11.8rem;
 
-      @apply top-2;
-    }
+    @apply top-2;
   }
+}
 
-  .side-nav.collapsed {
-    @apply bg-white w-sidenav-collapsed px-0;
+.side-nav.collapsed {
+  @apply bg-white w-sidenav-collapsed px-0;
 
-    .collapse-button {
-      @apply left-2.5;
-    }
+  .collapse-button {
+    @apply left-2.5;
   }
+}
 
 .account-state-container {
   box-shadow: 0 4px 30px rgba(122, 134, 154, 0.12);

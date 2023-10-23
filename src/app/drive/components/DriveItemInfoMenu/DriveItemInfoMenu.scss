@@ -1,21 +1,21 @@
-  .file-activity-tabs-inner-container {
-    top: 1px;
+.file-activity-tabs-inner-container {
+  top: 1px;
 
-    @apply relative w-full flex justify-center;
+  @apply relative w-full flex justify-center;
+}
+
+.file-activity-info-item {
+  @apply mb-6;
+
+  span {
+    @apply block;
   }
 
-  .file-activity-info-item {
-    @apply mb-6;
-
-    span {
-      @apply block;
-    }
-
-    .label {
-      @apply text-xs;
-    }
-
-    .value {
-      @apply text-sm;
-    }
+  .label {
+    @apply text-xs;
   }
+
+  .value {
+    @apply text-sm;
+  }
+}
