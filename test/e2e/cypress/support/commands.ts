@@ -74,24 +74,3 @@ Cypress.Commands.add('uploadExampleFile', () => {
     }
   });
 });
-
-Cypress.Commands.add('createFolder', (itemName: string) => {
-  cy.get('[data-test=create-folder-button]').click({ force: true });
-  cy.get('[data-test=create-folder-input]').clear().type(itemName);
-  cy.get('button[type="submit"]').click({ force: true });
-});
-
-Cypress.Commands.add('moveFolder', (itemName: string) => {
-  cy.contains(FOLDER_ITEM_SELECTOR, itemName).rightclick();
-  cy.get(MENU_ITEM_SELECTOR).contains('Move').click({ force: true });
-  cy.get('[data-test=folder-list]').click('top', { force: true });
-  cy.get('[data-test=move-items-dialog-accept-button]').click({ force: true });
-});
-
-Cypress.Commands.add('shouldNotFindFolder', (itemName: string) => {
-  cy.get('.infinite-scroll-component').contains(itemName).should('not.exist');
-});
-
-Cypress.Commands.add('shouldFindLoggerText', (itemName: string) => {
-  cy.get('[data-test=task-logger]').contains(itemName).should('eq', itemName);
-});
