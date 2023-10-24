@@ -189,7 +189,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         <CreateFolderDialog currentFolderId={currentFolderId} />
 
         {/* Folder list */}
-        <div data-test="folder-list" className="flex flex-col">
+        <div className="flex flex-col">
           <div className="flex h-10 items-center">
             {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
           </div>
@@ -243,7 +243,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
             <Button
               disabled={isLoading}
               variant="primary"
-              dataTest="move-items-dialog-accept-button"
               onClick={() =>
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
               }

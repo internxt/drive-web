@@ -26,7 +26,7 @@
 
 import 'cypress-file-upload';
 import * as path from 'path';
-import { EXAMPLE_FILENAME, EXAMPLE_FOLDERNAME, FOLDER_ITEM_SELECTOR, MENU_ITEM_SELECTOR } from '../constans';
+import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../constans';
 
 Cypress.Commands.add('login', (enableOnboarding?: boolean) => {
   const fixturesFolder = Cypress.config('fixturesFolder');
@@ -56,12 +56,6 @@ Cypress.Commands.add('removeExampleFile', () => {
   cy.contains(EXAMPLE_FILENAME).rightclick({ force: true });
   cy.contains(MENU_ITEM_SELECTOR, 'Move to trash').click({ force: true });
   cy.contains(EXAMPLE_FILENAME).should('not.exist');
-});
-
-Cypress.Commands.add('removeExampleFolder', () => {
-  cy.contains(EXAMPLE_FOLDERNAME).rightclick({ force: true });
-  cy.contains(MENU_ITEM_SELECTOR, 'Move to trash').click({ force: true });
-  cy.contains(EXAMPLE_FOLDERNAME).should('not.exist');
 });
 
 Cypress.Commands.add('uploadExampleFile', () => {

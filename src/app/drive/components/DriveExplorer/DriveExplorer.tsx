@@ -81,7 +81,6 @@ import ShareDialog from '../ShareDialog/ShareDialog';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import BannerWrapper from 'app/banners/BannerWrapper';
-import envService from 'app/core/services/env.service';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -597,12 +596,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         data-tooltip-content={translate('actions.upload.folder')}
         data-tooltip-place="bottom"
       >
-        <Button
-          dataTest="create-folder-button"
-          variant="tertiary"
-          className="aspect-square"
-          onClick={onCreateFolderButtonClicked}
-        >
+        <Button variant="tertiary" className="aspect-square" onClick={onCreateFolderButtonClicked}>
           <FolderSimplePlus className="h-6 w-6" />
         </Button>
         <TooltipElement id="createfolder-tooltip" delayShow={DELAY_SHOW_MS} />
@@ -671,7 +665,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      {envService.isProduction() && <BannerWrapper />}
+      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
