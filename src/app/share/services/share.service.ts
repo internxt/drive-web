@@ -648,6 +648,10 @@ export async function downloadSharedFiles({
   } else {
     const initPage = 0;
     const itemsPerPage = 15;
+    let folderName;
+    if (selectedItems.length === 1 && selectedItems[0].isFolder) {
+      folderName = selectedItems[0].name;
+    }
 
     const createFoldersIterator = (directoryUuid: string, resourcesToken?: string) => {
       return new DirectorySharedFolderIterator(
@@ -672,6 +676,7 @@ export async function downloadSharedFiles({
         fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
         areSharedItems: true,
+        sharedFolderName: folderName,
       }),
     );
   }

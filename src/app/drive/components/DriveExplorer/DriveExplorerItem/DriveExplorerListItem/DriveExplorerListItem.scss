@@ -1,6 +1,6 @@
 @layer components {
   .file-list-item {
-    @apply relative flex flex-grow w-full flex-row items-center text-base;
+    @apply relative flex flex-grow flex-row items-center text-base;
 
     &.selected {
       @apply border-blue-20 border-opacity-65;
@@ -33,9 +33,9 @@
     }
   }
 
-  .file-list-item-name-span {
-    @apply flex-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-gray-80;
-  }
+  // .file-list-item-name-span {
+  //   @apply flex-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-gray-80;
+  // }
 
   .file-list-item-actions-button {
     @apply h-5 w-5 rounded-1/2 bg-neutral-20 p-0.5 font-bold text-primary;

@@ -15,6 +15,7 @@ import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import WarningMessageWrapper from '../../drive/components/WarningMessage/WarningMessageWrapper';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -82,6 +83,7 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   return (
     <>
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
+        <WarningMessageWrapper />
         {showEmpty ? (
           <Empty
             title={translate('views.photos.empty.title')}

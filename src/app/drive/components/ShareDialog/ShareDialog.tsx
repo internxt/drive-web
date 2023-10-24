@@ -70,6 +70,7 @@ const cropSharedName = (name: string) => {
 type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
+  onShareItem?: () => void;
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
@@ -250,7 +251,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
   };
 
-  const onCopyLink = (): void => {
+  const onCopyLink = async (): Promise<void> => {
     if (accessMode === 'restricted') {
       getPrivateShareLink();
       closeSelectedUserPopover();
@@ -258,7 +259,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
 
     if (itemToShare?.item.uuid) {
-      shareService.getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+      await shareService.getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+      props.onShareItem?.();
       closeSelectedUserPopover();
     }
   };
@@ -313,7 +315,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         itemName,
       }),
     );
-
+    props.onShareItem?.();
     setShowStopSharingConfirmation(false);
     onClose();
     setIsLoading(false);

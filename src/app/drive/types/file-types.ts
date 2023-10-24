@@ -1,4 +1,4 @@
-type FileExtensionMap = Record<string, string[]>;
+export type FileExtensionMap = Record<string, string[]>;
 export interface VideoExtensions {
   webm: 'webm';
   mkv: 'mkv';
