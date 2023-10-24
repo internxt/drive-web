@@ -638,7 +638,9 @@
       },
       "errors": {
         "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde.",
-        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde."
+        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde.",
+        "update-sharing-access": "El modo de acceso no se pudo actualizar, por favor inténtelo de nuevo más tarde"
+        }
       },
       "general": {
         "generalAccess": "Acceso general",

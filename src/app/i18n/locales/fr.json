@@ -573,7 +573,8 @@
       },
       "errors": {
         "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
-        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard."
+        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard.",
+        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard"
       },
       "general": {
         "generalAccess": "Accès général",
