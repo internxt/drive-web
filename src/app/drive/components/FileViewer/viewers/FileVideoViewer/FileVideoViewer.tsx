@@ -28,21 +28,18 @@ const FileVideoViewer = ({
       setIsPreviewAvailable(false);
     });
 
-    // Cleanup.
+    // Cleanup
     return () => {
       URL.revokeObjectURL(videoPlayer.src);
     };
   }, []);
 
   return (
-    <div className={'flex h-full w-full flex-col items-center justify-center'}>
+    <div className={'flex max-h-screen w-full flex-col items-center justify-center'}>
       <video
         ref={videoPlayerRef}
         controls
-        className={`${dimensions.width > dimensions.height ? 'w-full' : 'h-full'}`}
-        style={{
-          aspectRatio: `${dimensions.width}/${dimensions.height}`,
-        }}
+        className={`${dimensions.width > dimensions.height ? 'w-full' : 'max-h-screen'}`}
       ></video>
     </div>
   );
