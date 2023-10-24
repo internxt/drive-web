@@ -73,6 +73,10 @@ type ShareDialogProps = {
   onShareItem?: () => void;
 };
 
+const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
+  return (item as AdvancedSharedItem).encryptionKey !== undefined;
+};
+
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
@@ -267,11 +271,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       return;
     }
 
-    if (itemToShare?.item.uuid) {
+    if (itemToShare?.item.uuid && isAdvanchedShareItem(itemToShare.item)) {
       await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
-        (itemToShare?.item as unknown as AdvancedSharedItem)?.encryptionKey,
+        itemToShare?.item?.encryptionKey,
       );
       props.onShareItem?.();
       closeSelectedUserPopover();
