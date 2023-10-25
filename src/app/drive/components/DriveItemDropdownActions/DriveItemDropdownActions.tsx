@@ -99,7 +99,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const { title, hiddenActions } = props;
 
   return (
-    <div>
+    <div className="z-20 flex flex-col">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
       {/* {!hiddenActions.includes(DriveItemAction.Share) && !props.isTrash ? (
@@ -111,10 +111,10 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
         <Dropdown.Item
           id="share"
-          onClick={() => {
+          onClick={() =>
             //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK
-            dispatch(uiActions.setIsShareDialogOpen(true));
-          }}
+            onShareButtonClicked
+          }
         >
           <Users className="mr-1" size={20} />
           <span>{translate('drive.dropdown.share')}</span>

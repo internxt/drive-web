@@ -6,6 +6,7 @@ import { DriveItemData } from '../../../types';
 import DriveGridItemSkeleton from '../../DriveGridItemSkeleton/DriveGridItemSkeleton';
 import './DriveExplorerGrid.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import ShareDialog from 'app/photos/components/ShareDialog';
 
 interface DriveExplorerGridProps {
   folderId: number;
