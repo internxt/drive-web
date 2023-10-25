@@ -1,186 +1,154 @@
-import { MouseEvent } from 'react';
-import {
-  PencilSimple,
-  Trash,
-  DownloadSimple,
-  Copy,
-  Link,
-  Gear,
-  LinkBreak,
-  ClockCounterClockwise,
-  Users,
-} from '@phosphor-icons/react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { PencilSimple, Trash, DownloadSimple, Link, Users, ArrowsOutCardinal, Eye } from '@phosphor-icons/react';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
-import envService from '../../../core/services/env.service';
+import { Menu } from '@headlessui/react';
+import { storageActions } from 'app/store/slices/storage';
+import { DriveItemData } from 'app/drive/types';
+import shareService from 'app/share/services/share.service';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { useCallback } from 'react';
 
 interface FileDropdownActionsProps {
   title?: string;
   hiddenActions: DriveItemAction[];
-  onRenameButtonClicked: (e: MouseEvent) => void;
-  onDownloadButtonClicked: (e: MouseEvent) => void;
-  onShareButtonClicked: (e: MouseEvent) => void;
-  onShareCopyButtonClicked: (e: MouseEvent) => void;
-  onShareSettingsButtonClicked: (e: MouseEvent) => void;
-  onShareDeleteButtonClicked: (e: MouseEvent) => void;
-  onInfoButtonClicked: (e: MouseEvent) => void;
-  onDeleteButtonClicked: (e: MouseEvent) => void;
-  onRecoverButtonClicked?: (e: MouseEvent) => void;
-  onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
+  onRenameButtonClicked: any;
   isTrash?: boolean;
+  item?: DriveItemData;
+  closeDropdown: () => void;
+  openDropdown: boolean;
 }
+
+type MenuItem =
+  | {
+      icon: any;
+      text: string;
+      onClick: () => void;
+      className?: string;
+      iconClassName?: string;
+    }
+  | {
+      divider: boolean;
+    }
+  | null;
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const onDownloadButtonClicked = (e: MouseEvent): void => {
-    const { onDownloadButtonClicked } = props;
-
-    onDownloadButtonClicked && onDownloadButtonClicked(e);
-  };
-
-  const onRenameButtonClicked = (e: MouseEvent): void => {
-    const { onRenameButtonClicked } = props;
-
-    onRenameButtonClicked && onRenameButtonClicked(e);
-  };
-
-  const onShareButtonClicked = (e: MouseEvent): void => {
-    const { onShareButtonClicked } = props;
-
-    onShareButtonClicked && onShareButtonClicked(e);
-  };
-
-  const onShareCopyButtonClicked = (e: MouseEvent): void => {
-    const { onShareCopyButtonClicked } = props;
-
-    onShareCopyButtonClicked && onShareCopyButtonClicked(e);
-  };
-
-  const onShareSettingsButtonClicked = (e: MouseEvent): void => {
-    const { onShareSettingsButtonClicked } = props;
-
-    onShareSettingsButtonClicked && onShareSettingsButtonClicked(e);
-  };
-
-  const onShareDeleteButtonClicked = (e: MouseEvent): void => {
-    const { onShareDeleteButtonClicked } = props;
-
-    onShareDeleteButtonClicked && onShareDeleteButtonClicked(e);
-  };
-
-  const onInfoButtonClicked = (e: MouseEvent): void => {
-    const { onInfoButtonClicked } = props;
-
-    onInfoButtonClicked && onInfoButtonClicked(e);
-  };
-
-  const onRecoverButtonClicked = (e: MouseEvent): void => {
-    const { onRecoverButtonClicked } = props;
-
-    onRecoverButtonClicked && onRecoverButtonClicked(e);
-  };
-
-  const onDeleteButtonClicked = (e: MouseEvent): void => {
-    const { onDeleteButtonClicked } = props;
-
-    onDeleteButtonClicked && onDeleteButtonClicked(e);
-  };
-
-  const onDeletePermanentlyButtonClicked = (e: MouseEvent): void => {
-    const { onDeletePermanentlyButtonClicked } = props;
-
-    onDeletePermanentlyButtonClicked && onDeletePermanentlyButtonClicked(e);
-  };
 
   const { title, hiddenActions } = props;
 
+  const menuItems: MenuItem[] = [
+    {
+      icon: Users,
+      text: translate('drive.dropdown.share'),
+
+      onClick: () => {
+        dispatch(
+          storageActions.setItemToShare({
+            share: (props.item as DriveItemData)?.shares?.[0],
+            item: props.item as DriveItemData,
+          }),
+        );
+        dispatch(uiActions.setIsShareDialogOpen(true));
+      },
+    },
+    {
+      icon: Link,
+      text: translate('drive.dropdown.getLink'),
+
+      onClick: () => {
+        const driveItem = props.item as DriveItemData;
+        shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+      },
+    },
+    { divider: true },
+    !props.item?.isFolder
+      ? {
+          icon: Eye,
+          text: translate('drive.dropdown.openPreview'),
+
+          onClick: () => {
+            dispatch(uiActions.setIsFileViewerOpen(true));
+            dispatch(uiActions.setFileViewerItem(props.item as DriveItemData));
+          },
+        }
+      : null,
+    {
+      icon: PencilSimple,
+      text: translate('drive.dropdown.rename'),
+
+      onClick: () => props.onRenameButtonClicked(props.item as DriveItemData),
+    },
+    // {
+    //   icon: ArrowsOutCardinal,
+    //   text: translate('drive.dropdown.move'),
+
+    //   onClick: () => {
+    //     dispatch(storageActions.setItemsToMove([props.item as DriveItemData]));
+    //     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+    //   },
+    // },
+    {
+      icon: DownloadSimple,
+      text: translate('drive.dropdown.download'),
+
+      onClick: () => {
+        dispatch(storageThunks.downloadItemsThunk([props.item as DriveItemData]));
+      },
+    },
+    { divider: true },
+    {
+      icon: Trash,
+      text: props.isTrash ? translate('drive.dropdown.deletePermanently') : translate('drive.dropdown.moveToTrash'),
+      className: !props.isTrash ? 'text-red-60 hover:text-red-60' : '',
+      iconClassName: props.isTrash ? 'text-blue-60' : '',
+
+      onClick: () => {
+        moveItemsToTrash([props.item as DriveItemData]);
+      },
+    },
+  ];
+
+  // Ahora, 'menuItems' contiene divisores dentro del arreglo que se usarán en la representación del menú.
+
   return (
-    <div className="z-20 flex flex-col">
+    <div className="absolute z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
-
-      {/* {!hiddenActions.includes(DriveItemAction.Share) && !props.isTrash ? (
-          <Dropdown.Item id="share" onClick={onShareButtonClicked}>
-            <Eye className="mr-1" size={20} />
-            <span>Open preview</span>
-          </Dropdown.Item>
-        ) : null} */}
-      {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
-        <Dropdown.Item
-          id="share"
-          onClick={() =>
-            //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK
-            onShareButtonClicked
-          }
-        >
-          <Users className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.share')}</span>
-        </Dropdown.Item>
-      ) : null}
-      {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !props.isTrash ? (
-        <Dropdown.Item id="share" onClick={() => dispatch(uiActions.setIsShareDialogOpen(true))}>
-          <Users className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.manageLinkAccess')}</span>
-        </Dropdown.Item>
-      ) : null}
-      {!hiddenActions.includes(DriveItemAction.ShareGetLink) && !props.isTrash ? (
-        <Dropdown.Item id="share" onClick={onShareButtonClicked}>
-          <Link className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.getLink')}</span>
-        </Dropdown.Item>
-      ) : null}
-      {!hiddenActions.includes(DriveItemAction.ShareCopyLink) && !props.isTrash ? (
-        <Dropdown.Item id="share" onClick={onShareCopyButtonClicked}>
-          <Copy className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.copyLink')}</span>
-        </Dropdown.Item>
-      ) : null}
-      {!hiddenActions.includes(DriveItemAction.Info) && props.isTrash ? (
-        <Dropdown.Item id="recover" onClick={onRecoverButtonClicked}>
-          <ClockCounterClockwise className="mr-1 h-5 text-blue-60" />
-          <span>{translate('drive.dropdown.restore')}</span>
-        </Dropdown.Item>
-      ) : null}
-
-      {!props.isTrash && <hr className="my-1.5 text-gray-10" />}
-
-      {!hiddenActions.includes(DriveItemAction.Rename) && !props.isTrash ? (
-        <Dropdown.Item id="rename" onClick={onRenameButtonClicked}>
-          <PencilSimple className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.rename')}</span>
-        </Dropdown.Item>
-      ) : null}
-
-      {/* {!hiddenActions.includes(DriveItemAction.Info) ? (
-          <Dropdown.Item id="info" onClick={onInfoButtonClicked}>
-            <ArrowsOutCardinal className="mr-1" size={20} />
-            <span>Move</span>
-          </Dropdown.Item>
-        ) : null} */}
-      {!hiddenActions.includes(DriveItemAction.Download) && !props.isTrash ? (
-        <Dropdown.Item id="download" onClick={onDownloadButtonClicked}>
-          <DownloadSimple className="mr-1" size={20} />
-          <span>{translate('drive.dropdown.download')}</span>
-        </Dropdown.Item>
-      ) : null}
-
-      <hr className="my-1.5 text-gray-10"></hr>
-
-      {!hiddenActions.includes(DriveItemAction.Delete) ? (
-        <Dropdown.Item
-          id="delete"
-          className={`${!props.isTrash ? 'text-red-60 hover:text-red-60' : ''}`}
-          onClick={!props.isTrash ? onDeleteButtonClicked : onDeletePermanentlyButtonClicked}
-        >
-          <Trash className={`mr-1 ${props.isTrash ? 'text-blue-60' : ''}`} size={20} />
-          <span>
-            {props.isTrash ? translate('drive.dropdown.deletePermanently') : translate('drive.dropdown.moveToTrash')}
-          </span>
-        </Dropdown.Item>
-      ) : null}
+      {props.openDropdown && (
+        <>
+          {menuItems.map((item, index) => (
+            <div key={index}>
+              {item && 'divider' in item ? (
+                <div className="my-0.5 flex w-full flex-row px-4">
+                  <div className="h-px w-full bg-gray-10" />
+                </div>
+              ) : (
+                item && (
+                  <Menu.Item as={'div'}>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        item.onClick();
+                        props.closeDropdown();
+                      }}
+                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
+                    >
+                      <div className="flex flex-row items-center space-x-2">
+                        {item.icon && <item.icon size={20} className={item.iconClassName} />}
+                        <span>{item.text}</span>
+                      </div>
+                    </div>
+                  </Menu.Item>
+                )
+              )}
+            </div>
+          ))}
+        </>
+      )}
     </div>
   );
 };

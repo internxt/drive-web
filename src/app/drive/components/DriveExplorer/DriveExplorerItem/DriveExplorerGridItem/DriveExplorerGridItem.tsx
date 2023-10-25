@@ -18,6 +18,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { storageActions } from 'app/store/slices/storage';
 import { DriveItemData } from 'app/drive/types';
 import { uiActions } from 'app/store/slices/ui';
+import { Menu } from '@headlessui/react';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
@@ -30,7 +31,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onNameClicked,
     onNameEnterKeyDown,
     onDownloadButtonClicked,
-    onRenameButtonClicked,
     onInfoButtonClicked,
     onDeleteButtonClicked,
     onDeletePermanentlyButtonClicked,
@@ -111,21 +111,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     }
   }, [isEditingName(item)]);
 
-  const openLinkSettings = useCallback(
-    (item) => {
-      dispatch(
-        storageActions.setItemToShare({
-          share: (item as DriveItemData)?.shares?.[0],
-          item: item as DriveItemData,
-        }),
-      );
-      dispatch(uiActions.setIsShareDialogOpen(true));
-      // Use to share with specific user
-      // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
-    },
-    [dispatch, storageActions, uiActions],
-  );
-
   const template = connectDropTarget(
     <div
       ref={itemRef}
@@ -137,33 +122,38 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       onDoubleClick={onItemDoubleClicked}
       draggable={false}
     >
-      <Dropdown>
-        <Dropdown.Toggle
-          variant="success"
-          id="dropdown-basic"
-          className="absolute right-2 top-2 h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
-        >
-          <UilEllipsisH className="h-full w-full" />
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          <DriveItemDropdownActions
-            hiddenActions={
-              item?.shares?.length || 0 > 0
-                ? [DriveItemAction.ShareGetLink]
-                : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
-            }
-            onRenameButtonClicked={onRenameButtonClicked}
-            onDownloadButtonClicked={onDownloadButtonClicked}
-            onShareButtonClicked={openLinkSettings}
-            onShareCopyButtonClicked={onShareCopyButtonClicked}
-            onShareSettingsButtonClicked={onShareSettingsButtonClicked}
-            onShareDeleteButtonClicked={onShareDeleteButtonClicked}
-            onInfoButtonClicked={onInfoButtonClicked}
-            onDeleteButtonClicked={onDeleteButtonClicked}
-            onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
-          />
-        </Dropdown.Menu>
-      </Dropdown>
+      <Menu as="div">
+        {({ open, close }) => {
+          return (
+            <>
+              <Menu.Button
+                id="dropdown-basic"
+                className="absolute right-2 top-2 h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
+              >
+                <UilEllipsisH className="h-full w-full" />
+              </Menu.Button>
+              <Menu.Items
+                style={{
+                  position: 'absolute',
+                  zIndex: 99,
+                }}
+              >
+                <DriveItemDropdownActions
+                  openDropdown={open}
+                  closeDropdown={close}
+                  hiddenActions={
+                    item?.shares?.length || 0 > 0
+                      ? [DriveItemAction.ShareGetLink]
+                      : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
+                  }
+                  onRenameButtonClicked={() => props.setEditNameItem && props.setEditNameItem(item as DriveItemData)}
+                  item={item}
+                />
+              </Menu.Items>
+            </>
+          );
+        }}
+      </Menu>
       <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft filter">
         {item.currentThumbnail ? (
           <div className="h-full w-full">

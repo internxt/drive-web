@@ -6,7 +6,9 @@ import { DriveItemData } from '../../../types';
 import DriveGridItemSkeleton from '../../DriveGridItemSkeleton/DriveGridItemSkeleton';
 import './DriveExplorerGrid.scss';
 import InfiniteScroll from 'react-infinite-scroll-component';
-import ShareDialog from 'app/photos/components/ShareDialog';
+import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
+import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { useAppDispatch } from 'app/store/hooks';
 
 interface DriveExplorerGridProps {
   folderId: number;
@@ -17,6 +19,9 @@ interface DriveExplorerGridProps {
 }
 
 const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridProps) => {
+  const [editNameItem, setEditNameItem] = React.useState<DriveItemData | null>(null);
+  const dispatch = useAppDispatch();
+
   function loadingSkeleton(): JSX.Element[] {
     return Array(20)
       .fill(0)
@@ -26,7 +31,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
   function itemsList(): JSX.Element[] {
     return props.items.map((item) => {
       const itemKey = `${item.isFolder ? 'folder' : 'file'}-${item.id}`;
-      return <DriveExplorerGridItem key={itemKey} item={item} />;
+      return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
     });
   }
 
@@ -37,7 +42,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerGridItem key={itemKey} item={item} />;
+        return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
       });
   }
 
@@ -48,7 +53,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerGridItem key={itemKey} item={item} />;
+        return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
       });
   }
 
@@ -68,6 +73,18 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
         <div className="files-grid flex-grow">{loadingSkeleton()}</div>
       ) : (
         <div id="scrollableList" className="h-full w-full overflow-y-auto py-6">
+          {editNameItem && (
+            <EditItemNameDialog
+              item={editNameItem}
+              isOpen={true}
+              onSuccess={() => {
+                dispatch(fetchSortedFolderContentThunk(props.folderId));
+              }}
+              onClose={() => {
+                setEditNameItem(null);
+              }}
+            />
+          )}
           <InfiniteScroll
             dataLength={itemsList().length}
             next={onEndOfScroll}
