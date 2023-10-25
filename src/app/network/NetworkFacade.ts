@@ -7,15 +7,14 @@ import { downloadFile } from '@internxt/sdk/dist/network/download';
 
 import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
+import { UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { createWebWorker } from '../../WebWorker';
-import appWorker from '../store/slices/storage/storage.thunks/app.worker';
-import { generateFileKey } from '../drive/services/network.service';
+import uploadWorker from '../../upload.worker';
 
-const worker: Worker = createWebWorker(appWorker);
+const worker: Worker = createWebWorker(uploadWorker);
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -79,10 +78,43 @@ export class NetworkFacade {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
 
-        await uploadFileBlob(fileToUpload, fetchUrl, {
-          progressCallback: options.uploadingCallback,
-          abortController: options.abortController,
-        });
+        const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
+          return await new Promise((resolve, reject) => {
+            const messageHandler = (event) => {
+              const { result, size, bytesRead } = event.data;
+
+              const resultHandlers = {
+                success: () => {
+                  resolve();
+                },
+                notifyProgress: () => {
+                  options.uploadingCallback(size, bytesRead);
+                },
+                error: () => {
+                  options.abortController?.abort();
+                  reject();
+                },
+              };
+              const resultHandler = resultHandlers[result];
+              if (resultHandler) {
+                resultHandler();
+              } else {
+                reject(new Error(`${result}`));
+              }
+              // worker.removeEventListener('message', messageHandler);
+            };
+            worker.onmessage = messageHandler;
+
+            worker.postMessage({
+              content: upload.contentToUpload,
+              url: upload.urlToUpload,
+            });
+
+            // worker.addEventListener('message', messageHandler);
+          });
+        };
+
+        await task({ contentToUpload: fileToUpload, urlToUpload: fetchUrl });
 
         /**
          * TODO: Memory leak here, probably due to closures usage with this variable.
@@ -119,30 +151,41 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
-    const worker2 = async (upload: UploadTask): Promise<void> => {
+    const executeWorker = async (upload: UploadTask): Promise<void> => {
+      //COMMENT RETURN TO QUEUE
       return await new Promise((resolve, reject) => {
         const uploadIndexToworker = upload.index + 1;
-        console.log('index to send to worker', uploadIndexToworker);
 
         const messageHandler = (event) => {
           const { result, etag, size, uploadIndex } = event.data;
-          if (result === 'success') {
-            console.log({ uploadIndex: uploadIndex });
-            console.log({ data: event.data });
-            const ETag = etag;
-            if (!ETag) {
-              reject(new Error('ETag header was not returned'));
-            }
-            fileParts.push({
-              ETag,
-              PartNumber: uploadIndex,
-            });
-            console.log({ fileParts });
-            resolve(uploadIndex);
-          } else if (result === 'notifyProgress') {
-            notifyProgress(upload.index, size);
+
+          const resultHandlers = {
+            success: (ETag, uploadIndex) => {
+              if (!ETag) {
+                reject(new Error('ETag header was not returned'));
+              }
+              fileParts.push({
+                ETag,
+                PartNumber: uploadIndex,
+              });
+              resolve(uploadIndex);
+            },
+            notifyProgress: () => {
+              if (size) notifyProgress(upload.index, size);
+            },
+            error: () => {
+              uploadsAbortController?.abort();
+              reject();
+            },
+          };
+          const resultHandler = resultHandlers[result];
+          if (resultHandler) {
+            resultHandler(etag, uploadIndex);
+          } else {
+            reject(new Error(`${result}`));
           }
-          // worker.removeEventListener('message', messageHandler);
+
+          worker.removeEventListener('message', messageHandler);
         };
         worker.onmessage = messageHandler;
 
@@ -150,15 +193,7 @@ export class NetworkFacade {
           content: upload.contentToUpload,
           url: upload.urlToUpload,
           uploadIndex: uploadIndexToworker,
-          // opts: {
-          //   progressCallback: (_, uploadedBytes) => {
-          //     notifyProgress(upload.index, uploadedBytes);
-          //   },
-          //   abortController: uploadsAbortController,
-          // },
         });
-
-        // worker.addEventListener('message', messageHandler);
       });
     };
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
@@ -166,36 +201,35 @@ export class NetworkFacade {
       const limitConcurrency = 6;
       const uploadPromises: Promise<void>[] = [];
 
-      const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
-        console.log({ taskIndex: task.index });
-        console.log({ queueLength: uploadQueue.length() });
-        console.log({ queuerunning: uploadQueue.running() });
-
-        worker2(task)
-          .then((uploadIndex) => {
-            console.log('finished task', { task: task.index });
-            console.log('finished task', { uploadIndex: uploadIndex });
-            callback();
-          })
-          .catch((e) => {
-            console.log('error task', { task });
-
-            callback(e);
-          });
-      }, limitConcurrency);
+      // REMOVE COMMENTED CODE BEFORE MERGE IF FINALLY WE HOLD PROMISES WAY
+      // const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
+      //   executeWorker(task)
+      //     .then(() => {
+      //       console.log('callback');
+      //       callback();
+      //     })
+      //     .catch((e) => {
+      //       callback(e);
+      //     });
+      // }, limitConcurrency);
 
       const fileHash = await processEveryFileBlobReturnHash(fileReadable, async (blob) => {
-        if (uploadQueue.running() === limitConcurrency) {
-          await uploadQueue.unsaturated();
-        }
+        // if (uploadQueue.running() === limitConcurrency) {
+        //   await uploadQueue.unsaturated();
+        // }
 
-        if (uploadsAbortController.signal.aborted) {
-          if (realError) throw realError;
-          else throw new Error('Upload cancelled by user');
-        }
+        // if (uploadsAbortController.signal.aborted) {
+        //   if (realError) throw realError;
+        //   else throw new Error('Upload cancelled by user');
+        // }
 
-        const errorAlreadyThrown = false;
+        // let errorAlreadyThrown = false;
 
+        // while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
+        //   await uploadQueue.drain();
+        // }
+
+        //
         // uploadQueue
         //   .pushAsync({
         //     contentToUpload: blob,
@@ -217,15 +251,12 @@ export class NetworkFacade {
         //       }
         //     }
         //   });
-        uploadPromises.push(worker2({ contentToUpload: blob, urlToUpload: urls[partIndex], index: partIndex++ }));
+        uploadPromises.push(executeWorker({ contentToUpload: blob, urlToUpload: urls[partIndex], index: partIndex++ }));
+        console.log({ uploadPromises });
         await Promise.all(uploadPromises);
         // TODO: Remove
-        blob = new Blob([]);
+        // blob = new Blob([]);
       });
-
-      while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
-        await uploadQueue.drain();
-      }
 
       return {
         hash: fileHash,
