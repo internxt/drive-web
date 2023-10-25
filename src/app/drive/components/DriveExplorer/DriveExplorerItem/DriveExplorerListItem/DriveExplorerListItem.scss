@@ -1,6 +1,8 @@
+@tailwind components;
+
 @layer components {
   .file-list-item {
-    @apply relative flex flex-grow w-full flex-row items-center text-base;
+    @apply relative flex w-full flex-grow flex-row items-center text-base;
 
     &.selected {
       @apply border-blue-20 border-opacity-65;
