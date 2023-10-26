@@ -13,8 +13,6 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
-import { useAppDispatch } from 'app/store/hooks';
-import { DriveItemData } from 'app/drive/types';
 import { Menu } from '@headlessui/react';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
