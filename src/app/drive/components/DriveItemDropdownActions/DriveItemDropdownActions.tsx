@@ -1,4 +1,4 @@
-import { PencilSimple, Trash, DownloadSimple, Link, Users, ArrowsOutCardinal, Eye } from '@phosphor-icons/react';
+import { PencilSimple, Trash, DownloadSimple, Link, Users, Eye } from '@phosphor-icons/react';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
@@ -9,7 +9,6 @@ import { DriveItemData } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { useCallback } from 'react';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -38,7 +37,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
-  const { title, hiddenActions } = props;
+  const { title } = props;
 
   const menuItems: MenuItem[] = [
     {
@@ -120,7 +119,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {props.openDropdown && (
         <>
           {menuItems.map((item, index) => (
-            <div key={index}>
+            <div key={`dropdown-item-${index}`}>
               {item && 'divider' in item ? (
                 <div className="my-0.5 flex w-full flex-row px-4">
                   <div className="h-px w-full bg-gray-10" />

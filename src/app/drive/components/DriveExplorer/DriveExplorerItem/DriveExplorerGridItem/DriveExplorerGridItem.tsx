@@ -1,5 +1,4 @@
-import { Fragment, createRef, useCallback, useEffect, useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { Fragment, createRef, useEffect, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
@@ -15,9 +14,7 @@ import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 import { useAppDispatch } from 'app/store/hooks';
-import { storageActions } from 'app/store/slices/storage';
 import { DriveItemData } from 'app/drive/types';
-import { uiActions } from 'app/store/slices/ui';
 import { Menu } from '@headlessui/react';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
@@ -30,14 +27,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     onNameBlurred,
     onNameClicked,
     onNameEnterKeyDown,
-    onDownloadButtonClicked,
-    onInfoButtonClicked,
-    onDeleteButtonClicked,
-    onDeletePermanentlyButtonClicked,
-    onShareButtonClicked,
-    onShareCopyButtonClicked,
-    onShareSettingsButtonClicked,
-    onShareDeleteButtonClicked,
     onItemClicked,
     onItemRightClicked,
     onItemDoubleClicked,
@@ -47,7 +36,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
-  const dispatch = useAppDispatch();
 
   const nameNodeFactory = () => {
     const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
@@ -146,7 +134,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
                       ? [DriveItemAction.ShareGetLink]
                       : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
                   }
-                  onRenameButtonClicked={() => props.setEditNameItem && props.setEditNameItem(item as DriveItemData)}
+                  onRenameButtonClicked={() => (props.setEditNameItem ? props.setEditNameItem(item) : null)}
                   item={item}
                 />
               </Menu.Items>
