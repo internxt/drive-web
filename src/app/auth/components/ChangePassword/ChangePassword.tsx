@@ -12,6 +12,8 @@ import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@ph
 import { validateMnemonic } from 'bip39';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
+import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -116,6 +118,10 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     const password = newPassword;
     const mnemonic = backupKeyContent;
 
+    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
+      method: 'backup_key',
+    };
+
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
@@ -127,6 +133,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
       await authService.updateCredentialsWithToken(token, password, mnemonic, '');
       localStorageService.clear();
       setIsEmailSent(true);
+      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.serverError'),

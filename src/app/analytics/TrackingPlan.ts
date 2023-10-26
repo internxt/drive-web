@@ -102,6 +102,9 @@ export namespace TrackingPlan {
   export interface BackupKeyDownloadedProperties {
     backup_key_downloaded: boolean;
   }
+  export interface PasswordRecoveredProperties {
+    method: string;
+  }
 
   export enum EventNames {
     FileUploadStart = 'Upload Started',
@@ -120,5 +123,6 @@ export namespace TrackingPlan {
     FilePreviewed = 'File Previewed',
     FilePreviewClicked = 'File Preview Clicked',
     BackupKeyDownloaded = 'Backup Key Downloaded',
+    PasswordRecovered = 'Password Recovered',
   }
 }

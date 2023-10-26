@@ -93,6 +93,10 @@ export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownl
   analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
 }
 
+export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecoveredProperties): void {
+  analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
