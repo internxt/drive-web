@@ -77,6 +77,18 @@ export function trackSharedInvitationsAccepted(properties: TrackingPlan.SharedIn
   analytics.track(TrackingPlan.EventNames.SharedInvitationsAccepted, properties);
 }
 
+export function trackFilePreviewOpened(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewOpened, properties);
+}
+
+export function trackFilePreviewed(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewed, properties);
+}
+
+export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {

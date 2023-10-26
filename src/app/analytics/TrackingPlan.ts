@@ -94,6 +94,11 @@ export namespace TrackingPlan {
   export interface SharedInvitationsAcceptedProperties {
     invitation_id: string;
   }
+  export interface FilePreviewProperties {
+    file_size: number;
+    file_extension: string;
+    preview_id: string | undefined;
+  }
 
   export enum EventNames {
     FileUploadStart = 'Upload Started',
@@ -108,5 +113,8 @@ export namespace TrackingPlan {
     PublicShared = 'Shared Public',
     RestrictedShared = 'Shared Restricted',
     SharedInvitationsAccepted = 'Shared Accepted',
+    FilePreviewOpened = 'File Preview Opened',
+    FilePreviewed = 'File Previewed',
+    FilePreviewClicked = 'File Preview Clicked',
   }
 }
