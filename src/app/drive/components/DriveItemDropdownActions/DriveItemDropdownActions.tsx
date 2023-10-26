@@ -12,7 +12,6 @@ import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
 interface FileDropdownActionsProps {
   title?: string;
-  hiddenActions: DriveItemAction[];
   onRenameButtonClicked: any;
   isTrash?: boolean;
   item?: DriveItemData;
@@ -116,7 +115,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   // Ahora, 'menuItems' contiene divisores dentro del arreglo que se usarán en la representación del menú.
 
   return (
-    <div className="absolute z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none">
+    <div className="flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {props.openDropdown && (
         <>
