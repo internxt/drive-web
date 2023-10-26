@@ -79,11 +79,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       moveItemsToTrash([item]);
     }
   });
-  // useHotkeys('enter', () => {
-  //   if (isItemSelected(item)) {
-  //     onItemDoubleClicked();
-  //   }
-  // });
   useHotkeys('r', (e) => {
     e.stopPropagation();
     if (isItemSelected(item)) {
