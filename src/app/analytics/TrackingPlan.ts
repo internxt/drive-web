@@ -78,6 +78,22 @@ export namespace TrackingPlan {
   export interface CanceledSubscriptionProperties {
     feedback: string;
   }
+  export interface PublicSharedProperties {
+    is_folder: boolean;
+    share_type: string;
+    user_id: number;
+    item_id: number;
+  }
+  export interface RestrictedSharedProperties {
+    is_folder: boolean;
+    share_type: string;
+    user_id: number;
+    item_id: number;
+    invitations_send: number;
+  }
+  export interface SharedInvitationsAcceptedProperties {
+    invitation_id: string;
+  }
 
   export enum EventNames {
     FileUploadStart = 'Upload Started',
@@ -89,5 +105,8 @@ export namespace TrackingPlan {
     FileDownloadStarted = 'Download Started',
     FileDownloadAborted = 'Download Aborted',
     CanceledSubscription = 'Subscription Canceled',
+    PublicShared = 'Shared Public',
+    RestrictedShared = 'Shared Restricted',
+    SharedInvitationsAccepted = 'Shared Accepted',
   }
 }

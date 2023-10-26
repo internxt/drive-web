@@ -15,6 +15,8 @@ import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sh
 import { AsyncThunkAction } from '@reduxjs/toolkit';
 import { RootState } from '../../../store';
 import { Role } from '../../../store/slices/sharedLinks/types';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -83,6 +85,9 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
   const onInvite = async () => {
     const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
+
+    let trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties;
+
     if (usersToInvite.length === 0 && isValidEmail(email)) {
       const userRoleId = props.roles.find((role) => role.name === userRole)?.id;
       if (!userRoleId) return;
@@ -100,6 +105,14 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           }),
         ),
       );
+
+      trackingRestrictedSharedProperties = {
+        is_folder: props.itemToShare.item.isFolder,
+        share_type: 'private',
+        user_id: props.itemToShare.item.userId,
+        item_id: props.itemToShare.item.id,
+        invitations_send: 1,
+      };
     } else {
       usersToInvite.forEach((user) => {
         const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
@@ -119,8 +132,17 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
           ),
         );
       });
+
+      trackingRestrictedSharedProperties = {
+        is_folder: props.itemToShare.item.isFolder,
+        share_type: 'private',
+        user_id: props.itemToShare.item.userId,
+        item_id: props.itemToShare.item.id,
+        invitations_send: usersToInvite.length,
+      };
     }
     await Promise.all(sharingPromises);
+    trackRestrictedShared(trackingRestrictedSharedProperties);
     props.onClose();
   };
 

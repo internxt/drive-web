@@ -21,6 +21,8 @@ import { Role } from 'app/store/slices/sharedLinks/types';
 import copy from 'copy-to-clipboard';
 import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { trackPublicShared } from '../../../analytics/services/analytics.service';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -259,17 +261,22 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
 
     if (itemToShare?.item.uuid) {
+      const trackingPublicSharedProperties: TrackingPlan.PublicSharedProperties = {
+        is_folder: itemToShare.item.isFolder,
+        share_type: 'public',
+        user_id: itemToShare.item.userId,
+        item_id: itemToShare.item.id,
+      };
+
       await shareService.getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+
+      trackPublicShared(trackingPublicSharedProperties);
       props.onShareItem?.();
       closeSelectedUserPopover();
     }
   };
 
   const onInviteUser = () => {
-    // TODO -> Open invite user screen
-    // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
-    // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
-    // OR THAT LOGIC WILL BE DONE BY THE BACKEND
     setView('invite');
     closeSelectedUserPopover();
   };
