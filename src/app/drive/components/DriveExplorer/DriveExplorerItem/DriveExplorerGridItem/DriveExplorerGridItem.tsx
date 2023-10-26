@@ -13,6 +13,8 @@ import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
@@ -71,6 +73,23 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   useEffect(() => {
     downloadAndSetThumbnail();
   }, [item]);
+
+  useHotkeys('backspace', () => {
+    if (isItemSelected(item)) {
+      moveItemsToTrash([item]);
+    }
+  });
+  // useHotkeys('enter', () => {
+  //   if (isItemSelected(item)) {
+  //     onItemDoubleClicked();
+  //   }
+  // });
+  useHotkeys('r', (e) => {
+    e.stopPropagation();
+    if (isItemSelected(item)) {
+      props.setEditNameItem?.(item);
+    }
+  });
 
   const template = connectDropTarget(
     <div

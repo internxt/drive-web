@@ -1,4 +1,13 @@
-import { PencilSimple, Trash, DownloadSimple, Link, Users, Eye, ArrowsOutCardinal } from '@phosphor-icons/react';
+import {
+  PencilSimple,
+  Trash,
+  DownloadSimple,
+  Link,
+  Users,
+  Eye,
+  ArrowsOutCardinal,
+  Backspace,
+} from '@phosphor-icons/react';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
@@ -9,6 +18,7 @@ import { DriveItemData } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -27,6 +37,10 @@ type MenuItem = {
   className?: string;
   iconClassName?: string;
   divider?: boolean;
+  keyboardShortcutOptions?: {
+    keyboardShortcutIcon?: any;
+    keyboardShortcutText?: string;
+  };
 } | null;
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
@@ -77,6 +91,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       id: 'rename',
       icon: PencilSimple,
       text: translate('drive.dropdown.rename'),
+      keyboardShortcutOptions: {
+        keyboardShortcutText: 'R',
+      },
       onClick: () => props.onRenameButtonClicked(props.item as DriveItemData),
     },
     {
@@ -103,9 +120,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       id: 'trash',
       icon: Trash,
       text: props.isTrash ? translate('drive.dropdown.deletePermanently') : translate('drive.dropdown.moveToTrash'),
-      className: !props.isTrash ? 'text-red-60 hover:text-red-60' : '',
-      iconClassName: props.isTrash ? 'text-blue-60' : '',
-
+      keyboardShortcutOptions: {
+        keyboardShortcutIcon: Backspace,
+      },
       onClick: () => {
         moveItemsToTrash([props.item as DriveItemData]);
       },
@@ -129,12 +146,20 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                         item.onClick();
                         props.closeDropdown();
                       }}
-                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
+                      className={
+                        'flex cursor-pointer flex-row items-center justify-between space-x-3 whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100'
+                      }
                     >
                       <div className="flex flex-row items-center space-x-2">
                         {item.icon && <item.icon size={20} className={item.iconClassName} />}
                         <span>{item.text}</span>
                       </div>
+                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                        {item.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                          <item.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                        )}
+                        {item.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                      </span>
                     </div>
                   </Menu.Item>
                   {item.divider && <div className="border-b border-gray-10" />}
