@@ -1,4 +1,4 @@
-import { PencilSimple, Trash, DownloadSimple, Link, Users, Eye } from '@phosphor-icons/react';
+import { PencilSimple, Trash, DownloadSimple, Link, Users, Eye, ArrowsOutCardinal } from '@phosphor-icons/react';
 import { DriveItemAction } from '../DriveExplorer/DriveExplorerItem';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
@@ -79,16 +79,16 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       text: translate('drive.dropdown.rename'),
       onClick: () => props.onRenameButtonClicked(props.item as DriveItemData),
     },
-    // {
-    // id: 'move',
-    //   icon: ArrowsOutCardinal,
-    //   text: translate('drive.dropdown.move'),
+    {
+      id: 'move',
+      icon: ArrowsOutCardinal,
+      text: translate('drive.dropdown.move'),
 
-    //   onClick: () => {
-    //     dispatch(storageActions.setItemsToMove([props.item as DriveItemData]));
-    //     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-    //   },
-    // },
+      onClick: () => {
+        dispatch(storageActions.setItemsToMove([props.item as DriveItemData]));
+        dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+      },
+    },
     {
       id: 'download',
       icon: DownloadSimple,
