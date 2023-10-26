@@ -99,6 +99,9 @@ export namespace TrackingPlan {
     file_extension: string;
     preview_id: string | undefined;
   }
+  export interface BackupKeyDownloadedProperties {
+    backup_key_downloaded: boolean;
+  }
 
   export enum EventNames {
     FileUploadStart = 'Upload Started',
@@ -116,5 +119,6 @@ export namespace TrackingPlan {
     FilePreviewOpened = 'File Preview Opened',
     FilePreviewed = 'File Previewed',
     FilePreviewClicked = 'File Preview Clicked',
+    BackupKeyDownloaded = 'Backup Key Downloaded',
   }
 }

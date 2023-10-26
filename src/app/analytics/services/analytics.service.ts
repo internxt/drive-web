@@ -89,6 +89,10 @@ export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProp
   analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
 }
 
+export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownloadedProperties): void {
+  analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
