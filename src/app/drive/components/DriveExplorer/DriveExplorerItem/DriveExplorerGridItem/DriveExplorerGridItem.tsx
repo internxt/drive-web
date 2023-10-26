@@ -78,8 +78,8 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
         group relative box-border rounded-lg p-4 hover:bg-neutral-10`}
-      onContextMenu={(e) => onItemRightClicked}
-      onClick={(e) => onItemClicked}
+      onContextMenu={onItemRightClicked}
+      onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
       draggable={false}
       onKeyDown={(e) => {}}
