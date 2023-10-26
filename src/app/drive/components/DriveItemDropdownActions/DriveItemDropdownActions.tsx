@@ -22,6 +22,7 @@ interface FileDropdownActionsProps {
 
 type MenuItem =
   | {
+      id: string;
       icon: any;
       text: string;
       onClick: () => void;
@@ -29,6 +30,7 @@ type MenuItem =
       iconClassName?: string;
     }
   | {
+      id: string;
       divider: boolean;
     }
   | null;
@@ -41,9 +43,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
 
   const menuItems: MenuItem[] = [
     {
+      id: 'share',
       icon: Users,
       text: translate('drive.dropdown.share'),
-
       onClick: () => {
         dispatch(
           storageActions.setItemToShare({
@@ -55,6 +57,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       },
     },
     {
+      id: 'get-link',
       icon: Link,
       text: translate('drive.dropdown.getLink'),
 
@@ -63,9 +66,10 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
       },
     },
-    { divider: true },
+    { id: 'divider', divider: true },
     !props.item?.isFolder
       ? {
+          id: 'preview',
           icon: Eye,
           text: translate('drive.dropdown.openPreview'),
 
@@ -76,12 +80,13 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         }
       : null,
     {
+      id: 'rename',
       icon: PencilSimple,
       text: translate('drive.dropdown.rename'),
-
       onClick: () => props.onRenameButtonClicked(props.item as DriveItemData),
     },
     // {
+    // id: 'move',
     //   icon: ArrowsOutCardinal,
     //   text: translate('drive.dropdown.move'),
 
@@ -91,6 +96,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     //   },
     // },
     {
+      id: 'download',
       icon: DownloadSimple,
       text: translate('drive.dropdown.download'),
 
@@ -98,8 +104,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         dispatch(storageThunks.downloadItemsThunk([props.item as DriveItemData]));
       },
     },
-    { divider: true },
+    { id: 'divider-2', divider: true },
     {
+      id: 'trash',
       icon: Trash,
       text: props.isTrash ? translate('drive.dropdown.deletePermanently') : translate('drive.dropdown.moveToTrash'),
       className: !props.isTrash ? 'text-red-60 hover:text-red-60' : '',
@@ -118,34 +125,37 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {props.openDropdown && (
         <>
-          {menuItems.map((item, index) => (
-            <div key={`dropdown-item-${index}`}>
-              {item && 'divider' in item ? (
-                <div className="my-0.5 flex w-full flex-row px-4">
-                  <div className="h-px w-full bg-gray-10" />
-                </div>
-              ) : (
-                item && (
-                  <Menu.Item as={'div'}>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        item.onClick();
-                        props.closeDropdown();
-                      }}
-                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
-                    >
-                      <div className="flex flex-row items-center space-x-2">
-                        {item.icon && <item.icon size={20} className={item.iconClassName} />}
-                        <span>{item.text}</span>
-                      </div>
+          {menuItems.map(
+            (item) =>
+              item && (
+                <div key={item.id}>
+                  {item && 'divider' in item ? (
+                    <div className="my-0.5 flex w-full flex-row px-4">
+                      <div className="h-px w-full bg-gray-10" />
                     </div>
-                  </Menu.Item>
-                )
-              )}
-            </div>
-          ))}
+                  ) : (
+                    item && (
+                      <Menu.Item as={'div'}>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            item.onClick();
+                            props.closeDropdown();
+                          }}
+                          className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
+                        >
+                          <div className="flex flex-row items-center space-x-2">
+                            {item.icon && <item.icon size={20} className={item.iconClassName} />}
+                            <span>{item.text}</span>
+                          </div>
+                        </div>
+                      </Menu.Item>
+                    )
+                  )}
+                </div>
+              ),
+          )}
         </>
       )}
     </div>
