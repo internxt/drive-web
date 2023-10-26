@@ -112,8 +112,6 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     },
   ];
 
-  // Ahora, 'menuItems' contiene divisores dentro del arreglo que se usarán en la representación del menú.
-
   return (
     <div className="flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
