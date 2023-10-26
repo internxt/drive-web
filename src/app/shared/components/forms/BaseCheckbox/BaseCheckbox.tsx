@@ -12,9 +12,14 @@ interface BaseCheckboxProps {
 
 const BaseCheckbox = ({ id, checked, indeterminate, onClick, required, className }: BaseCheckboxProps): JSX.Element => {
   return (
-    <label className={`relative h-5 w-5 rounded focus-within:outline-primary ${className}`} onClick={onClick}>
+    <label
+      className={`relative h-5 w-5 rounded focus-within:outline-primary ${className}`}
+      onClick={onClick}
+      onKeyDown={() => {}}
+    >
       <div
         onClick={(e) => e.preventDefault()}
+        onKeyDown={() => {}}
         className={`relative flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded border text-white ${
           indeterminate || checked ? 'border-primary bg-primary' : 'border-gray-30 hover:border-gray-40'
         }`}

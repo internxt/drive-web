@@ -107,6 +107,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
       draggable={false}
+      onKeyDown={(e) => {}}
     >
       <Menu as="div">
         {({ open, close }) => {

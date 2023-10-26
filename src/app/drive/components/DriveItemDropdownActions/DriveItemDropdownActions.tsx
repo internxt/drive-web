@@ -126,9 +126,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                 <div key={item.id}>
                   <Menu.Item as={'div'}>
                     <div
+                      onKeyDown={(e) => {}}
                       onClick={(e) => {
                         e.stopPropagation();
-                        e.preventDefault();
                         item.onClick();
                         props.closeDropdown();
                       }}

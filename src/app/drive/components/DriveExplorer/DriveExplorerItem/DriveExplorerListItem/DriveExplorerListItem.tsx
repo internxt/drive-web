@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { Link, PencilSimple, Users } from '@phosphor-icons/react';
+import { PencilSimple, Users } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -11,7 +11,6 @@ import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAnd
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
 import { DriveItemData } from '../../../../types';
-import envService from '../../../../../core/services/env.service';
 
 const getItemPlainNameWithExtension = (item: DriveItemData) => {
   const plainName = item?.plainName ?? item?.plain_name;
@@ -32,9 +31,6 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     onNameClicked,
     onEditNameButtonClicked,
     onNameEnterKeyDown,
-    onDownloadButtonClicked,
-    onDeleteButtonClicked,
-    onShareButtonClicked,
     onItemClicked,
     onItemDoubleClicked,
   } = useDriveItemActions(item);
