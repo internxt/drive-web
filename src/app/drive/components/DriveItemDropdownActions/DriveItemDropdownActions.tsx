@@ -20,20 +20,15 @@ interface FileDropdownActionsProps {
   openDropdown: boolean;
 }
 
-type MenuItem =
-  | {
-      id: string;
-      icon: any;
-      text: string;
-      onClick: () => void;
-      className?: string;
-      iconClassName?: string;
-    }
-  | {
-      id: string;
-      divider: boolean;
-    }
-  | null;
+type MenuItem = {
+  id: string;
+  icon: any;
+  text: string;
+  onClick: () => void;
+  className?: string;
+  iconClassName?: string;
+  divider?: boolean;
+} | null;
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const dispatch = useAppDispatch();
@@ -65,8 +60,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         const driveItem = props.item as DriveItemData;
         shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
       },
+      divider: true,
     },
-    { id: 'divider', divider: true },
     !props.item?.isFolder
       ? {
           id: 'preview',
@@ -103,8 +98,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       onClick: () => {
         dispatch(storageThunks.downloadItemsThunk([props.item as DriveItemData]));
       },
+      divider: true,
     },
-    { id: 'divider-2', divider: true },
     {
       id: 'trash',
       icon: Trash,
@@ -129,30 +124,23 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
             (item) =>
               item && (
                 <div key={item.id}>
-                  {item && 'divider' in item ? (
-                    <div className="my-0.5 flex w-full flex-row px-4">
-                      <div className="h-px w-full bg-gray-10" />
+                  <Menu.Item as={'div'}>
+                    <div
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        item.onClick();
+                        props.closeDropdown();
+                      }}
+                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
+                    >
+                      <div className="flex flex-row items-center space-x-2">
+                        {item.icon && <item.icon size={20} className={item.iconClassName} />}
+                        <span>{item.text}</span>
+                      </div>
                     </div>
-                  ) : (
-                    item && (
-                      <Menu.Item as={'div'}>
-                        <div
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            e.preventDefault();
-                            item.onClick();
-                            props.closeDropdown();
-                          }}
-                          className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 ${item.className}`}
-                        >
-                          <div className="flex flex-row items-center space-x-2">
-                            {item.icon && <item.icon size={20} className={item.iconClassName} />}
-                            <span>{item.text}</span>
-                          </div>
-                        </div>
-                      </Menu.Item>
-                    )
-                  )}
+                  </Menu.Item>
+                  {item.divider && <div className="border-b border-gray-10" />}
                 </div>
               ),
           )}
