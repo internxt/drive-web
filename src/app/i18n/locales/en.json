@@ -657,7 +657,7 @@
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
         "copy-to-clipboard": "Error sharing item, try again later.",
-        "update-sharing-acces": "The acces mode could not be updated, please try again later"
+        "update-sharing-access": "The acces mode could not be updated, please try again later"
       },
       "general": {
         "generalAccess": "General access",
