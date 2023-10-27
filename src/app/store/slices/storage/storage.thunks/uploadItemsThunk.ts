@@ -34,30 +34,6 @@ interface UploadItemsPayload {
 
 const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
 
-// const webWorker = new WebWorker(appWorker);
-
-// (webWorker as Worker).onmessage = function (e) {
-//   const result = e.data;
-//   console.log('upload worder 2 on message ');
-//   console.log({ e });
-//   if (result?.error) {
-//     // Maneja el error
-//     console.error(result.error);
-//   } else {
-//     // Maneja el resultado exitoso de la carga
-//     console.log('Carga completada:', result);
-//   }
-// };
-
-// // Define la función para iniciar la carga
-// function uploadFilesWithWorker(files, abortController?, options?, relatedTaskProgress?) {
-//   console.log('upload with woerker ');
-//   const parsedObject = JSON.parse(JSON.stringify({ files, abortController, options, relatedTaskProgress }));
-//   console.log({ parsedObject });
-//   (webWorker as Worker).postMessage({ parsedObject });
-//   console.log('after upload with worker ');
-// }
-
 const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   if (zeroLengthFilesNumber > 0) {
     const fileText = zeroLengthFilesNumber === 1 ? 'file' : 'files';
@@ -462,7 +438,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
-    // await uploadFilesWithWorker(filesToUploadData);
 
     options.onSuccess?.();
 
@@ -537,7 +512,6 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     }));
 
     await uploadFileWithManager(filesToUploadData, abortController, options, filesProgress);
-    // await uploadFilesWithWorker(filesToUploadData, abortController, options, filesProgress);
 
     options.showNotifications = true;
     options.onSuccess?.();

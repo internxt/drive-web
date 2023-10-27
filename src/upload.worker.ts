@@ -36,6 +36,7 @@ export default () => {
 
   self.addEventListener('message', async (event) => {
     const { content, url, uploadIndex } = event.data;
+
     try {
       const { etag } = await uploadFileBlob(content, url);
       postMessage({ result: 'success', etag, uploadIndex });

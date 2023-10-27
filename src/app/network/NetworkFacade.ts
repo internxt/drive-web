@@ -81,7 +81,7 @@ export class NetworkFacade {
         const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
           return await new Promise((resolve, reject) => {
             const messageHandler = (event) => {
-              const { result, size, bytesRead } = event.data;
+              const { result, size, bytesRead, error } = event.data;
 
               const resultHandlers = {
                 success: () => {
@@ -93,7 +93,7 @@ export class NetworkFacade {
                 },
                 error: () => {
                   options.abortController?.abort();
-                  reject();
+                  reject(error);
                   cleanup();
                 },
               };
@@ -101,7 +101,7 @@ export class NetworkFacade {
               if (resultHandler) {
                 resultHandler();
               } else {
-                reject(new Error(`${result}`));
+                reject(new Error(`${error}`));
                 cleanup();
               }
             };
@@ -160,7 +160,7 @@ export class NetworkFacade {
 
         const messageHandler = (event) => {
           const currentIndex = upload.index + 1;
-          const { result, etag, size, uploadIndex } = event.data;
+          const { result, etag, size, uploadIndex, error } = event.data;
 
           const resultHandlers = {
             success: (ETag, uploadIndex) => {
@@ -184,7 +184,7 @@ export class NetworkFacade {
             },
             error: () => {
               uploadsAbortController?.abort();
-              reject();
+              reject(error);
               cleanup();
             },
           };
@@ -192,7 +192,7 @@ export class NetworkFacade {
           if (resultHandler) {
             resultHandler(etag, uploadIndex);
           } else {
-            reject(new Error(`${result}`));
+            reject(error);
             cleanup();
           }
         };
@@ -208,8 +208,6 @@ export class NetworkFacade {
           uploadIndex: uploadIndexToworker,
         });
       });
-
-      return;
     };
 
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
