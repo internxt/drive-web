@@ -164,11 +164,12 @@ export class NetworkFacade {
 
           const resultHandlers = {
             success: (ETag, uploadIndex) => {
-              if (!ETag) {
-                reject(new Error('ETag header was not returned'));
-              }
-
               if (currentIndex === uploadIndex) {
+                if (!ETag) {
+                  reject(new Error('ETag header was not returned'));
+                  cleanup();
+                }
+
                 fileParts.push({
                   ETag,
                   PartNumber: uploadIndex,
