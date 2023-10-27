@@ -74,7 +74,7 @@ type ShareDialogProps = {
 };
 
 const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
-  return (item as AdvancedSharedItem).encryptionKey !== undefined;
+  return item['encryptionKey'];
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {

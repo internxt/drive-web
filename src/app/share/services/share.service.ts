@@ -381,7 +381,7 @@ export const createPublicShareFromOwnerUser = async (
   const encryptedCode = aes.encrypt(code, mnemonic);
 
   return createPublicSharingItem({
-    encryptionAlgorithm: encryptionAlgorithm || 'inxt-v2',
+    encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
     encryptionKey: encryptedMnemonic,
     itemType,
     itemId: uuid,
