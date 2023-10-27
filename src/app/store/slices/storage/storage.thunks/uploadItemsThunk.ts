@@ -443,7 +443,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        console.log({ error });
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
@@ -518,7 +517,6 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (errors.length > 0) {
       for (const error of errors) {
-        console.log({ error });
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
@@ -533,8 +531,6 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.fulfilled, () => undefined)
     .addCase(uploadItemsThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options || {});
-      console.log({ error: requestOptions });
-      console.log({ errormessage: action.error.message });
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message || '' }),
