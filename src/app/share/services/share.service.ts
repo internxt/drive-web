@@ -386,6 +386,7 @@ export const createPublicShareFromOwnerUser = async (
     itemType,
     itemId: uuid,
     encryptedCode,
+    persistPreviousSharing: true,
   });
 };
 

@@ -271,11 +271,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       return;
     }
 
-    if (itemToShare?.item.uuid && isAdvanchedShareItem(itemToShare.item)) {
+    if (itemToShare?.item.uuid) {
+      const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
       await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
-        itemToShare?.item?.encryptionKey,
+        encryptionKey,
       );
       props.onShareItem?.();
       closeSelectedUserPopover();
@@ -503,7 +504,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 {({ open }) => (
                   <>
                     <Popover.Button as="div" className="outline-none z-1">
-                      <Button variant="secondary" disabled={isLoading || !isUserOwner}>
+                      <Button variant="secondary" disabled={isLoading || (!props.isDriveItem && !isUserOwner)}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
                           {accessMode === 'public'
