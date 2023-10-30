@@ -319,6 +319,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         const itemId = itemToShare?.item.uuid || '';
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
+        if (sharingType === 'public') {
+          await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+        }
         setAccessMode(mode);
       } catch (error) {
         errorService.reportError(error);
