@@ -14,8 +14,6 @@ import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/
 import { createWebWorker } from '../../WebWorker';
 import uploadWorker from '../../upload.worker';
 
-const worker: Worker = createWebWorker(uploadWorker);
-
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
@@ -77,6 +75,7 @@ export class NetworkFacade {
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+        const worker: Worker = createWebWorker(uploadWorker);
 
         const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
           return await new Promise((resolve, reject) => {
@@ -124,7 +123,7 @@ export class NetworkFacade {
          * Pending to be solved, do not remove this line unless the leak is solved.
          */
         fileToUpload = new Blob([]);
-
+        worker.terminate();
         return fileHash;
       },
     );
@@ -153,6 +152,7 @@ export class NetworkFacade {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
+    const worker: Worker = createWebWorker(uploadWorker);
 
     const executeWorker = async (upload: UploadTask): Promise<void> => {
       await new Promise((resolve, reject) => {
@@ -265,7 +265,7 @@ export class NetworkFacade {
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
         await uploadQueue.drain();
       }
-
+      worker.terminate();
       return {
         hash: fileHash,
         parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
