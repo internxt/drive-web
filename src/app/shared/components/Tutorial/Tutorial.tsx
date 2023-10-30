@@ -7,6 +7,7 @@ interface TutorialProps {
   steps: Step[];
   currentStep: number;
   passToNextStep?: () => void;
+  children?: React.ReactNode;
 }
 
 export type Step = {

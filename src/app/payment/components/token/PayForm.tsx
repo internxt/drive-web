@@ -185,7 +185,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
 
                 <div className="referred-description py-3">Market price of Internxt Tokens: {this.state.inxtEUR} €</div>
                 <Form className="form-payment" onSubmit={this.parseSubmit}>
-                  <Form.Row>
+                  <Row>
                     <Form.Group as={Col} controlId="paymentType">
                       <Form.Label>Payment Type</Form.Label>
                       <Form.Control as="select" name="currency">
@@ -200,9 +200,9 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
                         ))}
                       </Form.Control>
                     </Form.Group>
-                  </Form.Row>
+                  </Row>
 
-                  <Form.Row>
+                  <Row>
                     <Form.Group as={Col} controlId="email">
                       <Form.Label>Email Address for account to apply payment to</Form.Label>
                       <Form.Control
@@ -219,19 +219,19 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
                         {this.renderSwitch()}
                       </Form.Control>
                     </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
+                  </Row>
+                  <Row>
                     <Form.Group as={Col} controlId="wallet">
                       <Form.Label>Wallet from which you are sending INXT tokens</Form.Label>
                       <Form.Control name="wallet" value={this.state.wallet} onChange={this.handleChange} required />
                     </Form.Group>
-                  </Form.Row>
-                  <Form.Row>
+                  </Row>
+                  <Row>
                     <Form.Group as={Col} controlId="message">
                       <Form.Label>Optionally include a message with your request</Form.Label>
                       <Form.Control as="textarea" name="message" />
                     </Form.Group>
-                  </Form.Row>
+                  </Row>
 
                   <Container style={{ textAlign: 'right' }}>
                     <Row>
@@ -252,13 +252,13 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
                     </Row>
                   </Container>
 
-                  <Form.Row className="form-payment-submit">
+                  <Row className="form-payment-submit">
                     <Form.Group as={Col}>
                       <Button className="on btn-block" type="submit">
                         Send Request
                       </Button>
                     </Form.Group>
-                  </Form.Row>
+                  </Row>
                 </Form>
               </div>
             </Container>

@@ -40,10 +40,10 @@ class TaskManagerService {
 
   public updateTask(patch: UpdateTaskPayload) {
     const taskToUpdate = this.tasks.find((task) => task.id === patch.taskId);
-
-    Object.assign(taskToUpdate, patch.merge);
-
-    this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
+    if (taskToUpdate) {
+      Object.assign(taskToUpdate, patch.merge);
+      this.eventEmitter.emit(TaskEvent.TaskUpdated, taskToUpdate);
+    }
   }
 
   public clearTasks() {
