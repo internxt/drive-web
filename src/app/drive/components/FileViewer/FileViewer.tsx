@@ -96,9 +96,9 @@ const FileViewer = ({
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
   const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
-    file_size: file.size,
-    file_extension: file.type,
-    preview_id: file.uuid,
+    file_size: file?.size,
+    file_extension: file?.type,
+    preview_id: file?.uuid,
   };
 
   // To prevent close FileViewer if any of those modal are open
