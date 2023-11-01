@@ -18,11 +18,11 @@ import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
-  const itemButton = useRef(null);
+  const itemButton = useRef<HTMLButtonElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
   const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
-  const { onItemClicked, onItemRightClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(item);
+  const { onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
@@ -86,15 +86,29 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     }
   });
 
+  const handleRightClick = (e) => {
+    e.preventDefault();
+    if (isItemSelected(item)) {
+      itemButton.current?.click();
+    } else {
+      onItemClicked(e);
+      setTimeout(() => {
+        itemButton.current?.click();
+      }, 100);
+    }
+  };
+
   const template = connectDropTarget(
     <div
       ref={itemRef}
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
         group relative box-border rounded-lg p-4 hover:bg-neutral-10`}
-      onContextMenu={onItemRightClicked}
+      onContextMenu={handleRightClick}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
       draggable={false}
       onKeyDown={(e) => {}}
     >

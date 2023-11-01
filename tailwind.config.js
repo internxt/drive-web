@@ -1,12 +1,10 @@
 /* eslint-disable */
 module.exports = {
-  purge: {
-    content: ['./src/**/*.tsx'],
-    options: {
-      safelist: ['dropdown-menu', 'dropdown-item', 'nav-item', 'nav-link', 'tab-content', 'tab-pane'],
-    },
+  content: ['./src/**/*.tsx'],
+  options: {
+    safelist: ['dropdown-menu', 'dropdown-item', 'nav-item', 'nav-link', 'tab-content', 'tab-pane'],
   },
-  darkMode: false, // or 'media' or 'class'
+
   theme: {
     screens: {
       xs: '512px',

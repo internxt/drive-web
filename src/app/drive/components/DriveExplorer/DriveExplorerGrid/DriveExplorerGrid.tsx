@@ -16,6 +16,7 @@ interface DriveExplorerGridProps {
   items: DriveItemData[];
   onEndOfScroll(): void;
   hasMoreItems: boolean;
+  onHoverListItems?: (areHover: boolean) => void;
 }
 
 const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridProps) => {
@@ -35,6 +36,14 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
     });
   }
 
+  function handleMouseEnter() {
+    props.onHoverListItems?.(true);
+  }
+
+  function handleMouseLeave() {
+    props.onHoverListItems?.(false);
+  }
+
   function itemsFileList(): JSX.Element[] {
     return props.items
       .filter((item) => !item.isFolder)
@@ -42,7 +51,15 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'file'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
+        return (
+          <DriveExplorerGridItem
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            setEditNameItem={setEditNameItem}
+            key={itemKey}
+            item={item}
+          />
+        );
       });
   }
 

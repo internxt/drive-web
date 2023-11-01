@@ -17,6 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { useEffect } from 'react';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -45,7 +46,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
 
-  const { title } = props;
+  const { title, item, openDropdown, closeDropdown } = props;
 
   const menuItems: MenuItem[] = [
     {
@@ -55,8 +56,8 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       onClick: () => {
         dispatch(
           storageActions.setItemToShare({
-            share: (props.item as DriveItemData)?.shares?.[0],
-            item: props.item as DriveItemData,
+            share: (item as DriveItemData)?.shares?.[0],
+            item: item as DriveItemData,
           }),
         );
         dispatch(uiActions.setIsShareDialogOpen(true));
@@ -68,12 +69,12 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       text: translate('drive.dropdown.getLink'),
 
       onClick: () => {
-        const driveItem = props.item as DriveItemData;
+        const driveItem = item as DriveItemData;
         shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
       },
       divider: true,
     },
-    !props.item?.isFolder
+    !item?.isFolder
       ? {
           id: 'preview',
           icon: Eye,
@@ -81,7 +82,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
 
           onClick: () => {
             dispatch(uiActions.setIsFileViewerOpen(true));
-            dispatch(uiActions.setFileViewerItem(props.item as DriveItemData));
+            dispatch(uiActions.setFileViewerItem(item as DriveItemData));
           },
         }
       : null,
@@ -92,7 +93,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       keyboardShortcutOptions: {
         keyboardShortcutText: 'R',
       },
-      onClick: () => props.onRenameButtonClicked(props.item as DriveItemData),
+      onClick: () => props.onRenameButtonClicked(item as DriveItemData),
     },
     {
       id: 'move',
@@ -100,7 +101,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       text: translate('drive.dropdown.move'),
 
       onClick: () => {
-        dispatch(storageActions.setItemsToMove([props.item as DriveItemData]));
+        dispatch(storageActions.setItemsToMove([item as DriveItemData]));
         dispatch(uiActions.setIsMoveItemsDialogOpen(true));
       },
     },
@@ -110,7 +111,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       text: translate('drive.dropdown.download'),
 
       onClick: () => {
-        dispatch(storageThunks.downloadItemsThunk([props.item as DriveItemData]));
+        dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
       },
       divider: true,
     },
@@ -122,7 +123,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
         keyboardShortcutIcon: Backspace,
       },
       onClick: () => {
-        moveItemsToTrash([props.item as DriveItemData]);
+        moveItemsToTrash([item as DriveItemData]);
       },
     },
   ];
@@ -130,7 +131,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   return (
     <div className="flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
-      {props.openDropdown && (
+      {openDropdown && (
         <>
           {menuItems.map(
             (item) =>
@@ -142,7 +143,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                       onClick={(e) => {
                         e.stopPropagation();
                         item.onClick();
-                        props.closeDropdown();
+                        closeDropdown();
                       }}
                       className={
                         'flex cursor-pointer flex-row items-center justify-between space-x-3 whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100'

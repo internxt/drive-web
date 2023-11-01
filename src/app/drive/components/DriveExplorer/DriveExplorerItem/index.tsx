@@ -17,4 +17,6 @@ export interface DriveExplorerItemProps {
   item: DriveItemData;
   isTrash?: boolean;
   setEditNameItem?: Dispatch<SetStateAction<DriveItemData | null>>;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
 }

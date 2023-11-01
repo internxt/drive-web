@@ -488,7 +488,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const filesEmptyImage = (
     <div className="relative h-32 w-32">
       <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-      <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      <FileIcon className="absolute -left-7 top-0.5 rotate-10- transform drop-shadow-soft filter" />
     </div>
   );
 
@@ -525,7 +525,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const MenuItemToGetSize = () => (
     <div
       className={
-        'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+        'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
       }
       style={{
         minWidth: '180px',
@@ -542,7 +542,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <p>{translate('actions.upload.folder')}</p>
           </div>
 
-          <div className="my-px mx-3 flex border-t border-gray-5" />
+          <div className="mx-3 my-px flex border-t border-gray-5" />
 
           <div
             className={
@@ -715,7 +715,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                             {open && (
                               <Menu.Items
                                 className={
-                                  'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                  'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                                 }
                               >
                                 <Menu.Item>
@@ -743,7 +743,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                     );
                                   }}
                                 </Menu.Item>
-                                <div className="my-px mx-3 flex border-t border-gray-5" />
+                                <div className="mx-3 my-px flex border-t border-gray-5" />
                                 <Menu.Item>
                                   {({ active }) => (
                                     <div
@@ -895,7 +895,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                               }
                             >
                               <Menu.Item>
@@ -963,7 +963,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   onEndOfScroll={fetchItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
-                  onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
+                  onHoverListItems={(areHovered) => {
+                    setIsListElementsHovered(areHovered);
+                    console.log('areHovered', areHovered);
+                  }}
                   title={title}
                 />
               </div>
