@@ -70,7 +70,15 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
         const itemParentId = item.parentId || item.folderId;
         const itemKey = `'folder'-${item.id}-${itemParentId}`;
 
-        return <DriveExplorerGridItem setEditNameItem={setEditNameItem} key={itemKey} item={item} />;
+        return (
+          <DriveExplorerGridItem
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            setEditNameItem={setEditNameItem}
+            key={itemKey}
+            item={item}
+          />
+        );
       });
   }
 
