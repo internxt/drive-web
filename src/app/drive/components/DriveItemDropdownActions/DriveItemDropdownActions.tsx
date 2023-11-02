@@ -17,7 +17,6 @@ import { DriveItemData } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { useEffect } from 'react';
 
 interface FileDropdownActionsProps {
   title?: string;
