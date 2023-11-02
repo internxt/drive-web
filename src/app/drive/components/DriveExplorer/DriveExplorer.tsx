@@ -529,7 +529,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const MenuItemToGetSize = () => (
     <div
       className={
-        'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+        'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
       }
       style={{
         minWidth: '180px',
@@ -725,7 +725,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                             {open && (
                               <Menu.Items
                                 className={
-                                  'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                  'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                                 }
                               >
                                 <Menu.Item>
@@ -905,7 +905,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                               }
                             >
                               <Menu.Item>
@@ -976,7 +976,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => {
                     setIsListElementsHovered(areHovered);
-                    console.log('areHovered', areHovered);
                   }}
                   title={title}
                 />

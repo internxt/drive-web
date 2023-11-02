@@ -1,4 +1,4 @@
-import { createRef, useEffect, useRef, useState } from 'react';
+import { Fragment, createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
@@ -15,20 +15,61 @@ import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import transformItemService from 'app/drive/services/item-transform.service';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
   const itemButton = useRef<HTMLButtonElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
-  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
-  const { onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(item);
+  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
+  const {
+    nameInputRef,
+    onNameChanged,
+    onNameBlurred,
+    onNameClicked,
+    onNameEnterKeyDown,
+    onItemClicked,
+    onItemDoubleClicked,
+    downloadAndSetThumbnail,
+  } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
 
-  const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+  const nameNodeFactory = () => {
+    const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+
+    return (
+      <Fragment>
+        <div className={isEditingName(item) ? 'flex' : 'hidden'}>
+          <input
+            className="dense no-ring rect w-full select-text border border-white"
+            onClick={(e) => e.stopPropagation()}
+            ref={nameInputRef}
+            type="text"
+            value={dirtyName}
+            placeholder="Name"
+            onChange={onNameChanged}
+            onBlur={onNameBlurred}
+            onKeyDown={onNameEnterKeyDown}
+            autoFocus
+          />
+          <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
+        </div>
+        <span
+          data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
+          onClick={onNameClicked}
+          title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+        >
+          {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+        </span>
+      </Fragment>
+    );
+  };
+
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';
@@ -78,12 +119,16 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       moveItemsToTrash([item]);
     }
   });
-  useHotkeys('r', (e) => {
-    e.stopPropagation();
-    if (isItemSelected(item)) {
-      props.setEditNameItem?.(item);
-    }
-  });
+  useHotkeys(
+    'r',
+    (e) => {
+      e.preventDefault();
+      if (isItemSelected(item)) {
+        props.setEditNameItem?.(item);
+      }
+    },
+    [isItemSelected(item)],
+  );
 
   const handleRightClick = (e) => {
     e.preventDefault();
@@ -132,7 +177,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
               <DriveItemDropdownActions
                 openDropdown={open}
                 closeDropdown={close}
-                onRenameButtonClicked={() => (props.setEditNameItem ? props.setEditNameItem(item) : null)}
+                onRenameButtonClicked={() => props.setEditNameItem?.(item)}
                 item={item}
               />
             </Menu.Items>
@@ -153,11 +198,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         )}
       </div>
       <div className="mt-3 text-center">
-        <div
-          className={`${ṣpanDisplayClass} mb-1 cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
-        >
-          {items.getItemDisplayName(item)}
-        </div>
+        <div className="mb-1">{nameNodeFactory()}</div>
       </div>
     </div>,
   );
