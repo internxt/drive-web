@@ -80,7 +80,6 @@ import ShareDialog from '../ShareDialog/ShareDialog';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import shareService from '../../../share/services/share.service';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
-import BannerWrapper from 'app/banners/BannerWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 
 const TRASH_PAGINATION_OFFSET = 50;
@@ -674,7 +673,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <BannerWrapper />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
@@ -687,6 +685,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           }}
         />
       )}
+
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
           <div className="z-10 flex h-14 max-w-full flex-shrink-0 justify-between px-5">

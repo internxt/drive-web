@@ -19,7 +19,7 @@ interface ItemProps {
   }>;
 }
 
-export default function Gridtem({
+export default function GridItem({
   item,
   itemComposition,
   selected,
