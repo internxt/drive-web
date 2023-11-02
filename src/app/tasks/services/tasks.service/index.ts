@@ -174,7 +174,7 @@ class TaskManagerService {
         break;
       }
       case TaskType.MoveFolder: {
-        title = itemsLib.getItemDisplayName(task.folder);
+        title = itemsLib.getItemDisplayName({ name: task.folder.name });
         break;
       }
       case TaskType.DownloadPhotos: {
