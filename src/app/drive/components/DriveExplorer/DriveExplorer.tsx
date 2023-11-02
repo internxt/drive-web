@@ -65,7 +65,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import './DriveExplorer.scss';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
@@ -82,6 +81,7 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import shareService from '../../../share/services/share.service';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import BannerWrapper from 'app/banners/BannerWrapper';
+import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -153,6 +153,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
+
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -453,11 +455,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
-        dispatch(uiActions.setCurrentEditingNameDirty(selectedItems[0].name));
-      } else {
-        dispatch(uiActions.setCurrentEditingNameDirty(dirtyName));
+        setEditNameItem(selectedItems[0]);
       }
-      dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItems[0]));
     }
   };
 
@@ -676,7 +675,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
       <BannerWrapper />
-
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          isOpen={true}
+          onSuccess={() => {
+            dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          }}
+          onClose={() => {
+            setEditNameItem(null);
+          }}
+        />
+      )}
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
           <div className="z-10 flex h-14 max-w-full flex-shrink-0 justify-between px-5">
