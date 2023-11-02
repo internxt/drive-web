@@ -85,7 +85,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(fetchDialogContentThunk(folderId))
       .unwrap()
       .then(() => {
-        databaseService.get(DatabaseCollection.Levels, folderId).then((items) => {
+        databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
           setCurrentFolderId(folderId);
           setCurrentFolderName(name);
           setDestinationId(folderId);

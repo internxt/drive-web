@@ -80,7 +80,7 @@ export interface DriveFileMetadataPayload {
   itemName?: string;
 }
 
-export type DriveItemData = DriveFileData & DriveFolderData;
+export type DriveItemData = DriveFileData & DriveFolderData & { sharings?: { type: string; id: string }[] };
 
 export interface DriveItemPatch {
   name?: string;

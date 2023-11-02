@@ -8,6 +8,7 @@ import errorService from '../core/services/error.service';
 import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
+import { HTTP_CODES } from '../core/services/http.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -43,11 +44,18 @@ type UploadManagerFileParams = {
 
 export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
+  maxSpaceOccupiedCallback: () => void,
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
 ): Promise<DriveFileData[]> => {
-  const uploadManager = new UploadManager(files, abortController, options, relatedTaskProgress);
+  const uploadManager = new UploadManager(
+    files,
+    maxSpaceOccupiedCallback,
+    abortController,
+    options,
+    relatedTaskProgress,
+  );
   return uploadManager.run();
 };
 
@@ -190,6 +198,8 @@ class UploadManager {
                 filesUploaded: this.relatedTaskProgress
                   ? this.relatedTaskProgress?.filesUploaded / this.relatedTaskProgress?.totalFilesToUpload
                   : 'unknown',
+                context: err?.context,
+                errStatus: err?.status,
               };
 
               if (isLostConnectionError) {
@@ -210,6 +220,10 @@ class UploadManager {
                 errorService.reportError(err, {
                   extra: fileInfoToReport,
                 });
+
+                if (err?.status === HTTP_CODES.MAX_SPACE_USED) {
+                  this.maxSpaceOccupiedCallback();
+                }
               }
 
               if (!this.errored) {
@@ -240,9 +254,11 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private uploadUUIDV4: string;
+  private maxSpaceOccupiedCallback: () => void;
 
   constructor(
     items: UploadManagerFileParams[],
+    maxSpaceOccupiedCallback: () => void,
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
@@ -252,6 +268,7 @@ class UploadManager {
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
     this.uploadUUIDV4 = analyticsService.getTrackingActionId();
+    this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
   }
 
   private classifyFilesBySize(

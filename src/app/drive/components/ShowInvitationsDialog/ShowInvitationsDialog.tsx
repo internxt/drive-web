@@ -114,7 +114,7 @@ const ShowInvitationsDialog = ({ onClose }): JSX.Element => {
                         <div className="flex flex-row justify-between pt-3.5">
                           <div className="flex w-full max-w-[263px] flex-row items-center space-x-2.5">
                             <IconComponent width={40} height={40} />
-                            <div className="flex flex-col">
+                            <div className="flex max-w-xxs flex-col truncate">
                               <p className="truncate font-medium text-gray-100">{invitation.item.plainName}</p>
                               <p className="truncate text-sm text-gray-50">
                                 {translate('modals.sharedInvitationsModal.sharedWith')}{' '}

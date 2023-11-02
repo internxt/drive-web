@@ -21,7 +21,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const itemButton = useRef<HTMLButtonElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
-  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
+  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
   const { onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(item);
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -29,7 +29,6 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const updateHeight = () => forceUpdate();
 
   const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
-
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
   const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';

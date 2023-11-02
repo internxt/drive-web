@@ -1,5 +1,5 @@
 import { Fragment, useEffect } from 'react';
-import { PencilSimple, Users } from '@phosphor-icons/react';
+import { PencilSimple } from '@phosphor-icons/react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -10,17 +10,7 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
-import { DriveItemData } from '../../../../types';
-
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
-  const plainName = item?.plainName ?? item?.plain_name;
-  const type = item.type;
-
-  if (!plainName || !type) return;
-  else if (type === 'folder') return plainName;
-
-  return plainName + '.' + type;
-};
+import usersIcon from 'assets/icons/users.svg';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
@@ -81,14 +71,14 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
           <span
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${spanDisplayClass} file-list-item-name-span`}
-            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             onClick={
               (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
                 ? onNameClicked
                 : undefined
             }
           >
-            {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           </span>
           {!isEditingName && ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
             <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
@@ -97,7 +87,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       </Fragment>
     );
   };
-  const itemIsShared = item.shares?.length || 0 > 0;
+  const isItemShared = (item.sharings?.length ?? 0) > 0;
 
   const template = (
     <div
@@ -110,27 +100,45 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      {/* ICON */}
-      <div className="box-content flex w-1/12 items-center px-3">
-        <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent
-            className="h-full"
-            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
-          />
-          {itemIsShared && (
-            <Users
-              className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-              data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+      <div className="flex min-w-activity flex-grow items-center pr-3">
+        {/* ICON */}
+        <div className="box-content flex items-center pr-4">
+          <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
+            <ItemIconComponent
+              className="h-full"
+              data-test={`file-list-${
+                item.isFolder ? 'folder' : 'file'
+              }-${transformItemService.getItemPlainNameWithExtension(item)}`}
             />
-          )}
+            {isItemShared && (
+              <img
+                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                src={usersIcon}
+                width={13}
+                alt="shared users"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* NAME */}
+        <div className="flex w-activity flex-grow cursor-pointer items-center truncate pr-2">
+          <span
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className="truncate"
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            onClick={
+              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                ? onNameClicked
+                : undefined
+            }
+          >
+            <p className="truncate">
+              {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            </p>
+          </span>
         </div>
       </div>
-
-      {/* NAME */}
-      <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
-
-      {/* HOVER ACTIONS */}
-      <div className="hidden w-2/12 items-center pl-3 xl:flex"></div>
 
       {
         /* DROPPABLE ZONE */
@@ -139,12 +147,12 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       }
 
       {/* DATE */}
-      <div className="hidden w-3/12 items-center overflow-ellipsis whitespace-nowrap lg:flex">
+      <div className="block w-date items-center whitespace-nowrap">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="flex w-1/12 items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-size items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (

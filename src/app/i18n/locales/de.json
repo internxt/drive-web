@@ -152,10 +152,10 @@
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
-    "subtitle": "Privater und sicherer Cloud-Speicher",
+    "subtitle": "Sicherer Cloud-Speicher mit unübertroffener Privatsphäre",
     "labels": {
       "privacy": "Datenschutz durch Design",
-      "end-to-end": "End-to-end Verschlüsselung",
+      "open-source": "Open Source und transparent",
       "military-grade": "Verschlüsselung auf Militärniveau",
       "zero-knowledge": "Zero-Knowledge Technologie"
     },
@@ -737,6 +737,7 @@
     "linkExpired": "Dieser sichere Link ist abgelaufen",
     "teamInvitation": "Die Einladungs-E-Mail konnte nicht gesendet werden",
     "storageIsFull": "Dein Speicher ist voll",
+    "storageIsFullDescription": "Sie können keine Dateien hochladen, synchronisieren oder sichern.",
     "noSpaceAvailable": "Du hast die Grenzen deines aktuellen Plans erreicht und die Synchronisierung wurde gestoppt. Führe jetzt ein Upgrade durch, damit deine Dateien sicher synchronisiert bleiben.",
     "sharedFolderTooBig": "Internxt Drive unterstützt das Teilen von Ordnern mit mehr als 1 GB nicht.",
     "titleSharedFolderTooBig": "Nicht unterstützte Aktion",
@@ -778,7 +779,7 @@
     },
     "dropdown": {
       "download": "Download",
-      "delete": "Löschen"
+      "delete": "Permanent löschen"
     }
   },
   "shared-links": {
@@ -1016,7 +1017,7 @@
     "downloaded": "Runtergeladen",
     "delete": "Löschen",
     "share": "Teilen",
-    "view": "Ansicht",
+    "view": "Vorschau",
     "accessFile": "Zugriff auf Datei",
     "upgradeNow": "Upgrade jetzt",
     "purchasePlan": "Upgrade jetzt",
@@ -1045,7 +1046,8 @@
     "restoreHere": "Hier wiederherstellen",
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
-    "copyLink": "Kopiere Link"
+    "copyLink": "Kopiere Link",
+    "report": "Missbrauch melden"
   },
   "drive": {
     "usage": "Verwendung",
