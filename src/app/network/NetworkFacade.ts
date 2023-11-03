@@ -12,7 +12,6 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { createWebWorker } from '../../WebWorker';
-import uploadWorker from '../../upload.worker';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -75,7 +74,7 @@ export class NetworkFacade {
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
-        const worker: Worker = createWebWorker(uploadWorker);
+        const worker: Worker = createWebWorker();
 
         const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
           return await new Promise((resolve, reject) => {
@@ -152,7 +151,7 @@ export class NetworkFacade {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
-    const worker: Worker = createWebWorker(uploadWorker);
+    const worker: Worker = createWebWorker();
 
     const executeWorker = async (upload: UploadTask): Promise<void> => {
       await new Promise((resolve, reject) => {
