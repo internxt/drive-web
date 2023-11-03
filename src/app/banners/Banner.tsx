@@ -8,7 +8,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
   return (
     <div
       className={`${showBanner ? 'flex' : 'hidden'} 
-         absolute bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-40`}
+         absolute bottom-0 left-0 right-0 top-0 z-10 bg-black/40`}
     >
       <div
         className={`absolute left-1/2 top-1/2 flex h-auto max-w-4xl -translate-x-1/2 -translate-y-1/2

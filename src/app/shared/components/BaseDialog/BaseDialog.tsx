@@ -38,7 +38,7 @@ const BaseDialog = ({
       data-test={dataTest}
       className={`${isOpen ? 'flex' : 'hidden'} ${
         classes || ''
-      } absolute bottom-0 left-0 right-0 top-0 z-50 bg-black bg-opacity-40`}
+      } absolute bottom-0 left-0 right-0 top-0 z-50 bg-black/40`}
     >
       <div
         className={`${panelClasses || ''} absolute left-1/2 top-1/2 flex w-104 -translate-x-1/2

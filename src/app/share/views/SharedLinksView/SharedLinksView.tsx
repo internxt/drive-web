@@ -562,7 +562,7 @@ function UpdateLinkModal({
                   <BaseButton
                     onClick={copyLink}
                     disabled={false}
-                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary px-4 py-0 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
+                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary px-4 py-0 font-medium text-primary hover:bg-primary/5 active:border-primary-dark"
                   >
                     <span>{translate('shared-links.link-settings.copy-link')}</span>
                     <Link size={24} />

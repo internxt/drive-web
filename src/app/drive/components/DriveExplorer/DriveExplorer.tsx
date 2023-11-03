@@ -528,9 +528,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const MenuItemToGetSize = () => (
     <div
-      className={
-        'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
-      }
+      className={'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'}
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -725,7 +723,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                             {open && (
                               <Menu.Items
                                 className={
-                                  'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                                  'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                                 }
                               >
                                 <Menu.Item>
@@ -905,7 +903,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                                'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                               }
                             >
                               <Menu.Item>

@@ -226,7 +226,7 @@ const Navbar = (props: NavbarProps) => {
               spellCheck="false"
               type="text"
               value={query}
-              className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-white focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary focus:ring-opacity-10"
+              className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-white focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10"
               onChange={(e) => {
                 setQuery(e.target.value);
                 handleSearch();

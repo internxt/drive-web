@@ -102,7 +102,7 @@ export default function ShareDialog({
         style={{
           zIndex,
         }}
-        className={'absolute inset-0 bg-black bg-opacity-40'}
+        className={'absolute inset-0 bg-black/40'}
         onClick={onClose}
       ></Transition.Child>
       <Transition.Child

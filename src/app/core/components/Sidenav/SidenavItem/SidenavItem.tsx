@@ -36,7 +36,7 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
     <div
       onClick={onClick}
       className={`cursor-pointer rounded-lg pl-6 pr-3 font-medium text-gray-60 ${
-        isActive ? 'bg-primary bg-opacity-10' : 'hover:bg-gray-1 active:bg-gray-5'
+        isActive ? 'bg-primary/10' : 'hover:bg-gray-1 active:bg-gray-5'
       }`}
     >
       {to ? (

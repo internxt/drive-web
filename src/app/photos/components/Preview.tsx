@@ -293,7 +293,7 @@ function Arrow({
 }) {
   return (
     <div
-      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-50 text-white backdrop-blur`}
+      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur`}
       onClick={onClick}
     >
       <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180' : ''} />

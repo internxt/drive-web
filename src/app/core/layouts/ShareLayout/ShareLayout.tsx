@@ -110,7 +110,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     <Menu.Button
                       className="inline-flex w-full justify-center rounded-lg px-4 py-2
                                               font-medium focus:outline-none focus-visible:ring-2
-                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75"
+                                              focus-visible:ring-blue-20/75"
                     >
                       <div className="flex flex-row space-x-3">
                         <div
@@ -136,7 +136,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   >
                     <Menu.Items
                       className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white p-1
-                                            shadow-lg ring-1 ring-cool-gray-100 ring-opacity-5 focus:outline-none
+                                            shadow-lg ring-1 ring-cool-gray-100/5 focus:outline-none
                                             "
                     >
                       <Menu.Item>
@@ -172,7 +172,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               logout();
                             }}
-                            className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex w-full
+                            className={`${active && 'bg-red-10/50 text-red-60'} group flex w-full
                                             items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.logout')}

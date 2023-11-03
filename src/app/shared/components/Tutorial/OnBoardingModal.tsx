@@ -76,11 +76,11 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
         <div className="flex h-auto w-auto min-w-max flex-row rounded-2xl bg-white" data-test="download-desktop-modal">
           <div
             onClick={onCloseModalPressed}
-            className="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full"
+            className="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full"
             data-test="download-desktop-modal-close-button"
           >
             <img src={XSVG} />
-            <div className="absolute inset-0 h-7 w-7 rounded-full bg-black opacity-5"></div>
+            <div className="absolute inset-0 h-7 w-7 rounded-full bg-black/5"></div>
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>

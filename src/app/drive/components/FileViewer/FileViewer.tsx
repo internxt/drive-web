@@ -192,7 +192,7 @@ const FileViewer = ({
       >
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
-          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-85 backdrop-blur-md" />
+          <Dialog.Overlay className="fixed inset-0 bg-black/85 backdrop-blur-md" />
 
           {/* Content */}
           <>
@@ -238,7 +238,7 @@ const FileViewer = ({
                           {filename}
                         </span>
                         <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
-                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white bg-opacity-25">
+                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
                           <div
                             className="h-1.5 rounded-full bg-white"
                             style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}

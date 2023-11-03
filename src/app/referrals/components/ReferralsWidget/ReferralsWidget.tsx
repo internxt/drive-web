@@ -41,7 +41,7 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
       <div
         className={`flex h-5 w-10
        flex-none justify-center rounded-lg text-xs font-medium ${
-         referral.isCompleted ? 'bg-green bg-opacity-10 text-green-dark' : 'bg-gray-5 text-gray-60'
+         referral.isCompleted ? 'bg-green/10 text-green-dark' : 'bg-gray-5 text-gray-60'
        }`}
       >
         <p className="leading-5">{sizeService.bytesToString(referral.credit * referral.steps)}</p>

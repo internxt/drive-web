@@ -88,9 +88,7 @@ export default function Tooltip({
         <div className={`w-max rounded-lg px-4 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
           <h1 className={`text-base ${style === 'dark' ? 'text-white' : 'text-gray-80'}`}>{title}</h1>
           {subtitle && (
-            <h2 className={`-mt-1 text-sm ${style === 'dark' ? 'text-white opacity-50' : 'text-gray-50'}`}>
-              {subtitle}
-            </h2>
+            <h2 className={`-mt-1 text-sm ${style === 'dark' ? 'text-white/50' : 'text-gray-50'}`}>{subtitle}</h2>
           )}
         </div>
         <div

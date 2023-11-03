@@ -47,7 +47,7 @@ export default function Dialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="absolute inset-0 bg-black bg-opacity-40"
+        className="absolute inset-0 bg-black/40"
         onClick={onClose}
       ></Transition.Child>
       <Transition.Child
