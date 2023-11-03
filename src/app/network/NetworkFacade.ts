@@ -186,8 +186,6 @@ export class NetworkFacade {
             error: () => {
               uploadsAbortController?.abort();
               reject(error);
-              console.log('terminate error');
-
               cleanup();
             },
           };
