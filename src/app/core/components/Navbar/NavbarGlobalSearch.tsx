@@ -320,7 +320,7 @@ const Navbar = (props: NavbarProps) => {
                       onMouseEnter={() => setSelectedResult(index)}
                       onClickCapture={() => openItem(item)}
                     >
-                      <Icon className="h-7 w-7 drop-shadow-soft filter" />
+                      <Icon className="h-7 w-7 drop-shadow-soft" />
                       <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
                     </li>
                   );

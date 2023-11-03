@@ -184,7 +184,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           </div>
         )}
       </Menu>
-      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft filter">
+      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft">
         {item.currentThumbnail ? (
           <div className="h-full w-full">
             <img

@@ -103,7 +103,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="flex min-w-activity flex-grow items-center pr-3">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
-          <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
+          <div className="flex h-10 w-10 justify-center drop-shadow-soft">
             <ItemIconComponent
               className="h-full"
               data-test={`file-list-${

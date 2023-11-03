@@ -192,10 +192,7 @@ const FileViewer = ({
       >
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
-          <Dialog.Overlay
-            className="fixed inset-0 bg-black bg-opacity-85 backdrop-blur-md
-                                    backdrop-filter"
-          />
+          <Dialog.Overlay className="fixed inset-0 bg-black bg-opacity-85 backdrop-blur-md" />
 
           {/* Content */}
           <>
@@ -203,7 +200,7 @@ const FileViewer = ({
             {fileIndex === 0 || isShareView ? null : (
               <button
                 title={translate('actions.previous')}
-                className="outline-none absolute top-1/2 left-4 z-30 rounded-full bg-black p-4 text-white"
+                className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
                 onClick={() => changeFile('prev')}
               >
                 <CaretLeft size={24} />
@@ -213,7 +210,7 @@ const FileViewer = ({
             {isTypeAllowed && isPreviewAvailable ? (
               <div
                 tabIndex={0}
-                className="outline-none z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto"
+                className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
               >
                 <div onClick={(e) => e.stopPropagation()} className="">
                   {blob && file ? (
@@ -231,8 +228,8 @@ const FileViewer = ({
                         tabIndex={0}
                         className={`${
                           progress === 1 ? 'hidden' : 'flex'
-                        } outline-none pointer-events-none z-10 select-none flex-col items-center justify-center
-                      rounded-xl font-medium`}
+                        } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
+                      font-medium outline-none`}
                       >
                         <div className="flex h-20 w-20 items-center">
                           <ItemIconComponent width={80} height={80} />
@@ -255,8 +252,8 @@ const FileViewer = ({
             ) : (
               <div
                 tabIndex={0}
-                className="outline-none z-10 flex select-none flex-col items-center justify-center
-                      space-y-6 rounded-xl font-medium"
+                className="z-10 flex select-none flex-col items-center justify-center space-y-6
+                      rounded-xl font-medium outline-none"
               >
                 <div className="flex flex-col items-center justify-center">
                   <div className="flex h-20 w-20 items-center">
@@ -274,7 +271,7 @@ const FileViewer = ({
             {fileIndex === totalFolderIndex - 1 || isShareView ? null : (
               <button
                 title={translate('actions.next')}
-                className="outline-none absolute top-1/2 right-4 z-30 rounded-full bg-black p-4 text-white"
+                className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
                 onClick={() => changeFile('next')}
               >
                 <CaretRight size={24} />
@@ -283,10 +280,7 @@ const FileViewer = ({
           </>
 
           {/* Background */}
-          <div
-            className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black
-                          blur-2xl filter"
-          />
+          <div className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black blur-2xl" />
 
           {/* Top bar controls */}
           <div
@@ -294,12 +288,10 @@ const FileViewer = ({
                           items-start justify-between px-4 text-lg"
           >
             {/* Close and title */}
-            <div className="mt-3 mr-6 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
+            <div className="mr-6 mt-3 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
-                className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 focus:bg-opacity-5"
+                className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full bg-white bg-opacity-0 transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilMultiply height={24} width={24} />
               </button>

@@ -67,7 +67,7 @@ export default function BackupsListItem({
       data-test={dataTest}
     >
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
-        <BackupIcon className={`h-8 w-8 ${isUploaded ? '' : 'opacity-40 grayscale filter'}`} />
+        <BackupIcon className={`h-8 w-8 ${isUploaded ? '' : 'opacity-40 grayscale'}`} />
       </div>
       <p className="flex-grow pr-3">{backup.name}</p>
       <div className="hidden w-2/12 items-center xl:flex"></div>

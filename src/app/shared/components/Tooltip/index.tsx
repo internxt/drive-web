@@ -82,7 +82,7 @@ export default function Tooltip({
     >
       <div
         className={`pointer-events-none absolute ${tooltipPosition} flex items-center ${trianglePosition} transition-all duration-150 ${
-          style === 'light' ? 'drop-shadow-tooltip filter' : ''
+          style === 'light' ? 'drop-shadow-tooltip' : ''
         } ${visible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
       >
         <div className={`w-max rounded-lg px-4 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>

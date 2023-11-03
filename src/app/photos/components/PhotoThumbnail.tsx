@@ -27,7 +27,7 @@ export default function PhotoThumbnail({
         <img
           onClick={onClick}
           className={`h-full w-full object-cover ${
-            selected && 'rounded-lg brightness-80 filter'
+            selected && 'rounded-lg brightness-80'
           } transition-all duration-100 ease-in-out`}
           src={src}
           draggable="false"
