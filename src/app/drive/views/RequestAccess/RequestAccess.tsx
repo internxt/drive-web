@@ -36,11 +36,11 @@ function RequestAccess(): JSX.Element {
 
   return (
     <div className="flex h-full w-full flex-col items-center overflow-auto bg-white sm:bg-gray-5">
-      <div className="flex flex-shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
+      <div className="flex shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
         <img src={bigLogo} width="120" alt="" />
       </div>
 
-      <div className="flex h-full w-full max-w-xs flex-shrink-0 flex-col items-center justify-start pb-8">
+      <div className="flex h-full w-full max-w-xs shrink-0 flex-col items-center justify-start pb-8">
         {!requestSent ? (
           <>
             <div className="flex w-full flex-col items-center rounded-2xl bg-white p-5 text-gray-100 transition-all duration-100 ease-out sm:shadow-subtle-hard">

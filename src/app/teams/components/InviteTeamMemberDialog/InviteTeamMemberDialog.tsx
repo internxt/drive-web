@@ -108,7 +108,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
         </form>
 
         {members.length > 0 && (
-          <div className="mt-6 mb-8 flex h-16 w-full flex-col overflow-y-auto">
+          <div className="mb-8 mt-6 flex h-16 w-full flex-col overflow-y-auto">
             {Object.values(members).map((member) => {
               console.log(member);
               return (
@@ -119,7 +119,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
                     <UilUserPlus className="mr-1 h-5 text-green" />
                   )}
                   <div className="flex flex-1 justify-start px-5">
-                    <span className="w-72 truncate overflow-ellipsis">{member.user}</span>
+                    <span className="w-72 truncate text-ellipsis">{member.user}</span>
                   </div>
                   <UilTrashAlt
                     className="h-5 cursor-pointer text-blue-60 transition duration-300 hover:text-blue-80"

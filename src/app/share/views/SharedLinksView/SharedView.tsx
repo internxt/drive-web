@@ -785,12 +785,12 @@ export default function SharedView(): JSX.Element {
 
   return (
     <div
-      className="flex w-full flex-shrink-0 flex-col"
+      className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
     >
-      <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
+      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />
         </div>

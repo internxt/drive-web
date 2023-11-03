@@ -677,13 +677,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
-          <div className="z-10 flex h-14 max-w-full flex-shrink-0 justify-between px-5">
+          <div className="z-10 flex h-14 max-w-full shrink-0 justify-between px-5">
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
 
             {!isTrash && (
-              <div className="flex flex-shrink-0 flex-row">
+              <div className="flex shrink-0 flex-row">
                 <div className="flex items-center justify-center">
                   <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
                     {({ open, close }) => {

@@ -42,7 +42,7 @@ export default function Faq({ className = '' }: { className?: string }): JSX.Ele
               >
                 <p>{question.title}</p>
                 <CaretUp
-                  className={`ml-4 mt-0.5 flex-shrink-0 text-gray-40 ${
+                  className={`ml-4 mt-0.5 shrink-0 text-gray-40 ${
                     open ? '' : 'rotate-180'
                   } transition-transform duration-200 ease-in-out`}
                   weight="bold"

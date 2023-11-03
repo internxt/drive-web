@@ -47,9 +47,7 @@ function shouldNotBeRendered(fileExtensionGroup) {
 }
 
 const DownloadFile = ({ onDownload, translate }) => (
-  <div
-    className={'z-10 mt-3 flex h-11 flex-shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}
-  >
+  <div className={'z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}>
     <button
       title={translate('actions.download')}
       onClick={onDownload}
@@ -291,7 +289,7 @@ const FileViewer = ({
             <div className="mr-6 mt-3 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
-                className="group relative flex h-10 w-10 flex-shrink-0 flex-col items-center justify-center rounded-full bg-white bg-opacity-0 transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+                className="group relative flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-full bg-white bg-opacity-0 transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
               >
                 <UilMultiply height={24} width={24} />
               </button>

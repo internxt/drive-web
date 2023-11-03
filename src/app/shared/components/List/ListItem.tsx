@@ -180,7 +180,7 @@ export default function ListItem<T extends { id: string }>({
         new Array(itemComposition.length).fill(0).map((col, i) => (
           <div
             key={i}
-            className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
+            className={`relative flex h-full shrink-0 flex-row items-center border-b ${
               selected ? 'border-primary/5' : 'border-gray-5'
             } ${columnsWidth[i]}`}
           >
@@ -189,7 +189,7 @@ export default function ListItem<T extends { id: string }>({
         ))
       )}
       <div
-        className={`flex h-14 w-12 flex-shrink-0 flex-col items-center justify-center border-b ${
+        className={`flex h-14 w-12 shrink-0 flex-col items-center justify-center border-b ${
           selected ? 'border-primary/5' : 'border-gray-5'
         }`}
       >

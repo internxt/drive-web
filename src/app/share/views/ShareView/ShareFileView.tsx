@@ -257,7 +257,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     ) : (
       <>
         {/* File info */}
-        <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
+        <div className="flex grow-0 flex-col items-center justify-center space-y-4">
           <div className="h-32 w-32 drop-shadow-soft">
             <FileIcon />
           </div>

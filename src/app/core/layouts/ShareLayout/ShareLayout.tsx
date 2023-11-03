@@ -56,7 +56,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
       <div className="flex h-screen flex-row items-stretch justify-center bg-white text-cool-gray-90">
         {/* Banner */}
         <div
-          className="relative hidden h-full w-96 flex-shrink-0 flex-col text-white lg:flex"
+          className="relative hidden h-full w-96 shrink-0 flex-col text-white lg:flex"
           style={{ background: 'radial-gradient(50% 50% at 50% 50%, #0058DB 0%, #161616 100%)' }}
         >
           <div className="z-10 flex h-full flex-col space-y-12 p-12">
@@ -101,7 +101,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
         {/* Download container */}
         <div className="flex flex-1 flex-col">
           {/* Top bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
               <>
                 {/* User avatar */}
@@ -228,7 +228,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
           {/* File container */}
           <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
           {/* Bottom bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             <div className="ml-auto px-4">
               <ReportButton />
             </div>

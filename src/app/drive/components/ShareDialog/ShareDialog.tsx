@@ -366,7 +366,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       general: (
         <>
           <span
-            className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
+            className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium"
             title={translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           >
             {translate('modals.shareModal.title', { name: itemToShare?.item.name })}
@@ -379,7 +379,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       invite: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.invite.title')}
           </span>
         </div>
@@ -387,7 +387,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       requests: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.requests.title')}
           </span>
         </div>
@@ -404,7 +404,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="relative flex flex-col">
             <div className="flex items-center space-x-4">
               <span
-                className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-medium"
+                className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium"
                 title={translate('modals.shareModal.list.peopleWithAccess')}
               >
                 {translate('modals.shareModal.list.peopleWithAccess')}
@@ -627,14 +627,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 } ${!isRequestPending(request.status) && 'hide-request'}`}
                 key={request.email + index}
               >
-                <div className="flex flex-shrink-0 items-center space-x-2.5">
+                <div className="flex shrink-0 items-center space-x-2.5">
                   <Avatar src={request.avatar} fullName={`${request.name} ${request.lastname}`} diameter={40} />
 
                   <div className="flex flex-1 flex-col overflow-hidden">
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
                       {request.name}&nbsp;{request.lastname}
                     </p>
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
                       {request.email}
                     </p>
                   </div>
@@ -851,17 +851,17 @@ const User = ({
   disableRoleChange: boolean;
 }) => (
   <div
-    className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
+    className={`group flex h-14 shrink-0 items-center space-x-2.5 border-t ${
       user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
     }`}
   >
     <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
 
     <div className="flex flex-1 flex-col overflow-hidden">
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
         {user.name}&nbsp;{user.lastname}
       </p>
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
         {user.email}
       </p>
     </div>
@@ -918,11 +918,11 @@ const InvitedUsersSkeletonLoader = () => {
   ].map((column) => column.width);
 
   return (
-    <div className="group relative flex h-14 w-full flex-shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
+    <div className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
       {new Array(5).fill(0).map((col, i) => (
         <div
           key={`${col}-${i}`}
-          className={`relative flex h-full flex-shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
+          className={`relative flex h-full shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
         >
           {skinSkeleton?.[i]}
         </div>

@@ -278,7 +278,7 @@ const Navbar = (props: NavbarProps) => {
             onMouseEnter={() => setPreventBlur(true)}
             onMouseLeave={() => setPreventBlur(false)}
           >
-            <div className="flex w-full flex-shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5">
+            <div className="flex w-full shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5">
               <button type="button" className="flex items-center space-x-2">
                 {filterItems.map((item) => (
                   <FilterItem
@@ -316,12 +316,12 @@ const Navbar = (props: NavbarProps) => {
                       aria-selected={selectedResult === index}
                       className={`${
                         selectedResult === index && 'bg-gray-5'
-                      } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
+                      } flex h-11 shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
                       onMouseEnter={() => setSelectedResult(index)}
                       onClickCapture={() => openItem(item)}
                     >
                       <Icon className="h-7 w-7 drop-shadow-soft" />
-                      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>
+                      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap">{item.name}</p>
                     </li>
                   );
                 })}
@@ -335,7 +335,7 @@ const Navbar = (props: NavbarProps) => {
         </form>
       )}
 
-      <div className="flex flex-shrink-0">
+      <div className="flex shrink-0">
         <Link
           to="/preferences"
           className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"

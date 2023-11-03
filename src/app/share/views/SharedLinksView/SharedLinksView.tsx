@@ -256,7 +256,7 @@ export default function SharedLinksView(): JSX.Element {
 
   return (
     <div
-      className="flex w-full flex-shrink-0 flex-col"
+      className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
@@ -271,7 +271,7 @@ export default function SharedLinksView(): JSX.Element {
           }}
         />
       )}
-      <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
+      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
         </div>
@@ -300,7 +300,7 @@ export default function SharedLinksView(): JSX.Element {
           header={[
             {
               label: translate('shared-links.list.link-content'),
-              width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-104 shrink-0 whitespace-nowrap', //flex-grow w-1
               name: 'item',
               orderable: false,
             },
@@ -337,7 +337,7 @@ export default function SharedLinksView(): JSX.Element {
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
                   <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
-                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft" />
+                    <Icon className="absolute h-8 w-8 shrink-0 drop-shadow-soft" />
                     <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white/90">
                       <Link size={12} color="white" />
                     </div>

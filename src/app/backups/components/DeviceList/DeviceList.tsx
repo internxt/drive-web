@@ -47,7 +47,7 @@ const DeviceList = (props: Props): JSX.Element => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex-1 min-w-activity truncate flex-shrink-0 cursor-pointer items-center',
+              width: 'flex-1 min-w-activity truncate shrink-0 cursor-pointer items-center',
               name: 'name',
               orderable: true,
               defaultDirection: 'ASC',

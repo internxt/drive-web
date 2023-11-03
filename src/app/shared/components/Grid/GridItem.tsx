@@ -46,7 +46,7 @@ export default function Gridtem({
       {/* COMPOSITION */}
       {itemComposition(item, selected)}
 
-      <div className="absolute right-2 top-2 flex flex-shrink-0 flex-col items-center justify-center">
+      <div className="absolute right-2 top-2 flex shrink-0 flex-col items-center justify-center">
         <Menu as="div" className="relative" onMouseDown={() => selectItem}>
           <Menu.Button
             className={`flex h-8 w-8 flex-col items-center justify-center rounded-md opacity-0 focus-within:outline-primary focus-visible:opacity-100 group-hover:opacity-100 ${
