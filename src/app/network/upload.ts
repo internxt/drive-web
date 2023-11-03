@@ -6,7 +6,7 @@ import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
 import axios, { AxiosError } from 'axios';
 import { ConnectionLostError } from './requests';
-
+import { createWebWorker } from '../../WebWorker';
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
 interface NetworkCredentials {
@@ -124,17 +124,32 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   params.abortController?.signal.addEventListener('abort', onAbort);
 
+  // crear aqui el worker para poder cargartelo en caso de culebracion
+  const worker: Worker = createWebWorker();
+
   if (useMultipart) {
-    uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
-      uploadingCallback: params.progressCallback,
-      abortController: uploadAbortController,
-      parts: Math.ceil(params.filesize / partSize),
-    });
+    uploadPromise = facade.uploadMultipart(
+      bucketId,
+      params.mnemonic,
+      file,
+      {
+        uploadingCallback: params.progressCallback,
+        abortController: uploadAbortController,
+        parts: Math.ceil(params.filesize / partSize),
+      },
+      worker,
+    );
   } else {
-    uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
-      uploadingCallback: params.progressCallback,
-      abortController: uploadAbortController,
-    });
+    uploadPromise = facade.upload(
+      bucketId,
+      params.mnemonic,
+      file,
+      {
+        uploadingCallback: params.progressCallback,
+        abortController: uploadAbortController,
+      },
+      worker,
+    );
   }
 
   return uploadPromise
@@ -150,6 +165,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
       throw err;
     })
     .finally(() => {
+      worker.terminate();
       console.timeEnd('multipart-upload');
     });
 }

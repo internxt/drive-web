@@ -11,7 +11,6 @@ import { UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
-import { createWebWorker } from '../../WebWorker';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -54,7 +53,7 @@ export class NetworkFacade {
     };
   }
 
-  upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
+  upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions, worker: Worker): Promise<string> {
     let fileToUpload: Blob;
     let fileHash: string;
 
@@ -74,7 +73,6 @@ export class NetworkFacade {
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
-        const worker: Worker = createWebWorker();
 
         const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
           return await new Promise((resolve, reject) => {
@@ -122,13 +120,18 @@ export class NetworkFacade {
          * Pending to be solved, do not remove this line unless the leak is solved.
          */
         fileToUpload = new Blob([]);
-        worker.terminate();
         return fileHash;
       },
     );
   }
 
-  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
+  uploadMultipart(
+    bucketId: string,
+    mnemonic: string,
+    file: File,
+    options: UploadMultipartOptions,
+    worker: Worker,
+  ): Promise<string> {
     const partsUploadedBytes: Record<number, number> = {};
 
     function notifyProgress(partId: number, uploadedBytes: number) {
@@ -151,7 +154,6 @@ export class NetworkFacade {
       const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
-    const worker: Worker = createWebWorker();
 
     const executeWorker = async (upload: UploadTask): Promise<void> => {
       await new Promise((resolve, reject) => {
@@ -184,6 +186,8 @@ export class NetworkFacade {
             error: () => {
               uploadsAbortController?.abort();
               reject(error);
+              console.log('terminate error');
+
               cleanup();
             },
           };
@@ -264,7 +268,7 @@ export class NetworkFacade {
       while (uploadQueue.running() > 0 || uploadQueue.length() > 0) {
         await uploadQueue.drain();
       }
-      worker.terminate();
+
       return {
         hash: fileHash,
         parts: fileParts.sort((pA, pB) => pA.PartNumber - pB.PartNumber),
