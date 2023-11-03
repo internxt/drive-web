@@ -95,7 +95,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
   }) => (
     <div
       onClick={onClick}
-      className={`${active && 'bg-gray-5'} flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+      className={`${active && 'bg-gray-5'} flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
     >
       {icon}
       <p className="ml-3">{text}</p>
@@ -111,7 +111,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           <button
             onClick={copyNavigatorLink}
             title={translate('actions.copyLink')}
-            className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+            className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
           >
             <Link size={20} />
           </button>
@@ -119,28 +119,28 @@ const TopBarActions: FC<TopBarActionsProps> = ({
         <button
           onClick={onDownload}
           title={translate('actions.download')}
-          className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+          className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
         >
           <UilImport size={20} />
         </button>
       </div>
       {file && isAuthenticated && (
         <Menu as="div" className="relative inline-block text-left">
-          <Menu.Button className="outline-none flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5">
+          <Menu.Button className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5">
             <DotsThree weight="bold" size={20} />
           </Menu.Button>
           <Transition
             className={'flex'}
-            enter="transform transition duration-100 ease-out"
+            enter="transition duration-100 ease-out"
             enterFrom="opacity-0"
             enterTo="opacity-100"
-            leave="transform transition duration-100 ease-out"
+            leave="transition duration-100 ease-out"
             leaveFrom="scale-95 opacity-100"
             leaveTo="scale-100 opacity-0"
           >
             <Menu.Items
               className={
-                'outline-none absolute right-0 mt-1 w-56 origin-top-right rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                'absolute right-0 mt-1 w-56 origin-top-right rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
               }
             >
               <>
@@ -189,7 +189,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
                     </Menu.Item>
                   </>
                 )}
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
+                <div className="mx-3 my-0.5 border-t border-gray-10" />
                 <Menu.Item>
                   {({ active }) => (
                     <MenuItem
@@ -220,7 +220,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
                     />
                   )}
                 </Menu.Item>
-                <div className="my-0.5 mx-3 border-t border-gray-10" />
+                <div className="mx-3 my-0.5 border-t border-gray-10" />
                 <Menu.Item>
                   {({ active }) => (
                     <MenuItem

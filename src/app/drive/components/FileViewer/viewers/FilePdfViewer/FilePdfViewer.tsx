@@ -111,7 +111,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
 
           {/* Preview controls */}
           <div
-            className="fixed bottom-6 left-1/2 z-10 flex h-12 -translate-x-1/2 transform select-none
+            className="fixed bottom-6 left-1/2 z-10 flex h-12 -translate-x-1/2 select-none
                             flex-row items-center overflow-hidden rounded-xl px-1.5 text-lg
                             font-medium shadow-xl"
           >

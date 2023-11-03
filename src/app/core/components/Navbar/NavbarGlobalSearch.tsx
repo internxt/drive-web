@@ -216,7 +216,7 @@ const Navbar = (props: NavbarProps) => {
             htmlFor="globalSearchInput"
           >
             <MagnifyingGlass
-              className="z-1 pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 transform text-gray-60 focus-within:text-gray-80"
+              className="z-1 pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
               size={20}
             />
             <input
@@ -226,7 +226,7 @@ const Navbar = (props: NavbarProps) => {
               spellCheck="false"
               type="text"
               value={query}
-              className="inxt-input outline-none left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-white focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary focus:ring-opacity-10"
+              className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-white focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary focus:ring-opacity-10"
               onChange={(e) => {
                 setQuery(e.target.value);
                 handleSearch();
@@ -252,14 +252,14 @@ const Navbar = (props: NavbarProps) => {
             <div
               className={`${
                 openSearchBox && 'opacity-0'
-              } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transform rounded-md bg-gray-10 py-1 px-2 text-sm text-gray-50`}
+              } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
             >
               {isMacOs ? '⌘F' : 'Ctrl F'}
             </div>
             <X
               className={`${
                 (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
-              } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 transform cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
+              } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
               onMouseDownCapture={() => {
                 setQuery('');
                 setSearchResult([]);
@@ -274,7 +274,7 @@ const Navbar = (props: NavbarProps) => {
               openSearchBox
                 ? 'translate-y-1.5 scale-100 opacity-100'
                 : 'pointer-events-none -translate-y-0.5 scale-98 opacity-0'
-            } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top transform flex-col overflow-hidden rounded-xl bg-white text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out`}
+            } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-white text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out`}
             onMouseEnter={() => setPreventBlur(true)}
             onMouseLeave={() => setPreventBlur(false)}
           >

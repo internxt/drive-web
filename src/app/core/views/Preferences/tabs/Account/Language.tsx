@@ -21,10 +21,10 @@ function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: Rea
       </Menu.Button>
       <Transition
         className={'left-0'}
-        enter="transform transition duration-50 ease-out"
+        enter="transition duration-50 ease-out"
         enterFrom="scale-98 opacity-0"
         enterTo="scale-100 opacity-100"
-        leave="transform transition duration-50 ease-out"
+        leave="transition duration-50 ease-out"
         leaveFrom="scale-98 opacity-100"
         leaveTo="scale-100 opacity-0"
       >
@@ -68,7 +68,7 @@ export default function Language(): JSX.Element {
   const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
     return (
       <div
-        className={'flex h-full w-full cursor-pointer py-2 px-3 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
+        className={'flex h-full w-full cursor-pointer px-3 py-2 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
         onClick={onClick}
       >
         {children}

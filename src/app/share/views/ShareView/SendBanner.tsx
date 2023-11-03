@@ -17,11 +17,11 @@ const SendBanner = (props: Props) => {
     <div
       className={`${
         props.sendBannerVisible ? 'flex' : 'hidden'
-      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
+      }  fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black bg-opacity-50 px-10 lg:px-0`}
     >
       <div
-        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex
-        w-auto max-w-[800px] -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
+        className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex
+        w-auto max-w-[800px] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-neutral-900`}
         style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
         <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onClose}>
@@ -37,7 +37,7 @@ const SendBanner = (props: Props) => {
             </div>
             <div className="flex pt-6">
               <button
-                className="focus:outline-none relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
+                className="relative flex h-14 w-48 flex-row items-center justify-center space-x-4 rounded-full bg-primary px-8 text-base text-white transition duration-100 focus:outline-none focus-visible:bg-primary-dark active:bg-primary-dark sm:text-lg"
                 onClick={() => {
                   window.location.replace('https://internxt.com');
                 }}

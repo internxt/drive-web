@@ -491,8 +491,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const FileIcon = iconService.getItemIcon(false);
   const filesEmptyImage = (
     <div className="relative h-32 w-32">
-      <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-      <FileIcon className="absolute -left-7 top-0.5 rotate-10- transform drop-shadow-soft filter" />
+      <FileIcon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft filter" />
+      <FileIcon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft filter" />
     </div>
   );
 
@@ -712,10 +712,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           </Menu.Button>
                           <Transition
                             className="absolute"
-                            enter="transform transition origin-top-right duration-100 ease-out"
+                            enter="transition origin-top-right duration-100 ease-out"
                             enterFrom="scale-95 opacity-0"
                             enterTo="scale-100 opacity-100"
-                            leave="transform transition origin-top-right duration-100 ease-out"
+                            leave="transition origin-top-right duration-100 ease-out"
                             leaveFrom="scale-95 opacity-100"
                             leaveTo="scale-100 opacity-0"
                             style={
@@ -892,10 +892,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
                         <Transition
                           className="absolute"
-                          enter="transform transition origin-top-right duration-100 ease-out"
+                          enter="transition origin-top-right duration-100 ease-out"
                           enterFrom="scale-95 opacity-0"
                           enterTo="scale-100 opacity-100"
-                          leave="transform transition origin-top-right duration-100 ease-out"
+                          leave="transition origin-top-right duration-100 ease-out"
                           leaveFrom="scale-95 opacity-100"
                           leaveTo="scale-100 opacity-0"
                           style={

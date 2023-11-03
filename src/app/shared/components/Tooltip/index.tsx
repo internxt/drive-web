@@ -81,14 +81,16 @@ export default function Tooltip({
       style={{ lineHeight: 0 }}
     >
       <div
-        className={`absolute pointer-events-none transform ${tooltipPosition} flex items-center ${trianglePosition} transition-all duration-150 ${
+        className={`pointer-events-none absolute ${tooltipPosition} flex items-center ${trianglePosition} transition-all duration-150 ${
           style === 'light' ? 'drop-shadow-tooltip filter' : ''
-        } ${visible ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}
+        } ${visible ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`}
       >
         <div className={`w-max rounded-lg px-4 py-1.5 text-center ${style === 'dark' ? 'bg-gray-90' : 'bg-white'}`}>
           <h1 className={`text-base ${style === 'dark' ? 'text-white' : 'text-gray-80'}`}>{title}</h1>
           {subtitle && (
-            <h2 className={`text-sm -mt-1 ${style === 'dark' ? 'text-white opacity-50' : 'text-gray-50'}`}>{subtitle}</h2>
+            <h2 className={`-mt-1 text-sm ${style === 'dark' ? 'text-white opacity-50' : 'text-gray-50'}`}>
+              {subtitle}
+            </h2>
           )}
         </div>
         <div

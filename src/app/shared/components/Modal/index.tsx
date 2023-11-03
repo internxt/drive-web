@@ -44,7 +44,7 @@ export default function Modal({
               <Dialog.Panel
                 className={`w-full text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
                   className ?? 'p-5'
-                } transform rounded-2xl bg-white shadow-subtle-hard transition-all duration-100 ease-out`}
+                } rounded-2xl bg-white shadow-subtle-hard transition-all duration-100 ease-out`}
               >
                 {children}
               </Dialog.Panel>

@@ -543,7 +543,7 @@ function UpdateLinkModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
+              <Dialog.Panel className="flex w-full max-w-lg flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
                   <span className="font-medium">{translate('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
@@ -562,7 +562,7 @@ function UpdateLinkModal({
                   <BaseButton
                     onClick={copyLink}
                     disabled={false}
-                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
+                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary px-4 py-0 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
                   >
                     <span>{translate('shared-links.link-settings.copy-link')}</span>
                     <Link size={24} />
@@ -579,7 +579,7 @@ function UpdateLinkModal({
                         // })
                       }}
                       isLoading={savingLinkChanges}
-                      className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
+                      className="flex h-auto flex-row items-center rounded-lg bg-primary px-4 py-0 font-medium text-white hover:bg-primary-dark"
                     >
                       {translate('shared-links.link-settings.close') as string}
                     </BaseButton>

@@ -115,10 +115,10 @@ export default function ShareDialog({
         style={{
           zIndex,
         }}
-        className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
+        className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-3 text-center"
       >
         <XCircle
-          className="absolute top-2 right-2 cursor-pointer text-gray-20"
+          className="absolute right-2 top-2 cursor-pointer text-gray-20"
           onClick={onClose}
           weight="fill"
           size={24}
@@ -128,13 +128,13 @@ export default function ShareDialog({
             ? translate('modals.sharePhotosModal.multiTitle', { item: numberOfSelectedItems })
             : translate('modals.sharePhotosModal.singleTitle', { item: numberOfSelectedItems })}
         </h1>
-        <p className="mt-3 ml-5 text-left font-medium text-gray-80">{translate('modals.sharePhotosModal.options')}</p>
+        <p className="ml-5 mt-3 text-left font-medium text-gray-80">{translate('modals.sharePhotosModal.options')}</p>
         <div className="mt-1 rounded-lg bg-gray-5 p-4 text-left">
           <div className="flex font-medium text-gray-80">
             <p>{translate('modals.sharePhotosModal.openCount')}</p>
             <input
               disabled={status.tag !== 'ready'}
-              className="outline-none mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
+              className="mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 outline-none focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
               style={{ textAlign: 'right' }}
               type="number"
               value={views}

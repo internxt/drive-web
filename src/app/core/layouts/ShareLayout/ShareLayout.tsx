@@ -108,8 +108,8 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className="focus:outline-none inline-flex w-full justify-center rounded-lg px-4
-                                              py-2 font-medium focus-visible:ring-2
+                      className="inline-flex w-full justify-center rounded-lg px-4 py-2
+                                              font-medium focus:outline-none focus-visible:ring-2
                                               focus-visible:ring-blue-20 focus-visible:ring-opacity-75"
                     >
                       <div className="flex flex-row space-x-3">
@@ -128,15 +128,15 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
                     leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
                   >
                     <Menu.Items
-                      className="focus:outline-none absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white
-                                            p-1 shadow-lg ring-1 ring-cool-gray-100 ring-opacity-5
+                      className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white p-1
+                                            shadow-lg ring-1 ring-cool-gray-100 ring-opacity-5 focus:outline-none
                                             "
                     >
                       <Menu.Item>

@@ -57,7 +57,7 @@ export default function Dialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100 scale-100"
         leaveTo="opacity-0 scale-95"
-        className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 transform rounded-2xl bg-white p-3 text-center"
+        className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-white p-3 text-center"
       >
         <h1 className="mt-4 text-xl font-semibold text-gray-80">{title}</h1>
         <p className="font-medium text-gray-50">{subtitle}</p>

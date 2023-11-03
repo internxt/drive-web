@@ -53,11 +53,11 @@ const NotificationToast = ({
     <Transition
       appear
       enter="transition ease-out duration-200"
-      enterFrom="transform opacity-0 scale-95"
-      enterTo="transform opacity-100 scale-100"
+      enterFrom="opacity-0 scale-95"
+      enterTo="opacity-100 scale-100"
       leave="transition ease-in duration-200"
-      leaveFrom="transform opacity-100 scale-100"
-      leaveTo="transform opacity-0 scale-95"
+      leaveFrom="opacity-100 scale-100"
+      leaveTo="opacity-0 scale-95"
       show={visible}
     >
       <div
@@ -67,7 +67,7 @@ const NotificationToast = ({
         {type === ToastType.Loading && <Spinner className="mr-1.5 h-6 w-6" />}
         {Icon && <Icon weight="fill" className={`${IconColor} mr-1.5`} size={24} />}
 
-        <p className="flex-1 whitespace-pre break-words text-gray-80 line-clamp-2">{text}</p>
+        <p className="line-clamp-2 flex-1 whitespace-pre break-words text-gray-80">{text}</p>
         {action &&
           (action.to ? (
             <NavLink

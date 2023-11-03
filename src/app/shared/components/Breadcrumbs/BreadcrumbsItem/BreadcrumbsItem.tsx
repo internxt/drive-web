@@ -227,10 +227,10 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       {!props.item.active && !props.item.dialog ? (
         <Menu as="div" className="relative">
           <Menu.Button
-            className="outline-none max-w-fit flex flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 hover:bg-gray-5  
+            className="flex max-w-fit flex-1 cursor-pointer flex-row items-center truncate rounded-md p-1 px-1.5 font-medium text-gray-100 outline-none hover:bg-gray-5  
         focus-visible:bg-gray-5"
           >
-            <div className="max-w-fit flex flex-1 flex-row items-center truncate">
+            <div className="flex max-w-fit flex-1 flex-row items-center truncate">
               <span title={breadcrumbDirtyName || props.item.label} className="max-w-sm flex-1 truncate">
                 {breadcrumbDirtyName || props.item.label}
               </span>
@@ -239,15 +239,15 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
           </Menu.Button>
           <Transition
             className={'absolute left-0'}
-            enter="transform transition origin-top-left duration-100 ease-out"
+            enter="transition origin-top-left duration-100 ease-out"
             enterFrom="scale-95 opacity-0"
             enterTo="scale-100 opacity-100"
-            leave="transform transition origin-top-left duration-100 ease-out"
+            leave="transition origin-top-left duration-100 ease-out"
             leaveFrom="scale-95 opacity-100"
             leaveTo="scale-100 opacity-0"
           >
             <Menu.Items
-              className={`outline-none absolute z-10 mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard ${
+              className={`absolute z-10 mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none ${
                 isSharedView && 'hidden'
               }`}
             >
@@ -259,21 +259,21 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         onClick={onCreateFolderButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <FolderSimplePlus size={20} />
                         <p className="ml-3">{translate('actions.upload.folder')}</p>
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <div className="mx-3 my-0.5 border-t border-gray-10" />
                   <Menu.Item>
                     {({ active }) => (
                       <div
                         onClick={onShareLinkButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <Users size={20} />
                         <p className="ml-3">{translate('drive.dropdown.shareLink')}</p>
@@ -287,7 +287,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                           onClick={onCreateLinkButtonClicked}
                           className={`${
                             active && 'bg-gray-5'
-                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                          } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                         >
                           <Link size={20} />
                           <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
@@ -302,7 +302,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                             onClick={onCopyLinkButtonClicked}
                             className={`${
                               active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                           >
                             <Copy size={20} />
                             <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
@@ -315,7 +315,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                             onClick={onLinkSettingsButtonClicked}
                             className={`${
                               active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                           >
                             <Gear size={20} />
                             <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
@@ -328,7 +328,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                             onClick={onDeleteLinkButtonClicked}
                             className={`${
                               active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                           >
                             <LinkBreak size={20} />
                             <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
@@ -343,7 +343,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         onClick={onEditButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <PencilSimple size={20} />
                         <p className="ml-3">{translate('drive.dropdown.rename')}</p>
@@ -356,35 +356,35 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         onClick={onMoveButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <ArrowsOutCardinal size={20} />
                         <p className="ml-3">{translate('drive.dropdown.move')}</p>
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <div className="mx-3 my-0.5 border-t border-gray-10" />
                   <Menu.Item>
                     {({ active }) => (
                       <div
                         onClick={onDownloadButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <DownloadSimple size={20} />
                         <p className="ml-3">{translate('drive.dropdown.download')}</p>
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="my-0.5 mx-3 border-t border-gray-10" />
+                  <div className="mx-3 my-0.5 border-t border-gray-10" />
                   <Menu.Item>
                     {({ active }) => (
                       <div
                         onClick={onMoveToTrashButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <Trash size={20} />
                         <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
@@ -400,7 +400,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         onClick={onDownloadBackupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <DownloadSimple size={20} />
                         <p className="ml-3">{translate('backups.dropdown.download')}</p>
@@ -413,7 +413,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                         onClick={onDeleteBackupButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
-                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
                         <Trash size={20} />
                         <p className="ml-3">{translate('backups.dropdown.delete')}</p>
@@ -429,7 +429,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         <div
           ref={drop}
           className={`flex ${props.isHiddenInList ? 'w-full' : 'max-w-fit'} ${
-            props.item.isFirstPath ? 'flex-shrink-0 pr-1' : 'min-w-breadcrumb flex-1 py-1.5 px-3'
+            props.item.isFirstPath ? 'flex-shrink-0 pr-1' : 'min-w-breadcrumb flex-1 px-3 py-1.5'
           } cursor-pointer flex-row items-center truncate font-medium ${isDraggingOverClassNames}
         ${
           !props.item.active || (props.item.isFirstPath && props.totalBreadcrumbsLength === 1)

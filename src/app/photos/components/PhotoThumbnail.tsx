@@ -35,7 +35,7 @@ export default function PhotoThumbnail({
       ) : (
         <div className="relative h-full w-full overflow-hidden bg-gray-5">
           <div
-            className="absolute inset-0 h-full w-full -translate-x-full transform bg-gradient-to-r from-gray-5 via-white to-gray-5 opacity-40"
+            className="absolute inset-0 h-full w-full -translate-x-full bg-gradient-to-r from-gray-5 via-white to-gray-5 opacity-40"
             style={{ animation: 'shimmer 1s infinite' }}
           />
         </div>
