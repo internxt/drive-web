@@ -173,6 +173,7 @@ function SignUp(props: SignUpProps): JSX.Element {
 
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
+      window.gtag('event', 'User Signup', { method: 'email', email: email });
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';

@@ -31,38 +31,47 @@ export const PATH_NAMES = {
 
 export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadStart, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileUploadStart);
 }
 
 export function trackFileUploadCompleted(properties: TrackingPlan.UploadCompletedProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadCompleted, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileUploadCompleted);
 }
 
 export function trackFileUploadError(properties: TrackingPlan.UploadErrorProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadError, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileUploadError);
 }
 
 export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileUploadAborted);
 }
 
 export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadStarted, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileDownloadStarted);
 }
 
 export function trackFileDownloadCompleted(properties: TrackingPlan.DownloadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadCompleted, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileDownloadCompleted);
 }
 
 export function trackFileDownloadError(properties: TrackingPlan.DownloadErrorProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadError, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileDownloadError);
 }
 
 export function trackFileDownloadAborted(properties: TrackingPlan.DownloadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadAborted, properties);
+  window.gtag('event', TrackingPlan.EventNames.FileDownloadAborted);
 }
 
 export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubscriptionProperties): void {
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
+  window.gtag('event', TrackingPlan.EventNames.CanceledSubscription);
 }
 
 function trackData(properties, actionName) {
@@ -312,6 +321,19 @@ export async function trackPaymentConversion() {
       impact_value: amount_total === 0 ? 5 : amount,
       subscription_id: subscription,
       payment_intent,
+    });
+    window.gtag('event', 'conversion', {
+      transaction_id: `${username}-${metadata.priceId}-${Date.now()}`,
+      value: amount,
+      currency: currency.toUpperCase(),
+      items: [
+        {
+          item_id: metadata.priceId,
+          item_name: metadata.name,
+          quantity: 1,
+          price: amount,
+        },
+      ],
     });
   } catch (err) {
     const castedError = errorService.castError(err);
