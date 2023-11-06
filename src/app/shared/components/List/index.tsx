@@ -90,6 +90,8 @@ ListProps<T, F>): JSX.Element {
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
+  const container = document.getElementById('scrollableList');
+  const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
 
   const loader = new Array(25)
     .fill(0)
@@ -160,10 +162,9 @@ ListProps<T, F>): JSX.Element {
     }
   }
 
-  const handleKeyPress = (action) => {
-    return () => {
-      if (!disableKeyboardShortcuts) action();
-    };
+  const handleKeyPress = (action, e) => {
+    e.preventDefault();
+    if (!disableKeyboardShortcuts) action();
   };
 
   const handleRKeyPressed = () => {
@@ -174,19 +175,20 @@ ListProps<T, F>): JSX.Element {
     keyBoardShortcutActions?.onBackspaceKeyPressed?.();
   };
 
-  useHotkeys(
-    'ctrl+a, meta+a',
-    (e) => {
-      e.preventDefault();
-      handleKeyPress(selectAllItems)();
-    },
-    [items, selectedItems, disableKeyboardShortcuts],
-  );
+  useHotkeys('ctrl+a, meta+a', (e) => handleKeyPress(selectAllItems, e), [
+    items,
+    selectedItems,
+    disableKeyboardShortcuts,
+  ]);
 
-  useHotkeys('esc', handleKeyPress(unselectAllItems), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('enter', handleKeyPress(executeClickOnSelectedItem), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('r', handleKeyPress(handleRKeyPressed), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('backspace', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('esc', (e) => handleKeyPress(unselectAllItems, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('enter', (e) => handleKeyPress(executeClickOnSelectedItem, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('r', (e) => handleKeyPress(handleRKeyPressed, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('backspace', (e) => handleKeyPress(handleBackspaceKeyPressed, e), [
+    selectedItems,
+    disableKeyboardShortcuts,
+  ]);
+  useHotkeys('delete', (e) => handleKeyPress(handleBackspaceKeyPressed, e), [selectedItems, disableKeyboardShortcuts]);
 
   function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
@@ -204,13 +206,16 @@ ListProps<T, F>): JSX.Element {
   }
 
   return (
-    <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
+    <div
+      id="generic-list-component"
+      className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
+    >
       {/* HEAD */}
-      <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
+      <div className="flex h-12 flex-shrink-0 flex-row px-5">
         {/* COLUMN */}
-        <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
+        <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
           {/* SELECTION CHECKBOX */}
-          <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
+          <div className="flex h-full flex-row items-center justify-between pr-4">
             <BaseCheckbox
               checked={selectedItems.length > 0}
               indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
@@ -236,13 +241,13 @@ ListProps<T, F>): JSX.Element {
                 ))}
             </div>
           ))}
-
+          {isVerticalScrollbarVisible && <div className="mr-15px" />}
           {menu && <div className="flex h-full w-12 flex-shrink-0" />}
         </div>
       </div>
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
+      <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
         {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
           emptyState
         ) : items.length > 0 ? (

@@ -6,10 +6,15 @@ export type AdvancedSharedItem = SharedFolders &
   SharedFiles & {
     isFolder: boolean;
     isRootLink: boolean;
-    credentials: NetworkCredentials;
+    credentials: SharedNetworkCredentials;
     sharingId?: string;
     sharingType: 'public' | 'private';
   };
+
+export type SharedNetworkCredentials = {
+  networkUser: string;
+  networkPass: string;
+};
 
 export type PreviewFileItem = DriveFileData & {
   credentials?: NetworkCredentials;

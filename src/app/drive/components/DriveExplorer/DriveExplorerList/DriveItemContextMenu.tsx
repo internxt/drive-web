@@ -4,7 +4,6 @@ import {
   ArrowsOutCardinal,
   Backspace,
   ClockCounterClockwise,
-  Copy,
   DownloadSimple,
   Eye,
   Link,
@@ -45,24 +44,6 @@ const getDeleteLinkMenuItem = (deleteLink: (target?) => void) => ({
   },
 });
 
-const getSharedLinkMenuItems = ({
-  copyLink,
-  deleteLink,
-}: {
-  copyLink: (target?) => void;
-  deleteLink: (target?) => void;
-}) => [
-  {
-    name: t('drive.dropdown.copyLink'),
-    icon: Copy,
-    action: copyLink,
-    disabled: () => {
-      return false;
-    },
-  },
-  getDeleteLinkMenuItem(deleteLink),
-];
-
 const manageLinkAccessMenuItem = (manageAccess: (target) => void) => ({
   name: t('drive.dropdown.manageLinkAccess'),
   icon: Users,
@@ -72,8 +53,8 @@ const manageLinkAccessMenuItem = (manageAccess: (target) => void) => ({
   },
 });
 
-const getGetLinkMenuItem = (getLink: (target) => void) => ({
-  name: t('drive.dropdown.getLink'),
+const getCopyLinkMenuItem = (getLink: (target) => void) => ({
+  name: t('drive.dropdown.copyLink'),
   icon: Link,
   action: getLink,
   disabled: () => {
@@ -184,7 +165,7 @@ const contextMenuDriveNotSharedLink = ({
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
-  getGetLinkMenuItem(getLink),
+  getCopyLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getOpenPreviewMenuItem(openPreview),
   getRenameMenuItem(renameItem),
@@ -210,7 +191,7 @@ const contextMenuDriveFolderNotSharedLink = ({
   moveToTrash: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
-  getGetLinkMenuItem(getLink),
+  getCopyLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
@@ -238,10 +219,7 @@ const contextMenuDriveItemShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  ...[
-    //manageLinkAccessMenuItem(openShareAccessSettings),
-    getGetLinkMenuItem(copyLink),
-  ],
+  ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)],
   { name: '', action: () => false, separator: true },
   getOpenPreviewMenuItem(openPreview),
   getRenameMenuItem(renameItem),
@@ -268,7 +246,7 @@ const contextMenuDriveFolderShared = ({
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveToTrash: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
 }): ListItemMenu<DriveItemData | (ListShareLinksItem & { code: string })> => [
-  ...[manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyLink)],
+  ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyLink)],
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
@@ -379,7 +357,7 @@ const contextMenuDriveItemSharedsView = ({
   openShareAccessSettings: (item) => void;
   deleteLink: (open: boolean) => void;
 }): ListItemMenu<DriveItemData> => [
-  ...[manageLinkAccessMenuItem(openShareAccessSettings), getGetLinkMenuItem(copyShareLink)],
+  ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyShareLink)],
 ];
 
 const contextMenuDriveItemSharedAFS = ({
@@ -402,7 +380,6 @@ const contextMenuDriveItemSharedAFS = ({
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
-  //  getGetLinkMenuItem(copyLink), // TODO: UNCOMMENT TO CHECK ADVANCED SHARING]),
   ...[getOpenPreviewMenuItem(openPreview)],
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
@@ -420,17 +397,16 @@ const contextMenuDriveFolderSharedAFS = ({
   downloadItem,
   moveToTrash,
 }: {
-  copyLink: (item: AdvancedSharedItem) => void;
-  openShareAccessSettings: (item: AdvancedSharedItem) => void;
-  deleteLink: (item: AdvancedSharedItem) => void;
-  renameItem?: (item: AdvancedSharedItem) => void;
-  moveItem?: (item: AdvancedSharedItem) => void;
-  downloadItem: (item: AdvancedSharedItem) => Promise<void>;
-  moveToTrash?: (item: AdvancedSharedItem) => void;
-}): ListItemMenu<AdvancedSharedItem> => [
+  copyLink: (item: any) => void;
+  openShareAccessSettings: (item: any) => void;
+  deleteLink: (item: any) => void;
+  renameItem?: (item: any) => void;
+  moveItem?: (item: any) => void;
+  downloadItem: (item: any) => Promise<void>;
+  moveToTrash?: (item: any) => void;
+}): ListItemMenu<any> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
-  // TODO: UNCOMMENT getGetLinkMenuItem to enable get-link AFS
-  /* getGetLinkMenuItem(copyLink) */ { name: '', action: () => false, separator: true },
+  { name: '', action: () => false, separator: true },
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),

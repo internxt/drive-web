@@ -1,20 +1,16 @@
 import { Fragment } from 'react';
 import { Menu, Transition } from '@headlessui/react';
-import { ReactComponent as Logo } from 'assets/icons/brand/x-white.svg';
+import { ReactComponent as Logo } from 'assets/icons/logo.svg';
 import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../../core/services/desktop.service';
-import bg from 'assets/images/shared-file/bg.png';
-import Shield from 'assets/images/shared-file/icons/shield.png';
-import EndToEnd from 'assets/images/shared-file/icons/end-to-end.png';
-import Lock from 'assets/images/shared-file/icons/lock.png';
-import EyeSlash from 'assets/images/shared-file/icons/eye-slash.png';
 import '../../../share/views/ShareView/ShareView.scss';
 import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import ReportButton from '../../../share/views/ShareView/ReportButon';
+import { ShieldCheck, Password, Key, Eye } from '@phosphor-icons/react';
 
 interface ShareLayoutProps {
   children: JSX.Element;
@@ -59,13 +55,13 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
       {/* Content */}
       <div className="flex h-screen flex-row items-stretch justify-center bg-white text-cool-gray-90">
         {/* Banner */}
-        <div className="relative hidden h-full w-96 flex-shrink-0 flex-col bg-blue-80 text-white lg:flex">
-          <img src={bg} className="absolute top-0 left-0 h-full w-full object-cover object-center" />
-
+        <div
+          className="relative hidden h-full w-96 flex-shrink-0 flex-col text-white lg:flex"
+          style={{ background: 'radial-gradient(50% 50% at 50% 50%, #0058DB 0%, #161616 100%)' }}
+        >
           <div className="z-10 flex h-full flex-col space-y-12 p-12">
             <div className="relative flex flex-row items-center space-x-2 font-semibold">
-              <Logo className="h-4 w-4" />
-              <span>INTERNXT</span>
+              <Logo className="w-36" />
             </div>
 
             <div className="flex h-full flex-col justify-center space-y-20">
@@ -76,13 +72,13 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
               <div className="flex flex-col space-y-3 text-xl">
                 {[
-                  { icon: Shield, label: translate('shareLayout.labels.privacy') },
-                  { icon: EndToEnd, label: translate('shareLayout.labels.end-to-end') },
-                  { icon: Lock, label: translate('shareLayout.labels.military-grade') },
-                  { icon: EyeSlash, label: translate('shareLayout.labels.zero-knowledge') },
+                  { id: 1, icon: Password, label: translate('shareLayout.labels.military-grade') },
+                  { id: 2, icon: Key, label: translate('shareLayout.labels.zero-knowledge') },
+                  { id: 3, icon: ShieldCheck, label: translate('shareLayout.labels.privacy') },
+                  { id: 4, icon: Eye, label: translate('shareLayout.labels.open-source') },
                 ].map((item) => (
-                  <div className="flex flex-row items-center space-x-3" key={item.icon}>
-                    <img src={item.icon} className="h-6 w-6" />
+                  <div className="flex flex-row items-center space-x-3" key={item.id}>
+                    <item.icon className="h-6 w-6" />
                     <span>{item.label}</span>
                   </div>
                 ))}
@@ -90,18 +86,13 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
             </div>
 
             {!isAuthenticated && (
-              <a href="https://internxt.com" className="no-underline" target="_blank" rel="noopener noreferrer">
-                <div
-                  className="flex cursor-pointer flex-row items-center justify-center rounded-xl p-1 no-underline
-                                ring-3 ring-blue-30"
-                >
-                  <div
-                    className="flex h-12 w-full flex-row items-center justify-center rounded-lg bg-white
-                                  px-6 text-xl font-semibold text-blue-70 no-underline"
-                  >
-                    <span>{translate('shareLayout.tryInternxt')}</span>
-                  </div>
-                </div>
+              <a
+                href="https://internxt.com"
+                className="cursor-pointer no-underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <button className="button-primary">{translate('shareLayout.tryInternxt')}</button>
               </a>
             )}
           </div>
@@ -129,7 +120,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                           <span className="text-sm font-semibold">{getAvatarLetters()}</span>
                         </div>
                         <div className="flex flex-row items-center font-semibold">
-                          <span>{`${user && user['name']} ${user && user['lastname']}`}</span>
+                          <span>{`${user ? user['name'] : ''} ${user ? user['lastname'] : ''}`}</span>
                         </div>
                       </div>
                     </Menu.Button>

@@ -3,6 +3,10 @@ import axios, { AxiosRequestConfig } from 'axios';
 import packageJson from '../../../../package.json';
 import localStorageService from './local-storage.service';
 
+export const HTTP_CODES = {
+  MAX_SPACE_USED: 420,
+};
+
 const httpService = {
   get: <ResponseType>(url: string, config?: AxiosRequestConfig): Promise<ResponseType> => {
     return axios.get<ResponseType>(url, config).then((response) => response.data);
