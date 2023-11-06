@@ -152,7 +152,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                         {item.icon && <item.icon size={20} className={item.iconClassName} />}
                         <span>{item.text}</span>
                       </div>
-                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                      <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                         {item.keyboardShortcutOptions?.keyboardShortcutIcon && (
                           <item.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                         )}

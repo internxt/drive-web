@@ -910,7 +910,7 @@ const InvitedUsersSkeletonLoader = () => {
       width: 'flex w-1/12 cursor-pointer items-center',
     },
     {
-      width: 'flex flex-grow cursor-pointer items-center pl-4',
+      width: 'flex grow cursor-pointer items-center pl-4',
     },
     {
       width: 'hidden w-3/12 lg:flex pl-4',

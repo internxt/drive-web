@@ -70,7 +70,7 @@ const Sidenav = (props: SidenavProps) => {
       >
         <InternxtLogo className="h-auto w-28" />
       </div>
-      <div className="flex flex-grow flex-col overflow-x-auto border-r border-gray-5 px-2">
+      <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
           <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
           <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
@@ -80,11 +80,7 @@ const Sidenav = (props: SidenavProps) => {
           <SidenavItem label={translate('sideNav.trash')} to="/app/trash" Icon={Trash} />
           <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
         </div>
-        {props.subscription && props.subscription.type === 'free' ? (
-          <ReferralsWidget />
-        ) : (
-          <div className="flex-grow"></div>
-        )}
+        {props.subscription && props.subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 
         <div className="mb-11 mt-8 px-5">
           <PlanUsage

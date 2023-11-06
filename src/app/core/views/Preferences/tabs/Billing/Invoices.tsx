@@ -39,7 +39,7 @@ export default function Invoices({ className = '' }: { className?: string }): JS
       <Empty />
     ) : state.tag === 'ready' ? (
       <div className="flex">
-        <div className="flex flex-grow flex-col">
+        <div className="flex grow flex-col">
           <h1 className="mb-0.5 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.billing.invoices.billingDate')}
           </h1>

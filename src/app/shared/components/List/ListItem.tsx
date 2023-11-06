@@ -126,7 +126,7 @@ export default function ListItem<T extends { id: string }>({
                     {option.icon && <option.icon size={20} />}
                     <span>{option.name}</span>
                   </div>
-                  <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                  <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                     {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                       <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                     )}
@@ -170,7 +170,7 @@ export default function ListItem<T extends { id: string }>({
       {disableItemCompositionStyles ? (
         <div
           key={0}
-          className={`flex-grow-1 relative flex h-full w-full flex-row items-center border-b ${
+          className={`grow-1 relative flex h-full w-full flex-row items-center border-b ${
             selected ? 'border-primary/5' : 'border-gray-5'
           }`}
         >
@@ -286,7 +286,7 @@ export default function ListItem<T extends { id: string }>({
                                         {option.icon && <option.icon size={20} />}
                                         <span>{option.name}</span>
                                       </div>
-                                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                      <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                                         {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                                           <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                                         )}

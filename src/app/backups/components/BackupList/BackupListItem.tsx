@@ -69,7 +69,7 @@ export default function BackupsListItem({
       <div className="box-content flex w-0.5/12 items-center justify-center px-3">
         <BackupIcon className={`h-8 w-8 ${isUploaded ? '' : 'opacity-40 grayscale'}`} />
       </div>
-      <p className="flex-grow pr-3">{backup.name}</p>
+      <p className="grow pr-3">{backup.name}</p>
       <div className="hidden w-2/12 items-center xl:flex"></div>
       <div className="hidden w-3/12 items-center lg:flex">
         {backup.lastBackupAt ? dateService.format(backup.lastBackupAt, 'DD MMMM YYYY. HH:mm') : 'Not uploaded yet'}

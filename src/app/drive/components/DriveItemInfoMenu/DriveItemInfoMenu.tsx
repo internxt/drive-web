@@ -29,7 +29,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
         </div>
         <span
           className="whitespace-nowrap\ mx-3 block
-         flex-grow overflow-hidden text-ellipsis text-sm text-neutral-700"
+         grow overflow-hidden text-ellipsis text-sm text-neutral-700"
         >
           {props.title}
         </span>

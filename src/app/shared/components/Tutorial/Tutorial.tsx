@@ -55,11 +55,11 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children, currentStep
   };
 
   if (isTutorialFinished || !show) {
-    return <div className="flex h-full flex-grow">{children}</div>;
+    return <div className="flex h-full grow">{children}</div>;
   }
 
   return (
-    <div className="flex h-full flex-grow" onClick={handleNextStep}>
+    <div className="flex h-full grow" onClick={handleNextStep}>
       <div className="fixed inset-0 z-10 flex bg-black/40" />
       {children}
       <div ref={popperRef} className="z-50" style={existsRef ? styles.popper : centeredStyle} {...attributes.popper}>

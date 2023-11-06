@@ -96,7 +96,7 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
                   <p className="mt-2 text-base leading-5">{logoName}</p>
                 </div>
                 {separatorV}
-                <div className="flex flex-grow items-center justify-center">
+                <div className="flex grow items-center justify-center">
                   <Button variant="primary" onClick={onDownloadAppButtonClicked} autofocus>
                     <span>{translate('views.account.popover.downloadApp')}</span>
                   </Button>

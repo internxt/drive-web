@@ -95,7 +95,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
   return (
     <>
       {isLoading && isFirstLoad.current ? (
-        <div className="files-grid flex-grow">{loadingSkeleton()}</div>
+        <div className="files-grid grow">{loadingSkeleton()}</div>
       ) : (
         <div id="scrollableList" className="h-full w-full overflow-y-auto overflow-x-hidden py-6">
           {editNameItem && (
@@ -116,7 +116,7 @@ const DriveExplorerGrid: FC<DriveExplorerGridProps> = (props: DriveExplorerGridP
             hasMore={hasMoreItems}
             loader={loadingSkeleton()}
             scrollableTarget="scrollableList"
-            className="files-grid z-0 flex-grow"
+            className="files-grid z-0 grow"
             style={{ overflow: 'visible' }}
             scrollThreshold={0.6}
           >

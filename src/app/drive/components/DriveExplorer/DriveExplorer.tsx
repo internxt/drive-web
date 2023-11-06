@@ -629,7 +629,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         },
         {
           label: translate('drive.list.columns.name'),
-          width: 'flex flex-grow cursor-pointer items-center pl-6',
+          width: 'flex grow cursor-pointer items-center pl-6',
           name: 'name',
           orderable: true,
           defaultDirection: 'ASC',
@@ -654,7 +654,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const driveExplorer = (
     <div
-      className="flex h-full flex-grow flex-col"
+      className="flex h-full grow flex-col"
       data-test="drag-and-drop-area"
       onContextMenu={isListElementsHovered ? () => null : handleContextMenuClick}
     >
@@ -675,8 +675,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <MenuItemToGetSize />
       <BannerWrapper />
 
-      <div className="z-0 flex h-full w-full max-w-full flex-grow">
-        <div className="flex w-1 flex-grow flex-col">
+      <div className="z-0 flex h-full w-full max-w-full grow">
+        <div className="flex w-1 grow flex-col">
           <div className="z-10 flex h-14 max-w-full shrink-0 justify-between px-5">
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
@@ -744,7 +744,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                       >
                                         <FolderSimplePlus size={20} />
                                         <p>{translate('actions.upload.folder')}</p>
-                                        <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                        <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                                           <ArrowFatUp size={14} /> F
                                         </span>
                                       </div>
@@ -961,10 +961,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             )}
           </div>
 
-          <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+          <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
             {hasItems && (
-              <div className="flex flex-grow flex-col justify-between overflow-hidden">
+              <div className="flex grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
                   folderId={currentFolderId}
                   items={items}

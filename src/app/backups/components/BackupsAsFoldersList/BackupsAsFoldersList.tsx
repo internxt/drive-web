@@ -95,7 +95,7 @@ export default function BackupsAsFoldersList({
   };
 
   return (
-    <div className={`${className} flex min-h-0 flex-grow flex-col`}>
+    <div className={`${className} flex min-h-0 grow flex-col`}>
       <div className="flex h-full w-full flex-col overflow-y-auto">
         {isLoading ? (
           Skeleton
@@ -132,11 +132,11 @@ export default function BackupsAsFoldersList({
                 const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
                 return (
-                  <div className="flex min-w-activity flex-grow items-center justify-start pr-3">
+                  <div className="flex min-w-activity grow items-center justify-start pr-3">
                     <div className="mr-3 h-8 w-8">
                       <Icon className="h-8 w-8" />
                     </div>
-                    <div className="flex-grow cursor-default truncate">
+                    <div className="grow cursor-default truncate">
                       <span className="z-10 flex-shrink cursor-pointer truncate" onClick={() => onClick(item)}>
                         {displayName}
                       </span>
