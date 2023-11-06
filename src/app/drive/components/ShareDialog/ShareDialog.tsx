@@ -371,7 +371,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           >
             {translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           </span>
-          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
+          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black/0 transition-all duration-200 ease-in-out hover:bg-black/4 active:bg-black/8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />
           </div>
         </>

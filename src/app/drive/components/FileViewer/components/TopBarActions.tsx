@@ -111,7 +111,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           <button
             onClick={copyNavigatorLink}
             title={translate('actions.copyLink')}
-            className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+            className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5 focus-visible:bg-white/5"
           >
             <Link size={20} />
           </button>
@@ -119,14 +119,14 @@ const TopBarActions: FC<TopBarActionsProps> = ({
         <button
           onClick={onDownload}
           title={translate('actions.download')}
-          className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5"
+          className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5 focus-visible:bg-white/5"
         >
           <UilImport size={20} />
         </button>
       </div>
       {file && isAuthenticated && (
         <Menu as="div" className="relative inline-block text-left">
-          <Menu.Button className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white bg-opacity-0 font-medium outline-none transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5 focus-visible:bg-opacity-5">
+          <Menu.Button className="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5 focus-visible:bg-white/5">
             <DotsThree weight="bold" size={20} />
           </Menu.Button>
           <Transition

@@ -46,7 +46,7 @@ export default function PhotoThumbnail({
           src
             ? selected
               ? 'flex bg-primary active:bg-primary-dark'
-              : 'hidden bg-white/25 active:bg-opacity-50 group-hover:flex'
+              : 'hidden bg-white/25 active:bg-white/50 group-hover:flex'
             : 'hidden'
         } absolute left-3 top-3 box-content h-6 w-6 items-center justify-center rounded-full border-2 border-white shadow-photo-select`}
         data-test={'photos-item-selector-' + photoId}

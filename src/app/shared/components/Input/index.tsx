@@ -118,7 +118,7 @@ export default function Input({
             e.preventDefault();
             setShowPassword(!showPassword);
           }}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer bg-opacity-0 py-2 pl-2 text-gray-80 ${backgroundColor}`}
+          className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer py-2 pl-2 text-gray-80 ${backgroundColor}`}
         >
           {showPassword ? <Eye size={24} /> : <EyeSlash size={24} />}
         </div>

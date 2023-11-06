@@ -51,9 +51,9 @@ const DownloadFile = ({ onDownload, translate }) => (
     <button
       title={translate('actions.download')}
       onClick={onDownload}
-      className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white
-                          bg-opacity-0 px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+      className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white/0
+                           px-6 font-medium transition duration-50
+                          ease-in-out hover:bg-white/10 focus:bg-white/5"
     >
       <UilImport size={20} />
       <span className="font-medium">{translate('actions.download')}</span>
@@ -289,7 +289,7 @@ const FileViewer = ({
             <div className="mr-6 mt-3 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
                 onClick={onClose}
-                className="group relative flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-full bg-white bg-opacity-0 transition duration-50 ease-in-out hover:bg-opacity-10 focus:bg-opacity-5"
+                className="group relative flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-full bg-white/0 transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5"
               >
                 <UilMultiply height={24} width={24} />
               </button>

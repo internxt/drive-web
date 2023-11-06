@@ -206,7 +206,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                   return (
                     <div
                       className={`cursor-pointer ${
-                        destinationId === folder.id ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-1'
+                        destinationId === folder.id ? 'bg-primary/10 text-primary' : 'hover:bg-gray-1'
                       } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
                       onClick={() => onFolderClicked(folder.id, folder.name)}

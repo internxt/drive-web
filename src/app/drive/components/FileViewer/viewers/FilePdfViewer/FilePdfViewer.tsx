@@ -134,8 +134,8 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
                 onClick={decreaseZoom}
                 disabled={zoom === 0}
                 className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
+                                bg-white/0 transition duration-50 ease-in-out
+                                hover:bg-white/10 active:bg-white/5 disabled:pointer-events-none disabled:opacity-30"
               >
                 <MagnifyingGlassMinus height="24" width="24" className="pointer-events-none" />
               </button>
@@ -144,8 +144,8 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
                 onClick={increaseZoom}
                 disabled={zoom === zoomRange.length - 1}
                 className="flex h-9 w-9 cursor-pointer flex-row items-center justify-center rounded-lg
-                                bg-white bg-opacity-0 transition duration-50 ease-in-out
-                                hover:bg-opacity-10 active:bg-opacity-5 disabled:pointer-events-none disabled:opacity-30"
+                                bg-white/0 transition duration-50 ease-in-out
+                                hover:bg-white/10 active:bg-white/5 disabled:pointer-events-none disabled:opacity-30"
               >
                 <MagnifyingGlassPlus height="24" width="24" className="pointer-events-none" />
               </button>
