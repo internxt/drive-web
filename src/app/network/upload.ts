@@ -124,7 +124,6 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   params.abortController?.signal.addEventListener('abort', onAbort);
 
-  // crear aqui el worker para poder cargartelo en caso de culebracion
   const worker: Worker = createWebWorker();
 
   if (useMultipart) {
