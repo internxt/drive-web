@@ -6,7 +6,7 @@ import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
 import axios, { AxiosError } from 'axios';
 import { ConnectionLostError } from './requests';
-import { createWebWorker } from '../../WebWorker';
+import { createUploadWebWorker } from '../../WebWorker';
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
 interface NetworkCredentials {
@@ -124,7 +124,7 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   params.abortController?.signal.addEventListener('abort', onAbort);
 
-  const worker: Worker = createWebWorker();
+  const worker: Worker = createUploadWebWorker();
 
   if (useMultipart) {
     uploadPromise = facade.uploadMultipart(
