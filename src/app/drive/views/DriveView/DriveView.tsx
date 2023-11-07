@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
@@ -21,28 +21,19 @@ export interface DriveViewProps {
   isGlobalSearch: boolean;
 }
 
-class DriveView extends Component<DriveViewProps> {
-  componentDidMount(): void {
-    const { dispatch } = this.props;
+const DriveView = (props: DriveViewProps) => {
+  const { dispatch, namePath, isGlobalSearch, items, isLoading } = props;
+
+  useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
-    this.fetchItems();
-  }
-
-  componentWillUnmount(): void {
-    const { dispatch } = this.props;
-    dispatch(storageActions.resetDrivePagination());
-  }
-
-  fetchItems = (): void => {
-    const { dispatch } = this.props;
-
     dispatch(storageActions.clearSelectedItems());
-  };
+    return () => {
+      dispatch(storageActions.resetDrivePagination());
+    };
+  }, []);
 
-  get breadcrumbItems(): BreadcrumbItemData[] {
-    const { isGlobalSearch } = this.props;
-    const { namePath, dispatch } = this.props;
+  const breadcrumbItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
 
     if (namePath.length > 0) {
@@ -81,21 +72,17 @@ class DriveView extends Component<DriveViewProps> {
     }
 
     return items;
-  }
+  };
 
-  render(): ReactNode {
-    const { items, isLoading } = this.props;
-
-    return (
-      <>
-        <Helmet>
-          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
-        </Helmet>
-        <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Helmet>
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
+      </Helmet>
+      <DriveExplorer title={<Breadcrumbs items={breadcrumbItems()} />} isLoading={isLoading} items={items} />
+    </>
+  );
+};
 
 const sortFoldersFirst = (items: DriveItemData[]) =>
   items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
