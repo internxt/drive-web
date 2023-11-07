@@ -18,8 +18,8 @@ import dayjs from 'dayjs';
 const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const analytics: Analytics = Analytics.getInstance();
-const impactCookie = getCookie('impact');
-const impactValues = JSON.parse(atob(impactCookie));
+const anonymousID = getCookie('impactAnonymousId');
+const source = getCookie('impactSource');
 
 export function getTrackingActionId() {
   return uuidv4();
@@ -159,10 +159,10 @@ export function trackSignUp(uuid, email): void {
   window.rudderanalytics.identify(uuid, { email, uuid: uuid });
   window.rudderanalytics.track('User Signup', { email });
 
-  impactValues.source !== 'direct' &&
+  source !== 'direct' &&
     axios
       .post(IMPACT_API, {
-        anonymousId: impactValues.anonymousId,
+        anonymousId: anonymousID,
         timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
         messageId: '',
         userId: uuid,
@@ -321,10 +321,10 @@ export async function trackPaymentConversion() {
       payment_intent,
     });
 
-    impactValues.source !== 'direct' &&
+    source !== 'direct' &&
       axios
         .post(IMPACT_API, {
-          anonymousId: impactValues.anonymousId,
+          anonymousId: anonymousID,
           timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
           properties: {
             impact_value: amount_total === 0 ? 5 : amount,
