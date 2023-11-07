@@ -323,7 +323,7 @@ export async function trackPaymentConversion() {
       payment_intent,
     });
     window.gtag('event', 'conversion', {
-      transaction_id: `${username}-${metadata.priceId}-${Date.now()}`,
+      transaction_id: `${username.toString()}-${metadata.priceId.toString()}-${Date.now()}`,
       value: amount,
       currency: currency.toUpperCase(),
       items: [
