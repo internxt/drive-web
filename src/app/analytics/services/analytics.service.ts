@@ -164,7 +164,7 @@ export function trackSignUp(uuid, email): void {
       .post(IMPACT_API, {
         anonymousId: anonymousID,
         timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
-        messageId: '',
+        messageId: crypto.randomUUID(),
         userId: uuid,
         type: 'track',
         event: 'User Signup',
