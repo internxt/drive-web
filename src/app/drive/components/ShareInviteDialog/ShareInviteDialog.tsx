@@ -95,7 +95,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     setUsersToInvite(newUserToInvite);
   };
 
-  const getUserPublicKey = async (email: string) => {
+  const getUserPublicKey = async (email: string): Promise<string> => {
     let publicKey = '';
     try {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
@@ -151,7 +151,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       usersList.push({
         email,
         userRole,
-        isNewUser: publicKey ? false : true,
+        isNewUser: !publicKey,
         publicKey,
       });
     }
