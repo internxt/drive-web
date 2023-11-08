@@ -1,5 +1,5 @@
 import createZipReadable from 'app/drive/services/download.service/downloadFolder/zipStream';
-import streamSaver from 'streamsaver';
+// import streamSaver from 'streamsaver';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 
 type BinaryStream = ReadableStream<Uint8Array>;
@@ -165,16 +165,15 @@ export class FlatFolderZip {
 
     if (isFirefox) {
       loadWritableStreamPonyfill().then(() => {
-        streamSaver.WritableStream = window.WritableStream;
-
-        this.finished = passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
-          signal: opts.abortController?.signal,
-        });
+        // streamSaver.WritableStream = window.WritableStream;
+        // this.finished = passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
+        //   signal: opts.abortController?.signal,
+        // });
       });
     } else {
-      this.finished = passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
-        signal: opts.abortController?.signal,
-      });
+      // this.finished = passThrough.pipeTo(streamSaver.createWriteStream(folderName + '.zip'), {
+      //   signal: opts.abortController?.signal,
+      // });
     }
   }
 

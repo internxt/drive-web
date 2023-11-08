@@ -6,7 +6,7 @@ import { sha256 } from './crypto';
 import { NetworkFacade } from './NetworkFacade';
 import axios, { AxiosError } from 'axios';
 import { ConnectionLostError } from './requests';
-import { createUploadWebWorker } from '../../WebWorker';
+
 export type UploadProgressCallback = (totalBytes: number, uploadedBytes: number) => void;
 
 interface NetworkCredentials {
@@ -108,9 +108,9 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   function connectionLostListener() {
     connectionLost = true;
     uploadAbortController.abort();
-    window.removeEventListener('offline', connectionLostListener);
+    // window.removeEventListener('offline', connectionLostListener);
   }
-  window.addEventListener('offline', connectionLostListener);
+  // window.addEventListener('offline', connectionLostListener);
 
   function onAbort() {
     if (!connectionLost) {
@@ -124,31 +124,17 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
 
   params.abortController?.signal.addEventListener('abort', onAbort);
 
-  const worker: Worker = createUploadWebWorker();
-
   if (useMultipart) {
-    uploadPromise = facade.uploadMultipart(
-      bucketId,
-      params.mnemonic,
-      file,
-      {
-        uploadingCallback: params.progressCallback,
-        abortController: uploadAbortController,
-        parts: Math.ceil(params.filesize / partSize),
-      },
-      worker,
-    );
+    uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: uploadAbortController,
+      parts: Math.ceil(params.filesize / partSize),
+    });
   } else {
-    uploadPromise = facade.upload(
-      bucketId,
-      params.mnemonic,
-      file,
-      {
-        uploadingCallback: params.progressCallback,
-        abortController: uploadAbortController,
-      },
-      worker,
-    );
+    uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: uploadAbortController,
+    });
   }
 
   return uploadPromise
@@ -164,7 +150,6 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
       throw err;
     })
     .finally(() => {
-      worker.terminate();
       console.timeEnd('multipart-upload');
     });
 }

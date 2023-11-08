@@ -1,3 +1,5 @@
+import { uploadFile } from 'app/network/upload';
+
 async function uploadFileBlob(content: Blob, url: string): Promise<{ etag: string }> {
   try {
     const headers = new Headers();
@@ -34,14 +36,37 @@ async function uploadFileBlob(content: Blob, url: string): Promise<{ etag: strin
 }
 
 self.addEventListener('message', async (event) => {
-  const { content, url, uploadIndex } = event.data;
+  console.log('[WORKER]: Event received -->', event);
 
-  try {
-    const { etag } = await uploadFileBlob(content, url);
-    postMessage({ result: 'success', etag, uploadIndex });
-  } catch (error) {
-    const errorCloned = JSON.parse(JSON.stringify(error));
-    postMessage({ result: 'error', error: errorCloned });
+  if (event.data.type === 'upload') {
+    if (event.data.abort) {
+      postMessage({ result: 'abort', fileId: event.data.fileId });
+      return;
+    }
+
+    try {
+      const { bucketId, params } = event.data;
+
+      const fileId = await uploadFile(bucketId, {
+        ...params,
+        progressCallback: (totalBytes, uploadedBytes) => {
+          postMessage({
+            progress: uploadedBytes / totalBytes,
+            uploadedBytes,
+            totalBytes,
+          });
+        },
+      });
+      postMessage({ result: 'success', fileId });
+    } catch (err) {
+      console.log('[WORKER] ERROR -->', err);
+      const errorCloned = JSON.parse(JSON.stringify(err));
+      postMessage({ result: 'error', error: errorCloned });
+    }
+    return;
+  } else {
+    console.warn('[WORKER] Received unknown event');
   }
 });
+
 export {};

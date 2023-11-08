@@ -3,7 +3,7 @@ import { randomBytes } from 'crypto';
 import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
 import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
-import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
+import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
 import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
@@ -123,10 +123,8 @@ class UploadManager {
             content: file.content,
             parentFolderId: file.parentFolderId,
           },
-          false,
           (uploadProgress) => {
             this.uploadsProgress[uploadId] = uploadProgress;
-
             if (task?.status !== TaskStatus.Cancelled) {
               tasksService.updateTask({
                 taskId: taskId,
@@ -137,9 +135,19 @@ class UploadManager {
               });
             }
           },
-          { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
-          this.abortController ?? fileData.abortController,
-          this.options?.ownerUserAuthenticationData,
+          {
+            trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
+            abortController: this.abortController ?? fileData.abortController,
+            ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
+            abortCallback: (abort?: () => void) =>
+              tasksService.addListener({
+                event: TaskEvent.TaskCancelled,
+                listener: () => {
+                  abort?.();
+                },
+              }),
+            isTeam: false,
+          },
         )
           .then((driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
@@ -212,7 +220,7 @@ class UploadManager {
                 });
               }
 
-              if (task?.status !== TaskStatus.Cancelled) {
+              if (task?.status !== TaskStatus.Cancelled && err !== 'abort') {
                 tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Error },
@@ -226,15 +234,8 @@ class UploadManager {
                 }
               }
 
-              if (!this.errored) {
+              if (!this.errored && err !== 'abort') {
                 this.uploadQueue.kill();
-              }
-
-              if (isUploadAborted) {
-                return tasksService.updateTask({
-                  taskId: taskId,
-                  merge: { status: TaskStatus.Cancelled },
-                });
               }
 
               this.errored = true;

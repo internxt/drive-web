@@ -7,7 +7,7 @@ import { downloadFile } from '@internxt/sdk/dist/network/download';
 
 import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
 import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { UploadProgressCallback } from './upload';
+import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
@@ -53,7 +53,7 @@ export class NetworkFacade {
     };
   }
 
-  upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions, worker: Worker): Promise<string> {
+  upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
     let fileToUpload: Blob;
     let fileHash: string;
 
@@ -74,64 +74,23 @@ export class NetworkFacade {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
 
-        const task = async (upload: { contentToUpload: Blob; urlToUpload: string }): Promise<void> => {
-          return await new Promise((resolve, reject) => {
-            const messageHandler = (event) => {
-              const { result, size, bytesRead, error } = event.data;
-
-              const resultHandlers = {
-                success: () => {
-                  resolve();
-                  cleanup();
-                },
-                notifyProgress: () => {
-                  options.uploadingCallback(size, bytesRead);
-                },
-                error: () => {
-                  options.abortController?.abort();
-                  reject(error);
-                  cleanup();
-                },
-              };
-              const resultHandler = resultHandlers[result];
-              if (resultHandler) {
-                resultHandler();
-              } else {
-                reject(new Error(`${error}`));
-                cleanup();
-              }
-            };
-
-            const cleanup = () => {
-              worker.removeEventListener('message', messageHandler);
-            };
-            worker.addEventListener('message', messageHandler);
-            worker.postMessage({
-              content: upload.contentToUpload,
-              url: upload.urlToUpload,
-            });
-          });
-        };
-
-        await task({ contentToUpload: fileToUpload, urlToUpload: fetchUrl });
+        await uploadFileBlob(fileToUpload, fetchUrl, {
+          progressCallback: options.uploadingCallback,
+          abortController: options.abortController,
+        });
 
         /**
          * TODO: Memory leak here, probably due to closures usage with this variable.
          * Pending to be solved, do not remove this line unless the leak is solved.
          */
         fileToUpload = new Blob([]);
+
         return fileHash;
       },
     );
   }
 
-  uploadMultipart(
-    bucketId: string,
-    mnemonic: string,
-    file: File,
-    options: UploadMultipartOptions,
-    worker: Worker,
-  ): Promise<string> {
+  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
     const partsUploadedBytes: Record<number, number> = {};
 
     function notifyProgress(partId: number, uploadedBytes: number) {
@@ -155,68 +114,31 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
-    const executeWorker = async (upload: UploadTask): Promise<void> => {
-      await new Promise((resolve, reject) => {
-        const uploadIndexToworker = upload.index + 1;
-
-        const messageHandler = (event) => {
-          const currentIndex = upload.index + 1;
-          const { result, etag, size, uploadIndex, error } = event.data;
-
-          const resultHandlers = {
-            success: (ETag, uploadIndex) => {
-              if (currentIndex === uploadIndex) {
-                if (!ETag) {
-                  reject(new Error('ETag header was not returned'));
-                  cleanup();
-                }
-
-                fileParts.push({
-                  ETag,
-                  PartNumber: uploadIndex,
-                });
-
-                resolve(uploadIndex);
-                cleanup();
-              }
-            },
-            notifyProgress: () => {
-              if (size) notifyProgress(upload.index, size);
-            },
-            error: () => {
-              uploadsAbortController?.abort();
-              reject(error);
-              cleanup();
-            },
-          };
-          const resultHandler = resultHandlers[result];
-          if (resultHandler) {
-            resultHandler(etag, uploadIndex);
-          } else {
-            reject(error);
-            cleanup();
-          }
-        };
-
-        const cleanup = () => {
-          worker.removeEventListener('message', messageHandler);
-        };
-        worker.addEventListener('message', messageHandler);
-
-        worker.postMessage({
-          content: upload.contentToUpload,
-          url: upload.urlToUpload,
-          uploadIndex: uploadIndexToworker,
-        });
-      });
-    };
-
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
 
+      const worker = async (upload: UploadTask) => {
+        const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
+          progressCallback: (_, uploadedBytes) => {
+            notifyProgress(upload.index, uploadedBytes);
+          },
+          abortController: uploadsAbortController,
+        });
+
+        const ETag = etag;
+
+        if (!ETag) {
+          throw new Error('ETag header was not returned');
+        }
+        fileParts.push({
+          ETag,
+          PartNumber: upload.index + 1,
+        });
+      };
+
       const uploadQueue: QueueObject<UploadTask> = queue<UploadTask>(function (task, callback) {
-        executeWorker(task)
+        worker(task)
           .then(() => {
             callback();
           })
