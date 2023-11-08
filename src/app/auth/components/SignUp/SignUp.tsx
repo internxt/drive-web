@@ -28,6 +28,7 @@ import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/Preparin
 import paymentService from 'app/payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface SignUpProps {
   location: {
@@ -171,9 +172,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
-      window.gtag('event', 'User Signup', { method: 'email', ignore_referrer: false });
+      await analyticsService.trackSignUp(xUser.uuid, email);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';

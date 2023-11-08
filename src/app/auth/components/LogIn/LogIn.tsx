@@ -139,12 +139,6 @@ export default function LogIn(): JSX.Element {
         window.rudderanalytics.track('User Signin', { email: user.email });
         window.gtag('event', 'User Signin', { method: 'email' });
 
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
-
         try {
           dispatch(productsThunks.initializeThunk());
           dispatch(planThunks.initializeThunk());
