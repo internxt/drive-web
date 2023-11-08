@@ -11,8 +11,15 @@ import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrackNames } from '../types';
 import { TrackingPlan } from '../TrackingPlan';
 import { v4 as uuidv4 } from 'uuid';
+import { getCookie } from '../utils';
+import axios from 'axios';
+import dayjs from 'dayjs';
+
+const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const analytics: Analytics = Analytics.getInstance();
+const anonymousID = getCookie('impactAnonymousId');
+const source = getCookie('impactSource');
 
 export function getTrackingActionId() {
   return uuidv4();
@@ -148,23 +155,23 @@ export function signInAttempted(email: string, error: string | Error): void {
   }); */
 }
 
-export function trackSignUp(payload: {
-  properties: { signup_source; email: string };
-  traits: {
-    member_tier?: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    usage: number;
-    createdAt: string;
-    signup_device_source: string;
-    acquisition_channel;
-  };
-  userId: string;
-}): void {
-  /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrackNames.SignUp, payload.properties); */
-  trackSignUpServer(payload);
+export function trackSignUp(uuid, email): void {
+  window.rudderanalytics.identify(uuid, { email, uuid: uuid });
+  window.rudderanalytics.track('User Signup', { email });
+
+  source !== 'direct' &&
+    axios
+      .post(IMPACT_API, {
+        anonymousId: anonymousID,
+        timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+        messageId: '',
+        userId: uuid,
+        type: 'track',
+        event: 'User Signup',
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -313,6 +320,24 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
+
+    source !== 'direct' &&
+      axios
+        .post(IMPACT_API, {
+          anonymousId: anonymousID,
+          timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+          properties: {
+            impact_value: amount_total === 0 ? 5 : amount,
+            subscription_id: subscription,
+            payment_intent,
+          },
+          userId: uuid,
+          type: 'track',
+          event: 'Payment Conversion',
+        })
+        .catch((err) => {
+          console.log(err);
+        });
   } catch (err) {
     const castedError = errorService.castError(err);
     window.rudderanalytics.track('Error Signup After Payment Conversion', {
