@@ -322,8 +322,8 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
-    window.gtag('event', 'conversion', {
-      transaction_id: `${username.toString()}-${metadata.priceId.toString()}-${Date.now()}`,
+    window.gtag('event', 'purchase', {
+      transaction_id: `${metadata.priceId}-${uuid}`,
       value: amount,
       currency: currency.toUpperCase(),
       items: [
