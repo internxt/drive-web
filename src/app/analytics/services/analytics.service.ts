@@ -167,7 +167,7 @@ export function trackSignUp(uuid, email): void {
         messageId: '',
         userId: uuid,
         type: 'track',
-        event: 'USer Signup',
+        event: 'User Signup',
       })
       .catch((err) => {
         console.log(err);
