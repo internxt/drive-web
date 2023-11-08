@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IFormValues } from '../../../core/types';
 import { Listbox } from '@headlessui/react';
 import { CaretDown, Check } from '@phosphor-icons/react';
@@ -111,69 +111,57 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     return publicKey;
   };
 
-  //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
-  const onInvite = async ({ inviteUsers = false }) => {
-    const preCreateUsers = inviteUsers;
-
+  const processInvites = async (usersToInvite: UsersToInvite[]) => {
     const sharingPromises = [] as AsyncThunkAction<string | void, ShareFileWithUserPayload, { state: RootState }>[];
-    if (usersToInvite.length === 0 && isValidEmail(email)) {
-      const userRoleId = props.roles.find((role) => role.name === userRole)?.id;
+
+    usersToInvite.forEach((user) => {
+      const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
       if (!userRoleId) return;
-
-      let publicKey = await getUserPublicKey(email);
-
-      if (!publicKey && !preCreateUsers) {
-        setOpenNewUsersModal(true);
-        return;
-      }
-
-      if (!publicKey) {
-        const pcUserResponse = await userService.preCreateUser(email);
-        publicKey = pcUserResponse.publicKey;
-      }
 
       sharingPromises.push(
         dispatch(
           sharedThunks.shareItemWithUser({
-            encryptionAlgorithm: props.itemToShare.encryptVersion,
+            encryptionAlgorithm: props.itemToShare.encryptionAlgorithm,
             itemId: props.itemToShare.uuid,
             itemType: props.itemToShare.isFolder ? 'folder' : 'file',
             roleId: userRoleId,
-            sharedWith: email,
+            sharedWith: user.email,
             notifyUser,
             notificationMessage: messageText,
-            publicKey: publicKey,
+            publicKey: user.publicKey,
+            isNewUser: user.isNewUser,
           }),
         ),
       );
-    } else {
-      if (newUsersExists && !preCreateUsers) {
-        setOpenNewUsersModal(true);
-        return;
+    });
+    await Promise.all(sharingPromises);
+  };
+
+  //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
+  const onInvite = async ({ inviteNewUsers = false }) => {
+    const preCreateUsers = inviteNewUsers;
+    const usersList = [...usersToInvite];
+    let isThereAnyNewUser = newUsersExists;
+
+    if (usersList.length === 0 && isValidEmail(email)) {
+      const publicKey = await getUserPublicKey(email);
+      if (!publicKey && !preCreateUsers) {
+        isThereAnyNewUser = true;
       }
-
-      usersToInvite.forEach((user) => {
-        const userRoleId = props.roles.find((role) => role.name === user.userRole)?.id;
-        if (!userRoleId) return;
-
-        sharingPromises.push(
-          dispatch(
-            sharedThunks.shareItemWithUser({
-              encryptionAlgorithm: props.itemToShare.encryptionAlgorithm,
-              itemId: props.itemToShare.uuid,
-              itemType: props.itemToShare.isFolder ? 'folder' : 'file',
-              roleId: userRoleId,
-              sharedWith: user.email,
-              notifyUser,
-              notificationMessage: messageText,
-              publicKey: user.publicKey,
-              isNewUser: user.isNewUser,
-            }),
-          ),
-        );
+      usersList.push({
+        email,
+        userRole,
+        isNewUser: publicKey ? false : true,
+        publicKey,
       });
     }
-    await Promise.all(sharingPromises);
+
+    if (isThereAnyNewUser && !preCreateUsers) {
+      setOpenNewUsersModal(true);
+      return;
+    }
+
+    await processInvites(usersList);
     props.onClose();
   };
 
@@ -302,7 +290,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         }}
         onAccept={() => {
           setOpenNewUsersModal(false);
-          onInvite({ inviteUsers: true });
+          onInvite({ inviteNewUsers: true });
         }}
       />
     </>
