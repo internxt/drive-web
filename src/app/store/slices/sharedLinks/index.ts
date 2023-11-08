@@ -189,6 +189,7 @@ export interface ShareFileWithUserPayload {
   encryptionAlgorithm: string;
   roleId: string;
   publicKey?: string;
+  isNewUser?: boolean;
 }
 
 const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
@@ -204,11 +205,17 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       const { mnemonic } = user;
 
       let publicKey: string;
-      if (!payload.publicKey) {
+
+      if (!payload.publicKey && !payload.isNewUser) {
         const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
         publicKey = publicKeyResponse.publicKey;
+      }
+
+      if (payload.isNewUser) {
+        const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
+        publicKey = prCreatedUserResponse.publicKey;
       } else {
-        publicKey = payload.publicKey;
+        publicKey = payload.publicKey || '';
       }
 
       const encryptedMnemonic = await encryptMessageWithPublicKey({
