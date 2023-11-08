@@ -333,7 +333,21 @@ export async function trackPaymentConversion() {
       payment_intent,
     });
 
-    source !== 'direct' &&
+    window.gtag('event', 'purchase', {
+      transaction_id: `${metadata.priceId}-${uuid}`,
+      value: amount,
+      currency: currency.toUpperCase(),
+      items: [
+        {
+          item_id: metadata.priceId,
+          item_name: metadata.name,
+          quantity: 1,
+          price: amount,
+        },
+      ],
+    });
+
+    if (source !== 'direct') {
       axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
@@ -350,19 +364,7 @@ export async function trackPaymentConversion() {
         .catch((err) => {
           console.log(err);
         });
-    window.gtag('event', 'purchase', {
-      transaction_id: `${metadata.priceId}-${uuid}`,
-      value: amount,
-      currency: currency.toUpperCase(),
-      items: [
-        {
-          item_id: metadata.priceId,
-          item_name: metadata.name,
-          quantity: 1,
-          price: amount,
-        },
-      ],
-    });
+    }
   } catch (err) {
     const castedError = errorService.castError(err);
     window.rudderanalytics.track('Error Signup After Payment Conversion', {
