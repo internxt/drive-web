@@ -160,18 +160,14 @@ export function trackSignUp(uuid, email): void {
   window.rudderanalytics.track('User Signup', { email });
 
   source !== 'direct' &&
-    axios
-      .post(IMPACT_API, {
-        anonymousId: anonymousID,
-        timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
-        messageId: uuidv4(),
-        userId: uuid,
-        type: 'track',
-        event: 'User Signup',
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    axios.post(IMPACT_API, {
+      anonymousId: anonymousID,
+      timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+      messageId: uuidv4(),
+      userId: uuid,
+      type: 'track',
+      event: 'User Signup',
+    });
 }
 
 export function trackUserEnterPayments(priceId: string): void {

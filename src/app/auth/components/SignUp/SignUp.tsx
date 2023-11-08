@@ -172,7 +172,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      analyticsService.trackSignUp(xUser.uuid, email);
+      await analyticsService.trackSignUp(xUser.uuid, email);
 
       const urlParams = new URLSearchParams(window.location.search);
       const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
