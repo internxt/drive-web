@@ -155,23 +155,26 @@ export function signInAttempted(email: string, error: string | Error): void {
   }); */
 }
 
-export function trackSignUp(uuid, email): void {
-  window.rudderanalytics.identify(uuid, { email, uuid: uuid });
-  window.rudderanalytics.track('User Signup', { email });
+export async function trackSignUp(uuid, email) {
+  try {
+    window.rudderanalytics.identify(uuid, { email, uuid: uuid });
+    window.rudderanalytics.track('User Signup', { email });
 
-  source !== 'direct' &&
-    axios
-      .post(IMPACT_API, {
+    if (source !== 'direct') {
+      await axios.post(IMPACT_API, {
         anonymousId: anonymousID,
         timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
         messageId: uuidv4(),
         userId: uuid,
         type: 'track',
         event: 'User Signup',
-      })
-      .catch((err) => {
-        console.log(err);
       });
+    }
+  } catch (e) {
+    const castedError = errorService.castError(e);
+    console.error(castedError);
+    errorService.reportError(castedError);
+  }
 }
 
 export function trackUserEnterPayments(priceId: string): void {
