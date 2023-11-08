@@ -334,7 +334,7 @@ export async function trackPaymentConversion() {
     });
 
     window.gtag('event', 'purchase', {
-      transaction_id: `${metadata.priceId}-${uuid}`,
+      transaction_id: uuidv4(),
       value: amount,
       currency: currency.toUpperCase(),
       items: [
