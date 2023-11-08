@@ -871,7 +871,7 @@ const User = ({
     ) : (
       <>
         <div
-          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
+          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black/0 bg-white px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-black/15 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-black/10 group-hover:shadow-sm"
           onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
           tabIndex={-1}
         >

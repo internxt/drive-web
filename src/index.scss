@@ -280,7 +280,7 @@ code {
   .drag-over-effect {
     box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
 
-    @apply rounded-6px bg-blue-50 bg-opacity-30;
+    @apply rounded-6px bg-blue-50/30;
   }
 }
 

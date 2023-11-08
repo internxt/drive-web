@@ -134,7 +134,7 @@ export default function ShareDialog({
             <p>{translate('modals.sharePhotosModal.openCount')}</p>
             <input
               disabled={status.tag !== 'ready'}
-              className="mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 outline-none focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-opacity-10 disabled:bg-gray-10"
+              className="mx-2 inline-block w-12 rounded-md border border-transparent bg-white px-1 font-medium text-gray-80 outline-none focus:border-primary-dark focus:ring-2 focus:ring-primary focus:ring-primary/10 disabled:bg-gray-10"
               style={{ textAlign: 'right' }}
               type="number"
               value={views}

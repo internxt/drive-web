@@ -5,7 +5,7 @@
     @apply relative flex w-full flex-grow flex-row items-center text-base;
 
     &.selected {
-      @apply border-blue-20 border-opacity-65;
+      @apply border-blue-20/65;
     }
 
     &.is-dragging {

@@ -235,7 +235,7 @@ const FileViewer = ({
                         <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
                           {filename}
                         </span>
-                        <span className="text-white text-opacity-50">{translate('drive.loadingFile')}</span>
+                        <span className="text-white/50">{translate('drive.loadingFile')}</span>
                         <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
                           <div
                             className="h-1.5 rounded-full bg-white"
@@ -260,7 +260,7 @@ const FileViewer = ({
                   <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
                     {filename}
                   </span>
-                  <span className="text-white text-opacity-50">{translate('error.noFilePreview')}</span>
+                  <span className="text-white/50">{translate('error.noFilePreview')}</span>
                 </div>
 
                 <DownloadFile onDownload={onDownload} translate={translate} />

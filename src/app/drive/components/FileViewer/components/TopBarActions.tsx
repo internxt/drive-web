@@ -140,7 +140,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           >
             <Menu.Items
               className={
-                'absolute right-0 mt-1 w-56 origin-top-right rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                'absolute right-0 mt-1 w-56 origin-top-right rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
               }
             >
               <>

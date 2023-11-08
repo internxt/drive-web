@@ -247,7 +247,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
             leaveTo="scale-100 opacity-0"
           >
             <Menu.Items
-              className={`absolute z-10 mt-1 w-56 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard outline-none ${
+              className={`absolute z-10 mt-1 w-56 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none ${
                 isSharedView && 'hidden'
               }`}
             >

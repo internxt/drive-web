@@ -187,7 +187,7 @@ export default function SharedLinksView(): JSX.Element {
       icon={
         <div className="relative">
           <img className="w-36" alt="" src={emptyStateIcon} />
-          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
+          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary/10">
             <Link size={24} />
           </div>
         </div>
