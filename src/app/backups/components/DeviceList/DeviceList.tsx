@@ -94,7 +94,7 @@ const DeviceList = (props: Props): JSX.Element => {
                     <Icon className="h-8 w-8" />
                   </div>
                   <div className="grow cursor-default truncate pr-3">
-                    <span className="z-10 flex-shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
+                    <span className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
                       {device.name}
                     </span>
                   </div>

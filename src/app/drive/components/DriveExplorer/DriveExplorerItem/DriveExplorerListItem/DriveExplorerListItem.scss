@@ -2,7 +2,7 @@
 
 @layer components {
   .file-list-item {
-    @apply relative flex w-full flex-grow flex-row items-center text-base;
+    @apply relative flex w-full grow flex-row items-center text-base;
 
     &.selected {
       @apply border-blue-20/65;
