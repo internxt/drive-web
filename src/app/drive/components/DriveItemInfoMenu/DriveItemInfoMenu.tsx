@@ -28,8 +28,8 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
           <props.icon className="h-full" />
         </div>
         <span
-          className="whitespace-nowrap\ mx-3 block
-         grow overflow-hidden text-ellipsis text-sm text-neutral-700"
+          className="mx-3 block grow
+         overflow-hidden text-ellipsis whitespace-nowrap text-sm text-neutral-700"
         >
           {props.title}
         </span>
