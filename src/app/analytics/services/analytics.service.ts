@@ -338,7 +338,7 @@ export async function trackPaymentConversion() {
       ],
     });
 
-    if (source !== 'direct') {
+    if (!source || source !== 'direct') {
       axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
