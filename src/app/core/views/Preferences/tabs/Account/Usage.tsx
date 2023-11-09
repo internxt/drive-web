@@ -11,6 +11,7 @@ import { RootState } from '../../../../../store';
 import { PlanState } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
+import errorService from 'app/core/services/error.service';
 
 export default function Usage({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -18,9 +19,16 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   useEffect(() => {
-    usageService.getUsageDetails().then((usageDetails) => {
-      setPlanUsage(usageDetails);
-    });
+    usageService
+      .getUsageDetails()
+      .then((usageDetails) => {
+        setPlanUsage(usageDetails);
+      })
+      .catch((err) => {
+        const error = errorService.castError(err);
+        errorService.reportError(error);
+        console.error(error);
+      });
   }, []);
 
   const products: Parameters<typeof UsageDetails>[0]['products'] | null = planUsage
