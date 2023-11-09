@@ -161,7 +161,7 @@ export async function trackSignUp(uuid, email) {
     window.rudderanalytics.track('User Signup', { email });
     window.gtag('event', 'User Signup');
 
-    if (source || source !== 'direct') {
+    if (source && source !== 'direct') {
       await axios.post(IMPACT_API, {
         anonymousId: anonymousID,
         timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
@@ -339,7 +339,7 @@ export async function trackPaymentConversion() {
       ],
     });
 
-    if (source || source !== 'direct') {
+    if (source && source !== 'direct') {
       axios
         .post(IMPACT_API, {
           anonymousId: anonymousID,
