@@ -27,7 +27,6 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
       .catch((err) => {
         const error = errorService.castError(err);
         errorService.reportError(error);
-        console.error(error);
       });
   }, []);
 

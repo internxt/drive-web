@@ -354,7 +354,8 @@ export async function trackPaymentConversion() {
           event: 'Payment Conversion',
         })
         .catch((err) => {
-          console.log(err);
+          const error = errorService.castError(err);
+          errorService.reportError(error);
         });
     }
   } catch (err) {
