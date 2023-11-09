@@ -61,7 +61,7 @@ const NotificationToast = ({
       show={visible}
     >
       <div
-        className="flex max-w-xl items-center rounded-lg border border-gray-10 bg-white p-3 shadow-subtle-hard"
+        className="flex max-w-xl items-center rounded-lg border border-gray-10 bg-white p-3 "
         style={{ minWidth: '300px' }}
       >
         {type === ToastType.Loading && <Spinner className="mr-1.5 h-6 w-6" />}

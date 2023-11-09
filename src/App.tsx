@@ -182,7 +182,12 @@ class App extends Component<AppProps> {
               )}
             </Switch>
 
-            <Toaster position="bottom-center" />
+            <Toaster
+              position="bottom-center"
+              containerStyle={{
+                boxShadow: '0 32px 40px 0 rgba(18, 22, 25, 0.08)',
+              }}
+            />
 
             <NewsletterDialog isOpen={isNewsletterDialogOpen} />
             {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}

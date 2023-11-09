@@ -28,7 +28,7 @@ function LangDropdown({ title, menuItems }: { title: JSX.Element; menuItems: Rea
         leaveFrom="scale-98 opacity-100"
         leaveTo="scale-100 opacity-0"
       >
-        <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5 drop-shadow'}>
+        <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5'}>
           {menuItems && (
             <div className="border-translate w-full border-gray-10">
               {menuItems?.map((item, index) => (
