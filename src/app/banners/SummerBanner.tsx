@@ -1,5 +1,13 @@
 import { useState, useEffect } from 'react';
-import { X } from '@phosphor-icons/react';
+import {
+  ArrowsClockwise,
+  ClockCounterClockwise,
+  CloudCheck,
+  Fingerprint,
+  Gift,
+  ShieldCheck,
+  X,
+} from '@phosphor-icons/react';
 import paymentService from 'app/payment/services/payment.service';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
@@ -8,7 +16,6 @@ import { bytesToString } from 'app/drive/services/size.service';
 import BackgroundImage from 'assets/images/banner/BannerInternal-SummerCampaign-800x450-EN.svg';
 import { ReactComponent as InternxtLogo } from 'assets/images/banner/inxt-logo.svg';
 import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }) => {
@@ -48,28 +55,7 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
         <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
-        <div
-          className="flex cursor-pointer flex-col space-x-20 p-14 py-14 lg:flex-row lg:px-36"
-          onClick={async () => {
-            try {
-              const response = await paymentService.createCheckoutSession({
-                price_id: priceId,
-                success_url: `${window.location.origin}/checkout/success`,
-                cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-                customer_email: user.email,
-                coupon_code: '6FACDcgf',
-              });
-              localStorage.setItem('sessionId', response.sessionId);
-              await paymentService.redirectToCheckout(response);
-            } catch (error) {
-              errorService.reportError(error);
-              notificationsService.show({
-                text: translate('notificationMessages.errorCancelSubscription'),
-                type: ToastType.Error,
-              });
-            }
-          }}
-        >
+        <div className="flex cursor-pointer flex-col space-x-20 p-14 py-14 lg:flex-row lg:px-36">
           <div className="flex flex-col items-center justify-center space-y-9 text-center">
             <InternxtLogo />
             <div className="flex flex-col items-center justify-center space-y-6">
