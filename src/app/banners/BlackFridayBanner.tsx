@@ -45,7 +45,7 @@ const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClo
             </div>
             <button
               onClick={() => {
-                window.open('https://internxt.com/black-friday', '_blank');
+                window.open('https://internxt.com/black-friday#priceTable', '_blank');
               }}
               className="w-max rounded-lg bg-primary px-5 py-3 text-xl font-medium text-white"
             >
