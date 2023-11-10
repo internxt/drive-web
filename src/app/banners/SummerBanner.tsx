@@ -1,33 +1,8 @@
-import { useState, useEffect } from 'react';
 import { X } from '@phosphor-icons/react';
-import paymentService from 'app/payment/services/payment.service';
-import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { bytesToString } from 'app/drive/services/size.service';
 import BackgroundImage from 'assets/images/banner/BannerInternal-SummerCampaign-800x450-EN.svg';
 import { ReactComponent as InternxtLogo } from 'assets/images/banner/inxt-logo.svg';
-import errorService from 'app/core/services/error.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }) => {
-  const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
-  const [priceId, setPriceId] = useState<string>('');
-  const { translate } = useTranslationContext();
-
-  useEffect(() => {
-    paymentService
-      .getPrices()
-      .then((res) => {
-        res.forEach((price) => {
-          if (bytesToString(price.bytes) === '2TB' && price.interval === 'year') setPriceId(price.id);
-        });
-      })
-      .catch((error) => {
-        errorService.reportError(error);
-      });
-  }, []);
-
   return (
     <section
       className={`${
