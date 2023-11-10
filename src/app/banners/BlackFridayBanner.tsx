@@ -1,13 +1,4 @@
-import {
-  ArrowsClockwise,
-  CircleWavyCheck,
-  ClockCounterClockwise,
-  CloudCheck,
-  Fingerprint,
-  Gift,
-  ShieldCheck,
-  X,
-} from '@phosphor-icons/react';
+import { CircleWavyCheck, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
