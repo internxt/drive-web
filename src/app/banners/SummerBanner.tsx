@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import {
-  ArrowsClockwise,
-  ClockCounterClockwise,
-  CloudCheck,
-  Fingerprint,
-  Gift,
-  ShieldCheck,
-  X,
-} from '@phosphor-icons/react';
+import { X } from '@phosphor-icons/react';
 import paymentService from 'app/payment/services/payment.service';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
