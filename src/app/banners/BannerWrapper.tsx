@@ -6,8 +6,9 @@ import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import BlackFridayBanner from './BlackFridayBanner';
+import { getCookie, setCookie } from 'app/analytics/utils';
 
-const BLACK_FRIDAY_CONSTANT = STORAGE_KEYS.SHOW_BLACK_FRIDAY_BANNER;
+const SHOW_BANNER_COOKIE_NAME = 'showBanner';
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -15,11 +16,11 @@ const BannerWrapper = (): JSX.Element => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(BLACK_FRIDAY_CONSTANT);
+  const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
 
   const onCloseBanner = () => {
     setShowBanner(false);
-    localStorage.setItem(BLACK_FRIDAY_CONSTANT, 'false');
+    setCookie(SHOW_BANNER_COOKIE_NAME, 'true');
   };
 
   function handleBannerDisplay() {
