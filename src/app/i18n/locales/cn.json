@@ -1121,7 +1121,7 @@
     "emailNotEmpty": "电子邮件不能为空",
     "verificationEmail": "验证邮件已发送",
     "successCancelSubscription": "您的订阅已被取消",
-    "errorCancelSubscription": "取消订阅时出了点问题"
+    "errorCancelSubscription": "取消订阅时出了点问题",
     "successApplyCoupon": "3个月免费申请",
     "errorApplyCoupon": "应用折扣时出错",
     "alreadyAppliedCoupon": "优惠券已使用"
