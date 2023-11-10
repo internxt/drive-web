@@ -185,7 +185,7 @@ class App extends Component<AppProps> {
             <Toaster
               position="bottom-center"
               containerStyle={{
-                boxShadow: '0 32px 40px 0 rgba(18, 22, 25, 0.08)',
+                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
               }}
             />
 
