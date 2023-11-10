@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { AppDispatch, RootState } from '../../../store';
+import { RootState } from '../../../store';
 import { storageSelectors } from '../../../store/slices/storage';
-import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
-import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { TeamsSettings } from '../../../teams/types';
-import { Binoculars, Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
+import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
+import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
 import { Link } from 'react-router-dom';
@@ -15,48 +13,62 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { isMacOs } from 'react-device-detect';
+import { SdkFactory } from 'app/core/factory/sdk';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { uiActions } from 'app/store/slices/ui';
+import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/drive/types/file-types';
+import NotFoundState from './NotFoundState';
+import EmptyState from './EmptyState';
+import FilterItem from './FilterItem';
+import { getItemPlainName } from 'app/crypto/services/utils';
 
 interface NavbarProps {
   user: UserSettings | undefined;
-  team: TeamsSettings | undefined | null;
-  workspace: Workspace;
-  isTeam: boolean;
-  storageFilters: StorageFilters;
-  currentFolderId: number;
-  dispatch: AppDispatch;
   hideSearch?: boolean;
   plan: PlanState;
 }
 
-interface SearchResult {
-  name: string;
-  type: string;
-  id: string;
-}
-
 type FilterType = 'folder' | 'pdf' | 'image' | 'video' | 'audio' | null;
 
-// TODO: SUBSTITUE THE NAVBAR WITH THIS ONE WITH NEW SEARCH BAR WHEN BACKED IS READY
+const fileExtension = {
+  image: fileExtensionGroups[FileExtensionGroup.Image],
+  audio: fileExtensionGroups[FileExtensionGroup.Audio],
+  pdf: fileExtensionGroups[FileExtensionGroup.Pdf],
+  video: fileExtensionGroups[FileExtensionGroup.Video],
+  default: fileExtensionGroups[FileExtensionGroup.Default],
+};
+
+const isSelectedType = (extension: string, extensionMap: FileExtensionMap) => {
+  for (const fileType in extensionMap) {
+    if (extensionMap[fileType].includes(extension.toLowerCase())) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const Navbar = (props: NavbarProps) => {
   const { translate } = useTranslationContext();
   const { user, hideSearch } = props;
   if (!user) throw new Error('User is not defined');
 
+  const dispatch = useAppDispatch();
   const searchInput = useRef<HTMLInputElement>(null);
   const searchResultList = useRef<HTMLUListElement>(null);
   const [preventBlur, setPreventBlur] = useState<boolean>(false);
-  const [openSeachBox, setOpenSeachBox] = useState<boolean>(false);
+  const [openSearchBox, setOpenSearchBox] = useState<boolean>(false);
   const [filters, setFilters] = useState<FilterType[]>([]);
 
   const [query, setQuery] = useState('');
   const [searchResult, setSearchResult] = useState<SearchResult[]>([]);
+  const [filteredResults, setFilteredResults] = useState<SearchResult[]>([]);
   const [selectedResult, setSelectedResult] = useState<number>(0);
   const [loadingSearch, setLoadingSearch] = useState<boolean>(false);
   const [typingTimerID, setTypingTimerID] = useState<NodeJS.Timeout | null>(null);
   const doneTypingInterval = 200;
 
-  const PdfIcon = iconService.getItemIcon(false, 'pdf');
-  const FolderIcon = iconService.getItemIcon(true);
+  const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
 
   useHotkeys(
     ['Meta+F', 'Control+F'],
@@ -66,31 +78,40 @@ const Navbar = (props: NavbarProps) => {
         searchInput.current?.focus();
       }
     },
-    [hideSearch, openSeachBox],
+    [hideSearch, openSearchBox],
     { enableOnFormTags: ['INPUT'] },
   );
 
   useEffect(() => {
-    search();
+    if (filters.length > 0) {
+      setFilteredResults(filteredSearchResults);
+    }
+  }, [filters, searchResult]);
+
+  useEffect(() => {
+    if (filters.length === 0) {
+      setFilteredResults([]);
+    }
   }, [filters]);
 
-  // TODO -> Add the function to search
+  const filteredSearchResults = searchResult.filter((result) => {
+    for (const filter of filters) {
+      if (filter === 'folder' && result.itemType?.toLowerCase() === 'folder') {
+        return true;
+      }
+      if (result.item.type && isSelectedType(result.item.type, fileExtension[filter || 'default'])) {
+        return true;
+      }
+    }
+  });
+
   const search = async () => {
     const query = searchInput.current?.value ?? '';
     if (query.length > 0) {
-      //! setSearchResult of the real results
-      setSearchResult([
-        { name: 'Test folder 1', type: 'folder', id: '1' },
-        { name: 'Test file 2', type: 'pdf', id: '2' },
-        { name: 'Test file 3', type: 'pdf', id: '3' },
-        { name: 'Test file 4', type: 'pdf', id: '4' },
-        { name: 'Test file 5', type: 'pdf', id: '5' },
-        { name: 'Test file 6', type: 'pdf', id: '6' },
-        { name: 'Test file 7', type: 'pdf', id: '7' },
-        { name: 'Test file 8', type: 'pdf', id: '8' },
-        { name: 'Test file 9', type: 'pdf', id: '9' },
-        { name: 'Test file 10', type: 'pdf', id: '10' },
-      ]);
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const [itemsPromise] = await storageClient.getGlobalSearchItems(query);
+      const items = await itemsPromise;
+      setSearchResult(items.data);
     } else {
       setSearchResult([]);
     }
@@ -99,19 +120,21 @@ const Navbar = (props: NavbarProps) => {
     setLoadingSearch(false);
   };
 
-  const toggleFilter = (filter: FilterType) => {
-    if (filters.includes(filter)) {
-      setFilters((currentFilters) => currentFilters.filter((currentFilter) => currentFilter !== filter));
+  const openItem = (item) => {
+    const itemData = { ...item.item, name: getItemPlainName(item.item) };
+    if (item.itemType.toLowerCase() === 'folder') {
+      isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
+      dispatch(uiActions.setIsGlobalSearch(true));
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id }));
+      searchInput.current?.blur();
+      setQuery('');
+      setSearchResult([]);
+      setOpenSearchBox(false);
+      setPreventBlur(false);
     } else {
-      setFilters((currentFilters) => [...currentFilters, filter]);
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(itemData));
     }
-  };
-
-  const openItem = (id: string) => {
-    searchInput.current?.blur();
-    // TODO -> Open file/folder by id
-    // Open file/folder in the same tab
-    alert(`Open item with ID ${id}`);
   };
 
   const handleSearch = () => {
@@ -129,7 +152,7 @@ const Navbar = (props: NavbarProps) => {
     e.preventDefault();
     if (searchResult.length > 0) {
       setPreventBlur(false);
-      openItem(searchResult[selectedResult].id);
+      openItem(searchResult[selectedResult]);
     } else {
       setLoadingSearch(true);
       search();
@@ -153,20 +176,6 @@ const Navbar = (props: NavbarProps) => {
     }
     if (item) document.querySelector(`#searchResult_${item}`)?.scrollIntoView();
   };
-
-  const FilterItem = ({ id, Icon, name }) => (
-    <div
-      className={`${
-        filters.includes(id)
-          ? 'bg-primary bg-opacity-10 text-primary ring-primary ring-opacity-20'
-          : 'bg-white text-gray-80 ring-gray-10 hover:bg-gray-1 hover:shadow-sm hover:ring-gray-20 active:bg-gray-5 active:ring-gray-30'
-      } flex h-8 cursor-pointer items-center space-x-2 rounded-full px-3 font-medium shadow-sm ring-1 transition-all duration-100 ease-out`}
-      onClick={() => toggleFilter(id)}
-    >
-      <Icon className="h-5 w-5 drop-shadow-sm filter" />
-      <span className="text-sm">{name}</span>
-    </div>
-  );
 
   const filterItems = [
     {
@@ -196,27 +205,6 @@ const Navbar = (props: NavbarProps) => {
     },
   ];
 
-  const NotFoundState = () => (
-    <div className="flex h-full flex-col items-center justify-center space-y-4">
-      <Binoculars weight="thin" className="text-gray-100" size={64} />
-      <div className="flex flex-col items-center space-y-1">
-        <p className="text-xl font-medium text-gray-100">{translate('general.searchBar.notFoundState.title')}</p>
-        <p className="text-sm font-normal text-gray-60">{translate('general.searchBar.notFoundState.subtitle')}</p>
-      </div>
-    </div>
-  );
-
-  const EmptyState = () => (
-    <div className="flex h-full flex-col items-center justify-center">
-      <div className="relative h-20 w-28">
-        <FolderIcon className="absolute top-0 left-11 h-16 w-16 rotate-10 transform drop-shadow-soft filter" />
-        <PdfIcon className="absolute top-0 left-2 h-16 w-16 rotate-10- transform drop-shadow-soft filter" />
-      </div>
-      <p className="text-xl font-medium text-gray-100">{translate('general.searchBar.emptyState.title')}</p>
-      <p className="text-sm font-normal text-gray-60">{translate('general.searchBar.emptyState.subtitle')}</p>
-    </div>
-  );
-
   return (
     <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40">
       {hideSearch ? (
@@ -225,7 +213,7 @@ const Navbar = (props: NavbarProps) => {
         <form className="relative flex h-full w-full items-center" onSubmitCapture={handleSubmit}>
           <label
             className={`${
-              openSeachBox ? 'max-w-screen-sm' : 'max-w-sm'
+              openSearchBox ? 'max-w-screen-sm' : 'max-w-sm'
             } relative flex w-full items-center rounded-lg transition-all duration-150 ease-out`}
             htmlFor="globalSearchInput"
           >
@@ -257,22 +245,22 @@ const Navbar = (props: NavbarProps) => {
                 if (preventBlur) {
                   e.currentTarget.focus();
                 } else {
-                  setOpenSeachBox(false);
+                  setOpenSearchBox(false);
                 }
               }}
-              onFocusCapture={() => setOpenSeachBox(true)}
+              onFocusCapture={() => setOpenSearchBox(true)}
               placeholder={translate('general.searchBar.placeholder')}
             />
             <div
               className={`${
-                openSeachBox && 'opacity-0'
+                openSearchBox && 'opacity-0'
               } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 transform rounded-md bg-gray-10 py-1 px-2 text-sm text-gray-50`}
             >
               {isMacOs ? '⌘F' : 'Ctrl F'}
             </div>
             <X
               className={`${
-                (query.length === 0 || !openSeachBox) && 'pointer-events-none opacity-0'
+                (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
               } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 transform cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
               onMouseDownCapture={() => {
                 setQuery('');
@@ -285,7 +273,7 @@ const Navbar = (props: NavbarProps) => {
 
           <div
             className={`${
-              openSeachBox
+              openSearchBox
                 ? 'translate-y-1.5 scale-100 opacity-100'
                 : 'pointer-events-none -translate-y-0.5 scale-98 opacity-0'
             } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top transform flex-col overflow-hidden rounded-xl bg-white text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out`}
@@ -295,7 +283,14 @@ const Navbar = (props: NavbarProps) => {
             <div className="flex w-full flex-shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5">
               <button type="button" className="flex items-center space-x-2">
                 {filterItems.map((item) => (
-                  <FilterItem key={item.id} {...item} />
+                  <FilterItem
+                    key={item.id}
+                    id={item.id}
+                    Icon={item.Icon}
+                    name={item.name}
+                    filters={filters}
+                    setFilters={setFilters}
+                  />
                 ))}
               </button>
 
@@ -310,10 +305,11 @@ const Navbar = (props: NavbarProps) => {
               </button>
             </div>
 
-            {searchResult.length > 0 ? (
+            {(filters.length === 0 && searchResult.length > 0) || (filters.length > 0 && filteredResults.length > 0) ? (
               <ul ref={searchResultList} className="flex h-full flex-col overflow-y-auto pb-4">
-                {searchResult.map((item, index) => {
-                  const Icon = iconService.getItemIcon(item.type === 'folder', item.type);
+                {(filteredResults.length > 0 ? filteredResults : searchResult).map((item, index) => {
+                  const isFolder = item.itemType === 'FOLDER' || item.itemType === 'folder';
+                  const Icon = iconService.getItemIcon(isFolder, item.item.type);
                   return (
                     <li
                       key={item.id}
@@ -324,7 +320,7 @@ const Navbar = (props: NavbarProps) => {
                         selectedResult === index && 'bg-gray-5'
                       } flex h-11 flex-shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
                       onMouseEnter={() => setSelectedResult(index)}
-                      onClickCapture={() => openItem(item.id)}
+                      onClickCapture={() => openItem(item)}
                     >
                       <Icon className="h-7 w-7 drop-shadow-soft filter" />
                       <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap">{item.name}</p>

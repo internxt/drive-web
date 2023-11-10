@@ -177,10 +177,10 @@
   },
   "shareLayout": {
     "title": "",
-    "subtitle": "Almacenamiento seguro en la nube",
+    "subtitle": "Almacenamiento seguro en la nube con privacidad inigualable",
     "labels": {
       "privacy": "Privado por diseño",
-      "end-to-end": "Cifrado de extremo a extremo",
+      "open-source": "Código abierto y transparente",
       "military-grade": "Cifrado de grado militar",
       "zero-knowledge": "Conocimiento cero"
     },
@@ -825,6 +825,7 @@
     "linkExpired": "Este enlace seguro ha caducado",
     "teamInvitation": "No se ha podido enviar el correo electrónico de invitación",
     "storageIsFull": "Tu almacenamiento está lleno",
+    "storageIsFullDescription": "No puedes subir, sincronizar ni respaldar archivos.",
     "noSpaceAvailable": "Has alcanzado el límite y la sincronización se ha pausado. Mejora tu plan para mantener tus archivos sincronizados y seguros.",
     "sharedFolderTooBig": "Internxt Drive no admite compartir carpetas de más de 1 GB",
     "titleSharedFolderTooBig": "Acción no compatible",
@@ -1122,7 +1123,7 @@
     "download": "Descargar",
     "downloading": "Descargando",
     "downloaded": "Descargado",
-    "view": "Ver",
+    "view": "Previsualizar",
     "accessFile": "Acceder al archivo",
     "upgradeNow": "Comprar espacio",
     "purchasePlan": "Comprar plan",

@@ -159,10 +159,10 @@
   },
   "shareLayout": {
     "title": "",
-    "subtitle": "Stockage sécurisé dans le nuage",
+    "subtitle": "Stockage cloud sécurisé avec une confidentialité inégalée",
     "labels": {
       "privacy": "Privé par conception",
-      "end-to-end": "Chiffrement de bout en bout",
+      "open-source": "Open source et transparent",
       "military-grade": "Cryptage de qualité militaire",
       "zero-knowledge": "Zéro connaissance"
     },
@@ -760,6 +760,7 @@
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "storageIsFull": "Your storage is full",
+    "storageIsFullDescription": "Vous ne pouvez pas télécharger, synchroniser ou sauvegarder des fichiers.",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
     "titleSharedFolderTooBig": "Unsupported Action",
@@ -1053,7 +1054,7 @@
     "downloaded": "Téléchargé",
     "delete": "Supprimer",
     "share": "Partager",
-    "view": "Afficher",
+    "view": "Aperçu",
     "accessFile": "Fichier d'accès",
     "upgradeNow": "Acheter de l'espace",
     "purchasePlan": "Acheter de l'espace",

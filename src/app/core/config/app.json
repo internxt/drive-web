@@ -76,7 +76,8 @@
       "layout": "header-and-sidenav",
       "path": "/app/recents",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "backups",
@@ -99,7 +100,8 @@
       "layout": "header-and-sidenav",
       "path": "/app/shared",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "photos",

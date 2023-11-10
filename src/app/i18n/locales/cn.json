@@ -194,10 +194,10 @@
   },
   "shareLayout": {
     "title": "INTERNXT",
-    "subtitle": "安全云存储",
+    "subtitle": "具有无与伦比的隐私保护的安全云存储",
     "labels": {
       "privacy": "为隐私而设计",
-      "end-to-end": "端到端加密",
+      "open-source": "开源透明",
       "military-grade": "军事级别的加密",
       "zero-knowledge": "零知识"
     },
@@ -1140,7 +1140,7 @@
     "download": "下载",
     "downloading": "正在下载",
     "downloaded": "已下载",
-    "view": "视图",
+    "view": "预览",
     "accessFile": "访问文件",
     "upgradeNow": "购买储存空间",
     "purchasePlan": "购买储存空间",

@@ -78,7 +78,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
-  const isSelectedSharedItem = props.selectedItems.length === 1 && (props.selectedItems?.[0].shares?.length || 0) > 0;
+  const isSelectedSharedItem =
+    props.selectedItems.length === 1 &&
+    props.selectedItems?.[0].sharings &&
+    props.selectedItems?.[0].sharings.length > 0;
 
   const { translate } = useTranslationContext();
 
@@ -112,7 +115,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
     }
-    //  const deselecteditems = props.selectedItems.filter((selectedItem) => updatedSelectedItems.map().includes())
+
     const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
     dispatch(storageActions.deselectItems(deselecteditems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
@@ -231,7 +234,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const downloadItem = useCallback(
-    (item: ContextMenuDriveItem) => {
+    async (item: ContextMenuDriveItem) => {
       dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
     },
     [dispatch, storageThunks],
@@ -255,7 +258,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   return (
     <div className="flex h-full flex-grow flex-col">
-      <div className="h-full overflow-y-auto">
+      <div className="h-full w-full overflow-y-auto">
         {editNameItem && (
           <EditItemNameDialog
             item={editNameItem}
@@ -271,28 +274,22 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         <List<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
           header={[
             {
-              label: translate('drive.list.columns.type'),
-              width: 'flex w-1/12 items-center px-6',
-              name: 'type',
-              orderable: false,
-            },
-            {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center pl-6',
+              width: 'flex flex-grow items-center min-w-driveNameHeader',
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
+              width: 'w-date',
               name: 'updatedAt',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
             },
             {
               label: translate('drive.list.columns.size'),
-              width: 'flex w-1/12 items-center',
+              width: 'w-size',
               name: 'size',
               orderable: false,
             },
@@ -378,14 +375,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
+                    deleteLink: () => ({}),
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
@@ -427,8 +417,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             onRKeyPressed: () => {
               if (props.selectedItems.length === 1) {
                 const selectedItem = props.selectedItems[0];
-                dispatch(uiActions.setCurrentEditingNameDirty(selectedItem.name));
-                dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItem));
+                renameItem(selectedItem);
               }
             },
           }}

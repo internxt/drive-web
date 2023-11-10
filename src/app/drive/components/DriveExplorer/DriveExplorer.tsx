@@ -65,7 +65,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import './DriveExplorer.scss';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
@@ -78,9 +77,10 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ShareDialog from '../ShareDialog/ShareDialog';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import BannerWrapper from 'app/banners/BannerWrapper';
+import shareService from '../../../share/services/share.service';
+import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
+import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -147,10 +147,13 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
-  const isSelectedItemShared = selectedItems[0]?.shares && selectedItems[0]?.shares?.length > 0;
+
+  const isSelectedItemShared = selectedItems[0]?.sharings && selectedItems[0]?.sharings?.length > 0;
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
+
+  const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -435,13 +438,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onSelectedOneItemShare = (e): void => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
+      const selectedItem = selectedItems[0];
       dispatch(
         storageActions.setItemToShare({
-          share: selectedItems[0].shares?.[0],
-          item: selectedItems[0],
+          sharing: selectedItems[0]?.sharings && selectedItems[0]?.sharings?.[0],
+          item: selectedItem,
         }),
       );
-      dispatch(sharedThunks.getSharedLinkThunk({ item: selectedItems[0] as DriveItemData }));
+      if (selectedItem?.uuid)
+        shareService.getPublicShareLink(selectedItem.uuid, selectedItem.isFolder ? 'folder' : 'file');
     }
   };
 
@@ -449,11 +454,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     e.stopPropagation();
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
-        dispatch(uiActions.setCurrentEditingNameDirty(selectedItems[0].name));
-      } else {
-        dispatch(uiActions.setCurrentEditingNameDirty(dirtyName));
+        setEditNameItem(selectedItems[0]);
       }
-      dispatch(uiActions.setCurrentEditingNameDriveItem(selectedItems[0]));
     }
   };
 
@@ -658,14 +660,31 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog isDriveItem />
+      <ShareDialog
+        isDriveItem
+        onShareItem={() => {
+          resetPaginationState();
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+        }}
+      />
       <NameCollisionContainer />
       <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <BannerWrapper />
+      {editNameItem && (
+        <EditItemNameDialog
+          item={editNameItem}
+          isOpen={true}
+          onSuccess={() => {
+            dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          }}
+          onClose={() => {
+            setEditNameItem(null);
+          }}
+        />
+      )}
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">
@@ -954,6 +973,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           </div>
 
           <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+            <WarningMessageWrapper />
             {hasItems && (
               <div className="flex flex-grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
@@ -1009,6 +1029,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                       text: translate('views.recents.empty.uploadFiles'),
                       onClick: onUploadFileButtonClicked,
                     }}
+                    contextMenuClick={handleContextMenuClick}
                   />
                 ))
             }

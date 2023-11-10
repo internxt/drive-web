@@ -15,7 +15,7 @@ export default function DeviceListItem({
 }: {
   device: Device | (DriveFolderData & { size: number });
   onClick: (clickedDevice: typeof device) => void;
-  onDoubleClick: (clickedDevice: typeof device) => void;
+  onDoubleClick?: (clickedDevice: typeof device) => void;
   dataTest?: string;
 }): JSX.Element {
   let Icon;
@@ -40,20 +40,20 @@ export default function DeviceListItem({
 
   return (
     <div
-      className="flex flex-grow items-center py-3.5"
+      className="flex flex-grow cursor-pointer items-center py-3.5"
       onClick={() => onClick(device)}
-      onDoubleClick={() => onDoubleClick(device)}
+      onDoubleClick={() => onDoubleClick?.(device)}
       data-test={dataTest}
     >
-      <div className="box-content flex w-0.5/12 items-center justify-center px-3">
-        <Icon className="h-8 w-8" />
+      <div className="box-content flex flex-grow items-center justify-center">
+        <Icon className="mr-3 h-8 w-8" />
+        <p className="flex-grow">{device.name}</p>
       </div>
-      <p className="flex-grow pr-3">{device.name}</p>
-      <div className="hidden w-2/12 items-center xl:flex"></div>
-      <div className="hidden w-3/12 items-center lg:flex">
+      {/* <div className="hidden w-2/12 items-center xl:flex"></div> */}
+      <div className="w-3/12 min-w-date items-center lg:flex">
         {dateService.format(device.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
-      <div className="flex w-2/12 items-center">{size}</div>
+      <div className="flex w-2/12 min-w-breadcrumb items-center">{size}</div>
     </div>
   );
 }
