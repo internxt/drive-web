@@ -115,7 +115,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
     }
-    //  const deselecteditems = props.selectedItems.filter((selectedItem) => updatedSelectedItems.map().includes())
+
     const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
     dispatch(storageActions.deselectItems(deselecteditems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
