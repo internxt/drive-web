@@ -19,8 +19,8 @@ const BannerWrapper = (): JSX.Element => {
   const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
 
   const onCloseBanner = () => {
+    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', 31);
     setShowBanner(false);
-    setCookie(SHOW_BANNER_COOKIE_NAME, 'true');
   };
 
   function handleBannerDisplay() {
