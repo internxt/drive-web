@@ -28,7 +28,6 @@ self.addEventListener('message', async (event) => {
       const errorCloned = JSON.parse(JSON.stringify(err));
       postMessage({ result: 'error', error: errorCloned });
     }
-    return;
   } else {
     console.warn('[WORKER] Received unknown event');
   }
