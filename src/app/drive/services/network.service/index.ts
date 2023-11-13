@@ -116,7 +116,7 @@ export class Network {
       }),
       {
         abort: () => {
-          worker.postMessage({ type: 'upload', abort: true, fileId: 'inventedFileid' });
+          worker.postMessage({ type: 'upload', abort: true });
         },
       },
     ];

@@ -103,14 +103,16 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   console.time('multipart-upload');
 
   const uploadAbortController = new AbortController();
+  const context = typeof window === 'undefined' ? self : window;
 
   let connectionLost = false;
+
   function connectionLostListener() {
     connectionLost = true;
     uploadAbortController.abort();
-    // window.removeEventListener('offline', connectionLostListener);
+    context.removeEventListener('offline', connectionLostListener);
   }
-  // window.addEventListener('offline', connectionLostListener);
+  context.addEventListener('offline', connectionLostListener);
 
   function onAbort() {
     if (!connectionLost) {

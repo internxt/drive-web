@@ -136,6 +136,7 @@ class UploadManager {
             }
           },
           {
+            isTeam: false,
             trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
@@ -146,7 +147,6 @@ class UploadManager {
                   abort?.();
                 },
               }),
-            isTeam: false,
           },
         )
           .then((driveFileData) => {
@@ -191,8 +191,9 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
-            const isLostConnectionError = err instanceof ConnectionLostError;
+            const isUploadAborted =
+              this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted ?? err === 'abort';
+            const isLostConnectionError = err instanceof ConnectionLostError || err.message === 'Network Error';
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();
@@ -214,13 +215,17 @@ class UploadManager {
                 errorService.reportError(err, {
                   extra: fileInfoToReport,
                 });
-                return tasksService.updateTask({
+                tasksService.updateTask({
                   taskId,
-                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') ?? undefined },
                 });
+                this.errored = true;
+                next(err);
+                return;
               }
 
-              if (task?.status !== TaskStatus.Cancelled && err !== 'abort') {
+              const isUnexpectedError = task?.status !== TaskStatus.Cancelled && !isUploadAborted;
+              if (isUnexpectedError) {
                 tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Error },
@@ -234,11 +239,18 @@ class UploadManager {
                 }
               }
 
-              if (!this.errored && err !== 'abort') {
+              if (isUploadAborted) {
+                tasksService.updateTask({
+                  taskId: taskId,
+                  merge: { status: TaskStatus.Cancelled },
+                });
+              }
+
+              if (!this.errored && !isUploadAborted) {
                 this.uploadQueue.kill();
               }
 
-              this.errored = true;
+              if (!isUploadAborted) this.errored = true;
 
               next(err);
             }
