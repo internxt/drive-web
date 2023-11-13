@@ -40,7 +40,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
       </span>
       <div className="mt-6 flex">
         <input
-          className="no-ring semi-dense mr-2 flex-grow border border-neutral-30"
+          className="no-ring semi-dense mr-2 grow border border-neutral-30"
           placeholder={translate('form.fields.email.placeholder') as string}
           type="email"
           value={email}

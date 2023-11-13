@@ -33,11 +33,11 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
     <section
       className={`${
         showBanner ? 'flex' : 'hidden'
-      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-5 lg:px-0`}
+      }  fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black/50 px-5 lg:px-0`}
     >
       <div
-        className={`${showBanner ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex
-        w-max max-w-4xl -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
+        className={`${showBanner ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex
+        w-max max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-neutral-900`}
         style={{
           backgroundImage: `url(${BackgroundImage})`,
           backgroundPosition: 'center',

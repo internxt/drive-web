@@ -13,17 +13,17 @@ const CrowdcubeBanner = ({
     <div
       className={`${
         showBanner ? 'flex' : 'hidden'
-      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-5 lg:px-0`}
+      }  fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black/50 px-5 lg:px-0`}
     >
       <div
-        className={`${showBanner ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex w-full
-        -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl bg-primary-dark md:max-w-3.5xl`}
+        className={`${showBanner ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex w-full
+        -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl bg-primary-dark md:max-w-3.5xl`}
       >
         <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onCloseBanner}>
           <X size={32} />
         </button>
         <div className="flex w-full flex-row justify-between">
-          <div className="mx-12 flex w-full max-w-sm flex-col items-center justify-center space-y-9 pt-20 pb-16 text-center lg:items-start lg:justify-start lg:text-left">
+          <div className="mx-12 flex w-full max-w-sm flex-col items-center justify-center space-y-9 pb-16 pt-20 text-center lg:items-start lg:justify-start lg:text-left">
             <InternxtLogo className="h-4 max-w-[120px]" />
             <div className="flex  flex-col space-y-6 text-white">
               <p className="text-5xl font-bold">Become a part of Internxt's future</p>

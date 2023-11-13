@@ -156,7 +156,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             {translate('auth.recoverAccount.title')}
           </span>
           <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.backupKey.title')}</h3>
-          <div className="font-regular mb-4 flex rounded-md border border-orange border-opacity-30 bg-orange bg-opacity-5 p-4 text-sm text-orange-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-orange/30 bg-orange/5 p-4 text-sm text-orange-dark">
             <span className="mr-1.5 pt-0.5">
               <Warning size={18} weight="fill" />
             </span>

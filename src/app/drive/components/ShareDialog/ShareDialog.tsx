@@ -366,12 +366,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       general: (
         <>
           <span
-            className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
+            className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium"
             title={translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           >
             {translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           </span>
-          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
+          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black/0 transition-all duration-200 ease-in-out hover:bg-black/4 active:bg-black/8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />
           </div>
         </>
@@ -379,7 +379,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       invite: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.invite.title')}
           </span>
         </div>
@@ -387,7 +387,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       requests: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.requests.title')}
           </span>
         </div>
@@ -404,7 +404,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="relative flex flex-col">
             <div className="flex items-center space-x-4">
               <span
-                className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-medium"
+                className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium"
                 title={translate('modals.shareModal.list.peopleWithAccess')}
               >
                 {translate('modals.shareModal.list.peopleWithAccess')}
@@ -477,7 +477,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               <Popover className="relative z-10">
                 {({ open }) => (
                   <>
-                    <Popover.Button as="div" className="outline-none z-1">
+                    <Popover.Button as="div" className="z-1 outline-none">
                       <Button variant="secondary" disabled={isLoading}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
@@ -496,7 +496,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </Popover.Button>
 
                     <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left transform rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
                         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                       }`}
                       static
@@ -627,14 +627,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 } ${!isRequestPending(request.status) && 'hide-request'}`}
                 key={request.email + index}
               >
-                <div className="flex flex-shrink-0 items-center space-x-2.5">
+                <div className="flex shrink-0 items-center space-x-2.5">
                   <Avatar src={request.avatar} fullName={`${request.name} ${request.lastname}`} diameter={40} />
 
                   <div className="flex flex-1 flex-col overflow-hidden">
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
                       {request.name}&nbsp;{request.lastname}
                     </p>
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
                       {request.email}
                     </p>
                   </div>
@@ -651,7 +651,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </Popover.Button>
 
                           <Popover.Panel
-                            className={`absolute right-0 z-10 mt-1 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
                               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                             }`}
                             style={{ minWidth: '160px' }}
@@ -761,7 +761,7 @@ export const UserOptions = ({
       }}
     >
       <Popover.Panel
-        className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+        className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
           isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
         }`}
         style={{
@@ -851,17 +851,17 @@ const User = ({
   disableRoleChange: boolean;
 }) => (
   <div
-    className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
+    className={`group flex h-14 shrink-0 items-center space-x-2.5 border-t ${
       user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
     }`}
   >
     <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
 
     <div className="flex flex-1 flex-col overflow-hidden">
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
         {user.name}&nbsp;{user.lastname}
       </p>
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
         {user.email}
       </p>
     </div>
@@ -871,7 +871,7 @@ const User = ({
     ) : (
       <>
         <div
-          className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
+          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black/0 bg-white px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-black/15 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-black/10 group-hover:shadow-sm"
           onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
           tabIndex={-1}
         >
@@ -910,7 +910,7 @@ const InvitedUsersSkeletonLoader = () => {
       width: 'flex w-1/12 cursor-pointer items-center',
     },
     {
-      width: 'flex flex-grow cursor-pointer items-center pl-4',
+      width: 'flex grow cursor-pointer items-center pl-4',
     },
     {
       width: 'hidden w-3/12 lg:flex pl-4',
@@ -918,11 +918,11 @@ const InvitedUsersSkeletonLoader = () => {
   ].map((column) => column.width);
 
   return (
-    <div className="group relative flex h-14 w-full flex-shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
+    <div className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
       {new Array(5).fill(0).map((col, i) => (
         <div
           key={`${col}-${i}`}
-          className={`relative flex h-full flex-shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
+          className={`relative flex h-full shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
         >
           {skinSkeleton?.[i]}
         </div>

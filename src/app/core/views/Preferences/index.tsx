@@ -7,7 +7,7 @@ import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
-type PreferencesTabID = typeof PREFERENCES_TABS[number];
+type PreferencesTabID = (typeof PREFERENCES_TABS)[number];
 
 export const TabContext = createContext<{
   activeTab: PreferencesTabID;
@@ -61,7 +61,7 @@ export default function Preferences(): JSX.Element {
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
-        <div className="flex flex-grow flex-row justify-center overflow-y-auto p-8">
+        <div className="flex grow flex-row justify-center overflow-y-auto p-8">
           <div className="w-screen max-w-screen-xl overflow-x-visible">
             {TABS.map(
               ({ component: Component, id }) =>
