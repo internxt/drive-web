@@ -10,7 +10,10 @@ import newStorageService from '../../../../drive/services/new-storage.service';
 import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
-  const fullPath = breadcrumbsList.reverse();
+  // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore:next-line
+  const fullPath = breadcrumbsList.toReversed();
   const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
 
   return fullPathParsedNamesList;
