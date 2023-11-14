@@ -41,14 +41,17 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     };
 
     for (let i = 0; i < items.length; i++) {
+      const separatorKey = 'breadcrumbSeparator-' + items[i].id + i.toString();
+      const itemKey = 'breadcrumbItem-' + items[i].id + i.toString();
+
       if (items.length > 3 && i !== 0 && i < items.length - 2) {
         if (i === 1) {
-          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+          itemsList.push(breadcrumbSeparator(separatorKey));
         }
         hiddenItemsList.push(
           <MenuItem>
             <BreadcrumbsItem
-              key={'breadcrumbItem' + items[i].id}
+              key={itemKey}
               item={items[i]}
               isHiddenInList
               totalBreadcrumbsLength={items.length}
@@ -58,15 +61,10 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         );
       } else {
         itemsList.push(
-          <BreadcrumbsItem
-            key={'breadcrumbItem' + items[i].id}
-            item={items[i]}
-            totalBreadcrumbsLength={items.length}
-            items={items}
-          />,
+          <BreadcrumbsItem key={itemKey} item={items[i]} totalBreadcrumbsLength={items.length} items={items} />,
         );
         if (i < items.length - 1) {
-          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+          itemsList.push(breadcrumbSeparator(separatorKey));
         }
       }
     }

@@ -6,12 +6,21 @@ import { FolderPath } from '../../../../drive/types';
 import { uiActions } from '../../ui';
 import storageSelectors from '../storage.selectors';
 import { storageActions } from '..';
+import newStorageService from '../../../../drive/services/new-storage.service';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+
+const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
+  const fullPath = breadcrumbsList.reverse();
+  const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
+
+  return fullPathParsedNamesList;
+};
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
   async (path: FolderPath, { getState, dispatch }) => {
     const state = getState();
-    const currentPath = state.storage.currentPath as FolderPath;
+    const currentPath = state.storage.currentPath;
     if (currentPath.id === path.id) {
       // no need to go to the same folder
       return;
@@ -29,6 +38,12 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
     dispatch(storageActions.setCurrentPath(path));
+
+    if (path.uuid && !isInNamePath) {
+      const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(path.uuid);
+      const fullPathParsedNames = parsePathNames(breadcrumbsList);
+      dispatch(storageActions.setNamePath(fullPathParsedNames));
+    }
   },
 );
 

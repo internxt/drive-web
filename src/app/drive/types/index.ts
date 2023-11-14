@@ -133,6 +133,7 @@ export type StoragePlan = {
 export interface FolderPath {
   name: string;
   id: number;
+  uuid?: string;
 }
 
 export interface FolderPathDialog {
