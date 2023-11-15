@@ -147,7 +147,7 @@ module.exports = {
         156: '37.5rem',
       },
       maxWidth: {
-        xxs: '260px',
+        xxs: '280px',
         '3.5xl': '800px',
       },
       scale: {

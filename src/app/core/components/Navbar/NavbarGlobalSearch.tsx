@@ -21,6 +21,7 @@ import fileExtensionGroups, { FileExtensionGroup, FileExtensionMap } from 'app/d
 import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
+import { getItemPlainName } from 'app/crypto/services/utils';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -120,10 +121,11 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const openItem = (item) => {
+    const itemData = { ...item.item, name: getItemPlainName(item.item) };
     if (item.itemType.toLowerCase() === 'folder') {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.item.id }));
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id }));
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);
@@ -131,7 +133,7 @@ const Navbar = (props: NavbarProps) => {
       setPreventBlur(false);
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item.item));
+      dispatch(uiActions.setFileViewerItem(itemData));
     }
   };
 
