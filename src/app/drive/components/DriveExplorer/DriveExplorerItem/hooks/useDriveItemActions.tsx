@@ -190,7 +190,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const onItemDoubleClicked = (): void => {
     if (item.isFolder) {
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id, uuid: item.uuid as string }));
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));

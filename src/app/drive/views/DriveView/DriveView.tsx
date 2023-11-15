@@ -10,7 +10,6 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
-import { DotsThree } from '@phosphor-icons/react';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -22,7 +21,7 @@ export interface DriveViewProps {
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, isGlobalSearch, items, isLoading } = props;
+  const { dispatch, namePath, items, isLoading } = props;
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -50,15 +49,6 @@ const DriveView = (props: DriveViewProps) => {
           dispatch(storageThunks.goToFolderThunk(firstPath));
         },
       });
-
-      isGlobalSearch &&
-        items.push({
-          id: firstPath.id,
-          label: '',
-          icon: <DotsThree className="ml-0.5" />,
-          active: true,
-          isFirstPath: false,
-        });
 
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
@@ -97,6 +87,5 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
     items: sortedItems,
-    isGlobalSearch: state.ui.isGlobalSearch,
   };
 })(DriveView);

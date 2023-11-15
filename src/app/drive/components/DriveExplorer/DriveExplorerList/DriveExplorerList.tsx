@@ -305,7 +305,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
             if (driveItem.isFolder) {
-              dispatch(storageThunks.goToFolderThunk({ name: driveItem.name, id: driveItem.id }));
+              dispatch(
+                storageThunks.goToFolderThunk({
+                  name: driveItem.name,
+                  id: driveItem.id,
+                  uuid: driveItem.uuid,
+                }),
+              );
             } else {
               dispatch(uiActions.setIsFileViewerOpen(true));
               dispatch(uiActions.setFileViewerItem(driveItem));
