@@ -202,6 +202,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, uiActions],
   );
 
+  const getDetails = useCallback(
+    (item: DriveItemData) => {
+      dispatch(uiActions.setItemDetailsItem(item));
+      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+    },
+    [dispatch, storageActions, uiActions],
+  );
+
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
@@ -403,6 +411,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openLinkSettings(item);
                   },
                   openPreview: openPreview,
+                  getDetails: getDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,

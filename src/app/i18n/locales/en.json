@@ -1208,6 +1208,7 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "details": "Details",
       "shareLink": "Share",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",

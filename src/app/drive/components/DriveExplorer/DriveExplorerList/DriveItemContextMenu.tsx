@@ -6,6 +6,7 @@ import {
   ClockCounterClockwise,
   DownloadSimple,
   Eye,
+  Info,
   Link,
   LinkBreak,
   PencilSimple,
@@ -57,6 +58,15 @@ const getCopyLinkMenuItem = (getLink: (target) => void) => ({
   name: t('drive.dropdown.copyLink'),
   icon: Link,
   action: getLink,
+  disabled: () => {
+    return false;
+  },
+});
+
+const getDetailsMenuItem = (getDetails: (target) => void) => ({
+  name: t('drive.dropdown.details'),
+  icon: Info,
+  action: getDetails,
   disabled: () => {
     return false;
   },
@@ -150,6 +160,7 @@ const contextMenuSelectedItems = ({
 const contextMenuDriveNotSharedLink = ({
   shareLink,
   openPreview,
+  getDetails,
   getLink,
   renameItem,
   moveItem,
@@ -158,6 +169,7 @@ const contextMenuDriveNotSharedLink = ({
 }: {
   shareLink: (item: DriveItemData) => void;
   openPreview: (item: DriveItemData) => void;
+  getDetails: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
   renameItem: (item: DriveItemData) => void;
   moveItem: (item: DriveItemData) => void;
@@ -168,6 +180,7 @@ const contextMenuDriveNotSharedLink = ({
   getCopyLinkMenuItem(getLink),
   { name: '', action: () => false, separator: true },
   getOpenPreviewMenuItem(openPreview),
+  getDetailsMenuItem(getDetails),
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
@@ -192,6 +205,7 @@ const contextMenuDriveFolderNotSharedLink = ({
 }): ListItemMenu<DriveItemData> => [
   shareLinkMenuItem(shareLink),
   getCopyLinkMenuItem(getLink),
+
   { name: '', action: () => false, separator: true },
   getRenameMenuItem(renameItem),
   getMoveItemMenuItem(moveItem),
