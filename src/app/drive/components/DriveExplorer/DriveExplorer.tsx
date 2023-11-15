@@ -677,7 +677,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item={editNameItem}
           isOpen={true}
           onSuccess={() => {
-            dispatch(fetchSortedFolderContentThunk(currentFolderId));
+            setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
           }}
           onClose={() => {
             setEditNameItem(null);
