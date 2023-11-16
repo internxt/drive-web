@@ -207,7 +207,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       dispatch(uiActions.setItemDetailsItem(item));
       dispatch(uiActions.setIsItemDetailsDialogOpen(true));
     },
-    [dispatch, storageActions, uiActions],
+    [dispatch, uiActions],
   );
 
   const getLink = useCallback(
