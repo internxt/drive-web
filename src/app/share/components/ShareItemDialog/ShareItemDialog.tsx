@@ -19,10 +19,11 @@ import { TFunction } from 'i18next';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { domainManager } from '../../services/DomainManager';
 import _ from 'lodash';
+import { AdvancedSharedItem } from 'app/share/types';
 
 interface ShareItemDialogProps {
   share?: ShareLink;
-  item: DriveItemData;
+  item: DriveItemData | AdvancedSharedItem;
   isPreviewView?: boolean;
 }
 
