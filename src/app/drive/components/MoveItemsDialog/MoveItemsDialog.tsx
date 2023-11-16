@@ -190,7 +190,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         {/* Create folder dialog */}
         <CreateFolderDialog
           currentFolderId={currentFolderId}
-          onFolderCreated={() => setTimeout(() => onShowFolderContentClicked(currentFolderId, currentFolderName), 500)}
+          onFolderCreated={() => setTimeout(() => onShowFolderContentClicked(currentFolderId, currentFolderName), 1000)}
         />
 
         {/* Folder list */}

@@ -9,6 +9,7 @@ import errorService from '../../../../core/services/error.service';
 import folderService from '../../../../drive/services/folder.service';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
@@ -71,6 +72,9 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
             items: createdFolderNormalized as DriveItemData,
           }),
         );
+        await databaseService.put(DatabaseCollection.MoveDialogLevels, parentFolderId, [
+          createdFolderNormalized as DriveItemData,
+        ]);
       }
 
       return createdFolderNormalized;
