@@ -50,12 +50,14 @@ const ItemDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
+  const namePath = useAppSelector((state: RootState) => state.storage.namePath);
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const { onNameClicked } = useDriveItemActions(item as DriveItemData);
+  const path = '/' + namePath.map((item) => item.name).join('/');
 
   useEffect(() => {
     if (isOpen && item && user) {
@@ -69,7 +71,7 @@ const ItemDetailsDialog = () => {
         uploaded: formateDate(item.createdAt),
         modified: formateDate(item.updatedAt),
         uploadedBy: user.email,
-        location: 'Drive',
+        location: path,
         isFolder: item.isFolder,
       };
 
@@ -108,7 +110,7 @@ const ItemDetailsDialog = () => {
         <div className="flex flex-col">
           <div className="flex flex-col items-center justify-center space-y-3 py-5">
             <IconComponent width={60} height={80} />
-            <p>{itemName}</p>
+            <p className="truncate text-base font-semibold text-gray-100">{itemName}</p>
             <Button onClick={handleButtonItemClick} variant="secondary">
               {item?.isFolder
                 ? translate('modals.itemDetailsModal.folderCta')
