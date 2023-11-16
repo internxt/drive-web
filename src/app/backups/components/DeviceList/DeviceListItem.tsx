@@ -40,14 +40,14 @@ export default function DeviceListItem({
 
   return (
     <div
-      className="flex flex-grow cursor-pointer items-center py-3.5"
+      className="flex grow cursor-pointer items-center py-3.5"
       onClick={() => onClick(device)}
       onDoubleClick={() => onDoubleClick?.(device)}
       data-test={dataTest}
     >
-      <div className="box-content flex flex-grow items-center justify-center">
+      <div className="box-content flex grow items-center justify-center">
         <Icon className="mr-3 h-8 w-8" />
-        <p className="flex-grow">{device.name}</p>
+        <p className="grow">{device.name}</p>
       </div>
       {/* <div className="hidden w-2/12 items-center xl:flex"></div> */}
       <div className="w-3/12 min-w-date items-center lg:flex">

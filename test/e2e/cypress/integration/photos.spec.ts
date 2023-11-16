@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 import { join } from 'path';
 import { MOCK, mockPhotos, photos_data } from '../utils/photos.mock';
 

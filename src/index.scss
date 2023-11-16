@@ -1,6 +1,8 @@
-@tailwind base;
 @tailwind components;
-@tailwind utilities;
+
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
+}
 
 @import url('./assets/fonts/InstrumentSans/font.css');
 
@@ -104,7 +106,7 @@ code {
     min-width: 175px;
     max-width: 250px;
 
-    @apply flex w-full items-center rounded-1px py-1 px-5 text-base text-neutral-900 no-underline hover:bg-neutral-20 hover:text-neutral-900 active:bg-neutral-30;
+    @apply flex w-full items-center rounded-1px px-5 py-1 text-base text-neutral-900 no-underline hover:bg-neutral-20 hover:text-neutral-900 active:bg-neutral-30;
 
     img {
       height: 14px;
@@ -172,7 +174,7 @@ code {
   }
 
   .input-number {
-    @apply outline-none appearance-none border-neutral-60 text-center;
+    @apply appearance-none border-neutral-60 text-center outline-none;
 
     -moz-appearance: textfield;
   }
@@ -278,7 +280,7 @@ code {
   .drag-over-effect {
     box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
 
-    @apply rounded-6px bg-blue-50 bg-opacity-30;
+    @apply rounded-6px bg-blue-50/30;
   }
 }
 

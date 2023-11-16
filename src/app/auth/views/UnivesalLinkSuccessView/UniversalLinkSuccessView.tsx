@@ -37,11 +37,11 @@ export default function UniversalLinkSuccessView(): JSX.Element {
   };
   return (
     <main className="flex h-full w-full flex-col bg-gray-5">
-      <div className="flex flex-shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
+      <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
         <img src={bigLogo} width="120" alt="" />
       </div>
       <div className="flex flex-1 items-center justify-center">
-        <div className="w-96 rounded-lg bg-white py-10 px-8 shadow-soft">
+        <div className="w-96 rounded-lg bg-white px-8 py-10 shadow-soft">
           <div className="mb-6 flex justify-center">
             <img src={squareLogo} alt="" className="shadow-soft" height={64} />
           </div>
@@ -67,7 +67,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
           </div>
         </div>
       </div>
-      <div className="flex flex-shrink-0 flex-row justify-center py-8">
+      <div className="flex shrink-0 flex-row justify-center py-8">
         <a
           href="https://internxt.com/legal"
           target="_blank"

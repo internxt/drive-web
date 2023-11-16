@@ -187,7 +187,7 @@ export default function SharedLinksView(): JSX.Element {
       icon={
         <div className="relative">
           <img className="w-36" alt="" src={emptyStateIcon} />
-          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary ring-opacity-10">
+          <div className=" absolute -bottom-1 right-2 flex h-10 w-10 flex-col items-center justify-center rounded-full bg-primary text-white shadow-subtle-hard ring-8 ring-primary/10">
             <Link size={24} />
           </div>
         </div>
@@ -256,7 +256,7 @@ export default function SharedLinksView(): JSX.Element {
 
   return (
     <div
-      className="flex w-full flex-shrink-0 flex-col"
+      className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
@@ -271,7 +271,7 @@ export default function SharedLinksView(): JSX.Element {
           }}
         />
       )}
-      <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
+      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
         </div>
@@ -300,7 +300,7 @@ export default function SharedLinksView(): JSX.Element {
           header={[
             {
               label: translate('shared-links.list.link-content'),
-              width: 'flex-1 min-w-104 flex-shrink-0 whitespace-nowrap', //flex-grow w-1
+              width: 'flex-1 min-w-104 shrink-0 whitespace-nowrap', //grow w-1
               name: 'item',
               orderable: false,
             },
@@ -336,9 +336,9 @@ export default function SharedLinksView(): JSX.Element {
               const Icon = iconService.getItemIcon(props.isFolder, (props.item as DriveFileData).type);
               return (
                 <div className={'flex w-full cursor-pointer flex-row items-center space-x-6 overflow-hidden'}>
-                  <div className="my-5 flex h-8 w-8 flex-shrink items-center justify-center">
-                    <Icon className="absolute h-8 w-8 flex-shrink-0 drop-shadow-soft filter" />
-                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white ring-opacity-90">
+                  <div className="my-5 flex h-8 w-8 shrink items-center justify-center">
+                    <Icon className="absolute h-8 w-8 shrink-0 drop-shadow-soft" />
+                    <div className="z-index-10 relative left-4 top-3 flex h-4 w-4 items-center justify-center rounded-full bg-primary font-normal text-white shadow-subtle-hard ring-2 ring-white/90">
                       <Link size={12} color="white" />
                     </div>
                   </div>
@@ -529,7 +529,7 @@ function UpdateLinkModal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 bg-gray-100 bg-opacity-50" />
+          <div className="fixed inset-0 bg-gray-100/50" />
         </Transition.Child>
 
         <div className="fixed inset-0 overflow-y-auto">
@@ -543,7 +543,7 @@ function UpdateLinkModal({
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="flex w-full max-w-lg transform flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
+              <Dialog.Panel className="flex w-full max-w-lg flex-col space-y-5 overflow-hidden rounded-2xl bg-white p-5 text-left align-middle shadow-subtle-hard transition-all">
                 <Dialog.Title as="h3" className="flex flex-col text-2xl text-gray-80">
                   <span className="font-medium">{translate('shared-links.link-settings.share-settings')}</span>
                   <span className="truncate whitespace-nowrap text-base text-gray-40">
@@ -562,7 +562,7 @@ function UpdateLinkModal({
                   <BaseButton
                     onClick={copyLink}
                     disabled={false}
-                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary py-0 px-4 font-medium text-primary hover:bg-primary hover:bg-opacity-5 active:border-primary-dark"
+                    className="flex h-auto flex-row items-center space-x-2 rounded-lg border border-primary px-4 py-0 font-medium text-primary hover:bg-primary/5 active:border-primary-dark"
                   >
                     <span>{translate('shared-links.link-settings.copy-link')}</span>
                     <Link size={24} />
@@ -579,7 +579,7 @@ function UpdateLinkModal({
                         // })
                       }}
                       isLoading={savingLinkChanges}
-                      className="flex h-auto flex-row items-center rounded-lg bg-primary py-0 px-4 font-medium text-white hover:bg-primary-dark"
+                      className="flex h-auto flex-row items-center rounded-lg bg-primary px-4 py-0 font-medium text-white hover:bg-primary-dark"
                     >
                       {translate('shared-links.link-settings.close') as string}
                     </BaseButton>

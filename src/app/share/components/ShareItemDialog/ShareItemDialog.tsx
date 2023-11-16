@@ -83,7 +83,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
       dialogRounded={true}
       panelClasses="w-screen max-w-lg"
       titleClasses="text-black font-medium text-left"
-      closeClass="flex-shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black hover:bg-opacity-2 rounded-md focus:bg-black focus:bg-opacity-5"
+      closeClass="shrink-0 flex items-center justify-center h-10 w-10 text-black hover:bg-black/2 rounded-md focus:bg-black/5"
       onClose={onClose}
       weightIcon="light"
       dataTest="share-item-dialog"
@@ -132,7 +132,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
           <div className="flex flex-row justify-between">
             <button
               className={`${
-                isLinkCopied ? ' z-10 flex bg-blue-10 bg-opacity-5' : ''
+                isLinkCopied ? ' z-10 flex bg-blue-10/5' : ''
               } flex h-10 flex-row items-center justify-center rounded-md border border-primary px-5`}
               onClick={() => {
                 setIsLinkCopied(true);
