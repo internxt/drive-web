@@ -14,16 +14,21 @@ import localStorageService from '../../../core/services/local-storage.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { DriveItemData } from '../../../drive/types';
 
-interface itemProps {
+type ItemDetailsProps = {
   name: string;
-  uploadedBy?: string;
+  uploadedBy: string;
   location: string;
   uploaded: string;
   modified: string;
   shared: number;
-  type?: string;
-  size?: string;
-}
+} & (
+  | { isFolder: true }
+  | {
+      isFolder: false;
+      type: string;
+      size: string;
+    }
+);
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -46,24 +51,29 @@ const ItemDetailsDialog = () => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
   const { translate } = useTranslationContext();
-  const [itemProps, setItemProps] = useState<itemProps>();
+  const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
-  const itemName = `${item?.plainName ?? item?.name}` + `${item?.type ? '.' + item?.type : ''}`;
+  const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
-  const { onItemDoubleClicked } = useDriveItemActions(item as DriveItemData);
+  const { onNameClicked } = useDriveItemActions(item as DriveItemData);
 
   useEffect(() => {
     if (isOpen && item && user) {
-      setItemProps({
+      const shares = item.sharings?.length ?? item.shares?.length ?? 0;
+
+      const details: ItemDetailsProps = {
         name: item.name,
-        shared: item?.shares!.length > 0 ? item?.shares!.length : 0,
-        type: item.type,
+        shared: shares,
         size: bytesToString(item.size),
+        type: item.type,
         uploaded: formateDate(item.createdAt),
         modified: formateDate(item.updatedAt),
         uploadedBy: user.email,
         location: 'Drive',
-      });
+        isFolder: item.isFolder,
+      };
+
+      setItemProps(details);
     }
   }, [item, isOpen]);
 
@@ -76,12 +86,12 @@ const ItemDetailsDialog = () => {
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     event.preventDefault();
+    onClose();
     if (!item?.isFolder) {
-      onClose();
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));
     } else {
-      onItemDoubleClicked(event);
+      onNameClicked(event);
     }
   }
 
@@ -100,15 +110,18 @@ const ItemDetailsDialog = () => {
             <IconComponent width={60} height={80} />
             <p>{itemName}</p>
             <Button onClick={handleButtonItemClick} variant="secondary">
-              {translate('modals.itemDetailsModal.fileCta')}
+              {item?.isFolder
+                ? translate('modals.itemDetailsModal.folderCta')
+                : translate('modals.itemDetailsModal.fileCta')}
             </Button>
           </div>
         </div>
         <div className="flex w-full border border-gray-5" />
         <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 truncate pb-10">
           {itemProps &&
-            Object.keys(itemProps).map((key) => {
-              return (
+            Object.keys(itemProps)
+              .filter((key) => key !== 'isFolder' && (itemProps.isFolder ? key !== 'type' && key !== 'size' : true))
+              .map((key) => (
                 <div
                   key={key}
                   className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 truncate"
@@ -118,8 +131,7 @@ const ItemDetailsDialog = () => {
                   </p>
                   <p className="truncate text-base font-medium text-gray-100">{itemProps[key]}</p>
                 </div>
-              );
-            })}
+              ))}
         </div>
       </div>
     </Modal>

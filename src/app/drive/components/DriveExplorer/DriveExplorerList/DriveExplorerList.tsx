@@ -203,8 +203,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const getDetails = useCallback(
-    (item: DriveItemData) => {
-      dispatch(uiActions.setItemDetailsItem(item));
+    (item: ContextMenuDriveItem) => {
+      dispatch(uiActions.setItemDetailsItem(item as DriveItemData));
       dispatch(uiActions.setIsItemDetailsDialogOpen(true));
     },
     [dispatch, uiActions],
@@ -364,6 +364,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
+                    getDetails: getDetails,
                     deleteLink: (item) => {
                       dispatch(
                         sharedThunks.deleteLinkThunk({
@@ -379,6 +380,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   })
                 : contextMenuDriveItemShared({
                     openPreview: openPreview,
+                    getDetails: getDetails,
                     copyLink: copyLink,
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
@@ -397,6 +399,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     // openAdvancedShareLinkSettings(item);
                     openLinkSettings(item);
                   },
+                  getDetails: getDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,
@@ -406,8 +409,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               : contextMenuDriveNotSharedLink({
                   shareLink: (item) => {
                     //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    // WAITING BACKEND ENDPOINTS
-                    // openAdvancedShareLinkSettings(item);
                     openLinkSettings(item);
                   },
                   openPreview: openPreview,
