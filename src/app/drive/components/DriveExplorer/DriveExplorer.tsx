@@ -667,7 +667,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }}
       />
       <NameCollisionContainer />
-      <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <MoveItemsDialog
+        items={[...items]}
+        onItemsMoved={() => {
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          onItemsMoved?.();
+        }}
+        isTrash={isTrash}
+      />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />

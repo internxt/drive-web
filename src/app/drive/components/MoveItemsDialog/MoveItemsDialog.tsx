@@ -85,41 +85,43 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(fetchDialogContentThunk(folderId))
       .unwrap()
       .then(() => {
-        databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
-          setCurrentFolderId(folderId);
-          setCurrentFolderName(name);
-          setDestinationId(folderId);
-
-          const files: DriveItemData[] = [];
-          const folders = items?.filter((i) => {
-            if (!i.isFolder) files.push(i);
-            return i.isFolder;
-          });
-
-          let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
-          const currentIndex = auxCurrentPaths.findIndex((i) => {
-            return i.id === folderId;
-          });
-          if (currentIndex > -1) {
-            auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
-            dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
-          } else {
-            auxCurrentPaths.push({ id: folderId, name: name });
-            dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
-          }
-
-          setCurrentNamePaths(auxCurrentPaths);
-          if (folders) {
-            const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
-            setShownFolders(unselectedFolders);
-          } else {
-            setShownFolders([]);
-            setDestinationId(folderId);
-            setCurrentFolderId(folderId);
-            setCurrentFolderName(name);
-          }
-        });
+        getDatabaseItems(folderId, name);
       });
+  };
+
+  const getDatabaseItems = (folderId: number, name: string) => {
+    databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
+      setCurrentFolderId(folderId);
+      setCurrentFolderName(name);
+      setDestinationId(folderId);
+
+      const folders = items?.filter((i) => {
+        return i.isFolder;
+      });
+
+      let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
+      const currentIndex = auxCurrentPaths.findIndex((i) => {
+        return i.id === folderId;
+      });
+      if (currentIndex > -1) {
+        auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
+        dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
+      } else {
+        auxCurrentPaths.push({ id: folderId, name: name });
+        dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
+      }
+
+      setCurrentNamePaths(auxCurrentPaths);
+      if (folders) {
+        const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
+        setShownFolders(unselectedFolders);
+      } else {
+        setShownFolders([]);
+        setDestinationId(folderId);
+        setCurrentFolderId(folderId);
+        setCurrentFolderName(name);
+      }
+    });
   };
 
   const onFolderClicked = (folderId: number, name?: string): void => {
@@ -161,15 +163,15 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
-      props.onItemsMoved && props.onItemsMoved();
+      props.onItemsMoved?.();
 
       setIsLoading(false);
       onClose();
       setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
+      errorService.reportError(castedError);
       setIsLoading(false);
-      console.log(castedError.message);
     }
   };
 
@@ -186,7 +188,10 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         </div>
 
         {/* Create folder dialog */}
-        <CreateFolderDialog currentFolderId={currentFolderId} />
+        <CreateFolderDialog
+          currentFolderId={currentFolderId}
+          onFolderCreated={() => setTimeout(() => onShowFolderContentClicked(currentFolderId, currentFolderName), 500)}
+        />
 
         {/* Folder list */}
         <div className="flex flex-col">
