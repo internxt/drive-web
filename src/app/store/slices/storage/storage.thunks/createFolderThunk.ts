@@ -9,7 +9,6 @@ import errorService from '../../../../core/services/error.service';
 import folderService from '../../../../drive/services/folder.service';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
