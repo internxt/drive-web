@@ -12,9 +12,9 @@ import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { DriveItemData } from '../../../drive/types';
+import { DriveItemData, DriveItemDetails } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
-import { getItemPlainName } from 'app/crypto/services/utils';
+import errorService from 'app/core/services/error.service';
 
 type ItemDetailsProps = {
   name: string;
@@ -61,6 +61,47 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
   );
 };
 
+async function getDetailsData(
+  item: DriveItemDetails,
+  isShared: string,
+  uploaded: string,
+  modified: string,
+  email: string,
+) {
+  const uuid = item.isFolder ? item.uuid : item.folderUuid;
+
+  try {
+    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+
+    const getPathName = ancestors
+      .map((ancestor) => (ancestor.plainName === null ? item.view : ancestor.plainName))
+      .reverse();
+
+    if (item.isFolder) {
+      getPathName.pop();
+    }
+
+    const path = '/' + getPathName.join('/');
+
+    const details: ItemDetailsProps = {
+      name: item.name,
+      shared: isShared,
+      size: item.isFolder ? undefined : bytesToString(item.size),
+      type: item.isFolder ? undefined : item.type,
+      uploaded: uploaded,
+      modified: modified,
+      uploadedBy: item.userEmail ?? email,
+      location: path,
+    };
+
+    return details;
+  } catch (err) {
+    const error = errorService.castError(err);
+    errorService.reportError(error);
+  }
+  // Get the folder ancestors and substitute the last item name with the item.view property
+}
+
 const ItemDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -74,25 +115,15 @@ const ItemDetailsDialog = () => {
 
   useEffect(() => {
     if (isOpen && item && user) {
-      const uuid = item.isFolder ? item.uuid : item.folderUuid;
-      newStorageService.getFolderAncestors(uuid as string).then((res) => {
-        console.log('ancestors', res);
-      });
-
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
-
-      const details: ItemDetailsProps = {
-        name: item.name,
-        shared: isShared,
-        size: item.isFolder ? undefined : bytesToString(item.size),
-        type: item.isFolder ? undefined : item.type,
-        uploaded: formateDate(item.createdAt),
-        modified: formateDate(item.updatedAt),
-        uploadedBy: item.userEmail ?? user.email,
-        location: 'Drive',
-      };
-
-      setItemProps(details);
+      const uploaded = formateDate(item.createdAt);
+      const modified = formateDate(item.updatedAt);
+      getDetailsData(item, isShared, uploaded, modified, user.email)
+        .then((details) => setItemProps(details))
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+        });
     }
   }, [item, isOpen]);
 
@@ -100,7 +131,12 @@ const ItemDetailsDialog = () => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(false));
     setTimeout(() => {
       dispatch(uiActions.setItemDetailsItem(null));
+      setItemProps(undefined);
     }, 300);
+  }
+
+  function formateDate(dateString: string) {
+    return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
@@ -112,10 +148,6 @@ const ItemDetailsDialog = () => {
     } else {
       onNameClicked(event);
     }
-  }
-
-  function formateDate(dateString: string) {
-    return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
   return (

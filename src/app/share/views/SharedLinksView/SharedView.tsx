@@ -9,7 +9,7 @@ import shareService, { decryptMnemonic } from '../../../share/services/share.ser
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
-import { DriveFileData, DriveItemData } from '../../../drive/types';
+import { DriveFileData, DriveItemData, DriveItemDetails } from '../../../drive/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import sizeService from '../../../drive/services/size.service';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -41,7 +41,6 @@ import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import Sidenav from 'app/core/components/Sidenav/Sidenav';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -509,10 +508,11 @@ export default function SharedView(): JSX.Element {
   };
 
   const getDetails = (shareItem) => {
-    const itemDetails = {
+    const itemDetails: DriveItemDetails = {
       ...shareItem,
       isShared: true,
       userEmail: shareItem.user?.email,
+      view: shareItem.sharedWithMe ? 'Shared' : 'Drive',
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
