@@ -1200,7 +1200,9 @@
     "rename": "Rename",
     "restore": "Restore",
     "copyLink": "Copy link",
-    "report": "Report abuse"
+    "report": "Report abuse",
+    "yes": "Yes",
+    "no": "No"
   },
   "drive": {
     "usage": "Usage",

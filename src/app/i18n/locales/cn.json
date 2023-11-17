@@ -126,8 +126,8 @@
       "button": "发送账户重启验证",
       "successDescription": "您的账户和密码已重置",
       "error": "重启账户时出了问题。"
-  },
-   "universalLinkSuccess": {
+    },
+    "universalLinkSuccess": {
       "loginAs": "登录为",
       "openDesktopApp": "打开桌面应用程序",
       "anotherAccount": "使用另一个帐户？",
@@ -353,7 +353,7 @@
             "giveUsFeedback": "能否告诉我们您为什么要取消您的 {{currentPlanName}} Internxt 计划并降级为免费计划？",
             "feedback": {
               "placeholder": "给我们一些反馈"
-              },
+            },
             "coupon": {
               "title": "3 个月",
               "subtitle": "免费",
@@ -639,6 +639,21 @@
       "label": "名称",
       "placeholder": "无标题文件夹",
       "untitled": "无标题文件夹"
+    },
+    "itemDetailsModal": {
+      "title": "详细信息",
+      "fileCta": "打开预览",
+      "folderCta": "打开文件夹",
+      "itemDetails": {
+        "name": "名称",
+        "type": "类型",
+        "uploaded": "已上传",
+        "uploadedBy": "上传者",
+        "shared": "共享",
+        "size": "大小",
+        "modified": "已修改",
+        "location": "位置"
+      }
     },
     "shareModal": {
       "title": "分享 \"{{name}}\"",
@@ -1171,7 +1186,9 @@
     "rename": "重命名",
     "restore": "恢复",
     "copyLink": "复制链接",
-    "report": "举报滥用"
+    "report": "举报滥用",
+    "yes": "有",
+    "no": "是"
   },
   "drive": {
     "usage": "使用情况",
@@ -1198,6 +1215,7 @@
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",
+      "details ": "详细信息",
       "share": "分享",
       "manageAccess": "管理访问权限",
       "download": "下载",

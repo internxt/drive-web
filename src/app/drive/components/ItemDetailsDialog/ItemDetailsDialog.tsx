@@ -20,7 +20,7 @@ type ItemDetailsProps = {
   location: string;
   uploaded: string;
   modified: string;
-  shared: number;
+  shared: string;
 } & (
   | { isFolder: true }
   | {
@@ -61,7 +61,7 @@ const ItemDetailsDialog = () => {
 
   useEffect(() => {
     if (isOpen && item && user) {
-      const shares = item.sharings?.length ?? item.shares?.length ?? 0;
+      const shares = item.sharings?.length ? translate('actions.yes') : translate('actions.no');
 
       const details: ItemDetailsProps = {
         name: item.name,

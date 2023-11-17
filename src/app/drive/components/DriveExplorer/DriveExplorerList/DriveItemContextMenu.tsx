@@ -384,6 +384,7 @@ const contextMenuDriveItemSharedsView = ({
 
 const contextMenuDriveItemSharedAFS = ({
   openPreview,
+  getDetails,
   copyLink,
   openShareAccessSettings,
   deleteLink,
@@ -393,6 +394,7 @@ const contextMenuDriveItemSharedAFS = ({
   moveToTrash,
 }: {
   openPreview: (item: AdvancedSharedItem) => void;
+  getDetails: (item: AdvancedSharedItem) => void;
   copyLink: (item: AdvancedSharedItem) => void;
   openShareAccessSettings: (item: AdvancedSharedItem) => void;
   deleteLink: (item: AdvancedSharedItem) => void;
@@ -403,6 +405,7 @@ const contextMenuDriveItemSharedAFS = ({
 }): ListItemMenu<AdvancedSharedItem> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
   ...[getOpenPreviewMenuItem(openPreview)],
+  getDetailsMenuItem(getDetails),
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),
@@ -413,6 +416,7 @@ const contextMenuDriveItemSharedAFS = ({
 const contextMenuDriveFolderSharedAFS = ({
   copyLink,
   openShareAccessSettings,
+  getDetails,
   deleteLink,
   renameItem,
   moveItem,
@@ -422,6 +426,7 @@ const contextMenuDriveFolderSharedAFS = ({
   copyLink: (item: any) => void;
   openShareAccessSettings: (item: any) => void;
   deleteLink: (item: any) => void;
+  getDetails: (item: any) => void;
   renameItem?: (item: any) => void;
   moveItem?: (item: any) => void;
   downloadItem: (item: any) => Promise<void>;
@@ -429,6 +434,7 @@ const contextMenuDriveFolderSharedAFS = ({
 }): ListItemMenu<any> => [
   manageLinkAccessMenuItem(openShareAccessSettings),
   { name: '', action: () => false, separator: true },
+  getDetailsMenuItem(getDetails),
   renameItem && getRenameMenuItem(renameItem),
   moveItem && getMoveItemMenuItem(moveItem),
   getDownloadMenuItem(downloadItem),

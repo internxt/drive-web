@@ -506,6 +506,14 @@ export default function SharedView(): JSX.Element {
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
+  const getDetails = useCallback(
+    (item) => {
+      dispatch(uiActions.setItemDetailsItem(item as DriveItemData));
+      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+    },
+    [dispatch, uiActions],
+  );
+
   const removeItemsFromList = () => {
     const selectedItemsIDs = new Set(selectedItems.map((selectedItem) => selectedItem.id));
     const newShareList = shareItems.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
@@ -961,6 +969,7 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
+                  getDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
@@ -969,6 +978,7 @@ export default function SharedView(): JSX.Element {
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings,
                   openPreview: openPreview,
+                  getDetails,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
