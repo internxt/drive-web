@@ -41,6 +41,7 @@ import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import Sidenav from 'app/core/components/Sidenav/Sidenav';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -507,19 +508,16 @@ export default function SharedView(): JSX.Element {
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
-  const getDetails = useCallback(
-    (item) => {
-      const itemDetails = {
-        ...item,
-        isShared: true,
-        userEmail: item.user?.email,
-        namePath: sharedNamePath,
-      };
-      dispatch(uiActions.setItemDetailsItem(itemDetails));
-      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
-    },
-    [dispatch, uiActions],
-  );
+  const getDetails = (shareItem) => {
+    const itemDetails = {
+      ...shareItem,
+      isShared: true,
+      userEmail: shareItem.user?.email,
+      namePath: sharedNamePath,
+    };
+    dispatch(uiActions.setItemDetailsItem(itemDetails));
+    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+  };
 
   const removeItemsFromList = () => {
     const selectedItemsIDs = new Set(selectedItems.map((selectedItem) => selectedItem.id));

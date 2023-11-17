@@ -74,6 +74,7 @@ const ItemDetailsDialog = () => {
     if (isOpen && item && user) {
       const path = '/' + item.namePath.map((item) => item.name).join('/');
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
+      console.log(item.namePath);
 
       const details: ItemDetailsProps = {
         name: item.name,
