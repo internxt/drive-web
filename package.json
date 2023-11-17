@@ -166,7 +166,7 @@
     "webpack-bundle-analyzer": "^4.9.1"
   },
   "engines": {
-    "node": ">=14.17.0 <17"
+    "node": ">=14.17.0 < 21"
   },
   "lint-staged": {
     "*.{js,jsx,tsx,ts}": [
