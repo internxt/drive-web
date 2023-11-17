@@ -40,7 +40,7 @@ import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
