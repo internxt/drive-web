@@ -21,14 +21,9 @@ type ItemDetailsProps = {
   uploaded: string;
   modified: string;
   shared: string;
-} & (
-  | { isFolder: true }
-  | {
-      isFolder: false;
-      type: string;
-      size: string;
-    }
-);
+  type?: string;
+  size?: string;
+};
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -46,33 +41,49 @@ const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   );
 };
 
+const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: (key: string) => string }) => {
+  return (
+    <>
+      {Object.entries(item).map(([key, value]) => {
+        if (!value) return;
+        return (
+          <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 truncate">
+            <p className="text-sm font-medium text-gray-50">
+              {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
+            </p>
+            <p className="truncate text-base font-medium text-gray-100">{value}</p>
+          </div>
+        );
+      })}
+    </>
+  );
+};
+
 const ItemDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
-  const namePath = useAppSelector((state: RootState) => state.storage.namePath);
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const { onNameClicked } = useDriveItemActions(item as DriveItemData);
-  const path = '/' + namePath.map((item) => item.name).join('/');
 
   useEffect(() => {
     if (isOpen && item && user) {
-      const shares = item.sharings?.length ? translate('actions.yes') : translate('actions.no');
+      const path = '/' + item.namePath.map((item) => item.name).join('/');
+      const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
 
       const details: ItemDetailsProps = {
         name: item.name,
-        shared: shares,
-        size: bytesToString(item.size),
-        type: item.type,
+        shared: isShared,
+        size: item.isFolder ? undefined : bytesToString(item.size),
+        type: item.isFolder ? undefined : item.type,
         uploaded: formateDate(item.createdAt),
         modified: formateDate(item.updatedAt),
-        uploadedBy: user.email,
+        uploadedBy: item.userEmail ?? user.email,
         location: path,
-        isFolder: item.isFolder,
       };
 
       setItemProps(details);
@@ -91,7 +102,7 @@ const ItemDetailsDialog = () => {
     onClose();
     if (!item?.isFolder) {
       dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item));
+      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
     } else {
       onNameClicked(event);
     }
@@ -120,20 +131,7 @@ const ItemDetailsDialog = () => {
         </div>
         <div className="flex w-full border border-gray-5" />
         <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 truncate pb-10">
-          {itemProps &&
-            Object.keys(itemProps)
-              .filter((key) => key !== 'isFolder' && (itemProps.isFolder ? key !== 'type' && key !== 'size' : true))
-              .map((key) => (
-                <div
-                  key={key}
-                  className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 truncate"
-                >
-                  <p className="text-sm font-medium text-gray-50">
-                    {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
-                  </p>
-                  <p className="truncate text-base font-medium text-gray-100">{itemProps[key]}</p>
-                </div>
-              ))}
+          {itemProps && <ItemsDetails item={itemProps} translate={translate} />}
         </div>
       </div>
     </Modal>

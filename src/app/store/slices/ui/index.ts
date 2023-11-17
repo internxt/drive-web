@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PreviewFileItem } from '../../../share/types';
-import { DriveItemData, FileInfoMenuItem } from '../../../drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../share/types';
+import { DriveItemData, FileInfoMenuItem, FolderPath } from '../../../drive/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -29,7 +29,7 @@ interface UISliceState {
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
-  itemDetails: DriveItemData | null;
+  itemDetails: (DriveItemData & { isShared: boolean; namePath: FolderPath[]; userEmail?: string }) | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;

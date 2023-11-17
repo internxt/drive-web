@@ -228,7 +228,7 @@ const contextMenuDriveItemShared = ({
   moveToTrash,
 }: {
   openPreview: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  getDetails: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  getDetails: (item: DriveItemData) => void;
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
@@ -260,7 +260,7 @@ const contextMenuDriveFolderShared = ({
 }: {
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  getDetails: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
+  getDetails: (item: DriveItemData) => void;
   deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   renameItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;

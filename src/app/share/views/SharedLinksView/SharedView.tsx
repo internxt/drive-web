@@ -509,7 +509,13 @@ export default function SharedView(): JSX.Element {
 
   const getDetails = useCallback(
     (item) => {
-      dispatch(uiActions.setItemDetailsItem(item as DriveItemData));
+      const itemDetails = {
+        ...item,
+        isShared: true,
+        userEmail: item.user?.email,
+        namePath: sharedNamePath,
+      };
+      dispatch(uiActions.setItemDetailsItem(itemDetails));
       dispatch(uiActions.setIsItemDetailsDialogOpen(true));
     },
     [dispatch, uiActions],

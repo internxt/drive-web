@@ -7,7 +7,7 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions } from '../../../../store/slices/storage';
-import { DriveItemData } from '../../../types';
+import { DriveItemData, FolderPath } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import List from '../../../../shared/components/List';
@@ -34,6 +34,7 @@ interface DriveExplorerListProps {
   isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
+  namePath: FolderPath[];
   order: OrderSettings;
   disableKeyboardShortcuts: boolean;
   dispatch: AppDispatch;
@@ -203,8 +204,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   );
 
   const getDetails = useCallback(
-    (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setItemDetailsItem(item as DriveItemData));
+    (item: DriveItemData) => {
+      const itemDetails = {
+        ...item,
+        isShared: (item.sharings && item.sharings.length > 0) ?? false,
+        namePath: props.namePath,
+      };
+      dispatch(uiActions.setItemDetailsItem(itemDetails));
       dispatch(uiActions.setIsItemDetailsDialogOpen(true));
     },
     [dispatch, uiActions],
@@ -447,6 +453,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  namePath: state.storage.namePath,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||
