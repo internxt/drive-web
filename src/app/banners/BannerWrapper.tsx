@@ -5,7 +5,10 @@ import { PlanState } from 'app/store/slices/plan';
 import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import CyberAwarenessBanner from './CyberAwarenessBanner';
+import BlackFridayBanner from './BlackFridayBanner';
+import { getCookie, setCookie } from 'app/analytics/utils';
+
+const SHOW_BANNER_COOKIE_NAME = 'showBanner';
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -13,11 +16,11 @@ const BannerWrapper = (): JSX.Element => {
   const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !localStorageService.get(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER);
+  const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
 
   const onCloseBanner = () => {
+    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', 31);
     setShowBanner(false);
-    localStorage.setItem(STORAGE_KEYS.SHOW_CYBER_AWARENESS_BANNER, 'false');
   };
 
   function handleBannerDisplay() {
@@ -30,7 +33,7 @@ const BannerWrapper = (): JSX.Element => {
     handleBannerDisplay();
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
-  return <CyberAwarenessBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <BlackFridayBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
