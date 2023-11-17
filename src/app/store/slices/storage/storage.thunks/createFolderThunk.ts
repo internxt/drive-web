@@ -72,9 +72,6 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
             items: createdFolderNormalized as DriveItemData,
           }),
         );
-        await databaseService.put(DatabaseCollection.MoveDialogLevels, parentFolderId, [
-          createdFolderNormalized as DriveItemData,
-        ]);
       }
 
       return createdFolderNormalized;
