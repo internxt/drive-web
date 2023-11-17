@@ -40,6 +40,7 @@ import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
+import ItemDetailsDialog from 'app/drive/components/ItemDetailsDialog/ItemDetailsDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -1022,6 +1023,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
+      <ItemDetailsDialog />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
