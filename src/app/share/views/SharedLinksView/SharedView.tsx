@@ -513,7 +513,6 @@ export default function SharedView(): JSX.Element {
       ...shareItem,
       isShared: true,
       userEmail: shareItem.user?.email,
-      namePath: sharedNamePath,
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));

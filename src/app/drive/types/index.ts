@@ -43,6 +43,7 @@ export interface DriveFileData {
   fileId: string;
   folderId: number;
   folder_id: number;
+  folderUuid?: string;
   id: number;
   name: string;
   plain_name: string | null;
@@ -158,6 +159,5 @@ export enum FreeStoragePlan {
 
 export type DriveItemDetails = DriveItemData & {
   isShared: boolean;
-  namePath: FolderPath[] | SharedNamePath[];
   userEmail?: string;
 };

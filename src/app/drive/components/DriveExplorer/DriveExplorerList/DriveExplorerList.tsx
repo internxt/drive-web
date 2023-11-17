@@ -34,7 +34,6 @@ interface DriveExplorerListProps {
   isLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
-  namePath: FolderPath[];
   order: OrderSettings;
   disableKeyboardShortcuts: boolean;
   dispatch: AppDispatch;
@@ -208,7 +207,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       const itemDetails = {
         ...item,
         isShared: (item.sharings && item.sharings.length > 0) ?? false,
-        namePath: props.namePath,
       };
       dispatch(uiActions.setItemDetailsItem(itemDetails));
       dispatch(uiActions.setIsItemDetailsDialogOpen(true));
@@ -453,7 +451,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
-  namePath: state.storage.namePath,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||

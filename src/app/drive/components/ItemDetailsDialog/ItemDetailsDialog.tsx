@@ -13,6 +13,8 @@ import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { DriveItemData } from '../../../drive/types';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { getItemPlainName } from 'app/crypto/services/utils';
 
 type ItemDetailsProps = {
   name: string;
@@ -72,9 +74,12 @@ const ItemDetailsDialog = () => {
 
   useEffect(() => {
     if (isOpen && item && user) {
-      const path = '/' + item.namePath.map((item) => item.name).join('/');
+      const uuid = item.isFolder ? item.uuid : item.folderUuid;
+      newStorageService.getFolderAncestors(uuid as string).then((res) => {
+        console.log('ancestors', res);
+      });
+
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
-      console.log(item.namePath);
 
       const details: ItemDetailsProps = {
         name: item.name,
@@ -84,7 +89,7 @@ const ItemDetailsDialog = () => {
         uploaded: formateDate(item.createdAt),
         modified: formateDate(item.updatedAt),
         uploadedBy: item.userEmail ?? user.email,
-        location: path,
+        location: 'Drive',
       };
 
       setItemProps(details);
