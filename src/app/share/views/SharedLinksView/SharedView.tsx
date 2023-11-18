@@ -495,24 +495,24 @@ export default function SharedView(): JSX.Element {
         })
         .finally(() => {
           const currentURL = history.location.pathname;
-          const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
-          history.replace(nuevaURL);
+          const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+          history.replace(newURL);
         });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    {
-      dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
-    }
+    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
   const getDetails = (shareItem) => {
+    const isOwner = isItemOwnedByCurrentUser(shareItem.user?.uuid);
     const itemDetails: DriveItemDetails = {
       ...shareItem,
       isShared: true,
       userEmail: shareItem.user?.email,
-      view: shareItem.sharedWithMe ? 'Shared' : 'Drive',
+      view: isOwner ? 'Drive' : 'Shared',
+      onFolderClicked: onNameClicked,
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));

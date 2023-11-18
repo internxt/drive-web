@@ -15,6 +15,7 @@ import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDri
 import { DriveItemData, DriveItemDetails } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
 type ItemDetailsProps = {
   name: string;
@@ -61,47 +62,18 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
   );
 };
 
-async function getDetailsData(
-  item: DriveItemDetails,
-  isShared: string,
-  uploaded: string,
-  modified: string,
-  email: string,
-) {
-  const uuid = item.isFolder ? item.uuid : item.folderUuid;
-
-  try {
-    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
-
-    const getPathName = ancestors
-      .map((ancestor) => (ancestor.plainName === null ? item.view : ancestor.plainName))
-      .reverse();
-
-    if (item.isFolder) {
-      getPathName.pop();
-    }
-
-    const path = '/' + getPathName.join('/');
-
-    const details: ItemDetailsProps = {
-      name: item.name,
-      shared: isShared,
-      size: item.isFolder ? undefined : bytesToString(item.size),
-      type: item.isFolder ? undefined : item.type,
-      uploaded: uploaded,
-      modified: modified,
-      uploadedBy: item.userEmail ?? email,
-      location: path,
-    };
-
-    return details;
-  } catch (err) {
-    const error = errorService.castError(err);
-    errorService.reportError(error);
-  }
-  // Get the folder ancestors and substitute the last item name with the item.view property
-}
-
+/**
+ * Return all the details of the item selected
+ * The data is:
+ * - Name
+ * - Shared
+ * - Size (only for files)
+ * - Type (only for files)
+ * - Uploaded
+ * - Modified
+ * - Uploaded by
+ * - Location
+ *  */
 const ItemDetailsDialog = () => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -112,9 +84,11 @@ const ItemDetailsDialog = () => {
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const { onNameClicked } = useDriveItemActions(item as DriveItemData);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (isOpen && item && user) {
+      setIsLoading(true);
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
       const uploaded = formateDate(item.createdAt);
       const modified = formateDate(item.updatedAt);
@@ -123,7 +97,8 @@ const ItemDetailsDialog = () => {
         .catch((err) => {
           const error = errorService.castError(err);
           errorService.reportError(error);
-        });
+        })
+        .finally(() => setIsLoading(false));
     }
   }, [item, isOpen]);
 
@@ -146,7 +121,46 @@ const ItemDetailsDialog = () => {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item as DriveItemData));
     } else {
-      onNameClicked(event);
+      item.onFolderClicked?.(item) ?? onNameClicked(event);
+    }
+  }
+
+  async function getDetailsData(
+    item: DriveItemDetails,
+    isShared: string,
+    uploaded: string,
+    modified: string,
+    email: string,
+  ) {
+    const uuid = item.isFolder ? item.uuid : item.folderUuid;
+    const rootFolder = item.view === 'Drive' ? item.view : item.view + '/';
+
+    try {
+      const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+
+      const getPathName = ancestors.map((ancestor) => ancestor.plainName).reverse();
+
+      if (item.isFolder) {
+        getPathName.pop();
+      }
+
+      const path = '/' + rootFolder + getPathName.join('/');
+
+      const details: ItemDetailsProps = {
+        name: item.name,
+        shared: isShared,
+        size: item.isFolder ? undefined : bytesToString(item.size),
+        type: item.isFolder ? undefined : item.type,
+        uploaded: uploaded,
+        modified: modified,
+        uploadedBy: item.userEmail ?? email,
+        location: path,
+      };
+
+      return details;
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
     }
   }
 
@@ -155,7 +169,7 @@ const ItemDetailsDialog = () => {
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header title={translate('modals.itemDetailsModal.title')} onClose={onClose} />
       </div>
-      <div className="flex w-full flex-col items-center justify-center space-y-6 px-5">
+      <div className="flex  w-full flex-col items-center justify-center space-y-6 px-5">
         <div className="flex flex-col">
           <div className="flex flex-col items-center justify-center space-y-3 py-5">
             <IconComponent width={60} height={80} />
@@ -167,10 +181,17 @@ const ItemDetailsDialog = () => {
             </Button>
           </div>
         </div>
+
         <div className="flex w-full border border-gray-5" />
-        <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 truncate pb-10">
-          {itemProps && <ItemsDetails item={itemProps} translate={translate} />}
-        </div>
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center pb-10">
+            <Spinner size={24} />
+          </div>
+        ) : (
+          <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 truncate pb-10">
+            {itemProps && <ItemsDetails item={itemProps} translate={translate} />}
+          </div>
+        )}
       </div>
     </Modal>
   );

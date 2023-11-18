@@ -8,6 +8,9 @@ export async function searchItemsByName(name: string): Promise<DriveFileData[]> 
   return result;
 }
 
+/**
+ * Return all the parent folders of the folder with the given uuid
+ */
 export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderAncestors(uuid);
