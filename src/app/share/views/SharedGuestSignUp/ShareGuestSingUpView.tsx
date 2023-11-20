@@ -60,7 +60,7 @@ function ShareGuestSingUpView(): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { doRegisterPreCreatedUser } = useSignUp('activate', undefined);
+  const { doRegisterPreCreatedUser } = useSignUp('activate');
   const [passwordState, setPasswordState] = useState<{
     tag: 'error' | 'warning' | 'success';
     label: string;
@@ -164,9 +164,9 @@ function ShareGuestSingUpView(): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey
-        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
-        : undefined;
+      const decryptedPrivateKey = decryptPrivateKey(xUser.privateKey, password);
+
+      const privateKey = xUser.privateKey ? Buffer.from(decryptedPrivateKey).toString('base64') : undefined;
 
       const user = {
         ...xUser,
