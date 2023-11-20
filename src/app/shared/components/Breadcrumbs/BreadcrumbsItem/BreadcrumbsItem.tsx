@@ -7,9 +7,7 @@ import {
   Trash,
   PencilSimple,
   Link,
-  LinkBreak,
   Copy,
-  Gear,
   ArrowsOutCardinal,
   DownloadSimple,
   Users,
@@ -295,21 +293,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       )}
                     </Menu.Item>
                   ) : (
-                    <>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onCopyLinkButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <Copy size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </>
+                    <Menu.Item>
+                      {({ active }) => (
+                        <div
+                          onClick={onCopyLinkButtonClicked}
+                          className={`${
+                            active && 'bg-gray-5'
+                          } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                        >
+                          <Copy size={20} />
+                          <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
+                        </div>
+                      )}
+                    </Menu.Item>
                   )}
                   <Menu.Item>
                     {({ active }) => (
