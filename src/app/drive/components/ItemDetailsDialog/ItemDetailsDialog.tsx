@@ -12,22 +12,11 @@ import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { DriveItemData, DriveItemDetails } from '../../../drive/types';
+import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
-import Skeleton from 'react-loading-skeleton';
-
-type ItemDetailsProps = {
-  name: string;
-  uploadedBy: string;
-  location: string;
-  uploaded: string;
-  modified: string;
-  shared: string;
-  type?: string;
-  size?: string;
-};
+import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -45,57 +34,19 @@ const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   );
 };
 
-const ItemsDetails = ({
-  item,
-  translate,
-}: {
-  item: ItemDetailsProps | undefined;
-  translate: (key: string) => string;
-}) => {
+const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: (key: string) => string }) => {
   return (
     <>
-      {item ? (
-        <>
-          {Object.entries(item).map(([key, value]) => {
-            if (!value) return;
-            return (
-              <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5">
-                <p className="text-sm font-medium text-gray-50">
-                  {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
-                </p>
-                <p className="w-full text-base font-medium text-gray-100 line-clamp-2">{value}</p>
-              </div>
-            );
-          })}
-        </>
-      ) : (
-        <LoadingSkeleton translate={translate} />
-      )}
-    </>
-  );
-};
-
-const LoadingSkeleton = ({ translate }: { translate: (key: string) => string }) => {
-  const itemData: ItemDetailsProps = {
-    name: '',
-    shared: '',
-    size: '',
-    type: '',
-    uploaded: '',
-    modified: '',
-    uploadedBy: '',
-    location: '',
-  };
-
-  return (
-    <>
-      {Object.keys(itemData).map((key) => {
+      {Object.entries(item).map(([key, value]) => {
+        if (!value) return;
         return (
           <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5">
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <Skeleton width={200} height={20} />
+            <p title={value} className="w-full text-base font-medium text-gray-100 line-clamp-2">
+              {value}
+            </p>
           </div>
         );
       })}
@@ -121,7 +72,7 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
   const { translate } = useTranslationContext();
-  const [itemProps, setItemProps] = useState<ItemDetailsProps | undefined>(undefined);
+  const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const [isLoading, setIsLoading] = useState(false);
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
@@ -136,12 +87,14 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
       const uploaded = formateDate(item.createdAt);
       const modified = formateDate(item.updatedAt);
       getDetailsData(item, isShared, uploaded, modified, user.email)
-        .then((details) => setItemProps(details))
+        .then((details) => {
+          setItemProps(details);
+          setIsLoading(false);
+        })
         .catch((err) => {
           const error = errorService.castError(err);
           errorService.reportError(error);
-        })
-        .finally(() => setIsLoading(false));
+        });
     }
   }, [item, isOpen]);
 
@@ -219,7 +172,9 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
       <div className="flex w-full flex-col items-center justify-center space-y-6 px-5">
         <div className="flex max-w-sm flex-col items-center justify-center space-y-3 py-5">
           <IconComponent width={60} height={80} />
-          <p className="text-center text-base font-semibold text-gray-100 line-clamp-2">{itemName}</p>
+          <p title={itemName} className="text-center text-base font-semibold text-gray-100 line-clamp-2">
+            {itemName}
+          </p>
           <Button onClick={handleButtonItemClick} variant="secondary">
             {item?.isFolder
               ? translate('modals.itemDetailsModal.folderCta')
@@ -230,9 +185,9 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
 
         <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 pb-10">
           {isLoading ? (
-            <LoadingSkeleton translate={translate} />
+            <ItemDetailsSkeleton translate={translate} isFolder={isFolder} />
           ) : (
-            <ItemsDetails item={itemProps} translate={translate} />
+            <>{itemProps && <ItemsDetails item={itemProps} translate={translate} />}</>
           )}
         </div>
       </div>

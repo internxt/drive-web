@@ -161,3 +161,14 @@ export type DriveItemDetails = DriveItemData & {
   userEmail?: string;
   view: 'Drive' | 'Shared';
 };
+
+export type ItemDetailsProps = {
+  name: string;
+  uploadedBy: string;
+  location: string;
+  uploaded: string;
+  modified: string;
+  shared: string;
+  type?: string;
+  size?: string;
+};

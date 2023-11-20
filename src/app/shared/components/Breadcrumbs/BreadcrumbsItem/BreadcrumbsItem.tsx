@@ -199,17 +199,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(sharedThunks.getSharedLinkThunk({ item }));
   };
 
-  const onDeleteLinkButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string, item }));
-  };
-
-  const onLinkSettingsButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
-  };
-
   const onMoveButtonClicked = () => {
     dispatch(storageActions.setItemsToMove(currentFolder));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
@@ -317,32 +306,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                           >
                             <Copy size={20} />
                             <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onLinkSettingsButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <Gear size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onDeleteLinkButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <LinkBreak size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
                           </div>
                         )}
                       </Menu.Item>
