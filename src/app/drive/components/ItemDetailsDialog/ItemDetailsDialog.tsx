@@ -15,8 +15,8 @@ import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDri
 import { DriveItemData, DriveItemDetails } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import { getItemPlainName } from 'app/crypto/services/utils';
+import Skeleton from 'react-loading-skeleton';
 
 type ItemDetailsProps = {
   name: string;
@@ -45,17 +45,57 @@ const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   );
 };
 
-const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: (key: string) => string }) => {
+const ItemsDetails = ({
+  item,
+  translate,
+}: {
+  item: ItemDetailsProps | undefined;
+  translate: (key: string) => string;
+}) => {
   return (
     <>
-      {Object.entries(item).map(([key, value]) => {
-        if (!value) return;
+      {item ? (
+        <>
+          {Object.entries(item).map(([key, value]) => {
+            if (!value) return;
+            return (
+              <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5">
+                <p className="text-sm font-medium text-gray-50">
+                  {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
+                </p>
+                <p className="w-full text-base font-medium text-gray-100 line-clamp-2">{value}</p>
+              </div>
+            );
+          })}
+        </>
+      ) : (
+        <LoadingSkeleton translate={translate} />
+      )}
+    </>
+  );
+};
+
+const LoadingSkeleton = ({ translate }: { translate: (key: string) => string }) => {
+  const itemData: ItemDetailsProps = {
+    name: '',
+    shared: '',
+    size: '',
+    type: '',
+    uploaded: '',
+    modified: '',
+    uploadedBy: '',
+    location: '',
+  };
+
+  return (
+    <>
+      {Object.keys(itemData).map((key) => {
         return (
           <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5">
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p className="w-full text-base font-medium text-gray-100 line-clamp-2">{value}</p>
+            <Skeleton width={200} height={20} />
           </div>
         );
       })}
@@ -75,17 +115,19 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Uploaded by
  * - Location
  *  */
+
 const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: (item: any) => void }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
   const { translate } = useTranslationContext();
-  const [itemProps, setItemProps] = useState<ItemDetailsProps>();
+  const [itemProps, setItemProps] = useState<ItemDetailsProps | undefined>(undefined);
+  const [isLoading, setIsLoading] = useState(false);
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
   const { onNameClicked } = useDriveItemActions(item as DriveItemData);
-  const [isLoading, setIsLoading] = useState(false);
+  const isFolder = item?.isFolder;
 
   useEffect(() => {
     if (isOpen && item && user) {
@@ -118,11 +160,11 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     event.preventDefault();
     onClose();
-    if (!item?.isFolder) {
+    if (isFolder) {
+      onSharedFolderClicked?.(item) ?? onNameClicked(event);
+    } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-    } else {
-      onSharedFolderClicked?.(item) ?? onNameClicked(event);
     }
   }
 
@@ -185,15 +227,14 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
           </Button>
         </div>
         <div className="flex w-full border border-gray-5" />
-        {isLoading ? (
-          <div className="flex flex-col items-center justify-center pb-10">
-            <Spinner size={24} />
-          </div>
-        ) : (
-          <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 pb-10">
-            {itemProps && <ItemsDetails item={itemProps} translate={translate} />}
-          </div>
-        )}
+
+        <div className="grid-flow-cols grid w-full grid-cols-2 items-center justify-between gap-4 pb-10">
+          {isLoading ? (
+            <LoadingSkeleton translate={translate} />
+          ) : (
+            <ItemsDetails item={itemProps} translate={translate} />
+          )}
+        </div>
       </div>
     </Modal>
   );
