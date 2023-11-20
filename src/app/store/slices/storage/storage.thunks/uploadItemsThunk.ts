@@ -539,7 +539,6 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.fulfilled, () => undefined)
     .addCase(uploadItemsThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options || {});
-
       if (requestOptions?.showErrors) {
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message || '' }),

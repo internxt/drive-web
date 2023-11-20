@@ -2,7 +2,6 @@ import { Component, createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 
 import configService from './app/core/services/config.service';
@@ -35,6 +34,7 @@ import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
+import { manager } from './app/utils/dnd-utils';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -152,7 +152,7 @@ class App extends Component<AppProps> {
 
     if (!isAuthenticated || isInitialized) {
       template = (
-        <DndProvider backend={HTML5Backend}>
+        <DndProvider manager={manager}>
           <Router history={navigationService.history}>
             {isDev && configService.getAppConfig().debug.enabled && (
               <span

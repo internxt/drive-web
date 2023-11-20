@@ -8,7 +8,7 @@ import tasksService from '../../../../tasks/services/tasks.service';
 import { DownloadPhotosTask, TaskStatus, TaskType } from '../../../../tasks/types';
 import { SerializablePhoto } from '..';
 import { getPhotoBlob, getPhotoCachedOrStream } from 'app/network/download';
-import { FlatFolderZip } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zipFolder.service';
 import { t } from 'i18next';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 
