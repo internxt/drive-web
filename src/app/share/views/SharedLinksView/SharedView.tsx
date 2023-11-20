@@ -512,7 +512,6 @@ export default function SharedView(): JSX.Element {
       isShared: true,
       userEmail: shareItem.user?.email,
       view: isOwner ? 'Drive' : 'Shared',
-      onFolderClicked: onNameClicked,
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
@@ -1026,7 +1025,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
-      <ItemDetailsDialog />
+      <ItemDetailsDialog onSharedFolderClicked={onItemDoubleClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog

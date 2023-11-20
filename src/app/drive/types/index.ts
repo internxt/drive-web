@@ -160,5 +160,4 @@ export type DriveItemDetails = DriveItemData & {
   isShared: boolean;
   userEmail?: string;
   view: 'Drive' | 'Shared';
-  onFolderClicked?: (item: any) => void;
 };

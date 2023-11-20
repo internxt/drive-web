@@ -78,7 +78,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Uploaded by
  * - Location
  *  */
-const ItemDetailsDialog = () => {
+const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: (item: any) => void }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -125,7 +125,7 @@ const ItemDetailsDialog = () => {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item as DriveItemData));
     } else {
-      item.onFolderClicked?.(item) ?? onNameClicked(event);
+      onSharedFolderClicked?.(item) ?? onNameClicked(event);
     }
   }
 
