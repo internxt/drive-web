@@ -36,12 +36,12 @@ import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { validateMnemonic, generateMnemonic } from 'bip39';
 
-export async function logOut(): Promise<void> {
+export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login);
+  navigationService.push(AppView.Login, loginParams);
 }
 
 export function cancelAccount(): Promise<void> {

@@ -7,9 +7,14 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import bigLogo from 'assets/icons/big-logo.svg';
 import './RequestAccess.scss';
+import { logOut } from '../../../auth/services/auth.service';
 
 function RequestAccess(): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const urlParams = new URLSearchParams(window.location.search);
+  const isRequestingAccess = urlParams.get('requestAccess');
+  const folderuuid = urlParams.get('folderuuid');
+
   const { translate } = useTranslationContext();
 
   const [messageText, setMessageText] = useState<string>('');
@@ -31,7 +36,8 @@ function RequestAccess(): JSX.Element {
   };
 
   const onChangeAccount = (): void => {
-    // TODO add logic to change account and redirect to link
+    const queryParams: Record<string, string> = folderuuid ? { folderuuid } : {};
+    logOut(queryParams);
   };
 
   return (
@@ -51,24 +57,28 @@ function RequestAccess(): JSX.Element {
               <p className="font-regular mt-1 mb-3 text-center text-base text-gray-60">
                 {translate('modals.shareModal.requestAccess.description')}
               </p>
-              <textarea
-                value={messageText}
-                placeholder={translate('modals.shareModal.requestAccess.textarea')}
-                rows={4}
-                className="outline-none mt-5 w-full max-w-lg resize-none rounded-6px border border-gray-40 bg-gray-1 p-3 pl-4 ring-primary ring-opacity-10 focus:border-primary focus:ring-3"
-                onChange={(e) => setMessageText(String(e.target.value))}
-                maxLength={1000}
-              />
-              <span
-                className={`font-regular mt-2 flex w-full justify-end text-xs text-gray-50 ${
-                  messageTextLimit && 'text-red-50'
-                }`}
-              >
-                {messageText.length === 0 ? 0 : messageText.length}/1000
-              </span>
-              <Button variant="primary" className="mt-2 w-full cursor-pointer" onClick={onRequestAcces}>
-                {translate('modals.shareModal.requestAccess.requestButton')}
-              </Button>
+              {isRequestingAccess && (
+                <>
+                  <textarea
+                    value={messageText}
+                    placeholder={translate('modals.shareModal.requestAccess.textarea')}
+                    rows={4}
+                    className="outline-none mt-5 w-full max-w-lg resize-none rounded-6px border border-gray-40 bg-gray-1 p-3 pl-4 ring-primary ring-opacity-10 focus:border-primary focus:ring-3"
+                    onChange={(e) => setMessageText(String(e.target.value))}
+                    maxLength={1000}
+                  />
+                  <span
+                    className={`font-regular mt-2 flex w-full justify-end text-xs text-gray-50 ${
+                      messageTextLimit && 'text-red-50'
+                    }`}
+                  >
+                    {messageText.length === 0 ? 0 : messageText.length}/1000
+                  </span>
+                  <Button variant="primary" className="mt-2 w-full cursor-pointer" onClick={onRequestAcces}>
+                    {translate('modals.shareModal.requestAccess.requestButton')}
+                  </Button>
+                </>
+              )}
             </div>
 
             <div className="request-access-user-container mt-4 w-full transform rounded-2xl bg-white p-5 text-gray-100 transition-all duration-100 ease-out sm:shadow-subtle-hard">
