@@ -351,6 +351,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                   <Menu.Item>
                     {({ active }) => (
                       <div
+                        onKeyDown={() => {
+                          // No op
+                        }}
                         onClick={onDetailsItemButtonClicked}
                         className={`${
                           active && 'bg-gray-5'
