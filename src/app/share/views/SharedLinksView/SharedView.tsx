@@ -41,6 +41,7 @@ import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import { connect } from 'react-redux';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -57,15 +58,27 @@ const removeDuplicates = (list: AdvancedSharedItem[]) => {
   });
 };
 
+interface SharedViewProps {
+  isShareDialogOpen: boolean;
+  isShowInvitationsOpen: boolean;
+  sharedNamePath: SharedNamePath[];
+  currentShareId: string | null;
+  currentUserRole: string | null;
+  disableKeyboardShortcuts: boolean;
+}
+
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
-export default function SharedView(): JSX.Element {
+function SharedView(props: SharedViewProps): JSX.Element {
+  const {
+    isShareDialogOpen,
+    isShowInvitationsOpen,
+    sharedNamePath,
+    currentShareId,
+    currentUserRole,
+    disableKeyboardShortcuts,
+  } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
-  const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
-  const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
-  const currentShareId = useAppSelector((state) => state.shared.currentShareId);
-  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
@@ -887,6 +900,7 @@ export default function SharedView(): JSX.Element {
           ]}
           items={shareItems}
           isLoading={isLoading}
+          disableKeyboardShortcuts={disableKeyboardShortcuts}
           onClick={(item) => {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
@@ -1054,3 +1068,21 @@ export default function SharedView(): JSX.Element {
     </div>
   );
 }
+
+export default connect((state: RootState) => ({
+  isShareDialogOpen: state.ui.isShareDialogOpen,
+  isShowInvitationsOpen: state.ui.isInvitationsDialogOpen,
+  sharedNamePath: state.storage.sharedNamePath,
+  currentShareId: state.shared.currentShareId,
+  currentUserRole: state.shared.currentSharingRole,
+  disableKeyboardShortcuts:
+    state.ui.isShareDialogOpen ||
+    state.ui.isSurveyDialogOpen ||
+    state.ui.isEditFolderNameDialog ||
+    state.ui.isFileViewerOpen ||
+    state.ui.isMoveItemsDialogOpen ||
+    state.ui.isCreateFolderDialogOpen ||
+    state.ui.isNameCollisionDialogOpen ||
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isItemDetailsDialogOpen,
+}))(SharedView);

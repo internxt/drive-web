@@ -460,5 +460,6 @@ export default connect((state: RootState) => ({
     state.ui.isMoveItemsDialogOpen ||
     state.ui.isCreateFolderDialogOpen ||
     state.ui.isNameCollisionDialogOpen ||
-    state.ui.isReachedPlanLimitDialogOpen,
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isItemDetailsDialogOpen,
 }))(DriveExplorerList);
