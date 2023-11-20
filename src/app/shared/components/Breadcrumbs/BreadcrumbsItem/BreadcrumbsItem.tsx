@@ -13,6 +13,7 @@ import {
   ArrowsOutCardinal,
   DownloadSimple,
   Users,
+  Info,
 } from '@phosphor-icons/react';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
@@ -20,7 +21,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
-import { DriveItemData } from 'app/drive/types';
+import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import iconService from 'app/drive/services/icon.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
@@ -162,7 +163,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const currentFolder = findCurrentFolder(currentBreadcrumb);
-  const isBreadcrumbItemShared = currentFolder[0]?.shares && currentFolder[0]?.shares?.length !== 0;
+  const isBreadcrumbItemShared = currentFolder[0]?.sharings && currentFolder[0]?.sharings?.length !== 0;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -176,6 +177,16 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   const onDownloadButtonClicked = () => {
     dispatch(storageThunks.downloadItemsThunk(currentFolder));
+  };
+
+  const onDetailsItemButtonClicked = async () => {
+    const itemDetails: DriveItemDetails = {
+      ...currentFolder[0],
+      isShared: true,
+      view: 'Drive',
+    };
+    dispatch(uiActions.setItemDetailsItem(itemDetails));
+    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
   const onCreateLinkButtonClicked = () => {
@@ -337,6 +348,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       </Menu.Item>
                     </>
                   )}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onDetailsItemButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Info size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.details')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
                       <div

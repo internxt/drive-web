@@ -68,7 +68,7 @@ interface SharedViewProps {
 }
 
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
-function SharedView(props: SharedViewProps): JSX.Element {
+function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
   const {
     isShareDialogOpen,
     isShowInvitationsOpen,
