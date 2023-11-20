@@ -17,6 +17,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { getItemPlainName } from 'app/crypto/services/utils';
+import { aes } from '@internxt/lib';
 
 type ItemDetailsProps = {
   name: string;
@@ -141,6 +142,10 @@ const ItemDetailsDialog = () => {
 
     try {
       const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+
+      ancestors.map((ancestor) => {
+        console.log('PLAIN NAME:', getItemPlainName(ancestor as unknown as DriveItemData));
+      });
 
       const getPathName = ancestors.map((ancestor) => ancestor.plainName).reverse();
 

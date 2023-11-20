@@ -80,6 +80,7 @@ const getItemPlainName = (item: DriveItemData) => {
     }
   } catch (err) {
     //Decrypt has failed because item.name is not encrypted
+    console.log('decrypting folder name failed', item);
     return item.name;
   }
 };
