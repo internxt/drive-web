@@ -73,14 +73,13 @@ const getItemPlainName = (item: DriveItemData) => {
     return item.plainName;
   }
   try {
-    if (item.isFolder) {
+    if (item.isFolder || item.type === 'folder') {
       return aes.decrypt(item.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${item.parentId}`);
     } else {
       return aes.decrypt(item.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${item.folderId}`);
     }
   } catch (err) {
     //Decrypt has failed because item.name is not encrypted
-    console.log('decrypting folder name failed', item);
     return item.name;
   }
 };

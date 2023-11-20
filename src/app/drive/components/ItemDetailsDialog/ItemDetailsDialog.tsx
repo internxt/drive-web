@@ -17,7 +17,6 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { getItemPlainName } from 'app/crypto/services/utils';
-import { aes } from '@internxt/lib';
 
 type ItemDetailsProps = {
   name: string;
@@ -56,7 +55,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             key={key}
             className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 overflow-hidden"
           >
-            <p className="marquee-content text-sm font-medium text-gray-50">
+            <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
             <p className="w-full truncate text-base font-medium text-gray-100">{value}</p>
@@ -138,22 +137,22 @@ const ItemDetailsDialog = () => {
     email: string,
   ) {
     const uuid = item.isFolder ? item.uuid : item.folderUuid;
-    const rootFolder = item.view === 'Drive' ? item.view : item.view + '/';
+    const rootPathName = item.view;
 
     try {
       const ancestors = await newStorageService.getFolderAncestors(uuid as string);
 
-      ancestors.map((ancestor) => {
-        console.log('PLAIN NAME:', getItemPlainName(ancestor as unknown as DriveItemData));
-      });
-
-      const getPathName = ancestors.map((ancestor) => ancestor.plainName).reverse();
+      const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
 
       if (item.isFolder) {
         getPathName.pop();
       }
 
-      const path = '/' + rootFolder + getPathName.join('/');
+      if (item.view === 'Drive') {
+        getPathName.shift();
+      }
+
+      const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
 
       const details: ItemDetailsProps = {
         name: item.name,
