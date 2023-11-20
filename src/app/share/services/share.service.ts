@@ -771,6 +771,12 @@ export function createPublicSharingItem(publicSharingPayload: CreateSharingPaylo
     throw errorService.castError(error);
   });
 }
+export function validateSharingInvitation(sharingId: string): Promise<{ uuid: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.validateInviteExpiration(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 
 export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
@@ -811,6 +817,7 @@ const shareService = {
   getPublicSharingMeta,
   getPublicSharedFolderContent,
   getPublicShareLink,
+  validateSharingInvitation,
 };
 
 export default shareService;
