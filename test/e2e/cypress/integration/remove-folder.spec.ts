@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 import { MENU_ITEM_SELECTOR } from '../constans';
 
 describe('Remove Folder', () => {

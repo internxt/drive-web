@@ -3,6 +3,19 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
+  "blackFridayBanner": {
+    "header": "Save big on privacy.",
+    "title": "Internxt's Black Friday Deal",
+    "cta": "Get the deal!",
+    "features": {
+      "discount": "Get 91% discount on all annual plans",
+      "safeCloud": "Safe and secure cloud storage",
+      "openSource": "Open source and transparent",
+      "endToEnd": "End-to-end encrypted transfers",
+      "unauthorized": "No unauthorized access",
+      "offerEnds": "Offer ends November 30th"
+    }
+  },
   "valentinesBanner": {
     "title": "Love without limits!",
     "subtitle": "Get 90% off our 2TB plan with code VDAY",

@@ -132,17 +132,13 @@ export default function LogIn(): JSX.Element {
       const isTfaEnabled = await is2FANeeded(email);
 
       if (!isTfaEnabled || showTwoFactor) {
-        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode);
+        const loginType = isUniversalLinkMode ? 'desktop' : 'web';
+        const { token, user, mnemonic } = await doLogin(email, password, twoFactorCode, loginType);
         dispatch(userActions.setUser(user));
 
         window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
         window.rudderanalytics.track('User Signin', { email: user.email });
-
-        // analyticsService.identify(user, user.email);
-        // analyticsService.trackSignIn({
-        //   email: user.email,
-        //   userId: user.uuid,
-        // });
+        window.gtag('event', 'User Signin', { method: 'email' });
 
         try {
           dispatch(productsThunks.initializeThunk());

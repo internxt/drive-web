@@ -4,9 +4,6 @@ import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
   SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
-  SHOW_LIFETIME_BANNER: 'showLifetimeOffer',
-  SHOW_CROWDCUBE_BANNER: 'showCrowdcubeBanner',
-  SHOW_CYBER_AWARENESS_BANNER: 'showCyberAwarenessBanner',
 };
 
 function get(key: string): string | null {
@@ -58,8 +55,6 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
-  localStorage.removeItem(STORAGE_KEYS.SHOW_LIFETIME_BANNER);
-  localStorage.removeItem(STORAGE_KEYS.SHOW_CROWDCUBE_BANNER);
 }
 
 const localStorageService = {

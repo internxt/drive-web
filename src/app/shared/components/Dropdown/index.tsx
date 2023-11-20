@@ -9,7 +9,7 @@ export default function Dropdown({
   classMenuItems,
   openDirection,
 }: {
-  children: ReactNode;
+  children: ReactNode | ((obj: any) => JSX.Element);
   options?: { text: string; onClick: () => void }[];
   classButton?: string;
   menuItems?: ReactNode[];

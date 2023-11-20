@@ -81,6 +81,7 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import shareService from '../../../share/services/share.service';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
+import BannerWrapper from 'app/banners/BannerWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -685,6 +686,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           }}
         />
       )}
+      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full flex-grow">
         <div className="flex w-1 flex-grow flex-col">

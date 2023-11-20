@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import streamSaver from 'streamsaver';
 import { match } from 'react-router';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
@@ -17,9 +16,10 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import network from 'app/network';
 import downloadService from '../../../drive/services/download.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
-import { FlatFolderZip, binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zipFolder.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import dateService from 'app/core/services/date.service';
+
 interface SharePhotosProps {
   match: match<{
     token: string;
