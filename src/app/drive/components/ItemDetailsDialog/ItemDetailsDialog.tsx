@@ -16,6 +16,7 @@ import { DriveItemData, DriveItemDetails } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import { getItemPlainName } from 'app/crypto/services/utils';
 
 type ItemDetailsProps = {
   name: string;
@@ -50,11 +51,14 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
       {Object.entries(item).map(([key, value]) => {
         if (!value) return;
         return (
-          <div key={key} className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 truncate">
-            <p className="text-sm font-medium text-gray-50">
+          <div
+            key={key}
+            className="flex w-full max-w-xxxs flex-col items-start justify-center space-y-0.5 overflow-hidden"
+          >
+            <p className="marquee-content text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p className="truncate text-base font-medium text-gray-100">{value}</p>
+            <p className="w-full truncate text-base font-medium text-gray-100">{value}</p>
           </div>
         );
       })}
@@ -169,17 +173,15 @@ const ItemDetailsDialog = () => {
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header title={translate('modals.itemDetailsModal.title')} onClose={onClose} />
       </div>
-      <div className="flex  w-full flex-col items-center justify-center space-y-6 px-5">
-        <div className="flex flex-col">
-          <div className="flex flex-col items-center justify-center space-y-3 py-5">
-            <IconComponent width={60} height={80} />
-            <p className="truncate text-base font-semibold text-gray-100">{itemName}</p>
-            <Button onClick={handleButtonItemClick} variant="secondary">
-              {item?.isFolder
-                ? translate('modals.itemDetailsModal.folderCta')
-                : translate('modals.itemDetailsModal.fileCta')}
-            </Button>
-          </div>
+      <div className="flex w-full flex-col items-center justify-center space-y-6 overflow-hidden px-5">
+        <div className="flex w-max flex-col items-center justify-center space-y-3 truncate py-5">
+          <IconComponent width={60} height={80} />
+          <p className="max-w-sm truncate text-base font-semibold text-gray-100">{itemName}</p>
+          <Button onClick={handleButtonItemClick} variant="secondary">
+            {item?.isFolder
+              ? translate('modals.itemDetailsModal.folderCta')
+              : translate('modals.itemDetailsModal.fileCta')}
+          </Button>
         </div>
 
         <div className="flex w-full border border-gray-5" />
