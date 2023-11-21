@@ -2,6 +2,7 @@ import { SVGProps } from 'react';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AdvancedSharedItem } from 'app/share/types';
 
 export interface DriveFolderData {
   id: number;
@@ -156,7 +157,7 @@ export enum FreeStoragePlan {
   storageLimit = 2147483648,
 }
 
-export type DriveItemDetails = DriveItemData & {
+export type DriveItemDetails = (DriveItemData | AdvancedSharedItem) & {
   isShared: boolean;
   userEmail?: string;
   view: 'Drive' | 'Shared';

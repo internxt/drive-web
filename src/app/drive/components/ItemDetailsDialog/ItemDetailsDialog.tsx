@@ -17,6 +17,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
+import { AdvancedSharedItem } from 'app/share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -67,7 +68,11 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Location
  *  */
 
-const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: (item: any) => void }) => {
+const ItemDetailsDialog = ({
+  onSharedFolderClicked,
+}: {
+  onSharedFolderClicked?: (item: AdvancedSharedItem) => void;
+}) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -109,7 +114,7 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
     event.preventDefault();
     onClose();
     if (isFolder) {
-      onSharedFolderClicked?.(item) ?? onNameClicked(event);
+      onSharedFolderClicked?.(item as AdvancedSharedItem) ?? onNameClicked(event);
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item as DriveItemData));
