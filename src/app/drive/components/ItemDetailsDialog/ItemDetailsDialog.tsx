@@ -18,6 +18,7 @@ import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
+import notificationsService from 'app/notifications/services/notifications.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -91,10 +92,20 @@ const ItemDetailsDialog = ({
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
       const uploaded = formateDate(item.createdAt);
       const modified = formateDate(item.updatedAt);
-      getDetailsData(item, isShared, uploaded, modified, user.email).then((details) => {
-        setItemProps(details);
-        setIsLoading(false);
-      });
+      getDetailsData(item, isShared, uploaded, modified, user.email)
+        .then((details) => {
+          setItemProps(details);
+        })
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+          notificationsService.show({
+            text: error.message,
+          });
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
   }, [item, isOpen]);
 
@@ -131,37 +142,32 @@ const ItemDetailsDialog = ({
     const uuid = item.isFolder ? item.uuid : item.folderUuid;
     const rootPathName = item.view;
 
-    try {
-      const ancestors = await newStorageService.getFolderAncestors(uuid as string);
+    const ancestors = await newStorageService.getFolderAncestors(uuid as string);
 
-      const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
+    const getPathName = ancestors.map((ancestor) => getItemPlainName(ancestor as unknown as DriveItemData)).reverse();
 
-      if (item.isFolder) {
-        getPathName.pop();
-      }
-
-      if (item.view === 'Drive') {
-        getPathName.shift();
-      }
-
-      const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
-
-      const details: ItemDetailsProps = {
-        name: item.name,
-        shared: isShared,
-        size: item.isFolder ? undefined : bytesToString(item.size),
-        type: item.isFolder ? undefined : item.type,
-        uploaded: uploaded,
-        modified: modified,
-        uploadedBy: item.userEmail ?? email,
-        location: path,
-      };
-
-      return details;
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
+    if (item.isFolder) {
+      getPathName.pop();
     }
+
+    if (item.view === 'Drive') {
+      getPathName.shift();
+    }
+
+    const path = '/' + rootPathName + (getPathName.length > 0 ? '/' + getPathName.join('/') : '');
+
+    const details: ItemDetailsProps = {
+      name: item.name,
+      shared: isShared,
+      size: item.isFolder ? undefined : bytesToString(item.size),
+      type: item.isFolder ? undefined : item.type,
+      uploaded: uploaded,
+      modified: modified,
+      uploadedBy: item.userEmail ?? email,
+      location: path,
+    };
+
+    return details;
   }
 
   return (
