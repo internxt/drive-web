@@ -206,7 +206,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     (item: DriveItemData) => {
       const itemDetails: DriveItemDetails = {
         ...item,
-        isShared: !!(item.sharings && item.sharings.length),
+        isShared: !!item.sharings?.length,
         view: 'Drive',
       };
       dispatch(uiActions.setItemDetailsItem(itemDetails));
@@ -369,7 +369,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
-                    showDetails: showDetails,
+                    showDetails,
                     deleteLink: (item) => {
                       dispatch(
                         sharedThunks.deleteLinkThunk({
@@ -385,7 +385,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   })
                 : contextMenuDriveItemShared({
                     openPreview: openPreview,
-                    showDetails: showDetails,
+                    showDetails,
                     copyLink: copyLink,
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
@@ -404,7 +404,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     // openAdvancedShareLinkSettings(item);
                     openLinkSettings(item);
                   },
-                  showDetails: showDetails,
+                  showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,
@@ -417,7 +417,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openLinkSettings(item);
                   },
                   openPreview: openPreview,
-                  showDetails: showDetails,
+                  showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,

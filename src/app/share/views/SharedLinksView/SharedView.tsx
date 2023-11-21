@@ -986,7 +986,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  showDetails: showDetails,
+                  showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
@@ -995,7 +995,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings,
                   openPreview: openPreview,
-                  showDetails: showDetails,
+                  showDetails,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
