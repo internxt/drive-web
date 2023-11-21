@@ -17,6 +17,7 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
+import { AdvancedSharedItem } from 'app/share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -86,15 +87,10 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
       const isShared = item.isShared ? translate('actions.yes') : translate('actions.no');
       const uploaded = formateDate(item.createdAt);
       const modified = formateDate(item.updatedAt);
-      getDetailsData(item, isShared, uploaded, modified, user.email)
-        .then((details) => {
-          setItemProps(details);
-          setIsLoading(false);
-        })
-        .catch((err) => {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
-        });
+      getDetailsData(item, isShared, uploaded, modified, user.email).then((details) => {
+        setItemProps(details);
+        setIsLoading(false);
+      });
     }
   }, [item, isOpen]);
 

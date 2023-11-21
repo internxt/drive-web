@@ -180,7 +180,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const onDetailsItemButtonClicked = async () => {
     const itemDetails: DriveItemDetails = {
       ...currentFolder[0],
-      isShared: true,
+      isShared: false,
       view: 'Drive',
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
