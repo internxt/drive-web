@@ -98,13 +98,13 @@ const ItemDetailsDialog = ({ onSharedFolderClicked }: { onSharedFolderClicked?: 
     }
   }, [item, isOpen]);
 
-  function onClose() {
+  const onClose = () => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(false));
     setTimeout(() => {
       dispatch(uiActions.setItemDetailsItem(null));
       setItemProps(undefined);
     }, 300);
-  }
+  };
 
   function formateDate(dateString: string) {
     return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
