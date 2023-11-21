@@ -12,8 +12,8 @@ const ItemDetailsSkeleton = ({
     name: '',
     shared: '',
     ...(!isFolder && {
-      size: '',
       type: '',
+      size: '',
     }),
     uploaded: '',
     modified: '',

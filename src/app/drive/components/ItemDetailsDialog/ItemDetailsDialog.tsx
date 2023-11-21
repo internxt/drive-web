@@ -95,6 +95,7 @@ const ItemDetailsDialog = ({
       getDetailsData(item, isShared, uploaded, modified, user.email)
         .then((details) => {
           setItemProps(details);
+          setIsLoading(false);
         })
         .catch((err) => {
           const error = errorService.castError(err);
@@ -102,9 +103,6 @@ const ItemDetailsDialog = ({
           notificationsService.show({
             text: error.message,
           });
-        })
-        .finally(() => {
-          setIsLoading(false);
         });
     }
   }, [item, isOpen]);
@@ -159,8 +157,8 @@ const ItemDetailsDialog = ({
     const details: ItemDetailsProps = {
       name: item.name,
       shared: isShared,
-      size: item.isFolder ? undefined : bytesToString(item.size),
       type: item.isFolder ? undefined : item.type,
+      size: item.isFolder ? undefined : bytesToString(item.size),
       uploaded: uploaded,
       modified: modified,
       uploadedBy: item.userEmail ?? email,
