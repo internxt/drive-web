@@ -211,7 +211,7 @@ export default function SharedLinksView(): JSX.Element {
       : dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
-  const getDetails = useCallback(
+  const showDetails = useCallback(
     (item) => {
       const itemDetails = {
         ...item,
@@ -410,7 +410,7 @@ export default function SharedLinksView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
-                  getDetails,
+                  showDetails,
                   renameItem: renameItem,
                   moveItem: moveItem,
                   downloadItem: downloadItem,
@@ -421,7 +421,7 @@ export default function SharedLinksView(): JSX.Element {
                     dispatch(uiActions.setIsFileViewerOpen(true));
                     dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
                   },
-                  getDetails,
+                  showDetails,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,

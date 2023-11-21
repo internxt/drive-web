@@ -17,7 +17,6 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
-import { AdvancedSharedItem } from 'app/share/types';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
