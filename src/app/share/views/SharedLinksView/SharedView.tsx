@@ -518,7 +518,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
-  const showDetails = (shareItem) => {
+  const showDetails = (shareItem: AdvancedSharedItem) => {
     const isOwner = isItemOwnedByCurrentUser(shareItem.user?.uuid);
     const itemDetails: DriveItemDetails = {
       ...shareItem,
