@@ -499,8 +499,8 @@ export default function SharedView(): JSX.Element {
             navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
           } else {
             const currentURL = history.location.pathname;
-            const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
-            history.replace(nuevaURL);
+            const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+            history.replace(newURL);
           }
         });
   };
