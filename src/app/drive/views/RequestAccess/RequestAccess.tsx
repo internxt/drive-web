@@ -9,6 +9,8 @@ import bigLogo from 'assets/icons/big-logo.svg';
 import './RequestAccess.scss';
 import { logOut } from '../../../auth/services/auth.service';
 
+const TEXTAREA_MAX_LENGTH = 950;
+
 function RequestAccess(): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const urlParams = new URLSearchParams(window.location.search);
@@ -20,10 +22,9 @@ function RequestAccess(): JSX.Element {
   const [messageText, setMessageText] = useState<string>('');
   const [messageTextLimit, setMessageTextLimit] = useState<boolean>(false);
   const [requestSent, setRequestSent] = useState<boolean>(false);
-  const alertUsersTextareaMaxLenght = 950;
 
   useEffect(() => {
-    if (messageText.length >= alertUsersTextareaMaxLenght) {
+    if (messageText.length >= TEXTAREA_MAX_LENGTH) {
       setMessageTextLimit(true);
     } else {
       setMessageTextLimit(false);
