@@ -100,9 +100,6 @@ const ItemDetailsDialog = ({
         .catch((err) => {
           const error = errorService.castError(err);
           errorService.reportError(error);
-          notificationsService.show({
-            text: error.message,
-          });
         });
     }
   }, [item, isOpen]);
