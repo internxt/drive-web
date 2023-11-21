@@ -18,7 +18,6 @@ import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
-import notificationsService from 'app/notifications/services/notifications.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
