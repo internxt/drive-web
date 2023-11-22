@@ -473,7 +473,7 @@ export default function SharedView(): JSX.Element {
   );
 
   const handleFolderAccess = () => {
-    let hasTriggeredError = false;
+    let statusError: null | number = null;
 
     if (folderUUID)
       shareService
@@ -483,9 +483,10 @@ export default function SharedView(): JSX.Element {
           onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
         })
         .catch((error) => {
-          hasTriggeredError = true;
           if (error.status === 403) {
-            notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+            statusError = 403;
+            navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
+            return;
           } else if (error.status === 404) {
             notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
           } else {
@@ -495,9 +496,7 @@ export default function SharedView(): JSX.Element {
           fetchRootFolders();
         })
         .finally(() => {
-          if (hasTriggeredError && folderUUID) {
-            navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
-          } else {
+          if (statusError !== 403) {
             const currentURL = history.location.pathname;
             const newURL = currentURL.replace(/folderuuid=valor&?/, '');
             history.replace(newURL);
