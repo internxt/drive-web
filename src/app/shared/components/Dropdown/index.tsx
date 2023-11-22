@@ -22,16 +22,18 @@ export default function Dropdown({
   dropdownActionsContext?: ListItemMenu<DriveItemData>;
   item?: DriveItemData;
 }>): JSX.Element {
+  const direction = openDirection === 'left' ? 'origin-top-left' : 'origin-top-right';
+
   return (
     <Menu as="div" className="relative outline-none">
       <Menu.Button className={`cursor-pointer outline-none ${classButton}`}>{children}</Menu.Button>
 
       <Transition
         className={`absolute ${openDirection === 'left' ? 'left-0' : 'right-0'}`}
-        enter={`${openDirection === 'left' ? 'origin-top-left' : 'origin-top-right'} transition duration-100 ease-out`}
+        enter={`${direction} transition duration-100 ease-out`}
         enterFrom="scale-95 opacity-0"
         enterTo="scale-100 opacity-100"
-        leave={`${openDirection === 'left' ? 'origin-top-left' : 'origin-top-right'} transition duration-100 ease-out`}
+        leave={`${direction} transition duration-100 ease-out`}
         leaveFrom="scale-95 opacity-100"
         leaveTo="scale-100 opacity-0"
       >
