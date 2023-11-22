@@ -1,7 +1,6 @@
-import { SdkFactory } from 'app/core/factory/sdk';
 import usageService, { UsageDetailsProps } from 'app/drive/services/usage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useSelector } from 'react-redux';
 import Card from '../../../../../shared/components/Card';
@@ -52,13 +51,24 @@ export default function Usage({ className = '' }: { className?: string }): JSX.E
 
   const userSubscription = plan.subscription;
 
+  const sumUsageDetails = (usageDetails: UsageDetailsProps): number => {
+    return Object.values(usageDetails).reduce((acc, value) => acc + value, 0);
+  };
+
+  const totalPlanUsage = useMemo(() => (planUsage ? sumUsageDetails(planUsage) : 0), [planUsage, sumUsageDetails]);
+
   return (
     <Section className={className} title={translate('drive.usage')}>
       <Card>
         {products && plan.planLimit && userSubscription ? (
           <>
             <CurrentPlanWrapper bytesInPlan={plan.planLimit} userSubscription={userSubscription} />
-            <UsageDetails className="mt-5" planLimitInBytes={plan.planLimit} products={products} />
+            <UsageDetails
+              className="mt-5"
+              planLimitInBytes={plan.planLimit}
+              products={products}
+              planUsage={totalPlanUsage}
+            />
           </>
         ) : (
           <div className="flex items-center justify-center" style={{ height: '122px' }}>
