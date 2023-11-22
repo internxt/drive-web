@@ -809,12 +809,12 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
 
   return (
     <div
-      className="flex w-full flex-shrink-0 flex-col"
+      className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
     >
-      <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
+      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />
         </div>
@@ -911,9 +911,9 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
               const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
               return (
                 <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
-                  <div className="relative flex h-10 w-10 flex-shrink items-center justify-center">
-                    <Icon className="flex h-full justify-center drop-shadow-soft filter" />
-                    <div className="absolute -right-1.5 -bottom-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                  <div className="relative flex h-10 w-10 shrink items-center justify-center">
+                    <Icon className="flex h-full justify-center drop-shadow-soft" />
+                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
                       <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>

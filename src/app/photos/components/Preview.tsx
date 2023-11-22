@@ -121,10 +121,10 @@ export default function Preview({
     <Transition
       as={Fragment}
       show={photosState.previewIndex !== null}
-      enter="transform origin-center overflow-hidden transition-all duration-100 ease-out"
+      enter="origin-center overflow-hidden transition-all duration-100 ease-out"
       enterFrom="opacity-0 scale-95"
       enterTo="opacity-100 scale-100"
-      leave="transform origin-center overflow-hidden transition-all duration-100 ease-in"
+      leave="origin-center overflow-hidden transition-all duration-100 ease-in"
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
@@ -161,7 +161,7 @@ export default function Preview({
             )}
           </Transition.Child>
         ) : (
-          <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
@@ -293,10 +293,10 @@ function Arrow({
 }) {
   return (
     <div
-      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-50 text-white backdrop-blur backdrop-filter`}
+      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur`}
       onClick={onClick}
     >
-      <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180 transform' : ''} />
+      <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180' : ''} />
     </div>
   );
 }

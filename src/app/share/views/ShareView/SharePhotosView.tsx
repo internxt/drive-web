@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import streamSaver from 'streamsaver';
 import { match } from 'react-router';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
@@ -17,9 +16,10 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import network from 'app/network';
 import downloadService from '../../../drive/services/download.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
-import { FlatFolderZip, binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zipFolder.service';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import dateService from 'app/core/services/date.service';
+
 interface SharePhotosProps {
   match: match<{
     token: string;
@@ -198,8 +198,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     body = (
       <>
         <div className="relative h-32 w-32">
-          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-          <ItemIconComponent className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+          <ItemIconComponent className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
@@ -229,8 +229,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     body = (
       <>
         {/* File info */}
-        <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
-          <div className="h-32 w-32 drop-shadow-soft filter">
+        <div className="flex grow-0 flex-col items-center justify-center space-y-4">
+          <div className="h-32 w-32 drop-shadow-soft">
             <FileIcon />
           </div>
 
@@ -270,8 +270,8 @@ function ImagesIcon() {
   const Icon = iconService.getItemIcon(false, 'png');
   return (
     <div className="relative h-32 w-32">
-      <Icon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-      <Icon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      <Icon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+      <Icon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
     </div>
   );
 }

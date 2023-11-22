@@ -264,12 +264,12 @@ export async function trackCancelPayment(priceId: string) {
       amount_total,
       id: sessionId,
       customer_email,
-    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+    } = (await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
       params: {
         sessionId: checkoutSessionId,
       },
       headers: httpService.getHeaders(true, false),
-    });
+    })) as any;
 
     const amount = amount_total * 0.01;
 
@@ -288,7 +288,7 @@ export async function trackCancelPayment(priceId: string) {
 export async function trackPaymentConversion() {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
+    const { metadata, amount_total, currency, customer, subscription, payment_intent } = (await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
       {
         params: {
@@ -296,7 +296,7 @@ export async function trackPaymentConversion() {
         },
         headers: httpService.getHeaders(true, false),
       },
-    );
+    )) as any;
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 

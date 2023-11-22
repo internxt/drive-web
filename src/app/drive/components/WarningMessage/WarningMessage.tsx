@@ -11,7 +11,7 @@ export const WarningMessage = (): JSX.Element => {
 
   return (
     <div className="mx-5 my-1 flex h-12 w-auto flex-row items-center rounded-lg bg-red-std-transparent">
-      <span className="flex w-auto flex-grow flex-row items-center px-4">
+      <span className="flex w-auto grow flex-row items-center px-4">
         <WarningCircle size={24} weight="fill" className="mr-2 text-red-std" />
         <b>{t('error.storageIsFull')}.&nbsp;</b>
         {t('error.storageIsFullDescription')}
