@@ -111,6 +111,11 @@ interface DriveExplorerProps {
   currentFolderId: number;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
+  isAuthenticated: boolean;
+  isCreateFolderDialogOpen: boolean;
+  isMoveItemsDialogOpen: boolean;
+  isDeleteItemsDialogOpen: boolean;
+  isClearTrashDialogOpen: boolean;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -153,8 +158,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
   const hasAnyItemSelected = selectedItems.length > 0;
-
-  const isSelectedItemShared = selectedItems[0]?.sharings && selectedItems[0]?.sharings?.length > 0;
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');

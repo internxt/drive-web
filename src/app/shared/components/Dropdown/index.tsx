@@ -19,7 +19,7 @@ export default function Dropdown({
   menuItems?: ReactNode[];
   classMenuItems: string;
   openDirection: 'left' | 'right';
-  dropdownActionsContext?: ListItemMenu<DriveItemData> | undefined;
+  dropdownActionsContext?: ListItemMenu<DriveItemData>;
   item?: DriveItemData;
 }): JSX.Element {
   return (
@@ -56,7 +56,7 @@ export default function Dropdown({
           {dropdownActionsContext && item && (
             <div className="w-full max-w-xs">
               {dropdownActionsContext?.map((option, i) => (
-                <div key={i}>
+                <div key={option?.name}>
                   {option && option.separator ? (
                     <div className="my-0.5 flex w-full flex-row px-4">
                       <div className="h-px w-full bg-gray-10" />
@@ -67,6 +67,7 @@ export default function Dropdown({
                         {({ active, disabled }) => {
                           return (
                             <div
+                              onKeyDown={() => {}}
                               onClick={(e) => {
                                 e.stopPropagation();
                                 option.action?.(item);
