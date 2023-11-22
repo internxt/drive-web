@@ -15,6 +15,7 @@ import {
   CaretDown,
   ArrowFatUp,
   Users,
+  DotsThreeVertical,
 } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
@@ -43,7 +44,7 @@ import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
-import { DriveItemData, FileViewMode, FolderPath } from '../../types';
+import { DriveItemData, DriveItemDetails, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
@@ -83,6 +84,13 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
+import Dropdown from 'app/shared/components/Dropdown';
+import {
+  contextMenuDriveFolderNotSharedLink,
+  contextMenuDriveFolderShared,
+  contextMenuDriveItemShared,
+  contextMenuDriveNotSharedLink,
+} from './DriveExplorerList/DriveItemContextMenu';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -102,11 +110,6 @@ interface DriveExplorerProps {
   currentFolderId: number;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
-  isAuthenticated: boolean;
-  isCreateFolderDialogOpen: boolean;
-  isMoveItemsDialogOpen: boolean;
-  isDeleteItemsDialogOpen: boolean;
-  isClearTrashDialogOpen: boolean;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -432,13 +435,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onRecoverButtonClicked = (): void => {
-    //Recover selected (you can select all) files or folders from Trash
     dispatch(storageActions.setItemsToMove(selectedItems));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
   const onSelectedOneItemShare = (e): void => {
-    e.stopPropagation();
     if (selectedItems.length === 1) {
       const selectedItem = selectedItems[0];
       dispatch(
@@ -453,11 +454,83 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onSelectedOneItemRename = (e): void => {
-    e.stopPropagation();
     if (selectedItems.length === 1) {
       if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
         setEditNameItem(selectedItems[0]);
       }
+    }
+  };
+
+  const onShowDetailsButtonClicked = (): void => {
+    const itemDetails: DriveItemDetails = {
+      ...selectedItems[0],
+      isShared: !!selectedItems[0].sharings?.length,
+      view: 'Drive',
+    };
+    dispatch(uiActions.setItemDetailsItem(itemDetails));
+    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+  };
+
+  const onOpenShareSettingsButtonClicked = (): void => {
+    dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
+    dispatch(uiActions.setIsShareDialogOpen(true));
+  };
+
+  const onMoveItemButtonClicked = (): void => {
+    dispatch(storageActions.setItemsToMove([selectedItems[0]]));
+    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
+  };
+
+  const onOpenPreviewButtonClicked = (): void => {
+    dispatch(uiActions.setIsFileViewerOpen(true));
+    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
+  };
+
+  const dropdownActions = () => {
+    if (selectedItems[0].sharings && selectedItems[0].sharings?.length > 0) {
+      return selectedItems[0].isFolder
+        ? contextMenuDriveFolderShared({
+            showDetails: onShowDetailsButtonClicked,
+            copyLink: onSelectedOneItemShare,
+            openShareAccessSettings: onOpenShareSettingsButtonClicked,
+            deleteLink: () => ({}),
+            renameItem: onSelectedOneItemRename,
+            moveItem: onMoveItemButtonClicked,
+            downloadItem: onDownloadButtonClicked,
+            moveToTrash: onBulkDeleteButtonClicked,
+          })
+        : contextMenuDriveItemShared({
+            openPreview: onOpenPreviewButtonClicked,
+            showDetails: onShowDetailsButtonClicked,
+            copyLink: onSelectedOneItemShare,
+            openShareAccessSettings: onOpenShareSettingsButtonClicked,
+            deleteLink: () => ({}),
+            renameItem: onSelectedOneItemRename,
+            moveItem: onMoveItemButtonClicked,
+            downloadItem: onDownloadButtonClicked,
+            moveToTrash: onBulkDeleteButtonClicked,
+          });
+    } else {
+      return selectedItems[0].isFolder
+        ? contextMenuDriveFolderNotSharedLink({
+            shareLink: onOpenShareSettingsButtonClicked,
+            showDetails: onShowDetailsButtonClicked,
+            getLink: onSelectedOneItemRename,
+            renameItem: onSelectedOneItemRename,
+            moveItem: onMoveItemButtonClicked,
+            downloadItem: onDownloadButtonClicked,
+            moveToTrash: onBulkDeleteButtonClicked,
+          })
+        : contextMenuDriveNotSharedLink({
+            shareLink: onOpenShareSettingsButtonClicked,
+            openPreview: onOpenPreviewButtonClicked,
+            showDetails: onShowDetailsButtonClicked,
+            getLink: onSelectedOneItemRename,
+            renameItem: onSelectedOneItemRename,
+            moveItem: onMoveItemButtonClicked,
+            downloadItem: onDownloadButtonClicked,
+            moveToTrash: onBulkDeleteButtonClicked,
+          });
     }
   };
 
@@ -881,6 +954,26 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         </Button>
                         <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
                       </div>
+                      {selectedItems.length === 1 && (
+                        <div
+                          className="flex items-center justify-center"
+                          data-tooltip-id="trash-tooltip"
+                          data-tooltip-content={translate('drive.dropdown.moveToTrash')}
+                          data-tooltip-place="bottom"
+                        >
+                          <Dropdown
+                            classButton="flex items-center justify-center"
+                            openDirection="right"
+                            classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard min-w-[180px]"
+                            item={selectedItems[0]}
+                            dropdownActionsContext={dropdownActions()}
+                          >
+                            <Button variant="tertiary" className="aspect-square">
+                              <DotsThreeVertical size={24} />
+                            </Button>
+                          </Dropdown>
+                        </div>
+                      )}
                     </div>
                   </>
                 )}
