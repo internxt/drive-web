@@ -24,6 +24,13 @@ export default function Dropdown({
 }>): JSX.Element {
   const direction = openDirection === 'left' ? 'origin-top-left' : 'origin-top-right';
 
+  function handleActiveItem(active, disabled) {
+    if (active) {
+      return 'bg-gray-5 text-gray-100';
+    }
+    return disabled ? 'pointer-events-none font-medium text-gray-100' : 'text-gray-80';
+  }
+
   return (
     <Menu as="div" className="relative outline-none">
       <Menu.Button className={`cursor-pointer outline-none ${classButton}`}>{children}</Menu.Button>
@@ -75,13 +82,10 @@ export default function Dropdown({
                                 e.stopPropagation();
                                 option.action?.(item);
                               }}
-                              className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
-                                active
-                                  ? 'bg-gray-5 text-gray-100'
-                                  : disabled
-                                  ? 'pointer-events-none font-medium text-gray-100'
-                                  : 'text-gray-80'
-                              }`}
+                              className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${handleActiveItem(
+                                active,
+                                disabled,
+                              )}`}
                             >
                               <div className="flex flex-row items-center space-x-2">
                                 {option.icon && <option.icon size={20} />}
