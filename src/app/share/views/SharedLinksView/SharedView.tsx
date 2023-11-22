@@ -523,7 +523,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
     const itemDetails: DriveItemDetails = {
       ...shareItem,
       isShared: true,
-      userEmail: shareItem.user?.email,
+      userEmail: shareItem.user?.email ?? shareItem.credentials.networkUser,
       view: isOwner ? 'Drive' : 'Shared',
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
