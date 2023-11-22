@@ -12,7 +12,7 @@ export default function Dropdown({
   openDirection,
   dropdownActionsContext,
   item,
-}: {
+}: Readonly<{
   children: ReactNode | ((obj: any) => JSX.Element);
   options?: { text: string; onClick: () => void }[];
   classButton?: string;
@@ -21,7 +21,7 @@ export default function Dropdown({
   openDirection: 'left' | 'right';
   dropdownActionsContext?: ListItemMenu<DriveItemData>;
   item?: DriveItemData;
-}): JSX.Element {
+}>): JSX.Element {
   return (
     <Menu as="div" className="relative outline-none">
       <Menu.Button className={`cursor-pointer outline-none ${classButton}`}>{children}</Menu.Button>
@@ -39,6 +39,7 @@ export default function Dropdown({
           {options?.map((option) => (
             <Menu.Item key={option.text}>
               <div
+                onKeyDown={() => {}}
                 className="cursor-pointer px-3 py-1.5 text-gray-80 hover:bg-primary hover:text-white active:bg-primary-dark"
                 onClick={option.onClick}
               >
@@ -48,8 +49,8 @@ export default function Dropdown({
           ))}
           {menuItems && (
             <div className="w-full max-w-xs">
-              {menuItems?.map((item, index) => (
-                <Menu.Item key={'menuitem-' + index}>{item}</Menu.Item>
+              {menuItems?.map((item) => (
+                <Menu.Item key={'menuitem-' + item}>{item}</Menu.Item>
               ))}
             </div>
           )}
@@ -57,12 +58,12 @@ export default function Dropdown({
             <div className="w-full max-w-xs">
               {dropdownActionsContext?.map((option, i) => (
                 <div key={option?.name}>
-                  {option && option.separator ? (
-                    <div className="my-0.5 flex w-full flex-row px-4">
-                      <div className="h-px w-full bg-gray-10" />
-                    </div>
-                  ) : (
-                    option && (
+                  {option &&
+                    (option.separator ? (
+                      <div className="my-0.5 flex w-full flex-row px-4">
+                        <div className="h-px w-full bg-gray-10" />
+                      </div>
+                    ) : (
                       <Menu.Item disabled={option.disabled?.(item)}>
                         {({ active, disabled }) => {
                           return (
@@ -94,8 +95,7 @@ export default function Dropdown({
                           );
                         }}
                       </Menu.Item>
-                    )
-                  )}
+                    ))}
                 </div>
               ))}
             </div>
