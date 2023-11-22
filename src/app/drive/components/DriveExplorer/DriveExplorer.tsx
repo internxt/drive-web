@@ -834,14 +834,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {isSelectedItemShared && (
                             <div
                               className="flex items-center justify-center"
-                              data-tooltip-id="linkSettings-tooltip"
-                              data-tooltip-content={translate('drive.dropdown.linkSettings')}
+                              data-tooltip-id="copyLink-tooltip"
+                              data-tooltip-content={translate('drive.dropdown.copyLink')}
                               data-tooltip-place="bottom"
                             >
                               <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
                                 <Link className="h-6 w-6" />
                               </Button>
-                              <TooltipElement id="linkSettings-tooltip" delayShow={DELAY_SHOW_MS} />
+                              <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
                             </div>
                           )}
                         </>
