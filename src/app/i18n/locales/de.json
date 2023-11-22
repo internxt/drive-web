@@ -536,6 +536,21 @@
       "placeholder": "Unbenannter Ordner",
       "untitled": "Unbenannter Ordner"
     },
+    "itemDetailsModal": {
+      "title": "Einzelheiten",
+      "fileCta": "Vorschau öffnen",
+      "folderCta": "Ordner öffnen",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Typ",
+        "uploaded": "Hochgeladen",
+        "uploadedBy": "Hochgeladen von",
+        "shared": "Freigegeben",
+        "size": "Größe",
+        "modified": "Feändert",
+        "Ort": "Ort"
+      }
+    },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",
       "list": {
@@ -1048,7 +1063,9 @@
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
     "copyLink": "Kopiere Link",
-    "report": "Missbrauch melden"
+    "report": "Missbrauch melden",
+    "yes": "Ja",
+    "no": "Nein"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1075,6 +1092,7 @@
       "rename": "Umbenennen",
       "download": "Download",
       "manageLinkAccess": "Zugang verwalten",
+      "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",
       "copyLink": "Kopiere Link",
       "linkSettings": "Link Einstellungen",

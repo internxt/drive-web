@@ -635,6 +635,21 @@
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
     },
+    "itemDetailsModal": {
+      "title": "Detalles",
+      "fileCta": "Abrir previsualización",
+      "folderCta": "Abrir carpeta",
+      "itemDetails": {
+        "name": "Nombre",
+        "type": "Tipo",
+        "uploaded": "Subido",
+        "uploadedBy": "Subido por",
+        "shared": "Compartido",
+        "size": "Tamaño",
+        "modified": "Modificado",
+        "location": "Ubicación"
+      }
+    },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",
       "list": {
@@ -1169,7 +1184,9 @@
     "rename": "Renombrar",
     "restore": "Restaurar",
     "copyLink": "Copiar enlace",
-    "report": "Reportar abuso"
+    "report": "Reportar abuso",
+    "yes": "Si",
+    "no": "No"
   },
   "drive": {
     "usage": "Uso",
@@ -1193,7 +1210,10 @@
     "dropdown": {
       "openPreview": "Abrir previsualización",
       "getLink": "Copiar enlace",
+      "details": "Detalles",
       "rename": "Renombrar",
+      "manageLinkAccess": "Gestionar acceso",
+      "manageAccess": "Gestionar acceso",
       "download": "Descargar",
       "moveToTrash": "Mover a la papelera",
       "copyLink": "Copiar enlace",

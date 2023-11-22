@@ -4,7 +4,7 @@ import { Trash, Link } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import { Dialog, Transition } from '@headlessui/react';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, Fragment, useEffect } from 'react';
+import { useState, Fragment, useEffect, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import copy from 'copy-to-clipboard';
 import Empty from 'app/shared/components/Empty/Empty';
@@ -211,6 +211,18 @@ export default function SharedLinksView(): JSX.Element {
       : dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
+  const showDetails = useCallback(
+    (item) => {
+      const itemDetails = {
+        ...item,
+        isShared: true,
+      };
+      dispatch(uiActions.setItemDetailsItem(itemDetails));
+      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+    },
+    [dispatch, uiActions],
+  );
+
   const moveSelectedItemsToTrash = async () => {
     const itemsToTrash = selectedItems.map((selectedShareLink) => ({
       ...(selectedShareLink.item as DriveItemData),
@@ -398,6 +410,7 @@ export default function SharedLinksView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
+                  showDetails,
                   renameItem: renameItem,
                   moveItem: moveItem,
                   downloadItem: downloadItem,
@@ -408,6 +421,7 @@ export default function SharedLinksView(): JSX.Element {
                     dispatch(uiActions.setIsFileViewerOpen(true));
                     dispatch(uiActions.setFileViewerItem((shareLink as ListShareLinksItem).item as DriveItemData));
                   },
+                  showDetails,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,

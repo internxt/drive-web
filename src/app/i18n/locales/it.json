@@ -614,6 +614,21 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "itemDetailsModal": {
+      "title": "Dettagli",
+      "fileCta": "Apri anteprima",
+      "cartellaCta": "Apri cartella",
+      "itemDetails": {
+        "nome": "Nome",
+        "tipo": "Tipo",
+        "modified": "Ultima modifica",
+        "size": "Dimensione",
+        "uploaded": "Caricato",
+        "uploadedBy": "Caricato da",
+        "shared": "Condiviso",
+        "location": "Posizione"
+      }
+    },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
       "list": {
@@ -1143,7 +1158,9 @@
     "rename": "Rinominare",
     "restore": "Ripristinare",
     "copyLink": "Copia link",
-    "report": "Segnala abuso"
+    "report": "Segnala abuso",
+    "yes": "Sì",
+    "no": "No"
   },
   "drive": {
     "usage": "Utilizzo",
@@ -1169,6 +1186,9 @@
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
+      "details": "Dettagli",
+      "manageAccess": "Gestisci accesso",
+      "manageLinkAccess": "Gestisci accesso",
       "moveToTrash": "Sposta nel cestino",
       "copyLink": "Copia link",
       "linkSettings": "Impostazioni link",
