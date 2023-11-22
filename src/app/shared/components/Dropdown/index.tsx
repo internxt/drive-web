@@ -24,7 +24,7 @@ export default function Dropdown({
 }>): JSX.Element {
   const direction = openDirection === 'left' ? 'origin-top-left' : 'origin-top-right';
 
-  function handleActiveItem(active, disabled) {
+  function handleActiveItemStyle(active, disabled) {
     if (active) {
       return 'bg-gray-5 text-gray-100';
     }
@@ -82,7 +82,7 @@ export default function Dropdown({
                                 e.stopPropagation();
                                 option.action?.(item);
                               }}
-                              className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${handleActiveItem(
+                              className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${handleActiveItemStyle(
                                 active,
                                 disabled,
                               )}`}
