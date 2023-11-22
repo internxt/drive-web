@@ -481,7 +481,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onMoveItemButtonClicked = (): void => {
-    dispatch(storageActions.setItemsToMove([selectedItems[0]]));
+    const itemsToMove = selectedItems.length === 1 ? [selectedItems[0]] : selectedItems;
+    dispatch(storageActions.setItemsToMove(itemsToMove));
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
