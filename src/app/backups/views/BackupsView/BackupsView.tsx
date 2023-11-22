@@ -1,6 +1,4 @@
 import { useEffect, useState } from 'react';
-import UilHdd from '@iconscout/react-unicons/icons/uil-hdd';
-
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';

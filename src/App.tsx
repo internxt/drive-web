@@ -2,7 +2,6 @@ import { createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
-import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 
 import configService from './app/core/services/config.service';
@@ -35,6 +34,7 @@ import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
+import { manager } from './app/utils/dnd-utils';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -162,13 +162,13 @@ const App = (props: AppProps): JSX.Element => {
 
   if (!isAuthenticated || isInitialized) {
     template = (
-      <DndProvider backend={HTML5Backend}>
+      <DndProvider manager={manager}>
         <Router history={navigationService.history}>
           {isDev && configService.getAppConfig().debug.enabled && (
             <span
               className="\ \ pointer-events-none absolute top-5 -right-7
-              z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
-              tracking-wider text-white opacity-80 drop-shadow-2xl"
+               z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
+               tracking-wider text-white opacity-80 drop-shadow-2xl"
             >
               {t('general.stage.development')}
             </span>
