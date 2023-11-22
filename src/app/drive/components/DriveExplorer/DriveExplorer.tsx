@@ -25,6 +25,7 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
@@ -904,20 +905,32 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                             </Button>
                             <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
                           </div>
-                          {isSelectedItemShared && (
-                            <div
-                              className="flex items-center justify-center"
-                              data-tooltip-id="copyLink-tooltip"
-                              data-tooltip-content={translate('drive.dropdown.copyLink')}
-                              data-tooltip-place="bottom"
-                            >
-                              <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
-                                <Link className="h-6 w-6" />
-                              </Button>
-                              <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
-                            </div>
-                          )}
+
+                          <div
+                            className="flex items-center justify-center"
+                            data-tooltip-id="copyLink-tooltip"
+                            data-tooltip-content={translate('drive.dropdown.copyLink')}
+                            data-tooltip-place="bottom"
+                          >
+                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
+                              <Link className="h-6 w-6" />
+                            </Button>
+                            <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
+                          </div>
                         </>
+                      )}
+                      {selectedItems.length > 1 && (
+                        <div
+                          className="flex items-center justify-center"
+                          data-tooltip-id="move-tooltip"
+                          data-tooltip-content={translate('drive.dropdown.move')}
+                          data-tooltip-place="bottom"
+                        >
+                          <Button variant="tertiary" className="aspect-square" onClick={onMoveItemButtonClicked}>
+                            <MoveActionIcon className="h-6 w-6" />
+                          </Button>
+                          <TooltipElement id="move-tooltip" delayShow={DELAY_SHOW_MS} />
+                        </div>
                       )}
                       <div
                         className="flex items-center justify-center"
@@ -930,19 +943,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         </Button>
                         <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
                       </div>
-                      {selectedItems.length === 1 && (
-                        <div
-                          className="flex items-center justify-center"
-                          data-tooltip-id="rename-tooltip"
-                          data-tooltip-content={translate('drive.dropdown.rename')}
-                          data-tooltip-place="bottom"
-                        >
-                          <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemRename}>
-                            <PencilSimple className="h-6 w-6" />
-                          </Button>
-                          <TooltipElement id="rename-tooltip" delayShow={DELAY_SHOW_MS} />
-                        </div>
-                      )}
                       <div
                         className="flex items-center justify-center"
                         data-tooltip-id="trash-tooltip"
@@ -955,24 +955,25 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
                       </div>
                       {selectedItems.length === 1 && (
-                        <div
-                          className="flex items-center justify-center"
-                          data-tooltip-id="trash-tooltip"
-                          data-tooltip-content={translate('drive.dropdown.moveToTrash')}
-                          data-tooltip-place="bottom"
+                        <Dropdown
+                          classButton="flex items-center justify-center"
+                          openDirection="right"
+                          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard min-w-[180px]"
+                          item={selectedItems[0]}
+                          dropdownActionsContext={dropdownActions()}
                         >
-                          <Dropdown
-                            classButton="flex items-center justify-center"
-                            openDirection="right"
-                            classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard min-w-[180px]"
-                            item={selectedItems[0]}
-                            dropdownActionsContext={dropdownActions()}
+                          <div
+                            className="flex items-center justify-center"
+                            data-tooltip-id="more-tooltip"
+                            data-tooltip-content={translate('actions.more')}
+                            data-tooltip-place="bottom"
                           >
                             <Button variant="tertiary" className="aspect-square">
                               <DotsThreeVertical size={24} />
                             </Button>
-                          </Dropdown>
-                        </div>
+                            <TooltipElement id="more-tooltip" delayShow={DELAY_SHOW_MS} />
+                          </div>
+                        </Dropdown>
                       )}
                     </div>
                   </>

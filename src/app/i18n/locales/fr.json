@@ -1116,7 +1116,8 @@
     "copyLink": "Copier le lien",
     "report": "Signaler un abus",
     "yes": "Oui",
-    "no": "Non"
+    "no": "Non",
+    "more": "Plus"
   },
   "drive": {
     "usage": "Usage",
