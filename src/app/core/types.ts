@@ -118,6 +118,7 @@ export enum AppView {
   SharedLinks = 'shared-links',
   Shared = 'shared',
   Photos = 'photos',
+  DriveItems = 'drive-items',
   Preferences = 'preferences',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',

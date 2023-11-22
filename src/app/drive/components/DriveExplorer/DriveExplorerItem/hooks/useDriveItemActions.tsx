@@ -17,6 +17,7 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { useHistory, useLocation } from 'react-router-dom';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -50,6 +51,8 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
+  const history = useHistory();
+  const pathname = useLocation().pathname;
 
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
@@ -189,11 +192,18 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   const onItemDoubleClicked = (): void => {
+    const pathnameSplit = pathname.split('/');
+    const isRecentsView = pathnameSplit[2] === 'recents';
+
     if (item.isFolder) {
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id, uuid: item.uuid as string }));
+      history.push(`/app/folder/${item.uuid}`);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item));
+      if (isRecentsView) {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item));
+      } else {
+        history.push(`/app/file/${item.uuid}`);
+      }
     }
   };
 

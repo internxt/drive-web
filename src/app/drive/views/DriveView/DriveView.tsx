@@ -10,6 +10,10 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
+import { useLocation, useHistory } from 'react-router-dom';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { SdkFactory } from 'app/core/factory/sdk';
+import errorService from 'app/core/services/error.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -22,6 +26,23 @@ export interface DriveViewProps {
 
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
+  const history = useHistory();
+  const pathname = useLocation().pathname;
+
+  useEffect(() => {
+    dispatch(uiActions.setIsFileViewerOpen(false));
+    const pathnameSplit = pathname.split('/');
+    const itemType = pathnameSplit[2];
+    const itemUuid = pathnameSplit[3];
+
+    if (itemUuid && itemType === 'folder') {
+      goFolder(itemUuid);
+    }
+
+    if (itemUuid && itemType === 'file') {
+      goFile(itemUuid);
+    }
+  }, [pathname]);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -31,6 +52,34 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(storageActions.resetDrivePagination());
     };
   }, []);
+
+  const goFolder = async (folderUuid) => {
+    try {
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
+      dispatch(
+        storageThunks.goToFolderThunk({
+          name: folderMeta.plainName,
+          id: folderMeta.id,
+          uuid: folderMeta.uuid as string,
+        }),
+      );
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const goFile = async (folderUuid) => {
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const [responsePromise] = storageClient.getFile(folderUuid);
+
+    try {
+      const fileMeta = await responsePromise;
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(fileMeta));
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   const breadcrumbItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
@@ -47,6 +96,7 @@ const DriveView = (props: DriveViewProps) => {
         onClick: () => {
           dispatch(uiActions.setIsGlobalSearch(false));
           dispatch(storageThunks.goToFolderThunk(firstPath));
+          history.push('/app');
         },
       });
 
@@ -56,7 +106,7 @@ const DriveView = (props: DriveViewProps) => {
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => dispatch(storageThunks.goToFolderThunk(path)),
+          onClick: () => history.push(`/app/folder/${path.uuid}`),
         });
       });
     }

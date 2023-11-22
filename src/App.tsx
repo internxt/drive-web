@@ -148,6 +148,18 @@ const App = (props: AppProps): JSX.Element => {
     }
   }
 
+  const onCloseFileViewer = () => {
+    const pathname = navigationService.history.location.pathname.split('/');
+    const isRecentsView = pathname[2] === 'recents';
+    const isSharedView = pathname[2] === 'shared';
+
+    if (isRecentsView || isSharedView) {
+      dispatch(uiActions.setIsFileViewerOpen(false));
+    } else {
+      navigationService.history.push(`/app/folder/${fileViewerItem?.folderUuid}`);
+    }
+  };
+
   if (!isAuthenticated || isInitialized) {
     template = (
       <DndProvider backend={HTML5Backend}>
@@ -188,7 +200,7 @@ const App = (props: AppProps): JSX.Element => {
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper
               file={fileViewerItem}
-              onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
+              onClose={() => onCloseFileViewer()}
               showPreview={isFileViewerOpen}
             />
           )}

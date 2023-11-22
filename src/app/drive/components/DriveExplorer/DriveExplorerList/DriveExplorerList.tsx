@@ -28,6 +28,7 @@ import {
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import shareService from '../../../../share/services/share.service';
+import { useHistory } from 'react-router-dom';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -84,6 +85,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     props.selectedItems?.[0].sharings.length > 0;
 
   const { translate } = useTranslationContext();
+  const history = useHistory();
 
   useEffect(() => {
     setIsAllSelectedEnabled(false);
@@ -196,8 +198,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const openPreview = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      const driveItem = item as DriveItemData;
+      history.push(`/app/file/${driveItem.uuid as string}`);
     },
     [dispatch, uiActions],
   );

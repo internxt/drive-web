@@ -54,6 +54,7 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
+  { id: AppView.DriveItems, component: DriveView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },

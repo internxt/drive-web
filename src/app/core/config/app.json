@@ -121,6 +121,13 @@
       "hideSearch": true
     },
     {
+      "id": "drive-items",
+      "layout": "header-and-sidenav",
+      "path": "/app/:folderType?/:id?",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "preferences",
       "layout": "header-and-sidenav",
       "path": "/preferences",
