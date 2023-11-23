@@ -7,12 +7,11 @@ import {
   Trash,
   PencilSimple,
   Link,
-  Copy,
-  ArrowsOutCardinal,
   DownloadSimple,
   Users,
   Info,
 } from '@phosphor-icons/react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
@@ -278,35 +277,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       </div>
                     )}
                   </Menu.Item>
-                  {!isBreadcrumbItemShared ? (
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onCreateLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Link size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                  ) : (
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onCopyLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Copy size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                  )}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onCopyLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Link size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -344,12 +327,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
-                        <ArrowsOutCardinal size={20} />
+                        <MoveActionIcon className="h-5 w-5" />
                         <p className="ml-3">{translate('drive.dropdown.move')}</p>
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="mx-3 my-0.5 border-t border-gray-10" />
                   <Menu.Item>
                     {({ active }) => (
                       <div
