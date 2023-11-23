@@ -98,8 +98,7 @@ const App = (props: AppProps): JSX.Element => {
       );
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
-
-      console.log(castedError.message);
+      errorService.reportError(castedError);
     }
   };
 
