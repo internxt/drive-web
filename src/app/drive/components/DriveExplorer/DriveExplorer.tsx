@@ -2,7 +2,6 @@ import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 're
 import { connect } from 'react-redux';
 import {
   Trash,
-  DownloadSimple,
   UploadSimple,
   FolderSimplePlus,
   Rows,
@@ -10,12 +9,8 @@ import {
   FileArrowUp,
   Plus,
   ClockCounterClockwise,
-  Link,
-  PencilSimple,
   CaretDown,
   ArrowFatUp,
-  Users,
-  DotsThreeVertical,
 } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
@@ -25,7 +20,6 @@ import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } fr
 import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { StorageFilters } from 'app/store/slices/storage/storage.model';
@@ -45,10 +39,9 @@ import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
-import { DriveItemData, DriveItemDetails, FileViewMode, FolderPath } from '../../types';
+import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
-import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
 import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
 import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
 import {
@@ -56,7 +49,6 @@ import {
   transformJsonFilesToItems,
 } from 'app/drive/services/folder.service/uploadFolderInput.service';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import useDriveItemStoreProps from './DriveExplorerItem/hooks/useDriveStoreProps';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import {
   handleRepeatedUploadingFiles,
@@ -80,18 +72,11 @@ import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ShareDialog from '../ShareDialog/ShareDialog';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import shareService from '../../../share/services/share.service';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
-import Dropdown from 'app/shared/components/Dropdown';
-import {
-  contextMenuDriveFolderNotSharedLink,
-  contextMenuDriveFolderShared,
-  contextMenuDriveItemShared,
-  contextMenuDriveNotSharedLink,
-} from './DriveExplorerList/DriveItemContextMenu';
+import DriveTopBarActions from './components/DriveTopBarActions';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -153,7 +138,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
-  const { dirtyName } = useDriveItemStoreProps();
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -361,10 +345,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     folderInputRef.current?.click();
   };
 
-  const onDownloadButtonClicked = (): void => {
-    dispatch(storageThunks.downloadItemsThunk(selectedItems));
-  };
-
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
 
@@ -417,125 +397,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const onBulkDeleteButtonClicked = (): void => {
-    errorService.addBreadcrumb({
-      level: 'info',
-      category: 'button',
-      message: 'Top bar delete items button clicked',
-      data: {
-        currentFolderId: currentFolderId,
-      },
-    });
-    moveItemsToTrash(selectedItems);
-  };
-
   const onDeletePermanentlyButtonClicked = (): void => {
     if (selectedItems.length > 0) {
       dispatch(storageActions.setItemsToDelete(selectedItems));
       dispatch(uiActions.setIsDeleteItemsDialogOpen(true));
     } else {
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
-    }
-  };
-
-  const onRecoverButtonClicked = (): void => {
-    dispatch(storageActions.setItemsToMove(selectedItems));
-    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-  };
-
-  const onSelectedOneItemShare = (e): void => {
-    if (selectedItems.length === 1) {
-      const selectedItem = selectedItems[0];
-      dispatch(
-        storageActions.setItemToShare({
-          sharing: selectedItems[0]?.sharings && selectedItems[0]?.sharings?.[0],
-          item: selectedItem,
-        }),
-      );
-      if (selectedItem?.uuid)
-        shareService.getPublicShareLink(selectedItem.uuid, selectedItem.isFolder ? 'folder' : 'file');
-    }
-  };
-
-  const onSelectedOneItemRename = (e): void => {
-    if (selectedItems.length === 1) {
-      if (!dirtyName || dirtyName === null || dirtyName.trim() === '') {
-        setEditNameItem(selectedItems[0]);
-      }
-    }
-  };
-
-  const onShowDetailsButtonClicked = (): void => {
-    const itemDetails: DriveItemDetails = {
-      ...selectedItems[0],
-      isShared: !!selectedItems[0].sharings?.length,
-      view: 'Drive',
-    };
-    dispatch(uiActions.setItemDetailsItem(itemDetails));
-    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
-  };
-
-  const onOpenShareSettingsButtonClicked = (): void => {
-    dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
-    dispatch(uiActions.setIsShareDialogOpen(true));
-  };
-
-  const onMoveItemButtonClicked = (): void => {
-    const itemsToMove = selectedItems.length === 1 ? [selectedItems[0]] : selectedItems;
-    dispatch(storageActions.setItemsToMove(itemsToMove));
-    dispatch(uiActions.setIsMoveItemsDialogOpen(true));
-  };
-
-  const onOpenPreviewButtonClicked = (): void => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
-  };
-
-  const dropdownActions = () => {
-    if (selectedItems[0].sharings && selectedItems[0].sharings?.length > 0) {
-      return selectedItems[0].isFolder
-        ? contextMenuDriveFolderShared({
-            showDetails: onShowDetailsButtonClicked,
-            copyLink: onSelectedOneItemShare,
-            openShareAccessSettings: onOpenShareSettingsButtonClicked,
-            deleteLink: () => ({}),
-            renameItem: onSelectedOneItemRename,
-            moveItem: onMoveItemButtonClicked,
-            downloadItem: onDownloadButtonClicked,
-            moveToTrash: onBulkDeleteButtonClicked,
-          })
-        : contextMenuDriveItemShared({
-            openPreview: onOpenPreviewButtonClicked,
-            showDetails: onShowDetailsButtonClicked,
-            copyLink: onSelectedOneItemShare,
-            openShareAccessSettings: onOpenShareSettingsButtonClicked,
-            deleteLink: () => ({}),
-            renameItem: onSelectedOneItemRename,
-            moveItem: onMoveItemButtonClicked,
-            downloadItem: onDownloadButtonClicked,
-            moveToTrash: onBulkDeleteButtonClicked,
-          });
-    } else {
-      return selectedItems[0].isFolder
-        ? contextMenuDriveFolderNotSharedLink({
-            shareLink: onOpenShareSettingsButtonClicked,
-            showDetails: onShowDetailsButtonClicked,
-            getLink: onSelectedOneItemRename,
-            renameItem: onSelectedOneItemRename,
-            moveItem: onMoveItemButtonClicked,
-            downloadItem: onDownloadButtonClicked,
-            moveToTrash: onBulkDeleteButtonClicked,
-          })
-        : contextMenuDriveNotSharedLink({
-            shareLink: onOpenShareSettingsButtonClicked,
-            openPreview: onOpenPreviewButtonClicked,
-            showDetails: onShowDetailsButtonClicked,
-            getLink: onSelectedOneItemRename,
-            renameItem: onSelectedOneItemRename,
-            moveItem: onMoveItemButtonClicked,
-            downloadItem: onDownloadButtonClicked,
-            moveToTrash: onBulkDeleteButtonClicked,
-          });
     }
   };
 
@@ -780,217 +647,136 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               {title}
             </div>
 
-            {!isTrash && (
-              <div className="flex shrink-0 flex-row">
-                <div className="flex items-center justify-center">
-                  <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
-                    {({ open, close }) => {
-                      useEffect(() => {
-                        if (!open) {
-                          setOpenedWithRightClick(false);
-                          setPosX(0);
-                          setPosY(0);
-                        }
-                      }, [open]);
+            <div className="flex shrink-0 flex-row">
+              {!isTrash && (
+                <>
+                  <div className="flex items-center justify-center">
+                    <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
+                      {({ open, close }) => {
+                        useEffect(() => {
+                          if (!open) {
+                            setOpenedWithRightClick(false);
+                            setPosX(0);
+                            setPosY(0);
+                          }
+                        }, [open]);
 
-                      return (
-                        <>
-                          <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
-                            <Button variant="primary" className="hidden">
-                              <div className="flex items-center justify-center space-x-2.5">
-                                <span className="font-medium">{translate('actions.upload.new')}</span>
-                                <div className="flex items-center space-x-0.5">
-                                  <Plus weight="bold" className="h-4 w-4" />
-                                  <CaretDown weight="fill" className="h-3 w-3" />
+                        return (
+                          <>
+                            <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
+                              <Button variant="primary" className="hidden">
+                                <div className="flex items-center justify-center space-x-2.5">
+                                  <span className="font-medium">{translate('actions.upload.new')}</span>
+                                  <div className="flex items-center space-x-0.5">
+                                    <Plus weight="bold" className="h-4 w-4" />
+                                    <CaretDown weight="fill" className="h-3 w-3" />
+                                  </div>
                                 </div>
-                              </div>
-                            </Button>
-                          </Menu.Button>
-                          <Transition
-                            className="absolute"
-                            enter="transition origin-top-right duration-100 ease-out"
-                            enterFrom="scale-95 opacity-0"
-                            enterTo="scale-100 opacity-100"
-                            leave="transition origin-top-right duration-100 ease-out"
-                            leaveFrom="scale-95 opacity-100"
-                            leaveTo="scale-100 opacity-0"
-                            style={
-                              openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }
-                            }
-                          >
-                            {open && (
-                              <Menu.Items
-                                className={
-                                  'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
-                                }
-                              >
-                                <Menu.Item>
-                                  {({ active }) => {
-                                    useHotkeys('shift+F', () => {
-                                      if (open) {
-                                        close();
-                                        onCreateFolderButtonClicked();
-                                      }
-                                    });
+                              </Button>
+                            </Menu.Button>
+                            <Transition
+                              className="absolute"
+                              enter="transition origin-top-right duration-100 ease-out"
+                              enterFrom="scale-95 opacity-0"
+                              enterTo="scale-100 opacity-100"
+                              leave="transition origin-top-right duration-100 ease-out"
+                              leaveFrom="scale-95 opacity-100"
+                              leaveTo="scale-100 opacity-0"
+                              style={
+                                openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }
+                              }
+                            >
+                              {open && (
+                                <Menu.Items
+                                  className={
+                                    'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                                  }
+                                >
+                                  <Menu.Item>
+                                    {({ active }) => {
+                                      useHotkeys('shift+F', () => {
+                                        if (open) {
+                                          close();
+                                          onCreateFolderButtonClicked();
+                                        }
+                                      });
 
-                                    return (
+                                      return (
+                                        <div
+                                          onClick={onCreateFolderButtonClicked}
+                                          className={`${
+                                            active && 'bg-gray-5'
+                                          } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                        >
+                                          <FolderSimplePlus size={20} />
+                                          <p>{translate('actions.upload.folder')}</p>
+                                          <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
+                                            <ArrowFatUp size={14} /> F
+                                          </span>
+                                        </div>
+                                      );
+                                    }}
+                                  </Menu.Item>
+                                  <div className="mx-3 my-px flex border-t border-gray-5" />
+                                  <Menu.Item>
+                                    {({ active }) => (
                                       <div
-                                        onClick={onCreateFolderButtonClicked}
+                                        onClick={onUploadFileButtonClicked}
                                         className={`${
                                           active && 'bg-gray-5'
                                         } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
                                       >
-                                        <FolderSimplePlus size={20} />
-                                        <p>{translate('actions.upload.folder')}</p>
-                                        <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                                          <ArrowFatUp size={14} /> F
-                                        </span>
+                                        <FileArrowUp size={20} />
+                                        <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
                                       </div>
-                                    );
-                                  }}
-                                </Menu.Item>
-                                <div className="mx-3 my-px flex border-t border-gray-5" />
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <div
-                                      onClick={onUploadFileButtonClicked}
-                                      className={`${
-                                        active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                    >
-                                      <FileArrowUp size={20} />
-                                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-                                    </div>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <div
-                                      onClick={onUploadFolderButtonClicked}
-                                      className={`${
-                                        active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                    >
-                                      <UploadSimple size={20} />
-                                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
-                                    </div>
-                                  )}
-                                </Menu.Item>
-                              </Menu.Items>
-                            )}
-                          </Transition>
-                        </>
-                      );
-                    }}
-                  </Menu>
-                </div>
-                {!isTrash && <DriveTopBarItems />}
-                {hasAnyItemSelected && (
-                  <>
-                    {separatorV}
-                    <div className="flex items-center justify-center">
-                      {selectedItems.length === 1 && (
-                        <>
-                          <div
-                            className="flex items-center justify-center"
-                            data-tooltip-id="share-tooltip"
-                            data-tooltip-content={translate('drive.dropdown.share')}
-                            data-tooltip-place="bottom"
-                          >
-                            <Button
-                              variant="tertiary"
-                              className="aspect-square"
-                              onClick={() => {
-                                dispatch(storageActions.setItemToShare({ item: selectedItems[0] }));
-                                dispatch(uiActions.setIsShareDialogOpen(true));
-                              }}
-                            >
-                              <Users className="h-6 w-6" />
-                            </Button>
-                            <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
-                          </div>
-
-                          <div
-                            className="flex items-center justify-center"
-                            data-tooltip-id="copyLink-tooltip"
-                            data-tooltip-content={translate('drive.dropdown.copyLink')}
-                            data-tooltip-place="bottom"
-                          >
-                            <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
-                              <Link className="h-6 w-6" />
-                            </Button>
-                            <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
-                          </div>
-                        </>
-                      )}
-                      {selectedItems.length > 1 && (
-                        <div
-                          className="flex items-center justify-center"
-                          data-tooltip-id="move-tooltip"
-                          data-tooltip-content={translate('drive.dropdown.move')}
-                          data-tooltip-place="bottom"
-                        >
-                          <Button variant="tertiary" className="aspect-square" onClick={onMoveItemButtonClicked}>
-                            <MoveActionIcon className="h-6 w-6" />
-                          </Button>
-                          <TooltipElement id="move-tooltip" delayShow={DELAY_SHOW_MS} />
-                        </div>
-                      )}
-                      <div
-                        className="flex items-center justify-center"
-                        data-tooltip-id="download-tooltip"
-                        data-tooltip-content={translate('drive.dropdown.download')}
-                        data-tooltip-place="bottom"
-                      >
-                        <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
-                          <DownloadSimple className="h-6 w-6" />
-                        </Button>
-                        <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
-                      </div>
-                      <div
-                        className="flex items-center justify-center"
-                        data-tooltip-id="trash-tooltip"
-                        data-tooltip-content={translate('drive.dropdown.moveToTrash')}
-                        data-tooltip-place="bottom"
-                      >
-                        <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
-                          <Trash className="h-6 w-6" />
-                        </Button>
-                        <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
-                      </div>
-                      {selectedItems.length === 1 && (
-                        <Dropdown
-                          classButton="flex items-center justify-center"
-                          openDirection="right"
-                          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard min-w-[180px]"
-                          item={selectedItems[0]}
-                          dropdownActionsContext={dropdownActions()}
-                        >
-                          <div
-                            className="flex items-center justify-center"
-                            data-tooltip-id="more-tooltip"
-                            data-tooltip-content={translate('actions.more')}
-                            data-tooltip-place="bottom"
-                          >
-                            <Button variant="tertiary" className="aspect-square">
-                              <DotsThreeVertical size={24} />
-                            </Button>
-                            <TooltipElement id="more-tooltip" delayShow={DELAY_SHOW_MS} />
-                          </div>
-                        </Dropdown>
-                      )}
-                    </div>
-                  </>
-                )}
-                {separatorV}
-                <div className="flex items-center justify-center">
-                  <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
-                    {viewModesIcons[viewMode]}
-                  </Button>
-                  <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
-                </div>
-              </div>
-            )}
+                                    )}
+                                  </Menu.Item>
+                                  <Menu.Item>
+                                    {({ active }) => (
+                                      <div
+                                        onClick={onUploadFolderButtonClicked}
+                                        className={`${
+                                          active && 'bg-gray-5'
+                                        } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                      >
+                                        <UploadSimple size={20} />
+                                        <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+                                      </div>
+                                    )}
+                                  </Menu.Item>
+                                </Menu.Items>
+                              )}
+                            </Transition>
+                          </>
+                        );
+                      }}
+                    </Menu>
+                  </div>
+                  {!isTrash && <DriveTopBarItems />}
+                </>
+              )}
+              <DriveTopBarActions
+                hasAnyItemSelected={hasAnyItemSelected}
+                isTrash={isTrash}
+                selectedItems={selectedItems}
+                separatorV={separatorV}
+                tooltipDelay={DELAY_SHOW_MS}
+                currentFolderId={currentFolderId}
+                setEditNameItem={setEditNameItem}
+                hasItems={hasItems}
+              />
+              {!isTrash && (
+                <>
+                  {separatorV}
+                  <div className="flex items-center justify-center">
+                    <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
+                      {viewModesIcons[viewMode]}
+                    </Button>
+                    <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
+                  </div>
+                </>
+              )}
+            </div>
             {isTrash && (
               <div className="flex items-center justify-center">
                 <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
@@ -1044,37 +830,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     );
                   }}
                 </Menu>
-              </div>
-            )}
-            {isTrash && hasAnyItemSelected && (
-              <div
-                className="flex items-center justify-center"
-                data-tooltip-id="restore-tooltip"
-                data-tooltip-content={translate('trash.item-menu.restore')}
-                data-tooltip-place="bottom"
-              >
-                <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
-                  <ClockCounterClockwise className="h-6 w-6" />
-                </Button>
-                <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
-              </div>
-            )}
-            {isTrash && (
-              <div
-                className="flex items-center justify-center"
-                data-tooltip-id="delete-permanently-tooltip"
-                data-tooltip-content={translate('trash.item-menu.delete-permanently')}
-                data-tooltip-place="bottom"
-              >
-                <Button
-                  variant="tertiary"
-                  className="aspect-square"
-                  disabled={!hasItems}
-                  onClick={onDeletePermanentlyButtonClicked}
-                >
-                  <Trash className="h-5 w-5" />
-                </Button>
-                <TooltipElement id="delete-permanently-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
           </div>
