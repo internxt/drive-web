@@ -280,7 +280,7 @@ const Navbar = (props: NavbarProps) => {
             onMouseEnter={() => setPreventBlur(true)}
             onMouseLeave={() => setPreventBlur(false)}
           >
-            <div className="flex w-full flex-shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5">
+            <div className="flex w-full flex-shrink-0 items-center justify-between overflow-y-auto border-b border-gray-5 px-2.5 py-2.5">
               <button type="button" className="flex items-center space-x-2">
                 {filterItems.map((item) => (
                   <FilterItem
@@ -298,7 +298,7 @@ const Navbar = (props: NavbarProps) => {
                 type="button"
                 className={`${
                   filters.length === 0 && 'pointer-events-none opacity-0'
-                } flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5`}
+                } ml-2 flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5`}
                 onClick={() => setFilters([])}
               >
                 {translate('general.searchBar.filters.clear')}
