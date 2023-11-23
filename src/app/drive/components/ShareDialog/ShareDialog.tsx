@@ -82,7 +82,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
-  const [showLoader, setShowLoader] = useState(true);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('restricted');
@@ -112,18 +111,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
-    setShowLoader(true);
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        setShowLoader(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
@@ -191,7 +179,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
     setAccessMode(shareAccessMode);
 
-    // TODO -> Load invited users
     if (!itemToShare?.item) return;
 
     try {
@@ -266,10 +253,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   const onInviteUser = () => {
-    // TODO -> Open invite user screen
-    // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
-    // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
-    // OR THAT LOGIC WILL BE DONE BY THE BACKEND
     setView('invite');
     closeSelectedUserPopover();
   };
@@ -438,7 +421,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
               {accessMode !== 'public' ? (
-                invitedUsers.length === 0 && showLoader ? (
+                invitedUsers.length === 0 && isLoading ? (
                   <>
                     {Array.from({ length: 4 }, (_, i) => (
                       <InvitedUsersSkeletonLoader key={`loader-${i}`} />
