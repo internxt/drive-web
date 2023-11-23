@@ -44,6 +44,9 @@ const DriveTopBarActions = ({
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
 
+  const hasItemsAndIsNotTrash = hasAnyItemSelected && !isTrash;
+  const hasItemsAndIsTrash = hasAnyItemSelected && isTrash;
+
   const onDownloadButtonClicked = (): void => {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
   };
@@ -172,7 +175,7 @@ const DriveTopBarActions = ({
 
   return (
     <>
-      {hasAnyItemSelected && !isTrash && (
+      {hasItemsAndIsNotTrash && (
         <>
           {separatorV}
           <div className="flex items-center justify-center">
@@ -269,7 +272,7 @@ const DriveTopBarActions = ({
           </div>
         </>
       )}
-      {isTrash && hasAnyItemSelected && (
+      {hasItemsAndIsTrash && (
         <div
           className="flex items-center justify-center"
           data-tooltip-id="restore-tooltip"
