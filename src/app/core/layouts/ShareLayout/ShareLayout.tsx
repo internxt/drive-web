@@ -66,7 +66,6 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
             <div className="flex h-full flex-col justify-center space-y-20">
               <div className="flex flex-col space-y-2">
-                <span className="text-xl opacity-60">{translate('shareLayout.title')}</span>
                 <p className="text-3xl font-semibold leading-none">{translate('shareLayout.subtitle')}</p>
               </div>
 
@@ -79,7 +78,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 ].map((item) => (
                   <div className="flex flex-row items-center space-x-3" key={item.id}>
                     <item.icon className="h-6 w-6" />
-                    <span>{item.label}</span>
+                    <span className="text-lg font-medium">{item.label}</span>
                   </div>
                 ))}
               </div>
@@ -92,7 +91,12 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <button className="button-primary">{translate('shareLayout.tryInternxt')}</button>
+                <button
+                  className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-60 px-6
+                        font-medium text-white"
+                >
+                  {translate('shareLayout.tryInternxt')}
+                </button>
               </a>
             )}
           </div>
