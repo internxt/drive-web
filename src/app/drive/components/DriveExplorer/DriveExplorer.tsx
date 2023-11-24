@@ -607,126 +607,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
-
-            <div className="flex shrink-0 flex-row">
-              {!isTrash && (
-                <div className="flex items-center justify-center">
-                  <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
-                    {({ open, close }) => {
-                      useEffect(() => {
-                        if (!open) {
-                          setOpenedWithRightClick(false);
-                          setPosX(0);
-                          setPosY(0);
-                        }
-                      }, [open]);
-
-                      return (
-                        <>
-                          <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
-                            <Button variant="primary" className="hidden">
-                              <div className="flex items-center justify-center space-x-2.5">
-                                <span className="font-medium">{translate('actions.upload.new')}</span>
-                                <div className="flex items-center space-x-0.5">
-                                  <Plus weight="bold" className="h-4 w-4" />
-                                  <CaretDown weight="fill" className="h-3 w-3" />
-                                </div>
-                              </div>
-                            </Button>
-                          </Menu.Button>
-                          <Transition
-                            className="absolute"
-                            enter="transition origin-top-right duration-100 ease-out"
-                            enterFrom="scale-95 opacity-0"
-                            enterTo="scale-100 opacity-100"
-                            leave="transition origin-top-right duration-100 ease-out"
-                            leaveFrom="scale-95 opacity-100"
-                            leaveTo="scale-100 opacity-0"
-                            style={
-                              openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }
-                            }
-                          >
-                            {open && (
-                              <Menu.Items
-                                className={
-                                  'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
-                                }
-                              >
-                                <Menu.Item>
-                                  {({ active }) => {
-                                    useHotkeys('shift+F', () => {
-                                      if (open) {
-                                        close();
-                                        onCreateFolderButtonClicked();
-                                      }
-                                    });
-
-                                    return (
-                                      <div
-                                        onClick={onCreateFolderButtonClicked}
-                                        className={`${
-                                          active && 'bg-gray-5'
-                                        } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                      >
-                                        <FolderSimplePlus size={20} />
-                                        <p>{translate('actions.upload.folder')}</p>
-                                        <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                                          <ArrowFatUp size={14} /> F
-                                        </span>
-                                      </div>
-                                    );
-                                  }}
-                                </Menu.Item>
-                                <div className="mx-3 my-px flex border-t border-gray-5" />
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <div
-                                      onClick={onUploadFileButtonClicked}
-                                      className={`${
-                                        active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                    >
-                                      <FileArrowUp size={20} />
-                                      <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
-                                    </div>
-                                  )}
-                                </Menu.Item>
-                                <Menu.Item>
-                                  {({ active }) => (
-                                    <div
-                                      onClick={onUploadFolderButtonClicked}
-                                      className={`${
-                                        active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
-                                    >
-                                      <UploadSimple size={20} />
-                                      <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
-                                    </div>
-                                  )}
-                                </Menu.Item>
-                              </Menu.Items>
-                            )}
-                          </Transition>
-                        </>
-                      );
-                    }}
-                  </Menu>
-                  <DriveTopBarItems />
-                </div>
-              )}
-              <DriveTopBarActions
-                hasAnyItemSelected={hasAnyItemSelected}
-                isTrash={isTrash}
-                selectedItems={selectedItems}
-                currentFolderId={currentFolderId}
-                setEditNameItem={setEditNameItem}
-                hasItems={hasItems}
-              />
-            </div>
-            {isTrash && (
+            {/* General Dropdown for Drive Explorer/Trash */}
+            {!isTrash && (
               <div className="flex items-center justify-center">
                 <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
-                  {({ open }) => {
+                  {({ open, close }) => {
                     useEffect(() => {
                       if (!open) {
                         setOpenedWithRightClick(false);
@@ -737,7 +622,17 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
                     return (
                       <>
-                        <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
+                        <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}>
+                          <Button variant="primary" className="hidden">
+                            <div className="flex items-center justify-center space-x-2.5">
+                              <span className="font-medium">{translate('actions.upload.new')}</span>
+                              <div className="flex items-center space-x-0.5">
+                                <Plus weight="bold" className="h-4 w-4" />
+                                <CaretDown weight="fill" className="h-3 w-3" />
+                              </div>
+                            </div>
+                          </Button>
+                        </Menu.Button>
                         <Transition
                           className="absolute"
                           enter="transition origin-top-right duration-100 ease-out"
@@ -757,15 +652,54 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                               }
                             >
                               <Menu.Item>
+                                {({ active }) => {
+                                  useHotkeys('shift+F', () => {
+                                    if (open) {
+                                      close();
+                                      onCreateFolderButtonClicked();
+                                    }
+                                  });
+
+                                  return (
+                                    <div
+                                      onClick={onCreateFolderButtonClicked}
+                                      className={`${
+                                        active && 'bg-gray-5'
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    >
+                                      <FolderSimplePlus size={20} />
+                                      <p>{translate('actions.upload.folder')}</p>
+                                      <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
+                                        <ArrowFatUp size={14} /> F
+                                      </span>
+                                    </div>
+                                  );
+                                }}
+                              </Menu.Item>
+                              <div className="mx-3 my-px flex border-t border-gray-5" />
+                              <Menu.Item>
                                 {({ active }) => (
                                   <div
-                                    onClick={onDeletePermanentlyButtonClicked}
+                                    onClick={onUploadFileButtonClicked}
                                     className={`${
                                       active && 'bg-gray-5'
                                     } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
                                   >
-                                    <Trash size={20} />
-                                    <p>{translate('drive.clearTrash.accept')}</p>
+                                    <FileArrowUp size={20} />
+                                    <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
+                                  </div>
+                                )}
+                              </Menu.Item>
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <div
+                                    onClick={onUploadFolderButtonClicked}
+                                    className={`${
+                                      active && 'bg-gray-5'
+                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                  >
+                                    <UploadSimple size={20} />
+                                    <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
                                   </div>
                                 )}
                               </Menu.Item>
@@ -776,9 +710,71 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     );
                   }}
                 </Menu>
+                <DriveTopBarItems />
               </div>
             )}
+            <DriveTopBarActions
+              hasAnyItemSelected={hasAnyItemSelected}
+              isTrash={isTrash}
+              selectedItems={selectedItems}
+              currentFolderId={currentFolderId}
+              setEditNameItem={setEditNameItem}
+              hasItems={hasItems}
+            />
           </div>
+          {isTrash && (
+            <div className="flex items-center justify-center">
+              <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
+                {({ open }) => {
+                  useEffect(() => {
+                    if (!open) {
+                      setOpenedWithRightClick(false);
+                      setPosX(0);
+                      setPosY(0);
+                    }
+                  }, [open]);
+
+                  return (
+                    <>
+                      <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
+                      <Transition
+                        className="absolute"
+                        enter="transition origin-top-right duration-100 ease-out"
+                        enterFrom="scale-95 opacity-0"
+                        enterTo="scale-100 opacity-100"
+                        leave="transition origin-top-right duration-100 ease-out"
+                        leaveFrom="scale-95 opacity-100"
+                        leaveTo="scale-100 opacity-0"
+                        style={openedWithRightClick ? { top: posY, left: posX, zIndex: 99 } : { right: 0, zIndex: 99 }}
+                      >
+                        {open && (
+                          <Menu.Items
+                            className={
+                              'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                            }
+                          >
+                            <Menu.Item>
+                              {({ active }) => (
+                                <div
+                                  onClick={onDeletePermanentlyButtonClicked}
+                                  className={`${
+                                    active && 'bg-gray-5'
+                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                >
+                                  <Trash size={20} />
+                                  <p>{translate('drive.clearTrash.accept')}</p>
+                                </div>
+                              )}
+                            </Menu.Item>
+                          </Menu.Items>
+                        )}
+                      </Transition>
+                    </>
+                  );
+                }}
+              </Menu>
+            </div>
+          )}
 
           <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />

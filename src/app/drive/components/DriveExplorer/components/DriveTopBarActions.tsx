@@ -209,7 +209,7 @@ const DriveTopBarActions = ({
   };
 
   return (
-    <>
+    <div className="flex shrink-0 flex-row">
       {hasItemsAndIsNotTrash && (
         <>
           {separatorV}
@@ -349,7 +349,7 @@ const DriveTopBarActions = ({
           <TooltipElement id="delete-permanently-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       )}
-    </>
+    </div>
   );
 };
 
