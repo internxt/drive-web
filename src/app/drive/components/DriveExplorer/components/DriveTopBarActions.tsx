@@ -1,10 +1,19 @@
-import { ClockCounterClockwise, DotsThreeVertical, DownloadSimple, Link, Trash, Users } from '@phosphor-icons/react';
+import {
+  ClockCounterClockwise,
+  DotsThreeVertical,
+  DownloadSimple,
+  Link,
+  Rows,
+  SquaresFour,
+  Trash,
+  Users,
+} from '@phosphor-icons/react';
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import Button from '../../../../shared/components/Button/Button';
 import Dropdown from '../../../../shared/components/Dropdown';
 import TooltipElement from '../../../../shared/components/Tooltip/Tooltip';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { useAppDispatch } from '../../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
 import { uiActions } from '../../../../store/slices/ui';
 import {
@@ -17,7 +26,7 @@ import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import shareService from '../../../../share/services/share.service';
-import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
+import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 
 const DriveTopBarActions = ({
@@ -44,8 +53,37 @@ const DriveTopBarActions = ({
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
 
+  const viewMode = useAppSelector((state) => state.storage.viewMode);
+
   const hasItemsAndIsNotTrash = hasAnyItemSelected && !isTrash;
   const hasItemsAndIsTrash = hasAnyItemSelected && isTrash;
+
+  const viewModesIcons = {
+    [FileViewMode.List]: (
+      <SquaresFour
+        size={24}
+        className="outline-none"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.gridMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
+    [FileViewMode.Grid]: (
+      <Rows
+        size={24}
+        className="outline-none"
+        data-tooltip-id="viewMode-tooltip"
+        data-tooltip-content={translate('drive.viewMode.listMode')}
+        data-tooltip-place="bottom"
+      />
+    ),
+  };
+
+  const onViewModeButtonClicked = (): void => {
+    const setViewMode: FileViewMode = viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
+
+    dispatch(storageActions.setViewMode(setViewMode));
+  };
 
   const onDownloadButtonClicked = (): void => {
     dispatch(storageThunks.downloadItemsThunk(selectedItems));
@@ -269,6 +307,17 @@ const DriveTopBarActions = ({
                 </div>
               </Dropdown>
             )}
+          </div>
+        </>
+      )}
+      {!isTrash && (
+        <>
+          {separatorV}
+          <div className="flex items-center justify-center">
+            <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
+              {viewModesIcons[viewMode]}
+            </Button>
+            <TooltipElement id="viewMode-tooltip" delayShow={tooltipDelay} />
           </div>
         </>
       )}
