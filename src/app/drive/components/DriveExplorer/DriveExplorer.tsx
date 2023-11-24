@@ -345,7 +345,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           parentFolderId: currentFolderId,
         }),
       ).then(() => {
-        onFileUploaded ? onFileUploaded() : null;
+        onFileUploaded && onFileUploaded();
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
       setFileInputKey(Date.now());
