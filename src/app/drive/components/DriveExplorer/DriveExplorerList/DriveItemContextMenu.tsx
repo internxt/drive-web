@@ -1,11 +1,11 @@
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import { t } from 'i18next';
 import {
-  ArrowsOutCardinal,
   Backspace,
   ClockCounterClockwise,
   DownloadSimple,
   Eye,
+  Icon,
   Info,
   Link,
   LinkBreak,
@@ -17,6 +17,7 @@ import { Device } from '../../../../backups/types';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import { AdvancedSharedItem } from '../../../../share/types';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 
 const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
   name: t('drive.dropdown.openPreview'),
@@ -107,7 +108,7 @@ const getMoveToTrashMenuItem = (moveToTrash: (target?) => void) => ({
 
 const getMoveItemMenuItem = (moveItem: (target?) => void) => ({
   name: t('drive.dropdown.move'),
-  icon: ArrowsOutCardinal,
+  icon: MoveActionIcon as Icon,
   action: moveItem,
   disabled: () => {
     return false;

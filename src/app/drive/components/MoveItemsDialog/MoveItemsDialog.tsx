@@ -112,7 +112,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       handleDialogBreadcrumbs(folderId, name);
 
       if (folders) {
-        const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
+        const unselectedFolders = folders?.filter((folderItem) => {
+          return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+        });
         setShownFolders(unselectedFolders);
       } else {
         setShownFolders([]);
