@@ -1,8 +1,10 @@
+@tailwind components;
+
 @layer components {
   .file-activity-tabs-inner-container {
     top: 1px;
 
-    @apply relative w-full flex justify-center;
+    @apply relative flex w-full justify-center;
   }
 
   .file-activity-info-item {

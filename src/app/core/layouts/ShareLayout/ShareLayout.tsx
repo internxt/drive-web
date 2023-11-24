@@ -56,7 +56,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
       <div className="flex h-screen flex-row items-stretch justify-center bg-white text-cool-gray-90">
         {/* Banner */}
         <div
-          className="relative hidden h-full w-96 flex-shrink-0 flex-col text-white lg:flex"
+          className="relative hidden h-full w-96 shrink-0 flex-col text-white lg:flex"
           style={{ background: 'radial-gradient(50% 50% at 50% 50%, #0058DB 0%, #161616 100%)' }}
         >
           <div className="z-10 flex h-full flex-col space-y-12 p-12">
@@ -101,16 +101,16 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
         {/* Download container */}
         <div className="flex flex-1 flex-col">
           {/* Top bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             {isAuthenticated ? (
               <>
                 {/* User avatar */}
                 <Menu as="div" className="relative inline-block text-left">
                   <div>
                     <Menu.Button
-                      className="focus:outline-none inline-flex w-full justify-center rounded-lg px-4
-                                              py-2 font-medium focus-visible:ring-2
-                                              focus-visible:ring-blue-20 focus-visible:ring-opacity-75"
+                      className="inline-flex w-full justify-center rounded-lg px-4 py-2
+                                              font-medium focus:outline-none focus-visible:ring-2
+                                              focus-visible:ring-blue-20/75"
                     >
                       <div className="flex flex-row space-x-3">
                         <div
@@ -128,15 +128,15 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   <Transition
                     as={Fragment}
                     enter="transition ease-out duration-100"
-                    enterFrom="transform opacity-0 scale-95"
-                    enterTo="transform opacity-100 scale-100"
+                    enterFrom="opacity-0 scale-95"
+                    enterTo="opacity-100 scale-100"
                     leave="transition ease-in duration-75"
-                    leaveFrom="transform opacity-100 scale-100"
-                    leaveTo="transform opacity-0 scale-95"
+                    leaveFrom="opacity-100 scale-100"
+                    leaveTo="opacity-0 scale-95"
                   >
                     <Menu.Items
-                      className="focus:outline-none absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white
-                                            p-1 shadow-lg ring-1 ring-cool-gray-100 ring-opacity-5
+                      className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white p-1
+                                            shadow-lg ring-1 ring-cool-gray-100/5 focus:outline-none
                                             "
                     >
                       <Menu.Item>
@@ -172,7 +172,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               logout();
                             }}
-                            className={`${active && 'bg-red-10 bg-opacity-50 text-red-60'} group flex w-full
+                            className={`${active && 'bg-red-10/50 text-red-60'} group flex w-full
                                             items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.logout')}
@@ -228,7 +228,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
           {/* File container */}
           <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
           {/* Bottom bar */}
-          <div className="hidden h-20 flex-shrink-0 flex-row items-center justify-end px-6 sm:flex">
+          <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             <div className="ml-auto px-4">
               <ReportButton />
             </div>

@@ -7,7 +7,7 @@ const DriveListItemSkeleton = (): JSX.Element => {
       <div className="box-content flex w-1/12 cursor-pointer items-center px-3 opacity-50">
         <Skeleton className="rounded-lg" height={32} width={32} />
       </div>
-      <div className="flex flex-grow cursor-pointer items-center opacity-50">
+      <div className="flex grow cursor-pointer items-center opacity-50">
         <Skeleton width={256} />
       </div>
       <div className="hidden w-2/12 items-center opacity-50 xl:flex"></div>

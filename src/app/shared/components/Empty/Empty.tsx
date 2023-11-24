@@ -22,8 +22,8 @@ export default function Empty({ icon, title, subtitle, action, contextMenuClick 
       <button
         onClick={action.onClick}
         className={`mx-auto flex items-center rounded-lg ${
-          action.style === 'elevated' ? 'mt-5 bg-primary' : 'mt-2.5 bg-transparent'
-        } h-10 bg-opacity-10 px-5 font-medium text-primary hover:bg-opacity-15 active:bg-opacity-20`}
+          action.style === 'elevated' ? 'mt-5 bg-primary/10' : 'mt-2.5 bg-transparent'
+        } h-10 px-5 font-medium text-primary hover:bg-primary/15 active:bg-primary/20`}
       >
         {action.text}
         <action.icon className="ml-2" size={20} weight="bold" />

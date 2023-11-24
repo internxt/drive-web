@@ -211,7 +211,7 @@ ListProps<T, F>): JSX.Element {
       className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
     >
       {/* HEAD */}
-      <div className="flex h-12 flex-shrink-0 flex-row px-5">
+      <div className="flex h-12 shrink-0 flex-row px-5">
         {/* COLUMN */}
         <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
           {/* SELECTION CHECKBOX */}
@@ -227,7 +227,7 @@ ListProps<T, F>): JSX.Element {
             <div
               onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
               key={column.name.toString()}
-              className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+              className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
                 column.width
               } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
             >
@@ -242,7 +242,7 @@ ListProps<T, F>): JSX.Element {
             </div>
           ))}
           {isVerticalScrollbarVisible && <div className="mr-15px" />}
-          {menu && <div className="flex h-full w-12 flex-shrink-0" />}
+          {menu && <div className="flex h-full w-12 shrink-0" />}
         </div>
       </div>
 

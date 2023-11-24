@@ -656,7 +656,8 @@
       },
       "errors": {
         "updatingRole": "无法更新角色，请稍后重试.",
-        "copy-to-clipboard": "分享项目时出错，请稍后再试."
+        "copy-to-clipboard": "分享项目时出错，请稍后再试.",
+        "update-sharing-access": "访问模式无法更新，请稍后再试"
       },
       "general": {
         "generalAccess": "访问设置",

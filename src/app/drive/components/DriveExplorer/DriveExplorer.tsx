@@ -490,8 +490,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const FileIcon = iconService.getItemIcon(false);
   const filesEmptyImage = (
     <div className="relative h-32 w-32">
-      <FileIcon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-      <FileIcon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      <FileIcon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+      <FileIcon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
     </div>
   );
 
@@ -527,9 +527,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const MenuItemToGetSize = () => (
     <div
-      className={
-        'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
-      }
+      className={'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'}
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -545,7 +543,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             <p>{translate('actions.upload.folder')}</p>
           </div>
 
-          <div className="my-px mx-3 flex border-t border-gray-5" />
+          <div className="mx-3 my-px flex border-t border-gray-5" />
 
           <div
             className={
@@ -630,7 +628,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         },
         {
           label: translate('drive.list.columns.name'),
-          width: 'flex flex-grow cursor-pointer items-center pl-6',
+          width: 'flex grow cursor-pointer items-center pl-6',
           name: 'name',
           orderable: true,
           defaultDirection: 'ASC',
@@ -655,7 +653,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const driveExplorer = (
     <div
-      className="flex h-full flex-grow flex-col"
+      className="flex h-full grow flex-col"
       data-test="drag-and-drop-area"
       onContextMenu={isListElementsHovered ? () => null : handleContextMenuClick}
     >
@@ -669,7 +667,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }}
       />
       <NameCollisionContainer />
-      <MoveItemsDialog items={[...items]} onItemsMoved={onItemsMoved} isTrash={isTrash} />
+      <MoveItemsDialog
+        items={[...items]}
+        onItemsMoved={() => {
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          onItemsMoved?.();
+        }}
+        isTrash={isTrash}
+      />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
@@ -679,7 +684,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item={editNameItem}
           isOpen={true}
           onSuccess={() => {
-            dispatch(fetchSortedFolderContentThunk(currentFolderId));
+            setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
           }}
           onClose={() => {
             setEditNameItem(null);
@@ -688,15 +693,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       )}
       <BannerWrapper />
 
-      <div className="z-0 flex h-full w-full max-w-full flex-grow">
-        <div className="flex w-1 flex-grow flex-col">
-          <div className="z-10 flex h-14 max-w-full flex-shrink-0 justify-between px-5">
+      <div className="z-0 flex h-full w-full max-w-full grow">
+        <div className="flex w-1 grow flex-col">
+          <div className="z-10 flex h-14 max-w-full shrink-0 justify-between px-5">
             <div className={`mr-20 flex w-full min-w-0 flex-1 flex-row items-center text-lg ${titleClassName || ''}`}>
               {title}
             </div>
 
             {!isTrash && (
-              <div className="flex flex-shrink-0 flex-row">
+              <div className="flex shrink-0 flex-row">
                 <div className="flex items-center justify-center">
                   <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
                     {({ open, close }) => {
@@ -723,10 +728,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           </Menu.Button>
                           <Transition
                             className="absolute"
-                            enter="transform transition origin-top-right duration-100 ease-out"
+                            enter="transition origin-top-right duration-100 ease-out"
                             enterFrom="scale-95 opacity-0"
                             enterTo="scale-100 opacity-100"
-                            leave="transform transition origin-top-right duration-100 ease-out"
+                            leave="transition origin-top-right duration-100 ease-out"
                             leaveFrom="scale-95 opacity-100"
                             leaveTo="scale-100 opacity-0"
                             style={
@@ -736,7 +741,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                             {open && (
                               <Menu.Items
                                 className={
-                                  'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                  'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                                 }
                               >
                                 <Menu.Item>
@@ -757,14 +762,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                       >
                                         <FolderSimplePlus size={20} />
                                         <p>{translate('actions.upload.folder')}</p>
-                                        <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                        <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                                           <ArrowFatUp size={14} /> F
                                         </span>
                                       </div>
                                     );
                                   }}
                                 </Menu.Item>
-                                <div className="my-px mx-3 flex border-t border-gray-5" />
+                                <div className="mx-3 my-px flex border-t border-gray-5" />
                                 <Menu.Item>
                                   {({ active }) => (
                                     <div
@@ -903,10 +908,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         <Menu.Button ref={menuButtonRef as LegacyRef<HTMLButtonElement>}></Menu.Button>
                         <Transition
                           className="absolute"
-                          enter="transform transition origin-top-right duration-100 ease-out"
+                          enter="transition origin-top-right duration-100 ease-out"
                           enterFrom="scale-95 opacity-0"
                           enterTo="scale-100 opacity-100"
-                          leave="transform transition origin-top-right duration-100 ease-out"
+                          leave="transition origin-top-right duration-100 ease-out"
                           leaveFrom="scale-95 opacity-100"
                           leaveTo="scale-100 opacity-0"
                           style={
@@ -916,7 +921,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'outline-none mt-1 rounded-md border border-black border-opacity-8 bg-white py-1.5 text-base shadow-subtle-hard'
+                                'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
                               }
                             >
                               <Menu.Item>
@@ -974,10 +979,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             )}
           </div>
 
-          <div className="z-0 flex h-full flex-grow flex-col justify-between overflow-y-hidden">
+          <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
             {hasItems && (
-              <div className="flex flex-grow flex-col justify-between overflow-hidden">
+              <div className="flex grow flex-col justify-between overflow-hidden">
                 <ViewModeComponent
                   folderId={currentFolderId}
                   items={items}
@@ -985,7 +990,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   onEndOfScroll={fetchItems}
                   hasMoreItems={hasMoreItems}
                   isTrash={isTrash}
-                  onHoverListItems={(areHovered) => setIsListElementsHovered(areHovered)}
+                  onHoverListItems={(areHovered) => {
+                    setIsListElementsHovered(areHovered);
+                  }}
                   title={title}
                 />
               </div>

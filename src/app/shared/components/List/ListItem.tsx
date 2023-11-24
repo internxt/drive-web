@@ -103,7 +103,7 @@ export default function ListItem<T extends { id: string }>({
   // at the same time as the view to get the size and make the necessary positional adjustments.
   const MenuItemList = () => (
     <div
-      className="outline-none z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none"
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -126,7 +126,7 @@ export default function ListItem<T extends { id: string }>({
                     {option.icon && <option.icon size={20} />}
                     <span>{option.name}</span>
                   </div>
-                  <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                  <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                     {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                       <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                     )}
@@ -148,7 +148,7 @@ export default function ListItem<T extends { id: string }>({
       onContextMenu={handleContextMenuClick}
       ref={rootWrapperRef}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
-        selected ? 'bg-primary bg-opacity-10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
+        selected ? 'bg-primary/10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -170,8 +170,8 @@ export default function ListItem<T extends { id: string }>({
       {disableItemCompositionStyles ? (
         <div
           key={0}
-          className={`flex-grow-1 relative flex h-full w-full flex-row items-center border-b ${
-            selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+          className={`grow-1 relative flex h-full w-full flex-row items-center border-b ${
+            selected ? 'border-primary/5' : 'border-gray-5'
           }`}
         >
           {itemComposition[0](item)}
@@ -180,8 +180,8 @@ export default function ListItem<T extends { id: string }>({
         new Array(itemComposition.length).fill(0).map((col, i) => (
           <div
             key={i}
-            className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
-              selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+            className={`relative flex h-full shrink-0 flex-row items-center border-b ${
+              selected ? 'border-primary/5' : 'border-gray-5'
             } ${columnsWidth[i]}`}
           >
             {itemComposition[i](item)}
@@ -189,8 +189,8 @@ export default function ListItem<T extends { id: string }>({
         ))
       )}
       <div
-        className={`flex h-14 w-12 flex-shrink-0 flex-col items-center justify-center border-b ${
-          selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+        className={`flex h-14 w-12 shrink-0 flex-col items-center justify-center border-b ${
+          selected ? 'border-primary/5' : 'border-gray-5'
         }`}
       >
         <Menu as="div" className={openedFromRightClick ? '' : 'relative'}>
@@ -229,9 +229,9 @@ export default function ListItem<T extends { id: string }>({
                 <Menu.Button
                   id={'list-item-menu-button'}
                   ref={menuButtonRef as LegacyRef<HTMLButtonElement>}
-                  className={`outline-none flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
+                  className={`flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 outline-none focus-visible:opacity-100 group-hover:opacity-100 ${
                     selected
-                      ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10 focus-visible:bg-primary focus-visible:bg-opacity-10'
+                      ? 'text-gray-80 hover:bg-primary/10 focus-visible:bg-primary/10'
                       : 'text-gray-60 hover:bg-gray-10 focus-visible:bg-gray-10'
                   }`}
                   onClick={() => onThreeDotsButtonPressed?.(item)}
@@ -286,7 +286,7 @@ export default function ListItem<T extends { id: string }>({
                                         {option.icon && <option.icon size={20} />}
                                         <span>{option.name}</span>
                                       </div>
-                                      <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
+                                      <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                                         {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
                                           <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
                                         )}
