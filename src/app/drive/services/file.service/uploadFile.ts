@@ -9,7 +9,7 @@ import { getEnvironmentConfig } from '../network.service';
 import { encryptFilename } from '../../../crypto/services/utils';
 import errorService from '../../../core/services/error.service';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { uploadFile as uploadToBucket } from 'app/network/upload';
+import { Network } from 'app/drive/services/network.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
@@ -21,23 +21,28 @@ export interface FileToUpload {
   parentFolderId: number;
 }
 
-export async function uploadFile(
-  userEmail: string,
-  file: FileToUpload,
-  isTeam: boolean,
-  updateProgressCallback: (progress: number) => void,
-  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string },
-  abortController?: AbortController,
+export interface FileUploadOptions {
+  isTeam: boolean;
+  trackingParameters: { isMultipleUpload: 0 | 1; processIdentifier: string };
+  abortController?: AbortController;
   ownerUserAuthenticationData?: {
     token: string;
     bridgeUser: string;
     bridgePass: string;
     encryptionKey: string;
     bucketId: string;
-  },
+  };
+  abortCallback?: (abort?: () => void) => void;
+}
+
+export async function uploadFile(
+  userEmail: string,
+  file: FileToUpload,
+  updateProgressCallback: (progress: number) => void,
+  options: FileUploadOptions,
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
-    ownerUserAuthenticationData ?? getEnvironmentConfig(isTeam);
+    options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 
   const trackingUploadProperties: TrackingPlan.UploadProperties = {
@@ -48,8 +53,8 @@ export async function uploadFile(
     file_name: file.name,
     bandwidth: 0,
     band_utilization: 0,
-    process_identifier: trackingParameters?.processIdentifier,
-    is_multiple: trackingParameters?.isMultipleUpload,
+    process_identifier: options.trackingParameters?.processIdentifier,
+    is_multiple: options.trackingParameters?.isMultipleUpload,
     is_brave: isBrave,
   };
   try {
@@ -70,19 +75,17 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const fileId = await uploadToBucket(bucketId, {
-      creds: {
-        pass: bridgePass,
-        user: bridgeUser,
-      },
+    const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(bucketId, {
       filecontent: file.content,
       filesize: file.size,
-      mnemonic: encryptionKey,
-      progressCallback: (totalBytes, uploadedBytes) => {
-        updateProgressCallback(uploadedBytes / totalBytes);
+      progressCallback: (progress) => {
+        updateProgressCallback(progress);
       },
-      abortController,
     });
+
+    options.abortCallback?.(abort?.abort);
+
+    const fileId = await promise;
 
     const name = encryptFilename(file.name, file.parentFolderId);
 
@@ -98,7 +101,7 @@ export async function uploadFile(
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
-    let response = await storageClient.createFileEntry(fileEntry, ownerUserAuthenticationData?.token);
+    let response = await storageClient.createFileEntry(fileEntry, options.ownerUserAuthenticationData?.token);
     if (!response.thumbnails) {
       response = {
         ...response,
@@ -106,7 +109,7 @@ export async function uploadFile(
       };
     }
 
-    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, isTeam);
+    const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
     if (generatedThumbnail && generatedThumbnail.thumbnail) {
       response.thumbnails.push(generatedThumbnail.thumbnail);
       if (generatedThumbnail.thumbnailFile) {
@@ -125,7 +128,7 @@ export async function uploadFile(
   } catch (err: unknown) {
     const castedError = errorService.castError(err);
 
-    if (!abortController?.signal.aborted) {
+    if (!options.abortController?.signal.aborted) {
       analyticsService.trackFileUploadError({
         ...trackingUploadProperties,
         bucket_id: parseInt(bucketId),

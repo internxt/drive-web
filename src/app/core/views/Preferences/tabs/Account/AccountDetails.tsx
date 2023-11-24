@@ -48,7 +48,7 @@ export default function AccountDetails({ className = '' }: { className?: string 
               className="ml-8 pr-2"
             />
           </div>
-          <Button className="flex-shrink-0" variant="secondary" onClick={() => setIsDetailsModalOpen(true)}>
+          <Button className="shrink-0" variant="secondary" onClick={() => setIsDetailsModalOpen(true)}>
             {translate('actions.edit')}
           </Button>
         </div>

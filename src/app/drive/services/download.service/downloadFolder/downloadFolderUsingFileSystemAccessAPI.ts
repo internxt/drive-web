@@ -3,9 +3,8 @@ import { items } from '@internxt/lib';
 import { getEnvironmentConfig } from '../../network.service';
 import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import { FlatFolderZip } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zipFolder.service';
 import network from 'app/network';
-import analyticsService from 'app/analytics/services/analytics.service';
 
 /**
  * @description Downloads a folder using File System Access API

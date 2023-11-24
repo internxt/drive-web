@@ -3,6 +3,19 @@
     "title": "Gérez vos fichiers, votre compte et votre abonnement sur l'application",
     "logOut": "Déconnexion"
   },
+  "blackFridayBanner": {
+    "header": "Choisissez la confidentialité.",
+    "title": "Offre du Black Friday",
+    "cta": "Obtenez l'offre",
+    "features": {
+      "discount": "-91% sur notre plans annuels",
+      "safeCloud": "Stockage en nuage sécurisé",
+      "openSource": "Open source et transparent",
+      "endToEnd": "Transferts cryptés de bout en bout",
+      "unauthorized": "Aucun accès non autorisé",
+      "offerEnds": "L'offre se termine le 30 Novembre"
+    }
+  },
   "valentinesBanner": {
     "title": "L'amour sans limites !",
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
@@ -573,7 +586,8 @@
       },
       "errors": {
         "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
-        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard."
+        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard.",
+        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard"
       },
       "general": {
         "generalAccess": "Accès général",

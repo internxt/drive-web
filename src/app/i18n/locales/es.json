@@ -3,6 +3,19 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
+  "blackFridayBanner": {
+    "header": "¡Elige la privacidad!",
+    "title": "Oferta de internxt de Black Friday",
+    "cta": "¡Obtén el descuento!",
+    "features": {
+      "discount": "91% de descuento en planes anuales",
+      "safeCloud": "Almacenamiento seguro en la nube",
+      "openSource": "Código abierto y transparente",
+      "endToEnd": "Cifrado de extremo a extremo",
+      "unauthorized": "Sin acceso no autorizado",
+      "offerEnds": "La oferta termina el 30 de Noviembre"
+    }
+  },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
@@ -638,7 +651,8 @@
       },
       "errors": {
         "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde.",
-        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde."
+        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde.",
+        "update-sharing-access": "El modo de acceso no se pudo actualizar, por favor inténtelo de nuevo más tarde"
       },
       "general": {
         "generalAccess": "Acceso general",

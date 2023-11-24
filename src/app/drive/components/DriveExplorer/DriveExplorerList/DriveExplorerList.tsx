@@ -115,7 +115,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         updatedSelectedItems = [...updatedSelectedItems, change.props];
       }
     }
-    //  const deselecteditems = props.selectedItems.filter((selectedItem) => updatedSelectedItems.map().includes())
+
     const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
     dispatch(storageActions.deselectItems(deselecteditems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
@@ -257,14 +257,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   ];
 
   return (
-    <div className="flex h-full flex-grow flex-col">
+    <div className="flex h-full grow flex-col">
       <div className="h-full w-full overflow-y-auto">
         {editNameItem && (
           <EditItemNameDialog
             item={editNameItem}
             isOpen={true}
             onSuccess={() => {
-              dispatch(fetchSortedFolderContentThunk(currentFolderId));
+              setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
             }}
             onClose={() => {
               setEditNameItem(null);
@@ -275,7 +275,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center min-w-driveNameHeader',
+              width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
