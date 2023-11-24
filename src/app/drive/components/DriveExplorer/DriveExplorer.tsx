@@ -1,17 +1,6 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
 import { connect } from 'react-redux';
-import {
-  Trash,
-  UploadSimple,
-  FolderSimplePlus,
-  Rows,
-  SquaresFour,
-  FileArrowUp,
-  Plus,
-  ClockCounterClockwise,
-  CaretDown,
-  ArrowFatUp,
-} from '@phosphor-icons/react';
+import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';
@@ -356,7 +345,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           parentFolderId: currentFolderId,
         }),
       ).then(() => {
-        onFileUploaded && onFileUploaded();
+        onFileUploaded ? onFileUploaded() : null;
         dispatch(fetchSortedFolderContentThunk(currentFolderId));
       });
       setFileInputKey(Date.now());
@@ -415,8 +404,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
-
   const EmptyTrash = () => (
     <div className="flex h-36 w-36 items-center justify-center rounded-full bg-gray-5">
       <Trash size={80} weight="thin" />
@@ -425,8 +412,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const handleContextMenuClick = (event) => {
     event.preventDefault();
-    const childWidth = menuItemsRef?.current?.offsetWidth || 180;
-    const childHeight = menuItemsRef?.current?.offsetHeight || 300;
+    const childWidth = menuItemsRef?.current?.offsetWidth ?? 180;
+    const childHeight = menuItemsRef?.current?.offsetHeight ?? 300;
 
     let x = event.clientX;
     let y = event.clientY;
@@ -731,8 +718,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                 hasAnyItemSelected={hasAnyItemSelected}
                 isTrash={isTrash}
                 selectedItems={selectedItems}
-                separatorV={separatorV}
-                tooltipDelay={DELAY_SHOW_MS}
                 currentFolderId={currentFolderId}
                 setEditNameItem={setEditNameItem}
                 hasItems={hasItems}

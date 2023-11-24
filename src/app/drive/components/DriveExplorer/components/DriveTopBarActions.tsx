@@ -11,7 +11,7 @@ import {
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import Button from '../../../../shared/components/Button/Button';
 import Dropdown from '../../../../shared/components/Dropdown';
-import TooltipElement from '../../../../shared/components/Tooltip/Tooltip';
+import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
@@ -30,18 +30,14 @@ import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive
 import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 
 const DriveTopBarActions = ({
-  separatorV,
   selectedItems,
-  tooltipDelay,
   currentFolderId,
   setEditNameItem,
   hasAnyItemSelected,
   isTrash,
   hasItems,
 }: {
-  separatorV: JSX.Element;
   selectedItems: DriveItemData[];
-  tooltipDelay: number;
   currentFolderId: number;
   setEditNameItem: (item: DriveItemData) => void;
   hasAnyItemSelected: boolean;
@@ -54,6 +50,7 @@ const DriveTopBarActions = ({
   const { dirtyName } = useDriveItemStoreProps();
 
   const viewMode = useAppSelector((state) => state.storage.viewMode);
+  const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
 
   const hasItemsAndIsNotTrash = hasAnyItemSelected && !isTrash;
   const hasItemsAndIsTrash = hasAnyItemSelected && isTrash;
@@ -235,7 +232,7 @@ const DriveTopBarActions = ({
                   >
                     <Users className="h-6 w-6" />
                   </Button>
-                  <TooltipElement id="share-tooltip" delayShow={tooltipDelay} />
+                  <TooltipElement id="share-tooltip" delayShow={DELAY_SHOW_MS} />
                 </div>
 
                 <div
@@ -247,7 +244,7 @@ const DriveTopBarActions = ({
                   <Button variant="tertiary" className="aspect-square" onClick={onSelectedOneItemShare}>
                     <Link className="h-6 w-6" />
                   </Button>
-                  <TooltipElement id="copyLink-tooltip" delayShow={tooltipDelay} />
+                  <TooltipElement id="copyLink-tooltip" delayShow={DELAY_SHOW_MS} />
                 </div>
               </>
             )}
@@ -261,7 +258,7 @@ const DriveTopBarActions = ({
                 <Button variant="tertiary" className="aspect-square" onClick={onMoveItemButtonClicked}>
                   <MoveActionIcon className="h-6 w-6" />
                 </Button>
-                <TooltipElement id="move-tooltip" delayShow={tooltipDelay} />
+                <TooltipElement id="move-tooltip" delayShow={DELAY_SHOW_MS} />
               </div>
             )}
             <div
@@ -273,7 +270,7 @@ const DriveTopBarActions = ({
               <Button variant="tertiary" className="aspect-square" onClick={onDownloadButtonClicked}>
                 <DownloadSimple className="h-6 w-6" />
               </Button>
-              <TooltipElement id="download-tooltip" delayShow={tooltipDelay} />
+              <TooltipElement id="download-tooltip" delayShow={DELAY_SHOW_MS} />
             </div>
             <div
               className="flex items-center justify-center"
@@ -284,7 +281,7 @@ const DriveTopBarActions = ({
               <Button variant="tertiary" className="aspect-square" onClick={onBulkDeleteButtonClicked}>
                 <Trash className="h-6 w-6" />
               </Button>
-              <TooltipElement id="trash-tooltip" delayShow={tooltipDelay} />
+              <TooltipElement id="trash-tooltip" delayShow={DELAY_SHOW_MS} />
             </div>
             {selectedItems.length === 1 && (
               <Dropdown
@@ -303,7 +300,7 @@ const DriveTopBarActions = ({
                   <Button variant="tertiary" className="aspect-square">
                     <DotsThreeVertical size={24} />
                   </Button>
-                  <TooltipElement id="more-tooltip" delayShow={tooltipDelay} />
+                  <TooltipElement id="more-tooltip" delayShow={DELAY_SHOW_MS} />
                 </div>
               </Dropdown>
             )}
@@ -317,7 +314,7 @@ const DriveTopBarActions = ({
             <Button variant="tertiary" className="aspect-square" onClick={onViewModeButtonClicked}>
               {viewModesIcons[viewMode]}
             </Button>
-            <TooltipElement id="viewMode-tooltip" delayShow={tooltipDelay} />
+            <TooltipElement id="viewMode-tooltip" delayShow={DELAY_SHOW_MS} />
           </div>
         </>
       )}
@@ -331,7 +328,7 @@ const DriveTopBarActions = ({
           <Button variant="tertiary" className="aspect-square" onClick={onRecoverButtonClicked}>
             <ClockCounterClockwise className="h-6 w-6" />
           </Button>
-          <TooltipElement id="restore-tooltip" delayShow={tooltipDelay} />
+          <TooltipElement id="restore-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       )}
       {isTrash && (
@@ -349,7 +346,7 @@ const DriveTopBarActions = ({
           >
             <Trash className="h-5 w-5" />
           </Button>
-          <TooltipElement id="delete-permanently-tooltip" delayShow={tooltipDelay} />
+          <TooltipElement id="delete-permanently-tooltip" delayShow={DELAY_SHOW_MS} />
         </div>
       )}
     </>
