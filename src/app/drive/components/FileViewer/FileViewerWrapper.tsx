@@ -23,11 +23,25 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
-import { PreviewFileItem } from '../../../share/types';
+import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
 import { uiActions } from '../../../store/slices/ui';
 import { RootState } from '../../../store';
+import localStorageService from 'app/core/services/local-storage.service';
+import {
+  contextMenuDriveItemShared,
+  contextMenuDriveItemSharedAFS,
+  contextMenuDriveNotSharedLink,
+  contextMenuTrashItems,
+} from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import useDropdownActions from '../DriveExplorer/DriveExplorerItem/hooks/useDropdownActions';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { getAppConfig } from 'app/core/services/config.service';
+
+export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
+
+type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
@@ -45,6 +59,95 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const [blob, setBlob] = useState<Blob | null>(null);
+  const user = localStorageService.getUser();
+
+  const path = getAppConfig().views.find((view) => view.path === location.pathname);
+  const pathId = path?.id as pathProps;
+  const driveActions = pathId === 'drive';
+  const recentsActions = pathId === 'recents';
+  const sharedActions = pathId === 'shared';
+  const trashActions = pathId === 'trash';
+  const isSharedItem = file.sharings && file.sharings?.length > 0;
+  const isOwner = file.credentials?.user === user?.email;
+
+  const {
+    onDownloadItemButtonClicked,
+    onMoveItemButtonClicked,
+    onCopyLinkButtonClicked,
+    onShowDetailsButtonClicked,
+    onLinkSettingsButtonClicked,
+    onMoveToTrashButtonClicked,
+    onRenameItemButtonClicked,
+    onRestoreItemButtonClicked,
+    onDeletePermanentlyButtonClicked,
+    isCurrentUserViewer,
+  } = useDropdownActions(dispatch);
+
+  const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
+    if (isSharedItem) {
+      return contextMenuDriveItemShared({
+        copyLink: onCopyLinkButtonClicked,
+        openShareAccessSettings: onLinkSettingsButtonClicked,
+        deleteLink: () => ({}),
+        showDetails: onShowDetailsButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
+    } else {
+      return contextMenuDriveNotSharedLink({
+        shareLink: onLinkSettingsButtonClicked,
+        getLink: onCopyLinkButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        showDetails: onShowDetailsButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
+    }
+  };
+
+  const recentsActionsMenu = (): ListItemMenu<DriveItemData> => {
+    return contextMenuDriveNotSharedLink({
+      shareLink: onLinkSettingsButtonClicked,
+      getLink: onCopyLinkButtonClicked,
+      renameItem: onRenameItemButtonClicked,
+      moveItem: onMoveItemButtonClicked,
+      showDetails: onShowDetailsButtonClicked,
+      downloadItem: onDownloadItemButtonClicked,
+      moveToTrash: onMoveItemButtonClicked,
+    });
+  };
+
+  const sharedActionsMenu = (): ListItemMenu<AdvancedSharedItem> => {
+    return contextMenuDriveItemSharedAFS({
+      openShareAccessSettings: isOwner ? onLinkSettingsButtonClicked : undefined,
+      copyLink: onCopyLinkButtonClicked,
+      deleteLink: () => undefined,
+      showDetails: onShowDetailsButtonClicked,
+      renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
+      moveItem: isOwner ? onMoveItemButtonClicked : undefined,
+      downloadItem: onDownloadItemButtonClicked,
+      moveToTrash: isOwner ? onMoveItemButtonClicked : undefined,
+    });
+  };
+
+  const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
+    return contextMenuTrashItems({
+      openPreview: () => ({}),
+      restoreItem: onRestoreItemButtonClicked,
+      deletePermanently: onDeletePermanentlyButtonClicked,
+    });
+  };
+
+  const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
+    if (sharedActions) return sharedActionsMenu();
+    if (recentsActions) return recentsActionsMenu();
+    if (trashActions) return trashActionsMenu();
+
+    return driveActionsMenu();
+  };
 
   useEffect(() => {
     setBlob(null);
@@ -243,6 +346,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
       setBlob={setBlob}
+      dropdownItems={topDropdownBarActionsMenu()}
     />
   ) : (
     <div className="hidden" />

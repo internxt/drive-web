@@ -42,6 +42,7 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import EditFolderNameDialog from 'app/drive/components/EditFolderNameDialog/EditFolderNameDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -985,7 +986,9 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
@@ -993,7 +996,9 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   openPreview: openPreview,
                   showDetails,
                   copyLink,
@@ -1032,6 +1037,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
         }))}
         isTrash={false}
       />
+      <EditFolderNameDialog />
       <EditItemNameDialog
         item={editNameItem}
         resourceToken={nextResourcesToken}
