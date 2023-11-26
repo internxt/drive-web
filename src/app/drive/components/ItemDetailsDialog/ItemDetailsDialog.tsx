@@ -45,7 +45,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p title={value} className="w-full text-base font-medium text-gray-100 line-clamp-2">
+            <p title={value} className="line-clamp-2 w-full text-base font-medium text-gray-100">
               {value}
             </p>
           </div>
@@ -76,6 +76,7 @@ const ItemDetailsDialog = ({
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const [isLoading, setIsLoading] = useState(false);
@@ -172,14 +173,16 @@ const ItemDetailsDialog = ({
       <div className="flex w-full flex-col items-center justify-center space-y-6 px-5">
         <div className="flex max-w-sm flex-col items-center justify-center space-y-3 py-5">
           <IconComponent width={60} height={80} />
-          <p title={itemName} className="text-center text-base font-semibold text-gray-100 line-clamp-2">
+          <p title={itemName} className="line-clamp-2 text-center text-base font-semibold text-gray-100">
             {itemName}
           </p>
-          <Button onClick={handleButtonItemClick} variant="secondary">
-            {item?.isFolder
-              ? translate('modals.itemDetailsModal.folderCta')
-              : translate('modals.itemDetailsModal.fileCta')}
-          </Button>
+          {!isFileViewerOpen && (
+            <Button onClick={handleButtonItemClick} variant="secondary">
+              {item?.isFolder
+                ? translate('modals.itemDetailsModal.folderCta')
+                : translate('modals.itemDetailsModal.fileCta')}
+            </Button>
+          )}
         </div>
         <div className="flex w-full border border-gray-5" />
 
