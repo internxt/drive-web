@@ -401,7 +401,7 @@ const contextMenuDriveItemSharedAFS = ({
   deleteLink: (item: AdvancedSharedItem) => void;
   renameItem?: (item: AdvancedSharedItem) => void;
   moveItem?: (item: AdvancedSharedItem) => void;
-  downloadItem: (item: AdvancedSharedItem) => Promise<void>;
+  downloadItem: (item: AdvancedSharedItem) => void;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [
   openShareAccessSettings && manageLinkAccessMenuItem(openShareAccessSettings),

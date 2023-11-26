@@ -90,29 +90,12 @@ const useDriveItemActions = (item) => {
     // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
   };
 
-  const onDownloadItemButtonClicked = async () => {
+  const onDownloadItemButtonClicked = () => {
     dispatch(storageThunks.downloadItemsThunk([item as DriveItemData]));
   };
 
   const onMoveToTrashButtonClicked = () => {
     moveItemsToTrash([item as DriveItemData]);
-  };
-
-  const confirmNameChange = async () => {
-    if (nameEditPending) return;
-
-    const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };
-    if (item.name !== dirtyName) {
-      setNameEditPending(true);
-      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }));
-      onNameBlurred();
-      setNameEditPending(false);
-      dispatch(storageActions.setHasMoreDriveFolders(true));
-      dispatch(storageActions.setHasMoreDriveFiles(true));
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
-    }
-
-    nameInputRef?.current?.blur();
   };
 
   const onNameBlurred = (): void => {
