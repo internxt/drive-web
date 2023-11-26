@@ -35,7 +35,6 @@ import {
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
 } from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import useDropdownActions from '../DriveExplorer/DriveExplorerItem/hooks/useDropdownActions';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';

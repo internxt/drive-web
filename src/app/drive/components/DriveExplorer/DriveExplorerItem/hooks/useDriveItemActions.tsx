@@ -115,14 +115,6 @@ const useDriveItemActions = (item) => {
     nameInputRef?.current?.blur();
   };
 
-  const onNameEnterKeyDown = (e: KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      confirmNameChange();
-    } else if (e.key === 'Escape') {
-      onNameBlurred();
-    }
-  };
-
   const onNameBlurred = (): void => {
     dispatch(uiActions.setCurrentEditingNameDirty(''));
     dispatch(uiActions.setCurrentEditingNameDriveItem(null));
@@ -188,7 +180,6 @@ const useDriveItemActions = (item) => {
     onItemClicked,
     onItemDoubleClicked,
     downloadAndSetThumbnail,
-    onNameEnterKeyDown,
     isCurrentUserViewer,
   };
 };
