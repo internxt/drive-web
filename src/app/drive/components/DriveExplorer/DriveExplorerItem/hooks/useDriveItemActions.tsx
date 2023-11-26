@@ -1,6 +1,6 @@
-import { items } from '@internxt/lib';
-
 import { MouseEvent, ChangeEvent, createRef, KeyboardEventHandler, RefObject, useState } from 'react';
+
+import { items } from '@internxt/lib';
 import { DriveFileMetadataPayload, DriveFolderMetadataPayload, DriveItemData } from '../../../../types';
 import dateService from '../../../../../core/services/date.service';
 import iconService from '../../../../services/icon.service';
@@ -13,10 +13,10 @@ import { uiActions } from '../../../../../store/slices/ui';
 import useDriveItemStoreProps from './useDriveStoreProps';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { sharedThunks } from '../../../../../store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
-import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../../../services/database.service';
+import { fetchSortedFolderContentThunk } from '../../../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -208,13 +208,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
 
   const downloadAndSetThumbnail = async () => {
     if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
-      const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: item.id });
+      const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: item.id });
       let thumbnailBlob = databaseThumbnail?.preview;
       const newThumbnail = item.thumbnails[0];
 
       if (!thumbnailBlob) {
         thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
-        updateDatabaseFilePrewiewData({
+        updateDatabaseFilePreviewData({
           fileId: item.id,
           folderId: item.folderId,
           previewBlob: thumbnailBlob,

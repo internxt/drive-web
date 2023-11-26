@@ -9,7 +9,7 @@ import { ContextMenuDriveItem } from '../../DriveExplorerList/DriveExplorerList'
 import { useAppSelector } from 'app/store/hooks';
 import useDriveItemStoreProps from './useDriveStoreProps';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from 'app/drive/services/database.service';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
 import { sharedActions, sharedSelectors } from 'app/store/slices/sharedLinks';
@@ -144,13 +144,13 @@ const useDropdownActions = (dispatch) => {
 
   const downloadAndSetThumbnail = async (item) => {
     if (item.thumbnails && item.thumbnails.length > 0 && !item.currentThumbnail) {
-      const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: item.id });
+      const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: item.id });
       let thumbnailBlob = databaseThumbnail?.preview;
       const newThumbnail = item.thumbnails[0];
 
       if (!thumbnailBlob) {
         thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
-        updateDatabaseFilePrewiewData({
+        updateDatabaseFilePreviewData({
           fileId: item.id,
           folderId: item.folderId,
           previewBlob: thumbnailBlob,

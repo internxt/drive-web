@@ -8,8 +8,8 @@ import downloadService from '../../services/download.service';
 import { useEffect, useMemo, useState } from 'react';
 import {
   getDatabaseFileSourceData,
-  getDatabaseFilePrewiewData,
-  updateDatabaseFilePrewiewData,
+  getDatabaseFilePreviewData,
+  updateDatabaseFilePreviewData,
   canFileBeCached,
   updateDatabaseFileSourceData,
 } from '../../services/database.service';
@@ -23,7 +23,7 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
-import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../share/types';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
 import { uiActions } from '../../../store/slices/ui';
@@ -202,7 +202,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
-    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+    const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
 
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
@@ -242,7 +242,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
             driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
         }
         setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-        await updateDatabaseFilePrewiewData({
+        await updateDatabaseFilePreviewData({
           fileId: driveFile.id,
           folderId: driveFile.folderId,
           previewBlob: thumbnailToUpload.content,
@@ -250,7 +250,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         });
       }
     } else if (!databaseThumbnail && thumbnailGenerated?.file) {
-      await updateDatabaseFilePrewiewData({
+      await updateDatabaseFilePreviewData({
         fileId: driveFile.id,
         folderId: driveFile.folderId,
         previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
