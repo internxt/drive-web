@@ -3,7 +3,7 @@ import shareService from 'app/share/services/share.service';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import { ChangeEvent, createRef, useCallback, useState } from 'react';
+import { ChangeEvent, createRef, useCallback, useState, useMemo } from 'react';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { ContextMenuDriveItem } from '../../DriveExplorerList/DriveExplorerList';
 import { useAppSelector } from 'app/store/hooks';
@@ -12,15 +12,14 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from 'app/drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from 'app/drive/services/thumbnail.service';
 import { sessionSelectors } from 'app/store/slices/session/session.selectors';
-import { sharedActions, sharedSelectors } from 'app/store/slices/sharedLinks';
-import { RootState } from 'app/store';
+import { AppDispatch, RootState } from 'app/store';
 import { UserRoles } from 'app/share/types';
 
-const useDropdownActions = (dispatch) => {
+const useDropdownActions = (dispatch: AppDispatch) => {
   const { dirtyName } = useDriveItemStoreProps();
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const [nameEditPending, setNameEditPending] = useState(false);
-  const [nameInputRef] = useState(createRef<HTMLInputElement>());
+  const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
@@ -89,7 +88,7 @@ const useDropdownActions = (dispatch) => {
     moveItemsToTrash([item as DriveItemData]);
   };
 
-  const confirmNameChange = async (item) => {
+  const confirmNameChange = async (item: DriveItemData) => {
     if (nameEditPending) return;
 
     const metadata: DriveFileMetadataPayload | DriveFolderMetadataPayload = { itemName: dirtyName };

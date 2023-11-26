@@ -63,7 +63,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
-  const driveActions = pathId === 'drive';
   const recentsActions = pathId === 'recents';
   const sharedActions = pathId === 'shared';
   const trashActions = pathId === 'trash';
