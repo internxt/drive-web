@@ -1,20 +1,12 @@
-import { createRef, useCallback, useState, useMemo } from 'react';
+import { createRef, useCallback, useMemo } from 'react';
 
-import {
-  DriveFileMetadataPayload,
-  DriveFolderMetadataPayload,
-  DriveItemData,
-  DriveItemDetails,
-} from '../../../../../drive/types';
+import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
 import shareService from '../../../../../share/services/share.service';
-import { storageActions, storageSelectors } from '../../../../../store/slices/storage';
+import { storageActions } from '../../../../../store/slices/storage';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { ContextMenuDriveItem } from '../../DriveExplorerList/DriveExplorerList';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
-import useDriveItemStoreProps from './useDriveStoreProps';
-import { fetchSortedFolderContentThunk } from '../../../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import {
   getDatabaseFilePreviewData,
   updateDatabaseFilePreviewData,
@@ -26,9 +18,6 @@ import { UserRoles } from '../../../../../share/types';
 
 const useDriveItemActions = (item) => {
   const dispatch = useAppDispatch();
-  const { dirtyName } = useDriveItemStoreProps();
-  const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
-  const [nameEditPending, setNameEditPending] = useState(false);
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
@@ -71,7 +60,7 @@ const useDriveItemActions = (item) => {
   const onShowDetailsButtonClicked = () => {
     const itemDetails: DriveItemDetails = {
       ...(item as DriveItemData),
-      isShared: !!(item as any).sharings?.length,
+      isShared: !!item.sharings?.length,
       view: 'Drive',
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
@@ -96,11 +85,6 @@ const useDriveItemActions = (item) => {
 
   const onMoveToTrashButtonClicked = () => {
     moveItemsToTrash([item as DriveItemData]);
-  };
-
-  const onNameBlurred = (): void => {
-    dispatch(uiActions.setCurrentEditingNameDirty(''));
-    dispatch(uiActions.setCurrentEditingNameDriveItem(null));
   };
 
   const onItemClicked = (): void => {
