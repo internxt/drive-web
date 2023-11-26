@@ -38,6 +38,7 @@ import {
 import useDropdownActions from '../DriveExplorer/DriveExplorerItem/hooks/useDropdownActions';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
+import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -80,7 +81,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     onRestoreItemButtonClicked,
     onDeletePermanentlyButtonClicked,
     isCurrentUserViewer,
-  } = useDropdownActions(dispatch);
+  } = useDriveItemActions(file);
 
   const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
     if (isSharedItem) {

@@ -83,7 +83,7 @@ const ItemDetailsDialog = ({
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
-  const { onNameClicked } = useDriveItemActions(item as DriveItemData);
+  const { onNameClicked, onOpenPreviewButtonClicked } = useDriveItemActions(item);
   const isFolder = item?.isFolder;
 
   useEffect(() => {
@@ -122,8 +122,7 @@ const ItemDetailsDialog = ({
     if (isFolder) {
       onSharedFolderClicked?.(item as AdvancedSharedItem) ?? onNameClicked(event);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      onOpenPreviewButtonClicked();
     }
   }
 

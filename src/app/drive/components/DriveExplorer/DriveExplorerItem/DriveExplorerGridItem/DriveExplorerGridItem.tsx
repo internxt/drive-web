@@ -1,4 +1,4 @@
-import { Fragment, createRef, useEffect, useRef, useState, useMemo } from 'react';
+import { createRef, useEffect, useRef, useState, useMemo } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
@@ -23,7 +23,9 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
-  const { onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(item);
+  const { onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(
+    props.item,
+  );
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
@@ -95,7 +97,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     if (isItemSelected(item)) {
       itemButton.current?.click();
     } else {
-      onItemClicked(e);
+      onItemClicked();
       setTimeout(() => {
         itemButton.current?.click();
       }, 100);
@@ -160,6 +162,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       <div className="mt-3 text-center">
         <div className="mb-1">
           <span
+            onKeyDown={() => {}}
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
             onClick={onNameClicked}

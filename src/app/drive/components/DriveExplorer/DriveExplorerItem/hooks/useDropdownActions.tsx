@@ -3,7 +3,7 @@ import shareService from 'app/share/services/share.service';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
-import { ChangeEvent, createRef, useCallback, useState, useMemo } from 'react';
+import { createRef, useCallback, useState, useMemo } from 'react';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { ContextMenuDriveItem } from '../../DriveExplorerList/DriveExplorerList';
 import { useAppSelector } from 'app/store/hooks';
@@ -105,11 +105,7 @@ const useDropdownActions = (dispatch: AppDispatch) => {
     nameInputRef?.current?.blur();
   };
 
-  const onNameChanged = (e: ChangeEvent<HTMLInputElement>): void => {
-    dispatch(uiActions.setCurrentEditingNameDirty(e.target.value));
-  };
-
-  const onNameEnterKeyDown = (e, item) => {
+  const onNameEnterKeyDown = (e: KeyboardEvent, item: DriveItemData) => {
     if (e.key === 'Enter') {
       confirmNameChange(item);
     } else if (e.key === 'Escape') {
@@ -136,7 +132,7 @@ const useDropdownActions = (dispatch: AppDispatch) => {
     }
   };
 
-  const onNameClicked = (e: MouseEvent, item) => {
+  const onNameClicked = (e: MouseEvent, item: DriveItemData) => {
     e.stopPropagation();
     onItemDoubleClicked(item);
   };
@@ -181,7 +177,6 @@ const useDropdownActions = (dispatch: AppDispatch) => {
     onItemClicked,
     onItemDoubleClicked,
     downloadAndSetThumbnail,
-    onNameChanged,
     onNameEnterKeyDown,
     isCurrentUserViewer,
   };
