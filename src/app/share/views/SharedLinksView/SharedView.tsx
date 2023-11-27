@@ -42,7 +42,6 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
-import EditFolderNameDialog from 'app/drive/components/EditFolderNameDialog/EditFolderNameDialog';
 
 export const ITEMS_PER_PAGE = 15;
 

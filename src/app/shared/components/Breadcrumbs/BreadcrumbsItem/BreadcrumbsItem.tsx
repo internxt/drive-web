@@ -32,7 +32,6 @@ import {
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { useEffect } from 'react';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
