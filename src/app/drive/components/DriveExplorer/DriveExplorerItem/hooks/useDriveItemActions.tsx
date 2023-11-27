@@ -1,4 +1,4 @@
-import { createRef, useCallback, useMemo } from 'react';
+import { createRef, useMemo } from 'react';
 
 import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
 import shareService from '../../../../../share/services/share.service';
@@ -13,8 +13,6 @@ import {
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
-import { RootState } from '../../../../../store';
-import { UserRoles } from '../../../../../share/types';
 
 const useDriveItemActions = (item) => {
   const dispatch = useAppDispatch();
