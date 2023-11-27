@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getDatabaseFileSourceData,
   getDatabaseFilePreviewData,
@@ -23,7 +23,7 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
-import { AdvancedSharedItem, PreviewFileItem } from '../../../share/types';
+import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
 import { uiActions } from '../../../store/slices/ui';
@@ -54,6 +54,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
@@ -79,8 +80,11 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     onRenameItemButtonClicked,
     onRestoreItemButtonClicked,
     onDeletePermanentlyButtonClicked,
-    isCurrentUserViewer,
   } = useDriveItemActions(file);
+
+  const isCurrentUserViewer = useCallback(() => {
+    return currentUserRole === UserRoles.Reader;
+  }, [currentUserRole]);
 
   const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
     if (isSharedItem) {

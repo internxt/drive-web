@@ -1,4 +1,4 @@
-import { createRef, useEffect, useRef, useState, useMemo } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
@@ -18,7 +18,7 @@ import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import transformItemService from 'app/drive/services/item-transform.service';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
-  const itemRef = useMemo(() => createRef<HTMLDivElement>(), []);
+  const [itemRef] = useState(createRef<HTMLDivElement>());
   const itemButton = useRef<HTMLButtonElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;

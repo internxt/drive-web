@@ -20,7 +20,6 @@ const useDriveItemActions = (item) => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -126,10 +125,6 @@ const useDriveItemActions = (item) => {
     }
   };
 
-  const isCurrentUserViewer = useCallback(() => {
-    return currentUserRole === UserRoles.Reader;
-  }, [currentUserRole]);
-
   return {
     nameInputRef,
     onRenameItemButtonClicked,
@@ -147,7 +142,6 @@ const useDriveItemActions = (item) => {
     onItemClicked,
     onItemDoubleClicked,
     downloadAndSetThumbnail,
-    isCurrentUserViewer,
   };
 };
 
