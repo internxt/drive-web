@@ -152,7 +152,7 @@ function ShareGuestSingUpView(): JSX.Element {
 
     try {
       const { email, password, token } = formData;
-      const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, token);
+      const { xUser, xToken, mnemonic } = await doRegisterPreCreatedUser(email, password, invitationId ?? '', token);
 
       localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
 

@@ -28,13 +28,24 @@ type RegisterFunction = (
   mnemonic: string;
 }>;
 
+type RegisterPreCreatedUser = (
+  email: string,
+  password: string,
+  invitationId: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
+}>;
+
 export function useSignUp(
   registerSource: 'activate' | 'appsumo',
   referrer?: string,
 ): {
   updateInfo: UpdateInfoFunction;
   doRegister: RegisterFunction;
-  doRegisterPreCreatedUser: RegisterFunction;
+  doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
@@ -121,12 +132,12 @@ export function useSignUp(
     return { xUser: user, xToken: token, mnemonic: user.mnemonic };
   };
 
-  const doRegisterPreCreatedUser = async (email: string, password: string, captcha: string) => {
+  const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
     const authClient = SdkFactory.getNewApiInstance().createAuthClient();
 
     const registerDetails = await generateRegisterDetails(email, password, captcha);
 
-    const data = await authClient.register(registerDetails);
+    const data = await authClient.registerPreCreatedUser({ ...registerDetails, invitationId });
     const { token } = data;
     const user: UserSettings = data.user as unknown as UserSettings;
 
