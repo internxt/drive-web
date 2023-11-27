@@ -22,6 +22,11 @@ const inviteAFriend = (email: string): Promise<void> => {
   return usersClient.sendInvitation(email);
 };
 
+const preCreateUser = (email: string): Promise<{ publicKey: string; user: { email: string; uuid: string } }> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.preRegister(email);
+};
+
 /**
  * ! This endpoint accepts a body but is using GET method
  */
@@ -71,6 +76,7 @@ const userService = {
   deleteUserAvatar,
   sendVerificationEmail,
   getPublicKeyByEmail,
+  preCreateUser,
 };
 
 export default userService;

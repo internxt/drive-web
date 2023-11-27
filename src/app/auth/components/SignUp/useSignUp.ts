@@ -10,20 +10,42 @@ import { getAesInitFromEnv } from 'app/crypto/services/keys.service';
 import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import { decryptTextWithKey, encryptText, encryptTextWithKey, passToHash } from 'app/crypto/services/utils';
 
-type UpdateInfoFunction = (email: string, password: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type UpdateInfoFunction = (
+  email: string,
+  password: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
-type RegisterFunction = (email: string, password: string, captcha: string) => Promise<{
-  xUser: UserSettings
-  xToken: string,
-  mnemonic: string
+type RegisterFunction = (
+  email: string,
+  password: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
 }>;
 
-export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: string): {
-  updateInfo: UpdateInfoFunction,
-  doRegister: RegisterFunction
+type RegisterPreCreatedUser = (
+  email: string,
+  password: string,
+  invitationId: string,
+  captcha: string,
+) => Promise<{
+  xUser: UserSettings;
+  xToken: string;
+  mnemonic: string;
+}>;
+
+export function useSignUp(
+  registerSource: 'activate' | 'appsumo',
+  referrer?: string,
+): {
+  updateInfo: UpdateInfoFunction;
+  doRegister: RegisterFunction;
+  doRegisterPreCreatedUser: RegisterPreCreatedUser;
 } {
   const updateInfo: UpdateInfoFunction = async (email: string, password: string) => {
     // Setup hash and salt
@@ -97,7 +119,7 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
       keys: keys,
       captcha: captcha,
       referral: readReferalCookie(),
-      referrer: referrer
+      referrer: referrer,
     };
 
     const data = await authClient.register(registerDetails);
@@ -110,5 +132,54 @@ export function useSignUp(registerSource: 'activate' | 'appsumo', referrer?: str
     return { xUser: user, xToken: token, mnemonic: user.mnemonic };
   };
 
-  return { updateInfo, doRegister };
+  const doRegisterPreCreatedUser = async (email: string, password: string, invitationId: string, captcha: string) => {
+    const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+
+    const registerDetails = await generateRegisterDetails(email, password, captcha);
+
+    const data = await authClient.registerPreCreatedUser({ ...registerDetails, invitationId });
+    const { token } = data;
+    const user: UserSettings = data.user as unknown as UserSettings;
+
+    user.mnemonic = decryptTextWithKey(user.mnemonic, password);
+
+    return { xUser: user, xToken: token, mnemonic: user.mnemonic };
+  };
+
+  const generateRegisterDetails = async (
+    email: string,
+    password: string,
+    captcha: string,
+  ): Promise<RegisterDetails> => {
+    const hashObj = passToHash({ password });
+    const encPass = encryptText(hashObj.hash);
+    const encSalt = encryptText(hashObj.salt);
+    const mnemonic = bip39.generateMnemonic(256);
+    const encMnemonic = encryptTextWithKey(mnemonic, password);
+
+    const { privateKeyArmored, publicKeyArmored, revocationCertificate } = await generateNewKeys();
+    const encPrivateKey = aes.encrypt(privateKeyArmored, password, getAesInitFromEnv());
+
+    const keys: Keys = {
+      privateKeyEncrypted: encPrivateKey,
+      publicKey: publicKeyArmored,
+      revocationCertificate: revocationCertificate,
+    };
+    const registerDetails: RegisterDetails = {
+      name: 'My',
+      lastname: 'Internxt',
+      email: email.toLowerCase(),
+      password: encPass,
+      salt: encSalt,
+      mnemonic: encMnemonic,
+      keys: keys,
+      captcha: captcha,
+      referral: readReferalCookie(),
+      referrer: referrer,
+    };
+
+    return registerDetails;
+  };
+
+  return { updateInfo, doRegister, doRegisterPreCreatedUser };
 }
