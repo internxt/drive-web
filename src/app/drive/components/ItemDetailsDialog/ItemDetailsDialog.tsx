@@ -45,7 +45,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
             <p className="text-sm font-medium text-gray-50">
               {translate(`modals.itemDetailsModal.itemDetails.${key}`)}
             </p>
-            <p title={value} className="w-full text-base font-medium text-gray-100 line-clamp-2">
+            <p title={value} className="line-clamp-2 w-full text-base font-medium text-gray-100">
               {value}
             </p>
           </div>
@@ -170,9 +170,9 @@ const ItemDetailsDialog = ({
         <Header title={translate('modals.itemDetailsModal.title')} onClose={onClose} />
       </div>
       <div className="flex w-full flex-col items-center justify-center space-y-6 px-5">
-        <div className="flex max-w-sm flex-col items-center justify-center space-y-3 py-5">
+        <div className="flex w-full max-w-sm flex-col items-center justify-center space-y-3 py-5">
           <IconComponent width={60} height={80} />
-          <p title={itemName} className="text-center text-base font-semibold text-gray-100 line-clamp-2">
+          <p title={itemName} className="line-clamp-2 w-full flex-1 text-center text-base font-semibold text-gray-100">
             {itemName}
           </p>
           <Button onClick={handleButtonItemClick} variant="secondary">
