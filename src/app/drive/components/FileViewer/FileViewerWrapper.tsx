@@ -66,7 +66,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const recentsActions = pathId === 'recents';
   const sharedActions = pathId === 'shared';
   const trashActions = pathId === 'trash';
-  const isSharedItem = file.sharings && file.sharings?.length > 0;
+  const isSharedItem = sharedActions;
   const isOwner = file.credentials?.user === user?.email;
 
   const {
@@ -80,7 +80,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     onRestoreItemButtonClicked,
     onDeletePermanentlyButtonClicked,
     isCurrentUserViewer,
-  } = useDriveItemActions(file);
+  } = useDriveItemActions(currentFile);
 
   const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
     if (isSharedItem) {
@@ -134,7 +134,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
     return contextMenuTrashItems({
-      openPreview: () => ({}),
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,
     });
@@ -151,7 +150,11 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   useEffect(() => {
     setBlob(null);
     if (dirtyName) {
-      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+      // setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+      setCurrentFile?.({
+        ...currentFile,
+        plainName: dirtyName,
+      });
     }
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
@@ -346,6 +349,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       changeFile={changeFile}
       setBlob={setBlob}
       dropdownItems={topDropdownBarActionsMenu()}
+      isShareView={isSharedItem}
     />
   ) : (
     <div className="hidden" />
