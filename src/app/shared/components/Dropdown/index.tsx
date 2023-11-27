@@ -12,7 +12,7 @@ export default function Dropdown({
   openDirection,
   dropdownActionsContext,
   item,
-}: Readonly<{
+}: {
   children: ReactNode | ((obj: any) => JSX.Element);
   options?: { text: string; onClick: () => void }[];
   classButton?: string;
@@ -21,7 +21,7 @@ export default function Dropdown({
   openDirection: 'left' | 'right';
   dropdownActionsContext?: ListItemMenu<DriveItemData>;
   item?: DriveItemData;
-}>): JSX.Element {
+}): JSX.Element {
   const direction = openDirection === 'left' ? 'origin-top-left' : 'origin-top-right';
 
   function handleActiveItemStyle(active, disabled) {

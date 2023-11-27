@@ -17,7 +17,8 @@ import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
-import { AdvancedSharedItem } from 'app/share/types';
+import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
+import { decryptMnemonic } from 'app/share/services/share.service';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -68,11 +69,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Location
  *  */
 
-const ItemDetailsDialog = ({
-  onSharedFolderClicked,
-}: {
-  onSharedFolderClicked?: (item: AdvancedSharedItem) => void;
-}) => {
+const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (item: AdvancedSharedItem) => void }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -116,13 +113,17 @@ const ItemDetailsDialog = ({
   }
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    event.preventDefault();
     onClose();
-    if (isFolder) {
-      onSharedFolderClicked?.(item as AdvancedSharedItem) ?? onNameClicked(event);
+    if (item?.isShared) {
+      // item is copied to avoid readonly errors
+      onSharedItemClicked?.(item as AdvancedSharedItem);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      if (isFolder) {
+        onNameClicked(event);
+      } else {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      }
     }
   }
 
