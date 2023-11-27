@@ -17,6 +17,12 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import {
+  trackFilePreviewed,
+  trackFilePreviewOpened,
+  trackFilePreviewClicked,
+} from '../../../analytics/services/analytics.service';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -86,6 +92,12 @@ const FileViewer = ({
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
+
+  const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
+    file_size: file?.size,
+    file_extension: file?.type,
+    preview_id: file?.uuid,
+  };
 
   // To prevent close FileViewer if any of those modal are open
   useEffect(() => {
@@ -160,16 +172,22 @@ const FileViewer = ({
   useEffect(() => {
     setIsPreviewAvailable(true);
     const largeFile = isLargeFile(file?.size);
-
+    trackFilePreviewClicked(trackFilePreviewProperties);
     if (show && isTypeAllowed) {
       if (shouldNotBeRendered(fileExtensionGroup) && largeFile) {
         setIsPreviewAvailable(false);
         return;
       }
+      trackFilePreviewOpened(trackFilePreviewProperties);
     } else {
       setIsPreviewAvailable(false);
     }
   }, [show, file]);
+
+  const onClosePreview = () => {
+    onClose();
+    trackFilePreviewed(trackFilePreviewProperties);
+  };
 
   return (
     <Transition
@@ -186,7 +204,7 @@ const FileViewer = ({
       <Dialog
         as="div"
         className="hide-scroll fixed inset-0 z-50 flex flex-col items-center justify-start text-white"
-        onClose={onClose}
+        onClose={onClosePreview}
       >
         <div className="flex h-screen w-screen flex-col items-center justify-center">
           {/* Close overlay */}
@@ -288,7 +306,7 @@ const FileViewer = ({
             {/* Close and title */}
             <div className="mr-6 mt-3 flex h-10 flex-row items-center justify-start space-x-4 truncate md:mr-32">
               <button
-                onClick={onClose}
+                onClick={onClosePreview}
                 className="group relative flex h-10 w-10 shrink-0 flex-col items-center justify-center rounded-full bg-white/0 transition duration-50 ease-in-out hover:bg-white/10 focus:bg-white/5"
               >
                 <UilMultiply height={24} width={24} />
