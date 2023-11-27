@@ -68,11 +68,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Location
  *  */
 
-const ItemDetailsDialog = ({
-  onSharedFolderClicked,
-}: {
-  onSharedFolderClicked?: (item: AdvancedSharedItem) => void;
-}) => {
+const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (item: AdvancedSharedItem) => void }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -116,14 +112,17 @@ const ItemDetailsDialog = ({
   }
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    event.preventDefault();
-    onClose();
-    if (isFolder) {
-      onSharedFolderClicked?.(item as AdvancedSharedItem) ?? onNameClicked(event);
+    if (item?.isShared) {
+      onSharedItemClicked?.(item as AdvancedSharedItem);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      if (isFolder) {
+        onNameClicked(event);
+      } else {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      }
     }
+    onClose();
   }
 
   async function getDetailsData(
