@@ -112,9 +112,7 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
   }
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    onClose();
     if (item?.isShared) {
-      // item is copied to avoid readonly errors
       onSharedItemClicked?.(item as AdvancedSharedItem);
     } else {
       if (isFolder) {
@@ -124,6 +122,7 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
         dispatch(uiActions.setFileViewerItem(item as DriveItemData));
       }
     }
+    onClose();
   }
 
   async function getDetailsData(
