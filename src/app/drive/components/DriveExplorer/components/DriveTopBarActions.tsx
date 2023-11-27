@@ -189,7 +189,7 @@ const DriveTopBarActions = ({
         ? contextMenuDriveFolderNotSharedLink({
             shareLink: onOpenShareSettingsButtonClicked,
             showDetails: onShowDetailsButtonClicked,
-            getLink: onSelectedOneItemRename,
+            getLink: onSelectedOneItemShare,
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
@@ -199,7 +199,7 @@ const DriveTopBarActions = ({
             shareLink: onOpenShareSettingsButtonClicked,
             openPreview: onOpenPreviewButtonClicked,
             showDetails: onShowDetailsButtonClicked,
-            getLink: onSelectedOneItemRename,
+            getLink: onSelectedOneItemShare,
             renameItem: onSelectedOneItemRename,
             moveItem: onMoveItemButtonClicked,
             downloadItem: onDownloadButtonClicked,
