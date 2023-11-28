@@ -46,7 +46,7 @@ interface DriveExplorerListProps {
 
 type ObjectWithId = { id: string | number };
 
-export type ContextMenuDriveItem =
+type ContextMenuDriveItem =
   | DriveItemData
   | Pick<DriveItemData, 'type' | 'name' | 'updatedAt' | 'size'>
   | (ListShareLinksItem & { code: string });
