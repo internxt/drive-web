@@ -291,7 +291,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData) => {
-      console.log('onDetailsButtonClicked', item);
       if (item.isFolder) {
         dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
       } else {
