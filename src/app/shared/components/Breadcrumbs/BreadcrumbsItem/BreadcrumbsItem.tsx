@@ -160,7 +160,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const currentFolder = findCurrentFolder(currentBreadcrumb);
-  const isBreadcrumbItemShared = currentFolder[0]?.sharings && currentFolder[0]?.sharings?.length !== 0;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -184,11 +183,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     };
     dispatch(uiActions.setItemDetailsItem(itemDetails));
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
-  };
-
-  const onCreateLinkButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
   };
 
   const onCopyLinkButtonClicked = () => {
