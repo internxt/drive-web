@@ -114,14 +114,13 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
     if (item?.isShared) {
       onSharedItemClicked?.(item as AdvancedSharedItem);
+    } else if (isFolder) {
+      onNameClicked(event);
     } else {
-      if (isFolder) {
-        onNameClicked(event);
-      } else {
-        dispatch(uiActions.setIsFileViewerOpen(true));
-        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-      }
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
     }
+
     onClose();
   }
 
