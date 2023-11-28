@@ -68,7 +68,11 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Location
  *  */
 
-const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (item: AdvancedSharedItem) => void }) => {
+const ItemDetailsDialog = ({
+  onButtonClicked,
+}: {
+  onButtonClicked: (item: AdvancedSharedItem | DriveItemData, event?) => void;
+}) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -78,7 +82,6 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
-  const { onNameClicked } = useDriveItemActions(item as DriveItemData);
   const isFolder = item?.isFolder;
 
   useEffect(() => {
@@ -111,15 +114,8 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
     return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
-  function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    if (item?.isShared && item.view === 'Shared') {
-      onSharedItemClicked?.(item as AdvancedSharedItem);
-    } else if (isFolder) {
-      onNameClicked(event);
-    } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-    }
+  function handleButtonItemClick(event) {
+    onButtonClicked(item as AdvancedSharedItem, event);
 
     onClose();
   }

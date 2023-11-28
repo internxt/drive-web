@@ -66,6 +66,8 @@ import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import { PreviewFileItem } from 'app/share/types';
+import useDriveItemActions from './DriveExplorerItem/hooks/useDriveItemActions';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -134,6 +136,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
+
+  const { onNameClicked } = useDriveItemActions(selectedItems[0]);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
@@ -586,7 +590,16 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <ItemDetailsDialog />
+      <ItemDetailsDialog
+        onButtonClicked={(item, event) => {
+          if (item.isFolder) {
+            onNameClicked(event);
+          } else {
+            dispatch(uiActions.setIsFileViewerOpen(true));
+            dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+          }
+        }}
+      />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
