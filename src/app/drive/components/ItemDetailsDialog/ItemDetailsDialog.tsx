@@ -112,7 +112,7 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
   }
 
   function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    if (item?.isShared) {
+    if (item?.isShared && item.view === 'Shared') {
       onSharedItemClicked?.(item as AdvancedSharedItem);
     } else if (isFolder) {
       onNameClicked(event);
