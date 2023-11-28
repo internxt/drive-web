@@ -41,7 +41,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
-  const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
 
   const onCreateFolderButtonClicked = () => {
@@ -68,28 +67,38 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true);
       setCurrentNamePaths([]);
       onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
-      setIsLoading(false);
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen && !newFolderIsOpen) {
-      onShowFolderContentClicked(currentFolderId, currentFolderName);
-    }
-  }, [newFolderIsOpen]);
-
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
+    setIsLoading(true);
     dispatch(fetchDialogContentThunk(folderId))
       .unwrap()
       .then(() => {
-        getDatabaseItems(folderId, name);
-      });
+        retrieveMoveDialogItems(folderId, name);
+      })
+      .finally(() => setIsLoading(false));
   };
 
-  const getDatabaseItems = (folderId: number, name: string) => {
+  const handleDialogBreadcrumbs = (folderId: number, name: string) => {
+    let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
+    const currentIndex = auxCurrentPaths.findIndex((i) => {
+      return i.id === folderId;
+    });
+    if (currentIndex > -1) {
+      auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
+      dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
+    } else {
+      auxCurrentPaths.push({ id: folderId, name: name });
+      dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
+    }
+
+    setCurrentNamePaths(auxCurrentPaths);
+  };
+
+  const retrieveMoveDialogItems = (folderId: number, name: string) => {
     databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
       setCurrentFolderId(folderId);
       setCurrentFolderName(name);
@@ -99,21 +108,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         return i.isFolder;
       });
 
-      let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
-      const currentIndex = auxCurrentPaths.findIndex((i) => {
-        return i.id === folderId;
-      });
-      if (currentIndex > -1) {
-        auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
-        dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
-      } else {
-        auxCurrentPaths.push({ id: folderId, name: name });
-        dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
-      }
+      handleDialogBreadcrumbs(folderId, name);
 
-      setCurrentNamePaths(auxCurrentPaths);
       if (folders) {
-        const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
+        const unselectedFolders = folders?.filter((folderItem) => {
+          return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+        });
         setShownFolders(unselectedFolders);
       } else {
         setShownFolders([]);
@@ -190,7 +190,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         {/* Create folder dialog */}
         <CreateFolderDialog
           currentFolderId={currentFolderId}
-          onFolderCreated={() => setTimeout(() => onShowFolderContentClicked(currentFolderId, currentFolderName), 500)}
+          onFolderCreated={() => onShowFolderContentClicked(currentFolderId, currentFolderName)}
         />
 
         {/* Folder list */}

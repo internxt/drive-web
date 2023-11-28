@@ -653,6 +653,21 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "itemDetailsModal": {
+      "title": "Details",
+      "fileCta": "Open preview",
+      "folderCta": "Open folder",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Type",
+        "uploaded": "Uploaded",
+        "uploadedBy": "Uploaded by",
+        "shared": "Shared",
+        "size": "Size",
+        "modified": "Modified",
+        "location": "Location"
+      }
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -1186,7 +1201,10 @@
     "rename": "Rename",
     "restore": "Restore",
     "copyLink": "Copy link",
-    "report": "Report abuse"
+    "report": "Report abuse",
+    "yes": "Yes",
+    "no": "No",
+    "more": "More"
   },
   "drive": {
     "usage": "Usage",
@@ -1209,6 +1227,7 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "details": "Details",
       "shareLink": "Share",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",

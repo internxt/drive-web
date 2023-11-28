@@ -7,20 +7,18 @@ import {
   Trash,
   PencilSimple,
   Link,
-  LinkBreak,
-  Copy,
-  Gear,
-  ArrowsOutCardinal,
   DownloadSimple,
   Users,
+  Info,
 } from '@phosphor-icons/react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { BreadcrumbItemData } from '../Breadcrumbs';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
-import { DriveItemData } from 'app/drive/types';
+import { DriveItemData, DriveItemDetails } from 'app/drive/types';
 import iconService from 'app/drive/services/icon.service';
 import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
@@ -162,7 +160,6 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const currentFolder = findCurrentFolder(currentBreadcrumb);
-  const isBreadcrumbItemShared = currentFolder[0]?.shares && currentFolder[0]?.shares?.length !== 0;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -178,25 +175,19 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(storageThunks.downloadItemsThunk(currentFolder));
   };
 
-  const onCreateLinkButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+  const onDetailsItemButtonClicked = async () => {
+    const itemDetails: DriveItemDetails = {
+      ...currentFolder[0],
+      isShared: !!currentFolder[0].sharings?.length,
+      view: 'Drive',
+    };
+    dispatch(uiActions.setItemDetailsItem(itemDetails));
+    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
   const onCopyLinkButtonClicked = () => {
     const item = currentFolder[0];
     dispatch(sharedThunks.getSharedLinkThunk({ item }));
-  };
-
-  const onDeleteLinkButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(sharedThunks.deleteLinkThunk({ linkId: item?.shares?.[0]?.id as string, item }));
-  };
-
-  const onLinkSettingsButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(storageActions.setItemToShare({ share: item?.shares?.[0], item }));
-    dispatch(uiActions.setIsShareItemDialogOpen(true));
   };
 
   const onMoveButtonClicked = () => {
@@ -280,63 +271,35 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                       </div>
                     )}
                   </Menu.Item>
-                  {!isBreadcrumbItemShared ? (
-                    <Menu.Item>
-                      {({ active }) => (
-                        <div
-                          onClick={onCreateLinkButtonClicked}
-                          className={`${
-                            active && 'bg-gray-5'
-                          } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                        >
-                          <Link size={20} />
-                          <p className="ml-3">{translate('drive.dropdown.getLink')}</p>
-                        </div>
-                      )}
-                    </Menu.Item>
-                  ) : (
-                    <>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onCopyLinkButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <Copy size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onLinkSettingsButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <Gear size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.linkSettings')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                      <Menu.Item>
-                        {({ active }) => (
-                          <div
-                            onClick={onDeleteLinkButtonClicked}
-                            className={`${
-                              active && 'bg-gray-5'
-                            } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
-                          >
-                            <LinkBreak size={20} />
-                            <p className="ml-3">{translate('drive.dropdown.deleteLink')}</p>
-                          </div>
-                        )}
-                      </Menu.Item>
-                    </>
-                  )}
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onClick={onCopyLinkButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Link size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
+                  <Menu.Item>
+                    {({ active }) => (
+                      <div
+                        onKeyDown={() => {
+                          // No op
+                        }}
+                        onClick={onDetailsItemButtonClicked}
+                        className={`${
+                          active && 'bg-gray-5'
+                        } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
+                      >
+                        <Info size={20} />
+                        <p className="ml-3">{translate('drive.dropdown.details')}</p>
+                      </div>
+                    )}
+                  </Menu.Item>
                   <Menu.Item>
                     {({ active }) => (
                       <div
@@ -358,12 +321,11 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
                           active && 'bg-gray-5'
                         } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
                       >
-                        <ArrowsOutCardinal size={20} />
+                        <MoveActionIcon className="h-5 w-5" />
                         <p className="ml-3">{translate('drive.dropdown.move')}</p>
                       </div>
                     )}
                   </Menu.Item>
-                  <div className="mx-3 my-0.5 border-t border-gray-10" />
                   <Menu.Item>
                     {({ active }) => (
                       <div
