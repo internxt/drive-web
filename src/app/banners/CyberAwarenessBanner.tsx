@@ -9,11 +9,11 @@ const CyberAwarenessBanner = ({ showBanner, onClose }: { showBanner: boolean; on
     <section
       className={`${
         showBanner ? 'flex' : 'hidden'
-      }  fixed top-0 left-0 right-0 bottom-0 z-50 h-screen bg-black bg-opacity-50 px-5 lg:px-0`}
+      }  fixed bottom-0 left-0 right-0 top-0 z-50 h-screen bg-black/50 px-5 lg:px-0`}
     >
       <div
-        className={`${showBanner ? 'flex' : 'hidden'} absolute top-1/2 left-1/2 flex
-        w-auto max-w-4xl -translate-y-1/2 -translate-x-1/2 transform flex-col rounded-2xl text-neutral-900`}
+        className={`${showBanner ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex
+        w-auto max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-neutral-900`}
         style={{
           backgroundImage: `url(${BackgroundImage})`,
           backgroundPosition: 'center',
@@ -42,7 +42,7 @@ const CyberAwarenessBanner = ({ showBanner, onClose }: { showBanner: boolean; on
                 </p>
               </div>
               <button
-                className="focus:outline-none flex flex-row items-center justify-center space-x-4 rounded-lg bg-white py-3 px-5 text-base font-medium text-gray-80 transition duration-100 focus-visible:bg-gray-10 active:bg-gray-10 sm:text-lg"
+                className="flex flex-row items-center justify-center space-x-4 rounded-lg bg-white px-5 py-3 text-base font-medium text-gray-80 transition duration-100 focus:outline-none focus-visible:bg-gray-10 active:bg-gray-10 sm:text-lg"
                 onClick={() => {
                   window.open(redirectURL, '_blank', 'noopener noreferrer');
                 }}

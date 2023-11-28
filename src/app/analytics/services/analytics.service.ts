@@ -72,6 +72,38 @@ export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubsc
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
 }
 
+export function trackPublicShared(properties: TrackingPlan.PublicSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.PublicShared, properties);
+}
+
+export function trackRestrictedShared(properties: TrackingPlan.RestrictedSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.RestrictedShared, properties);
+}
+
+export function trackSharedInvitationsAccepted(properties: TrackingPlan.SharedInvitationsAcceptedProperties): void {
+  analytics.track(TrackingPlan.EventNames.SharedInvitationsAccepted, properties);
+}
+
+export function trackFilePreviewOpened(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewOpened, properties);
+}
+
+export function trackFilePreviewed(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewed, properties);
+}
+
+export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
+}
+
+export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownloadedProperties): void {
+  analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
+}
+
+export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecoveredProperties): void {
+  analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {

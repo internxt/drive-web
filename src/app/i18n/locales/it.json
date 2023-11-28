@@ -614,6 +614,21 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "itemDetailsModal": {
+      "title": "Dettagli",
+      "fileCta": "Apri anteprima",
+      "cartellaCta": "Apri cartella",
+      "itemDetails": {
+        "nome": "Nome",
+        "tipo": "Tipo",
+        "modified": "Ultima modifica",
+        "size": "Dimensione",
+        "uploaded": "Caricato",
+        "uploadedBy": "Caricato da",
+        "shared": "Condiviso",
+        "location": "Posizione"
+      }
+    },
     "shareModal": {
       "title": "Condividi \"{{name}}\"",
       "list": {
@@ -630,7 +645,8 @@
       },
       "errors": {
         "updatingRole": "Impossibile aggiornare il ruolo, per favore riprova più tardi.",
-        "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi."
+        "copy-to-clipboard": "Errore durante la condivisione dell'elemento, riprova più tardi.",
+        "update-sharing-access": "La modalità di accesso non ha potuto essere aggiornata, riprova più tardi"
       },
       "general": {
         "generalAccess": "Accesso generale",
@@ -1142,7 +1158,10 @@
     "rename": "Rinominare",
     "restore": "Ripristinare",
     "copyLink": "Copia link",
-    "report": "Segnala abuso"
+    "report": "Segnala abuso",
+    "yes": "Sì",
+    "no": "No",
+    "more": "Di più"
   },
   "drive": {
     "usage": "Utilizzo",
@@ -1168,6 +1187,9 @@
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
+      "details": "Dettagli",
+      "manageAccess": "Gestisci accesso",
+      "manageLinkAccess": "Gestisci accesso",
       "moveToTrash": "Sposta nel cestino",
       "copyLink": "Copia link",
       "linkSettings": "Impostazioni link",

@@ -5,12 +5,12 @@ export default function Popover({
   childrenButton,
   panel,
   className,
-  classButton
+  classButton,
 }: {
   childrenButton: ReactNode;
   panel: ReactNode;
   className?: string;
-  classButton?: string
+  classButton?: string;
 }): JSX.Element {
   return (
     <HPopover style={{ lineHeight: 0 }} className={`relative ${className}`}>
@@ -25,7 +25,7 @@ export default function Popover({
         leaveTo="scale-95 opacity-0"
         className="z-50"
       >
-        <HPopover.Panel className="absolute right-0 z-50 mt-1 transform rounded-md border border-gray-10 bg-white py-1.5 shadow-subtle">
+        <HPopover.Panel className="absolute right-0 z-50 mt-1 rounded-md border border-gray-10 bg-white py-1.5 shadow-subtle">
           {panel}
         </HPopover.Panel>
       </Transition>

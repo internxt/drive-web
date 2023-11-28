@@ -536,6 +536,21 @@
       "placeholder": "Unbenannter Ordner",
       "untitled": "Unbenannter Ordner"
     },
+    "itemDetailsModal": {
+      "title": "Einzelheiten",
+      "fileCta": "Vorschau öffnen",
+      "folderCta": "Ordner öffnen",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Typ",
+        "uploaded": "Hochgeladen",
+        "uploadedBy": "Hochgeladen von",
+        "shared": "Freigegeben",
+        "size": "Größe",
+        "modified": "Feändert",
+        "Ort": "Ort"
+      }
+    },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",
       "list": {
@@ -552,7 +567,8 @@
       },
       "error": {
         "updatingRole": "Die Rolle konnte nicht aktualisiert werden, bitte versuchen Sie es später noch einmal.",
-        "copy-to-clipboard": "Fehler beim Teilen des Elements, versuchen Sie es später noch einmal."
+        "copy-to-clipboard": "Fehler beim Teilen des Elements, versuchen Sie es später noch einmal.",
+        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte versuchen Sie es später erneut"
       },
       "general": {
         "generalAccess": "Allgemeiner Zugriff",
@@ -1047,7 +1063,10 @@
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
     "copyLink": "Kopiere Link",
-    "report": "Missbrauch melden"
+    "report": "Missbrauch melden",
+    "yes": "Ja",
+    "no": "Nein",
+    "more": "Mehr"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1074,6 +1093,7 @@
       "rename": "Umbenennen",
       "download": "Download",
       "manageLinkAccess": "Zugang verwalten",
+      "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",
       "copyLink": "Kopiere Link",
       "linkSettings": "Link Einstellungen",

@@ -20,7 +20,7 @@ export default function BackupsAsFoldersListItem({
 
   return (
     <div
-      className={'flex flex-grow cursor-pointer items-center'}
+      className={'flex grow cursor-pointer items-center'}
       onClick={() => onClick(item)}
       onDoubleClick={() => onDoubleClick?.(item)}
       data-test={dataTest}

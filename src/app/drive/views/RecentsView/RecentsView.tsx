@@ -1,4 +1,4 @@
-import { Component, ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
