@@ -712,7 +712,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
         }),
       );
     }
-
+    dispatch(storageActions.setItemToRename(null));
     setIsEditNameDialogOpen(false);
     setEditNameItem(undefined);
   };

@@ -7,6 +7,7 @@ import Modal from 'app/shared/components/Modal';
 import { DriveItemData } from '../../types';
 import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { uiActions } from 'app/store/slices/ui';
 
 type EditItemNameDialogProps = {
   item: DriveItemData | undefined;

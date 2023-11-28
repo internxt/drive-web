@@ -216,7 +216,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   useEffect(() => {
-    if (isItemToRenameFromPreviewView) {
+    if (itemToRename) {
       setEditNameItem(itemToRename);
     }
   }, [itemToRename]);
@@ -600,12 +600,17 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item={editNameItem}
           isOpen={true}
           onSuccess={() => {
-            if (isFileViewerOpen) {
-              dispatch(uiActions.setCurrentEditingNameDirty(editNameItem.plainName ?? editNameItem.name));
-            }
             setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
           }}
-          onClose={() => {
+          onClose={(newItem) => {
+            if (newItem) {
+              if (isFileViewerOpen) {
+                dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+              } else if (itemToRename && editNameItem.isFolder) {
+                dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+              }
+            }
+            dispatch(storageActions.setItemToRename(null));
             setEditNameItem(null);
           }}
         />
