@@ -413,7 +413,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
+      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -1026,9 +1026,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
           }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          // onOrderByChanged={onOrderByChanged}
-          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>

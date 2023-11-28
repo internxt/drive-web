@@ -1,4 +1,4 @@
-import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
+import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
@@ -66,7 +66,6 @@ import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import useDriveItemActions from './DriveExplorerItem/hooks/useDriveItemActions';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -135,8 +134,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
-
-  const { onNameClicked } = useDriveItemActions(selectedItems[0]);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
@@ -291,6 +288,19 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const passToNextStep = () => {
     setCurrentTutorialStep(currentTutorialStep + 1);
   };
+
+  const onDetailsButtonClicked = useCallback(
+    (item: DriveItemData) => {
+      console.log('onDetailsButtonClicked', item);
+      if (item.isFolder) {
+        dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      } else {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item));
+      }
+    },
+    [dispatch],
+  );
 
   //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
   const getMoreTrashFolders = async () => {
@@ -589,16 +599,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <ItemDetailsDialog
-        onDetailsButtonClicked={(item, event) => {
-          if (item.isFolder) {
-            onNameClicked(event);
-          } else {
-            dispatch(uiActions.setIsFileViewerOpen(true));
-            dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-          }
-        }}
-      />
+      <ItemDetailsDialog onDetailsButtonClicked={(item) => onDetailsButtonClicked(item as DriveItemData)} />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}

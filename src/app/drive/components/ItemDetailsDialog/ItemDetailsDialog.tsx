@@ -11,7 +11,6 @@ import Button from '../../../shared/components/Button/Button';
 import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
@@ -71,7 +70,7 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
 const ItemDetailsDialog = ({
   onDetailsButtonClicked,
 }: {
-  onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData, event?) => void;
+  onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData) => void;
 }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -114,9 +113,8 @@ const ItemDetailsDialog = ({
     return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
-  function handleButtonItemClick(event) {
-    onDetailsButtonClicked(item as AdvancedSharedItem, event);
-
+  function handleButtonItemClick() {
+    onDetailsButtonClicked(item as AdvancedSharedItem);
     onClose();
   }
 
