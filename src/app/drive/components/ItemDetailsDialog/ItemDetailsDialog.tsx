@@ -11,7 +11,6 @@ import Button from '../../../shared/components/Button/Button';
 import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
@@ -68,7 +67,11 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  * - Location
  *  */
 
-const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (item: AdvancedSharedItem) => void }) => {
+const ItemDetailsDialog = ({
+  onDetailsButtonClicked,
+}: {
+  onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData) => void;
+}) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
@@ -78,7 +81,6 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
-  const { onNameClicked } = useDriveItemActions(item as DriveItemData);
   const isFolder = item?.isFolder;
 
   useEffect(() => {
@@ -111,16 +113,8 @@ const ItemDetailsDialog = ({ onSharedItemClicked }: { onSharedItemClicked?: (ite
     return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
-  function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    if (item?.isShared) {
-      onSharedItemClicked?.(item as AdvancedSharedItem);
-    } else if (isFolder) {
-      onNameClicked(event);
-    } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
-    }
-
+  function handleButtonItemClick() {
+    onDetailsButtonClicked(item as AdvancedSharedItem);
     onClose();
   }
 

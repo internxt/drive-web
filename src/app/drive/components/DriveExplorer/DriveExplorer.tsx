@@ -1,4 +1,4 @@
-import { createRef, useState, RefObject, useEffect, useRef, LegacyRef } from 'react';
+import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
 import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
@@ -10,10 +10,10 @@ import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import Empty from '../../../shared/components/Empty/Empty';
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { StorageFilters } from 'app/store/slices/storage/storage.model';
-import { AppDispatch, RootState } from 'app/store';
-import { Workspace } from 'app/core/types';
+import { transformDraggedItems } from '../../../core/services/drag-and-drop.service';
+import { StorageFilters } from '../../../store/slices/storage/storage.model';
+import { AppDispatch, RootState } from '../../../store';
+import { Workspace } from '../../../core/types';
 
 import './DriveExplorer.scss';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
@@ -32,19 +32,19 @@ import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import iconService from '../../services/icon.service';
 import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
-import { IRoot } from 'app/store/slices/storage/storage.thunks/uploadFolderThunk';
+import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
-} from 'app/drive/services/folder.service/uploadFolderInput.service';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+} from '../../../drive/services/folder.service/uploadFolderInput.service';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
@@ -60,12 +60,13 @@ import errorService from '../../../core/services/error.service';
 import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ShareDialog from '../ShareDialog/ShareDialog';
-import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import { AdvancedSharedItem } from '../../../share/types';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -288,6 +289,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const passToNextStep = () => {
     setCurrentTutorialStep(currentTutorialStep + 1);
   };
+
+  const onDetailsButtonClicked = useCallback(
+    (item: DriveItemData | AdvancedSharedItem) => {
+      if (item.isFolder) {
+        dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      } else {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      }
+    },
+    [dispatch],
+  );
 
   //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
   const getMoreTrashFolders = async () => {
@@ -586,7 +599,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <ItemDetailsDialog />
+      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}

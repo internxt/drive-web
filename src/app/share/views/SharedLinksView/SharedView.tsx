@@ -413,7 +413,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
+      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -814,6 +814,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
     return items;
   };
 
+  const handleDetailsButtonClicked = useCallback(
+    (item: DriveItemData | AdvancedSharedItem) => {
+      onItemDoubleClicked(item as AdvancedSharedItem);
+    },
+    [nextResourcesToken],
+  );
+
   return (
     <div
       className="flex w-full shrink-0 flex-col"
@@ -1026,9 +1033,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
           }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          // onOrderByChanged={onOrderByChanged}
-          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
@@ -1046,7 +1050,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
-      <ItemDetailsDialog onSharedItemClicked={onItemDoubleClicked} />
+      <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
