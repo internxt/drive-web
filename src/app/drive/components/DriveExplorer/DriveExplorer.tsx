@@ -135,7 +135,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const isTrash = title === translate('trash.trash');
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
-  const isItemToRenameFromPreviewView = itemToRename !== null;
   const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
