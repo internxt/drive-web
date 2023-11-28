@@ -814,6 +814,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
     return items;
   };
 
+  const handleDetailsButtonClicked = useCallback(
+    (item: DriveItemData | AdvancedSharedItem) => {
+      onItemDoubleClicked(item as AdvancedSharedItem);
+    },
+    [nextResourcesToken],
+  );
+
   return (
     <div
       className="flex w-full shrink-0 flex-col"
@@ -1043,7 +1050,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
-      <ItemDetailsDialog onDetailsButtonClicked={(item) => onItemDoubleClicked(item as AdvancedSharedItem)} />
+      <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog

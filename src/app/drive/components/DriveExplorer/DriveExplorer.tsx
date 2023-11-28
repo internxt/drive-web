@@ -66,6 +66,7 @@ import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
 import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import { AdvancedSharedItem } from '../../../share/types';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -290,12 +291,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   };
 
   const onDetailsButtonClicked = useCallback(
-    (item: DriveItemData) => {
+    (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
         dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
       } else {
         dispatch(uiActions.setIsFileViewerOpen(true));
-        dispatch(uiActions.setFileViewerItem(item));
+        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
       }
     },
     [dispatch],
@@ -598,7 +599,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
-      <ItemDetailsDialog onDetailsButtonClicked={(item) => onDetailsButtonClicked(item as DriveItemData)} />
+      <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
       {editNameItem && (
         <EditItemNameDialog
           item={editNameItem}
