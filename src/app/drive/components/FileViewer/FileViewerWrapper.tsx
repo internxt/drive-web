@@ -80,7 +80,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     onRenameItemButtonClicked,
     onRestoreItemButtonClicked,
     onDeletePermanentlyButtonClicked,
-  } = useDriveItemActions(file);
+  } = useDriveItemActions(currentFile);
 
   const isCurrentUserViewer = useCallback(() => {
     return currentUserRole === UserRoles.Reader;
