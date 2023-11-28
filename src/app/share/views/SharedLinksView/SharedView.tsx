@@ -1046,7 +1046,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
-      <ItemDetailsDialog onButtonClicked={(item) => onItemDoubleClicked(item as AdvancedSharedItem)} />
+      <ItemDetailsDialog onDetailsButtonClicked={(item) => onItemDoubleClicked(item as AdvancedSharedItem)} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog

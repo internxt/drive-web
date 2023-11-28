@@ -590,7 +590,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
       <ItemDetailsDialog
-        onButtonClicked={(item, event) => {
+        onDetailsButtonClicked={(item, event) => {
           if (item.isFolder) {
             onNameClicked(event);
           } else {

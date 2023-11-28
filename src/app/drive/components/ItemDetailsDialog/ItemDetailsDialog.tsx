@@ -69,9 +69,9 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  *  */
 
 const ItemDetailsDialog = ({
-  onButtonClicked,
+  onDetailsButtonClicked,
 }: {
-  onButtonClicked: (item: AdvancedSharedItem | DriveItemData, event?) => void;
+  onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData, event?) => void;
 }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -115,7 +115,7 @@ const ItemDetailsDialog = ({
   }
 
   function handleButtonItemClick(event) {
-    onButtonClicked(item as AdvancedSharedItem, event);
+    onDetailsButtonClicked(item as AdvancedSharedItem, event);
 
     onClose();
   }
