@@ -7,7 +7,7 @@ import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
 import { AppDispatch, RootState } from '../../../../store';
 import { storageActions } from '../../../../store/slices/storage';
-import { DriveItemData } from '../../../types';
+import { DriveItemData, DriveItemDetails } from '../../../types';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import List from '../../../../shared/components/List';
@@ -204,6 +204,19 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     [dispatch, uiActions],
   );
 
+  const showDetails = useCallback(
+    (item: DriveItemData) => {
+      const itemDetails: DriveItemDetails = {
+        ...item,
+        isShared: !!item.sharings?.length,
+        view: 'Drive',
+      };
+      dispatch(uiActions.setItemDetailsItem(itemDetails));
+      dispatch(uiActions.setIsItemDetailsDialogOpen(true));
+    },
+    [dispatch, uiActions],
+  );
+
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
@@ -259,14 +272,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   ];
 
   return (
-    <div className="flex h-full flex-grow flex-col">
+    <div className="flex h-full grow flex-col">
       <div className="h-full w-full overflow-y-auto">
         {editNameItem && (
           <EditItemNameDialog
             item={editNameItem}
             isOpen={true}
             onSuccess={() => {
-              dispatch(fetchSortedFolderContentThunk(currentFolderId));
+              setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
             }}
             onClose={() => {
               setEditNameItem(null);
@@ -277,7 +290,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow items-center min-w-driveNameHeader',
+              width: 'flex grow items-center min-w-driveNameHeader',
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
@@ -364,6 +377,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
+                    showDetails,
                     deleteLink: (item) => {
                       dispatch(
                         sharedThunks.deleteLinkThunk({
@@ -379,6 +393,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   })
                 : contextMenuDriveItemShared({
                     openPreview: openPreview,
+                    showDetails,
                     copyLink: copyLink,
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
@@ -397,6 +412,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     // openAdvancedShareLinkSettings(item);
                     openLinkSettings(item);
                   },
+                  showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,
@@ -406,11 +422,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               : contextMenuDriveNotSharedLink({
                   shareLink: (item) => {
                     //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    // WAITING BACKEND ENDPOINTS
-                    // openAdvancedShareLinkSettings(item);
                     openLinkSettings(item);
                   },
                   openPreview: openPreview,
+                  showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
                   moveItem: moveItem,
@@ -453,5 +468,6 @@ export default connect((state: RootState) => ({
     state.ui.isMoveItemsDialogOpen ||
     state.ui.isCreateFolderDialogOpen ||
     state.ui.isNameCollisionDialogOpen ||
-    state.ui.isReachedPlanLimitDialogOpen,
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isItemDetailsDialogOpen,
 }))(DriveExplorerList);

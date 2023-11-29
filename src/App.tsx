@@ -165,9 +165,9 @@ const App = (props: AppProps): JSX.Element => {
         <Router history={navigationService.history}>
           {isDev && configService.getAppConfig().debug.enabled && (
             <span
-              className="\ \ pointer-events-none absolute top-5 -right-7
-               z-50 w-28 rotate-45 transform bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
-               tracking-wider text-white opacity-80 drop-shadow-2xl"
+              className="\ \ pointer-events-none absolute -right-7 top-5
+               z-50 w-28 rotate-45 bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
+               tracking-wider text-white/80 drop-shadow-2xl"
             >
               {t('general.stage.development')}
             </span>

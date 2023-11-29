@@ -19,15 +19,15 @@ export default function Button({
   className?: string;
   leftIcon?: JSX.Element;
   rightIcon?: JSX.Element;
-  onClick?:()=> void;
+  onClick?: () => void;
 }): JSX.Element {
   return (
     <button
       disabled={disabled}
       type="submit"
-      onClick= {onClick}
+      onClick={onClick}
       className={`flex h-11 flex-row items-center justify-center space-x-3 whitespace-nowrap ${style} ${className} ${
-        loading && 'loading'
+        loading ? 'loading' : ''
       } ${disabled && !loading ? 'disabled' : ''}`}
     >
       {!loading && leftIcon}

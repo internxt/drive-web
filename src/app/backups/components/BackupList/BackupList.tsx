@@ -45,7 +45,7 @@ const BackupList = (props: Props): JSX.Element => {
   };
 
   return (
-    <div className="flex h-1 flex-grow flex-col bg-white">
+    <div className="flex h-1 grow flex-col bg-white">
       <div id="scrollableList" className="flex h-full flex-col overflow-y-auto">
         {isLoading ? (
           getLoadingSkeleton()
@@ -55,7 +55,7 @@ const BackupList = (props: Props): JSX.Element => {
               header={[
                 {
                   label: translate('drive.list.columns.name'),
-                  width: 'flex flex-grow cursor-pointer items-center pl-6',
+                  width: 'flex grow cursor-pointer items-center pl-6',
                   name: 'name',
                   orderable: true,
                   defaultDirection: 'ASC',

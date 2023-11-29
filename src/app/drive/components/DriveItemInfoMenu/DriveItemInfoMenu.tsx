@@ -15,26 +15,26 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
   const featuresList = props.features.map((feature, index) => (
     <div key={index} className="file-activity-info-item">
       <span className="label">{feature.label}</span>
-      <span className="value whitespace-nowrap overflow-ellipsis overflow-hidden">{feature.value}</span>
+      <span className="value overflow-hidden text-ellipsis whitespace-nowrap">{feature.value}</span>
     </div>
   ));
   let template: JSX.Element = <div></div>;
 
   template = (
-    <div className="w-activity min-w-activity bg-white rounded-4px pl-6 mr-8 border-l border-neutral-30 pt-6">
+    <div className="mr-8 w-activity min-w-activity rounded-4px border-l border-neutral-30 bg-white pl-6 pt-6">
       {/* HEADER */}
-      <div className="flex items-center mb-4">
-        <div className="flex items-center min-w-9 w-9 h-9">
+      <div className="mb-4 flex items-center">
+        <div className="min-w-9 flex h-9 w-9 items-center">
           <props.icon className="h-full" />
         </div>
         <span
-          className="mx-3 overflow-hidden whitespace-nowrap\
-         overflow-ellipsis block text-neutral-700 text-sm flex-grow"
+          className="mx-3 block grow
+         overflow-hidden text-ellipsis whitespace-nowrap text-sm text-neutral-700"
         >
           {props.title}
         </span>
         <div
-          className="w-8 h-8 rounded-1/2 bg-neutral-20 cursor-pointer justify-center items-center flex"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-1/2 bg-neutral-20"
           onClick={props.onClose}
         >
           <UilTimes className="text-blue-60" />
@@ -42,15 +42,15 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
       </div>
 
       {/* TABS */}
-      <div className="border-b border-l-neutral-50 text-center mb-4">
+      <div className="mb-4 border-b border-l-neutral-50 text-center">
         <div className="file-activity-tabs-inner-container">
-          <div className="border-b border-blue-60 text-neutral-700 w-1/2 py-3">Info</div>
+          <div className="w-1/2 border-b border-blue-60 py-3 text-neutral-700">Info</div>
         </div>
       </div>
 
       {/* INFO TAB CONTENT */}
       <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
-        <div className="w-4 absolute bg-white -left-2 text-neutral-500">
+        <div className="absolute -left-2 w-4 bg-white text-neutral-500">
           <UilFolderNetwork className="w-full" />
         </div>
 

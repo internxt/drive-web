@@ -38,7 +38,7 @@ interface DriveItemActions {
   onDeletePermanentlyButtonClicked: (e: MouseEvent) => void;
   onRecoverButtonClicked: (e: MouseEvent) => void;
   onItemClicked: (e: MouseEvent) => void;
-  onItemDoubleClicked: (e: MouseEvent) => void;
+  onItemDoubleClicked: () => void;
   onItemRightClicked: (e: MouseEvent) => void;
   downloadAndSetThumbnail: () => void;
 }

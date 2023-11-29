@@ -47,7 +47,7 @@ const DeviceList = (props: Props): JSX.Element => {
           header={[
             {
               label: translate('drive.list.columns.name'),
-              width: 'flex-1 min-w-activity truncate flex-shrink-0 cursor-pointer items-center',
+              width: 'flex-1 min-w-activity truncate shrink-0 cursor-pointer items-center',
               name: 'name',
               orderable: true,
               defaultDirection: 'ASC',
@@ -93,8 +93,8 @@ const DeviceList = (props: Props): JSX.Element => {
                   <div className="mr-3 h-8 w-8">
                     <Icon className="h-8 w-8" />
                   </div>
-                  <div className="flex-grow cursor-default truncate pr-3">
-                    <span className="z-10 flex-shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
+                  <div className="grow cursor-default truncate pr-3">
+                    <span className="z-10 shrink cursor-pointer truncate" onClick={() => onDeviceClicked(device)}>
                       {device.name}
                     </span>
                   </div>

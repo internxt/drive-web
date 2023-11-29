@@ -50,18 +50,19 @@ const InputPrimary = ({
         maxLength,
         pattern,
       })}
-      className={`py-2 w-full transform duration-200 ${error ? 'error' : ''}`}
+      className={`w-full py-2 duration-200 ${error ? 'error' : ''}`}
     />
 
     <div
-      className={`text-neutral-100 absolute ${
-        label === 'password' || label === 'confirmPassword'|| label === 'lastPassword' 
-          ? 'right-3 bottom-2 cursor-pointer' 
-          : 'right-3 bottom-2'
+      className={`absolute text-neutral-100 ${
+        label === 'password' || label === 'confirmPassword' || label === 'lastPassword'
+          ? 'bottom-2 right-3 cursor-pointer'
+          : 'bottom-2 right-3'
       } flex items-center justify-center`}
       onClick={() =>
-        label === 'password' || label === 'confirmPassword' ||
-        label === 'currentPassword' || label === 'lastPassword' ? onClick && onClick() : null
+        label === 'password' || label === 'confirmPassword' || label === 'currentPassword' || label === 'lastPassword'
+          ? onClick && onClick()
+          : null
       }
     >
       {icon || null}

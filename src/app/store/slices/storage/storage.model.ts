@@ -1,7 +1,7 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
-import { SharedNamePath } from 'app/share/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 export interface StorageFilters {
@@ -23,7 +23,11 @@ export interface StorageState {
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
-  itemToShare: { share?: ShareLink; sharings?: { type: string; id: string }[]; item: DriveItemData } | null;
+  itemToShare: {
+    share?: ShareLink;
+    sharings?: { type: string; id: string }[];
+    item: DriveItemData | AdvancedSharedItem;
+  } | null;
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];
   itemToRename: DriveItemData | null;
