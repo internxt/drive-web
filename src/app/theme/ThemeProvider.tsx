@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useMemo, useState } from '
 
 export type Theme = 'system' | 'light' | 'dark';
 
-// Define la interfaz para el contexto
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
   toggleTheme: (string) => void;
