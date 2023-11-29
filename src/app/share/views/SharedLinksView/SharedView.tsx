@@ -87,8 +87,6 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
   const folderUUID = urlParams.get('folderuuid');
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
-
-  const isItemToRenameFromPreviewView = itemToRename !== null;
   const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
@@ -119,7 +117,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
 
   // Set the item to rename from preview view
   useEffect(() => {
-    if (isItemToRenameFromPreviewView) {
+    if (itemToRename) {
       setEditNameItem(itemToRename);
       setIsEditNameDialogOpen(true);
     }
