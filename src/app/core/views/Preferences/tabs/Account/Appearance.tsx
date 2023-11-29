@@ -1,24 +1,12 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Section from '../../components/Section';
-import { ReactNode, forwardRef } from 'react';
 import { CaretDown } from '@phosphor-icons/react';
 import ItemsDropdown from './components/ItemsDropdown';
 import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
+import MenuItem from './components/MenuItem';
 
 const appearances: Theme[] = ['system', 'light', 'dark'];
-
-const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
-  return (
-    <div
-      onKeyDown={() => {}}
-      className={'flex h-full w-full cursor-pointer px-3 py-2 text-gray-80 hover:bg-gray-5 active:bg-gray-10'}
-      onClick={onClick}
-    >
-      {children}
-    </div>
-  );
-});
 
 const Appearance = () => {
   const { translate } = useTranslationContext();
