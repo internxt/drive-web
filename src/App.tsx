@@ -97,8 +97,8 @@ const App = (props: AppProps): JSX.Element => {
         }),
       );
     } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-      errorService.reportError(castedError);
+      const error = errorService.castError(err);
+      errorService.reportError(error);
     }
   };
 
