@@ -230,12 +230,12 @@ export default function List({
         className={`relative flex h-full flex-col ${isLoading && 'pointer-events-none overflow-y-hidden'} ${className}`}
       >
         {/* Click outside of the list to unselect all items */}
-        {itemList.length > 0 && <div className="absolute top-0 left-0 z-0 h-full w-full" onClick={unselectAllItems} />}
+        {itemList.length > 0 && <div className="absolute left-0 top-0 z-0 h-full w-full" onClick={unselectAllItems} />}
 
         {!isLoading && itemList.length > 0 && (
           <>
             {/* HEAD */}
-            <div className="sticky flex h-12 flex-shrink-0 flex-row items-center px-5">
+            <div className="sticky flex h-12 shrink-0 flex-row items-center px-5">
               {/* COLUMN */}
               <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
                 {/* SELECTION CHECKBOX */}
@@ -251,7 +251,7 @@ export default function List({
                   <div
                     onClick={() => order(column.order, column.data)}
                     key={column.name}
-                    className={`flex h-full flex-shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
+                    className={`flex h-full shrink-0 cursor-pointer flex-row items-center space-x-1.5 text-base font-medium text-gray-60 hover:text-gray-80 ${column.width}`}
                   >
                     <span>{column.name}</span>
                     {column.data === orderData &&
@@ -263,7 +263,7 @@ export default function List({
                   </div>
                 ))}
 
-                {menu && <div className="flex h-14 w-12 flex-shrink-0" />}
+                {menu && <div className="flex h-14 w-12 shrink-0" />}
               </div>
             </div>
           </>

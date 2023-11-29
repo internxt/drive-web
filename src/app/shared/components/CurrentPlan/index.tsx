@@ -23,7 +23,7 @@ export default function CurrentPlan({
       <div className="flex items-center">
         <div
           style={{ height: '34px' }}
-          className={`flex items-center rounded-lg border border-primary bg-primary bg-opacity-5 px-3 ${
+          className={`flex items-center rounded-lg border border-primary bg-primary/5 px-3 ${
             showInfinite ? 'text-4xl' : 'text-lg'
           } font-semibold text-primary`}
         >

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { PreviewFileItem } from '../../../share/types';
-import { DriveItemData, FileInfoMenuItem } from '../../../drive/types';
+import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from '../../../drive/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -10,6 +10,7 @@ interface UISliceState {
   isNameCollisionDialogOpen: boolean;
   isShareDialogOpen: boolean;
   isInvitationsDialogOpen: boolean;
+  isItemDetailsDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -28,6 +29,7 @@ interface UISliceState {
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
+  itemDetails: DriveItemDetails | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
@@ -44,6 +46,7 @@ const initialState: UISliceState = {
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
   isInvitationsDialogOpen: false,
+  isItemDetailsDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -62,6 +65,7 @@ const initialState: UISliceState = {
   isDeleteBackupDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
+  itemDetails: null,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
@@ -94,6 +98,9 @@ export const uiSlice = createSlice({
     },
     setIsInvitationsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
       state.isInvitationsDialogOpen = action.payload;
+    },
+    setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isItemDetailsDialogOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
@@ -148,6 +155,9 @@ export const uiSlice = createSlice({
     },
     setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
+    },
+    setItemDetailsItem: (state: UISliceState, action: PayloadAction<UISliceState['itemDetails']>) => {
+      state.itemDetails = action.payload;
     },
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
@@ -207,6 +217,7 @@ export const {
   setIsEditFolderNameDialog,
   setIsToastNotificacionOpen,
   setIsGlobalSearch,
+  setIsItemDetailsDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

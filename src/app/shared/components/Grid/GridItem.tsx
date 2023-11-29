@@ -46,11 +46,11 @@ export default function GridItem({
       {/* COMPOSITION */}
       {itemComposition(item, selected)}
 
-      <div className="absolute top-2 right-2 flex flex-shrink-0 flex-col items-center justify-center">
+      <div className="absolute right-2 top-2 flex shrink-0 flex-col items-center justify-center">
         <Menu as="div" className="relative" onMouseDown={() => selectItem}>
           <Menu.Button
-            className={`focus-within:outline-primary flex h-8 w-8 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
-              selected ? 'text-primary hover:bg-primary hover:bg-opacity-10' : 'text-gray-60 hover:bg-gray-10'
+            className={`flex h-8 w-8 flex-col items-center justify-center rounded-md opacity-0 focus-within:outline-primary focus-visible:opacity-100 group-hover:opacity-100 ${
+              selected ? 'text-primary hover:bg-primary/10' : 'text-gray-60 hover:bg-gray-10'
             }`}
           >
             <DotsThree size={24} weight="bold" />

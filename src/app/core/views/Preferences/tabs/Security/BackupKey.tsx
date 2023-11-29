@@ -5,9 +5,14 @@ import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
 import localStorageService from '../../../../services/local-storage.service';
 import Section from '../../components/Section';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
+import { trackBackupKeyDownloaded } from 'app/analytics/services/analytics.service';
 
 export default function BackupKey({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
+  const trackBackupKeyDownloadedProperties: TrackingPlan.BackupKeyDownloadedProperties = {
+    backup_key_downloaded: true,
+  };
   function handleExport() {
     const mnemonic = localStorageService.get('xMnemonic');
     if (!mnemonic) {
@@ -21,6 +26,7 @@ export default function BackupKey({ className = '' }: { className?: string }): J
         text: translate('views.account.tabs.security.backupKey.success'),
         type: ToastType.Success,
       });
+      trackBackupKeyDownloaded(trackBackupKeyDownloadedProperties);
     }
   }
 

@@ -564,6 +564,21 @@
       "deleteLinks": "Supprimer les liens",
       "deleteLink": "Supprimer le lien"
     },
+    "itemDetailsModal": {
+      "title": "Détails",
+      "fileCta": "Ouvrir l'aperçu",
+      "folderCta": "Ouvrir le dossier",
+      "itemDetails": {
+        "name": "Nom",
+        "type": "Type",
+        "uploaded": "Téléchargé",
+        "uploadedBy": "Téléchargé par",
+        "shared": "Partagé",
+        "size": "Taille",
+        "modified": "Modifié",
+        "location": "Emplacement"
+      }
+    },
     "newFolderModal": {
       "title": "Nouveau dossier",
       "label": "Nom",
@@ -586,7 +601,8 @@
       },
       "errors": {
         "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
-        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard."
+        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard.",
+        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard"
       },
       "general": {
         "generalAccess": "Accès général",
@@ -1098,7 +1114,10 @@
     "rename": "Renommer",
     "restore": "Restaurer",
     "copyLink": "Copier le lien",
-    "report": "Signaler un abus"
+    "report": "Signaler un abus",
+    "yes": "Oui",
+    "no": "Non",
+    "more": "Plus"
   },
   "drive": {
     "usage": "Usage",
@@ -1122,7 +1141,10 @@
     "dropdown": {
       "openPreview": "Ouvrir la prévisualisation",
       "getLink": "Copier le lien",
+      "details": "Détails",
       "rename": "Renommer",
+      "manageLinkAccess": "Gestion de l'accès",
+      "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",

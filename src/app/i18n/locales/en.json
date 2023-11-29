@@ -653,6 +653,21 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "itemDetailsModal": {
+      "title": "Details",
+      "fileCta": "Open preview",
+      "folderCta": "Open folder",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Type",
+        "uploaded": "Uploaded",
+        "uploadedBy": "Uploaded by",
+        "shared": "Shared",
+        "size": "Size",
+        "modified": "Modified",
+        "location": "Location"
+      }
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -669,7 +684,8 @@
       },
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
-        "copy-to-clipboard": "Error sharing item, try again later."
+        "copy-to-clipboard": "Error sharing item, try again later.",
+        "update-sharing-access": "The acces mode could not be updated, please try again later"
       },
       "general": {
         "generalAccess": "General access",
@@ -1189,7 +1205,10 @@
     "rename": "Rename",
     "restore": "Restore",
     "copyLink": "Copy link",
-    "report": "Report abuse"
+    "report": "Report abuse",
+    "yes": "Yes",
+    "no": "No",
+    "more": "More"
   },
   "drive": {
     "usage": "Usage",
@@ -1212,6 +1231,7 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "details": "Details",
       "shareLink": "Share",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",

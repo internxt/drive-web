@@ -17,6 +17,8 @@ import { RootState } from '../../../store';
 import { Role } from '../../../store/slices/sharedLinks/types';
 import userService from '../../../auth/services/user.service';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -134,7 +136,16 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         ),
       );
     });
+    const trackingRestrictedSharedProperties: TrackingPlan.RestrictedSharedProperties = {
+      is_folder: props.itemToShare?.isFolder,
+      share_type: 'private',
+      user_id: props.itemToShare?.userId,
+      item_id: props.itemToShare?.id,
+      invitations_send: 1,
+    };
+
     await Promise.all(sharingPromises);
+    trackRestrictedShared(trackingRestrictedSharedProperties);
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
@@ -191,7 +202,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                   <Listbox.Option
                     key={role.id}
                     value={role.name}
-                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                    className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5"
                   >
                     {({ selected }) => (
                       <>
@@ -236,7 +247,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                           <Listbox.Option
                             key={role.id}
                             value={role.name}
-                            className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg py-2 px-3 text-base font-medium hover:bg-gray-5"
+                            className="flex h-9 w-full cursor-pointer items-center justify-between space-x-3 rounded-lg px-3 py-2 text-base font-medium hover:bg-gray-5"
                           >
                             {({ selected }) => (
                               <>
@@ -263,7 +274,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 value={messageText}
                 placeholder={translate('modals.shareModal.invite.textarea')}
                 rows={4}
-                className="outline-none w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+                className="w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4 outline-none"
                 onChange={(e) => setMessageText(String(e.target.value))}
                 maxLength={1000}
               />
