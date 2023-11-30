@@ -310,7 +310,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       try {
         const sharingType = mode === 'restricted' ? 'private' : 'public';
         const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-        const itemId = itemToShare?.item.uuid || '';
+        const itemId = itemToShare?.item.uuid ?? '';
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
         if (sharingType === 'public') {
@@ -320,7 +320,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       } catch (error) {
         errorService.reportError(error);
         notificationsService.show({
-          text: translate('modals.shareModal.errors.update-sharing-acces'),
+          text: translate('modals.shareModal.errors.update-sharing-access'),
           type: ToastType.Error,
         });
       }
