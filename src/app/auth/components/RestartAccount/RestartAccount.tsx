@@ -9,8 +9,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
+import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
 
 interface RestartAccount {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -94,6 +95,9 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     setIsLoading(true);
 
     const token = window.location.pathname.split('/').pop();
+    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
+      method: 'reset',
+    };
 
     if (!token) {
       notificationsService.show({
@@ -105,6 +109,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     try {
       await authService.resetAccountWithToken(token, newPassword);
       setIsEmailSent(true);
+      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.restartAccount.error'),
@@ -129,7 +134,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
           </span>
           <h3 className="mb-1 text-2xl font-medium">{translate('auth.restartAccount.title')}</h3>
           <p className="font-regular mb-5 text-sm text-gray-80">{translate('auth.restartAccount.description')}</p>
-          <div className="font-regular mb-4 flex rounded-md border border-red-std border-opacity-30 bg-red-std bg-opacity-5 p-4 text-sm text-red-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-red-std/30 bg-red-std/5 p-4 text-sm text-red-dark">
             <span className="mr-1.5 pt-0.5">
               <WarningCircle size={18} weight="fill" className="text-red-std" />
             </span>

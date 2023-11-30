@@ -1,10 +1,10 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
 
 @layer components {
   .button-primary {
-    @apply h-11 cursor-pointer rounded-lg bg-primary px-5 font-medium text-white duration-100 ease-in-out hover:bg-primary-dark;
+    @apply cursor-pointer rounded-lg bg-primary px-5 font-medium text-white duration-100 ease-in-out hover:bg-primary-dark;
 
     &.loading {
       @apply bg-primary-dark;

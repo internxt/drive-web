@@ -106,7 +106,7 @@ const NameCollisionDialog: FC<NameCollisionDialogProps> = ({
             {options.map((option) => (
               <RadioGroup.Option
                 value={option}
-                className="outline-none rounded-md ring-2 ring-primary ring-opacity-0 ring-offset-2 focus-visible:ring-opacity-50"
+                className="rounded-md outline-none ring-2 ring-primary/0 ring-offset-2 focus-visible:ring-primary/50"
                 key={option.operation}
               >
                 <div className="group flex cursor-pointer flex-row items-center space-x-1.5">

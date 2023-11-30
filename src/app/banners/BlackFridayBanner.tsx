@@ -28,16 +28,16 @@ const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClo
   return (
     <div
       className={`${showBanner ? 'flex' : 'hidden'} 
-         absolute top-0 left-0 right-0 bottom-0 z-10 bg-black bg-opacity-40`}
+         absolute bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-40`}
     >
       <div
-        className={`absolute top-1/2 left-1/2 flex h-auto w-full max-w-4xl -translate-y-1/2 -translate-x-1/2
+        className={`absolute left-1/2 top-1/2 flex h-auto w-full max-w-4xl -translate-x-1/2 -translate-y-1/2
         transform flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-black to-primary text-neutral-900`}
       >
         <button className="absolute right-0 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="flex w-full flex-row justify-between py-16 px-20">
+        <div className="flex w-full flex-row justify-between px-20 py-16">
           <div className="flex  w-full flex-col items-start justify-between">
             <div className="flex w-full max-w-xxs flex-col space-y-4">
               <p className="text-3xl font-semibold text-white">{translate('blackFridayBanner.header')}</p>

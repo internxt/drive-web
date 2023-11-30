@@ -18,13 +18,13 @@ const PreparingWorkspaceAnimation = (): JSX.Element => {
   return (
     <div className="flex h-full w-full cursor-default flex-col items-center justify-center">
       <div className="pointer-events-none relative mb-4 h-32 w-40">
-        <img className="absolute top-0 left-0 h-full w-full object-contain" src={folderBack} alt="" />
+        <img className="absolute left-0 top-0 h-full w-full object-contain" src={folderBack} alt="" />
         <img
           className={`absolute h-16 w-16 object-contain transition-all duration-250 ease-in-out
           ${
             step >= 3
-              ? '-top-3 left-1/3 -translate-x-10 -rotate-12 scale-90 transform'
-              : 'top-12 left-1/3 -translate-x-2 -rotate-12 scale-50 transform'
+              ? '-top-3 left-1/3 -translate-x-10 -rotate-12 scale-90'
+              : 'left-1/3 top-12 -translate-x-2 -rotate-12 scale-50'
           }`}
           src={filePDF}
           alt=""
@@ -33,8 +33,8 @@ const PreparingWorkspaceAnimation = (): JSX.Element => {
           className={`absolute h-16 w-16 object-contain transition-all duration-250 ease-in-out
           ${
             step >= 6
-              ? '-top-2 left-1/2 -translate-x-7 rotate-3 scale-90 transform'
-              : 'top-10 left-1/2 -translate-x-8 rotate-3 scale-50 transform'
+              ? '-top-2 left-1/2 -translate-x-7 rotate-3 scale-90'
+              : 'left-1/2 top-10 -translate-x-8 rotate-3 scale-50'
           }`}
           src={fileDOC}
           alt=""
@@ -43,13 +43,13 @@ const PreparingWorkspaceAnimation = (): JSX.Element => {
           className={`absolute h-16 w-16 object-contain transition-all duration-250 ease-in-out
           ${
             step >= 9
-              ? 'top-0 left-1/2 translate-x-2 rotate-30 scale-90 transform'
-              : 'top-10 left-1/2 -translate-x-6 rotate-30 scale-50 transform'
+              ? 'left-1/2 top-0 translate-x-2 rotate-30 scale-90'
+              : 'left-1/2 top-10 -translate-x-6 rotate-30 scale-50'
           }`}
           src={fileZIP}
           alt=""
         />
-        <img className="absolute top-0 left-0 h-full w-full object-contain" src={folderFront} alt="" />
+        <img className="absolute left-0 top-0 h-full w-full object-contain" src={folderFront} alt="" />
       </div>
 
       <div className="flex flex-col items-center justify-center">

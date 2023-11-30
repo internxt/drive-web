@@ -9,7 +9,7 @@ export default function SkinSkeletonItem({ skinSkeleton, columns }: SkinSkeleton
       {new Array(columns.length).fill(0).map((col, i) => (
         <div
           key={`${col}-${i}`}
-          className={`relative flex h-full flex-shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columns[i]}`}
+          className={`relative flex h-full shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columns[i]}`}
         >
           {skinSkeleton?.[i]}
         </div>
