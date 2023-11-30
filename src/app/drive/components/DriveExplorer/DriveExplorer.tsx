@@ -1,7 +1,6 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
-import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -48,7 +47,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -334,7 +332,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     fileInputRef.current?.click();
-  }, []);
+  }, [currentFolderId]);
 
   const onUploadFolderButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
@@ -346,7 +344,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     folderInputRef.current?.click();
-  }, []);
+  }, [currentFolderId]);
 
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
@@ -382,12 +380,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setFolderInputKey(Date.now());
   };
 
-  const onViewModeButtonClicked = (): void => {
-    const setViewMode: FileViewMode = viewMode === FileViewMode.List ? FileViewMode.Grid : FileViewMode.List;
-
-    dispatch(storageActions.setViewMode(setViewMode));
-  };
-
   const onCreateFolderButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
       level: 'info',
@@ -398,7 +390,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
-  }, []);
+  }, [currentFolderId]);
 
   const onDeletePermanentlyButtonClicked = (): void => {
     if (selectedItems.length > 0) {
