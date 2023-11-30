@@ -10,12 +10,12 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import newStorageService from 'app/drive/services/new-storage.service';
-import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
+import fileService from 'app/drive/services/file.service';
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
@@ -27,7 +27,6 @@ export interface DriveViewProps {
 
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
-  const history = useHistory();
   const pathname = useLocation().pathname;
 
   useEffect(() => {
@@ -70,11 +69,8 @@ const DriveView = (props: DriveViewProps) => {
   };
 
   const goFile = async (folderUuid) => {
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const [responsePromise] = storageClient.getFile(folderUuid);
-
     try {
-      const fileMeta = await responsePromise;
+      const fileMeta = await fileService.getFile(folderUuid);
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
     } catch (error) {

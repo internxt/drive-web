@@ -94,12 +94,20 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
+export function getFile(uuid: string) {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const [responsePromise] = storageClient.getFile(uuid);
+
+  return responsePromise;
+}
+
 const fileService = {
   updateMetaData,
   moveFile,
   fetchRecents,
   uploadFile,
   fetchDeleted,
+  getFile,
 };
 
 export default fileService;
