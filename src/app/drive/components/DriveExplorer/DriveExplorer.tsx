@@ -410,6 +410,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     }
   };
 
+  const onCloseEditItemDialog = (newItem) => {
+    if (newItem && editNameItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      } else if (itemToRename && editNameItem.isFolder) {
+        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+      }
+    }
+    dispatch(storageActions.setItemToRename(null));
+    setEditNameItem(null);
+  };
+
   const viewModes = {
     [FileViewMode.List]: DriveExplorerList,
     [FileViewMode.Grid]: DriveExplorerGrid,
@@ -614,17 +626,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           onSuccess={() => {
             setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
           }}
-          onClose={(newItem) => {
-            if (newItem) {
-              if (isFileViewerOpen) {
-                dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
-              } else if (itemToRename && editNameItem.isFolder) {
-                dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
-              }
-            }
-            dispatch(storageActions.setItemToRename(null));
-            setEditNameItem(null);
-          }}
+          onClose={onCloseEditItemDialog}
         />
       )}
       <BannerWrapper />
