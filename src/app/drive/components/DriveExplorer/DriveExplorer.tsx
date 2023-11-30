@@ -63,7 +63,6 @@ import ShareDialog from '../ShareDialog/ShareDialog';
 import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
-import BannerWrapper from 'app/banners/BannerWrapper';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import { AdvancedSharedItem } from '../../../share/types';
@@ -612,7 +611,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           }}
         />
       )}
-      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full grow">
         <div className="flex w-1 grow flex-col">
