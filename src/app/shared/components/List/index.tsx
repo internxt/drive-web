@@ -66,7 +66,7 @@ const Header = ({
         </div>
 
         {header.map((column) => (
-          <div
+          <button
             onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
             key={column.name.toString()}
             className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
@@ -81,7 +81,7 @@ const Header = ({
               ) : (
                 <ArrowDown size={14} weight="bold" />
               ))}
-          </div>
+          </button>
         ))}
         {isVerticalScrollbarVisible && <div className="mr-15px" />}
         {menu && <div className="flex h-full w-12 shrink-0" />}
