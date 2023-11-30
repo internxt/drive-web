@@ -42,14 +42,14 @@ const navigationService = {
     instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
   },
   pushFolder(uuid: string | undefined): void {
-    instance.push(`/app/folder/${uuid}`);
+    instance.push(`/drive/folder/${uuid}`);
   },
   pushFile(uuid: string | undefined): void {
-    instance.push(`/app/file/${uuid}`);
+    instance.push(`/drive/file/${uuid}`);
   },
   isCurrentPath(path: string): boolean {
     const pathname = navigationService.history.location.pathname.split('/');
-    const currentPath = pathname[2];
+    const currentPath = pathname[1];
     return currentPath === path;
   },
 };

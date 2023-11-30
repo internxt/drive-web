@@ -5,7 +5,7 @@ describe('Backups view', () => {
     cy.intercept('GET', '/api/backup/deviceAsFolder', { fixture: '/api/backups/deviceAsFolder.json' });
     cy.intercept('GET', '/api/storage/v2/folder/130', { fixture: '/api/backups/storagev2folder130.json' });
     cy.intercept('GET', '/api/storage/v2/folder/131', { fixture: '/api/backups/storagev2folder131.json' });
-    cy.visit('/app/backups');
+    cy.visit('/backups');
   });
 
   it('Should check if has backups devices', () => {

@@ -193,8 +193,7 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   };
 
   const onItemDoubleClicked = (): void => {
-    const pathnameSplit = pathname.split('/');
-    const isRecentsView = pathnameSplit[2] === 'recents';
+    const isRecentsView = navigationService.isCurrentPath('recents');
 
     if (item.isFolder) {
       navigationService.pushFolder(item.uuid);

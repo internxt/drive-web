@@ -33,7 +33,7 @@ export const PATH_NAMES = {
   '/settings': 'Settings',
   '/invite': 'Invite',
   '/remove': 'Remove Account',
-  '/app': 'App',
+  '/drive': 'App',
 };
 
 export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
