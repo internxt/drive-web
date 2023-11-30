@@ -460,31 +460,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {accessMode !== 'public' ? (
-                invitedUsers.length === 0 && isLoading ? (
-                  <>
-                    {Array.from({ length: 4 }, (_, i) => (
-                      <InvitedUsersSkeletonLoader key={`loader-${i}`} />
-                    ))}
-                  </>
-                ) : (
-                  invitedUsers.map((user, index) => (
-                    <User
-                      user={user}
-                      key={user.email}
-                      listPosition={index}
-                      translate={translate}
-                      openUserOptions={openUserOptions}
-                      selectedUserListIndex={selectedUserListIndex}
-                      userOptionsY={userOptionsY}
-                      onRemoveUser={onRemoveUser}
-                      userOptionsEmail={userOptionsEmail}
-                      onChangeRole={handleUserRoleChange}
-                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                      disableRoleChange={currentUserFolderRole !== 'owner'}
-                    />
-                  ))
-                )
+              {invitedUsers.length === 0 && isLoading ? (
+                <>
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <InvitedUsersSkeletonLoader key={`loader-${i}`} />
+                  ))}
+                </>
               ) : (
                 invitedUsers.map((user, index) => (
                   <User
