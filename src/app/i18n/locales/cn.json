@@ -54,6 +54,12 @@
     "ru": "Русский (俄语)",
     "de": "Deutsch (德国)"
   },
+  "theme": {
+    "title": "外观",
+    "light": "明亮",
+    "dark": "暗",
+    "system": "系统"
+  },
   "auth": {
     "email": "电子邮件",
     "password": "密码",
