@@ -514,7 +514,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    const shareItemWithEmail = shareItem.user?.email
+      ? shareItem
+      : ({ ...shareItem, user: { email: shareItem.credentials.networkUser } } as AdvancedSharedItem & {
+          user: { email: string };
+        });
+    dispatch(storageActions.setItemToShare({ item: shareItemWithEmail }));
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
