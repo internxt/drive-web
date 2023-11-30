@@ -17,6 +17,8 @@ import { RootState } from 'app/store';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { TopBarActionsMenu } from './FileViewerWrapper';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -27,11 +29,10 @@ interface FileViewerProps {
   progress?: number;
   isShareView?: boolean;
   blob?: Blob | null;
-  setBlob?: (blob: Blob | null) => void;
-  changeFile?;
-  totalFolderIndex?;
-  fileIndex?;
-  dropdownItems?;
+  changeFile?: (direction: 'next' | 'prev') => void;
+  totalFolderIndex?: number;
+  fileIndex?: number;
+  dropdownItems?: TopBarActionsMenu;
 }
 
 export interface FormatFileViewerProps {
@@ -89,6 +90,9 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
+  const isFirstItem = fileIndex === 0 || isShareView;
+  const isLastItem = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
+
   // To prevent close FileViewer if any of those modal are open
   useEffect(() => {
     function handleKeyDown(event) {
@@ -141,16 +145,16 @@ const FileViewer = ({
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
     'right',
-    () => changeFile('next'),
+    () => changeFile?.('next'),
     {
-      enabled: fileIndex !== totalFolderIndex - 1,
+      enabled: () => fileIndex !== totalFolderIndex! - 1,
     },
     [fileIndex, totalFolderIndex],
   );
 
   useHotkeys(
     'left',
-    () => changeFile('prev'),
+    () => changeFile?.('prev'),
     {
       enabled: fileIndex !== 0,
     },
@@ -196,11 +200,11 @@ const FileViewer = ({
 
           {/* Content */}
           {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-          {fileIndex === 0 || isShareView ? null : (
+          {isFirstItem ? null : (
             <button
               title={translate('actions.previous')}
               className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile('prev')}
+              onClick={() => changeFile?.('prev')}
             >
               <CaretLeft size={24} />
             </button>
@@ -265,11 +269,11 @@ const FileViewer = ({
               <DownloadFile onDownload={onDownload} translate={translate} />
             </div>
           )}
-          {fileIndex === totalFolderIndex - 1 || isShareView ? null : (
+          {isLastItem ? null : (
             <button
               title={translate('actions.next')}
               className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-              onClick={() => changeFile('next')}
+              onClick={() => changeFile?.('next')}
             >
               <CaretRight size={24} />
             </button>
@@ -308,7 +312,7 @@ const FileViewer = ({
               file={file as DriveItemData}
               isAuthenticated={isAuthenticated}
               isShareView={isShareView}
-              dropdownItems={dropdownItems}
+              dropdownItems={dropdownItems as ListItemMenu<DriveItemData>}
             />
           </div>
         </div>

@@ -64,10 +64,11 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
-  const recentsActions = pathId === 'recents';
-  const sharedActions = pathId === 'shared';
-  const trashActions = pathId === 'trash';
-  const isSharedItem = sharedActions;
+  const recentsView = pathId === 'recents';
+  const sharedView = pathId === 'shared';
+  const trashView = pathId === 'trash';
+
+  const isSharedItem = file.sharings && file.sharings?.length > 0;
   const isOwner = file.credentials?.user === user?.email;
 
   const {
@@ -144,9 +145,9 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   };
 
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
-    if (sharedActions) return sharedActionsMenu();
-    if (recentsActions) return recentsActionsMenu();
-    if (trashActions) return trashActionsMenu();
+    if (sharedView) return sharedActionsMenu();
+    if (recentsView) return recentsActionsMenu();
+    if (trashView) return trashActionsMenu();
 
     return driveActionsMenu();
   };
@@ -154,7 +155,6 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   useEffect(() => {
     setBlob(null);
     if (dirtyName) {
-      // setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
       setCurrentFile?.({
         ...currentFile,
         plainName: dirtyName,
@@ -280,8 +280,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
           const isCacheExpired = !fileSource?.updatedAt
             ? true
             : dateService.isDateOneBefore({
-                dateOne: fileSource?.updatedAt as string,
-                dateTwo: currentFile?.updatedAt as string,
+                dateOne: fileSource?.updatedAt,
+                dateTwo: currentFile?.updatedAt,
               });
           if (isCacheExpired) {
             fileContent = await downloadFile(currentFile, abortController);
@@ -351,9 +351,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       fileIndex={fileIndex}
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
-      setBlob={setBlob}
       dropdownItems={topDropdownBarActionsMenu()}
-      isShareView={isSharedItem}
+      isShareView={sharedView}
     />
   ) : (
     <div className="hidden" />
