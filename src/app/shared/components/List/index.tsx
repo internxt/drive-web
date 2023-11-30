@@ -140,7 +140,7 @@ ListProps<T, F>): JSX.Element {
   };
   const container = document.getElementById('scrollableList');
   const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
-  const isEmptyState = (!hasMoreItems ?? false) && items.length === 0 && !isLoading;
+  const isEmptyState = !hasMoreItems && items.length === 0 && !isLoading;
 
   const loader = new Array(25)
     .fill(0)
