@@ -70,8 +70,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
         {/* NAME */}
         <div className="flex w-activity grow cursor-pointer items-center truncate pr-2">
-          <span
-            onKeyDown={() => {}}
+          <button
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
             title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
@@ -84,7 +83,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             <p className="truncate">
               {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             </p>
-          </span>
+          </button>
         </div>
       </div>
 
