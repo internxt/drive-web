@@ -297,11 +297,11 @@ const contextMenuTrashItems = ({
   restoreItem,
   deletePermanently,
 }: {
-  openPreview: (item: DriveItemData) => void;
+  openPreview?: (item: DriveItemData) => void;
   restoreItem: (item: DriveItemData) => void;
   deletePermanently: (item: DriveItemData) => void;
 }): ListItemMenu<DriveItemData> => [
-  getOpenPreviewMenuItem(openPreview),
+  openPreview && getOpenPreviewMenuItem(openPreview),
   getRestoreMenuItem(restoreItem),
   { name: '', action: () => false, separator: true },
   getDeletePermanentlyMenuItem(deletePermanently),

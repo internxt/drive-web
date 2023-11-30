@@ -42,7 +42,6 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
-import EditFolderNameDialog from 'app/drive/components/EditFolderNameDialog/EditFolderNameDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -87,6 +86,9 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
   const urlParams = new URLSearchParams(window.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [hasMoreRootFolders, setHasMoreRootFolders] = useState<boolean>(true);
@@ -112,6 +114,14 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
+  // Set the item to rename from preview view
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+      setIsEditNameDialogOpen(true);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -674,13 +684,16 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
-  const renameItem = (shareItem: AdvancedSharedItem) => {
+  const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
     setEditNameItem(shareItem as unknown as DriveItemData);
     setIsEditNameDialogOpen(true);
   };
 
   const onCloseEditNameItems = (newItem?: DriveItemData) => {
     if (newItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      }
       const editNameItemUuid = newItem.uuid || '';
       setShareItems(
         shareItems.map((shareItem) => {
@@ -697,12 +710,13 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
         }),
       );
     }
+    dispatch(storageActions.setItemToRename(null));
     setIsEditNameDialogOpen(false);
     setEditNameItem(undefined);
   };
 
   const openPreview = async (shareItem: AdvancedSharedItem) => {
-    const previewItem = shareItem as unknown as PreviewFileItem;
+    const previewItem = { ...(shareItem as unknown as PreviewFileItem) };
     previewItem.credentials = { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass };
 
     const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
@@ -1037,7 +1051,6 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
         }))}
         isTrash={false}
       />
-      <EditFolderNameDialog />
       <EditItemNameDialog
         item={editNameItem}
         resourceToken={nextResourcesToken}

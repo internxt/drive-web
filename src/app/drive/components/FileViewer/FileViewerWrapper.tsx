@@ -64,9 +64,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
-  const recentsActions = pathId === 'recents';
-  const sharedActions = pathId === 'shared';
-  const trashActions = pathId === 'trash';
+  const isRecentsView = pathId === 'recents';
+  const isSharedView = pathId === 'shared';
+  const isTrashView = pathId === 'trash';
+
   const isSharedItem = file.sharings && file.sharings?.length > 0;
   const isOwner = file.credentials?.user === user?.email;
 
@@ -80,7 +81,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     onRenameItemButtonClicked,
     onRestoreItemButtonClicked,
     onDeletePermanentlyButtonClicked,
-  } = useDriveItemActions(file);
+  } = useDriveItemActions(currentFile);
 
   const isCurrentUserViewer = useCallback(() => {
     return currentUserRole === UserRoles.Reader;
@@ -138,16 +139,15 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
     return contextMenuTrashItems({
-      openPreview: () => ({}),
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,
     });
   };
 
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
-    if (sharedActions) return sharedActionsMenu();
-    if (recentsActions) return recentsActionsMenu();
-    if (trashActions) return trashActionsMenu();
+    if (isSharedView) return sharedActionsMenu();
+    if (isRecentsView) return recentsActionsMenu();
+    if (isTrashView) return trashActionsMenu();
 
     return driveActionsMenu();
   };
@@ -155,7 +155,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   useEffect(() => {
     setBlob(null);
     if (dirtyName) {
-      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+      setCurrentFile?.({
+        ...currentFile,
+        plainName: dirtyName,
+      });
     }
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
@@ -277,8 +280,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
           const isCacheExpired = !fileSource?.updatedAt
             ? true
             : dateService.isDateOneBefore({
-                dateOne: fileSource?.updatedAt as string,
-                dateTwo: currentFile?.updatedAt as string,
+                dateOne: fileSource?.updatedAt,
+                dateTwo: currentFile?.updatedAt,
               });
           if (isCacheExpired) {
             fileContent = await downloadFile(currentFile, abortController);
@@ -348,8 +351,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       fileIndex={fileIndex}
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
-      setBlob={setBlob}
       dropdownItems={topDropdownBarActionsMenu()}
+      isShareView={isSharedView}
     />
   ) : (
     <div className="hidden" />
