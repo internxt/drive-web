@@ -64,9 +64,9 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
-  const recentsView = pathId === 'recents';
-  const sharedView = pathId === 'shared';
-  const trashView = pathId === 'trash';
+  const isRecentsView = pathId === 'recents';
+  const isSharedView = pathId === 'shared';
+  const isTrashView = pathId === 'trash';
 
   const isSharedItem = file.sharings && file.sharings?.length > 0;
   const isOwner = file.credentials?.user === user?.email;
@@ -145,9 +145,9 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   };
 
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
-    if (sharedView) return sharedActionsMenu();
-    if (recentsView) return recentsActionsMenu();
-    if (trashView) return trashActionsMenu();
+    if (isSharedView) return sharedActionsMenu();
+    if (isRecentsView) return recentsActionsMenu();
+    if (isTrashView) return trashActionsMenu();
 
     return driveActionsMenu();
   };
@@ -352,7 +352,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
       dropdownItems={topDropdownBarActionsMenu()}
-      isShareView={sharedView}
+      isShareView={isSharedView}
     />
   ) : (
     <div className="hidden" />
