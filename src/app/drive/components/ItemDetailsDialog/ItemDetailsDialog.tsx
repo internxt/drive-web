@@ -83,7 +83,6 @@ const ItemDetailsDialog = ({
   const IconComponent = iconService.getItemIcon(item?.type === 'folder', item?.type);
   const itemName = `${item?.plainName ?? item?.name}` + `${item?.type && !item.isFolder ? '.' + item?.type : ''}`;
   const user = localStorageService.getUser();
-  const { onNameClicked, onOpenPreviewButtonClicked } = useDriveItemActions(item);
   const isFolder = item?.isFolder;
 
   useEffect(() => {
