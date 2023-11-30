@@ -44,6 +44,12 @@ const navigationService = {
 
     instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
   },
+  pushFolder(uuid: string | undefined): void {
+    instance.push(`/app/folder/${uuid}`);
+  },
+  pushFile(uuid: string | undefined): void {
+    instance.push(`/app/file/${uuid}`);
+  },
 };
 
 export default navigationService;

@@ -18,6 +18,7 @@ import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-tr
 import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { useHistory, useLocation } from 'react-router-dom';
+import navigationService from 'app/core/services/navigation.service';
 
 interface DriveItemActions {
   nameInputRef: RefObject<HTMLInputElement>;
@@ -196,13 +197,13 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
     const isRecentsView = pathnameSplit[2] === 'recents';
 
     if (item.isFolder) {
-      history.push(`/app/folder/${item.uuid}`);
+      navigationService.pushFolder(item.uuid);
     } else {
       if (isRecentsView) {
         dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item));
       } else {
-        history.push(`/app/file/${item.uuid}`);
+        navigationService.pushFile(item.uuid);
       }
     }
   };

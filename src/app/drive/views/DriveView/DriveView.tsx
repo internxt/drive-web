@@ -14,7 +14,8 @@ import { useLocation, useHistory } from 'react-router-dom';
 import newStorageService from 'app/drive/services/new-storage.service';
 import { SdkFactory } from 'app/core/factory/sdk';
 import errorService from 'app/core/services/error.service';
-
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
@@ -96,7 +97,7 @@ const DriveView = (props: DriveViewProps) => {
         onClick: () => {
           dispatch(uiActions.setIsGlobalSearch(false));
           dispatch(storageThunks.goToFolderThunk(firstPath));
-          history.push('/app');
+          navigationService.push(AppView.Drive);
         },
       });
 
@@ -106,7 +107,7 @@ const DriveView = (props: DriveViewProps) => {
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => history.push(`/app/folder/${path.uuid}`),
+          onClick: () => navigationService.pushFolder(path.uuid),
         });
       });
     }

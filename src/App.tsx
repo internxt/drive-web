@@ -155,7 +155,7 @@ const App = (props: AppProps): JSX.Element => {
     if (isRecentsView || isSharedView) {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else {
-      navigationService.history.push(`/app/folder/${fileViewerItem?.folderUuid}`);
+      navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
   };
 
