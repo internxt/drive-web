@@ -148,9 +148,8 @@ const App = (props: AppProps): JSX.Element => {
   }
 
   const onCloseFileViewer = () => {
-    const pathname = navigationService.history.location.pathname.split('/');
-    const isRecentsView = pathname[2] === 'recents';
-    const isSharedView = pathname[2] === 'shared';
+    const isRecentsView = navigationService.isCurrentPath('recents');
+    const isSharedView = navigationService.isCurrentPath('shared');
 
     if (isRecentsView || isSharedView) {
       dispatch(uiActions.setIsFileViewerOpen(false));
