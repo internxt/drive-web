@@ -140,6 +140,7 @@ ListProps<T, F>): JSX.Element {
   };
   const container = document.getElementById('scrollableList');
   const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
+  const isEmptyState = (!hasMoreItems ?? false) && items.length === 0 && !isLoading;
 
   const loader = new Array(25)
     .fill(0)
@@ -258,22 +259,23 @@ ListProps<T, F>): JSX.Element {
       id="generic-list-component"
       className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
     >
+      {!isEmptyState ? (
+        <Header
+          selectedItems={selectedItems}
+          onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
+          items={items}
+          header={header}
+          orderBy={orderBy}
+          onOrderableColumnClicked={onOrderableColumnClicked}
+          menu={menu}
+          isVerticalScrollbarVisible={isVerticalScrollbarVisible}
+        />
+      ) : null}
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
+        {isEmptyState ? (
           emptyState
         ) : items.length > 0 ? (
           <>
-            <Header
-              selectedItems={selectedItems}
-              onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
-              items={items}
-              header={header}
-              orderBy={orderBy}
-              onOrderableColumnClicked={onOrderableColumnClicked}
-              menu={menu}
-              isVerticalScrollbarVisible={isVerticalScrollbarVisible}
-            />
-
             {/* BODY */}
             <InfiniteScroll
               dataLength={items.length}
