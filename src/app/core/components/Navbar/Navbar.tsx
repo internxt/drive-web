@@ -82,7 +82,7 @@ const Navbar = (props: NavbarProps) => {
             onChange={onSearchInputChange}
             type="text"
             placeholder={translate('general.searchBar.oldSearchBarPlaceholder') as string}
-            className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:ring-0"
+            className="no-ring-at-all h-9 w-80 max-w-md bg-gray-5 px-3 duration-200 focus:ring-0"
           />
           <MagnifyingGlass
             onClick={onSearchButtonClicked}

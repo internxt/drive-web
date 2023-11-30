@@ -37,8 +37,9 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   }, [isOpen]);
 
   const onClose = (): void => {
-    setIsLoading(false);
-    dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+    if (!isLoading) {
+      dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+    }
   };
 
   const createFolder = async () => {

@@ -35,7 +35,7 @@ const NumberInput = (props: NumberInputProps): JSX.Element => {
       >
         -
       </button>
-      <div className="flex flex-grow items-center justify-center py-1 px-3">
+      <div className="flex grow items-center justify-center px-3 py-1">
         <input
           type="number"
           min={min}

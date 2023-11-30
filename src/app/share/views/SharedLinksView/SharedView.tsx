@@ -9,7 +9,7 @@ import shareService, { decryptMnemonic } from '../../../share/services/share.ser
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
 import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
-import { DriveFileData, DriveItemData } from '../../../drive/types';
+import { DriveFileData, DriveItemData, DriveItemDetails } from '../../../drive/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import sizeService from '../../../drive/services/size.service';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
@@ -40,6 +40,8 @@ import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
+import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import { connect } from 'react-redux';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -56,15 +58,27 @@ const removeDuplicates = (list: AdvancedSharedItem[]) => {
   });
 };
 
+interface SharedViewProps {
+  isShareDialogOpen: boolean;
+  isShowInvitationsOpen: boolean;
+  sharedNamePath: SharedNamePath[];
+  currentShareId: string | null;
+  currentUserRole: string | null;
+  disableKeyboardShortcuts: boolean;
+}
+
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
-export default function SharedView(): JSX.Element {
+function SharedView(props: SharedViewProps): JSX.Element {
+  const {
+    isShareDialogOpen,
+    isShowInvitationsOpen,
+    sharedNamePath,
+    currentShareId,
+    currentUserRole,
+    disableKeyboardShortcuts,
+  } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
-  const isShowInvitationsOpen = useAppSelector((state) => state.ui.isInvitationsDialogOpen);
-  const sharedNamePath = useAppSelector((state) => state.storage.sharedNamePath);
-  const currentShareId = useAppSelector((state) => state.shared.currentShareId);
-  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
@@ -399,7 +413,7 @@ export default function SharedView(): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
+      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -494,16 +508,26 @@ export default function SharedView(): JSX.Element {
         })
         .finally(() => {
           const currentURL = history.location.pathname;
-          const nuevaURL = currentURL.replace(/folderuuid=valor&?/, '');
-          history.replace(nuevaURL);
+          const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+          history.replace(newURL);
         });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    {
-      dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
-    }
+    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
     dispatch(uiActions.setIsShareDialogOpen(true));
+  };
+
+  const showDetails = (shareItem: AdvancedSharedItem) => {
+    const isOwner = isItemOwnedByCurrentUser(shareItem.user?.uuid);
+    const itemDetails: DriveItemDetails = {
+      ...shareItem,
+      isShared: true,
+      userEmail: shareItem.user?.email ?? shareItem.credentials.networkUser,
+      view: isOwner ? 'Drive' : 'Shared',
+    };
+    dispatch(uiActions.setItemDetailsItem(itemDetails));
+    dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
   const removeItemsFromList = () => {
@@ -677,13 +701,20 @@ export default function SharedView(): JSX.Element {
   };
 
   const openPreview = async (shareItem: AdvancedSharedItem) => {
-    const previewItem = shareItem as unknown as PreviewFileItem;
-    previewItem.credentials = { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass };
+    const previewItem = {
+      ...(shareItem as unknown as PreviewFileItem),
+      credentials: { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass },
+    };
 
-    const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
+    try {
+      const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
 
-    dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
-    dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
+      dispatch(uiActions.setIsFileViewerOpen(true));
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+    }
   };
 
   const isItemOwnedByCurrentUser = (userUUid?: string) => {
@@ -783,14 +814,21 @@ export default function SharedView(): JSX.Element {
     return items;
   };
 
+  const handleDetailsButtonClicked = useCallback(
+    (item: DriveItemData | AdvancedSharedItem) => {
+      onItemDoubleClicked(item as AdvancedSharedItem);
+    },
+    [nextResourcesToken],
+  );
+
   return (
     <div
-      className="flex w-full flex-shrink-0 flex-col"
+      className="flex w-full shrink-0 flex-col"
       onContextMenu={(e) => {
         e.preventDefault();
       }}
     >
-      <div className="flex h-14 w-full flex-shrink-0 flex-row items-center px-5">
+      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />
         </div>
@@ -876,6 +914,7 @@ export default function SharedView(): JSX.Element {
           ]}
           items={shareItems}
           isLoading={isLoading}
+          disableKeyboardShortcuts={disableKeyboardShortcuts}
           onClick={(item) => {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
@@ -886,9 +925,9 @@ export default function SharedView(): JSX.Element {
               const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
               return (
                 <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
-                  <div className="relative flex h-10 w-10 flex-shrink items-center justify-center">
-                    <Icon className="flex h-full justify-center drop-shadow-soft filter" />
-                    <div className="absolute -right-1.5 -bottom-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                  <div className="relative flex h-10 w-10 shrink items-center justify-center">
+                    <Icon className="flex h-full justify-center drop-shadow-soft" />
+                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
                       <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>
@@ -961,6 +1000,7 @@ export default function SharedView(): JSX.Element {
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
+                  showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
@@ -969,6 +1009,7 @@ export default function SharedView(): JSX.Element {
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings,
                   openPreview: openPreview,
+                  showDetails,
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
@@ -992,9 +1033,6 @@ export default function SharedView(): JSX.Element {
           }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          // onOrderByChanged={onOrderByChanged}
-          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
@@ -1012,6 +1050,7 @@ export default function SharedView(): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
+      <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
@@ -1040,3 +1079,21 @@ export default function SharedView(): JSX.Element {
     </div>
   );
 }
+
+export default connect((state: RootState) => ({
+  isShareDialogOpen: state.ui.isShareDialogOpen,
+  isShowInvitationsOpen: state.ui.isInvitationsDialogOpen,
+  sharedNamePath: state.storage.sharedNamePath,
+  currentShareId: state.shared.currentShareId,
+  currentUserRole: state.shared.currentSharingRole,
+  disableKeyboardShortcuts:
+    state.ui.isShareDialogOpen ||
+    state.ui.isSurveyDialogOpen ||
+    state.ui.isEditFolderNameDialog ||
+    state.ui.isFileViewerOpen ||
+    state.ui.isMoveItemsDialogOpen ||
+    state.ui.isCreateFolderDialogOpen ||
+    state.ui.isNameCollisionDialogOpen ||
+    state.ui.isReachedPlanLimitDialogOpen ||
+    state.ui.isItemDetailsDialogOpen,
+}))(SharedView);
