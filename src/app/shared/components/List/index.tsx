@@ -44,13 +44,13 @@ interface ListProps<T, F> {
 
 const Header = ({
   selectedItems,
-  items,
   onTopSelectionCheckboxClick,
+  items,
   header,
-  onOrderableColumnClicked,
   orderBy,
-  isVerticalScrollbarVisible,
+  onOrderableColumnClicked,
   menu,
+  isVerticalScrollbarVisible,
 }) => {
   return (
     <div className="flex h-12 shrink-0 flex-row px-5">
@@ -66,7 +66,7 @@ const Header = ({
         </div>
 
         {header.map((column) => (
-          <button
+          <div
             onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
             key={column.name.toString()}
             className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
@@ -81,7 +81,7 @@ const Header = ({
               ) : (
                 <ArrowDown size={14} weight="bold" />
               ))}
-          </button>
+          </div>
         ))}
         {isVerticalScrollbarVisible && <div className="mr-15px" />}
         {menu && <div className="flex h-full w-12 shrink-0" />}
@@ -258,23 +258,23 @@ ListProps<T, F>): JSX.Element {
       id="generic-list-component"
       className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
     >
-      {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
-        emptyState
-      ) : items.length > 0 ? (
-        <>
-          {/* HEADER */}
-          <Header
-            selectedItems={selectedItems}
-            items={items}
-            onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
-            header={header}
-            onOrderableColumnClicked={onOrderableColumnClicked}
-            orderBy={orderBy}
-            isVerticalScrollbarVisible={isVerticalScrollbarVisible}
-            menu={menu}
-          />
-          {/* BODY */}
-          <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
+      <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
+        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
+          emptyState
+        ) : items.length > 0 ? (
+          <>
+            <Header
+              selectedItems={selectedItems}
+              onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
+              items={items}
+              header={header}
+              orderBy={orderBy}
+              onOrderableColumnClicked={onOrderableColumnClicked}
+              menu={menu}
+              isVerticalScrollbarVisible={isVerticalScrollbarVisible}
+            />
+
+            {/* BODY */}
             <InfiniteScroll
               dataLength={items.length}
               next={handleNextPage}
@@ -306,14 +306,14 @@ ListProps<T, F>): JSX.Element {
                 />
               ))}
             </InfiniteScroll>
-          </div>
-        </>
-      ) : (
-        <>{loader}</>
-      )}
+          </>
+        ) : (
+          <>{loader}</>
+        )}
 
-      {/* Click outside of the list to unselect all items */}
-      {items.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+        {/* Click outside of the list to unselect all items */}
+        {items.length > 0 && <div className="h-full w-full py-6" onClick={unselectAllItems} />}
+      </div>
     </div>
   );
 }
