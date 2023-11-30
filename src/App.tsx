@@ -196,11 +196,7 @@ const App = (props: AppProps): JSX.Element => {
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
 
           {isFileViewerOpen && fileViewerItem && (
-            <FileViewerWrapper
-              file={fileViewerItem}
-              onClose={() => onCloseFileViewer()}
-              showPreview={isFileViewerOpen}
-            />
+            <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
         </Router>
       </DndProvider>

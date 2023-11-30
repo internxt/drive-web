@@ -123,7 +123,7 @@
     {
       "id": "drive-items",
       "layout": "header-and-sidenav",
-      "path": "/app/:folderType?/:id?",
+      "path": "/app/:itemType?/:id?",
       "exact": true,
       "auth": true
     },
