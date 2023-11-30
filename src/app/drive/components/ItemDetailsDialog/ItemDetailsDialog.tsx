@@ -11,13 +11,13 @@ import Button from '../../../shared/components/Button/Button';
 import { bytesToString } from '../../../drive/services/size.service';
 import date from '../../../core/services/date.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { DriveItemData, DriveItemDetails, ItemDetailsProps } from '../../../drive/types';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import ItemDetailsSkeleton from './components/ItemDetailsSkeleton';
 import { AdvancedSharedItem } from 'app/share/types';
+import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 
 const Header = ({ title, onClose }: { title: string; onClose: () => void }) => {
   return (
@@ -69,9 +69,9 @@ const ItemsDetails = ({ item, translate }: { item: ItemDetailsProps; translate: 
  *  */
 
 const ItemDetailsDialog = ({
-  onSharedFolderClicked,
+  onDetailsButtonClicked,
 }: {
-  onSharedFolderClicked?: (item: AdvancedSharedItem) => void;
+  onDetailsButtonClicked: (item: AdvancedSharedItem | DriveItemData) => void;
 }) => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
@@ -116,14 +116,9 @@ const ItemDetailsDialog = ({
     return date.format(dateString, 'D MMMM, YYYY [at] HH:mm');
   }
 
-  function handleButtonItemClick(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) {
-    event.preventDefault();
+  function handleButtonItemClick() {
+    onDetailsButtonClicked(item as AdvancedSharedItem);
     onClose();
-    if (isFolder) {
-      onSharedFolderClicked?.(item as AdvancedSharedItem) ?? onNameClicked(event);
-    } else {
-      onOpenPreviewButtonClicked();
-    }
   }
 
   async function getDetailsData(
@@ -170,9 +165,9 @@ const ItemDetailsDialog = ({
         <Header title={translate('modals.itemDetailsModal.title')} onClose={onClose} />
       </div>
       <div className="flex w-full flex-col items-center justify-center space-y-6 px-5">
-        <div className="flex max-w-sm flex-col items-center justify-center space-y-3 py-5">
+        <div className="flex w-full max-w-sm flex-col items-center justify-center space-y-3 py-5">
           <IconComponent width={60} height={80} />
-          <p title={itemName} className="line-clamp-2 text-center text-base font-semibold text-gray-100">
+          <p title={itemName} className="line-clamp-2 w-full flex-1 text-center text-base font-semibold text-gray-100">
             {itemName}
           </p>
           {!isFileViewerOpen && (

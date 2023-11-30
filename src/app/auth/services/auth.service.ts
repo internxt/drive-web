@@ -71,16 +71,26 @@ const generateNewKeysWithEncrypted = async (password: string) => {
   };
 };
 
+const getAuthClient = (authType: 'web' | 'desktop') => {
+  const AUTH_CLIENT = {
+    web: SdkFactory.getInstance().createAuthClient(),
+    desktop: SdkFactory.getInstance().createDesktopAuthClient(),
+  };
+
+  return AUTH_CLIENT[authType];
+};
+
 export const doLogin = async (
   email: string,
   password: string,
   twoFactorCode: string,
+  loginType: 'web' | 'desktop' | undefined = 'web',
 ): Promise<{
   user: UserSettings;
   token: string;
   mnemonic: string;
 }> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,

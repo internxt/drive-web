@@ -68,7 +68,7 @@ interface SharedViewProps {
 }
 
 // TODO: FINISH LOGIC WHEN ADD MORE ADVANCED SHARING FEATURES
-function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
+function SharedView(props: SharedViewProps): JSX.Element {
   const {
     isShareDialogOpen,
     isShowInvitationsOpen,
@@ -424,7 +424,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user.avatar || '');
+      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -716,13 +716,20 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
   };
 
   const openPreview = async (shareItem: AdvancedSharedItem) => {
-    const previewItem = { ...(shareItem as unknown as PreviewFileItem) };
-    previewItem.credentials = { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass };
+    const previewItem = {
+      ...(shareItem as unknown as PreviewFileItem),
+      credentials: { user: shareItem.credentials.networkUser, pass: shareItem.credentials.networkPass },
+    };
 
-    const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
+    try {
+      const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
 
-    dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
-    dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
+      dispatch(uiActions.setIsFileViewerOpen(true));
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+    }
   };
 
   const isItemOwnedByCurrentUser = (userUUid?: string) => {
@@ -821,6 +828,13 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
 
     return items;
   };
+
+  const handleDetailsButtonClicked = useCallback(
+    (item: DriveItemData | AdvancedSharedItem) => {
+      onItemDoubleClicked(item as AdvancedSharedItem);
+    },
+    [nextResourcesToken],
+  );
 
   return (
     <div
@@ -1038,9 +1052,6 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
           }}
           selectedItems={selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          //   disableKeyboardShortcuts={isUpdateLinkModalOpen}
-          // onOrderByChanged={onOrderByChanged}
-          // orderBy={orderBy}
           onSelectedItemsChanged={onSelectedItemsChanged}
         />
       </div>
@@ -1058,7 +1069,7 @@ function SharedView(props: Readonly<SharedViewProps>): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
-      <ItemDetailsDialog onSharedFolderClicked={onItemDoubleClicked} />
+      <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog

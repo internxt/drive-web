@@ -52,6 +52,13 @@ export class SdkFactory {
     return Auth.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createDesktopAuthClient(): Auth {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getDesktopAppDetails();
+    const apiSecurity = this.getApiSecurity();
+    return Auth.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createStorageClient(): Storage {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -164,6 +171,13 @@ export class SdkFactory {
   private static getAppDetails(): AppDetails {
     return {
       clientName: packageJson.name,
+      clientVersion: packageJson.version,
+    };
+  }
+
+  private static getDesktopAppDetails(): AppDetails {
+    return {
+      clientName: 'drive-desktop',
       clientVersion: packageJson.version,
     };
   }
