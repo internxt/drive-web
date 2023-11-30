@@ -96,8 +96,8 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
-  const isFirstItem = fileIndex === 0 || isShareView;
-  const isLastItem = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
+  const isFirstItemOrShareView = fileIndex === 0 || isShareView;
+  const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
 
   const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
     file_size: file?.size,
@@ -218,7 +218,7 @@ const FileViewer = ({
 
           {/* Content */}
           {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-          {isFirstItem ? null : (
+          {isFirstItemOrShareView ? null : (
             <button
               title={translate('actions.previous')}
               className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
@@ -287,7 +287,7 @@ const FileViewer = ({
               <DownloadFile onDownload={onDownload} translate={translate} />
             </div>
           )}
-          {isLastItem ? null : (
+          {isLastItemOrShareView ? null : (
             <button
               title={translate('actions.next')}
               className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"

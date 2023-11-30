@@ -72,8 +72,6 @@ const useDriveItemActions = (item) => {
       }),
     );
     dispatch(uiActions.setIsShareDialogOpen(true));
-    // Use to share with specific user
-    // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
   };
 
   const onDownloadItemButtonClicked = () => {
