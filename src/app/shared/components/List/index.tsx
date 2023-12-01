@@ -271,44 +271,43 @@ ListProps<T, F>): JSX.Element {
           isVerticalScrollbarVisible={isVerticalScrollbarVisible}
         />
       ) : null}
+
+      {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
         {isEmptyState ? (
           emptyState
         ) : items.length > 0 ? (
-          <>
-            {/* BODY */}
-            <InfiniteScroll
-              dataLength={items.length}
-              next={handleNextPage}
-              hasMore={!!hasMoreItems}
-              loader={loader}
-              scrollThreshold={0.7}
-              scrollableTarget="scrollableList"
-              className="h-full"
-              style={{ overflow: 'visible' }}
-            >
-              {items.map((item) => (
-                <ListItem<T>
-                  key={item.id}
-                  item={item}
-                  itemComposition={itemComposition}
-                  selected={isItemSelected(item)}
-                  onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
-                  onClick={(e) => onItemClick(item, e)}
-                  onClickContextMenu={(e) => onRightItemClick(item, e)}
-                  onThreeDotsButtonPressed={(item) => {
-                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
-                  }}
-                  columnsWidth={header.map((column) => column.width)}
-                  menu={menu}
-                  onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
-                  disableItemCompositionStyles={disableItemCompositionStyles}
-                  onMouseEnter={onMouseEnter}
-                  onMouseLeave={onMouseLeave}
-                />
-              ))}
-            </InfiniteScroll>
-          </>
+          <InfiniteScroll
+            dataLength={items.length}
+            next={handleNextPage}
+            hasMore={!!hasMoreItems}
+            loader={loader}
+            scrollThreshold={0.7}
+            scrollableTarget="scrollableList"
+            className="h-full"
+            style={{ overflow: 'visible' }}
+          >
+            {items.map((item) => (
+              <ListItem<T>
+                key={item.id}
+                item={item}
+                itemComposition={itemComposition}
+                selected={isItemSelected(item)}
+                onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
+                onClick={(e) => onItemClick(item, e)}
+                onClickContextMenu={(e) => onRightItemClick(item, e)}
+                onThreeDotsButtonPressed={(item) => {
+                  if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                }}
+                columnsWidth={header.map((column) => column.width)}
+                menu={menu}
+                onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                disableItemCompositionStyles={disableItemCompositionStyles}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              />
+            ))}
+          </InfiniteScroll>
         ) : (
           <>{loader}</>
         )}
