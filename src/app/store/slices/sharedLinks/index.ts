@@ -206,19 +206,19 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
 
       let publicKey = payload.publicKey;
 
-      if (!payload.publicKey && !payload.isNewUser) {
-        const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
-        publicKey = publicKeyResponse.publicKey;
-      }
-
-      if (payload.isNewUser) {
+      if (payload.isNewUser && !publicKey) {
         const prCreatedUserResponse = await userService.preCreateUser(payload.sharedWith);
         publicKey = prCreatedUserResponse.publicKey;
       }
 
+      if ((!publicKey && !payload.isNewUser) || !publicKey) {
+        const publicKeyResponse = await userService.getPublicKeyByEmail(payload.sharedWith);
+        publicKey = publicKeyResponse.publicKey;
+      }
+
       const encryptedMnemonic = await encryptMessageWithPublicKey({
         message: mnemonic,
-        publicKeyInBase64: publicKey ?? '',
+        publicKeyInBase64: publicKey,
       });
 
       const encryptedMnemonicInBase64 = btoa(encryptedMnemonic as string);

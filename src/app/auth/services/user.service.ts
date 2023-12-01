@@ -3,6 +3,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import {
   FriendInvite,
   InitializeUserResponse,
+  PreCreateUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
 } from '@internxt/sdk/dist/drive/users/types';
@@ -22,7 +23,7 @@ const inviteAFriend = (email: string): Promise<void> => {
   return usersClient.sendInvitation(email);
 };
 
-const preCreateUser = (email: string): Promise<{ publicKey: string; user: { email: string; uuid: string } }> => {
+const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
   const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
   return usersClient.preRegister(email);
 };

@@ -19,6 +19,7 @@ import userService from '../../../auth/services/user.service';
 import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
+import errorService from 'app/core/services/error.service';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -106,7 +107,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       if (error instanceof Error) {
         const errorBody = JSON.parse(error.message);
         if (errorBody.statusCode !== 404) {
-          throw error;
+          errorService.reportError(error);
         }
       }
     }
@@ -149,8 +150,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   };
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
-  const onInvite = async ({ inviteNewUsers = false }) => {
-    const preCreateUsers = inviteNewUsers;
+  const onInvite = async ({ preCreateUsers = false }) => {
     const usersList = [...usersToInvite];
     let isThereAnyNewUser = newUsersExists;
 
@@ -301,7 +301,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         }}
         onAccept={() => {
           setOpenNewUsersModal(false);
-          onInvite({ inviteNewUsers: true });
+          onInvite({ preCreateUsers: true });
         }}
       />
     </>

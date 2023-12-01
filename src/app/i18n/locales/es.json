@@ -726,6 +726,10 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
+        "inviteNewUsersBody": "Las personas sin cuenta de Internxt recibirán un correo electrónico de invitación para registrarse",
+        "inviteNewUsersTitle": "¿Invitar a nuevos usuarios?",
+        "accept": "Aceptar",
+        "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",

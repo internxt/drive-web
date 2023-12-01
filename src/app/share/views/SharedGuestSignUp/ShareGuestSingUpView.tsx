@@ -121,6 +121,7 @@ function ShareGuestSingUpView(): JSX.Element {
     if (password.length > 0) onChangeHandler(password);
   }, [password]);
 
+  // TODO: Extract this to reuse in other components
   function onChangeHandler(input: string) {
     setIsValidPassword(false);
     if (input.length > MAX_PASSWORD_LENGTH) {
@@ -226,7 +227,7 @@ function ShareGuestSingUpView(): JSX.Element {
                   disabled={hasEmailParam}
                   register={register}
                   required={true}
-                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  minLength={{ value: 1, message: translate('notificationMessages.emailNotEmpty') }}
                   error={errors.email}
                 />
               </label>
