@@ -24,7 +24,6 @@ import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/Cre
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
-import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -136,6 +135,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
 
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   // UPLOAD ITEMS STATES
@@ -212,6 +214,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
     else setTimeout(handleOnEventCreation, 10000);
   };
+
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     try {
@@ -400,6 +408,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     } else {
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
     }
+  };
+
+  const onCloseEditItemDialog = (newItem) => {
+    if (newItem && editNameItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      } else if (itemToRename && editNameItem.isFolder) {
+        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+      }
+    }
+    dispatch(storageActions.setItemToRename(null));
+    setEditNameItem(null);
   };
 
   const viewModes = {
@@ -596,7 +616,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         isTrash={isTrash}
       />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
-      <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
@@ -607,9 +626,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           onSuccess={() => {
             setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
           }}
-          onClose={() => {
-            setEditNameItem(null);
-          }}
+          onClose={onCloseEditItemDialog}
         />
       )}
       <BannerWrapper />
