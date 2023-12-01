@@ -139,7 +139,7 @@ export function useSignUp(
 
     const data = await authClient.registerPreCreatedUser({ ...registerDetails, invitationId });
     const { token } = data;
-    const user: UserSettings = data.user as unknown as UserSettings;
+    const user = data.user as UserSettings;
 
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
