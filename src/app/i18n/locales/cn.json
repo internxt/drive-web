@@ -182,7 +182,7 @@
       "business": "商业"
     },
     "time": {
-      "month": "元/月"
+      "month": "/月"
     },
     "billing": {
       "billedEachPeriod": "{{price}} 已计费的 {{period}}",
@@ -641,7 +641,7 @@
       "untitled": "无标题文件夹"
     },
     "itemDetailsModal": {
-      "title": "详细信息",
+      "title": "详情",
       "fileCta": "打开预览",
       "folderCta": "打开文件夹",
       "itemDetails": {
