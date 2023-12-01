@@ -42,6 +42,54 @@ interface ListProps<T, F> {
   };
 }
 
+const Header = ({
+  selectedItems,
+  onTopSelectionCheckboxClick,
+  items,
+  header,
+  orderBy,
+  onOrderableColumnClicked,
+  menu,
+  isVerticalScrollbarVisible,
+}) => {
+  return (
+    <div className="flex h-12 shrink-0 flex-row px-5">
+      {/* COLUMN */}
+      <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
+        {/* SELECTION CHECKBOX */}
+        <div className="flex h-full flex-row items-center justify-between pr-4">
+          <BaseCheckbox
+            checked={selectedItems.length > 0}
+            indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
+            onClick={onTopSelectionCheckboxClick}
+          />
+        </div>
+
+        {header.map((column) => (
+          <button
+            onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
+            key={column.name.toString()}
+            className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+              column.width
+            } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
+          >
+            <span>{column.label}</span>
+            {column.name === orderBy?.field &&
+              column.orderable &&
+              (orderBy?.direction === 'ASC' ? (
+                <ArrowUp size={14} weight="bold" />
+              ) : (
+                <ArrowDown size={14} weight="bold" />
+              ))}
+          </button>
+        ))}
+        {isVerticalScrollbarVisible && <div className="mr-15px" />}
+        {menu && <div className="flex h-full w-12 shrink-0" />}
+      </div>
+    </div>
+  );
+};
+
 /**
  *
  * Generic arguments:
@@ -92,6 +140,7 @@ ListProps<T, F>): JSX.Element {
   };
   const container = document.getElementById('scrollableList');
   const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
+  const isEmptyState = !hasMoreItems && items.length === 0 && !isLoading;
 
   const loader = new Array(25)
     .fill(0)
@@ -210,80 +259,55 @@ ListProps<T, F>): JSX.Element {
       id="generic-list-component"
       className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
     >
-      {/* HEAD */}
-      <div className="flex h-12 shrink-0 flex-row px-5">
-        {/* COLUMN */}
-        <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
-          {/* SELECTION CHECKBOX */}
-          <div className="flex h-full flex-row items-center justify-between pr-4">
-            <BaseCheckbox
-              checked={selectedItems.length > 0}
-              indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
-              onClick={onTopSelectionCheckboxClick}
-            />
-          </div>
-
-          {header.map((column) => (
-            <div
-              onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
-              key={column.name.toString()}
-              className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
-                column.width
-              } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
-            >
-              <span>{column.label}</span>
-              {column.name === orderBy?.field &&
-                column.orderable &&
-                (orderBy?.direction === 'ASC' ? (
-                  <ArrowUp size={14} weight="bold" />
-                ) : (
-                  <ArrowDown size={14} weight="bold" />
-                ))}
-            </div>
-          ))}
-          {isVerticalScrollbarVisible && <div className="mr-15px" />}
-          {menu && <div className="flex h-full w-12 shrink-0" />}
-        </div>
-      </div>
+      {!isEmptyState ? (
+        <Header
+          selectedItems={selectedItems}
+          onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
+          items={items}
+          header={header}
+          orderBy={orderBy}
+          onOrderableColumnClicked={onOrderableColumnClicked}
+          menu={menu}
+          isVerticalScrollbarVisible={isVerticalScrollbarVisible}
+        />
+      ) : null}
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
+        {isEmptyState ? (
           emptyState
         ) : items.length > 0 ? (
-          <>
-            <InfiniteScroll
-              dataLength={items.length}
-              next={handleNextPage}
-              hasMore={!!hasMoreItems}
-              loader={loader}
-              scrollThreshold={0.7}
-              scrollableTarget="scrollableList"
-              className="h-full"
-              style={{ overflow: 'visible' }}
-            >
-              {items.map((item) => (
-                <ListItem<T>
-                  key={item.id}
-                  item={item}
-                  itemComposition={itemComposition}
-                  selected={isItemSelected(item)}
-                  onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
-                  onClick={(e) => onItemClick(item, e)}
-                  onClickContextMenu={(e) => onRightItemClick(item, e)}
-                  onThreeDotsButtonPressed={(item) => {
-                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
-                  }}
-                  columnsWidth={header.map((column) => column.width)}
-                  menu={menu}
-                  onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
-                  disableItemCompositionStyles={disableItemCompositionStyles}
-                  onMouseEnter={onMouseEnter}
-                  onMouseLeave={onMouseLeave}
-                />
-              ))}
-            </InfiniteScroll>
-          </>
+          <InfiniteScroll
+            dataLength={items.length}
+            next={handleNextPage}
+            hasMore={!!hasMoreItems}
+            loader={loader}
+            scrollThreshold={0.7}
+            scrollableTarget="scrollableList"
+            className="h-full"
+            style={{ overflow: 'visible' }}
+          >
+            {items.map((item) => (
+              <ListItem<T>
+                key={item.id}
+                item={item}
+                itemComposition={itemComposition}
+                selected={isItemSelected(item)}
+                onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
+                onClick={(e) => onItemClick(item, e)}
+                onClickContextMenu={(e) => onRightItemClick(item, e)}
+                onThreeDotsButtonPressed={(item) => {
+                  if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                }}
+                columnsWidth={header.map((column) => column.width)}
+                menu={menu}
+                onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                disableItemCompositionStyles={disableItemCompositionStyles}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              />
+            ))}
+          </InfiniteScroll>
         ) : (
           <>{loader}</>
         )}
