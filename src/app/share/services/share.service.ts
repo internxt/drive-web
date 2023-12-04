@@ -410,7 +410,9 @@ export const getPublicShareLink = async (
     }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
+    window.focus();
+    const copied = copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
+    if (!copied) throw Error('Error copying shared public link');
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   } catch (error) {
