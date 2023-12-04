@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
@@ -28,6 +28,7 @@ export interface DriveViewProps {
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const pathname = useLocation().pathname;
+  const [title, setTitle] = useState('Internxt Drive');
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
@@ -64,6 +65,7 @@ const DriveView = (props: DriveViewProps) => {
           uuid: folderMeta.uuid as string,
         }),
       );
+      folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -74,6 +76,7 @@ const DriveView = (props: DriveViewProps) => {
       const fileMeta = await fileService.getFile(folderUuid);
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
+      fileMeta.plainName && setTitle(`${fileMeta.plainName} - Internxt Drive`);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -115,6 +118,7 @@ const DriveView = (props: DriveViewProps) => {
   return (
     <>
       <Helmet>
+        <title>{title}</title>
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
       </Helmet>
       <DriveExplorer title={<Breadcrumbs items={breadcrumbItems()} />} isLoading={isLoading} items={items} />

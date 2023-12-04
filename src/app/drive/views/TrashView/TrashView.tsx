@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { connect } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 
 import DriveExplorer from 'app/drive/components/DriveExplorer/DriveExplorer';
 import { DriveItemData } from 'app/drive/types';
@@ -24,7 +25,14 @@ const TrashView = (props: TrashViewProps) => {
   }, []);
 
   const { items, isLoadingItemsOnTrash } = props;
-  return <DriveExplorer title={translate('trash.trash') as string} isLoading={isLoadingItemsOnTrash} items={items} />;
+  return (
+    <>
+      <Helmet>
+        <title>{translate('sideNav.trash')} - Internxt Drive</title>
+      </Helmet>
+      <DriveExplorer title={translate('trash.trash') as string} isLoading={isLoadingItemsOnTrash} items={items} />
+    </>
+  );
 };
 
 export default connect((state: RootState) => {

@@ -1,8 +1,9 @@
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Helmet } from 'react-helmet-async';
 import dateService from 'app/core/services/date.service';
 import { UploadSimple, Users } from '@phosphor-icons/react';
 import List from 'app/shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from 'app/drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
@@ -828,6 +829,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
         e.preventDefault();
       }}
     >
+      <Helmet>
+        <title>{translate('sideNav.shared')} - Internxt Drive</title>
+      </Helmet>
       <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />

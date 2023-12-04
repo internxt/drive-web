@@ -1,6 +1,7 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 import Empty from '../../shared/components/Empty/Empty';
 import { getPhotoPreview } from 'app/network/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
@@ -83,6 +84,9 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   return (
     <>
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
+        <Helmet>
+          <title>{translate('sideNav.photos')} - Internxt Drive</title>
+        </Helmet>
         <WarningMessageWrapper />
         {showEmpty ? (
           <Empty
