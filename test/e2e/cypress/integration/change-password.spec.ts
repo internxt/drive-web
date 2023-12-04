@@ -56,7 +56,7 @@ describe('Security account tab', () => {
       cy.get('input[name=email]').type(user.username);
       cy.get('input[name=password]').type(second_password);
       cy.get('button[type=submit]').click();
-      cy.url().should('include', '/drive');
+      cy.url().should('eq', Cypress.config().baseUrl);
 
       // To not show the after signup onboarding
       cy.window().then((win) => {

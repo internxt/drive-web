@@ -31,15 +31,16 @@ const DriveView = (props: DriveViewProps) => {
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
-    const pathnameSplit = pathname.split('/');
-    const itemType = pathnameSplit[2];
-    const itemUuid = pathnameSplit[3];
 
-    if (itemUuid && itemType === 'folder') {
+    const isFolderView = navigationService.isCurrentPath('folder');
+    const isFileView = navigationService.isCurrentPath('file');
+    const itemUuid = navigationService.getUuid();
+
+    if (isFolderView && itemUuid) {
       goFolder(itemUuid);
     }
 
-    if (itemUuid && itemType === 'file') {
+    if (isFileView && itemUuid) {
       goFile(itemUuid);
     }
   }, [pathname]);
@@ -114,7 +115,7 @@ const DriveView = (props: DriveViewProps) => {
   return (
     <>
       <Helmet>
-        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/drive`} />
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
       </Helmet>
       <DriveExplorer title={<Breadcrumbs items={breadcrumbItems()} />} isLoading={isLoading} items={items} />
     </>

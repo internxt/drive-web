@@ -67,7 +67,7 @@
     {
       "id": "drive",
       "layout": "header-and-sidenav",
-      "path": "/drive",
+      "path": "/",
       "exact": true,
       "auth": true
     },
@@ -121,19 +121,19 @@
       "hideSearch": true
     },
     {
-      "id": "drive-items",
-      "layout": "header-and-sidenav",
-      "path": "/drive/:itemType?/:id?",
-      "exact": true,
-      "auth": true
-    },
-    {
       "id": "preferences",
       "layout": "header-and-sidenav",
       "path": "/preferences",
       "exact": true,
       "auth": true,
       "hideSearch": true
+    },
+    {
+      "id": "drive-items",
+      "layout": "header-and-sidenav",
+      "path": "/:itemType/:id",
+      "exact": true,
+      "auth": true
     },
     {
       "id": "teams-join",

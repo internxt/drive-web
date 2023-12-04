@@ -32,7 +32,6 @@ import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 import SharedView from '../../share/views/SharedLinksView/SharedView';
-import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 
 const views: Array<{
@@ -54,8 +53,8 @@ const views: Array<{
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
-  { id: AppView.DriveItems, component: DriveView },
   { id: AppView.Preferences, component: Preferences },
+  { id: AppView.DriveItems, component: DriveView },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },

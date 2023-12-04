@@ -11,7 +11,7 @@ describe('Signup user', () => {
     }).as('getFolders');
   });
 
-  it('Should signup an user correctly and load folders correctly in /drive', () => {
+  it('Should signup an user correctly and load folders correctly in /', () => {
     cy.visit('/new');
 
     cy.contains('Create account');
@@ -22,7 +22,7 @@ describe('Signup user', () => {
 
     cy.get('button[type=submit]').click();
 
-    cy.url().should('include', '/drive');
+    cy.url().should('eq', Cypress.config().baseUrl);
 
     cy.wait('@getFolders', { timeout: 60000 }).then((foldersInterception) => {
       expect(foldersInterception.response.statusCode).to.equal(200);

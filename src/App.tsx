@@ -173,9 +173,6 @@ const App = (props: AppProps): JSX.Element => {
           )}
 
           <Switch>
-            <Route exact path="/">
-              <Redirect to="/login" />
-            </Route>
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />

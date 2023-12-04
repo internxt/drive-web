@@ -56,7 +56,7 @@ describe('Signup password requirements', () => {
 
     cy.get('button[type=submit]').click();
 
-    cy.url().should('include', '/drive');
+    cy.url().should('eq', Cypress.config().baseUrl);
   });
 
   it('Should check that it is possible to create an account with strong password', () => {
@@ -76,6 +76,6 @@ describe('Signup password requirements', () => {
 
     cy.get('button[type=submit]').click();
 
-    cy.url().should('include', '/drive');
+    cy.url().should('eq', Cypress.config().baseUrl);
   });
 });

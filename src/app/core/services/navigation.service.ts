@@ -2,7 +2,7 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
-import { AppView, AppViewConfig } from '../types';
+import { AppView } from '../types';
 import configService from './config.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
@@ -42,15 +42,20 @@ const navigationService = {
     instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
   },
   pushFolder(uuid: string | undefined): void {
-    instance.push(`/drive/folder/${uuid}`);
+    instance.push(`/folder/${uuid}`);
   },
   pushFile(uuid: string | undefined): void {
-    instance.push(`/drive/file/${uuid}`);
+    instance.push(`/file/${uuid}`);
   },
   isCurrentPath(path: string): boolean {
     const pathname = navigationService.history.location.pathname.split('/');
     const currentPath = pathname[1];
     return currentPath === path;
+  },
+  getUuid(): string {
+    const pathname = navigationService.history.location.pathname.split('/');
+    const currentUuid = pathname[2];
+    return currentUuid;
   },
 };
 

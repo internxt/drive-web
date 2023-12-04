@@ -40,7 +40,7 @@ Cypress.Commands.add('login', (enableOnboarding?: boolean) => {
 
       cy.get('button[type=submit]').click();
 
-      cy.url().should('include', '/drive');
+      cy.url().should('eq', Cypress.config().baseUrl);
 
       // To not show the after signup onboarding
       if (!enableOnboarding)
