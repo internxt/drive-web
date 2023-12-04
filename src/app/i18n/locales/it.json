@@ -44,6 +44,10 @@
       "description": "Reach out to our Support Team at hello@internxt.com."
     }
   },
+  "linkExpired": {
+    "title": "Link scaduto o eliminato",
+    "description": "Il link o l'invito che hai visitato è scaduto o è stato rimosso"
+  },
   "lang": {
     "title": "Lingua",
     "en": "English (Inglese)",
@@ -138,6 +142,7 @@
     "new": "new",
     "of": "di",
     "terms": "Termini e condizioni",
+    "contactSupport": "Contatta il supporto",
     "help": "Hai bisogno di aiuto?",
     "searchBar": "Cerca in questa cartella",
     "stage": {

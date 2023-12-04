@@ -28,6 +28,7 @@ import shareService from 'app/share/services/share.service';
 import bigLogo from 'assets/icons/big-logo.svg';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
+import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -197,6 +198,10 @@ function ShareGuestSingUpView(): JSX.Element {
 
   if (invitationValidation.isLoading) {
     return <></>;
+  }
+
+  if (!invitationValidation.isValid) {
+    return <ExpiredLink />;
   }
 
   return (

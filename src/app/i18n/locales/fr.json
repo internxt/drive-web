@@ -81,6 +81,10 @@
       "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
       "invalidEmail": "Invalide email"
     },
+    "linkExpired": {
+      "title": "Lien expiré ou supprimé",
+      "description": "Le lien ou l'invitation que vous avez visité a expiré ou a été supprimé"
+    },
     "recoverAccount": {
       "title": "Récupération de compte",
       "subtitle": "Avez-vous une clé de sauvegarde ?",
@@ -134,6 +138,7 @@
     "new": "Nouveau",
     "of": "de",
     "terms": "Termes et conditions",
+    "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
 

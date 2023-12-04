@@ -134,6 +134,7 @@
     "new": "nuevo",
     "of": "de",
     "terms": "Términos y condiciones",
+    "contactSupport": "Contactar con soporte",
     "help": "¿Necesitas ayuda?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Buscar en esta carpeta",
@@ -154,6 +155,10 @@
         "title": "No hay resultados",
         "subtitle": "Ninguna coincidencia para tu búsqueda"
       }
+    },
+    "linkExpired": {
+      "title": "Enlace caducado o eliminado",
+      "description": "El enlace o invitación que visitó ha caducado o ha sido eliminado"
     },
     "stage": {
       "development": "Development",

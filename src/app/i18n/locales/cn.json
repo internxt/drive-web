@@ -44,6 +44,10 @@
       "description": "请通过 hello@internxt.com 联系我们的支持团队。"
     }
   },
+  "linkExpired": {
+    "title": "链接已过期或已删除",
+    "description": "您访问的链接或邀请已过期或已被删除"
+  },
   "lang": {
     "title": "语言",
     "en": "English (英语)",
@@ -138,6 +142,7 @@
     "new": "新建",
     "of": "/",
     "terms": "条款和条件",
+    "contactSupport": "联系支持",
     "help": "需要帮助吗？",
     "searchBar": {
       "oldSearchBarPlaceholder": "搜索该文件夹",

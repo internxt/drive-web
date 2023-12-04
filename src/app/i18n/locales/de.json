@@ -68,6 +68,10 @@
       "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
       "invalidEmail": "Ungültige E-Mail Adresse"
     },
+    "linkExpired": {
+      "title": "Link abgelaufen oder gelöscht",
+      "description": "Der von Ihnen besuchte Link oder die Einladung ist abgelaufen oder wurde entfernt"
+    },
     "recoverAccount": {
       "title": "Konto wiederherstellen",
       "subtitle": "Haben Sie einen Sicherungsschlüssel?",
@@ -115,6 +119,7 @@
     "new": "Neu",
     "of": "von",
     "terms": "Geschäftsbedingungen",
+    "contactSupport": "Kundensupport kontaktieren",
     "help": "Brauchst du Hilfe?",
     "searchBar": "Durchsuche diesen Ordner",
     "stage": {
