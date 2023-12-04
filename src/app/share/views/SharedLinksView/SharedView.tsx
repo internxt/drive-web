@@ -1,10 +1,11 @@
-import dateService from 'app/core/services/date.service';
+import dateService from '../../../core/services/date.service';
 import { UploadSimple, Users } from '@phosphor-icons/react';
-import List from 'app/shared/components/List';
+import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import iconService from 'app/drive/services/icon.service';
+import iconService from '../../../drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
@@ -28,20 +29,21 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
-import Button from 'app/shared/components/Button/Button';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
-import { RootState } from 'app/store';
+import Button from '../../../shared/components/Button/Button';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
+import { RootState } from '../../../store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import Empty from '../../../shared/components/Empty/Empty';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -766,19 +768,55 @@ function SharedView(props: SharedViewProps): JSX.Element {
     <div className="h-4 w-20 rounded bg-gray-5" />,
   ];
 
-  const emptyState = (
-    <div className="h-full w-full p-8">
-      <div className="flex h-full flex-col items-center justify-center pb-20">
-        <div className="pointer-events-none mx-auto mb-10 w-max">
-          <Users size={80} weight="thin" />
-        </div>
-        <div className="pointer-events-none text-center">
-          <p className="mb-1 block text-2xl font-medium text-gray-100">{translate('shared-links.empty-state.title')}</p>
-          <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
+  const emptyState = {
+    rootLink: (
+      <div className="h-full w-full p-8">
+        <div className="flex h-full flex-col items-center justify-center pb-20">
+          <div className="pointer-events-none mx-auto mb-10 w-max">
+            <Users size={80} weight="thin" />
+          </div>
+          <div className="pointer-events-none text-center">
+            <p className="mb-1 block text-2xl font-medium text-gray-100">
+              {translate('shared-links.empty-state.title')}
+            </p>
+            <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    ),
+    viewer: (
+      <Empty
+        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+        title={translate('views.recents.empty.folderEmpty')}
+        subtitle={''}
+      />
+    ),
+    ownerOrEditor: (
+      <Empty
+        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+        title={translate('views.recents.empty.folderEmpty')}
+        subtitle={translate('views.recents.empty.folderEmptySubtitle')}
+        action={{
+          icon: UploadSimple,
+          style: 'elevated',
+          text: translate('views.recents.empty.uploadFiles'),
+          onClick: onUploadFileButtonClicked,
+        }}
+      />
+    ),
+  };
+
+  const getEmptyState = () => {
+    if (sharedNamePath.length) {
+      if (isCurrentUserViewer()) {
+        return emptyState.viewer;
+      } else {
+        return emptyState.ownerOrEditor;
+      }
+    } else {
+      return emptyState.rootLink;
+    }
+  };
 
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     setHasMoreFolders(true);
@@ -1000,7 +1038,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
             ),
           ]}
           skinSkeleton={skinSkeleton}
-          emptyState={emptyState}
+          emptyState={getEmptyState()}
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
           menu={
