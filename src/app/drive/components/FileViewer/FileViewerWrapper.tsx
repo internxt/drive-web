@@ -97,7 +97,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         renameItem: onRenameItemButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
+        moveToTrash: () => {
+          onMoveToTrashButtonClicked();
+          onClose();
+        },
       });
     } else {
       return contextMenuDriveNotSharedLink({
@@ -107,7 +110,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         showDetails: onShowDetailsButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
+        moveToTrash: () => {
+          onMoveToTrashButtonClicked();
+          onClose();
+        },
       });
     }
   };
@@ -120,7 +126,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       moveItem: onMoveItemButtonClicked,
       showDetails: onShowDetailsButtonClicked,
       downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: onMoveItemButtonClicked,
+      moveToTrash: () => {
+        onMoveToTrashButtonClicked();
+        onClose();
+      },
     });
   };
 
@@ -133,7 +142,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
       moveItem: isOwner ? onMoveItemButtonClicked : undefined,
       downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: isOwner ? onMoveItemButtonClicked : undefined,
+      moveToTrash: () => {
+        if (isOwner) {
+          onMoveToTrashButtonClicked();
+          onClose();
+        }
+      },
     });
   };
 
