@@ -42,6 +42,8 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -114,6 +116,49 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
+  const onItemDropped = async (item, monitor: DropTargetMonitor) => {
+    const droppedData: any = monitor.getItem();
+
+    const transformedObject = droppedData.files.reduce((acc, file, index) => {
+      acc[index] = file;
+      return acc;
+    }, {});
+
+    await onUploadFileInputChanged({
+      files: {
+        ...transformedObject,
+        length: droppedData.files.length,
+      },
+    });
+  };
+
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: [NativeTypes.FILE],
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+      canDrop: (item: any, monitor): boolean => {
+        const droppedType = monitor.getItemType();
+        const canDrop = droppedType === NativeTypes.FILE && !!sharedNamePath.length && !isCurrentUserViewer();
+
+        return canDrop;
+      },
+      drop: onItemDropped,
+    }),
+    [
+      selectedItems,
+      ownerEncryptionKey,
+      filesOwnerCredentials,
+      ownerBucket,
+      currentFolderId,
+      currentResourcesToken,
+      nextResourcesToken,
+      sharedNamePath,
+    ],
+  );
 
   // Set the item to rename from preview view
   useEffect(() => {
@@ -578,8 +623,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
     fileInputRef.current?.click();
   };
 
-  const onUploadFileInputChanged = async (e) => {
-    const files = e.target.files;
+  const onUploadFileInputChanged = async ({ files }) => {
+    const items = files;
+
     dispatch(
       storageActions.setItems({
         folderId: currentParentFolderId as number,
@@ -587,7 +633,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
       }),
     );
 
-    if (files.length >= 1000 || !currentParentFolderId) {
+    if (!items) return;
+
+    if (items.length >= 1000 || !currentParentFolderId) {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
@@ -625,7 +673,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
     await dispatch(
       storageThunks.uploadSharedItemsThunk({
-        files: Array.from(files),
+        files: Array.from(items),
         parentFolderId: currentParentFolderId,
         currentFolderId,
         ownerUserAuthenticationData,
@@ -858,7 +906,11 @@ function SharedView(props: SharedViewProps): JSX.Element {
             className="hidden"
             ref={fileInputRef}
             type="file"
-            onChange={(e) => onUploadFileInputChanged(e)}
+            onChange={(e) =>
+              onUploadFileInputChanged({
+                files: e.target.files,
+              })
+            }
             multiple={true}
             data-test="input-file"
           />
@@ -895,7 +947,16 @@ function SharedView(props: SharedViewProps): JSX.Element {
         </div>
       </div>
       <WarningMessageWrapper />
-      <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex h-full w-full flex-col overflow-y-auto" ref={drop}>
+        {
+          /* DRAG AND DROP */
+          isOver && canDrop && (
+            <div
+              className="drag-over-effect pointer-events-none\
+                    absolute flex h-full w-full items-end justify-center"
+            ></div>
+          )
+        }
         <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
