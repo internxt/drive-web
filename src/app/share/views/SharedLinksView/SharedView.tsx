@@ -116,6 +116,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+  const isNotRootFolder = !!sharedNamePath.length;
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedData: any = monitor.getItem();
@@ -142,7 +143,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       }),
       canDrop: (item: any, monitor): boolean => {
         const droppedType = monitor.getItemType();
-        const canDrop = droppedType === NativeTypes.FILE && !!sharedNamePath.length && !isCurrentUserViewer();
+        const canDrop = droppedType === NativeTypes.FILE && isNotRootFolder && !isCurrentUserViewer();
 
         return canDrop;
       },
@@ -623,7 +624,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
     fileInputRef.current?.click();
   };
 
-  const onUploadFileInputChanged = async ({ files }) => {
+  const onUploadFileInputChanged = async ({ files }: { files: FileList | null }) => {
     const items = files;
 
     dispatch(
