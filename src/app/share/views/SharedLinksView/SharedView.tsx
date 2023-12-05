@@ -1,11 +1,10 @@
 import dateService from '../../../core/services/date.service';
-import { UploadSimple, Users } from '@phosphor-icons/react';
+import { UploadSimple } from '@phosphor-icons/react';
 import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from '../../../drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
-import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import _ from 'lodash';
@@ -43,7 +42,6 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
-import Empty from '../../../shared/components/Empty/Empty';
 import EmptySharedView from 'app/drive/components/EmptySharedView/EmptySharedView';
 
 export const ITEMS_PER_PAGE = 15;
