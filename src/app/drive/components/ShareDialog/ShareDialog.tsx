@@ -102,8 +102,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const itemOwnerEmail = (itemToShare?.item as any)?.user?.email;
-  const isUserOwner = !!itemOwnerEmail && itemOwnerEmail === props?.user?.email;
+
+  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem).user?.email;
+  const isUserOwner = (!!itemOwnerEmail && itemOwnerEmail === props?.user?.email) || !!props?.isDriveItem;
 
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
@@ -177,16 +178,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    let sharingType: string;
+    let sharingType = 'public';
 
     if (props.isDriveItem) {
       sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
         ?.type;
     } else {
       const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-      const itemId = itemToShare?.item.uuid || '';
-      const sharingData = await shareService.getSharingType(itemId, itemType);
-      sharingType = sharingData.type;
+      const itemId = itemToShare?.item.uuid ?? '';
+      try {
+        const sharingData = await shareService.getSharingType(itemId, itemType);
+        sharingType = sharingData.type;
+      } catch (error) {
+        errorService.reportError(error);
+      }
     }
 
     if (sharingType === 'private') {
@@ -497,7 +502,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 {({ open }) => (
                   <>
                     <Popover.Button as="div" className="z-1 outline-none">
-                      <Button variant="secondary" disabled={isLoading || (!props.isDriveItem && !isUserOwner)}>
+                      <Button variant="secondary" disabled={isLoading || !isUserOwner}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
                           {accessMode === 'public'
