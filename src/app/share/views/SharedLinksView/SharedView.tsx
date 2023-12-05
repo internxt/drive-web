@@ -42,6 +42,8 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
+import StopSharingItem from 'app/drive/components/StopSharingItem';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -87,7 +89,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const folderUUID = urlParams.get('folderuuid');
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
-  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -95,9 +96,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isStopSharingDialogLoading, setIsStopSharingDialogLoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [shareItems, setShareItems] = useState<AdvancedSharedItem[]>([]);
+  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData>();
+  const [itemToView, setItemToView] = useState<any>();
+  const [isFileViewerOpen, setIsFileViewerOpen] = useState<boolean>(false);
   const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
   const [currentResourcesToken, setCurrentResourcesToken] = useState<string>('');
@@ -723,9 +728,8 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
     try {
       const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
-
-      dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
-      dispatch(uiActions.setIsFileViewerOpen(true));
+      setItemToView({ ...previewItem, mnemonic });
+      setIsFileViewerOpen(true);
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
@@ -740,6 +744,36 @@ function SharedView(props: SharedViewProps): JSX.Element {
       else return currentUser.uuid == user?.uuid;
     }
     return false;
+  };
+
+  const onCloseFileViewer = () => {
+    setItemToView(undefined);
+    setIsFileViewerOpen(false);
+  };
+
+  const onStopSharingAndMoveToTrash = async () => {
+    const item = itemToView ?? selectedItems[0];
+    if (isFileViewerOpen) {
+      onCloseFileViewer();
+    }
+    setIsStopSharingDialogLoading(true);
+    let itemName: string;
+
+    if (item.name.length > 32) {
+      itemName = item.name.substring(0, 32).concat('...');
+    } else {
+      itemName = item.name;
+    }
+    await dispatch(
+      sharedThunks.stopSharingItem({
+        itemType: item?.isFolder ? 'folder' : 'file',
+        itemId: item?.uuid as string,
+        itemName,
+      }),
+    );
+    setShowStopSharingConfirmation(false);
+    setIsStopSharingDialogLoading(false);
+    moveToTrash(item);
   };
 
   const isCurrentUserViewer = useCallback(() => {
@@ -1008,7 +1042,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: () => (isItemOwnedByCurrentUser() ? setShowStopSharingConfirmation(true) : undefined),
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
@@ -1021,7 +1055,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
+                  moveToTrash: () =>
+                    isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                      ? setShowStopSharingConfirmation(true)
+                      : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
@@ -1034,7 +1071,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
+                  moveToTrash: () =>
+                    isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                      ? setShowStopSharingConfirmation(true)
+                      : undefined,
                 })
           }
           keyBoardShortcutActions={{
@@ -1069,6 +1109,23 @@ function SharedView(props: SharedViewProps): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
+      {itemToView && (
+        <FileViewerWrapper
+          file={itemToView as DriveItemData}
+          showPreview={isFileViewerOpen}
+          onClose={onCloseFileViewer}
+          onStopSharing={() => setShowStopSharingConfirmation(true)}
+        />
+      )}
+      {
+        <StopSharingItem
+          onStopSharing={onStopSharingAndMoveToTrash}
+          isLoading={isStopSharingDialogLoading}
+          name={itemToView?.name ?? selectedItems[0]?.plainName}
+          setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+          showStopSharingConfirmation={showStopSharingConfirmation}
+        />
+      }
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}

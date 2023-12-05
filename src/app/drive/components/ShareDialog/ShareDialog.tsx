@@ -23,6 +23,7 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import StopSharingItem from '../StopSharingItem';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -612,31 +613,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           </div>
 
           {/* Stop sharing confirmation dialog */}
-          <Modal
-            maxWidth="max-w-sm"
-            className="space-y-5 p-5"
-            isOpen={showStopSharingConfirmation}
-            onClose={() => setShowStopSharingConfirmation(false)}
-            preventClosing={showStopSharingConfirmation && isLoading}
-          >
-            <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
-            <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
-            </p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowStopSharingConfirmation(false)}
-                disabled={showStopSharingConfirmation && isLoading}
-              >
-                {translate('modals.shareModal.stopSharing.cancel')}
-              </Button>
-              <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
-                {isLoading && <Spinner className="h-4 w-4" />}
-                <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
-              </Button>
-            </div>
-          </Modal>
+          <StopSharingItem
+            showStopSharingConfirmation={showStopSharingConfirmation}
+            setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+            name={itemToShare?.item.name ?? ''}
+            isLoading={isLoading}
+            onStopSharing={onStopSharing}
+          />
         </>
       ),
       invite: (
