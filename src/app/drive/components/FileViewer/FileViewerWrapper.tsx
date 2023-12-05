@@ -38,6 +38,7 @@ import {
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -142,6 +143,14 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,
     });
+  };
+
+  const renameItemFromKeyboard = () => {
+    if (isSharedView) {
+      if (!isCurrentUserViewer()) {
+        onRenameItemButtonClicked();
+      }
+    }
   };
 
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
@@ -353,6 +362,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       changeFile={changeFile}
       dropdownItems={topDropdownBarActionsMenu()}
       isShareView={isSharedView}
+      renameItemFromKeyboard={renameItemFromKeyboard}
     />
   ) : (
     <div className="hidden" />
