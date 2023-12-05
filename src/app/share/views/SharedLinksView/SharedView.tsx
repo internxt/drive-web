@@ -44,6 +44,7 @@ import WarningMessageWrapper from '../../../drive/components/WarningMessage/Warn
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
 import Empty from '../../../shared/components/Empty/Empty';
+import EmptySharedView from 'app/drive/components/EmptySharedView/EmptySharedView';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -768,56 +769,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
     <div className="h-4 w-20 rounded bg-gray-5" />,
   ];
 
-  const emptyState = {
-    rootLink: (
-      <div className="h-full w-full p-8">
-        <div className="flex h-full flex-col items-center justify-center pb-20">
-          <div className="pointer-events-none mx-auto mb-10 w-max">
-            <Users size={80} weight="thin" />
-          </div>
-          <div className="pointer-events-none text-center">
-            <p className="mb-1 block text-2xl font-medium text-gray-100">
-              {translate('shared-links.empty-state.title')}
-            </p>
-            <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
-          </div>
-        </div>
-      </div>
-    ),
-    viewer: (
-      <Empty
-        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-        title={translate('views.recents.empty.folderEmpty')}
-        subtitle={''}
-      />
-    ),
-    ownerOrEditor: (
-      <Empty
-        icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-        title={translate('views.recents.empty.folderEmpty')}
-        subtitle={translate('views.recents.empty.folderEmptySubtitle')}
-        action={{
-          icon: UploadSimple,
-          style: 'elevated',
-          text: translate('views.recents.empty.uploadFiles'),
-          onClick: onUploadFileButtonClicked,
-        }}
-      />
-    ),
-  };
-
-  const getEmptyState = () => {
-    if (sharedNamePath.length) {
-      if (isCurrentUserViewer()) {
-        return emptyState.viewer;
-      } else {
-        return emptyState.ownerOrEditor;
-      }
-    } else {
-      return emptyState.rootLink;
-    }
-  };
-
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     setHasMoreFolders(true);
     setHasMoreItems(true);
@@ -1038,7 +989,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
             ),
           ]}
           skinSkeleton={skinSkeleton}
-          emptyState={getEmptyState()}
+          emptyState={
+            <EmptySharedView
+              isCurrentUserViewer={isCurrentUserViewer}
+              onUploadFileButtonClicked={onUploadFileButtonClicked}
+              sharedNamePath={sharedNamePath}
+            />
+          }
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
           menu={
