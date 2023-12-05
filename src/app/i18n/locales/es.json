@@ -3,22 +3,6 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "signupBlog": {
-    "title": {
-      "line1": "Haz de tu privacidad una prioridad y únete a",
-      "blueText": " Internxt ",
-      "line2": "hoy"
-    },
-    "email": "Correo electrónico",
-    "passwordLabel": "Contraseña",
-    "emailEmpty": "El correo electrónico no puede estar vacío",
-    "passwordLabelEmpty": "La contraseña no puede estar vacía",
-    "buttonText": "Consigue 10GB - ¡Gratis!",
-    "legal": {
-      "line1": "Al crear una cuenta aceptas los",
-      "line2": "términos de servicio y la política de privacidad"
-    }
-  },
   "blackFridayBanner": {
     "header": "¡Elige la privacidad!",
     "title": "Oferta de internxt de Black Friday",

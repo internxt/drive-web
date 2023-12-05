@@ -3,22 +3,6 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
-  "signupBlog": {
-    "title": {
-      "line1": "Make privacy a priority and join",
-      "blueText": " Internxt ",
-      "line2": "today"
-    },
-    "email": "Email",
-    "passwordLabel": "Password",
-    "emailEmpty": "Email cannot be empty",
-    "passwordLabelEmpty": "Password cannot be empty",
-    "buttonText": "Get up to 10GB - For free!",
-    "legal": {
-      "line1": "By creating an account you accept the",
-      "line2": "terms of service, and privacy policy"
-    }
-  },
   "blackFridayBanner": {
     "header": "Save big on privacy.",
     "title": "Internxt's Black Friday Deal",
