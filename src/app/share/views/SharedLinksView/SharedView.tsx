@@ -42,7 +42,7 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
-import EmptySharedView from 'app/drive/components/EmptySharedView/EmptySharedView';
+import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
 
 export const ITEMS_PER_PAGE = 15;
 
