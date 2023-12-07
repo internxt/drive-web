@@ -424,7 +424,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
+      setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -493,22 +493,26 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
   const handleFolderAccess = () => {
+    let statusError: null | number = null;
+
     if (folderUUID)
       shareService
-        .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
+        .getSharedFolderContent(folderUUID, 'folders', '', 0, 15)
         .then((item) => {
           const shareItem = { plainName: (item as any).name, uuid: folderUUID, isFolder: true };
           onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
         })
         .catch((error) => {
           if (error.status === 403) {
-            notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+            statusError = 403;
+            navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
+            return;
           } else if (error.status === 404) {
             notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
           } else {
@@ -518,14 +522,21 @@ function SharedView(props: SharedViewProps): JSX.Element {
           fetchRootFolders();
         })
         .finally(() => {
-          const currentURL = history.location.pathname;
-          const newURL = currentURL.replace(/folderuuid=valor&?/, '');
-          history.replace(newURL);
+          if (statusError !== 403) {
+            const currentURL = history.location.pathname;
+            const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+            history.replace(newURL);
+          }
         });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    const shareItemWithEmail = shareItem.user?.email
+      ? shareItem
+      : ({ ...shareItem, user: { email: shareItem.credentials.networkUser } } as AdvancedSharedItem & {
+          user: { email: string };
+        });
+    dispatch(storageActions.setItemToShare({ item: shareItemWithEmail }));
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
@@ -694,10 +705,11 @@ function SharedView(props: SharedViewProps): JSX.Element {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       }
-      const editNameItemUuid = newItem.uuid || '';
+
+      const editNameItemUuid = newItem?.uuid ?? '';
       setShareItems(
         shareItems.map((shareItem) => {
-          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid || '';
+          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid ?? '';
           if (
             shareItemUuid.length > 0 &&
             editNameItemUuid.length > 0 &&
