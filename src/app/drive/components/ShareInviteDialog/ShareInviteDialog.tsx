@@ -193,7 +193,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
             <div className="relative">
               <Listbox.Button value={userRole} name="userRole">
                 <Button variant="secondary">
-                  <span>{translate(`modals.shareModal.invite.${userRole.toLowerCase()}`)}</span>
+                  <span>{translate(`modals.shareModal.invite.${userRole?.toLowerCase()}`)}</span>
                   <CaretDown size={24} />
                 </Button>
               </Listbox.Button>
@@ -206,7 +206,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                   >
                     {({ selected }) => (
                       <>
-                        <span>{translate(`modals.shareModal.invite.${role.name.toLowerCase()}`)}</span>
+                        <span>{translate(`modals.shareModal.invite.${role.name?.toLowerCase()}`)}</span>
                         {selected ? <Check size={20} /> : null}
                       </>
                     )}
@@ -237,7 +237,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                       <Listbox.Button value={user.userRole} name={user.email}>
                         <Button variant="secondary">
                           <span>
-                            {translate(`modals.shareModal.list.userItem.roles.${user.userRole.toLowerCase()}`)}
+                            {translate(`modals.shareModal.list.userItem.roles.${user.userRole?.toLowerCase()}`)}
                           </span>
                           <CaretDown size={24} />
                         </Button>
@@ -252,7 +252,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                             {({ selected }) => (
                               <>
                                 <span>
-                                  {translate(`modals.shareModal.list.userItem.roles.${role.name.toLowerCase()}`)}
+                                  {translate(`modals.shareModal.list.userItem.roles.${role.name?.toLowerCase()}`)}
                                 </span>
                                 {selected ? <Check size={20} /> : null}
                               </>

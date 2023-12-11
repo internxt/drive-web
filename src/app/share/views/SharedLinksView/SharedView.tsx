@@ -86,6 +86,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const urlParams = new URLSearchParams(window.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [hasMoreRootFolders, setHasMoreRootFolders] = useState<boolean>(true);
@@ -111,6 +114,14 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
+  // Set the item to rename from preview view
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+      setIsEditNameDialogOpen(true);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -413,7 +424,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
+      setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -482,22 +493,26 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
   const handleFolderAccess = () => {
+    let statusError: null | number = null;
+
     if (folderUUID)
       shareService
-        .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
+        .getSharedFolderContent(folderUUID, 'folders', '', 0, 15)
         .then((item) => {
           const shareItem = { plainName: (item as any).name, uuid: folderUUID, isFolder: true };
           onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
         })
         .catch((error) => {
           if (error.status === 403) {
-            notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+            statusError = 403;
+            navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
+            return;
           } else if (error.status === 404) {
             notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
           } else {
@@ -507,14 +522,21 @@ function SharedView(props: SharedViewProps): JSX.Element {
           fetchRootFolders();
         })
         .finally(() => {
-          const currentURL = history.location.pathname;
-          const newURL = currentURL.replace(/folderuuid=valor&?/, '');
-          history.replace(newURL);
+          if (statusError !== 403) {
+            const currentURL = history.location.pathname;
+            const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+            history.replace(newURL);
+          }
         });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    const shareItemWithEmail = shareItem.user?.email
+      ? shareItem
+      : ({ ...shareItem, user: { email: shareItem.credentials.networkUser } } as AdvancedSharedItem & {
+          user: { email: string };
+        });
+    dispatch(storageActions.setItemToShare({ item: shareItemWithEmail }));
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
@@ -673,17 +695,21 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
-  const renameItem = (shareItem: AdvancedSharedItem) => {
+  const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
     setEditNameItem(shareItem as unknown as DriveItemData);
     setIsEditNameDialogOpen(true);
   };
 
   const onCloseEditNameItems = (newItem?: DriveItemData) => {
     if (newItem) {
-      const editNameItemUuid = newItem.uuid || '';
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      }
+
+      const editNameItemUuid = newItem?.uuid ?? '';
       setShareItems(
         shareItems.map((shareItem) => {
-          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid || '';
+          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid ?? '';
           if (
             shareItemUuid.length > 0 &&
             editNameItemUuid.length > 0 &&
@@ -696,6 +722,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         }),
       );
     }
+    dispatch(storageActions.setItemToRename(null));
     setIsEditNameDialogOpen(false);
     setEditNameItem(undefined);
   };
@@ -999,7 +1026,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
@@ -1007,7 +1036,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   openPreview: openPreview,
                   showDetails,
                   copyLink,

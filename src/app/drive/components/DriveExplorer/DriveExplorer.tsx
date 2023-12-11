@@ -1,7 +1,6 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
-import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -24,7 +23,6 @@ import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/Cre
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
-import EditFolderNameDialog from '../EditFolderNameDialog/EditFolderNameDialog';
 import Button from '../../../shared/components/Button/Button';
 import storageSelectors from '../../../store/slices/storage/storage.selectors';
 import { planSelectors } from '../../../store/slices/plan';
@@ -48,7 +46,6 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import { Menu, Transition } from '@headlessui/react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import TooltipElement, { DELAY_SHOW_MS } from '../../../shared/components/Tooltip/Tooltip';
 import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
 import { userSelectors } from '../../../store/slices/user';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -63,7 +60,7 @@ import ShareDialog from '../ShareDialog/ShareDialog';
 import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
-import BannerWrapper from 'app/banners/BannerWrapper';
+import { DriveTopBarItems } from './DriveTopBarItems';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import { AdvancedSharedItem } from '../../../share/types';
@@ -135,6 +132,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const isRecents = title === translate('views.recents.head');
   const isTrash = title === translate('trash.trash');
+
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
@@ -212,6 +212,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
     else setTimeout(handleOnEventCreation, 10000);
   };
+
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     try {
@@ -323,7 +329,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const getMoreTrashItems = hasMoreTrashFolders ? getMoreTrashFolders : getMoreTrashFiles;
 
-  const onUploadFileButtonClicked = (): void => {
+  const onUploadFileButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
       level: 'info',
       category: 'button',
@@ -333,9 +339,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     fileInputRef.current?.click();
-  };
+  }, [currentFolderId]);
 
-  const onUploadFolderButtonClicked = (): void => {
+  const onUploadFolderButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
       level: 'info',
       category: 'button',
@@ -345,7 +351,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     folderInputRef.current?.click();
-  };
+  }, [currentFolderId]);
 
   const onUploadFileInputChanged = (e) => {
     const files = e.target.files;
@@ -381,7 +387,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setFolderInputKey(Date.now());
   };
 
-  const onCreateFolderButtonClicked = (): void => {
+  const onCreateFolderButtonClicked = useCallback((): void => {
     errorService.addBreadcrumb({
       level: 'info',
       category: 'button',
@@ -391,7 +397,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       },
     });
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
-  };
+  }, [currentFolderId]);
 
   const onDeletePermanentlyButtonClicked = (): void => {
     if (selectedItems.length > 0) {
@@ -400,6 +406,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     } else {
       dispatch(uiActions.setIsClearTrashDialogOpen(true));
     }
+  };
+
+  const onCloseEditItemDialog = (newItem) => {
+    if (newItem && editNameItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      } else if (itemToRename && editNameItem.isFolder) {
+        dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(newItem.plainName ?? newItem.name));
+      }
+    }
+    dispatch(storageActions.setItemToRename(null));
+    setEditNameItem(null);
   };
 
   const viewModes = {
@@ -486,45 +504,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     </div>
   );
 
-  const DriveTopBarItems = (): JSX.Element => (
-    <div className="flex items-center space-x-2">
-      <div ref={stepOneTutorialRef} className="flex items-center justify-center">
-        <Button variant="primary" onClick={onUploadFileButtonClicked}>
-          <div className="flex items-center justify-center space-x-2.5">
-            <div className="flex items-center space-x-2">
-              <UploadSimple size={24} />
-              <span className="font-medium">{translate('actions.upload.uploadFiles')}</span>
-            </div>
-          </div>
-        </Button>
-      </div>
-      <div
-        className="relative flex items-center justify-center"
-        data-tooltip-id="uploadFolder-tooltip"
-        data-tooltip-content={translate('actions.upload.uploadFolder')}
-        data-tooltip-place="bottom"
-      >
-        <Button variant="tertiary" className="aspect-square" onClick={onUploadFolderButtonClicked}>
-          <div className="h-6 w-6">
-            <img src={FolderSimpleArrowUp} className="h-6 w-6" alt="" />
-          </div>
-        </Button>
-        <TooltipElement id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} />
-      </div>
-      <div
-        className="flex items-center justify-center"
-        data-tooltip-id="createfolder-tooltip"
-        data-tooltip-content={translate('actions.upload.folder')}
-        data-tooltip-place="bottom"
-      >
-        <Button variant="tertiary" className="aspect-square" onClick={onCreateFolderButtonClicked}>
-          <FolderSimplePlus className="h-6 w-6" />
-        </Button>
-        <TooltipElement id="createfolder-tooltip" delayShow={DELAY_SHOW_MS} />
-      </div>
-    </div>
-  );
-
   const skinSkeleton = [
     <div className="flex flex-row items-center space-x-4">
       <div className="h-8 w-8 rounded-md bg-gray-5" />
@@ -571,6 +550,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     />
   ));
 
+  const handleOnShareItem = useCallback(() => {
+    resetPaginationState();
+    dispatch(fetchSortedFolderContentThunk(currentFolderId));
+  }, [currentFolderId]);
+
+  const onSuccessEditingName = useCallback(() => {
+    setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
+  }, [currentFolderId]);
+  const onCloseEditNameDialog = useCallback(() => {
+    setEditNameItem(null);
+  }, []);
+
   const driveExplorer = (
     <div
       className="flex h-full grow flex-col"
@@ -579,13 +570,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       <DeleteItemsDialog onItemsDeleted={onItemsDeleted} />
       <CreateFolderDialog onFolderCreated={onFolderCreated} currentFolderId={currentFolderId} />
-      <ShareDialog
-        isDriveItem
-        onShareItem={() => {
-          resetPaginationState();
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
-        }}
-      />
+      <ShareDialog isDriveItem onShareItem={handleOnShareItem} />
       <NameCollisionContainer />
       <MoveItemsDialog
         items={[...items]}
@@ -596,7 +581,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         isTrash={isTrash}
       />
       <ClearTrashDialog onItemsDeleted={onItemsDeleted} />
-      <EditFolderNameDialog />
       <UploadItemsFailsDialog />
       <MenuItemToGetSize />
       <ItemDetailsDialog onDetailsButtonClicked={onDetailsButtonClicked} />
@@ -604,15 +588,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         <EditItemNameDialog
           item={editNameItem}
           isOpen={true}
-          onSuccess={() => {
-            setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
-          }}
-          onClose={() => {
-            setEditNameItem(null);
-          }}
+          onSuccess={onSuccessEditingName}
+          onClose={onCloseEditNameDialog}
         />
       )}
-      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full grow">
         <div className="flex w-1 grow flex-col">
@@ -723,7 +702,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     );
                   }}
                 </Menu>
-                <DriveTopBarItems />
+                <DriveTopBarItems
+                  stepOneTutorialRef={stepOneTutorialRef}
+                  onCreateFolderButtonClicked={onCreateFolderButtonClicked}
+                  onUploadFileButtonClicked={onUploadFileButtonClicked}
+                  onUploadFolderButtonClicked={onUploadFolderButtonClicked}
+                />
               </div>
             )}
             <DriveTopBarActions
