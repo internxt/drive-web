@@ -38,7 +38,6 @@ import {
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { useHotkeys } from 'react-hotkeys-hook';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
