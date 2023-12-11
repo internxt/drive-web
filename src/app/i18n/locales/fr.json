@@ -141,7 +141,6 @@
     "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
-
     "stage": {
       "development": "Développement",
       "production": "Production"
@@ -364,7 +363,6 @@
             "business": "Changement de plan pour les entreprises"
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
-
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
@@ -666,7 +664,7 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
-        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire",
+        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire.",
         "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
         "accept": "Accepter",
         "cancel": "Annuler",
@@ -891,7 +889,6 @@
       "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
-
   "trash": {
     "trash": "Corbeille",
     "clearTrash": "La corbeille est vide",
