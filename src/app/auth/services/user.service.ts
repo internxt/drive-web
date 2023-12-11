@@ -3,6 +3,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import {
   FriendInvite,
   InitializeUserResponse,
+  PreCreateUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
 } from '@internxt/sdk/dist/drive/users/types';
@@ -20,6 +21,11 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
 const inviteAFriend = (email: string): Promise<void> => {
   const usersClient = SdkFactory.getInstance().createUsersClient();
   return usersClient.sendInvitation(email);
+};
+
+const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.preRegister(email);
 };
 
 /**
@@ -71,6 +77,7 @@ const userService = {
   deleteUserAvatar,
   sendVerificationEmail,
   getPublicKeyByEmail,
+  preCreateUser,
 };
 
 export default userService;

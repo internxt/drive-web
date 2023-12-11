@@ -81,6 +81,10 @@
       "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
       "invalidEmail": "Invalide email"
     },
+    "linkExpired": {
+      "title": "Lien expiré ou supprimé",
+      "description": "Le lien ou l'invitation que vous avez visité a expiré ou a été supprimé"
+    },
     "recoverAccount": {
       "title": "Récupération de compte",
       "subtitle": "Avez-vous une clé de sauvegarde ?",
@@ -134,6 +138,7 @@
     "new": "Nouveau",
     "of": "de",
     "terms": "Termes et conditions",
+    "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
 
@@ -661,6 +666,10 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
+        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire",
+        "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
+        "accept": "Accepter",
+        "cancel": "Annuler",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
