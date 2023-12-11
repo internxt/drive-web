@@ -17,6 +17,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
