@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "¡Elige la privacidad!",
-    "title": "Oferta de internxt de Black Friday",
+    "title": "Oferta navideña de Internxt",
     "cta": "¡Obtén el descuento!",
     "features": {
-      "discount": "91% de descuento en planes anuales",
+      "discount": "50% de descuento en planes lifetime",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
       "endToEnd": "Cifrado de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 30 de Noviembre"
+      "offerEnds": "La oferta termina el 7 de Enero"
     }
   },
   "valentinesBanner": {
