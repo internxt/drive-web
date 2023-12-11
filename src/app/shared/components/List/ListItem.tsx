@@ -204,7 +204,7 @@ export default function ListItem<T extends { id: string }>({
               const { bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const isHalfway = bottom > windowHeight / 2;
+              const isHalfway = bottom > windowHeight / 1.5;
               setIsHalfwayDown(isHalfway);
             }
 
