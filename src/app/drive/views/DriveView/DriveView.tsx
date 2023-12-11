@@ -38,7 +38,7 @@ const DriveView = (props: DriveViewProps) => {
     const itemUuid = navigationService.getUuid();
 
     if (isFolderView && itemUuid) {
-      goFolder(itemUuid);
+      setTimeout(() => goFolder(itemUuid), 200);
     }
 
     if (isFileView && itemUuid) {
@@ -74,6 +74,7 @@ const DriveView = (props: DriveViewProps) => {
   const goFile = async (folderUuid) => {
     try {
       const fileMeta = await fileService.getFile(folderUuid);
+      dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName} - Internxt Drive`);
