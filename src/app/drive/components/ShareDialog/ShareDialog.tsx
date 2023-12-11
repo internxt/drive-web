@@ -23,7 +23,7 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
-import StopSharingItem from '../StopSharingItem';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -613,7 +613,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           </div>
 
           {/* Stop sharing confirmation dialog */}
-          <StopSharingItem
+          <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
             setShowStopSharingConfirmation={setShowStopSharingConfirmation}
             name={itemToShare?.item.name ?? ''}

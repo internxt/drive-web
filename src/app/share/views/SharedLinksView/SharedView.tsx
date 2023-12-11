@@ -43,7 +43,7 @@ import WarningMessageWrapper from '../../../drive/components/WarningMessage/Warn
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
 import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
-import StopSharingItem from 'app/drive/components/StopSharingItem';
+import StopSharingItemDialog from 'app/drive/components/StopSharingItemDialog/StopSharingItemDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -1118,7 +1118,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         />
       )}
       {
-        <StopSharingItem
+        <StopSharingItemDialog
           onStopSharing={onStopSharingAndMoveToTrash}
           isLoading={isStopSharingDialogLoading}
           name={itemToView?.name ?? selectedItems[0]?.plainName}
