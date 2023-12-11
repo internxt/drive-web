@@ -47,10 +47,15 @@ interface FileViewerWrapperProps {
   file: PreviewFileItem;
   onClose: () => void;
   showPreview: boolean;
-  onStopSharing?: () => void;
+  onShowStopSharingDialog?: () => void;
 }
 
-const FileViewerWrapper = ({ file, onClose, showPreview, onStopSharing }: FileViewerWrapperProps): JSX.Element => {
+const FileViewerWrapper = ({
+  file,
+  onClose,
+  showPreview,
+  onShowStopSharingDialog,
+}: FileViewerWrapperProps): JSX.Element => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
@@ -145,7 +150,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview, onStopSharing }: FileVi
       downloadItem: onDownloadItemButtonClicked,
       moveToTrash: () => {
         if (isOwner) {
-          onStopSharing?.();
+          onShowStopSharingDialog?.();
         }
       },
     });

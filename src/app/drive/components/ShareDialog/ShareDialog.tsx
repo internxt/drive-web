@@ -24,6 +24,7 @@ import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -63,7 +64,7 @@ const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const cropSharedName = (name: string) => {
-  if (name.length > 32) {
+  if (name.length > MAX_SHARED_NAME_LENGTH) {
     return name.substring(0, 32).concat('...');
   } else {
     return name;
@@ -84,7 +85,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
-  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -615,7 +616,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           {/* Stop sharing confirmation dialog */}
           <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
-            setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+            onClose={() => setShowStopSharingConfirmation(false)}
             name={itemToShare?.item.name ?? ''}
             isLoading={isLoading}
             onStopSharing={onStopSharing}
@@ -738,7 +739,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>

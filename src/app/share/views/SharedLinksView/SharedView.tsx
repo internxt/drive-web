@@ -47,6 +47,8 @@ import StopSharingItemDialog from 'app/drive/components/StopSharingItemDialog/St
 
 export const ITEMS_PER_PAGE = 15;
 
+export const MAX_SHARED_NAME_LENGTH = 32;
+
 const removeDuplicates = (list: AdvancedSharedItem[]) => {
   const hash = {};
   return list.filter((obj) => {
@@ -759,7 +761,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
     setIsStopSharingDialogLoading(true);
     let itemName: string;
 
-    if (item.name.length > 32) {
+    if (item.name.length > MAX_SHARED_NAME_LENGTH) {
       itemName = item.name.substring(0, 32).concat('...');
     } else {
       itemName = item.name;
@@ -1114,7 +1116,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
           file={itemToView as DriveItemData}
           showPreview={isFileViewerOpen}
           onClose={onCloseFileViewer}
-          onStopSharing={() => setShowStopSharingConfirmation(true)}
+          onShowStopSharingDialog={() => setShowStopSharingConfirmation(true)}
         />
       )}
       {
@@ -1122,7 +1124,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
           onStopSharing={onStopSharingAndMoveToTrash}
           isLoading={isStopSharingDialogLoading}
           name={itemToView?.name ?? selectedItems[0]?.plainName}
-          setShowStopSharingConfirmation={setShowStopSharingConfirmation}
+          onClose={() => setShowStopSharingConfirmation(false)}
           showStopSharingConfirmation={showStopSharingConfirmation}
         />
       }

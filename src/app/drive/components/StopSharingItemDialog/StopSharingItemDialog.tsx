@@ -5,13 +5,13 @@ import Spinner from '../../../shared/components/Spinner/Spinner';
 
 const StopSharingItemDialog = ({
   showStopSharingConfirmation,
-  setShowStopSharingConfirmation,
+  onClose,
   name,
   isLoading,
   onStopSharing,
 }: {
   showStopSharingConfirmation: boolean;
-  setShowStopSharingConfirmation: (show: boolean) => void;
+  onClose: () => void;
   name: string;
   isLoading: boolean;
   onStopSharing: () => void;
@@ -22,17 +22,13 @@ const StopSharingItemDialog = ({
       maxWidth="max-w-sm"
       className="space-y-5 p-5"
       isOpen={showStopSharingConfirmation}
-      onClose={() => setShowStopSharingConfirmation(false)}
+      onClose={() => onClose()}
       preventClosing={showStopSharingConfirmation && isLoading}
     >
       <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
       <p className="text-lg text-gray-80">{translate('modals.shareModal.stopSharing.subtitle', { name: name })}</p>
       <div className="flex items-center justify-end space-x-2">
-        <Button
-          variant="secondary"
-          onClick={() => setShowStopSharingConfirmation(false)}
-          disabled={showStopSharingConfirmation && isLoading}
-        >
+        <Button variant="secondary" onClick={() => onClose()} disabled={showStopSharingConfirmation && isLoading}>
           {translate('modals.shareModal.stopSharing.cancel')}
         </Button>
         <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
