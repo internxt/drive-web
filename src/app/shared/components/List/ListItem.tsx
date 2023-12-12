@@ -201,11 +201,22 @@ export default function ListItem<T extends { id: string }>({
               const element = menuButtonRef.current;
               if (!element) return;
 
-              const { bottom } = element.getBoundingClientRect();
+              const { top, bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const isHalfway = bottom > windowHeight / 1.5;
-              setIsHalfwayDown(isHalfway);
+              const rangoSuperior = windowHeight / 2 - 50; // Ajusta según tus necesidades
+              const rangoInferior = windowHeight / 2 + 100; // Ajusta según tus necesidades
+
+              // Comprueba si el elemento está en el rango del medio
+              const isEnElMedio = top <= rangoInferior && bottom >= rangoSuperior;
+
+              if (isEnElMedio) {
+                console.log('El elemento está en el medio');
+                setIsHalfwayDown(false);
+              } else {
+                const isHalfway = bottom > windowHeight / 2;
+                setIsHalfwayDown(isHalfway);
+              }
             }
 
             useEffect(() => {
