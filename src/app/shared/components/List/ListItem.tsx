@@ -89,7 +89,7 @@ export default function ListItem<T extends { id: string }>({
       x = x - childWidth;
     }
 
-    if (event.clientY + childHeight > innerHeight) {
+    if (event.clientY + childHeight > innerHeight + 100) {
       y = y - childHeight;
     }
     setPosX(x);
@@ -204,14 +204,13 @@ export default function ListItem<T extends { id: string }>({
               const { top, bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const rangoSuperior = windowHeight / 2 - 50; // Ajusta según tus necesidades
-              const rangoInferior = windowHeight / 2 + 100; // Ajusta según tus necesidades
+              const higherRank = windowHeight / 2 - 50; // Ajusta según tus necesidades
+              const lowerRank = windowHeight / 2 + 100; // Ajusta según tus necesidades
 
               // Comprueba si el elemento está en el rango del medio
-              const isEnElMedio = top <= rangoInferior && bottom >= rangoSuperior;
+              const isItemInHalfway = top <= lowerRank && bottom >= higherRank;
 
-              if (isEnElMedio) {
-                console.log('El elemento está en el medio');
+              if (isItemInHalfway) {
                 setIsHalfwayDown(false);
               } else {
                 const isHalfway = bottom > windowHeight / 2;
