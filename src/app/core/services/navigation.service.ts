@@ -52,7 +52,7 @@ const navigationService = {
     const currentPath = pathname[1];
     return currentPath === path;
   },
-  getUuid(): string {
+  getUuid(): string | undefined {
     const pathname = navigationService.history.location.pathname.split('/');
     const currentUuid = pathname[2];
     return currentUuid;
