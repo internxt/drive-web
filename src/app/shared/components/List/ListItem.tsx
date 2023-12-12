@@ -199,23 +199,15 @@ export default function ListItem<T extends { id: string }>({
 
             function handleOpenPosition() {
               const element = menuButtonRef.current;
+              const contextMenu = menuItemsRef.current;
               if (!element) return;
+              if (!contextMenu) return;
 
               const { top, bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const higherRank = windowHeight / 2 - 50; // Ajusta según tus necesidades
-              const lowerRank = windowHeight / 2 + 100; // Ajusta según tus necesidades
-
-              // Comprueba si el elemento está en el rango del medio
-              const isItemInHalfway = top <= lowerRank && bottom >= higherRank;
-
-              if (isItemInHalfway) {
-                setIsHalfwayDown(false);
-              } else {
-                const isHalfway = bottom > windowHeight / 2;
-                setIsHalfwayDown(isHalfway);
-              }
+              const isHalfway = bottom > contextMenu.offsetHeight / 2 + windowHeight / 2.3;
+              setIsHalfwayDown(isHalfway);
             }
 
             useEffect(() => {
@@ -250,6 +242,7 @@ export default function ListItem<T extends { id: string }>({
                 </Menu.Button>
                 {open && (
                   <Menu.Items
+                    id="list-item-menu-items"
                     className="outline-none"
                     style={
                       openedFromRightClick
@@ -258,7 +251,7 @@ export default function ListItem<T extends { id: string }>({
                             position: 'absolute',
                             right: 0,
                             [isHalfwayDown ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
-                            zIndex: 99,
+                            zIndex: 9999,
                           }
                     }
                   >
