@@ -77,7 +77,7 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
-      fileMeta.plainName && setTitle(`${fileMeta.plainName} - Internxt Drive`);
+      fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
     } catch (error) {
       errorService.reportError(error);
     }
