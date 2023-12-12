@@ -30,7 +30,7 @@ const TrashView = (props: TrashViewProps) => {
       <Helmet>
         <title>{translate('sideNav.trash')} - Internxt Drive</title>
       </Helmet>
-      <DriveExplorer title={translate('trash.trash') as string} isLoading={isLoadingItemsOnTrash} items={items} />
+      <DriveExplorer title={translate('trash.trash')} isLoading={isLoadingItemsOnTrash} items={items} />
     </>
   );
 };

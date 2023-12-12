@@ -22,7 +22,6 @@ export interface DriveViewProps {
   items: DriveItemData[];
   currentFolderId: number;
   dispatch: AppDispatch;
-  isGlobalSearch: boolean;
 }
 
 const DriveView = (props: DriveViewProps) => {

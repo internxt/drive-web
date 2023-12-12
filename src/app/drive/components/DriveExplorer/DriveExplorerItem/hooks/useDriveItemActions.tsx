@@ -17,7 +17,6 @@ import { sharedThunks } from 'app/store/slices/sharedLinks';
 import moveItemsToTrash from '../../../../../../use_cases/trash/move-items-to-trash';
 import { getDatabaseFilePrewiewData, updateDatabaseFilePrewiewData } from '../../../../services/database.service';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import { useHistory, useLocation } from 'react-router-dom';
 import navigationService from 'app/core/services/navigation.service';
 
 interface DriveItemActions {
@@ -52,8 +51,6 @@ const useDriveItemActions = (item: DriveItemData): DriveItemActions => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const { dirtyName } = useDriveItemStoreProps();
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
-  const history = useHistory();
-  const pathname = useLocation().pathname;
 
   const onRenameButtonClicked = (e: MouseEvent): void => {
     e.stopPropagation();
