@@ -50,15 +50,19 @@ const SignupAuth = ({ lang }) => {
   );
 };
 
+const includedLanguages = ['en', 'es'];
+
 export default function SignupBlog(): JSX.Element {
   const [lang, setLang] = useState('en');
-  const language = navigator.language.split('-')[0];
 
   useEffect(() => {
-    if (language === 'es') {
-      setLang('es');
+    const query = window.location.search;
+    const params = new URLSearchParams(query);
+    const language = params.get('lang') as string;
+    if (includedLanguages.includes(language)) {
+      setLang(language);
     }
-  }, [language]);
+  }, []);
 
   return (
     <>
