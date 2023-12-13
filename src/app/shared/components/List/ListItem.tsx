@@ -37,6 +37,9 @@ interface ItemProps<T> {
 
 const MENU_BUTTON_HEIGHT = 40;
 
+// This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
+// As the size of the list is not fixed we need to create an item equal to the list to be rendered
+// at the same time as the view to get the size and make the necessary positional adjustments.
 const MenuItemList = ({
   menuItemsRef,
   menu,
@@ -144,10 +147,6 @@ export default function ListItem<T extends { id: string }>({
     menuButtonRef.current?.click();
   };
 
-  // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
-  // As the size of the list is not fixed we need to create an item equal to the list to be rendered
-  // at the same time as the view to get the size and make the necessary positional adjustments.
-
   return (
     <div
       onDoubleClick={onDoubleClick}
@@ -249,8 +248,7 @@ export default function ListItem<T extends { id: string }>({
                 </Menu.Button>
                 {open && (
                   <Menu.Items
-                    id="list-item-menu-items"
-                    className="outline-none"
+                    className="flex outline-none"
                     style={
                       openedFromRightClick
                         ? { position: 'absolute', left: posX, top: posY, zIndex: 99 }
@@ -263,7 +261,7 @@ export default function ListItem<T extends { id: string }>({
                     }
                   >
                     <div
-                      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+                      className="z-20 mt-0 flex flex-col rounded-lg border border-gray-10 bg-white py-1.5 shadow-subtle-hard"
                       style={{
                         minWidth: '180px',
                       }}
