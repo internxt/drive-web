@@ -145,10 +145,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   };
 
   const renameItemFromKeyboard = () => {
-    if (isSharedView) {
-      if (!isCurrentUserViewer()) {
-        onRenameItemButtonClicked();
-      }
+    if (isSharedView && !isCurrentUserViewer()) {
+      onRenameItemButtonClicked();
     }
   };
 
