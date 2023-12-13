@@ -205,14 +205,14 @@ export default function ListItem<T extends { id: string }>({
 
             function handleOpenPosition() {
               const element = menuButtonRef.current;
-              const contextMenu = menuItemsRef.current;
+              const contextMenu = menuItemsRef?.current?.offsetHeight || 300;
               if (!element) return;
               if (!contextMenu) return;
 
               const { bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const isHalfway = bottom > contextMenu.offsetHeight / 2 + windowHeight / 2.3;
+              const isHalfway = bottom + contextMenu > windowHeight;
               setIsHalfwayDown(isHalfway);
             }
 
