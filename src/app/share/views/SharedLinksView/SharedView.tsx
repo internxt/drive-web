@@ -990,7 +990,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
           isOver && canDrop && (
             <div
               className="drag-over-effect pointer-events-none\
-                    absolute flex h-full w-full items-end justify-center"
+                    absolute z-50 flex h-full w-full items-end justify-center"
             ></div>
           )
         }
