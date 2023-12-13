@@ -3,6 +3,7 @@ import { Menu } from '@headlessui/react';
 import { DotsThree } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { set } from 'lodash';
 
 export type ListItemMenu<T> = Array<
   | {
@@ -36,6 +37,52 @@ interface ItemProps<T> {
 }
 
 const MENU_BUTTON_HEIGHT = 40;
+
+const MenuItemList = ({
+  menuItemsRef,
+  menu,
+}: {
+  menuItemsRef: React.MutableRefObject<HTMLDivElement | null>;
+  menu?: ListItemMenu<any>;
+}) => (
+  <div
+    className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none"
+    style={{
+      minWidth: '180px',
+      position: 'fixed',
+      top: -9999,
+      left: -9999,
+    }}
+    ref={menuItemsRef}
+  >
+    {menu?.map((option, i) => (
+      <div key={i}>
+        {option && option.separator ? (
+          <div className="my-0.5 flex w-full flex-row px-4">
+            <div className="h-px w-full bg-gray-10" />
+          </div>
+        ) : (
+          option && (
+            <div>
+              <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
+                <div className="flex flex-row items-center space-x-2">
+                  {option.icon && <option.icon size={20} />}
+                  <span>{option.name}</span>
+                </div>
+                <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
+                  {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                    <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                  )}
+                  {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                </span>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    ))}
+  </div>
+);
 
 export default function ListItem<T extends { id: string }>({
   item,
@@ -89,7 +136,7 @@ export default function ListItem<T extends { id: string }>({
       x = x - childWidth;
     }
 
-    if (event.clientY + childHeight > innerHeight + 100) {
+    if (event.clientY + childHeight > innerHeight) {
       y = y - childHeight;
     }
     setPosX(x);
@@ -101,45 +148,6 @@ export default function ListItem<T extends { id: string }>({
   // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
   // As the size of the list is not fixed we need to create an item equal to the list to be rendered
   // at the same time as the view to get the size and make the necessary positional adjustments.
-  const MenuItemList = () => (
-    <div
-      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none"
-      style={{
-        minWidth: '180px',
-        position: 'fixed',
-        top: -9999,
-        left: -9999,
-      }}
-      ref={menuItemsRef}
-    >
-      {menu?.map((option, i) => (
-        <div key={i}>
-          {option && option.separator ? (
-            <div className="my-0.5 flex w-full flex-row px-4">
-              <div className="h-px w-full bg-gray-10" />
-            </div>
-          ) : (
-            option && (
-              <div>
-                <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
-                  <div className="flex flex-row items-center space-x-2">
-                    {option.icon && <option.icon size={20} />}
-                    <span>{option.name}</span>
-                  </div>
-                  <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
-                    {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
-                      <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
-                    )}
-                    {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
-                  </span>
-                </div>
-              </div>
-            )
-          )}
-        </div>
-      ))}
-    </div>
-  );
 
   return (
     <div
@@ -153,7 +161,7 @@ export default function ListItem<T extends { id: string }>({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <MenuItemList />
+      <MenuItemList menu={menu} menuItemsRef={menuItemsRef} />
       <div
         className={`absolute left-5 top-0 flex h-full w-0 flex-row items-center justify-start p-0 opacity-0 focus-within:opacity-100 group-hover:opacity-100 ${
           selected && 'opacity-100'
