@@ -3,7 +3,6 @@ import { Menu } from '@headlessui/react';
 import { DotsThree } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { set } from 'lodash';
 
 export type ListItemMenu<T> = Array<
   | {
@@ -211,7 +210,7 @@ export default function ListItem<T extends { id: string }>({
               if (!element) return;
               if (!contextMenu) return;
 
-              const { top, bottom } = element.getBoundingClientRect();
+              const { bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
               const isHalfway = bottom > contextMenu.offsetHeight / 2 + windowHeight / 2.3;
