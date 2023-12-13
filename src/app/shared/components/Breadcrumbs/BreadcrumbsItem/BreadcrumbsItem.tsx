@@ -122,6 +122,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       );
     }
   };
+
   const [{ isOver, canDrop }, drop] = useDrop(
     () => ({
       accept: [NativeTypes.FILE, DragAndDropType.DriveItem],
@@ -139,6 +140,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     }),
     [selectedItems],
   );
+
   const onItemClicked = (item: BreadcrumbItemData): void => {
     dispatch(uiActions.setCurrentEditingBreadcrumbNameDirty(''));
     if (item.active) {
