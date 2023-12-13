@@ -42,6 +42,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
+  const itemParentId: number = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
+  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === currentFolderId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -163,11 +165,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
-      props.onItemsMoved?.();
-
       setIsLoading(false);
       onClose();
-      setDriveBreadcrumb();
+      !props.isTrash && setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
@@ -246,7 +246,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
               {translate('actions.cancel')}
             </Button>
             <Button
-              disabled={isLoading}
+              disabled={isLoading || isDriveAndCurrentFolder}
               variant="primary"
               onClick={() =>
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)
