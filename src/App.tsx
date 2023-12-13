@@ -34,7 +34,9 @@ import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
+import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
+import { AppView } from 'app/core/types';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -44,6 +46,7 @@ interface AppProps {
   isSurveyDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
+  namePath: FolderPath[];
   dispatch: AppDispatch;
 }
 
@@ -150,9 +153,13 @@ const App = (props: AppProps): JSX.Element => {
   const onCloseFileViewer = () => {
     const isRecentsView = navigationService.isCurrentPath('recents');
     const isSharedView = navigationService.isCurrentPath('shared');
+    const isRootDrive = props.namePath.length === 1;
 
     if (isRecentsView || isSharedView) {
       dispatch(uiActions.setIsFileViewerOpen(false));
+    } else if (isRootDrive) {
+      dispatch(uiActions.setIsFileViewerOpen(false));
+      navigationService.push(AppView.Drive);
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
@@ -178,7 +185,7 @@ const App = (props: AppProps): JSX.Element => {
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/account" to="/preferences" />
-            <Redirect from="/app" to="/" />
+            <Redirect from="/app/:section?" to="/:section?" />
             {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
@@ -228,4 +235,5 @@ export default connect((state: RootState) => ({
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
+  namePath: state.storage.namePath,
 }))(App);
