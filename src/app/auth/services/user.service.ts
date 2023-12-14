@@ -1,10 +1,12 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { SdkFactory } from '../../core/factory/sdk';
 import {
+  CheckChangeEmailExpirationResponse,
   FriendInvite,
   InitializeUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
+  VerifyEmailChangeResponse,
 } from '@internxt/sdk/dist/drive/users/types';
 
 export async function initializeUser(email: string, mnemonic: string): Promise<InitializeUserResponse> {
@@ -60,6 +62,21 @@ const getPublicKeyByEmail = (email: string): Promise<UserPublicKeyResponse> => {
   return usersClient.getPublicKeyByEmail({ email });
 };
 
+const changeEmail = (newEmail: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return authClient.changeUserEmail(newEmail);
+};
+
+const verifyEmailChange = (verifyToken: string): Promise<VerifyEmailChangeResponse> => {
+  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return authClient.verifyEmailChange(verifyToken);
+};
+
+const checkChangeEmailLinkExpiration = (verifyToken: string): Promise<CheckChangeEmailExpirationResponse> => {
+  const authClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return authClient.checkChangeEmailExpiration(verifyToken);
+};
+
 const userService = {
   initializeUser,
   refreshUser,
@@ -71,6 +88,9 @@ const userService = {
   deleteUserAvatar,
   sendVerificationEmail,
   getPublicKeyByEmail,
+  changeEmail,
+  verifyEmailChange,
+  checkChangeEmailLinkExpiration,
 };
 
 export default userService;
