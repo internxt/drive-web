@@ -48,6 +48,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   const [notifyUser, setNotifyUser] = useState<boolean>(false);
   const [messageText, setMessageText] = useState<string>('');
   const [isInviteButtonDisabled, setIsInviteButtonDisabled] = useState<boolean>(true);
+  const [isAnyInviteLoading, setIsAnyInviteLoading] = useState<boolean>(false);
 
   useEffect(() => {
     isValidEmail(email) || usersToInvite.length > 0
@@ -62,6 +63,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
   }, [email]);
 
   const onAddInviteUser = async () => {
+    setIsAnyInviteLoading(true);
     const splitEmail = email.split(',');
     const emailToAdd = splitEmail[0];
     const userInvitedEmail = emailToAdd;
@@ -86,6 +88,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     } else {
       setEmailAccent('error');
     }
+    setIsAnyInviteLoading(false);
   };
 
   const onEditRole = (value: Role['name'], user: UsersToInvite) => {
@@ -151,6 +154,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
 
   //TODO: EXTRACT THIS LOGIC OUT OF THE DIALOG
   const onInvite = async ({ preCreateUsers = false }) => {
+    setIsAnyInviteLoading(true);
     const usersList = [...usersToInvite];
     let isThereAnyNewUser = newUsersExists;
 
@@ -173,6 +177,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
     }
 
     await processInvites(usersList);
+    setIsAnyInviteLoading(false);
     props.onClose();
   };
 
@@ -288,7 +293,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               <BaseCheckbox checked={notifyUser} />
               <p className="ml-2 text-base font-medium">{translate('modals.shareModal.invite.notifyUsers')}</p>
             </div>
-            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled}>
+            <Button variant="primary" onClick={onInvite} disabled={isInviteButtonDisabled} loading={isAnyInviteLoading}>
               <span>{translate('modals.shareModal.invite.invite')}</span>
             </Button>
           </div>
@@ -298,6 +303,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
         isOpen={openNewUsersModal}
         onClose={() => {
           setOpenNewUsersModal(false);
+          setIsAnyInviteLoading(false);
         }}
         onAccept={() => {
           setOpenNewUsersModal(false);
