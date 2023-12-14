@@ -165,6 +165,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
+      props.onItemsMoved?.();
+
       setIsLoading(false);
       onClose();
       !props.isTrash && setDriveBreadcrumb();

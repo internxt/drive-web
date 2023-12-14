@@ -575,7 +575,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <MoveItemsDialog
         items={[...items]}
         onItemsMoved={() => {
-          !isTrash && dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          onItemsMoved?.();
         }}
         isTrash={isTrash}
       />
