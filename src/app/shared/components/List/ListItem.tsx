@@ -201,19 +201,19 @@ export default function ListItem<T extends { id: string }>({
       >
         <Menu as="div" className={openedFromRightClick ? '' : 'relative'}>
           {({ open, close }) => {
-            const [isHalfwayDown, setIsHalfwayDown] = useState(false);
+            const [isContextMenuCutOff, setIsContextMenuCutOff] = useState(false);
 
             function handleOpenPosition() {
               const element = menuButtonRef.current;
-              const contextMenu = menuItemsRef?.current?.offsetHeight || 300;
+              const contextMenuHeight = menuItemsRef?.current?.offsetHeight || 300;
               if (!element) return;
-              if (!contextMenu) return;
+              if (!contextMenuHeight) return;
 
               const { bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const isHalfway = bottom + contextMenu > windowHeight;
-              setIsHalfwayDown(isHalfway);
+              const isContextCutOff = bottom + contextMenuHeight > windowHeight;
+              setIsContextMenuCutOff(isContextCutOff);
             }
 
             useEffect(() => {
@@ -255,7 +255,7 @@ export default function ListItem<T extends { id: string }>({
                         : {
                             position: 'absolute',
                             right: 0,
-                            [isHalfwayDown ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
+                            [isContextMenuCutOff ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
                             zIndex: 9999,
                           }
                     }
