@@ -13,12 +13,12 @@ export default function PlanUsage({
   usage,
   isLoading,
   className = '',
-}: {
+}: Readonly<{
   limit: number;
   usage: number;
   isLoading: boolean;
   className?: string;
-}): JSX.Element {
+}>): JSX.Element {
   const { translate } = useTranslationContext();
   const usagePercent = usageService.getUsagePercent(usage, limit);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
