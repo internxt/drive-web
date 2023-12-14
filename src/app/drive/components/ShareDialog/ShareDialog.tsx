@@ -92,8 +92,8 @@ const getLocalUserData = () => {
     role: {
       id: 'NONE',
       name: 'OWNER',
-      createdAt: '2023-12-07T08:28:07.050Z',
-      updatedAt: '2023-12-07T08:28:07.050Z',
+      createdAt: '',
+      updatedAt: '',
     },
   };
   return onwerData;
