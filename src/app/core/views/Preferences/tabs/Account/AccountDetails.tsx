@@ -270,8 +270,8 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
         } else {
           setStatus({ tag: 'error', type: 'PASSWORD_INVALID' });
         }
-      } catch {
-        errorService.reportError(newEmail);
+      } catch (error) {
+        errorService.reportError(error);
         setStatus({ tag: 'error', type: 'UNKNOWN' });
         notificationsService.show({
           text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),
