@@ -144,6 +144,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
     });
   };
 
+  const renameItemFromKeyboard = () => {
+    if (isSharedView && !isCurrentUserViewer()) {
+      onRenameItemButtonClicked();
+    }
+  };
+
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
     if (isSharedView) return sharedActionsMenu();
     if (isRecentsView) return recentsActionsMenu();
@@ -353,6 +359,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       changeFile={changeFile}
       dropdownItems={topDropdownBarActionsMenu()}
       isShareView={isSharedView}
+      renameItemFromKeyboard={renameItemFromKeyboard}
     />
   ) : (
     <div className="hidden" />
