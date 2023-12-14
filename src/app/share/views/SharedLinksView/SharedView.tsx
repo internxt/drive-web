@@ -105,7 +105,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [shareItems, setShareItems] = useState<AdvancedSharedItem[]>([]);
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData>();
-  const [itemToView, setItemToView] = useState<any>();
+  const [itemToView, setItemToView] = useState<PreviewFileItem>();
   const [isFileViewerOpen, setIsFileViewerOpen] = useState<boolean>(false);
   const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
@@ -1185,7 +1185,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         <StopSharingItemDialog
           onStopSharing={onStopSharingAndMoveToTrash}
           isLoading={isStopSharingDialogLoading}
-          name={itemToView?.name ?? selectedItems[0]?.plainName}
+          itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}
           onClose={() => setShowStopSharingConfirmation(false)}
           showStopSharingConfirmation={showStopSharingConfirmation}
         />

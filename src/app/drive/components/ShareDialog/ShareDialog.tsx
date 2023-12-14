@@ -617,7 +617,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <StopSharingItemDialog
             showStopSharingConfirmation={showStopSharingConfirmation}
             onClose={() => setShowStopSharingConfirmation(false)}
-            name={itemToShare?.item.name ?? ''}
+            itemToShareName={itemToShare?.item.name ?? ''}
             isLoading={isLoading}
             onStopSharing={onStopSharing}
           />
