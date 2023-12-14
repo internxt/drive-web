@@ -208,14 +208,17 @@ export default function LogIn(): JSX.Element {
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/login`} />
       </Helmet>
       <div className="flex h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft">
-        <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-          <h1 className="text-2xl font-medium">{translate('auth.login.title')}</h1>
+        <form data-cy="loginWrapper" className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
+          <h1 className="text-2xl font-medium" data-cy="loginTitle">
+            {translate('auth.login.title')}
+          </h1>
 
           <div className="flex flex-col space-y-3">
             <label className="space-y-0.5">
-              <span>{translate('auth.email')}</span>
+              <span data-cy="emailInputTitle">{translate('auth.email')}</span>
               <TextInput
                 placeholder={translate('auth.email')}
+                inputDataCy="emailInput"
                 label="email"
                 type="email"
                 register={register}
@@ -226,7 +229,9 @@ export default function LogIn(): JSX.Element {
 
             <label className="space-y-0.5">
               <div className="flex flex-row items-center justify-between">
-                <span className="font-normal">{translate('auth.password')}</span>
+                <span className="font-normal" data-cy="passwordInputTitle">
+                  {translate('auth.password')}
+                </span>
                 <Link
                   onClick={(): void => {
                     // analyticsService.trackUserResetPasswordRequest();
@@ -240,6 +245,7 @@ export default function LogIn(): JSX.Element {
 
               <PasswordInput
                 placeholder={translate('auth.password')}
+                inputDataCy="passwordInput"
                 label="password"
                 register={register}
                 required={true}
@@ -274,6 +280,8 @@ export default function LogIn(): JSX.Element {
             )}
 
             <Button
+              buttonDataCy="loginButton"
+              textDataCy="loginButtonText"
               disabled={isLoggingIn}
               text={translate('auth.login.title')}
               disabledText={
