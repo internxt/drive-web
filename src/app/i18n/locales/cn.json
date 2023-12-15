@@ -736,7 +736,7 @@
         "successSentInvitation": "與 {{email}} 成功分享",
         "acceptedSuccessfully": "成功接受共享文件夹邀请",
         "declinedSuccessfully": "成功拒绝共享文件夹邀请",
-        "inviteNewUsersBody": "没有Internxt帐户的人将收到注册邀请电子邮件",
+        "inviteNewUsersBody": "没有Internxt帐户的人将收到注册邀请电子邮件。",
         "inviteNewUsersTitle": "邀请新用户？",
         "accept": "接受",
         "cancel": "取消",

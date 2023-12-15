@@ -40,6 +40,9 @@ const handleFoldersRename = async (root: IRoot, currentFolderId: number) => {
 
   return fileContent;
 };
+const wait = (ms: number): Promise<void> => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+};
 
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
@@ -89,6 +92,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
             options: { relatedTaskId: taskId, showErrors: false },
           }),
         ).unwrap();
+        //Added wait in order to allow enough time for the server to create the folder
+        // UNCOMMENT IF THIS PATCH IS FINALLY RELEASED
+        // await wait(500);
 
         rootFolderItem = createdFolder;
 
@@ -235,7 +241,6 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
       while (levels.length > 0) {
         if (uploadFolderAbortController.signal.aborted) return;
-
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
@@ -244,6 +249,9 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
             options: { relatedTaskId: taskId, showErrors: false },
           }),
         ).unwrap();
+        //Added wait in order to allow enough time for the server to create the folder
+        // UNCOMMENT IF THIS PATCH IS FINALLY RELEASED
+        // await wait(500);
 
         rootFolderItem = createdFolder;
 

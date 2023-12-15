@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "Save big on privacy.",
-    "title": "Internxt's Black Friday Deal",
+    "title": "Internxt’s Christmas Deal",
     "cta": "Get the deal!",
     "features": {
-      "discount": "Get 91% discount on all annual plans",
+      "discount": "Get 50% discount on all annual plans",
       "safeCloud": "Safe and secure cloud storage",
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends November 30th"
+      "offerEnds": "Offer ends January 7th"
     }
   },
   "valentinesBanner": {
@@ -749,7 +749,7 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "People without Internxt account will be sent a signup invitation email",
+        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
         "inviteNewUsersTitle": "Invite new Users?",
         "accept": "Accept",
         "cancel": "Cancel",

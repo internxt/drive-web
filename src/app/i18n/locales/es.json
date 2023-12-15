@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "¡Elige la privacidad!",
-    "title": "Oferta de internxt de Black Friday",
+    "title": "Oferta navideña de Internxt",
     "cta": "¡Obtén el descuento!",
     "features": {
-      "discount": "91% de descuento en planes anuales",
+      "discount": "50% de descuento en planes lifetime",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
       "endToEnd": "Cifrado de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 30 de Noviembre"
+      "offerEnds": "La oferta termina el 7 de Enero"
     }
   },
   "valentinesBanner": {
@@ -731,7 +731,7 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
-        "inviteNewUsersBody": "Las personas sin cuenta de Internxt recibirán un correo electrónico de invitación para registrarse",
+        "inviteNewUsersBody": "Las personas sin una cuenta de Internxt recibirán un correo electrónico de invitación para registrarse.",
         "inviteNewUsersTitle": "¿Invitar a nuevos usuarios?",
         "accept": "Aceptar",
         "cancel": "Cancelar",

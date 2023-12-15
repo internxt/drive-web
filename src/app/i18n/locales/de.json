@@ -632,7 +632,7 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
-        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Einladungs-E-Mail zur Anmeldung",
+        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
         "inviteNewUsersTitle": "Neue Benutzer einladen?",
         "accept": "Akzeptieren",
         "cancel": "Abbrechen",

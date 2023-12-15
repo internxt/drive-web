@@ -710,7 +710,7 @@
         "successSentInvitation": "Condivisione riuscita con {{email}}",
         "acceptedSuccessfully": "Invito a cartella condivisa accettato con successo",
         "declinedSuccessfully": "Invito a cartella condivisa rifiutato con successo",
-        "inviteNewUsersBody": "Le persone senza account Internxt riceveranno una email di invito alla registrazione",
+        "inviteNewUsersBody": "Le persone senza un account Internxt riceveranno un'email di invito alla registrazione.",
         "inviteNewUsersTitle": "Invita nuovi utenti?",
         "accept": "Accetta",
         "cancel": "Annulla",
