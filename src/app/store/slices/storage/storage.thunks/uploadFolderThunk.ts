@@ -93,7 +93,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           }),
         ).unwrap();
         //Added wait in order to allow enough time for the server to create the folder
-        await wait(500);
+        // UNCOMMENT IF THIS PATCH IS FINALLY RELEASED
+        // await wait(500);
 
         rootFolderItem = createdFolder;
 
@@ -249,7 +250,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           }),
         ).unwrap();
         //Added wait in order to allow enough time for the server to create the folder
-        await wait(500);
+        // UNCOMMENT IF THIS PATCH IS FINALLY RELEASED
+        // await wait(500);
 
         rootFolderItem = createdFolder;
 
