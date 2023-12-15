@@ -1186,15 +1186,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
           onShowStopSharingDialog={() => setShowStopSharingConfirmation(true)}
         />
       )}
-      {
-        <StopSharingItemDialog
-          onStopSharing={onStopSharingAndMoveToTrash}
-          isLoading={isStopSharingDialogLoading}
-          itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}
-          onClose={() => setShowStopSharingConfirmation(false)}
-          showStopSharingConfirmation={showStopSharingConfirmation}
-        />
-      }
+      <StopSharingItemDialog
+        onStopSharing={onStopSharingAndMoveToTrash}
+        isLoading={isStopSharingDialogLoading}
+        itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}
+        onClose={() => setShowStopSharingConfirmation(false)}
+        showStopSharingConfirmation={showStopSharingConfirmation}
+      />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
