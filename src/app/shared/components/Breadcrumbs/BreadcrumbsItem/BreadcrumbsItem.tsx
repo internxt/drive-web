@@ -196,7 +196,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const onEditButtonClicked = () => {
-    dispatch(uiActions.setIsEditFolderNameDialog(true));
+    dispatch(storageActions.setItemToRename(currentFolder[0]));
   };
 
   const onDeleteBackupButtonClicked = () => {
