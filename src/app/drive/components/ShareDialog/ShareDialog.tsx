@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -23,6 +23,11 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -95,6 +100,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
   const [currentUserFolderRole, setCurrentUserFolderRole] = useState<string | undefined>('');
+  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [openPasswordInput, setOpenPasswordInput] = useState(false);
+  const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
+  const [sharingMeta, setSharingMeta] = useState<SharingMeta>();
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -179,6 +188,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
     let sharingType = 'public';
+    let isAlreadyPasswordProtected = false;
 
     if (props.isDriveItem) {
       sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
@@ -189,6 +199,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       try {
         const sharingData = await shareService.getSharingType(itemId, itemType);
         sharingType = sharingData.type;
+        isAlreadyPasswordProtected = sharingData.encryptedPassword ? true : false;
+        setSharingMeta(sharingData);
       } catch (error) {
         errorService.reportError(error);
       }
@@ -198,7 +210,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       shareAccessMode = 'restricted';
     }
     setAccessMode(shareAccessMode);
-
+    setIsPasswordProtected(isAlreadyPasswordProtected);
     if (!itemToShare?.item) return;
 
     try {
@@ -307,6 +319,45 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
     closeSelectedUserPopover();
   };
+
+  const onPasswordCheckboxChange = useCallback(() => {
+    if (!isPasswordProtected) {
+      setOpenPasswordInput(true);
+    } else {
+      setOpenPasswordDisableDialog(true);
+    }
+  }, [isPasswordProtected]);
+
+  const onSavePublicSharePassword = useCallback(
+    async (passwordValue: string) => {
+      try {
+        if (sharingMeta) {
+          const code = shareService.decryptPublicSharingCodeWithOwner(sharingMeta.encryptedCode);
+
+          await shareService.saveSharingPassword(sharingMeta.id, code, passwordValue);
+          setIsPasswordProtected(true);
+        }
+      } catch (error) {
+        errorService.castError(error);
+      } finally {
+        setOpenPasswordInput(false);
+      }
+    },
+    [sharingMeta],
+  );
+
+  const onDisablePassword = useCallback(async () => {
+    try {
+      if (sharingMeta) {
+        await shareService.removeSharingPassword(sharingMeta.id);
+        setIsPasswordProtected(false);
+      }
+    } catch (error) {
+      errorService.castError(error);
+    } finally {
+      setOpenPasswordDisableDialog(false);
+    }
+  }, [sharingMeta]);
 
   const changeAccess = async (mode: AccessMode) => {
     closeSelectedUserPopover();
@@ -494,6 +545,21 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
           <div className="h-px w-full bg-gray-5" />
 
+          {accessMode === 'public' && (
+            <div className="flex items-end justify-between align-middle">
+              <div className="flex flex-col space-y-2.5">
+                <div className="flex cursor-pointer items-center" onClick={onPasswordCheckboxChange}>
+                  <BaseCheckbox checked={isPasswordProtected} />
+                  <p className="ml-2 select-none text-base font-medium">{translate('shareItemDialog.protect')}</p>
+                </div>
+              </div>
+              {isPasswordProtected && (
+                <Button variant="secondary" onClick={() => setOpenPasswordInput(true)}>
+                  <span>Change Password</span>
+                </Button>
+              )}
+            </div>
+          )}
           <div className="flex items-end justify-between">
             <div className="flex flex-col space-y-2.5">
               <p className="font-medium">{translate('modals.shareModal.general.generalAccess')}</p>
@@ -602,6 +668,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               <span>{translate('modals.shareModal.general.copyLink')}</span>
             </Button>
           </div>
+
+          <SharePasswordInputDialog
+            onClose={() => setOpenPasswordInput(false)}
+            isOpen={openPasswordInput}
+            onSavePassword={onSavePublicSharePassword}
+          ></SharePasswordInputDialog>
+
+          <SharePasswordDisableDialog
+            isOpen={openPasswordDisableDialog}
+            onClose={() => setOpenPasswordDisableDialog(false)}
+            onConfirmHandler={onDisablePassword}
+          />
 
           {/* Stop sharing confirmation dialog */}
           <Modal

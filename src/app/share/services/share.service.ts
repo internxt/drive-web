@@ -390,6 +390,12 @@ export const createPublicShareFromOwnerUser = async (
   });
 };
 
+export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
+  const user = localStorageService.getUser() as UserSettings;
+  const { mnemonic } = user;
+  return aes.decrypt(encryptedCode, mnemonic);
+};
+
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
@@ -821,6 +827,20 @@ export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Pro
   });
 }
 
+export function saveSharingPassword(sharingId: string, code: string, password: string): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.saveSharingPassword(sharingId, code, password).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeSharingPassword(sharingId: string): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeSharingPassword(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -856,6 +876,9 @@ const shareService = {
   getPublicSharingMeta,
   getPublicSharedFolderContent,
   getPublicShareLink,
+  saveSharingPassword,
+  removeSharingPassword,
+  decryptPublicSharingCodeWithOwner,
 };
 
 export default shareService;
