@@ -1,9 +1,9 @@
-import dateService from 'app/core/services/date.service';
-import { UploadSimple, Users } from '@phosphor-icons/react';
-import List from 'app/shared/components/List';
+import dateService from '../../../core/services/date.service';
+import { UploadSimple } from '@phosphor-icons/react';
+import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import iconService from 'app/drive/services/icon.service';
+import iconService from '../../../drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -28,20 +28,21 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
-import Button from 'app/shared/components/Button/Button';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
-import { RootState } from 'app/store';
+import Button from '../../../shared/components/Button/Button';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
+import { RootState } from '../../../store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
@@ -477,7 +478,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       setHasMoreItems(true);
       setCurrentFolderId(sharedFolderId);
       setCurrentParentFolderId(shareItem.id);
-      setCurrentShareOwnerAvatar(shareItem.user?.avatar ?? '');
+      setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? '');
       setSelectedItems([]);
     } else {
       openPreview(shareItem);
@@ -546,22 +547,26 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
     },
     [dispatch, sharedThunks],
   );
 
   const handleFolderAccess = () => {
+    let statusError: null | number = null;
+
     if (folderUUID)
       shareService
-        .getSharedFolderContent(folderUUID as string, 'folders', '', 0, 15)
+        .getSharedFolderContent(folderUUID, 'folders', '', 0, 15)
         .then((item) => {
           const shareItem = { plainName: (item as any).name, uuid: folderUUID, isFolder: true };
           onItemDoubleClicked(shareItem as unknown as AdvancedSharedItem);
         })
         .catch((error) => {
           if (error.status === 403) {
-            notificationsService.show({ text: translate('shared.errors.notSharedFolder'), type: ToastType.Error });
+            statusError = 403;
+            navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
+            return;
           } else if (error.status === 404) {
             notificationsService.show({ text: translate('shared.errors.folderNotExists'), type: ToastType.Error });
           } else {
@@ -571,14 +576,21 @@ function SharedView(props: SharedViewProps): JSX.Element {
           fetchRootFolders();
         })
         .finally(() => {
-          const currentURL = history.location.pathname;
-          const newURL = currentURL.replace(/folderuuid=valor&?/, '');
-          history.replace(newURL);
+          if (statusError !== 403) {
+            const currentURL = history.location.pathname;
+            const newURL = currentURL.replace(/folderuuid=valor&?/, '');
+            history.replace(newURL);
+          }
         });
   };
 
   const openShareAccessSettings = (shareItem: AdvancedSharedItem) => {
-    dispatch(storageActions.setItemToShare({ item: shareItem as unknown as DriveItemData }));
+    const shareItemWithEmail = shareItem.user?.email
+      ? shareItem
+      : ({ ...shareItem, user: { email: shareItem.credentials.networkUser } } as AdvancedSharedItem & {
+          user: { email: string };
+        });
+    dispatch(storageActions.setItemToShare({ item: shareItemWithEmail }));
     dispatch(uiActions.setIsShareDialogOpen(true));
   };
 
@@ -750,10 +762,11 @@ function SharedView(props: SharedViewProps): JSX.Element {
       if (isFileViewerOpen) {
         dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
       }
-      const editNameItemUuid = newItem.uuid || '';
+
+      const editNameItemUuid = newItem?.uuid ?? '';
       setShareItems(
         shareItems.map((shareItem) => {
-          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid || '';
+          const shareItemUuid = (shareItem as unknown as DriveItemData).uuid ?? '';
           if (
             shareItemUuid.length > 0 &&
             editNameItemUuid.length > 0 &&
@@ -850,20 +863,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
     <div className="h-4 w-24 rounded bg-gray-5" />,
     <div className="h-4 w-20 rounded bg-gray-5" />,
   ];
-
-  const emptyState = (
-    <div className="h-full w-full p-8">
-      <div className="flex h-full flex-col items-center justify-center pb-20">
-        <div className="pointer-events-none mx-auto mb-10 w-max">
-          <Users size={80} weight="thin" />
-        </div>
-        <div className="pointer-events-none text-center">
-          <p className="mb-1 block text-2xl font-medium text-gray-100">{translate('shared-links.empty-state.title')}</p>
-          <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
-        </div>
-      </div>
-    </div>
-  );
 
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     setHasMoreFolders(true);
@@ -1098,7 +1097,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
             ),
           ]}
           skinSkeleton={skinSkeleton}
-          emptyState={emptyState}
+          emptyState={
+            <EmptySharedView
+              isCurrentUserViewer={isCurrentUserViewer}
+              onUploadFileButtonClicked={onUploadFileButtonClicked}
+              sharedNamePath={sharedNamePath}
+            />
+          }
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
           menu={

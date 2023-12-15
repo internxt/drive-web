@@ -90,7 +90,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
-  const [showLoader, setShowLoader] = useState(true);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('restricted');
@@ -105,8 +104,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const itemOwnerEmail = (itemToShare?.item as any)?.user?.email;
-  const isUserOwner = !!itemOwnerEmail && itemOwnerEmail === props?.user?.email;
+
+  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem).user?.email;
+  const isUserOwner = (!!itemOwnerEmail && itemOwnerEmail === props?.user?.email) || !!props?.isDriveItem;
 
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
@@ -120,18 +120,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
-    setShowLoader(true);
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        setShowLoader(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
@@ -191,16 +180,20 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    let sharingType: string;
+    let sharingType = 'public';
 
     if (props.isDriveItem) {
       sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
         ?.type;
     } else {
       const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-      const itemId = itemToShare?.item.uuid || '';
-      const sharingData = await shareService.getSharingType(itemId, itemType);
-      sharingType = sharingData.type;
+      const itemId = itemToShare?.item.uuid ?? '';
+      try {
+        const sharingData = await shareService.getSharingType(itemId, itemType);
+        sharingType = sharingData.type;
+      } catch (error) {
+        errorService.reportError(error);
+      }
     }
 
     if (sharingType === 'private') {
@@ -208,7 +201,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
     setAccessMode(shareAccessMode);
 
-    // TODO -> Load invited users
     if (!itemToShare?.item) return;
 
     try {
@@ -325,7 +317,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       try {
         const sharingType = mode === 'restricted' ? 'private' : 'public';
         const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-        const itemId = itemToShare?.item.uuid || '';
+        const itemId = itemToShare?.item.uuid ?? '';
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
         if (sharingType === 'public') {
@@ -335,7 +327,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       } catch (error) {
         errorService.reportError(error);
         notificationsService.show({
-          text: translate('modals.shareModal.errors.update-sharing-acces'),
+          text: translate('modals.shareModal.errors.update-sharing-access'),
           type: ToastType.Error,
         });
       }
@@ -475,7 +467,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {invitedUsers.length === 0 && showLoader ? (
+              {invitedUsers.length === 0 && isLoading ? (
                 <>
                   {Array.from({ length: 4 }, (_, i) => (
                     <InvitedUsersSkeletonLoader key={`loader-${i}`} />
@@ -512,7 +504,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 {({ open }) => (
                   <>
                     <Popover.Button as="div" className="z-1 outline-none">
-                      <Button variant="secondary" disabled={isLoading || (!props.isDriveItem && !isUserOwner)}>
+                      <Button variant="secondary" disabled={isLoading || !isUserOwner}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
                           {accessMode === 'public'

@@ -34,6 +34,7 @@ import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCan
 import SharedView from '../../share/views/SharedLinksView/SharedView';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
+import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
 
 const views: Array<{
   id: string;
@@ -45,6 +46,7 @@ const views: Array<{
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
+  { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
@@ -71,7 +73,7 @@ const views: Array<{
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
-  // { id: AppView.RequestAccess, component: RequestAccess },
+  { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
 
   { id: AppView.NotFound, component: NotFoundView },

@@ -44,6 +44,10 @@
       "description": "请通过 hello@internxt.com 联系我们的支持团队。"
     }
   },
+  "linkExpired": {
+    "title": "链接已过期或已删除",
+    "description": "您访问的链接或邀请已过期或已被删除"
+  },
   "lang": {
     "title": "语言",
     "en": "English (英语)",
@@ -138,6 +142,7 @@
     "new": "新建",
     "of": "/",
     "terms": "条款和条件",
+    "contactSupport": "联系支持",
     "help": "需要帮助吗？",
     "searchBar": {
       "oldSearchBarPlaceholder": "搜索该文件夹",
@@ -148,7 +153,7 @@
         "image": "图片",
         "video": "视频",
         "audio": "语音",
-        "clear": "Clear"
+        "clear": "清除"
       },
       "emptyState": {
         "title": "查找文件和文件夹",
@@ -182,7 +187,7 @@
       "business": "商业"
     },
     "time": {
-      "month": "元/月"
+      "month": "/月"
     },
     "billing": {
       "billedEachPeriod": "{{price}} 已计费的 {{period}}",
@@ -285,7 +290,7 @@
               "planName": "订阅",
               "button": "更改",
               "yearly": "年度",
-              "monthly": "元/月"
+              "monthly": "/月"
             }
           },
           "accountDetails": {
@@ -301,7 +306,7 @@
             },
             "verify": {
               "verify": "验证您的电子邮件",
-              "verified": "已核实电邮",
+              "verified": "已验证电子邮件地址",
               "description": "检查你的收件箱"
             },
             "editProfile": {
@@ -314,9 +319,9 @@
             "changeEmail": {
               "title": "更改电子邮件",
               "email": "电子邮件",
-              "newEmail": "新电邮",
+              "newEmail": "新电子邮件地址",
               "password": "密码",
-              "errorSameEmail": "新的电子邮件应该不同于当前的电子邮件",
+              "errorSameEmail": "新的电子邮件应不同于当前的电子邮件",
               "errorPassword": "密码错误,再试一次",
               "sendVerification": "发送验证",
               "sendingVerification": "发送验证",
@@ -345,7 +350,7 @@
               "titleCurrent": "当前的",
               "titleNew": "新建",
               "year": "年度",
-              "month": "元/月",
+              "month": "/月",
               "free": "免费的",
               "reachedFreeLimit": "你超过了 {{freePlanName}}",
               "reachedFreeLimitDescription": "由于您目前正在使用 {{currentUsage}}，您的 Internxt Drive 将停止同步您的文件，您将无法添加新文件"
@@ -423,7 +428,7 @@
                 "point3": "高级客户支持"
               },
               "section2": {
-                "title": "默认情况下的安全性",
+                "title": "默认安全",
                 "point1": "军事级别的加密以确保你的隐私",
                 "point2": "加密的云存储和共享",
                 "point3": "零知识隐私"
@@ -440,11 +445,11 @@
             "title": "更改计划",
             "subtitle1": "您即将更改您的 Internxt 计划 ",
             "subtitle2": " 至 ",
-            "subtitle3": ". 请确认您的选择以继续。",
+            "subtitle3": "请确认您的选择以继续。",
             "plan": {
               "current": "当前的",
               "new": "新建",
-              "interval": "元/月"
+              "interval": "/月"
             },
             "alert": {
               "title": "你完了 ",
@@ -465,7 +470,7 @@
           "description": "修改您的密码",
           "advice1": {
             "title": "修改密码",
-            "description": "更改密码将使您退出所有设备。 再次登录需要输入您更改后的的密码。"
+            "description": "更改密码将使您退出所有设备。再次登录需要输入您更改后的的密码。"
           },
           "advice2": {
             "title": "为了确保密码安全，您应该牢记什么？",
@@ -509,7 +514,7 @@
               "stepsLabel": "第 {{current}}/{{total}}步",
               "button": "激活 2FA",
               "2FALabelCode": "双因素身份验证代码",
-              "or": "OR",
+              "or": "或",
               "steps": {
                 "download": {
                   "title": "下载Authy",
@@ -525,7 +530,7 @@
                 },
                 "enable": {
                   "title": "确认2FA的激活情况",
-                  "description": "两步认证代码"
+                  "description": "双因素认证代码"
                 },
                 "disable": {
                   "title": "禁用双因素身份验证",
@@ -546,7 +551,7 @@
             "error": "我们无法生成您的备份密钥"
           },
           "faq": {
-            "title": "你丢失了什么东西吗？",
+            "title": "你丢失了什么？",
             "faq1": {
               "title": "为什么如果我失去了密码，就会失去我的文件？",
               "description": "你的密码是访问你的账户的唯一途径，Internxt团队不能访问你的账户或更改你的密码。这是为了防止任何人进入你的账户或窃取你的数据。 <br/><br/>其中，你的密码被用于加密过程，所以甚至连Internxt都没有机会接触到它。每次你登录时，你需要你的密码来解密你的文件，所以我们确保只有你有这个钥匙。"
@@ -641,7 +646,7 @@
       "untitled": "无标题文件夹"
     },
     "itemDetailsModal": {
-      "title": "详细信息",
+      "title": "详情",
       "fileCta": "打开预览",
       "folderCta": "打开文件夹",
       "itemDetails": {
@@ -731,6 +736,10 @@
         "successSentInvitation": "與 {{email}} 成功分享",
         "acceptedSuccessfully": "成功接受共享文件夹邀请",
         "declinedSuccessfully": "成功拒绝共享文件夹邀请",
+        "inviteNewUsersBody": "没有Internxt帐户的人将收到注册邀请电子邮件。",
+        "inviteNewUsersTitle": "邀请新用户？",
+        "accept": "接受",
+        "cancel": "取消",
         "error": {
           "errorInviting": "傳送邀請至 {{email}} 時出錯",
           "acceptedError": "接受共享文件夹邀请时出错",
@@ -1188,8 +1197,8 @@
     "restore": "恢复",
     "copyLink": "复制链接",
     "report": "举报滥用",
-    "yes": "有",
-    "no": "是",
+    "yes": "是",
+    "no": "否",
     "more": "更多信息"
   },
   "drive": {
