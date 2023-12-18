@@ -1,4 +1,4 @@
-import { MouseEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
 import { connect } from 'react-redux';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
@@ -115,7 +115,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [isPasswordProtected, setIsPasswordProtected] = useState(false);
   const [openPasswordInput, setOpenPasswordInput] = useState(false);
   const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
-  const [sharingMeta, setSharingMeta] = useState<SharingMeta>();
+  const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -139,6 +139,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
+    setIsPasswordProtected(false);
+    setSharingMeta(null);
   };
 
   useEffect(() => {
@@ -196,6 +198,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
+    if (!itemToShare?.item) return;
+
+    const isItemNotSharedYet = !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
+    if (isItemNotSharedYet) return;
+
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
@@ -207,7 +214,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     try {
       const sharingData = await shareService.getSharingType(itemId, itemType);
       sharingType = sharingData.type;
-      isAlreadyPasswordProtected = sharingData.encryptedPassword ? true : false;
+      isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
       setSharingMeta(sharingData);
     } catch (error) {
       errorService.reportError(error);
@@ -218,7 +225,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
     setAccessMode(shareAccessMode);
     setIsPasswordProtected(isAlreadyPasswordProtected);
-    if (!itemToShare?.item) return;
 
     try {
       await getAndUpdateInvitedUsers();
@@ -562,8 +568,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           {accessMode === 'public' && !isLoading && isUserOwner && (
             <div className="flex items-end justify-between align-middle">
               <div className="flex flex-col space-y-2.5">
-                <div className="flex cursor-pointer items-center" onClick={onPasswordCheckboxChange}>
-                  <BaseCheckbox checked={isPasswordProtected} />
+                <div className="flex items-center">
+                  <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
                   <p className="ml-2 select-none text-base font-medium">
                     {translate('modals.shareModal.protectSharingModal.buttons.changePassword')}
                   </p>
