@@ -828,12 +828,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const onStopSharingAndMoveToTrash = async () => {
     const items = itemToView ? [itemToView] : selectedItems;
 
-    console.log('items', items);
-
-    if (isFileViewerOpen) {
-      onCloseFileViewer();
-    }
-
     setIsStopSharingDialogLoading(true);
 
     const promises = items.map(async (item) => {
@@ -863,6 +857,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
     const resolvedItems = (await Promise.all(promises)).filter(Boolean);
 
     await moveSelectedItemsToTrash(resolvedItems);
+
+    if (isFileViewerOpen) {
+      onCloseFileViewer();
+    }
 
     setShowStopSharingConfirmation(false);
     setIsStopSharingDialogLoading(false);

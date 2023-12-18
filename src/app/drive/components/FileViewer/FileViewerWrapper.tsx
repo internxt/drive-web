@@ -148,11 +148,7 @@ const FileViewerWrapper = ({
       renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
       moveItem: isOwner ? onMoveItemButtonClicked : undefined,
       downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: () => {
-        if (isOwner) {
-          onShowStopSharingDialog?.();
-        }
-      },
+      moveToTrash: isOwner ? onShowStopSharingDialog : undefined,
     });
   };
 
