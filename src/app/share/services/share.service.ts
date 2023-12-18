@@ -371,6 +371,7 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
 export const createPublicShareFromOwnerUser = async (
   uuid: string,
   itemType: 'folder' | 'file',
+  plainPassword?: string,
   encryptionAlgorithm?: string,
 ): Promise<SharingMeta> => {
   const user = localStorageService.getUser() as UserSettings;
@@ -379,6 +380,7 @@ export const createPublicShareFromOwnerUser = async (
 
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
   const encryptedCode = aes.encrypt(code, mnemonic);
+  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, code) : null;
 
   return createPublicSharingItem({
     encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
@@ -387,6 +389,7 @@ export const createPublicShareFromOwnerUser = async (
     itemId: uuid,
     encryptedCode,
     persistPreviousSharing: true,
+    ...(encryptedPassword && { encryptedPassword }),
   });
 };
 
@@ -400,7 +403,7 @@ export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
   encriptedMnemonic?: string,
-): Promise<void> => {
+): Promise<SharingMeta | void> => {
   const user = localStorageService.getUser() as UserSettings;
   let { mnemonic } = user;
   const code = crypto.randomBytes(32).toString('hex');
@@ -424,6 +427,7 @@ export const getPublicShareLink = async (
     if (!isCopied) throw Error('Error copying shared public link');
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    return publicSharingItemData;
   } catch (error) {
     notificationsService.show({
       text: t('modals.shareModal.errors.copy-to-clipboard'),
@@ -833,9 +837,16 @@ export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Pro
   });
 }
 
-export function saveSharingPassword(sharingId: string, code: string, password: string): Promise<SharingMeta> {
+export function saveSharingPassword(
+  sharingId: string,
+  plainPassword: string,
+  encryptedCode: string,
+): Promise<SharingMeta> {
+  const code = shareService.decryptPublicSharingCodeWithOwner(encryptedCode);
+  const encryptedPassword = aes.encrypt(plainPassword, code);
+
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.saveSharingPassword(sharingId, code, password).catch((error) => {
+  return shareClient.saveSharingPassword(sharingId, encryptedPassword).catch((error) => {
     throw errorService.castError(error);
   });
 }

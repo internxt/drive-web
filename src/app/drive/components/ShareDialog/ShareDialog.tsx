@@ -200,9 +200,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const loadShareInfo = async () => {
     if (!itemToShare?.item) return;
 
-    const isItemNotSharedYet = !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length;
-    if (isItemNotSharedYet) return;
-
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
@@ -211,13 +208,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
     const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
     const itemId = itemToShare?.item.uuid ?? '';
-    try {
-      const sharingData = await shareService.getSharingType(itemId, itemType);
-      sharingType = sharingData.type;
-      isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
-      setSharingMeta(sharingData);
-    } catch (error) {
-      errorService.reportError(error);
+
+    const isItemNotSharedYet =
+      !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+
+    if (!isItemNotSharedYet) {
+      try {
+        const sharingData = await shareService.getSharingType(itemId, itemType);
+        sharingType = sharingData.type;
+        isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
+        setSharingMeta(sharingData);
+      } catch (error) {
+        errorService.reportError(error);
+      }
     }
 
     if (sharingType === 'private') {
@@ -300,11 +303,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       trackPublicShared(trackingPublicSharedProperties);
       const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
-      await shareService.getPublicShareLink(
+      const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
         encryptionKey,
       );
+      if (sharingInfo) {
+        setSharingMeta(sharingInfo);
+      }
       props.onShareItem?.();
       closeSelectedUserPopover();
     }
@@ -342,19 +348,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   }, [isPasswordProtected]);
 
   const onSavePublicSharePassword = useCallback(
-    async (passwordValue: string) => {
+    async (plainPassword: string) => {
       try {
         let sharingInfo = sharingMeta;
 
-        if (!sharingInfo) {
+        if (!sharingInfo?.encryptedCode) {
           const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
           const itemId = itemToShare?.item.uuid ?? '';
-          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
           setSharingMeta(sharingInfo);
+        } else {
+          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
         }
 
-        const code = shareService.decryptPublicSharingCodeWithOwner(sharingInfo.encryptedCode);
-        await shareService.saveSharingPassword(sharingInfo.id, code, passwordValue);
         setIsPasswordProtected(true);
       } catch (error) {
         errorService.castError(error);
@@ -389,9 +395,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
         if (sharingType === 'public') {
-          await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          const shareInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          setSharingMeta(shareInfo);
+          setIsPasswordProtected(false);
         }
-        await loadShareInfo();
         setAccessMode(mode);
       } catch (error) {
         errorService.reportError(error);
