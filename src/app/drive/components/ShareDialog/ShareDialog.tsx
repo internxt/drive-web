@@ -8,7 +8,18 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
+import {
+  ArrowLeft,
+  CaretDown,
+  Check,
+  CheckCircle,
+  Globe,
+  Link,
+  Question,
+  UserPlus,
+  Users,
+  X,
+} from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -23,11 +34,12 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
-import PasswordInput from 'app/share/components/ShareItemDialog/components/PasswordInput';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
+import { Tooltip } from 'react-tooltip';
+import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -145,7 +157,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     if (roles.length === 0) dispatch(sharedThunks.getSharedFolderRoles());
 
     if (roles.length > 0) loadShareInfo();
-  }, [roles]);
+  }, [roles, isOpen]);
 
   useEffect(() => {
     const removeDeniedRequests = () => {
@@ -190,20 +202,15 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     let sharingType = 'public';
     let isAlreadyPasswordProtected = false;
 
-    if (props.isDriveItem) {
-      sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
-        ?.type;
-    } else {
-      const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-      const itemId = itemToShare?.item.uuid ?? '';
-      try {
-        const sharingData = await shareService.getSharingType(itemId, itemType);
-        sharingType = sharingData.type;
-        isAlreadyPasswordProtected = sharingData.encryptedPassword ? true : false;
-        setSharingMeta(sharingData);
-      } catch (error) {
-        errorService.reportError(error);
-      }
+    const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+    const itemId = itemToShare?.item.uuid ?? '';
+    try {
+      const sharingData = await shareService.getSharingType(itemId, itemType);
+      sharingType = sharingData.type;
+      isAlreadyPasswordProtected = sharingData.encryptedPassword ? true : false;
+      setSharingMeta(sharingData);
+    } catch (error) {
+      errorService.reportError(error);
     }
 
     if (sharingType === 'private') {
@@ -331,19 +338,25 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const onSavePublicSharePassword = useCallback(
     async (passwordValue: string) => {
       try {
-        if (sharingMeta) {
-          const code = shareService.decryptPublicSharingCodeWithOwner(sharingMeta.encryptedCode);
+        let sharingInfo = sharingMeta;
 
-          await shareService.saveSharingPassword(sharingMeta.id, code, passwordValue);
-          setIsPasswordProtected(true);
+        if (!sharingInfo) {
+          const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+          const itemId = itemToShare?.item.uuid ?? '';
+          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          setSharingMeta(sharingInfo);
         }
+
+        const code = shareService.decryptPublicSharingCodeWithOwner(sharingInfo.encryptedCode);
+        await shareService.saveSharingPassword(sharingInfo.id, code, passwordValue);
+        setIsPasswordProtected(true);
       } catch (error) {
         errorService.castError(error);
       } finally {
         setOpenPasswordInput(false);
       }
     },
-    [sharingMeta],
+    [sharingMeta, itemToShare],
   );
 
   const onDisablePassword = useCallback(async () => {
@@ -372,6 +385,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         if (sharingType === 'public') {
           await shareService.createPublicShareFromOwnerUser(itemId, itemType);
         }
+        await loadShareInfo();
         setAccessMode(mode);
       } catch (error) {
         errorService.reportError(error);
@@ -545,17 +559,30 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
           <div className="h-px w-full bg-gray-5" />
 
-          {accessMode === 'public' && (
+          {accessMode === 'public' && !isLoading && isUserOwner && (
             <div className="flex items-end justify-between align-middle">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex cursor-pointer items-center" onClick={onPasswordCheckboxChange}>
                   <BaseCheckbox checked={isPasswordProtected} />
-                  <p className="ml-2 select-none text-base font-medium">{translate('shareItemDialog.protect')}</p>
+                  <p className="ml-2 select-none text-base font-medium">
+                    {translate('modals.shareModal.protectSharingModal.buttons.changePassword')}
+                  </p>
+                  <Question
+                    size={14}
+                    className="ml-2 flex items-center justify-center font-medium"
+                    data-tooltip-id="uploadFolder-tooltip"
+                    data-tooltip-place="top"
+                  />
+                  <Tooltip id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} className="z-40 rounded-md">
+                    <p className="break-word w-60 text-center text-white">
+                      {translate('modals.shareModal.protectSharingModal.protectTooltipText')}
+                    </p>
+                  </Tooltip>
                 </div>
               </div>
               {isPasswordProtected && (
                 <Button variant="secondary" onClick={() => setOpenPasswordInput(true)}>
-                  <span>Change Password</span>
+                  <span>{translate('modals.shareModal.protectSharingModal.buttons.changePassword')}</span>
                 </Button>
               )}
             </div>
@@ -673,8 +700,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             onClose={() => setOpenPasswordInput(false)}
             isOpen={openPasswordInput}
             onSavePassword={onSavePublicSharePassword}
-          ></SharePasswordInputDialog>
-
+            isAlreadyProtected={isPasswordProtected}
+          />
           <SharePasswordDisableDialog
             isOpen={openPasswordDisableDialog}
             onClose={() => setOpenPasswordDisableDialog(false)}

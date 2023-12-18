@@ -746,6 +746,20 @@
         "change": "改变",
         "requestSent": "请求已发送",
         "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "仅对没有查看或编辑访问权限的用户需要密码。",
+        "protect": "使用密码保护",
+        "disablePasswordTitle": "禁用密码保护？",
+        "disablePasswordBody": "禁用后，拥有链接的人将能够访问内容。",
+        "createPasswordTitle": "创建密码",
+        "editPasswordTitle": "编辑密码",
+        "buttons": {
+          "cancel": "取消",
+          "save": "保存",
+          "disable": "禁用",
+          "changePassword": "更改密码"
+        }
       }
     },
     "sharedInvitationsModal": {

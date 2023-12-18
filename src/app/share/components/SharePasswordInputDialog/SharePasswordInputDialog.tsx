@@ -3,14 +3,22 @@ import Modal from 'app/shared/components/Modal';
 import { useState } from 'react';
 import { Spinner } from '@phosphor-icons/react';
 import Input from 'app/shared/components/Input';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 type SharePasswordInputDialogProps = {
   isOpen: boolean;
   onClose: () => void;
   onSavePassword: (password: string) => Promise<void> | void;
+  isAlreadyProtected?: boolean;
 };
 
-export const SharePasswordInputDialog = ({ isOpen, onClose, onSavePassword }: SharePasswordInputDialogProps) => {
+export const SharePasswordInputDialog = ({
+  isOpen,
+  onClose,
+  onSavePassword,
+  isAlreadyProtected = true,
+}: SharePasswordInputDialogProps) => {
+  const { translate } = useTranslationContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [password, setPassword] = useState('');
 
@@ -22,7 +30,11 @@ export const SharePasswordInputDialog = ({ isOpen, onClose, onSavePassword }: Sh
 
   return (
     <Modal maxWidth="max-w-sm" className="space-y-5 p-5" isOpen={isOpen} onClose={onClose}>
-      <p className="text-2xl font-medium">Edit password</p>
+      <p className="text-2xl font-medium">
+        {!isAlreadyProtected
+          ? translate('modals.shareModal.protectSharingModal.createPasswordTitle')
+          : translate('modals.shareModal.protectSharingModal.editPasswordTitle')}
+      </p>
       <Input
         onChange={(value) => {
           if (value.length <= 50) {
@@ -31,14 +43,15 @@ export const SharePasswordInputDialog = ({ isOpen, onClose, onSavePassword }: Sh
         }}
         value={password}
         variant="password"
+        autoComplete="off"
       />
       <div className="flex items-center justify-end space-x-2">
         <Button variant="secondary" onClick={onClose}>
-          Cancel
+          {translate('modals.shareModal.protectSharingModal.buttons.cancel')}
         </Button>
-        <Button variant="primary" onClick={handleConfirm} loading={isLoading}>
+        <Button variant="primary" onClick={handleConfirm} loading={isLoading} disabled={!password}>
           {isLoading && <Spinner className="h-4 w-4" />}
-          Save
+          {translate('modals.shareModal.protectSharingModal.buttons.save')}
         </Button>
       </div>
     </Modal>

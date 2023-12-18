@@ -642,6 +642,20 @@
         "change": "Ändern",
         "requestSent": "Anfrage gesendet",
         "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Ein Passwort ist nur für Benutzer erforderlich, die keine Viewer- oder Bearbeitungsberechtigungen für das freigegebene Element haben.",
+        "protect": "Mit Passwort schützen",
+        "disablePasswordTitle": "Passwortschutz deaktivieren?",
+        "disablePasswordBody": "Wenn deaktiviert, können Personen mit dem Link auf den Inhalt zugreifen.",
+        "createPasswordTitle": "Passwort erstellen",
+        "editPasswordTitle": "Passwort bearbeiten",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "save": "Speichern",
+          "disable": "Deaktivieren",
+          "changePassword": "Passwort ändern"
+        }
       }
     },
     "deletePhotosModal": {

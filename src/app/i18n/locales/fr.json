@@ -136,7 +136,6 @@
     "terms": "Termes et conditions",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
-
     "stage": {
       "development": "Développement",
       "production": "Production"
@@ -359,7 +358,6 @@
             "business": "Changement de plan pour les entreprises"
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
-
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
@@ -676,6 +674,20 @@
         "change": "Changer",
         "requestSent": "Demande envoyée",
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Le mot de passe est uniquement requis pour les utilisateurs sans accès en lecture ou en modification à l'élément partagé.",
+        "protect": "Protéger par mot de passe",
+        "disablePasswordTitle": "Désactiver la protection par mot de passe ?",
+        "disablePasswordBody": "Lorsqu'elle est désactivée, les personnes disposant du lien pourront accéder au contenu.",
+        "createPasswordTitle": "Créer un mot de passe",
+        "editPasswordTitle": "Modifier le mot de passe",
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "disable": "Désactiver",
+          "changePassword": "Changer le mot de passe"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -882,7 +894,6 @@
       "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
-
   "trash": {
     "trash": "Corbeille",
     "clearTrash": "La corbeille est vide",

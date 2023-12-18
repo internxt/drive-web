@@ -759,6 +759,20 @@
         "change": "Change",
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
+        "protect": "Protect with password",
+        "disablePasswordTitle": "Disable password protection?",
+        "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
+        "createPasswordTitle": "Create passsword",
+        "editPasswordTitle": "Edit password",
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "disable": "Disable",
+          "changePassword": "Change password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1127,7 +1141,6 @@
   "shareItemDialog": {
     "title": "Link settings",
     "access": "Access",
-    "protect": "Protect with password",
     "addSecurePassword": "Secure this link by setting up a password",
     "password": "Password",
     "views": "Views",

@@ -1,3 +1,4 @@
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import { useState } from 'react';
@@ -13,6 +14,7 @@ export const SharePasswordDisableDialog = ({
   onClose,
   onConfirmHandler,
 }: SharePasswordDisableWarningDialogProps) => {
+  const { translate } = useTranslationContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleConfirm = async () => {
@@ -24,15 +26,17 @@ export const SharePasswordDisableDialog = ({
   return (
     <Modal maxWidth="max-w-md" isOpen={isOpen} onClose={onClose} preventClosing={isLoading}>
       <div className="flex flex-col space-y-5">
-        <p className="text-2xl font-medium text-gray-100">Disable password protection?</p>
-        <p className="text-lg text-gray-80">When disabled, people with the link will be able to access the content.</p>
+        <p className="text-2xl font-medium text-gray-100">
+          {translate('modals.shareModal.protectSharingModal.disablePasswordTitle')}
+        </p>
+        <p className="text-lg text-gray-80">{translate('modals.shareModal.protectSharingModal.disablePasswordBody')}</p>
 
         <div className="flex flex-row items-center justify-end space-x-2">
           <Button variant="secondary" onClick={onClose}>
-            Cancel
+            {translate('modals.shareModal.protectSharingModal.buttons.cancel')}
           </Button>
           <Button variant="primary" loading={isLoading} onClick={handleConfirm}>
-            Disable
+            {translate('modals.shareModal.protectSharingModal.buttons.disable')}
           </Button>
         </div>
       </div>
