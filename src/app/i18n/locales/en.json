@@ -1150,6 +1150,7 @@
   "shareItemDialog": {
     "title": "Link settings",
     "access": "Access",
+    "protect": "Protect with password",
     "addSecurePassword": "Secure this link by setting up a password",
     "password": "Password",
     "views": "Views",
