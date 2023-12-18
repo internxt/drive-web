@@ -86,6 +86,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const urlParams = new URLSearchParams(window.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [hasMoreRootFolders, setHasMoreRootFolders] = useState<boolean>(true);
@@ -111,6 +114,14 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
+  // Set the item to rename from preview view
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+      setIsEditNameDialogOpen(true);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -684,13 +695,17 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
-  const renameItem = (shareItem: AdvancedSharedItem) => {
+  const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
     setEditNameItem(shareItem as unknown as DriveItemData);
     setIsEditNameDialogOpen(true);
   };
 
   const onCloseEditNameItems = (newItem?: DriveItemData) => {
     if (newItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      }
+
       const editNameItemUuid = newItem?.uuid ?? '';
       setShareItems(
         shareItems.map((shareItem) => {
@@ -707,6 +722,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         }),
       );
     }
+    dispatch(storageActions.setItemToRename(null));
     setIsEditNameDialogOpen(false);
     setEditNameItem(undefined);
   };
@@ -1010,7 +1026,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
@@ -1018,7 +1036,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   openPreview: openPreview,
                   showDetails,
                   copyLink,

@@ -4,6 +4,7 @@ import {
   CheckChangeEmailExpirationResponse,
   FriendInvite,
   InitializeUserResponse,
+  PreCreateUserResponse,
   UpdateProfilePayload,
   UserPublicKeyResponse,
   VerifyEmailChangeResponse,
@@ -22,6 +23,11 @@ export const sendDeactivationEmail = (email: string): Promise<void> => {
 const inviteAFriend = (email: string): Promise<void> => {
   const usersClient = SdkFactory.getInstance().createUsersClient();
   return usersClient.sendInvitation(email);
+};
+
+const preCreateUser = (email: string): Promise<PreCreateUserResponse> => {
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
+  return usersClient.preRegister(email);
 };
 
 /**
@@ -91,6 +97,7 @@ const userService = {
   changeEmail,
   verifyEmailChange,
   checkChangeEmailLinkExpiration,
+  preCreateUser,
 };
 
 export default userService;
