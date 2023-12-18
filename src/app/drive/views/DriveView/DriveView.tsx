@@ -10,7 +10,6 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
-import { useLocation } from 'react-router-dom';
 import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -26,7 +25,7 @@ export interface DriveViewProps {
 
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
-  const pathname = useLocation().pathname;
+  const pathname = navigationService.history.location.pathname;
   const [title, setTitle] = useState('Internxt Drive');
 
   useEffect(() => {
@@ -37,7 +36,7 @@ const DriveView = (props: DriveViewProps) => {
     const itemUuid = navigationService.getUuid();
 
     if (isFolderView && itemUuid) {
-      setTimeout(() => goFolder(itemUuid), 200);
+      goFolder(itemUuid);
     }
 
     if (isFileView && itemUuid) {
@@ -57,6 +56,7 @@ const DriveView = (props: DriveViewProps) => {
   const goFolder = async (folderUuid) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
+      dispatch(storageThunks.fetchFolderContentThunk(folderMeta.id));
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
