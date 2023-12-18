@@ -57,6 +57,10 @@
       "description": "Reach out to our Support Team at hello@internxt.com."
     }
   },
+  "linkExpired": {
+    "title": "Link expired or deleted",
+    "description": "The link or invitation you visited has expired or has been removed"
+  },
   "lang": {
     "title": "Language",
     "en": "English (English)",
@@ -151,6 +155,7 @@
     "new": "new",
     "of": "of",
     "terms": "Terms and conditions",
+    "contactSupport": "Contact Support",
     "help": "Need help?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Search this folder",
@@ -744,6 +749,10 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
+        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
+        "inviteNewUsersTitle": "Invite new users?",
+        "accept": "Accept",
+        "cancel": "Cancel",
         "error": {
           "errorInviting": "Error sending invitation to {{email}}",
           "acceptedError": "Error accepting invitation to shared folder",

@@ -5,11 +5,11 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import downloadService from '../../services/download.service';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   getDatabaseFileSourceData,
-  getDatabaseFilePrewiewData,
-  updateDatabaseFilePrewiewData,
+  getDatabaseFilePreviewData,
+  updateDatabaseFilePreviewData,
   canFileBeCached,
   updateDatabaseFileSourceData,
 } from '../../services/database.service';
@@ -23,11 +23,25 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
-import { PreviewFileItem } from '../../../share/types';
+import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import errorService from '../../../core/services/error.service';
 import { OrderDirection } from '../../../core/types';
 import { uiActions } from '../../../store/slices/ui';
 import { RootState } from '../../../store';
+import localStorageService from 'app/core/services/local-storage.service';
+import {
+  contextMenuDriveItemShared,
+  contextMenuDriveItemSharedAFS,
+  contextMenuDriveNotSharedLink,
+  contextMenuTrashItems,
+} from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { getAppConfig } from 'app/core/services/config.service';
+import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+
+export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
+
+type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
@@ -40,16 +54,111 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
   const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const [blob, setBlob] = useState<Blob | null>(null);
+  const user = localStorageService.getUser();
+
+  const path = getAppConfig().views.find((view) => view.path === location.pathname);
+  const pathId = path?.id as pathProps;
+  const isRecentsView = pathId === 'recents';
+  const isSharedView = pathId === 'shared';
+  const isTrashView = pathId === 'trash';
+
+  const isSharedItem = file.sharings && file.sharings?.length > 0;
+  const isOwner = file.credentials?.user === user?.email;
+
+  const {
+    onDownloadItemButtonClicked,
+    onMoveItemButtonClicked,
+    onCopyLinkButtonClicked,
+    onShowDetailsButtonClicked,
+    onLinkSettingsButtonClicked,
+    onMoveToTrashButtonClicked,
+    onRenameItemButtonClicked,
+    onRestoreItemButtonClicked,
+    onDeletePermanentlyButtonClicked,
+  } = useDriveItemActions(currentFile);
+
+  const isCurrentUserViewer = useCallback(() => {
+    return currentUserRole === UserRoles.Reader;
+  }, [currentUserRole]);
+
+  const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
+    if (isSharedItem) {
+      return contextMenuDriveItemShared({
+        copyLink: onCopyLinkButtonClicked,
+        openShareAccessSettings: onLinkSettingsButtonClicked,
+        deleteLink: () => ({}),
+        showDetails: onShowDetailsButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
+    } else {
+      return contextMenuDriveNotSharedLink({
+        shareLink: onLinkSettingsButtonClicked,
+        getLink: onCopyLinkButtonClicked,
+        renameItem: onRenameItemButtonClicked,
+        showDetails: onShowDetailsButtonClicked,
+        moveItem: onMoveItemButtonClicked,
+        downloadItem: onDownloadItemButtonClicked,
+        moveToTrash: onMoveToTrashButtonClicked,
+      });
+    }
+  };
+
+  const recentsActionsMenu = (): ListItemMenu<DriveItemData> => {
+    return contextMenuDriveNotSharedLink({
+      shareLink: onLinkSettingsButtonClicked,
+      getLink: onCopyLinkButtonClicked,
+      renameItem: onRenameItemButtonClicked,
+      moveItem: onMoveItemButtonClicked,
+      showDetails: onShowDetailsButtonClicked,
+      downloadItem: onDownloadItemButtonClicked,
+      moveToTrash: onMoveItemButtonClicked,
+    });
+  };
+
+  const sharedActionsMenu = (): ListItemMenu<AdvancedSharedItem> => {
+    return contextMenuDriveItemSharedAFS({
+      openShareAccessSettings: isOwner ? onLinkSettingsButtonClicked : undefined,
+      copyLink: onCopyLinkButtonClicked,
+      deleteLink: () => undefined,
+      showDetails: onShowDetailsButtonClicked,
+      renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
+      moveItem: isOwner ? onMoveItemButtonClicked : undefined,
+      downloadItem: onDownloadItemButtonClicked,
+      moveToTrash: isOwner ? onMoveItemButtonClicked : undefined,
+    });
+  };
+
+  const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
+    return contextMenuTrashItems({
+      restoreItem: onRestoreItemButtonClicked,
+      deletePermanently: onDeletePermanentlyButtonClicked,
+    });
+  };
+
+  const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
+    if (isSharedView) return sharedActionsMenu();
+    if (isRecentsView) return recentsActionsMenu();
+    if (isTrashView) return trashActionsMenu();
+
+    return driveActionsMenu();
+  };
 
   useEffect(() => {
     setBlob(null);
     if (dirtyName) {
-      setCurrentFile?.(currentItemsFolder?.find((item) => item.name === dirtyName) as DriveFileData);
+      setCurrentFile?.({
+        ...currentFile,
+        plainName: dirtyName,
+      });
     }
     dispatch(uiActions.setCurrentEditingNameDirty(''));
   }, [dirtyName, currentFile]);
@@ -99,7 +208,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
 
   const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
-    const databaseThumbnail = await getDatabaseFilePrewiewData({ fileId: driveFile.id });
+    const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
 
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
@@ -139,7 +248,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
             driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
         }
         setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-        await updateDatabaseFilePrewiewData({
+        await updateDatabaseFilePreviewData({
           fileId: driveFile.id,
           folderId: driveFile.folderId,
           previewBlob: thumbnailToUpload.content,
@@ -147,7 +256,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         });
       }
     } else if (!databaseThumbnail && thumbnailGenerated?.file) {
-      await updateDatabaseFilePrewiewData({
+      await updateDatabaseFilePreviewData({
         fileId: driveFile.id,
         folderId: driveFile.folderId,
         previewBlob: new Blob([thumbnailGenerated?.file], { type: thumbnailGenerated.file?.type }),
@@ -171,8 +280,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
           const isCacheExpired = !fileSource?.updatedAt
             ? true
             : dateService.isDateOneBefore({
-                dateOne: fileSource?.updatedAt as string,
-                dateTwo: currentFile?.updatedAt as string,
+                dateOne: fileSource?.updatedAt,
+                dateTwo: currentFile?.updatedAt,
               });
           if (isCacheExpired) {
             fileContent = await downloadFile(currentFile, abortController);
@@ -242,7 +351,8 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       fileIndex={fileIndex}
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
-      setBlob={setBlob}
+      dropdownItems={topDropdownBarActionsMenu()}
+      isShareView={isSharedView}
     />
   ) : (
     <div className="hidden" />
