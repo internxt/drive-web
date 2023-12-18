@@ -68,6 +68,10 @@
       "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
       "invalidEmail": "Ungültige E-Mail Adresse"
     },
+    "linkExpired": {
+      "title": "Link abgelaufen oder gelöscht",
+      "description": "Der von Ihnen besuchte Link oder die Einladung ist abgelaufen oder wurde entfernt"
+    },
     "recoverAccount": {
       "title": "Konto wiederherstellen",
       "subtitle": "Haben Sie einen Sicherungsschlüssel?",
@@ -115,6 +119,7 @@
     "new": "Neu",
     "of": "von",
     "terms": "Geschäftsbedingungen",
+    "contactSupport": "Kundensupport kontaktieren",
     "help": "Brauchst du Hilfe?",
     "searchBar": "Durchsuche diesen Ordner",
     "stage": {
@@ -627,6 +632,10 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
+        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
+        "inviteNewUsersTitle": "Neue benutzer einladen?",
+        "accept": "Akzeptieren",
+        "cancel": "Abbrechen",
         "error": {
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",

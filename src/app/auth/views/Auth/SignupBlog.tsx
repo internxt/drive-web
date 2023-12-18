@@ -1,6 +1,7 @@
 import { SignupComponent } from './AuthView';
 import InternxtDevices from '../../../../assets/images/banner/Internxt-secure-cloud-storage.webp';
 import { Helmet } from 'react-helmet-async';
+import { useEffect, useState } from 'react';
 
 const textContent = {
   en: {
@@ -49,8 +50,20 @@ const SignupAuth = ({ lang }) => {
   );
 };
 
+const includedLanguages = ['en', 'es'];
+
 export default function SignupBlog(): JSX.Element {
-  const lang = navigator.language.split('-')[0];
+  const [lang, setLang] = useState('en');
+
+  useEffect(() => {
+    const query = window.location.search;
+    const params = new URLSearchParams(query);
+    const language = params.get('lang') as string;
+    if (includedLanguages.includes(language)) {
+      setLang(language);
+    }
+  }, []);
+
   return (
     <>
       <Helmet>

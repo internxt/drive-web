@@ -24,6 +24,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  sharings?: { type: string; id: string }[];
   uuid?: string;
 }
 
@@ -55,6 +56,7 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
+  sharings?: { type: string; id: string }[];
   uuid?: string;
 }
 
@@ -82,7 +84,7 @@ export interface DriveFileMetadataPayload {
   itemName?: string;
 }
 
-export type DriveItemData = DriveFileData & DriveFolderData & { sharings?: { type: string; id: string }[] };
+export type DriveItemData = DriveFileData & DriveFolderData;
 
 export interface DriveItemPatch {
   name?: string;
