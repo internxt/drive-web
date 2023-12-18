@@ -606,6 +606,7 @@
       "stopSharing": {
         "title": "Teilen aufhören?",
         "subtitle": "Niemand wird auf \"{{name}}\" zugreifen können",
+        "multipleItemsSubtitle": "Niemand wird Zugriff auf diese Dateien haben",
         "cancel": "Abbrechen",
         "confirm": "Freigabe beenden",
         "notification": {

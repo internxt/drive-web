@@ -710,6 +710,7 @@
       "stopSharing": {
         "title": "停止分享?",
         "subtitle": "没有人能够访问 \"{{name}}\"",
+        "multipleItemsSubtitle": "没有人能够访问这些文件",
         "cancel": "取消",
         "confirm": "停止分享",
         "notification": {

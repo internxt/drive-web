@@ -86,6 +86,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
   } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const currentUser = localStorageService.getUser();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
@@ -606,29 +607,21 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
-  const removeItemsFromList = () => {
-    const selectedItemsIDs = new Set(selectedItems.map((selectedItem) => selectedItem.id));
+  const removeItemsFromList = (itemsToRemove) => {
+    const selectedItemsIDs = new Set(itemsToRemove.map((selectedItem) => selectedItem.id));
     const newShareList = shareItems.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
 
     setShareItems(newShareList);
   };
 
-  const moveSelectedItemsToTrash = async () => {
-    const itemsToTrash = selectedItems.map((selectedShareItem) => ({
+  const moveSelectedItemsToTrash = async (items) => {
+    console.log('items', items);
+    const itemsToTrash = items.map((selectedShareItem) => ({
       ...(selectedShareItem as DriveItemData),
       isFolder: selectedShareItem.isFolder,
     }));
 
-    await moveItemsToTrash(itemsToTrash, removeItemsFromList);
-  };
-
-  const moveToTrash = async (shareItem: AdvancedSharedItem) => {
-    const itemToTrash = {
-      ...(shareItem as unknown as DriveItemData),
-      isFolder: shareItem.isFolder,
-    };
-
-    await moveItemsToTrash([itemToTrash], removeItemsFromList);
+    await moveItemsToTrash(itemsToTrash, () => removeItemsFromList(itemsToTrash));
   };
 
   const onUploadFileButtonClicked = (): void => {
@@ -664,7 +657,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
       return; // Exit the function if the condition fails
     }
 
-    const currentUser = localStorageService.getUser();
     let ownerUserAuthenticationData;
 
     const isSecondLevelOfFoldersOrMore = sharedNamePath.length > 2;
@@ -801,12 +793,18 @@ function SharedView(props: SharedViewProps): JSX.Element {
   };
 
   const isItemOwnedByCurrentUser = (userUUid?: string) => {
-    const currentUser = localStorageService.getUser();
-
     if (currentUser?.uuid && (user?.uuid || userUUid)) {
       if (userUUid) return currentUser.uuid === userUUid;
       else return currentUser.uuid == user?.uuid;
     }
+    return false;
+  };
+
+  const isItemsOwnedByCurrentUser = () => {
+    if (currentUser?.uuid && selectedItems && selectedItems.length > 1) {
+      return selectedItems.some((itemOwner) => currentUser.uuid === itemOwner.user.uuid);
+    }
+
     return false;
   };
 
@@ -816,28 +814,45 @@ function SharedView(props: SharedViewProps): JSX.Element {
   };
 
   const onStopSharingAndMoveToTrash = async () => {
-    const item = itemToView ?? selectedItems[0];
+    const items = itemToView ? [itemToView] : selectedItems;
+    const itemsToTrash: any[] = [];
+
     if (isFileViewerOpen) {
       onCloseFileViewer();
     }
-    setIsStopSharingDialogLoading(true);
-    let itemName: string;
 
-    if (item.name.length > MAX_SHARED_NAME_LENGTH) {
-      itemName = item.name.substring(0, 32).concat('...');
-    } else {
-      itemName = item.name;
-    }
-    await dispatch(
-      sharedThunks.stopSharingItem({
-        itemType: item?.isFolder ? 'folder' : 'file',
-        itemId: item?.uuid as string,
-        itemName,
-      }),
-    );
+    setIsStopSharingDialogLoading(true);
+
+    const promises = items.map(async (item) => {
+      let itemName: string;
+
+      if (currentUser?.uuid !== item.user.uuid) {
+        return;
+      } else {
+        if (item.name.length > MAX_SHARED_NAME_LENGTH) {
+          itemName = item.name.substring(0, 32).concat('...');
+        } else {
+          itemName = item.name;
+        }
+
+        await dispatch(
+          sharedThunks.stopSharingItem({
+            itemType: item.isFolder ? 'folder' : 'file',
+            itemId: item.uuid,
+            itemName,
+          }),
+        );
+
+        return item;
+      }
+    });
+
+    const resolvedItems = (await Promise.all(promises)).filter(Boolean);
+
+    await moveSelectedItemsToTrash(resolvedItems);
+
     setShowStopSharingConfirmation(false);
     setIsStopSharingDialogLoading(false);
-    moveToTrash(item);
   };
 
   const isCurrentUserViewer = useCallback(() => {
@@ -1111,7 +1126,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
-                  moveToTrash: () => (isItemOwnedByCurrentUser() ? setShowStopSharingConfirmation(true) : undefined),
+                  moveToTrash: () => (isItemsOwnedByCurrentUser() ? setShowStopSharingConfirmation(true) : undefined),
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
@@ -1147,7 +1162,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 })
           }
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: moveSelectedItemsToTrash,
+            onBackspaceKeyPressed: () => moveSelectedItemsToTrash(selectedItems),
             onRKeyPressed: () => {
               if (selectedItems.length === 1 && !isCurrentUserViewer() && isNotRootFolder) {
                 const selectedItem = selectedItems[0];
@@ -1180,7 +1195,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       <NameCollisionContainer />
       {itemToView && (
         <FileViewerWrapper
-          file={itemToView as DriveItemData}
+          file={selectedItems[0] ?? itemToView}
           showPreview={isFileViewerOpen}
           onClose={onCloseFileViewer}
           onShowStopSharingDialog={() => setShowStopSharingConfirmation(true)}
@@ -1192,6 +1207,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}
         onClose={() => setShowStopSharingConfirmation(false)}
         showStopSharingConfirmation={showStopSharingConfirmation}
+        isMultipleItems={selectedItems.length > 1}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}

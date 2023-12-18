@@ -665,6 +665,7 @@
       "stopSharing": {
         "title": "Перестать делиться?",
         "subtitle": "Никто не сможет получить доступ к \"{{name}}\"",
+        "multipleItemsSubtitle": "Никто не сможет получить доступ к этим файлам",
         "cancel": "Отмена",
         "confirm": "Прекратите делиться",
         "notification": {

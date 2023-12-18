@@ -723,6 +723,7 @@
       "stopSharing": {
         "title": "Stop sharing?",
         "subtitle": "No one will be able to access \"{{name}}\"",
+        "multipleItemsSubtitle": "No one will be able to access to this items",
         "cancel": "Cancel",
         "confirm": "Stop sharing",
         "notification": {

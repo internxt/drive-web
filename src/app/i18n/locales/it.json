@@ -684,6 +684,7 @@
       "stopSharing": {
         "title": "Smettere di condividere?",
         "subtitle": "Nessuno potrà accedere a \"{{name}}\"",
+        "multipleItemsSubtitle": "Nessuno potrà accedere a questi file",
         "cancel": "Annullare",
         "confirm": "Smettere di condividere",
         "notification": {
