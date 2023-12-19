@@ -1326,5 +1326,15 @@
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
     }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Carpeta no encontrada",
+      "description": "Asegúrese de que la URL es correcta y de que la carpeta no se ha movido ni eliminado."
+    },
+    "file": {
+      "title": "Archivo no encontrado",
+      "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
+    }
   }
 }

@@ -12,7 +12,7 @@ describe('Photos panel', () => {
 
   it('CY-01_Should list 0 photos', () => {
     mockPhotos(MOCK.EMPTY);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
     cy.get('[data-test=photos-gallery]').contains('Your photo gallery is empty');
@@ -21,7 +21,7 @@ describe('Photos panel', () => {
 
   it('CY-02_Should list 1 photo', () => {
     mockPhotos(MOCK.PHOTO1);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
     cy.get('[data-test=photos-grid]').should('be.visible');
@@ -30,7 +30,7 @@ describe('Photos panel', () => {
 
   it('CY-03_Should list 2 photos', () => {
     mockPhotos(MOCK.MULTIPLE);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     cy.get('[data-test=photos-gallery]').should('be.visible');
     cy.get('[data-test=photos-grid]').should('be.visible');
@@ -39,7 +39,7 @@ describe('Photos panel', () => {
 
   it('CY-04_Should do a fullscreen preview', () => {
     mockPhotos(MOCK.MULTIPLE);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     const photoId = photos_data.PHOTO1.photoId;
     cy.get('[data-test=photos-item-' + photoId + ']')
@@ -50,7 +50,7 @@ describe('Photos panel', () => {
 
   it('CY-05_Should download 1 photo', () => {
     mockPhotos(MOCK.PHOTO1);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     const photo1 = photos_data.PHOTO1;
     cy.get('[data-test=photos-item-selector-' + photo1.photoId + ']').click({ force: true });
@@ -67,7 +67,7 @@ describe('Photos panel', () => {
 
   it('CY-06_Should download multiple photos', () => {
     mockPhotos(MOCK.MULTIPLE);
-    cy.visit('/app/photos');
+    cy.visit('/photos');
 
     const photos = [photos_data.PHOTO1, photos_data.PHOTO2];
     const resultZipName = 'photos.zip';

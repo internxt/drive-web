@@ -43,6 +43,7 @@ import WarningMessageWrapper from '../../../drive/components/WarningMessage/Warn
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
 import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
+import { Helmet } from 'react-helmet-async';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -842,6 +843,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
         e.preventDefault();
       }}
     >
+      <Helmet>
+        <title>{translate('sideNav.shared')} - Internxt Drive</title>
+      </Helmet>
       <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />

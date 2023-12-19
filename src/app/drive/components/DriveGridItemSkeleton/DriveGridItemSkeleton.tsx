@@ -1,43 +1,27 @@
-import React, { Component } from 'react';
+import { useState, createRef, useEffect } from 'react';
+import useForceUpdate from 'app/core/hooks/useForceUpdate';
 import Skeleton from 'react-loading-skeleton';
 
-interface DriveGridItemSkeletonState {
-  itemRef: React.RefObject<HTMLDivElement>;
-}
+const DriveGridItemSkeleton = (): JSX.Element => {
+  const [itemRef] = useState(createRef<HTMLDivElement>());
+  const forceUpdate = useForceUpdate();
+  const updateHeight = () => forceUpdate();
+  const height = itemRef.current ? itemRef.current?.clientWidth + 'px' : 'auto';
 
-class DriveGridItemSkeleton extends Component<React.Attributes, DriveGridItemSkeletonState> {
-  constructor(props: React.Attributes) {
-    super(props);
+  useEffect(() => {
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
 
-    this.state = {
-      itemRef: React.createRef(),
+    return () => {
+      window.removeEventListener('resize', updateHeight);
     };
-  }
+  }, []);
 
-  componentDidMount(): void {
-    this.updateHeight();
-
-    window.addEventListener('resize', this.updateHeight);
-  }
-
-  componentWillUnmount(): void {
-    window.removeEventListener('resize', this.updateHeight);
-  }
-
-  updateHeight = (): void => {
-    this.forceUpdate();
-  };
-
-  render(): JSX.Element {
-    const { itemRef } = this.state;
-    const height = itemRef.current ? this.state.itemRef.current?.clientWidth + 'px' : 'auto';
-
-    return (
-      <div ref={itemRef} style={{ height }} className="rounded-lg">
-        <Skeleton width="100%" height="100%" />
-      </div>
-    );
-  }
-}
+  return (
+    <div ref={itemRef} style={{ height }} className="rounded-lg">
+      <Skeleton width="100%" height="100%" />
+    </div>
+  );
+};
 
 export default DriveGridItemSkeleton;
