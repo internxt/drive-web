@@ -19,6 +19,7 @@ import {
   SharedFoldersInvitationsAsInvitedUserResponse,
   CreateSharingPayload,
   SharingMeta,
+  PublicSharedItemInfo,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -329,6 +330,13 @@ export function acceptSharedFolderInvite({
 export function getUserRoleOfSharedRolder(sharingId: string): Promise<Role> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getUserRole(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPublicSharedItemInfo(sharingId: string): Promise<PublicSharedItemInfo> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPublicSharedItemInfo(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -897,6 +905,7 @@ const shareService = {
   removeSharingPassword,
   decryptPublicSharingCodeWithOwner,
   validateSharingInvitation,
+  getPublicSharedItemInfo,
 };
 
 export default shareService;

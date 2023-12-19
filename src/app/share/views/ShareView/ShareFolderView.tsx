@@ -17,17 +17,14 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import shareService from 'app/share/services/share.service';
-import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ReportButton from './ReportButon';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -56,6 +53,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
+  const [itemData, setItemData] = useState<PublicSharedItemInfo>();
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -121,8 +119,10 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       .then((folderSize) => {
         setSize(folderSize);
       })
-      .catch((err) => {
+      .catch(async (err) => {
         if (err.message === 'Forbidden') {
+          const itemData = await shareService.getPublicSharedItemInfo(sharingId);
+          setItemData(itemData);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
@@ -244,6 +244,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         onPasswordSubmitted={loadFolderInfo}
         itemPassword={itemPassword}
         setItemPassword={setItemPassword}
+        itemData={itemData}
       />
     ) : (
       //WITHOUT PASSWORD

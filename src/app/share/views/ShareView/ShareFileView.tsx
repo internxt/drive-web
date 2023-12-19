@@ -27,7 +27,7 @@ import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import errorService from 'app/core/services/error.service';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import Button from '../../../shared/components/Button/Button';
 
 export interface ShareViewProps extends ShareViewState {
@@ -61,6 +61,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
+  const [itemData, setItemData] = useState<PublicSharedItemInfo>();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -133,8 +134,10 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           name: res.item.plainName,
         });
       })
-      .catch((err) => {
+      .catch(async (err) => {
         if (err.message === 'Forbidden') {
+          const itemData = await shareService.getPublicSharedItemInfo(sharingId);
+          setItemData(itemData);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
@@ -253,7 +256,12 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     const FileIcon = iconService.getItemIcon(false, info?.item?.type);
 
     body = requiresPassword ? (
-      <ShareItemPwdView onPasswordSubmitted={loadInfo} itemPassword={itemPassword} setItemPassword={setItemPassword} />
+      <ShareItemPwdView
+        onPasswordSubmitted={loadInfo}
+        itemPassword={itemPassword}
+        setItemPassword={setItemPassword}
+        itemData={itemData}
+      />
     ) : (
       <>
         {/* File info */}
