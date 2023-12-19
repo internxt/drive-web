@@ -35,6 +35,7 @@ import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCan
 import SharedView from '../../share/views/SharedLinksView/SharedView';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 
 const views: Array<{
   id: string;
@@ -58,6 +59,7 @@ const views: Array<{
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },

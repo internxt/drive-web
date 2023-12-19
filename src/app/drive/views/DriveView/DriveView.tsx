@@ -66,6 +66,7 @@ const DriveView = (props: DriveViewProps) => {
       );
       folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
     } catch (error) {
+      navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });
       errorService.reportError(error);
     }
   };
@@ -78,6 +79,7 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
     } catch (error) {
+      navigationService.push(AppView.FolderFileNotFound, { itemType: 'file' });
       errorService.reportError(error);
     }
   };

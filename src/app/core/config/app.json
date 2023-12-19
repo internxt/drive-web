@@ -257,6 +257,13 @@
       "auth": true
     },
     {
+      "id": "folder-file-not-found",
+      "layout": "empty",
+      "path": "/not-found",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "not-found",
       "layout": "empty",
       "path": "",

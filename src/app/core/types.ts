@@ -120,6 +120,7 @@ export enum AppView {
   Photos = 'photos',
   Preferences = 'preferences',
   DriveItems = 'drive-items',
+  FolderFileNotFound = 'folder-file-not-found',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
   TeamsDeactivation = 'teams-deactivation',
