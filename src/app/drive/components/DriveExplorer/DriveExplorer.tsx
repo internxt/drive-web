@@ -64,6 +64,10 @@ import { DriveTopBarItems } from './DriveTopBarItems';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import { AdvancedSharedItem } from '../../../share/types';
+import StopSharingAndMoveToTrashDialog from '../StopSharingAndMoveToTrashDialog/StopSharingAndMoveToTrashDialog';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -135,6 +139,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
   const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
+  const [isStopSharingDialogLoading, setIsStopSharingDialogLoading] = useState(false);
+  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
@@ -558,9 +565,63 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
   }, [currentFolderId]);
+
   const onCloseEditNameDialog = useCallback(() => {
     setEditNameItem(null);
   }, []);
+
+  const onCloseStopSharingDialog = useCallback(() => {
+    setShowStopSharingConfirmation(false);
+  }, []);
+
+  const onOpenStopSharingAndMoveToTrashDialog = useCallback(() => {
+    setShowStopSharingConfirmation(true);
+  }, []);
+
+  const onStopSharingAndMoveToTrash = async () => {
+    const items = selectedItems;
+
+    setIsStopSharingDialogLoading(true);
+
+    const stopSharingItems = items.map(async (item) => {
+      let itemName: string;
+      const isSharedItem = item.sharings && item.sharings.length > 0;
+
+      if (isSharedItem) {
+        if (item.name.length > MAX_SHARED_NAME_LENGTH) {
+          itemName = item.name.substring(0, 32).concat('...');
+        } else {
+          itemName = item.name;
+        }
+
+        await dispatch(
+          sharedThunks.stopSharingItem({
+            itemType: item.isFolder ? 'folder' : 'file',
+            itemId: item.uuid as string,
+            itemName,
+          }),
+        );
+
+        return item;
+      }
+    });
+
+    await Promise.all(stopSharingItems);
+
+    const itemsToTrash = items.map((selectedShareItem) => ({
+      ...selectedShareItem,
+      isFolder: selectedShareItem.isFolder,
+    }));
+
+    await moveItemsToTrash(itemsToTrash);
+
+    setTimeout(async () => {
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    }, 500);
+
+    setShowStopSharingConfirmation(false);
+    setIsStopSharingDialogLoading(false);
+  };
 
   const driveExplorer = (
     <div
@@ -592,6 +653,14 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           onClose={onCloseEditNameDialog}
         />
       )}
+      <StopSharingAndMoveToTrashDialog
+        onStopSharing={onStopSharingAndMoveToTrash}
+        isLoading={isStopSharingDialogLoading}
+        itemToShareName={selectedItems[0]?.plainName as string}
+        onClose={onCloseStopSharingDialog}
+        showStopSharingConfirmation={showStopSharingConfirmation}
+        isMultipleItems={selectedItems.length > 1}
+      />
 
       <div className="z-0 flex h-full w-full max-w-full grow">
         <div className="flex w-1 grow flex-col">
@@ -788,6 +857,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     setIsListElementsHovered(areHovered);
                   }}
                   title={title}
+                  onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
                 />
               </div>
             )}
