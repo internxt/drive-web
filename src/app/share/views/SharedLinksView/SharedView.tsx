@@ -1172,9 +1172,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 })
           }
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: () => moveSelectedItemsToTrash(selectedItems),
+            onBackspaceKeyPressed: async () => await moveSelectedItemsToTrash(selectedItems),
             onRKeyPressed: () => {
-              if (selectedItems.length === 1 && !isCurrentUserViewer() && isNotRootFolder) {
+              const canUserRenameItem = selectedItems.length === 1 && !isCurrentUserViewer() && isNotRootFolder;
+              if (canUserRenameItem) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
                   ...selectedItem,
