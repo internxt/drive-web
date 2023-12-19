@@ -142,6 +142,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const [isStopSharingDialogLoading, setIsStopSharingDialogLoading] = useState(false);
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
+  const totalItemsWithSharing = itemsWithSharing.length;
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
@@ -656,10 +658,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       <StopSharingAndMoveToTrashDialog
         onStopSharing={onStopSharingAndMoveToTrash}
         isLoading={isStopSharingDialogLoading}
-        itemToShareName={selectedItems[0]?.plainName as string}
+        itemToShareName={itemsWithSharing[0]?.plainName ?? itemsWithSharing[0]?.name}
         onClose={onCloseStopSharingDialog}
         showStopSharingConfirmation={showStopSharingConfirmation}
-        isMultipleItems={selectedItems.length > 1}
+        isMultipleItems={totalItemsWithSharing > 1}
       />
 
       <div className="z-0 flex h-full w-full max-w-full grow">

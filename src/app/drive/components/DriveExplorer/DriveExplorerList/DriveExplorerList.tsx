@@ -429,7 +429,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           selectedItems={props.selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: () => moveItemsToTrash(props.selectedItems),
+            onBackspaceKeyPressed: () =>
+              isSelectedSharedItems
+                ? props.onOpenStopSharingAndMoveToTrashDialog()
+                : moveItemsToTrash(props.selectedItems),
             onRKeyPressed: () => {
               if (props.selectedItems.length === 1) {
                 const selectedItem = props.selectedItems[0];
