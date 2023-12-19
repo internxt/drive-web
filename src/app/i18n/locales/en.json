@@ -723,12 +723,23 @@
       "stopSharing": {
         "title": "Stop sharing?",
         "subtitle": "No one will be able to access \"{{name}}\"",
-        "multipleItemsSubtitle": "No one will be able to access to this items",
         "cancel": "Cancel",
         "confirm": "Stop sharing",
         "notification": {
           "success": "No longer sharing \"{{name}}\"",
           "error": "Couldn't stop sharing, please try again"
+        }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "Move to trash?",
+        "subtitle": "Users with the link or invited will no longer have access to \"{{name}}\"",
+        "multipleItemsSubtitle": "Users with the link or invited will no longer have access to these shared items",
+        "cancel": "Cancel",
+        "confirm": "Move to trash",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "successForMultipleItems": "No longer sharing these items",
+          "error": "Couldn't move to trash, please try again"
         }
       },
       "removeUser": {

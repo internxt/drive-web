@@ -705,13 +705,19 @@
       "stopSharing": {
         "title": "¿Dejar de compartir?",
         "subtitle": "Nadie podrá acceder a \"{{name}}\"",
-        "multipleItemsSubtitle": "Nadie podrá acceder a estos archivos",
         "cancelar": "Cancelar",
         "confirmar": "Dejar de compartir",
         "notification": {
           "success": "Dejar de compartir \"{{name}}\"",
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "¿Mover a la papelera?",
+        "subtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a estos elementos compartidos",
+        "cancel": "Cancelar",
+        "confirm": "Mover a la papelera"
       },
       "removeUser": {
         "notification": {

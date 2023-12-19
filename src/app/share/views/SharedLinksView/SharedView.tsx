@@ -1,14 +1,17 @@
-import dateService from '../../../core/services/date.service';
 import { UploadSimple } from '@phosphor-icons/react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
+import _ from 'lodash';
+import usersIcon from 'assets/icons/users.svg';
+
+import dateService from '../../../core/services/date.service';
 import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from '../../../drive/services/icon.service';
-import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import _ from 'lodash';
-import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData, DriveItemDetails } from '../../../drive/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import sizeService from '../../../drive/services/size.service';
@@ -36,17 +39,15 @@ import NameCollisionContainer from '../../../drive/components/NameCollisionDialo
 import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import { RootState } from '../../../store';
-import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import { connect } from 'react-redux';
 import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
-import FileViewerWrapper from 'app/drive/components/FileViewer/FileViewerWrapper';
-import StopSharingItemDialog from 'app/drive/components/StopSharingItemDialog/StopSharingItemDialog';
+import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
+import StopSharingAndMoveToTrashDialog from '../../../drive/components/StopSharingAndMoveToTrashDialog/StopSharingAndMoveToTrashDialog';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -830,7 +831,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
     setIsStopSharingDialogLoading(true);
 
-    const promises = items.map(async (item) => {
+    const stopSharingItems = items.map(async (item) => {
       let itemName: string;
 
       if (!isItemOwnedByCurrentUser(item.user?.uuid)) {
@@ -854,7 +855,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       }
     });
 
-    const resolvedItems = (await Promise.all(promises)).filter(Boolean);
+    const resolvedItems = (await Promise.all(stopSharingItems)).filter(Boolean);
 
     await moveSelectedItemsToTrash(resolvedItems);
 
@@ -1210,7 +1211,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
           onShowStopSharingDialog={onOpenStopSharingDialog}
         />
       )}
-      <StopSharingItemDialog
+      <StopSharingAndMoveToTrashDialog
         onStopSharing={onStopSharingAndMoveToTrash}
         isLoading={isStopSharingDialogLoading}
         itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}

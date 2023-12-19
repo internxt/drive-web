@@ -606,12 +606,22 @@
       "stopSharing": {
         "title": "Teilen aufhören?",
         "subtitle": "Niemand wird auf \"{{name}}\" zugreifen können",
-        "multipleItemsSubtitle": "Niemand wird Zugriff auf diese Dateien haben",
         "cancel": "Abbrechen",
         "confirm": "Freigabe beenden",
         "notification": {
           "success": "Nicht mehr teilen \"{{name}}",
           "error": "Die Freigabe konnte nicht beendet werden, bitte versuchen Sie es erneut"
+        }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "In den Papierkorb verschieben?",
+        "subtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf \"{{name}}\"",
+        "multipleItemsSubtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf diese geteilten Elemente",
+        "cancel": "Abbrechen",
+        "confirm": "In den Papierkorb verschieben",
+        "notification": {
+          "success": "Nicht mehr teilen \"{{name}}\"",
+          "error": "Konnte nicht in den Papierkorb verschoben werden, bitte versuchen Sie es erneut"
         }
       },
       "removeUser": {

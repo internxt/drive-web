@@ -3,18 +3,20 @@ import Button from '../../../shared/components/Button/Button';
 import Modal from '../../../shared/components/Modal';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 
-const StopSharingItemDialog = ({
+const StopSharingAndMoveToTrashDialog = ({
   showStopSharingConfirmation,
   onClose,
   itemToShareName,
   isLoading,
   onStopSharing,
+  isMultipleItems,
 }: {
   showStopSharingConfirmation: boolean;
   onClose: () => void;
   itemToShareName: string;
   isLoading: boolean;
   onStopSharing: (item) => void;
+  isMultipleItems?: boolean;
 }) => {
   const { translate } = useTranslationContext();
   return (
@@ -25,21 +27,23 @@ const StopSharingItemDialog = ({
       onClose={onClose}
       preventClosing={isLoading}
     >
-      <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
+      <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharingAndMoveToTrash.title')}</p>
       <p className="text-lg text-gray-80">
-        {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShareName })}
+        {isMultipleItems
+          ? translate('modals.shareModal.stopSharingAndMoveToTrash.multipleItemsSubtitle')
+          : translate('modals.shareModal.stopSharingAndMoveToTrash.subtitle', { name: itemToShareName })}
       </p>
       <div className="flex items-center justify-end space-x-2">
         <Button variant="secondary" onClick={() => onClose()} disabled={isLoading}>
-          {translate('modals.shareModal.stopSharing.cancel')}
+          {translate('modals.shareModal.stopSharingAndMoveToTrash.cancel')}
         </Button>
         <Button variant="accent" onClick={onStopSharing} disabled={isLoading}>
           {isLoading && <Spinner className="h-4 w-4" />}
-          <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
+          <span>{translate('modals.shareModal.stopSharingAndMoveToTrash.confirm')}</span>
         </Button>
       </div>
     </Modal>
   );
 };
 
-export default StopSharingItemDialog;
+export default StopSharingAndMoveToTrashDialog;

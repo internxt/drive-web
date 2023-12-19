@@ -684,12 +684,22 @@
       "stopSharing": {
         "title": "Smettere di condividere?",
         "subtitle": "Nessuno potrà accedere a \"{{name}}\"",
-        "multipleItemsSubtitle": "Nessuno potrà accedere a questi file",
         "cancel": "Annullare",
         "confirm": "Smettere di condividere",
         "notification": {
           "success": "Non condividiamo più \"{{name}}\"",
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
+        }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "Sposta nel cestino?",
+        "subtitle": "Gli utenti con il link o invitati non avranno più accesso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Gli utenti con il link o invitati non avranno più accesso a questi elementi condivisi",
+        "cancel": "Annulla",
+        "confirm": "Sposta nel cestino",
+        "notification": {
+          "success": "Non più condiviso \"{{name}}\"",
+          "error": "Impossibile spostare nel cestino, riprova"
         }
       },
       "removeUser": {
