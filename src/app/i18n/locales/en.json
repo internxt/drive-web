@@ -234,7 +234,7 @@
     "putPwd": "Please enter the password provided",
     "putPwd1": "by the sender for access.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Access"
   },
   "sideNav": {
@@ -774,7 +774,6 @@
         "protect": "Protect with password",
         "disablePasswordTitle": "Disable password protection?",
         "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
-        "createPasswordTitle": "Create passsword",
         "editPasswordTitle": "Edit password",
         "buttons": {
           "cancel": "Cancel",

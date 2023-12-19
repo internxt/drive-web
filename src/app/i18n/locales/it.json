@@ -202,7 +202,7 @@
     "putPwd": "Per accedere, inserisci la password",
     "putPwd1": " fornita dal mittente.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Login"
   },
   "sideNav": {
@@ -735,7 +735,6 @@
         "protect": "Proteggi con password",
         "disablePasswordTitle": "Disabilitare la protezione con password?",
         "disablePasswordBody": "Quando disabilitato, le persone con il link potranno accedere al contenuto.",
-        "createPasswordTitle": "Crea password",
         "editPasswordTitle": "Modifica password",
         "buttons": {
           "cancel": "Annulla",

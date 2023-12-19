@@ -136,15 +136,22 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       })
       .catch(async (err) => {
         if (err.message === 'Forbidden') {
-          const itemData = await shareService.getPublicSharedItemInfo(sharingId);
-          setItemData(itemData);
+          await getSharedItemInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-
         throw err;
       });
   }
+
+  const getSharedItemInfo = async (id: string) => {
+    try {
+      const itemData = await shareService.getPublicSharedItemInfo(id);
+      setItemData(itemData);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.ShareLink;

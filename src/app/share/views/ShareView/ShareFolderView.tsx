@@ -121,14 +121,22 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       })
       .catch(async (err) => {
         if (err.message === 'Forbidden') {
-          const itemData = await shareService.getPublicSharedItemInfo(sharingId);
-          setItemData(itemData);
+          await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
         throw err;
       });
   }
+
+  const getSharedFolderInfo = async (id: string) => {
+    try {
+      const itemData = await shareService.getPublicSharedItemInfo(id);
+      setItemData(itemData);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
     return getSharedFolderSize(shareId.toString(), folderId.toString());

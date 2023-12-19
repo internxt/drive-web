@@ -756,7 +756,6 @@
         "protect": "Proteger con contraseña",
         "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
         "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
-        "createPasswordTitle": "Crear contraseña",
         "editPasswordTitle": "Editar contraseña",
         "buttons": {
           "cancel": "Cancelar",

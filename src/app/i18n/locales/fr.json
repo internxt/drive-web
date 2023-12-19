@@ -689,7 +689,6 @@
         "protect": "Protéger par mot de passe",
         "disablePasswordTitle": "Désactiver la protection par mot de passe ?",
         "disablePasswordBody": "Lorsqu'elle est désactivée, les personnes disposant du lien pourront accéder au contenu.",
-        "createPasswordTitle": "Créer un mot de passe",
         "editPasswordTitle": "Modifier le mot de passe",
         "buttons": {
           "cancel": "Annuler",

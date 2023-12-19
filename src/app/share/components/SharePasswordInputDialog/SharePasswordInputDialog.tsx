@@ -12,6 +12,8 @@ type SharePasswordInputDialogProps = {
   isAlreadyProtected?: boolean;
 };
 
+const MAX_PASSWORD_LENGTH = 50;
+
 export const SharePasswordInputDialog = ({
   isOpen,
   onClose,
@@ -32,12 +34,12 @@ export const SharePasswordInputDialog = ({
     <Modal maxWidth="max-w-sm" className="space-y-5 p-5" isOpen={isOpen} onClose={onClose}>
       <p className="text-2xl font-medium">
         {!isAlreadyProtected
-          ? translate('modals.shareModal.protectSharingModal.createPasswordTitle')
+          ? translate('modals.shareModal.protectSharingModal.protect')
           : translate('modals.shareModal.protectSharingModal.editPasswordTitle')}
       </p>
       <Input
         onChange={(value) => {
-          if (value.length <= 50) {
+          if (value.length <= MAX_PASSWORD_LENGTH) {
             setPassword(value);
           }
         }}

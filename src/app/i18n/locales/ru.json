@@ -716,7 +716,6 @@
         "protect": "Защитить паролем",
         "disablePasswordTitle": "Отключить защиту паролем?",
         "disablePasswordBody": "При отключении люди с ссылкой смогут получить доступ к содержимому.",
-        "createPasswordTitle": "Создать пароль",
         "editPasswordTitle": "Изменить пароль",
         "buttons": {
           "cancel": "Отмена",
