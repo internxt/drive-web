@@ -292,7 +292,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
-              buttonDataCy: 'driveListHeaderNameButtonText',
+              buttonDataCy: 'driveListHeaderNameButton',
               textDataCy: 'driveListHeaderNameButtonText',
             },
             {
