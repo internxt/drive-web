@@ -88,7 +88,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
       weightIcon="light"
       dataTest="share-item-dialog"
     >
-      <hr className="border-translate-1 mb-5 w-screen border-neutral-40" />
+      <hr className="border-translate-1 mb-5 w-screen border-gray-10" />
       <div className="mb-5 flex flex-col">
         <div className="mx-5">
           <div className="justify-left flex flex-col">
@@ -114,7 +114,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
               onFocus={() => setPasswordInputVirgin(false)}
             />
           </div>
-          <hr className="border-translate-1 my-6 border-neutral-40" />
+          <hr className="border-translate-1 my-6 border-gray-10" />
           <div className="mb-8 flex flex-row justify-between">
             <div className="flex w-52 flex-col items-start">
               <p className="text-base font-medium">{translate('shareItemDialog.views')}</p>

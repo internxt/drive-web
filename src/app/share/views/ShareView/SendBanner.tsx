@@ -21,7 +21,7 @@ const SendBanner = (props: Props) => {
     >
       <div
         className={`${props.sendBannerVisible ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex
-        w-auto max-w-[800px] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-neutral-900`}
+        w-auto max-w-[800px] -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-gray-100`}
         style={{ backgroundImage: `url(${BackgroundImage})` }}
       >
         <button className="absolute right-0 m-7 flex w-auto text-white" onClick={onClose}>

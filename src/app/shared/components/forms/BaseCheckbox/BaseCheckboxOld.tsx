@@ -18,7 +18,7 @@ const BaseCheckboxOld = ({ label, register, required, text, additionalStyling }:
         {...register(label, { required })}
         className="hover:bg-primary/20"
       />
-      <span className="ml-3 select-none text-sm text-neutral-500">{text}</span>
+      <span className="ml-3 select-none text-sm text-gray-70">{text}</span>
     </label>
   );
 };

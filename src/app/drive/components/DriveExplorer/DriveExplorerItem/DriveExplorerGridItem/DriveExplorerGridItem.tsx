@@ -60,7 +60,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         </div>
         <span
           data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
+          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-gray-100 hover:underline`}
           onClick={onNameClicked}
           title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
         >
@@ -147,7 +147,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       ref={itemRef}
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
-        group relative box-border rounded-lg p-4 hover:bg-neutral-10`}
+        group relative box-border rounded-lg p-4 hover:bg-gray-1`}
       onContextMenu={handleRightClick}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}

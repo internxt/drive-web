@@ -152,7 +152,7 @@ export default function RecoverView(): JSX.Element {
                 We are going to recover your original key, please introduce your passwords.
               </span>
             </div>
-            <span className="mb-6 mt-1.5 text-sm text-neutral-500" />
+            <span className="mb-6 mt-1.5 text-sm text-gray-70" />
 
             <BaseInput
               className="mb-2.5"

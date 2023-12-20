@@ -63,14 +63,14 @@ code {
 
   /* INPUTS */
   input[type='checkbox']:not(.base-checkbox) {
-    @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
+    @apply h-4 w-4 rounded border-2 border-gray-70 text-xs text-gray-70;
   }
 
   input:not([type]):not(.inxt-input),
   input[type='text']:not(.inxt-input),
   input[type='email']:not(.inxt-input),
   input[type='password']:not(.inxt-input) {
-    @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-primary;
+    @apply rounded-md px-3 py-2 text-base text-gray-70 placeholder-gray-30 ring-1 ring-gray-50 focus:ring-primary;
 
     &:focus {
       outline: none !important;
@@ -118,7 +118,7 @@ code {
   }
 
   .input-number {
-    @apply appearance-none border-neutral-60 text-center outline-none;
+    @apply appearance-none border-gray-30 text-center outline-none;
 
     -moz-appearance: textfield;
   }
@@ -154,7 +154,7 @@ code {
     @apply bg-primary text-white hover:bg-primary-dark;
 
     &:disabled {
-      @apply bg-neutral-30 text-neutral-80 hover:bg-neutral-30;
+      @apply bg-gray-5 text-gray-40 hover:bg-gray-5;
     }
   }
 
@@ -165,7 +165,7 @@ code {
 
   button.dark,
   .base-button.dark {
-    @apply bg-white text-neutral-500 hover:bg-neutral-500 hover:text-white;
+    @apply bg-white text-gray-70 hover:bg-gray-70 hover:text-white;
   }
 
   button.tertiary,

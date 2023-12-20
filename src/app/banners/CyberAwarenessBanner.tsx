@@ -13,7 +13,7 @@ const CyberAwarenessBanner = ({ showBanner, onClose }: { showBanner: boolean; on
     >
       <div
         className={`${showBanner ? 'flex' : 'hidden'} absolute left-1/2 top-1/2 flex
-        w-auto max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-neutral-900`}
+        w-auto max-w-4xl -translate-x-1/2 -translate-y-1/2 flex-col rounded-2xl text-gray-100`}
         style={{
           backgroundImage: `url(${BackgroundImage})`,
           backgroundPosition: 'center',

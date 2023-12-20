@@ -10,7 +10,7 @@
       @apply hover:shadow-b;
 
       a.nav-link.active {
-        @apply bg-neutral-20;
+        @apply bg-gray-5;
 
         &::after {
           content: "";
@@ -26,6 +26,6 @@
   }
 
   a.nav-link {
-    @apply text-neutral-900 no-underline hover:text-primary w-full;
+    @apply text-gray-100 no-underline hover:text-primary w-full;
   }
 }

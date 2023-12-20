@@ -21,7 +21,7 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
   let template: JSX.Element = <div></div>;
 
   template = (
-    <div className="mr-8 w-activity min-w-activity rounded-4px border-l border-neutral-30 bg-white pl-6 pt-6">
+    <div className="mr-8 w-activity min-w-activity rounded-4px border-l border-gray-5 bg-white pl-6 pt-6">
       {/* HEADER */}
       <div className="mb-4 flex items-center">
         <div className="min-w-9 flex h-9 w-9 items-center">
@@ -29,12 +29,12 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
         </div>
         <span
           className="mx-3 block grow
-         overflow-hidden text-ellipsis whitespace-nowrap text-sm text-neutral-700"
+         overflow-hidden text-ellipsis whitespace-nowrap text-sm text-gray-80"
         >
           {props.title}
         </span>
         <div
-          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-1/2 bg-neutral-20"
+          className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-1/2 bg-gray-5"
           onClick={props.onClose}
         >
           <UilTimes className="text-primary" />
@@ -42,15 +42,15 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
       </div>
 
       {/* TABS */}
-      <div className="mb-4 border-b border-l-neutral-50 text-center">
+      <div className="mb-4 border-b border-l-gray-20 text-center">
         <div className="file-activity-tabs-inner-container">
-          <div className="w-1/2 border-b border-primary py-3 text-neutral-700">Info</div>
+          <div className="w-1/2 border-b border-primary py-3 text-gray-80">Info</div>
         </div>
       </div>
 
       {/* INFO TAB CONTENT */}
-      <div className="relative border-l border-dashed border-l-neutral-50 pl-4">
-        <div className="absolute -left-2 w-4 bg-white text-neutral-500">
+      <div className="relative border-l border-dashed border-l-gray-20 pl-4">
+        <div className="absolute -left-2 w-4 bg-white text-gray-70">
           <UilFolderNetwork className="w-full" />
         </div>
 

@@ -42,17 +42,17 @@ const BaseDialog = ({
     >
       <div
         className={`${panelClasses || ''} absolute left-1/2 top-1/2 flex w-104 -translate-x-1/2
-        -translate-y-1/2 flex-col overflow-hidden  ${
-          dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'
-        } text-neutral-900 ${bgColor || 'bg-white'}`}
+        -translate-y-1/2 flex-col overflow-hidden  ${dialogRounded ? 'rounded-2xl' : 'rounded-lg pt-8'} text-gray-100 ${
+          bgColor || 'bg-white'
+        }`}
       >
-        <div className={`${subTitle ? 'justify-between bg-neutral-10 p-5' : ''} flex flex-row items-start`}>
+        <div className={`${subTitle ? 'justify-between bg-gray-1 p-5' : ''} flex flex-row items-start`}>
           {title ? (
             <div className="relative flex max-w-full flex-1 flex-col truncate">
               <span className={`${titleClasses || ''} truncate text-xl`} title={title}>
                 {title}
               </span>
-              <span className="max-w-fit flex-1 truncate text-base font-normal text-neutral-100">{subTitle}</span>
+              <span className="max-w-fit flex-1 truncate text-base font-normal text-gray-50">{subTitle}</span>
             </div>
           ) : null}
           {hideCloseButton ? null : (
