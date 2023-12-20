@@ -53,7 +53,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
   return (
     <>
       {/* Content */}
-      <div className="flex h-screen flex-row items-stretch justify-center bg-white text-cool-gray-90">
+      <div className="flex h-screen flex-row items-stretch justify-center bg-white text-gray-90">
         {/* Banner */}
         <div
           className="relative hidden h-full w-96 shrink-0 flex-col text-white lg:flex"
@@ -140,14 +140,14 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   >
                     <Menu.Items
                       className="absolute right-0 origin-top-right whitespace-nowrap rounded-md bg-white p-1
-                                            shadow-lg ring-1 ring-cool-gray-100/5 focus:outline-none
+                                            shadow-lg ring-1 ring-gray-100/5 focus:outline-none
                                             "
                     >
                       <Menu.Item>
                         {({ active }) => (
-                          <Link to="/app" className="text-cool-gray-90 no-underline hover:text-cool-gray-90">
+                          <Link to="/app" className="text-gray-90 no-underline hover:text-gray-90">
                             <button
-                              className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
+                              className={`${active && 'bg-gray-1'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                             >
                               {translate('shareLayout.topBar.drive')}
@@ -162,7 +162,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               downloadDesktopApp();
                             }}
-                            className={`${active && 'bg-cool-gray-5'} group flex w-full items-center rounded-md
+                            className={`${active && 'bg-gray-1'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.downloadApp')}
@@ -193,7 +193,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 <div className="flex flex-row space-x-3">
                   <div
                     className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg px-4
-                                    font-medium text-cool-gray-90 no-underline hover:text-cool-gray-90"
+                                    font-medium text-gray-90 no-underline hover:text-gray-90"
                     onClick={() => {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/login';
                     }}
@@ -202,9 +202,9 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                   </div>
 
                   <div
-                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg bg-cool-gray-10
-                                    px-4 font-medium text-cool-gray-90 no-underline
-                                    hover:text-cool-gray-90"
+                    className="flex h-9 cursor-pointer flex-row items-center justify-center rounded-lg bg-gray-5
+                                    px-4 font-medium text-gray-90 no-underline
+                                    hover:text-gray-90"
                     onClick={() => {
                       window.location.href = process.env.REACT_APP_HOSTNAME + '/new';
                     }}

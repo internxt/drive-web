@@ -233,13 +233,13 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">Link expired or files deleted</span>
+          <span className="text-gray-60">Link expired or files deleted</span>
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/app" className="cursor-pointer text-gray-90 no-underline hover:text-gray-90">
             <div
-              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
+              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"
             >
               <span>Open Internxt Drive</span>
@@ -267,7 +267,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={getFormatFileName()}>
                 {getFormatFileName()}
               </abbr>
-              <span className="text-cool-gray-60">{getFormatFileSize()}</span>
+              <span className="text-gray-60">{getFormatFileSize()}</span>
             </div>
           </div>
         </div>
@@ -325,7 +325,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
       </>
     );
   } else {
-    body = <div className="h-8 w-8 text-cool-gray-30">{Spinner}</div>;
+    body = <div className="h-8 w-8 text-gray-30">{Spinner}</div>;
   }
 
   return (

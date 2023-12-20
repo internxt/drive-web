@@ -175,7 +175,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       )}
       <div className={`${className}`}>
         <div className="flex justify-center">
-          <div className="flex flex-row rounded-lg bg-cool-gray-10 p-0.5 text-sm">
+          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
             <IntervalSwitch
               active={interval === 'month'}
               text={translate('general.renewal.monthly')}

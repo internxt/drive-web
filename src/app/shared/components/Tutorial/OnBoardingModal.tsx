@@ -84,8 +84,8 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>
-              <p className="text-3xl leading-9 text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
-              <p className="mt-2 text-base leading-5 text-cool-gray-80	">
+              <p className="text-3xl leading-9 text-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="mt-2 text-base leading-5 text-gray-80	">
                 {t('tutorial.signUpTutorial.stepOne.description')}
               </p>
             </div>

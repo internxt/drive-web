@@ -204,13 +204,13 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared photos no longer available</span>
-          <span className="text-cool-gray-60">{errorMessage}</span>
+          <span className="text-gray-60">{errorMessage}</span>
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/app" className="cursor-pointer text-gray-90 no-underline hover:text-gray-90">
             <div
-              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
+              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"
             >
               <span>Open Internxt Drive</span>
@@ -239,7 +239,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={title}>
                 {title}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(size)}</span>
+              <span className="text-gray-60">{sizeService.bytesToString(size)}</span>
             </div>
           </div>
         </div>
@@ -258,7 +258,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     );
   } else {
     body = (
-      <div className="h-8 w-8 text-cool-gray-30">
+      <div className="h-8 w-8 text-gray-30">
         <Spinner />
       </div>
     );
