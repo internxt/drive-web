@@ -8,9 +8,18 @@ interface BaseCheckboxProps {
   onClick?: React.DOMAttributes<HTMLLabelElement>['onClick'];
   required?: boolean;
   className?: string;
+  checkboxDataCy?: string;
 }
 
-const BaseCheckbox = ({ id, checked, indeterminate, onClick, required, className }: BaseCheckboxProps): JSX.Element => {
+const BaseCheckbox = ({
+  id,
+  checked,
+  indeterminate,
+  onClick,
+  required,
+  className,
+  checkboxDataCy,
+}: BaseCheckboxProps): JSX.Element => {
   return (
     <label
       className={`relative h-5 w-5 rounded focus-within:outline-primary ${className}`}
@@ -19,6 +28,7 @@ const BaseCheckbox = ({ id, checked, indeterminate, onClick, required, className
     >
       <div
         onClick={(e) => e.preventDefault()}
+        data-cy={checkboxDataCy}
         onKeyDown={() => {}}
         className={`relative flex h-5 w-5 cursor-pointer flex-col items-center justify-center rounded border text-white ${
           indeterminate || checked ? 'border-primary bg-primary' : 'border-gray-30 hover:border-gray-40'

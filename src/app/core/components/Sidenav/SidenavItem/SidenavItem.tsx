@@ -9,9 +9,10 @@ interface SidenavItemProps {
   to?: string;
   Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   onClick?: () => void;
+  iconDataCy?: string;
 }
 
-const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): JSX.Element => {
+const SidenavItem = ({ label, to, Icon, onClick, showNew, iconDataCy }: SidenavItemProps): JSX.Element => {
   const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
 
   const { translate } = useTranslationContext();
@@ -19,7 +20,7 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
   const content: ReactNode = (
     <div className="flex h-10 w-full items-center justify-between">
       <div className="flex items-center">
-        <Icon weight={isActive ? 'fill' : undefined} size={24} />
+        <Icon weight={isActive ? 'fill' : undefined} size={24} data-cy={iconDataCy} />
         <span className="ml-2">{label}</span>
       </div>
       {showNew && (

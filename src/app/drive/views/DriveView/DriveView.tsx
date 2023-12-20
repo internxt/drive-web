@@ -91,7 +91,11 @@ class DriveView extends Component<DriveViewProps> {
         <Helmet>
           <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
         </Helmet>
-        <DriveExplorer title={<Breadcrumbs items={this.breadcrumbItems} />} isLoading={isLoading} items={items} />
+        <DriveExplorer
+          title={<Breadcrumbs items={this.breadcrumbItems} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />}
+          isLoading={isLoading}
+          items={items}
+        />
       </>
     );
   }
