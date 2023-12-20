@@ -1,13 +1,4 @@
-import {
-  Clock,
-  ClockCounterClockwise,
-  Link,
-  Desktop,
-  FolderSimple,
-  ImageSquare,
-  Trash,
-  Users,
-} from '@phosphor-icons/react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare, Trash, Users } from '@phosphor-icons/react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -25,7 +16,6 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import envService from '../../services/env.service';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -72,7 +62,7 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
+          <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
           <SidenavItem label={translate('sideNav.shared')} to="/app/shared" Icon={Users} />
