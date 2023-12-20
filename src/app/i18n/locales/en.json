@@ -1358,5 +1358,15 @@
         "description": "Click Upload button to upload your first file."
       }
     }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Folder not found",
+      "description": "Make sure that the URL is correct and the folder hasn’t been moved or deleted."
+    },
+    "file": {
+      "title": "File not found",
+      "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
+    }
   }
 }

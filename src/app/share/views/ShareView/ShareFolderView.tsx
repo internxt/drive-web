@@ -46,8 +46,6 @@ const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to 
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const FOLDERS_LIMIT_BY_REQUEST = 16;
-  const FILES_LIMIT_BY_REQUEST = 128;
   const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
@@ -232,7 +230,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
             <div
               className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
                           px-6 font-medium"
