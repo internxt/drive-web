@@ -205,7 +205,7 @@ function Toolbar({
       leaveTo="opacity-0"
       show={!isIdle}
     >
-      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
+      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black/75 to-transparent p-5">
         <TopIcon Target={X} onClick={onExit} />
         <div className="flex">
           <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />

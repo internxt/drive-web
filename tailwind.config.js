@@ -190,14 +190,11 @@ module.exports = {
       transparentw: 'rgb(255,255,255,0)',
       current: 'currentColor',
       black: 'rgb(0,0,0)',
-      'black-75': 'rgba(0,0,0,.75)',
       white: 'rgb(255,255,255)',
-      // NEW DESIGN SYSTEM
       primary: 'rgb(0,102,255)',
       'primary-dark': 'rgb(0,88,219)',
       red: 'rgb(255,13,0)',
       'red-dark': 'rgb(230,11,0)',
-      'pcComponentes-orange': '#F26122',
       orange: 'rgb(255,149,0)',
       'orange-dark': 'rgb(230,134,0)',
       yellow: 'rgb(255,204,0)',
@@ -226,6 +223,8 @@ module.exports = {
         90: 'rgb(44,44,48)',
         100: 'rgb(24,24,27)',
       },
+      // Suplemental colors
+      'pcComponentes-orange': '#F26122',
       // OLD DESIGN SYSTEM
       'cool-gray': {
         5: 'rgb(249,250,252)',
