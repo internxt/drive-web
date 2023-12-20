@@ -199,7 +199,7 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
       <>
         <div className="relative h-32 w-32">
           <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-          <ItemIconComponent className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
+          <ItemIconComponent className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
@@ -271,7 +271,7 @@ function ImagesIcon() {
   return (
     <div className="relative h-32 w-32">
       <Icon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-      <Icon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
+      <Icon className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
     </div>
   );
 }

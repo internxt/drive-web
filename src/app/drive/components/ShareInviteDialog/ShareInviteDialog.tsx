@@ -241,7 +241,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
               value={messageText}
               placeholder={translate('modals.shareModal.invite.textarea')}
               rows={4}
-              className="w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4 outline-none"
+              className="w-full max-w-lg resize-none rounded-md border border-gray-20 p-3 pl-4 outline-none"
               onChange={(e) => setMessageText(String(e.target.value))}
               maxLength={1000}
             />

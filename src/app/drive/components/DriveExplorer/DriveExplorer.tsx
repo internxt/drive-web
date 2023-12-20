@@ -413,7 +413,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const filesEmptyImage = (
     <div className="relative h-32 w-32">
       <FileIcon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-      <FileIcon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
+      <FileIcon className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
     </div>
   );
 

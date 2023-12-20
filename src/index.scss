@@ -220,7 +220,7 @@ code {
   .drag-over-effect {
     box-shadow: inset 0 0 0 0.15rem var(--color-primary);
 
-    @apply rounded-6px bg-primary/30;
+    @apply rounded-md bg-primary/30;
   }
 }
 

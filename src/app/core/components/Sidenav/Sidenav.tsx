@@ -20,7 +20,6 @@ import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
 import { planSelectors } from 'app/store/slices/plan';
 
-import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';

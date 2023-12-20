@@ -11,6 +11,6 @@
     height: 24px;
     line-height: 24px !important;
 
-    @apply flex cursor-pointer items-center justify-center rounded-1px text-xs text-gray-70 hover:bg-gray-1;
+    @apply flex cursor-pointer items-center justify-center rounded-px text-xs text-gray-70 hover:bg-gray-1;
   }
 }
