@@ -132,7 +132,7 @@ const ShareItemDialog = ({ share, item, isPreviewView }: ShareItemDialogProps): 
           <div className="flex flex-row justify-between">
             <button
               className={`${
-                isLinkCopied ? ' z-10 flex bg-blue-10/5' : ''
+                isLinkCopied ? ' z-10 flex bg-primary/5' : ''
               } flex h-10 flex-row items-center justify-center rounded-md border border-primary px-5`}
               onClick={() => {
                 setIsLinkCopied(true);

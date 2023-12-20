@@ -72,7 +72,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
 
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-  const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';
+  const selectedClassNames: string = isItemSelected(item) ? 'bg-primary/10 grid-item-shadow' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const height = itemRef.current ? itemRef.current.clientWidth + 'px' : 'auto';
 
@@ -162,7 +162,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             <Menu.Button
               id="dropdown-basic"
               ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
+              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
             >
               <UilEllipsisH className="h-full w-full" />
             </Menu.Button>

@@ -58,7 +58,7 @@ const BaseDialog = ({
           {hideCloseButton ? null : (
             <div
               className={`relative ml-auto cursor-pointer
-           transition duration-200 ease-in-out ${closeClass || 'text-blue-60 hover:text-blue-70'} `}
+           transition duration-200 ease-in-out ${closeClass || 'text-primary hover:text-primary-dark'} `}
             >
               <X onClick={onClose} size={28} weight={weightIcon} />
             </div>

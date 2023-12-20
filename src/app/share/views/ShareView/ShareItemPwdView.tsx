@@ -69,7 +69,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
               });
             });
           }}
-          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"
+          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-primary font-medium text-white"
         >
           <p className="text-sm font-medium">{translate('shareItemPwdView.access')}</p>
         </button>

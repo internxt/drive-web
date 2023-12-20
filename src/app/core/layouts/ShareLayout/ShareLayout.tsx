@@ -92,7 +92,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                 rel="noopener noreferrer"
               >
                 <button
-                  className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-blue-60 px-6
+                  className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-primary px-6
                         font-medium text-white"
                 >
                   {translate('shareLayout.tryInternxt')}
@@ -114,12 +114,12 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     <Menu.Button
                       className="inline-flex w-full justify-center rounded-lg px-4 py-2
                                               font-medium focus:outline-none focus-visible:ring-2
-                                              focus-visible:ring-blue-20/75"
+                                              focus-visible:ring-primary/10"
                     >
                       <div className="flex flex-row space-x-3">
                         <div
                           className="flex h-8 w-8 flex-row items-center justify-center
-                                        rounded-full bg-blue-10 text-blue-80"
+                                        rounded-full bg-primary/10 text-primary"
                         >
                           <span className="text-sm font-semibold">{getAvatarLetters()}</span>
                         </div>

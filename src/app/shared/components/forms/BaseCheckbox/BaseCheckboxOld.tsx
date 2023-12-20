@@ -11,12 +11,12 @@ interface BaseCheckboxProps {
 
 const BaseCheckboxOld = ({ label, register, required, text, additionalStyling }: BaseCheckboxProps): JSX.Element => {
   return (
-    <label className={`mt-2 mb-3.5 flex w-max cursor-pointer items-center ${additionalStyling}`}>
+    <label className={`mb-3.5 mt-2 flex w-max cursor-pointer items-center ${additionalStyling}`}>
       <input
         type="checkbox"
         placeholder="Remember me"
         {...register(label, { required })}
-        className="hover:bg-blue-20"
+        className="hover:bg-primary/20"
       />
       <span className="ml-3 select-none text-sm text-neutral-500">{text}</span>
     </label>

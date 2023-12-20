@@ -298,7 +298,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           <button
             onClick={download}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
+                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}
           >
             {Number(progress) == 100 ? (
               <>
@@ -311,7 +311,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                 {/* Download in progress */}
                 <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
                 <span>{translate('actions.downloading')}</span>
-                <span className="font-normal text-blue-20">{progress}%</span>
+                <span className="font-normal text-primary/20">{progress}%</span>
               </>
             ) : (
               <>

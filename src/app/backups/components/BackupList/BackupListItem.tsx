@@ -60,7 +60,7 @@ export default function BackupsListItem({
 
   return (
     <div
-      className={`flex items-center border-b border-neutral-30 py-3.5 hover:bg-blue-20 ${
+      className={`flex items-center border-b border-neutral-30 py-3.5 hover:bg-primary/20 ${
         isUploaded ? '' : 'text-gray-40'
       }`}
       onDoubleClick={onDownload}

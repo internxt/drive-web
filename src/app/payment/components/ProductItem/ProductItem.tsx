@@ -69,7 +69,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       <div
         className={`${
           isPlanActive ? 'visible' : 'invisible'
-        } rounded-translate-lg flex items-center justify-center bg-blue-60 py-2 text-xs font-semibold text-white`}
+        } rounded-translate-lg flex items-center justify-center bg-primary py-2 text-xs font-semibold text-white`}
       >
         {translate('drive.currentPlan')}
       </div>
@@ -90,7 +90,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
 
         {/* TOTAL AMOUNT */}
         {props.product.metadata.is_teams ? (
-          <div className="mt-6 mb-2 rounded-lg border border-neutral-20 bg-neutral-10 p-4">
+          <div className="mb-2 mt-6 rounded-lg border border-neutral-20 bg-neutral-10 p-4">
             <NumberInput
               className="mb-2"
               initialValue={teamMembersCount}
@@ -109,7 +109,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             </div>
           </div>
         ) : (
-          <span className="mt-2 mb-4 text-center text-xs text-neutral-80">
+          <span className="mb-4 mt-2 text-center text-xs text-neutral-80">
             {translate('general.billing.billedEachPeriod', {
               price: totalAmountFormatted,
               period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
@@ -130,12 +130,12 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const tabletTemplate = (
     <div className="product-item tablet">
       <div className="w-36">
-        <div className={`${isPlanActive ? 'text-blue-60' : ''} flex`}>
+        <div className={`${isPlanActive ? 'text-primary' : ''} flex`}>
           <span className="mr-3 block text-xl font-bold">{props.product.metadata.simple_name}</span>
           {isPlanActive && <UilCheck />}
         </div>
 
-        <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
+        <span className={`${isPlanActive ? 'text-primary' : 'text-neutral-80'} block text-xs`}>
           {translate('general.billing.billedEachPeriod', {
             price: totalAmountFormatted,
             period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),

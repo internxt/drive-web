@@ -49,7 +49,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
         <BaseButton
           //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
           disabled={isLoading || !email || !isValidEmail(email)}
-          className="primary inverse"
+          className="primary"
           onClick={onSendButtonClicked}
         >
           {translate('inviteAFriend.actions.sendInvitation') as string}

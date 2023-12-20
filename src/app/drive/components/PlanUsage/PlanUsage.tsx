@@ -47,7 +47,7 @@ export default function PlanUsage({
         <p
           onClick={onUpgradeButtonClicked}
           className={`mt-3 h-full cursor-pointer text-sm font-medium ${
-            isLimitReached ? 'text-red-std' : 'text-blue-60'
+            isLimitReached ? 'text-red-std' : 'text-primary'
           }`}
         >
           {translate('actions.upgradeNow')}

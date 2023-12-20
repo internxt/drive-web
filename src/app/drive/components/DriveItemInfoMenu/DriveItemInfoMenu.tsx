@@ -37,14 +37,14 @@ const DriveItemInfoMenu = (props: DriveItemInfoMenuProps): JSX.Element => {
           className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-1/2 bg-neutral-20"
           onClick={props.onClose}
         >
-          <UilTimes className="text-blue-60" />
+          <UilTimes className="text-primary" />
         </div>
       </div>
 
       {/* TABS */}
       <div className="mb-4 border-b border-l-neutral-50 text-center">
         <div className="file-activity-tabs-inner-container">
-          <div className="w-1/2 border-b border-blue-60 py-3 text-neutral-700">Info</div>
+          <div className="w-1/2 border-b border-primary py-3 text-neutral-700">Info</div>
         </div>
       </div>
 

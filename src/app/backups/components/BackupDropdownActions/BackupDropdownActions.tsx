@@ -24,24 +24,24 @@ class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> 
 
     return (
       <div>
-        {title ? <span className="text-supporting-2 mb-1">{title}</span> : null}
+        {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
 
         {!hiddenActions.includes(DriveItemAction.Download) ? (
           <Dropdown.Item id="download" onClick={this.props.onDownloadButtonClicked}>
-            <UilCloudDownload className="text-blue-60 h-5 mr-1" />
+            <UilCloudDownload className="mr-1 h-5 text-primary" />
             <span>Download</span>
           </Dropdown.Item>
         ) : null}
         {!hiddenActions.includes(DriveItemAction.Info) ? (
           <Dropdown.Item id="info" onClick={this.props.onInfoButtonClicked}>
-            <UilFileInfoAlt className="text-blue-60 h-5 mr-1" />
+            <UilFileInfoAlt className="mr-1 h-5 text-primary" />
             <span>Info</span>
           </Dropdown.Item>
         ) : null}
-        <hr className="text-neutral-30 my-1.5"></hr>
+        <hr className="my-1.5 text-neutral-30"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
-            <UilTrashAlt className="text-red-60 h-5 mr-1" />
+            <UilTrashAlt className="mr-1 h-5 text-red-60" />
             <span className="text-red-60">Delete</span>
           </Dropdown.Item>
         ) : null}

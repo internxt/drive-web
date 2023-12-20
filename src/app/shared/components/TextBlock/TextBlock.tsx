@@ -10,7 +10,7 @@ const TextBlock = (props: TextBlockProps): JSX.Element => {
   return (
     <div className="account-advice-component">
       <div className="mb-2 flex">
-        <props.icon className="text-blue-40 mr-2" />
+        <props.icon className="mr-2 text-primary" />
         {props.title}
       </div>
       <span className="text-neutral-100">{props.description}</span>

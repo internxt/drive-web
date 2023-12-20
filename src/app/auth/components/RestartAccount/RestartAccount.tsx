@@ -127,7 +127,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
         <>
           <span
             onClick={() => props.setHasBackupKey(undefined)}
-            className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+            className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}

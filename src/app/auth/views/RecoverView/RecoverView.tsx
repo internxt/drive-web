@@ -139,7 +139,7 @@ export default function RecoverView(): JSX.Element {
       <div className="flex w-full flex-col items-center justify-center">
         {showSuccess ? (
           <div className="flex w-72 flex-col items-center">
-            <span className="mt-3.5 cursor-pointer text-center text-sm font-medium text-blue-60 hover:text-blue-80">
+            <span className="mt-3.5 cursor-pointer text-center text-sm font-medium text-primary hover:text-primary-dark">
               Your keys have been recovered correctly.
               <br />
               You can upload your content now.
@@ -152,7 +152,7 @@ export default function RecoverView(): JSX.Element {
                 We are going to recover your original key, please introduce your passwords.
               </span>
             </div>
-            <span className="mt-1.5 mb-6 text-sm text-neutral-500" />
+            <span className="mb-6 mt-1.5 text-sm text-neutral-500" />
 
             <BaseInput
               className="mb-2.5"

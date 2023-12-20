@@ -91,7 +91,7 @@ function RequestAccess(): JSX.Element {
           </>
         ) : (
           <div className="flex w-full max-w-xs flex-col items-center rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
-            <CheckCircle size={80} weight="thin" className="mt-3 text-blue-60" />
+            <CheckCircle size={80} weight="thin" className="mt-3 text-primary" />
             <h4 className="mt-4 text-center text-xl font-medium">
               {translate('modals.shareModal.requestAccess.requestSent')}
             </h4>

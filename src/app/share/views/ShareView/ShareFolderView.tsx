@@ -199,7 +199,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             <Spinner />
           </div>
           <span>{translate('actions.downloading')}</span>
-          {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
+          {!!size && size > 0 && <span className="font-normal text-primary/20">{progress}%</span>}
         </>
       ) : (
         <>
@@ -273,7 +273,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               download(itemPassword);
             }}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
+                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}
           >
             {downloadButton}
           </button>

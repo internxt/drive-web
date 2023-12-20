@@ -27,7 +27,7 @@ export const getSignUpSteps = (
                 </div>
               </div>
             </Button>
-            <div className="absolute right-0 top-0 mr-1 mt-1 h-10 w-40 animate-ping rounded-lg bg-blue-50" />
+            <div className="absolute right-0 top-0 mr-1 mt-1 h-10 w-40 animate-ping rounded-lg bg-primary" />
           </div>
           <div className="mt-2 rounded-lg bg-white p-5">
             <p className="text-lg text-cool-gray-100">{t('tutorial.signUpTutorial.stepTwo.title')}.</p>
