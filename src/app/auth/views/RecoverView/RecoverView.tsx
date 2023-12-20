@@ -200,12 +200,12 @@ export default function RecoverView(): JSX.Element {
 
             {showLastPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">{translate('error.lastPasswordError')}</span>
+                <span className="w-56 text-sm font-medium text-red">{translate('error.lastPasswordError')}</span>
               </div>
             )}
             {showCurrentPasswordError && (
               <div className="my-1 flex">
-                <span className="w-56 text-sm font-medium text-red-60">{translate('error.incorrectPassword')}</span>
+                <span className="w-56 text-sm font-medium text-red">{translate('error.incorrectPassword')}</span>
               </div>
             )}
 

@@ -260,9 +260,9 @@ export default function LogIn(): JSX.Element {
             {loginError && showErrors && (
               <div className="flex flex-row items-start pt-1">
                 <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                 </div>
-                <span className="font-base w-56 text-sm text-red-60">{loginError}</span>
+                <span className="font-base w-56 text-sm text-red">{loginError}</span>
               </div>
             )}
 

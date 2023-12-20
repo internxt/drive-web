@@ -77,7 +77,7 @@ code {
     }
 
     &.error {
-      @apply bg-white ring-1 ring-1 ring-red-50; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+      @apply bg-white ring-1 ring-1 ring-red; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
     }
 
     &.warning {
@@ -188,12 +188,12 @@ code {
 
   button.delete-red,
   .base-button.delete-red {
-    @apply bg-red-60 text-white hover:bg-red-dark;
+    @apply bg-red text-white hover:bg-red-dark;
   }
 
   button.cancel,
   .base-button.cancel {
-    @apply bg-opacity-0 text-red-60;
+    @apply bg-opacity-0 text-red;
   }
 
   .base-button.square {

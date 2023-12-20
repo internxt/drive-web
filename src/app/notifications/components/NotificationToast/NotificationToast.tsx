@@ -34,7 +34,7 @@ const NotificationToast = ({
       break;
     case ToastType.Error:
       Icon = WarningOctagon;
-      IconColor = 'text-red-50';
+      IconColor = 'text-red';
       break;
     case ToastType.Info:
       Icon = Info;

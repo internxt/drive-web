@@ -195,8 +195,7 @@ module.exports = {
       // NEW DESIGN SYSTEM
       primary: 'rgb(0,102,255)',
       'primary-dark': 'rgb(0,88,219)',
-      'red-std': 'rgb(255,13,0)',
-      'red-std-transparent': 'rgba(255, 13, 0, 0.08)',
+      red: 'rgb(255,13,0)',
       'red-dark': 'rgb(230,11,0)',
       'pcComponentes-orange': '#F26122',
       orange: 'rgb(255,149,0)',
@@ -240,18 +239,6 @@ module.exports = {
         80: 'rgb(52,58,63)',
         90: 'rgb(33,39,42)',
         100: 'rgb(18,22,25)',
-      },
-      red: {
-        10: 'rgb(255,241,241)',
-        20: 'rgb(255,215,217)',
-        30: 'rgb(255,179,184)',
-        40: 'rgb(255,131,137)',
-        50: 'rgb(250,77,86)',
-        60: 'rgb(218,30,40)',
-        70: 'rgb(162,25,31)',
-        80: 'rgb(117,14,19)',
-        90: 'rgb(82,4,8)',
-        100: 'rgb(45,7,9)',
       },
       neutral: {
         10: 'rgb(250,251,252)',

@@ -61,7 +61,7 @@ function RequestAccess(): JSX.Element {
               />
               <span
                 className={`font-regular mt-2 flex w-full justify-end text-xs text-gray-50 ${
-                  messageTextLimit && 'text-red-50'
+                  messageTextLimit && 'text-red'
                 }`}
               >
                 {messageText.length === 0 ? 0 : messageText.length}/1000

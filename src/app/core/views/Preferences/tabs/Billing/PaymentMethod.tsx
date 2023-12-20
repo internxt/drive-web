@@ -188,7 +188,7 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
   return (
     <>
       <PaymentElement className="mt-5" />
-      {error && <p className="mt-2 text-sm text-red-std">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red">{error}</p>}
       <div className="mt-3 flex items-center justify-end">
         <Button variant="secondary" onClick={onClose}>
           {translate('actions.cancel')}

@@ -191,7 +191,7 @@ const Step2 = ({
       <div className="mt-5 flex w-full max-w-lg flex-row items-center justify-center pb-3">
         <div className="flex w-40 flex-col items-center justify-center rounded-12px border border-gray-10 p-3 shadow-subtle-hard">
           <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
-            <span className="p-2 pt-1.5 pb-1.5">
+            <span className="p-2 pb-1.5 pt-1.5">
               {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleCurrent')}
             </span>
           </div>
@@ -209,14 +209,12 @@ const Step2 = ({
         </div>
         <div className="flex w-40 flex-col items-center justify-center rounded-12px border border-gray-10 p-3 shadow-subtle-hard">
           <div className="mt-3 rounded-xl border border-gray-10 bg-gray-1">
-            <span className="p-2 pt-1.5 pb-1.5">
+            <span className="p-2 pb-1.5 pt-1.5">
               {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.titleNew')}
             </span>
           </div>
           <div className="mt-3">
-            <span
-              className={`text-2xl font-bold text-primary ${isCurrentUsageGreaterThanFreePlan ? 'text-red-std' : ''}`}
-            >
+            <span className={`text-2xl font-bold text-primary ${isCurrentUsageGreaterThanFreePlan ? 'text-red' : ''}`}>
               {FreeStoragePlan.simpleName}
             </span>
           </div>
@@ -229,16 +227,16 @@ const Step2 = ({
       </div>
 
       {isCurrentUsageGreaterThanFreePlan && (
-        <div className="mt-5 flex w-full max-w-lg flex-col rounded-12px border border-red-30 bg-red-10 pt-3 pb-3">
+        <div className="mt-5 flex w-full max-w-lg flex-col rounded-12px border border-red/30 bg-red/10 pb-3 pt-3">
           <div className="flex items-center justify-center p-3">
-            <span className="text-lg font-bold text-red-std">
+            <span className="text-lg font-bold text-red">
               {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.reachedFreeLimit', {
                 freePlanName: FreeStoragePlan.simpleName,
               })}
             </span>
           </div>
           <div className="flex items-center justify-center p-3">
-            <span className="font-medium text-red-std">
+            <span className="font-medium text-red">
               {translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.reachedFreeLimitDescription', {
                 currentUsage: sizeService.bytesToString(currentUsage),
               })}
@@ -299,11 +297,11 @@ const Step3 = ({
           value={otherFeedback}
           placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
           rows={4}
-          className="outline-none mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4"
+          className="mt-4 w-full max-w-lg resize-none rounded-6px border border-gray-20 p-3 pl-4 outline-none"
           onChange={(e) => setOtherFeedback(String(e.target.value))}
         />
         <div className="flex w-full max-w-lg justify-end">
-          <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red-std') || ''}`}>
+          <span className={`text-sm ${(otherFeedback.length > MAX_OTHERFEEDBACK_LENGTH && 'text-red') || ''}`}>
             {otherFeedback.length}/{MAX_OTHERFEEDBACK_LENGTH}
           </span>
         </div>

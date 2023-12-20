@@ -58,9 +58,9 @@ function RecoveryLink(): JSX.Element {
             {showErrors && (
               <div className="mt-2 flex flex-row items-start pb-3">
                 <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                 </div>
-                <span className="font-base w-56 text-sm text-red-60">{emailErrors}</span>
+                <span className="font-base w-56 text-sm text-red">{emailErrors}</span>
               </div>
             )}
             <Button type="submit" variant="primary" className="mt-4 w-full">

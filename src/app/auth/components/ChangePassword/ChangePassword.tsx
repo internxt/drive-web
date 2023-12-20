@@ -230,9 +230,9 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
                   {confirmNewPassword && !isEqualPassword && (
                     <div className="flex flex-row items-start pt-1">
                       <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                       </div>
-                      <span className="font-base w-56 text-sm text-red-60">
+                      <span className="font-base w-56 text-sm text-red">
                         {translate('auth.recoverAccount.changePassword.notMatch')}
                       </span>
                     </div>

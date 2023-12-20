@@ -176,7 +176,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                             onClick={() => {
                               logout();
                             }}
-                            className={`${active && 'bg-red-10/50 text-red-60'} group flex w-full
+                            className={`${active && 'bg-red/10 text-red'} group flex w-full
                                             items-center rounded-md px-4 py-2 font-medium`}
                           >
                             {translate('shareLayout.topBar.logout')}

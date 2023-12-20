@@ -41,8 +41,8 @@ class BackupDropdownActions extends React.Component<BackupDropdownActionsProps> 
         <hr className="my-1.5 text-neutral-30"></hr>
         {!hiddenActions.includes(DriveItemAction.Delete) ? (
           <Dropdown.Item id="info" onClick={this.props.onDeleteButtonClicked}>
-            <UilTrashAlt className="mr-1 h-5 text-red-60" />
-            <span className="text-red-60">Delete</span>
+            <UilTrashAlt className="mr-1 h-5 text-red" />
+            <span className="text-red">Delete</span>
           </Dropdown.Item>
         ) : null}
       </div>

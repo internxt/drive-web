@@ -37,8 +37,8 @@ export default function UsageDetails({
     }
   }, []);
 
-  const colorMapping: { [key in typeof products[number]['color']]: string } = {
-    red: 'bg-red-std',
+  const colorMapping: { [key in (typeof products)[number]['color']]: string } = {
+    red: 'bg-red',
     orange: 'bg-orange',
     yellow: 'bg-yellow',
     green: 'bg-green',

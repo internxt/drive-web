@@ -60,7 +60,7 @@ export default function Input({
 
   switch (accent) {
     case 'error':
-      focusColor = 'border-red-std focus:border-red-std ring-red-std';
+      focusColor = 'border-red focus:border-red ring-red';
       break;
     case 'warning':
       focusColor = 'focus:border-orange ring-orange';
@@ -159,7 +159,7 @@ export default function Input({
       MessageIcon = Warning;
       break;
     case 'error':
-      messageColor = 'text-red-std';
+      messageColor = 'text-red';
       MessageIcon = WarningOctagon;
       break;
     default:

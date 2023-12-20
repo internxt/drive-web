@@ -31,7 +31,7 @@ export default function Button({
   } else if (variant === 'primary' && disabled) {
     styles = 'bg-gray-30 text-white shadow-sm';
   } else if (variant === 'accent' && !disabled) {
-    styles = `${loading ? 'bg-red-dark' : 'bg-red-std'} active:bg-red-dark text-white shadow-sm`;
+    styles = `${loading ? 'bg-red-dark' : 'bg-red'} active:bg-red-dark text-white shadow-sm`;
   } else if (variant === 'accent' && disabled) {
     styles = 'bg-gray-30 text-white shadow-sm';
   } else if (variant === 'secondary' && !disabled) {

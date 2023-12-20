@@ -157,7 +157,7 @@ class App extends Component<AppProps> {
             {isDev && configService.getAppConfig().debug.enabled && (
               <span
                 className="\ \ pointer-events-none absolute -right-7 top-5
-               z-50 w-28 rotate-45 bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
+               z-50 w-28 rotate-45 bg-red px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white/80 drop-shadow-2xl"
               >
                 {t('general.stage.development')}
