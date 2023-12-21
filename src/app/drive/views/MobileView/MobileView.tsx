@@ -40,7 +40,7 @@ const Mobile = (props: MobileProps): JSX.Element => {
   return (
     <div>
       <header className="flex flex-col items-center bg-gray-1 pb-4 pt-8">
-        <InternxtLogo className="h-auto w-28" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
         <div className="flex w-full flex-row items-center justify-between px-4 pt-8">
           <div className="... mr-2 flex flex-row truncate">
             <Avatar

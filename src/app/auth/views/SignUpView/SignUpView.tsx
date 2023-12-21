@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import SignUp from '../../components/SignUp/SignUp';
 import { useMemo } from 'react';
 import authService from '../../services/auth.service';
@@ -23,7 +23,7 @@ export default function SignUpView(props: SignUpViewProps): JSX.Element {
     <div className={`flex h-full w-full flex-col bg-white ${props.displayIframe ? '' : 'overflow-auto sm:bg-gray-5'}`}>
       {isRegularSignup && (
         <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-          <img src={bigLogo} width="120" alt="" />
+          <InternxtLogo className="h-auto w-28 text-gray-100" />
         </div>
       )}
 

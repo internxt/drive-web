@@ -1,12 +1,12 @@
 //import sideInfoBackground from '../../../../assets/images/sideinfo-background.jpg';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 import './AuthSideInfo.scss';
 
 const AuthSideInfo = ({ title, subtitle }: { title: string; subtitle: string }): JSX.Element => {
   return (
     <div className="bg-gray-5">
-      <img className=" object-cover" width="110" src={bigLogo} alt="" />
+      <InternxtLogo className="h-auto w-28 text-gray-100" />
 
       <div className="z-10 flex flex-col">
         <span className="text-xl font-bold">{title}</span>

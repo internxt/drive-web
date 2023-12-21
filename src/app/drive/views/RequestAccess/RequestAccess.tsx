@@ -5,7 +5,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LockSimple, CheckCircle } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import './RequestAccess.scss';
 
 function RequestAccess(): JSX.Element {
@@ -37,7 +37,7 @@ function RequestAccess(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col items-center overflow-auto bg-white sm:bg-gray-5">
       <div className="flex shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="120" alt="" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
 
       <div className="flex h-full w-full max-w-xs shrink-0 flex-col items-center justify-start pb-8">

@@ -217,7 +217,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
           </div>
 
           <div className="flex flex-row items-center justify-between p-4 sm:hidden">
-            <InternxtLogo className="h-3 w-auto" />
+            <InternxtLogo className="h-3 w-auto text-gray-100" />
             <Link to="/new" className="no-underline">
               <div
                 className="flex h-9 cursor-pointer flex-row items-center justify-end rounded-full border border-primary
