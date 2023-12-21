@@ -302,7 +302,7 @@
             },
             "subscription": {
               "planName": "Subscription",
-              "button": "change",
+              "button": "Change",
               "yearly": "year",
               "monthly": "month"
             }
