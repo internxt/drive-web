@@ -107,7 +107,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
             cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
             customer_email: user.email,
             mode: 'payment',
-            currency: 'eur',
+            currency: currency,
           });
           localStorage.setItem('sessionId', response.sessionId);
           await paymentService.redirectToCheckout(response).then(async (result) => {

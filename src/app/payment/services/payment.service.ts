@@ -79,7 +79,7 @@ const paymentService = {
     return paymentsClient.getUserSubscription();
   },
 
-  async getPrices(currency: string): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getPrices(currency);
   },
