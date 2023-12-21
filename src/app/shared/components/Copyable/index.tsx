@@ -21,7 +21,6 @@ export default function Copyable({ className = '', text }: { className?: string;
         popsFrom="top"
         title={justCopied ? 'Copied!' : 'Copy to clipboard'}
         delayInMs={justCopied ? 500 : undefined}
-        style="dark"
       >
         <button disabled={justCopied} onClick={onCopy}>
           <Copy className="text-gray-50 hover:text-gray-60" size={24} />

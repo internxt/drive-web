@@ -66,7 +66,6 @@ export default function AccountDetails({ className = '' }: { className?: string 
             )}
           </div>
           <Tooltip
-            style="dark"
             title={
               isVerified
                 ? translate('views.account.tabs.account.accountDetails.verify.verified')

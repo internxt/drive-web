@@ -71,7 +71,6 @@ export default function UsageDetails({
         {usedProducts.map((product, i) => (
           <Tooltip
             key={product.name}
-            style="light"
             title={product.name}
             subtitle={bytesToString(product.usageInBytes)}
             popsFrom="top"
