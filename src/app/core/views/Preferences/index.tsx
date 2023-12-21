@@ -1,11 +1,12 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { createContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { createContext, useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
 type PreferencesTabID = (typeof PREFERENCES_TABS)[number];
@@ -27,56 +28,39 @@ export default function Preferences(): JSX.Element {
     { id: 'plans', label: translate('views.account.tabs.plans.label'), component: PlansTab },
     { id: 'security', label: translate('views.account.tabs.security.label'), component: SecurityTab },
   ];
-
+  const params = new URLSearchParams(window.location.search);
+  const urlTab = params.get('tab');
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');
-
-  const history = useHistory();
-
-  function updateUrlWithState() {
-    history.replace({ search: new URLSearchParams({ tab: activeTab }).toString() });
-  }
-
-  const firstRun = useRef(true);
+  const [currentTabTitle, setCurrentTabTitle] = useState<string>('account');
 
   useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
+    if (urlTab) {
+      const currentTab = TABS.filter((tab) => tab.id === urlTab);
+      setActiveTab(urlTab as PreferencesTabID);
+      setCurrentTabTitle(currentTab[0].label);
+    } else {
+      navigationService.history.replace({ search: new URLSearchParams({ tab: activeTab }).toString() });
     }
-    updateUrlWithState();
-  }, [activeTab]);
+  }, [urlTab]);
 
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab');
-
-    if (tab && PREFERENCES_TABS.includes(tab as PreferencesTabID)) {
-      setActiveTab(tab as PreferencesTabID);
-    } else if (!tab) {
-      updateUrlWithState();
-    }
-  }, []);
-
-  const currentTabTitle = () => {
-    const currentTab = TABS.filter((tab) => tab.id === activeTab);
-    return currentTab[0].label;
+  const navigateTab = (tabId) => {
+    navigationService.push(AppView.Preferences, { tab: `${tabId}` });
   };
 
   return (
     <div className="flex h-full w-full flex-col">
       <Helmet>
-        <title>{currentTabTitle()} - Internxt Drive</title>
+        <title>{currentTabTitle} - Internxt Drive</title>
       </Helmet>
-      <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      <TabSelector tabs={TABS} activeTab={activeTab} onChange={navigateTab} />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
-        {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
         <div className="flex grow flex-row justify-center overflow-y-auto p-8">
           <div className="w-screen max-w-screen-xl overflow-x-visible">
             {TABS.map(
               ({ component: Component, id }) =>
                 Component && <Component className={`${activeTab !== id ? 'hidden' : ''}`} key={id} />,
             )}
-            <div className="h-8" /> {/* flexbox glitch trick */}
+            <div className="h-8" />
           </div>
         </div>
       </TabContext.Provider>
