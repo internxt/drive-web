@@ -447,7 +447,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const MenuItemToGetSize = () => (
     <div
-      className={'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'}
+      className={
+        'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
+      }
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -458,7 +460,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       {!isTrash && (
         <>
-          <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5">
+          <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
             <FolderSimplePlus size={20} />
             <p>{translate('actions.upload.folder')}</p>
           </div>
@@ -467,7 +469,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
           <div
             className={
-              'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5'
+              'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
             }
           >
             <FileArrowUp size={20} />
@@ -477,7 +479,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       )}
       <div
         className={
-          'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5'
+          'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
         }
       >
         <UploadSimple size={20} />
@@ -659,7 +661,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                                'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
                               }
                             >
                               <Menu.Item>
@@ -676,7 +678,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                       onClick={onCreateFolderButtonClicked}
                                       className={`${
                                         active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                     >
                                       <FolderSimplePlus size={20} />
                                       <p>{translate('actions.upload.folder')}</p>
@@ -694,7 +696,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                     onClick={onUploadFileButtonClicked}
                                     className={`${
                                       active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <FileArrowUp size={20} />
                                     <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
@@ -707,7 +709,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                     onClick={onUploadFolderButtonClicked}
                                     className={`${
                                       active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <UploadSimple size={20} />
                                     <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
@@ -761,7 +763,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         {open && (
                           <Menu.Items
                             className={
-                              'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                              'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
                             }
                           >
                             <Menu.Item>
@@ -770,7 +772,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                   onClick={onDeletePermanentlyButtonClicked}
                                   className={`${
                                     active && 'bg-gray-5'
-                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                 >
                                   <Trash size={20} />
                                   <p>{translate('drive.clearTrash.accept')}</p>
