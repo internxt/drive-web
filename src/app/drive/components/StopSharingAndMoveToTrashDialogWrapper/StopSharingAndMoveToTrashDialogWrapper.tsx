@@ -27,7 +27,6 @@ const StopSharingAndMoveToTrashDialogWrapper = (props: StopSharingAndMoveToTrash
     moveItemsToTrash,
   } = props;
   const dispatch = useDispatch();
-  const previewItem = useAppSelector((state: RootState) => state.ui.fileViewerItem);
   const [isStopSharingDialogLoading, setIsStopSharingDialogLoading] = useState(false);
 
   const onStopSharingAndMoveToTrash = async () => {
