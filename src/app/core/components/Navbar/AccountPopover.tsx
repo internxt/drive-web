@@ -62,10 +62,12 @@ export default function AccountPopover({
       <div className="flex items-center p-3">
         {avatarWrapper}
         <div className="ml-2 min-w-0">
-          <h1 className="truncate font-medium text-gray-80" style={{ lineHeight: 1 }}>
+          <p className="truncate font-medium text-gray-80" title={fullName} style={{ lineHeight: 1 }}>
             {fullName}
-          </h1>
-          <h2 className="truncate text-sm text-gray-50">{user.email}</h2>
+          </p>
+          <p className="truncate text-sm text-gray-50" title={user.email}>
+            {user.email}
+          </p>
         </div>
       </div>
       <div className="flex items-center justify-between px-3 pb-1">
