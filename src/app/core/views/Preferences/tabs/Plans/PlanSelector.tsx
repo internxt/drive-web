@@ -222,7 +222,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
-              onPlanClick={onPlanClick}
+              onPlanClick={() => onPlanClick(price.id, price.currency)}
               priceID={price.id}
               currency={price.currency}
             />
