@@ -203,58 +203,56 @@ export default function LogIn(): JSX.Element {
       <div className="flex h-fit w-96 flex-col items-start justify-center space-y-5 px-8 py-10">
         <h1 className="text-3xl font-medium">{translate('auth.login.title')}</h1>
 
-        <form className="flex w-full flex-col" onSubmit={handleSubmit(onSubmit)}>
-          <div className="flex flex-col space-y-3">
-            <TextInput
-              placeholder={translate('auth.email')}
-              label="email"
-              type="email"
-              register={register}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              error={errors.email}
-            />
+        <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+          <TextInput
+            placeholder={translate('auth.email')}
+            label="email"
+            type="email"
+            register={register}
+            minLength={{ value: 1, message: 'Email must not be empty' }}
+            error={errors.email}
+          />
 
+          <PasswordInput
+            placeholder={translate('auth.password')}
+            label="password"
+            register={register}
+            required={true}
+            minLength={{ value: 1, message: 'Password must not be empty' }}
+            error={errors.password}
+          />
+
+          {showTwoFactor && (
             <PasswordInput
-              placeholder={translate('auth.password')}
-              label="password"
+              label="twoFactorCode"
+              placeholder={translate('auth.login.twoFactorAuthenticationCode')}
+              error={errors.twoFactorCode}
               register={register}
               required={true}
-              minLength={{ value: 1, message: 'Password must not be empty' }}
-              error={errors.password}
+              minLength={1}
+              pattern={twoFactorRegexPattern}
             />
+          )}
 
-            {showTwoFactor && (
-              <PasswordInput
-                label="twoFactorCode"
-                placeholder={translate('auth.login.twoFactorAuthenticationCode')}
-                error={errors.twoFactorCode}
-                register={register}
-                required={true}
-                minLength={1}
-                pattern={twoFactorRegexPattern}
-              />
-            )}
-
-            {loginError && showErrors && (
-              <div className="flex flex-row items-start pt-1">
-                <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
-                </div>
-                <span className="font-base w-56 text-sm text-red">{loginError}</span>
+          {loginError && showErrors && (
+            <div className="flex flex-row items-start pt-1">
+              <div className="flex h-5 flex-row items-center">
+                <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
               </div>
-            )}
+              <span className="font-base w-56 text-sm text-red">{loginError}</span>
+            </div>
+          )}
 
-            <Button
-              disabled={isLoggingIn}
-              text={translate('auth.login.title')}
-              disabledText={
-                isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
-              }
-              loading={isLoggingIn}
-              style="button-primary"
-              className="w-full"
-            />
-          </div>
+          <Button
+            disabled={isLoggingIn}
+            text={translate('auth.login.title')}
+            disabledText={
+              isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
+            }
+            loading={isLoggingIn}
+            style="button-primary"
+            className="w-full"
+          />
         </form>
 
         <Link
