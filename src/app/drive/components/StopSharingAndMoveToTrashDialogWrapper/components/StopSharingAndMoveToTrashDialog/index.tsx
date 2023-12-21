@@ -1,7 +1,7 @@
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Button from '../../../shared/components/Button/Button';
-import Modal from '../../../shared/components/Modal';
-import Spinner from '../../../shared/components/Spinner/Spinner';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import Button from '../../../../../shared/components/Button/Button';
+import Modal from '../../../../../shared/components/Modal';
+import Spinner from '../../../../../shared/components/Spinner/Spinner';
 
 const StopSharingAndMoveToTrashDialog = ({
   showStopSharingConfirmation,

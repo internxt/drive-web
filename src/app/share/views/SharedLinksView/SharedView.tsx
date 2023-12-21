@@ -47,7 +47,7 @@ import EmptySharedView from '../../../share/components/EmptySharedView/EmptyShar
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import StopSharingAndMoveToTrashDialog from '../../../drive/components/StopSharingAndMoveToTrashDialog/StopSharingAndMoveToTrashDialog';
+import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -103,7 +103,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [page, setPage] = useState<number>(0);
   const [orderBy, setOrderBy] = useState<OrderBy>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isStopSharingDialogLoading, setIsStopSharingDialogLoading] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [shareItems, setShareItems] = useState<AdvancedSharedItem[]>([]);
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
@@ -127,6 +126,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
   const isNotRootFolder = !!sharedNamePath.length;
+  const stopSharingItemName = itemToView ? itemToView.plainName : selectedItems[0]?.plainName;
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedData: any = monitor.getItem();
@@ -826,45 +826,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
     setShowStopSharingConfirmation(false);
   };
 
-  const onStopSharingAndMoveToTrash = async () => {
-    const items = itemToView ? [itemToView] : selectedItems;
-
-    setIsStopSharingDialogLoading(true);
-
-    const stopSharingItems = items.map(async (item) => {
-      let itemName: string;
-
-      if (!isItemOwnedByCurrentUser(item.user?.uuid)) {
-        return;
-      } else {
-        if (item.name.length > MAX_SHARED_NAME_LENGTH) {
-          itemName = item.name.substring(0, 32).concat('...');
-        } else {
-          itemName = item.name;
-        }
-
-        await dispatch(
-          sharedThunks.stopSharingItem({
-            itemType: item.isFolder ? 'folder' : 'file',
-            itemId: item.uuid,
-            itemName,
-          }),
-        );
-
-        return item;
-      }
-    });
-
-    const resolvedItems = (await Promise.all(stopSharingItems)).filter(Boolean);
-
-    await moveSelectedItemsToTrash(resolvedItems);
+  const moveItemsToTrashOnStopSharing = async (items) => {
+    await moveSelectedItemsToTrash(items);
 
     if (isFileViewerOpen) {
       onCloseFileViewer();
     }
-
-    setShowStopSharingConfirmation(false);
-    setIsStopSharingDialogLoading(false);
   };
 
   const isCurrentUserViewer = useCallback(() => {
@@ -1212,13 +1179,14 @@ function SharedView(props: SharedViewProps): JSX.Element {
           onShowStopSharingDialog={onOpenStopSharingDialog}
         />
       )}
-      <StopSharingAndMoveToTrashDialog
-        onStopSharing={onStopSharingAndMoveToTrash}
-        isLoading={isStopSharingDialogLoading}
-        itemToShareName={itemToView?.name ?? selectedItems[0]?.plainName}
+      <StopSharingAndMoveToTrashDialogWrapper
         onClose={onCloseStopSharingDialog}
+        selectedItems={itemToView ? [itemToView] : selectedItems}
+        isItemOwnedByCurrentUser={isItemOwnedByCurrentUser}
         showStopSharingConfirmation={showStopSharingConfirmation}
+        moveItemsToTrash={moveItemsToTrashOnStopSharing}
         isMultipleItems={selectedItems.length > 1}
+        itemToShareName={stopSharingItemName}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
