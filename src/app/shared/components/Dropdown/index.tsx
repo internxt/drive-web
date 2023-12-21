@@ -49,7 +49,7 @@ export default function Dropdown({
             <Menu.Item key={option.text}>
               <div
                 onKeyDown={() => {}}
-                className="cursor-pointer px-3 py-1.5 text-gray-80 hover:bg-primary hover:text-white active:bg-primary-dark"
+                className="cursor-pointer px-3 py-1.5 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
                 onClick={option.onClick}
               >
                 {option.text}
