@@ -105,7 +105,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
-    return getPublicSharingMeta(sharingId, code)
+    return getPublicSharingMeta(sharingId, code, password)
       .then((res) => {
         setInfo({ ...res });
         setIsLoaded(true);
