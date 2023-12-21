@@ -13,7 +13,6 @@ import { useAppDispatch } from '../../../../../store/hooks';
 import { planActions, PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
-import { useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
 
