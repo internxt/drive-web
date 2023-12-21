@@ -219,7 +219,7 @@ export default function RecoverView(): JSX.Element {
 
             <div className="mt-3 flex w-full justify-center text-sm">
               <span className="mr-2">Don't you know what this is about?</span>
-              <Link to="/app">Go home</Link>
+              <Link to="/">Go home</Link>
             </div>
           </form>
         )}

@@ -17,9 +17,13 @@ const BannerWrapper = (): JSX.Element => {
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
+  const expireDate = new Date('2024-01-01');
+  const today = new Date();
+
+  const daysLeft = Math.floor((expireDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
 
   const onCloseBanner = () => {
-    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', 31);
+    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', daysLeft);
     setShowBanner(false);
   };
 

@@ -1,4 +1,4 @@
-import { Component, createElement, useEffect } from 'react';
+import { createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -34,7 +34,9 @@ import Mobile from './app/drive/views/MobileView/MobileView';
 import RealtimeService from './app/core/services/socket.service';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
+import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
+import { AppView } from 'app/core/types';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -44,43 +46,44 @@ interface AppProps {
   isSurveyDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
+  namePath: FolderPath[];
   dispatch: AppDispatch;
 }
 
-class App extends Component<AppProps> {
-  constructor(props: AppProps) {
-    super(props);
+const App = (props: AppProps): JSX.Element => {
+  const token = localStorageService.get('xToken');
+  const params = new URLSearchParams(window.location.search);
+  const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
+
+  useEffect(() => {
+    initialState();
+  }, []);
+
+  if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
+    /**
+     * In case we receive a valid redirectUrl param, we return to that URL with the current token
+     */
+    const redirectUrl = authService.getRedirectUrl(params, token);
+
+    if (redirectUrl) {
+      window.location.replace(redirectUrl);
+    }
   }
 
-  async componentDidMount(): Promise<void> {
-    const token = localStorageService.get('xToken');
-    const params = new URLSearchParams(window.location.search);
-    const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
+  const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
+    path: navigationService.history.location.pathname,
+  });
 
-    if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
-      /**
-       * In case we receive a valid redirectUrl param, we return to that URL with the current token
-       */
-      const redirectUrl = authService.getRedirectUrl(params, token);
+  const dispatch: AppDispatch = props.dispatch;
 
-      if (redirectUrl) {
-        window.location.replace(redirectUrl);
-        return;
-      }
-    }
+  window.addEventListener('offline', () => {
+    dispatch(sessionActions.setHasConnection(false));
+  });
+  window.addEventListener('online', () => {
+    dispatch(sessionActions.setHasConnection(true));
+  });
 
-    const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
-      path: navigationService.history.location.pathname,
-    });
-    const dispatch: AppDispatch = this.props.dispatch;
-
-    window.addEventListener('offline', () => {
-      dispatch(sessionActions.setHasConnection(false));
-    });
-    window.addEventListener('online', () => {
-      dispatch(sessionActions.setHasConnection(true));
-    });
-
+  const initialState = async () => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
@@ -91,19 +94,18 @@ class App extends Component<AppProps> {
 
       RealtimeService.getInstance().init();
 
-      await this.props.dispatch(
+      await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
         }),
       );
     } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      console.log(castedError.message);
+      const error = errorService.castError(err);
+      errorService.reportError(error);
     }
-  }
+  };
 
-  get routes(): JSX.Element[] {
+  const routes = (): JSX.Element[] => {
     const routes: JSX.Element[] = views.map((v) => {
       const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
       const layoutConfig = layouts.find((l) => l.id === viewConfig?.layout) || layouts[0];
@@ -120,93 +122,94 @@ class App extends Component<AppProps> {
     });
 
     return routes;
+  };
+
+  const isDev = !envService.isProduction();
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    fileViewerItem,
+  } = props;
+  const pathName = window.location.pathname.split('/')[1];
+  let template = <PreparingWorkspaceAnimation />;
+  let isMobile = false;
+
+  if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
+    isMobile = true;
   }
 
-  render(): JSX.Element {
-    const isDev = !envService.isProduction();
-    const {
-      isInitialized,
-      isAuthenticated,
-      isFileViewerOpen,
-      isNewsletterDialogOpen,
-      isSurveyDialogOpen,
-      fileViewerItem,
-      dispatch,
-    } = this.props;
-    const pathName = window.location.pathname.split('/')[1];
-    let template = <PreparingWorkspaceAnimation />;
-    let isMobile = false;
-
-    if (navigator.userAgent.match(/iPhone/i) || navigator.userAgent.match(/Android/i)) {
-      isMobile = true;
+  if (window.location.pathname) {
+    if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
+      window.rudderanalytics.page(PATH_NAMES[window.location.pathname]);
+      serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
+        // NO OP
+      });
     }
+  }
 
-    if (window.location.pathname) {
-      if ((pathName === 'new' || pathName === 'appsumo') && window.location.search !== '') {
-        window.rudderanalytics.page(PATH_NAMES[window.location.pathname]);
-        serverPage(PATH_NAMES[window.location.pathname]).catch(() => {
-          // NO OP
-        });
-      }
+  const onCloseFileViewer = () => {
+    const isRecentsView = navigationService.isCurrentPath('recents');
+    const isSharedView = navigationService.isCurrentPath('shared');
+    const isRootDrive = props.namePath.length === 1;
+
+    if (isRecentsView || isSharedView) {
+      dispatch(uiActions.setIsFileViewerOpen(false));
+    } else if (isRootDrive) {
+      dispatch(uiActions.setIsFileViewerOpen(false));
+      navigationService.push(AppView.Drive);
+    } else {
+      navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
+  };
 
-    if (!isAuthenticated || isInitialized) {
-      template = (
-        <DndProvider manager={manager}>
-          <Router history={navigationService.history}>
-            {isDev && configService.getAppConfig().debug.enabled && (
-              <span
-                className="\ \ pointer-events-none absolute -right-7 top-5
+  if (!isAuthenticated || isInitialized) {
+    template = (
+      <DndProvider manager={manager}>
+        <Router history={navigationService.history}>
+          {isDev && configService.getAppConfig().debug.enabled && (
+            <span
+              className="\ \ pointer-events-none absolute -right-7 top-5
                z-50 w-28 rotate-45 bg-red px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white/80 drop-shadow-2xl"
-              >
-                {t('general.stage.development')}
-              </span>
-            )}
+            >
+              {t('general.stage.development')}
+            </span>
+          )}
 
-            <Switch>
-              <Route exact path="/">
-                <Redirect to="/login" />
+          <Switch>
+            <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
+            <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/account" to="/preferences" />
+            <Redirect from="/app/:section?" to="/:section?" />
+            {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+              <Route path="*">
+                <Mobile user={props.user} />
               </Route>
-              <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
-              <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
-              <Redirect from="/account" to="/preferences" />
-              {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
-                <Route path="*">
-                  <Mobile user={this.props.user} />
-                </Route>
-              ) : (
-                this.routes
-              )}
-            </Switch>
-
-            <Toaster
-              position="bottom-center"
-              containerStyle={{
-                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
-              }}
-            />
-
-            <NewsletterDialog isOpen={isNewsletterDialogOpen} />
-            {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
-            {isFileViewerOpen && fileViewerItem && (
-              <FileViewerWrapper
-                file={fileViewerItem}
-                onClose={() => dispatch(uiActions.setIsFileViewerOpen(false))}
-                showPreview={isFileViewerOpen}
-              />
+            ) : (
+              routes()
             )}
-          </Router>
-        </DndProvider>
-      );
-    }
+          </Switch>
 
-    return template;
+          <Toaster position="bottom-center" />
+
+          <NewsletterDialog isOpen={isNewsletterDialogOpen} />
+          {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
+
+          {isFileViewerOpen && fileViewerItem && (
+            <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
+          )}
+        </Router>
+      </DndProvider>
+    );
   }
-}
+
+  return template;
+};
 
 const SharingRedirect = () => {
   const params = useParams();
@@ -232,4 +235,5 @@ export default connect((state: RootState) => ({
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
+  namePath: state.storage.namePath,
 }))(App);

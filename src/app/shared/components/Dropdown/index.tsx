@@ -59,7 +59,7 @@ export default function Dropdown({
           {menuItems && (
             <div className="w-full max-w-xs">
               {menuItems?.map((item) => (
-                <Menu.Item key={'menuitem-' + item}>{item}</Menu.Item>
+                <Menu.Item key={'menuitem-' + item}>{({ close }) => <div onClick={close}>{item}</div>}</Menu.Item>
               ))}
             </div>
           )}

@@ -75,6 +75,7 @@ const ItemDetailsDialog = ({
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isItemDetailsDialogOpen);
   const item = useAppSelector((state: RootState) => state.ui.itemDetails);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
   const { translate } = useTranslationContext();
   const [itemProps, setItemProps] = useState<ItemDetailsProps>();
   const [isLoading, setIsLoading] = useState(false);
@@ -167,11 +168,13 @@ const ItemDetailsDialog = ({
           <p title={itemName} className="line-clamp-2 w-full flex-1 text-center text-base font-semibold text-gray-100">
             {itemName}
           </p>
-          <Button onClick={handleButtonItemClick} variant="secondary">
-            {item?.isFolder
-              ? translate('modals.itemDetailsModal.folderCta')
-              : translate('modals.itemDetailsModal.fileCta')}
-          </Button>
+          {!isFileViewerOpen && (
+            <Button onClick={handleButtonItemClick} variant="secondary">
+              {item?.isFolder
+                ? translate('modals.itemDetailsModal.folderCta')
+                : translate('modals.itemDetailsModal.fileCta')}
+            </Button>
+          )}
         </div>
         <div className="flex w-full border border-gray-5" />
 

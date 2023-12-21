@@ -8,9 +8,9 @@
   integrity sha512-1Yjs2SvM8TflER/OD3cOjhWWOZb58A2t7wpE2S9XfBYTiIl+XFhQG2bjy4Pu1I+EAlCNUzRDYDdFwFYUKvXcIA==
 
 "@adobe/css-tools@^4.3.0":
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.3.1.tgz#abfccb8ca78075a2b6187345c26243c1a0842f28"
-  integrity sha512-/62yikz7NLScCGAAST5SHdnjaDJQBDq0M2muyRTpf2VQhw6StBg2ALiu73zSJQ4fMVLA+0uBhBHAle7Wg+2kSg==
+  version "4.3.2"
+  resolved "https://registry.yarnpkg.com/@adobe/css-tools/-/css-tools-4.3.2.tgz#a6abc715fb6884851fca9dad37fc34739a04fd11"
+  integrity sha512-DA5a1C0gD/pLOvhv33YMrbf2FK3oUzwNl9oOJqE4XVjuEtt6XIakRcsd7eLiOSPkp1kTRQGICTA8cKra/vFbjw==
 
 "@alloc/quick-lru@^5.2.0":
   version "5.2.0"
@@ -1605,10 +1605,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@1.4.57":
-  version "1.4.57"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.57/e47b45b2103e46965f38dff1dbb96b0de9f414f8#e47b45b2103e46965f38dff1dbb96b0de9f414f8"
-  integrity sha512-sLUXgPgcfNZID6V0FSuEqV/YmE538Jwc+BJRvXJrfoB0v2XMUZSRgrI8axi5KQY7pbIjrkPqcP0YtLEtn/27lQ==
+"@internxt/sdk@1.4.59":
+  version "1.4.59"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.59/879fe7c663a48083c97cc2d1b8672635b59e9cd6#879fe7c663a48083c97cc2d1b8672635b59e9cd6"
+  integrity sha512-pcbIIQtY1mFd+QJCIpppsKnors6aVHifJq8v2xHha7TORyH4qlNGihSfWo+wzV0JSc2qMO/ty7KLuu4ASQkTkQ==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"

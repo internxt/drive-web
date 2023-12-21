@@ -153,8 +153,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     const foldersList: DriveItemData[] = [];
 
     for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find((item) => item.id === currentBreadcrumb.id);
-      if (selectedFolder) foldersList.push(selectedFolder as DriveItemData);
+      const selectedFolder = allItems[itemsInAllitems].find((item) => item?.id === currentBreadcrumb?.id);
+      if (selectedFolder) foldersList.push(selectedFolder);
     }
     return foldersList;
   };
@@ -196,7 +196,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   };
 
   const onEditButtonClicked = () => {
-    dispatch(uiActions.setIsEditFolderNameDialog(true));
+    dispatch(storageActions.setItemToRename(currentFolder[0]));
   };
 
   const onDeleteBackupButtonClicked = () => {

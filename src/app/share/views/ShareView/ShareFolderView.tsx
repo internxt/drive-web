@@ -18,16 +18,12 @@ import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import shareService from 'app/share/services/share.service';
-import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ReportButton from './ReportButon';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -49,8 +45,6 @@ const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to 
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const FOLDERS_LIMIT_BY_REQUEST = 16;
-  const FILES_LIMIT_BY_REQUEST = 128;
   const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
