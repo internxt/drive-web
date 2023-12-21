@@ -3,8 +3,6 @@ import { useDispatch } from 'react-redux';
 import { MAX_SHARED_NAME_LENGTH } from '../../../share/views/SharedLinksView/SharedView';
 import StopSharingAndMoveToTrashDialog from './components/StopSharingAndMoveToTrashDialog';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
-import { useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
 
 interface StopSharingAndMoveToTrashDialogWrapperProps {
   selectedItems: any[];
