@@ -16,7 +16,8 @@ import moneyService from 'app/payment/services/money.service';
 import { useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
-import axios from 'axios';
+
+const WEBSITE_BASE_URL = envService.isProduction() ? 'https://internxt.com' : 'http://localhost:3001';
 
 const productValue = {
   US: 'usd',
@@ -41,7 +42,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
-    const app = fetch('http://localhost:3001/api/get_country', {
+    const app = fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
       method: 'GET',
     });
     app
