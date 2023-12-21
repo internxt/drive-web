@@ -528,7 +528,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </Popover.Button>
 
                     <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
                         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                       }`}
                       static
@@ -537,7 +537,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         <>
                           {/* Public */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('public')}
                           >
                             <Globe size={32} weight="light" />
@@ -561,7 +561,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </button>
                           {/* Restricted */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('restricted')}
                           >
                             <Users size={32} weight="light" />
@@ -586,7 +586,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button
-                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                               onClick={() => {
                                 setShowStopSharingConfirmation(true);
                                 close();
