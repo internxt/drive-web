@@ -145,7 +145,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
                     >
                       <Menu.Item>
                         {({ active }) => (
-                          <Link to="/app" className="text-gray-90 no-underline hover:text-gray-90">
+                          <Link to="/" className="text-gray-90 no-underline hover:text-gray-90">
                             <button
                               className={`${active && 'bg-gray-1'} group flex w-full items-center rounded-md
                                             px-4 py-2 font-medium`}
