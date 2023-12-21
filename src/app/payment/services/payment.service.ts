@@ -79,9 +79,9 @@ const paymentService = {
     return paymentsClient.getUserSubscription();
   },
 
-  async getPrices(): Promise<DisplayPrice[]> {
+  async getPrices(currency: string): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices();
+    return paymentsClient.getPrices(currency);
   },
 
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
