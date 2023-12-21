@@ -86,7 +86,7 @@ function TabSelector({
 }): JSX.Element {
   return (
     <div className="px-8 pt-5">
-      <div className="flex space-x-8 border-b border-gray-5 px-2">
+      <div className="flex space-x-8 border-b border-gray-5">
         {tabs.map((tab) => (
           <button
             key={tab.id}

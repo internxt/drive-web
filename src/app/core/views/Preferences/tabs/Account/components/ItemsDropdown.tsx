@@ -17,11 +17,14 @@ const ItemsDropdown = ({ title, menuItems }: { title: JSX.Element; menuItems: Re
         leaveFrom="scale-98 opacity-100"
         leaveTo="scale-100 opacity-0"
       >
-        <Menu.Items className={'mt-2 w-full rounded-md bg-white py-1.5'}>
+        <Menu.Items className="w-full pt-2 outline-none">
           {menuItems && (
-            <div className="border-translate w-full border-gray-10">
+            <div className="w-full">
               {menuItems?.map((item, index) => (
-                <div className={'pt-2'} key={'menuitem-' + index}>
+                <div
+                  className={index === 0 ? '' : 'border-t border-gray-5 hover:border-transparent'}
+                  key={'menuitem-' + index}
+                >
                   <Menu.Item>{item}</Menu.Item>
                 </div>
               ))}
