@@ -103,7 +103,7 @@ export default function ListItem<T extends { id: string }>({
   // at the same time as the view to get the size and make the necessary positional adjustments.
   const MenuItemList = () => (
     <div
-      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none"
+      className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard outline-none dark:bg-gray-5"
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -253,7 +253,7 @@ export default function ListItem<T extends { id: string }>({
                     }
                   >
                     <div
-                      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+                      className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5"
                       style={{
                         minWidth: '180px',
                       }}
@@ -276,7 +276,7 @@ export default function ListItem<T extends { id: string }>({
                                       }}
                                       className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                                         active
-                                          ? 'bg-gray-5 text-gray-100'
+                                          ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
                                           : disabled
                                           ? 'pointer-events-none font-medium text-gray-100'
                                           : 'text-gray-80'
