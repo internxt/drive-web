@@ -23,7 +23,7 @@ export default function Copyable({ className = '', text }: { className?: string;
         delayInMs={justCopied ? 500 : undefined}
       >
         <button disabled={justCopied} onClick={onCopy}>
-          <Copy className="text-gray-50 hover:text-gray-60" size={24} />
+          <Copy className="shrink-0 text-gray-50 hover:text-gray-60" size={24} />
         </button>
       </Tooltip>
     </div>
