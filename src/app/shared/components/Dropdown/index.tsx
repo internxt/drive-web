@@ -26,7 +26,7 @@ export default function Dropdown({
 
   function handleActiveItemStyle(active, disabled) {
     if (active) {
-      return 'bg-gray-5 text-gray-100';
+      return 'bg-gray-5 dark:bg-gray-10 text-gray-100';
     }
     return disabled ? 'pointer-events-none font-medium text-gray-100' : 'text-gray-80';
   }
