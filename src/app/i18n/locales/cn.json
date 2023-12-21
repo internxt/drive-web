@@ -1342,5 +1342,15 @@
         "description": "单击上传按钮上传您的第一个文件。"
       }
     }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "未找到文件夹",
+      "description": "确保 URL 正确且文件夹未被移动或删除"
+    },
+    "file": {
+      "title": "未找到文件",
+      "description": "确保 URL 正确且文件未被移动或删除"
+    }
   }
 }

@@ -22,7 +22,9 @@ interface InputProps {
   autoFocus?: boolean;
   value?: string;
   autoComplete?: string;
+  inputDataCy?: string;
 }
+
 const PasswordInput = ({
   label,
   disabled,
@@ -39,8 +41,10 @@ const PasswordInput = ({
   className,
   autoFocus,
   autoComplete,
+  inputDataCy,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={`relative flex-1 ${className}`}>
       <input
@@ -51,6 +55,7 @@ const PasswordInput = ({
         required={true}
         autoFocus={autoFocus}
         autoComplete={autoComplete}
+        data-cy={inputDataCy}
         {...register(label, {
           required,
           minLength,

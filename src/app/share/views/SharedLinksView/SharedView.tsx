@@ -44,6 +44,7 @@ import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
+import { Helmet } from 'react-helmet-async';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
@@ -921,6 +922,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
         e.preventDefault();
       }}
     >
+      <Helmet>
+        <title>{translate('sideNav.shared')} - Internxt Drive</title>
+      </Helmet>
       <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />

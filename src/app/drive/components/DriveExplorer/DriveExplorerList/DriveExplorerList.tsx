@@ -28,6 +28,7 @@ import {
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
 import shareService from '../../../../share/services/share.service';
+import navigationService from 'app/core/services/navigation.service';
 
 interface DriveExplorerListProps {
   folderId: number;
@@ -199,8 +200,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const openPreview = useCallback(
     (item: ContextMenuDriveItem) => {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+      const driveItem = item as DriveItemData;
+      navigationService.pushFile(driveItem.uuid);
     },
     [dispatch, uiActions],
   );
@@ -325,7 +326,13 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
             if (driveItem.isFolder) {
-              dispatch(storageThunks.goToFolderThunk({ name: driveItem.name, id: driveItem.id }));
+              dispatch(
+                storageThunks.goToFolderThunk({
+                  name: driveItem.name,
+                  id: driveItem.id,
+                  uuid: driveItem.uuid,
+                }),
+              );
             } else {
               dispatch(uiActions.setIsFileViewerOpen(true));
               dispatch(uiActions.setFileViewerItem(driveItem));

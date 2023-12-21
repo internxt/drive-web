@@ -1311,5 +1311,15 @@
         "description": "Fare clic sul pulsante _____ per caricare il primo file."
       }
     }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Cartella non trovata",
+      "description": "Assicurarsi che l'URL sia corretto e che la cartella non sia stata spostata o eliminata."
+    },
+    "file": {
+      "title": "File non trovato",
+      "description": "Assicuratevi che l'URL sia corretto e che il file non sia stato spostato o cancellato."
+    }
   }
 }

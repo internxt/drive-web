@@ -250,7 +250,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const getPrivateShareLink = () => {
     try {
-      copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      copy(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({
