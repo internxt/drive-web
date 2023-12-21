@@ -297,7 +297,7 @@ const Step3 = ({
           value={otherFeedback}
           placeholder={translate('views.account.tabs.billing.cancelSubscriptionModal.feedback.placeholder')}
           rows={4}
-          className="mt-4 w-full max-w-lg resize-none rounded-md border border-gray-20 p-3 pl-4 outline-none"
+          className="mt-4 w-full max-w-lg resize-none rounded-md border border-gray-20 bg-transparent p-3 pl-4 outline-none"
           onChange={(e) => setOtherFeedback(String(e.target.value))}
         />
         <div className="flex w-full max-w-lg justify-end">
