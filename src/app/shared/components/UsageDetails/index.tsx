@@ -15,7 +15,7 @@ export default function UsageDetails({
   products: {
     name: string;
     usageInBytes: number;
-    color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'teal' | 'mint' | 'primary' | 'gray';
+    color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'primary' | 'gray';
   }[];
 }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -44,8 +44,6 @@ export default function UsageDetails({
     green: 'bg-green',
     pink: 'bg-pink',
     indigo: 'bg-indigo',
-    teal: 'bg-teal',
-    mint: 'bg-mint',
     primary: 'bg-primary',
     gray: 'bg-gray-40',
   };
