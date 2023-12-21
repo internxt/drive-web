@@ -76,9 +76,6 @@ export default function Input({
   const borderColor =
     variant === 'search' ? 'border-transparent' : 'border-gray-20 disabled:border-gray-10 hover:border-gray-30';
 
-  const backgroundColor =
-    variant === 'search' ? 'bg-gray-5 focus:bg-white disabled:bg-gray-5' : 'bg-white disabled:bg-white';
-
   const placeholderColor = variant === 'search' ? 'placeholder-gray-40' : 'placeholder-gray-30';
 
   const padding = variant === 'search' ? 'pr-4 pl-10' : 'px-4';
@@ -91,8 +88,8 @@ export default function Input({
       <input
         ref={inputRef}
         disabled={disabled}
-        className={`inxt-input h-11 w-full rounded-md border text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 
-          ${borderColor} ${focusColor} ${placeholderColor} ${backgroundColor} ${padding}`}
+        className={`inxt-input h-11 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20 
+          ${borderColor} ${focusColor} ${placeholderColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : variant === 'email' ? 'email' : 'text'}
         placeholder={placeholder}
         onChange={(e) => onChange && onChange(e.target.value)}
@@ -118,7 +115,7 @@ export default function Input({
             e.preventDefault();
             setShowPassword(!showPassword);
           }}
-          className={`absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer py-2 pl-2 text-gray-80 ${backgroundColor}`}
+          className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer bg-transparent py-2 pl-2 text-gray-80"
         >
           {showPassword ? <Eye size={24} /> : <EyeSlash size={24} />}
         </div>
