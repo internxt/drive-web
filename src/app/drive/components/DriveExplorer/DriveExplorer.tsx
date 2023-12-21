@@ -1,7 +1,7 @@
 import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
-import FolderSimpleArrowUp from 'assets/icons/FolderSimpleArrowUp.svg';
+import { ReactComponent as FolderSimpleArrowUp } from 'assets/icons/FolderSimpleArrowUp.svg';
 
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
@@ -505,9 +505,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         data-tooltip-place="bottom"
       >
         <Button variant="tertiary" className="aspect-square" onClick={onUploadFolderButtonClicked}>
-          <div className="h-6 w-6">
-            <img src={FolderSimpleArrowUp} className="h-6 w-6" alt="" />
-          </div>
+          <FolderSimpleArrowUp className="h-6 w-6 text-gray-80" />
         </Button>
         <TooltipElement id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} />
       </div>
