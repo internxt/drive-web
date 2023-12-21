@@ -225,7 +225,9 @@ function IntervalSwitch({
 }): JSX.Element {
   return (
     <button
-      className={`${active ? 'bg-white text-gray-100 shadow-sm' : 'text-gray-50'} rounded-lg px-6 py-1.5 font-medium`}
+      className={`${
+        active ? 'bg-surface text-gray-100 shadow-sm dark:bg-gray-20' : 'text-gray-50'
+      } rounded-lg px-6 py-1.5 font-medium`}
       onClick={onClick}
     >
       {text}
@@ -278,7 +280,7 @@ function Price({
       : translate('actions.purchasePlan');
 
   return (
-    <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
+    <div className={`${className} w-full rounded-xl border border-gray-10 p-6 dark:bg-gray-1 lg:w-64`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="border-translate mt-5 border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">

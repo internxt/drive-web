@@ -67,7 +67,7 @@ export default function UsageDetails({
         </p>
         <p className="text-gray-50">{percentageUsed}%</p>
       </div>
-      <div className="mt-2 flex h-2 rounded-sm bg-gray-5" ref={barRef}>
+      <div className="mt-2 flex h-5 rounded bg-gray-5" ref={barRef}>
         {usedProducts.map((product, i) => (
           <Tooltip
             key={product.name}
@@ -78,7 +78,9 @@ export default function UsageDetails({
           >
             <div
               style={{ width: `${Math.max((product.usageInBytes / maxBytesLimit) * barWidth, 12)}px` }}
-              className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
+              className={`${colorMapping[product.color]} h-full border-r-2 border-surface dark:border-gray-1 ${
+                i === 0 ? 'rounded-l' : ''
+              }`}
             />
           </Tooltip>
         ))}
