@@ -95,7 +95,9 @@ const TopBarActions: FC<TopBarActionsProps> = ({
   }) => (
     <div
       onClick={onClick}
-      className={`${active && 'bg-gray-5'} flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
+      className={`${
+        active && 'bg-gray-5 dark:bg-gray-10'
+      } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
     >
       {icon}
       <p className="ml-3">{text}</p>
@@ -106,7 +108,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
     <div
       className={`${background} z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
-      <div className="flex flex-row items-center justify-center space-x-2 px-5">
+      <div className="flex flex-row items-center justify-center space-x-2">
         {!isAuthenticated && isShareView && (
           <button
             onClick={copyNavigatorLink}
@@ -140,7 +142,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
           >
             <Menu.Items
               className={
-                'absolute right-0 mt-1 w-56 origin-top-right rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                'absolute right-0 z-50 mt-1 w-56 origin-top-right rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
               }
             >
               <>

@@ -115,7 +115,7 @@ const FilePdfViewer = (props: FormatFileViewerProps): JSX.Element => {
                             font-medium shadow-xl"
         >
           <div className="absolute inset-0 h-full w-full backdrop-blur-xl backdrop-contrast-50" />
-          <div className="absolute inset-0 h-full w-full bg-gray-100/80" />
+          <div className="absolute inset-0 h-full w-full bg-black/80" />
 
           <div className="z-10 flex flex-row items-center justify-center space-x-1.5">
             <div className="flex flex-row items-center justify-center">
