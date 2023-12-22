@@ -64,7 +64,7 @@ const Sidenav = (props: SidenavProps) => {
   return (
     <div className="flex w-64 flex-col">
       <div
-        className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8"
+        className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}
       >
         <InternxtLogo className="h-auto w-28 text-gray-100" />

@@ -507,7 +507,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         data-tooltip-place="bottom"
       >
         <Button variant="tertiary" className="aspect-square" onClick={onUploadFolderButtonClicked}>
-          <FolderSimpleArrowUp className="h-6 w-6 text-gray-80" />
+          <FolderSimpleArrowUp className="h-6 w-6 text-gray-100" />
         </Button>
         <TooltipElement id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} />
       </div>
