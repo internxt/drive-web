@@ -154,6 +154,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           taskId: taskId,
           merge: {
             status: TaskStatus.Error,
+            subtitle: t('tasks.subtitles.upload-failed') as string,
           },
         });
 
@@ -312,6 +313,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           taskId: taskId,
           merge: {
             status: TaskStatus.Error,
+            subtitle: t('tasks.subtitles.upload-failed') as string,
           },
         });
 

@@ -911,6 +911,8 @@
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
       "processing": "Traitement {{pending}} de {{finished}}"
     },
+    "waiting": "En attente",
+    "paused": "En pause",
     "create-folder": {
       "status": {
         "pending": "En attente de création de dossier",
@@ -1029,6 +1031,9 @@
         "cancelled": "Annulation du renommage"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Échec du téléchargement"
     }
   },
   "success": {

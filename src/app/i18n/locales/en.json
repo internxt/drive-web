@@ -997,6 +997,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}"
     },
+    "waiting": "Waiting",
+    "paused": "Paused",
     "create-folder": {
       "status": {
         "pending": "Pending to create folder",
@@ -1115,6 +1117,9 @@
         "cancelled": "Cancelled renaming"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload failed"
     }
   },
   "success": {

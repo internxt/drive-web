@@ -228,7 +228,7 @@ class UploadManager {
               if (isUnexpectedError) {
                 tasksService.updateTask({
                   taskId: taskId,
-                  merge: { status: TaskStatus.Error },
+                  merge: { status: TaskStatus.Error, subtitle: t('tasks.subtitles.upload-failed') as string },
                 });
                 errorService.reportError(err, {
                   extra: fileInfoToReport,

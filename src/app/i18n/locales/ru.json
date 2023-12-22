@@ -887,6 +887,8 @@
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}"
     },
+    "waiting": "Ожидание",
+    "paused": "Приостановлено",
     "create-folder": {
       "status": {
         "pending": "Ожидается создание папки",
@@ -1005,6 +1007,9 @@
         "cancelled": "Отмена переименования"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Не удалось загрузить"
     }
   },
   "success": {
