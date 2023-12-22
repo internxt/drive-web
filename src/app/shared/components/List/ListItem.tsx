@@ -253,7 +253,7 @@ export default function ListItem<T extends { id: string }>({
                     }
                   >
                     <div
-                      className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5"
+                      className="z-20 mt-0 flex flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5"
                       style={{
                         minWidth: '180px',
                       }}
