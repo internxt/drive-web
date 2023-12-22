@@ -259,9 +259,9 @@ function ShareGuestSingUpView(): JSX.Element {
                 {bottomInfoError && (
                   <div className="flex flex-row items-start pt-1">
                     <div className="flex h-5 flex-row items-center">
-                      <WarningCircle weight="fill" className="text-red-std mr-1 h-4" />
+                      <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                     </div>
-                    <span className="font-base text-red-60 w-56 text-sm">{bottomInfoError}</span>
+                    <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
                   </div>
                 )}
               </label>

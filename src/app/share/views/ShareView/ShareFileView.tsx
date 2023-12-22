@@ -237,7 +237,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         </div>
 
         {isAuthenticated && (
-          <Link to="/" className="text-cool-gray-90 hover:text-cool-gray-90 cursor-pointer no-underline">
+          <Link to="/" className="cursor-pointer text-gray-100 no-underline hover:text-gray-100">
             <div
               className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"

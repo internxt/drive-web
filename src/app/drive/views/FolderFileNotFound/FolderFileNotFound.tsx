@@ -14,7 +14,7 @@ export default function FolderFileNotFound(): JSX.Element {
       </div>
       <div className="flex h-full flex-col items-center justify-center">
         <div className="flex max-w-sm flex-col items-center rounded-2xl border border-gray-10 bg-gray-1 p-8 text-center">
-          <WarningCircle className=" text-red-std mb-5 text-center" size={80} weight="thin" />
+          <WarningCircle className=" mb-5 text-center text-red" size={80} weight="thin" />
           <h3 className="pb-1 text-xl font-medium text-gray-100">
             {isFolder ? translate('itemNotFound.folder.title') : translate('itemNotFound.file.title')}
           </h3>
