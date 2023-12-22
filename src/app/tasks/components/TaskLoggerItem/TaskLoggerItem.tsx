@@ -35,6 +35,9 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const { retryDownload } = useRetryDownload(notification);
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
+  const notExistProgress = notification.progress && notification.progress === Infinity;
+  const progress = notExistProgress ? '-' : progressInPercentage;
+
   const showProgressBar = notification.status === TaskStatus.InProcess || notification.status === TaskStatus.Paused;
   const isUploadTask = notification.action.includes('upload');
 
@@ -77,15 +80,13 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
         <TaskLoggerActions
           isHovered={isHovered}
           status={notification.status}
-          progress={progressInPercentage.toString()}
+          progress={progress.toString()}
           cancelAction={onCancelButtonClicked}
           retryAction={isDownloadError ? retryDownload : () => {}}
           isUploadTask={isUploadTask}
         />
       </div>
-      {showProgressBar && (
-        <ProgressBar progress={progressInPercentage} isPaused={notification.status === TaskStatus.Paused} />
-      )}
+      {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}
     </div>
   );
 };
