@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 
@@ -267,6 +267,16 @@ function SignUp(props: SignUpProps): JSX.Element {
                   </div>
                 )}
               </label>
+
+              <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                <Info size={20} className="shrink-0 text-primary" />
+                <p className="text-xs">
+                  Internxt doesn't store passwords.{' '}
+                  <span className="font-semibold">
+                    In case you forget your password, you will lose access to all your files.
+                  </span>
+                </p>
+              </div>
 
               <Button
                 disabled={isLoading || !isValidPassword}
