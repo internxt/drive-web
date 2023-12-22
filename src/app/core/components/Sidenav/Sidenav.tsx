@@ -25,6 +25,7 @@ import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import envService from '../../services/env.service';
+import { useAppSelector } from 'app/store/hooks';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -61,6 +62,8 @@ const Sidenav = (props: SidenavProps) => {
 
   const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = props;
 
+  const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
   return (
     <div className="flex w-64 flex-col">
       <div
@@ -74,7 +77,12 @@ const Sidenav = (props: SidenavProps) => {
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} />
           <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
-          <SidenavItem label={translate('sideNav.shared')} to="/app/shared" Icon={Users} />
+          <SidenavItem
+            label={translate('sideNav.shared')}
+            to="/app/shared"
+            Icon={Users}
+            notifications={pendingInvitations.length}
+          />
           <SidenavItem label={translate('sideNav.recents')} to="/app/recents" Icon={Clock} />
           <SidenavItem label={translate('sideNav.trash')} to="/app/trash" Icon={Trash} />
           <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />

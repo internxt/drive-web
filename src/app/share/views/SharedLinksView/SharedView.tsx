@@ -869,12 +869,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 dispatch(uiActions.setIsInvitationsDialogOpen(true));
               }}
             >
-              <p className="space-x-2">
-                Pending Invitations{' '}
-                <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+              <div className="flex items-center space-x-2">
+                <span>Pending Invitations</span>
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
                   {pendingInvitations.length}
                 </span>
-              </p>
+              </div>
             </Button>
           )}
         </div>

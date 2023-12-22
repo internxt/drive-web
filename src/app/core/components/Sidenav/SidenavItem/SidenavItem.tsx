@@ -6,12 +6,13 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 interface SidenavItemProps {
   label: string;
   showNew?: boolean;
+  notifications?: number;
   to?: string;
   Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   onClick?: () => void;
 }
 
-const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): JSX.Element => {
+const SidenavItem = ({ label, to, Icon, onClick, showNew, notifications }: SidenavItemProps): JSX.Element => {
   const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
 
   const { translate } = useTranslationContext();
@@ -27,6 +28,11 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
       {showNew && (
         <div className="h-5 rounded-full bg-primary px-2.5 text-xs font-medium uppercase text-white">
           <p className="leading-5">{translate('general.new')}</p>
+        </div>
+      )}
+      {!!notifications && (
+        <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
+          <span>{notifications}</span>
         </div>
       )}
     </div>
