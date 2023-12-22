@@ -9,6 +9,8 @@ import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import transformItemService from 'app/drive/services/item-transform.service';
 import { DriveItemData } from 'app/drive/types';
+import AppError from 'app/core/types';
+import Button from 'app/shared/components/Button/Button';
 
 export interface ShareItemPwdViewProps {
   onPasswordSubmitted: (password: string) => Promise<void>;
@@ -21,15 +23,36 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
   const { translate } = useTranslationContext();
   const { onPasswordSubmitted, setItemPassword, itemPassword } = props;
   const [onPasswordError, setOnPasswordError] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const Icon = props.itemData ? iconService.getItemIcon(props.itemData.type === 'folder', props.itemData.type) : null;
-  if (!onPasswordError) {
-    setTimeout(() => setOnPasswordError(false), 6000);
-  }
 
   function handleChange(pwd) {
     const value = pwd.target.value;
     setItemPassword(value);
   }
+
+  const handlePasswordSubmit = async () => {
+    try {
+      setIsSubmitting(true);
+      await onPasswordSubmitted(itemPassword);
+    } catch (error) {
+      if (error instanceof AppError) {
+        const { statusCode } = JSON.parse(error.message);
+        if (statusCode === 403) {
+          setOnPasswordError(true);
+        } else {
+          errorService.reportError(error);
+          notificationsService.show({
+            text: errorService.castError(error).message,
+            type: ToastType.Warning,
+            duration: 50000,
+          });
+        }
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex w-full flex-col items-center space-y-0 space-y-8 px-5 sm:w-96">
@@ -75,26 +98,17 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
             <p className="text-sm font-normal text-red-std">{translate('error.wrongPassword')}</p>
           </div>
         )}
-        <button
+        <Button
           type="submit"
+          loading={isSubmitting}
+          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"
           onClick={(evt) => {
             evt.preventDefault();
-            onPasswordSubmitted(itemPassword).catch((err) => {
-              if (err.message === 'Forbidden') {
-                setOnPasswordError(true);
-                return;
-              }
-              notificationsService.show({
-                text: errorService.castError(err).message,
-                type: ToastType.Warning,
-                duration: 50000,
-              });
-            });
+            handlePasswordSubmit();
           }}
-          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"
         >
-          <p className="text-sm font-medium">{translate('shareItemPwdView.access')}</p>
-        </button>
+          {translate('shareItemPwdView.access')}
+        </Button>
       </form>
     </div>
   );

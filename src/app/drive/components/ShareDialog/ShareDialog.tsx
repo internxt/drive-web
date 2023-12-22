@@ -158,7 +158,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   useEffect(() => {
     if (roles.length === 0) dispatch(sharedThunks.getSharedFolderRoles());
 
-    if (roles.length > 0) loadShareInfo();
+    if (roles.length > 0 && isOpen) loadShareInfo();
   }, [roles, isOpen]);
 
   useEffect(() => {
