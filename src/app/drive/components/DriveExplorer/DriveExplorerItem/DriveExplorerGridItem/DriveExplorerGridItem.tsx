@@ -188,8 +188,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         {item.currentThumbnail ? (
           <div className="h-full w-full">
             <img
-              className={`h-full max-h-full w-full max-w-full object-cover pt-5 
-                ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
+              className="h-full max-h-full w-full max-w-full object-contain object-center pt-5"
               src={item.currentThumbnail.urlObject}
             />
           </div>
