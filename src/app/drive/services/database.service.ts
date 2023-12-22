@@ -33,7 +33,7 @@ const deleteDatabaseProfileAvatar = async (): Promise<void> => {
   databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
 };
 
-const updateDatabaseFilePrewiewData = async ({
+const updateDatabaseFilePreviewData = async ({
   fileId,
   folderId,
   previewBlob,
@@ -60,13 +60,13 @@ const updateDatabaseFilePrewiewData = async ({
   );
 };
 
-const getDatabaseFilePrewiewData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
+const getDatabaseFilePreviewData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
 
   return lruFilesPreviewCacheManager?.get(fileId.toString());
 };
 
-const updateDatabasePhotosPrewiewData = async ({
+const updateDatabasePhotosPreviewData = async ({
   photoId,
   preview,
 }: {
@@ -86,7 +86,7 @@ const updateDatabasePhotosPrewiewData = async ({
   );
 };
 
-const getDatabasePhotosPrewiewData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
+const getDatabasePhotosPreviewData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
   const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
   return lruPhotosPreviewCacheManager.get(photoId);
 };
@@ -187,12 +187,12 @@ export {
   getDatabaseProfileAvatar,
   updateDatabaseProfileAvatar,
   deleteDatabaseProfileAvatar,
-  getDatabaseFilePrewiewData,
-  updateDatabaseFilePrewiewData,
+  getDatabaseFilePreviewData,
+  updateDatabaseFilePreviewData,
   getDatabaseFileSourceData,
   updateDatabaseFileSourceData,
-  getDatabasePhotosPrewiewData,
-  updateDatabasePhotosPrewiewData,
+  getDatabasePhotosPreviewData,
+  updateDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
   updateDatabasePhotosSourceData,
   deleteDatabasePhotos,

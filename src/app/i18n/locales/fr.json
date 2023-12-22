@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "Choisissez la confidentialité.",
-    "title": "Offre du Black Friday",
+    "title": "Internxt offre de Noël",
     "cta": "Obtenez l'offre",
     "features": {
-      "discount": "-91% sur notre plans annuels",
+      "discount": "-50% sur notre plans lifetime",
       "safeCloud": "Stockage en nuage sécurisé",
       "openSource": "Open source et transparent",
       "endToEnd": "Transferts cryptés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 30 Novembre"
+      "offerEnds": "L'offre se termine le 7 janvier"
     }
   },
   "valentinesBanner": {
@@ -87,6 +87,10 @@
       "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
       "invalidEmail": "Invalide email"
     },
+    "linkExpired": {
+      "title": "Lien expiré ou supprimé",
+      "description": "Le lien ou l'invitation que vous avez visité a expiré ou a été supprimé"
+    },
     "recoverAccount": {
       "title": "Récupération de compte",
       "subtitle": "Avez-vous une clé de sauvegarde ?",
@@ -140,9 +144,9 @@
     "new": "Nouveau",
     "of": "de",
     "terms": "Termes et conditions",
+    "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
-
     "stage": {
       "development": "Développement",
       "production": "Production"
@@ -365,7 +369,6 @@
             "business": "Changement de plan pour les entreprises"
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
-
           "card": {
             "annually": "€{{amount}} Facturation annuellement",
             "monthly": "€{{amount}} par mois",
@@ -667,6 +670,10 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
+        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire.",
+        "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
+        "accept": "Accepter",
+        "cancel": "Annuler",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
@@ -888,7 +895,6 @@
       "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
-
   "trash": {
     "trash": "Corbeille",
     "clearTrash": "La corbeille est vide",
@@ -1252,6 +1258,16 @@
         "title": "Commençons tout de suite !",
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Dossier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le dossier n'a pas été déplacé ou supprimé."
+    },
+    "file": {
+      "title": "Fichier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
     }
   }
 }

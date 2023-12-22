@@ -26,7 +26,7 @@ export interface StorageState {
   itemToShare: {
     share?: ShareLink;
     sharings?: { type: string; id: string }[];
-    item: DriveItemData | AdvancedSharedItem;
+    item: DriveItemData | (AdvancedSharedItem & { user: { email: string } });
   } | null;
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];

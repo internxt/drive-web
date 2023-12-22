@@ -1,4 +1,4 @@
-import { Fragment, createRef, useEffect, useRef, useState } from 'react';
+import { createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
@@ -9,7 +9,6 @@ import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
-import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
@@ -22,53 +21,15 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const itemButton = useRef<HTMLButtonElement | null>(null);
   const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
-  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
-  const {
-    nameInputRef,
-    onNameChanged,
-    onNameBlurred,
-    onNameClicked,
-    onNameEnterKeyDown,
-    onItemClicked,
-    onItemDoubleClicked,
-    downloadAndSetThumbnail,
-  } = useDriveItemActions(item);
+  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
+  const { onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(
+    props.item,
+  );
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
-
-  const nameNodeFactory = () => {
-    const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
-
-    return (
-      <Fragment>
-        <div className={isEditingName(item) ? 'flex' : 'hidden'}>
-          <input
-            className="dense no-ring rect w-full select-text border border-white"
-            onClick={(e) => e.stopPropagation()}
-            ref={nameInputRef}
-            type="text"
-            value={dirtyName}
-            placeholder="Name"
-            onChange={onNameChanged}
-            onBlur={onNameBlurred}
-            onKeyDown={onNameEnterKeyDown}
-            autoFocus
-          />
-          <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
-        </div>
-        <span
-          data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-gray-100 hover:underline`}
-          onClick={onNameClicked}
-          title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-        >
-          {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-        </span>
-      </Fragment>
-    );
-  };
+  const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
@@ -135,7 +96,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
     if (isItemSelected(item)) {
       itemButton.current?.click();
     } else {
-      onItemClicked(e);
+      onItemClicked();
       setTimeout(() => {
         itemButton.current?.click();
       }, 100);
@@ -197,7 +158,17 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         )}
       </div>
       <div className="mt-3 text-center">
-        <div className="mb-1">{nameNodeFactory()}</div>
+        <div className="mb-1">
+          <span
+            onKeyDown={() => {}}
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className={`${ṣpanDisplayClass} text-neutral-900 cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base hover:underline`}
+            onClick={onNameClicked}
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+          >
+            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+          </span>
+        </div>
       </div>
     </div>,
   );

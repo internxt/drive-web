@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "¡Elige la privacidad!",
-    "title": "Oferta de internxt de Black Friday",
+    "title": "Oferta navideña de Internxt",
     "cta": "¡Obtén el descuento!",
     "features": {
-      "discount": "91% de descuento en planes anuales",
+      "discount": "50% de descuento en planes lifetime",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
       "endToEnd": "Cifrado de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 30 de Noviembre"
+      "offerEnds": "La oferta termina el 7 de Enero"
     }
   },
   "valentinesBanner": {
@@ -141,6 +141,7 @@
     "new": "nuevo",
     "of": "de",
     "terms": "Términos y condiciones",
+    "contactSupport": "Contactar con soporte",
     "help": "¿Necesitas ayuda?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Buscar en esta carpeta",
@@ -161,6 +162,10 @@
         "title": "No hay resultados",
         "subtitle": "Ninguna coincidencia para tu búsqueda"
       }
+    },
+    "linkExpired": {
+      "title": "Enlace caducado o eliminado",
+      "description": "El enlace o invitación que visitó ha caducado o ha sido eliminado"
     },
     "stage": {
       "development": "Development",
@@ -733,6 +738,10 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
+        "inviteNewUsersBody": "Las personas sin una cuenta de Internxt recibirán un correo electrónico de invitación para registrarse.",
+        "inviteNewUsersTitle": "¿Invitar a nuevos usuarios?",
+        "accept": "Aceptar",
+        "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
@@ -1323,6 +1332,16 @@
         "title": "Empecemos...",
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Carpeta no encontrada",
+      "description": "Asegúrese de que la URL es correcta y de que la carpeta no se ha movido ni eliminado."
+    },
+    "file": {
+      "title": "Archivo no encontrado",
+      "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
     }
   }
 }

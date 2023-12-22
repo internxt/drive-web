@@ -410,7 +410,12 @@ export const getPublicShareLink = async (
     }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
+    window.focus();
+    const publicShareLink = `${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`;
+    // workaround to enable copy after login, because first copy always fails
+    copy(publicShareLink);
+    const isCopied = copy(publicShareLink);
+    if (!isCopied) throw Error('Error copying shared public link');
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
   } catch (error) {
@@ -794,6 +799,12 @@ export function createPublicSharingItem(publicSharingPayload: CreateSharingPaylo
     throw errorService.castError(error);
   });
 }
+export function validateSharingInvitation(sharingId: string): Promise<{ uuid: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.validateInviteExpiration(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 
 export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
@@ -851,6 +862,7 @@ const shareService = {
   getPublicSharingMeta,
   getPublicSharedFolderContent,
   getPublicShareLink,
+  validateSharingInvitation,
 };
 
 export default shareService;

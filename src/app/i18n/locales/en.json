@@ -5,15 +5,15 @@
   },
   "blackFridayBanner": {
     "header": "Save big on privacy.",
-    "title": "Internxt's Black Friday Deal",
+    "title": "Internxt’s Christmas Deal",
     "cta": "Get the deal!",
     "features": {
-      "discount": "Get 91% discount on all annual plans",
+      "discount": "Get 50% discount on all annual plans",
       "safeCloud": "Safe and secure cloud storage",
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends November 30th"
+      "offerEnds": "Offer ends January 7th"
     }
   },
   "valentinesBanner": {
@@ -56,6 +56,10 @@
       "title": "Contact Support",
       "description": "Reach out to our Support Team at hello@internxt.com."
     }
+  },
+  "linkExpired": {
+    "title": "Link expired or deleted",
+    "description": "The link or invitation you visited has expired or has been removed"
   },
   "lang": {
     "title": "Language",
@@ -157,6 +161,7 @@
     "new": "new",
     "of": "of",
     "terms": "Terms and conditions",
+    "contactSupport": "Contact Support",
     "help": "Need help?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Search this folder",
@@ -750,6 +755,10 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
+        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
+        "inviteNewUsersTitle": "Invite new users?",
+        "accept": "Accept",
+        "cancel": "Cancel",
         "error": {
           "errorInviting": "Error sending invitation to {{email}}",
           "acceptedError": "Error accepting invitation to shared folder",
@@ -1341,6 +1350,16 @@
         "title": "Let's get started...",
         "description": "Click Upload button to upload your first file."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Folder not found",
+      "description": "Make sure that the URL is correct and the folder hasn’t been moved or deleted."
+    },
+    "file": {
+      "title": "File not found",
+      "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
     }
   }
 }

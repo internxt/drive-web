@@ -121,11 +121,12 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const openItem = (item) => {
-    const itemData = { ...item.item, name: getItemPlainName(item.item) };
+    const itemData = { ...item.item, name: getItemPlainName(item.item), uuid: item.itemId };
     if (item.itemType.toLowerCase() === 'folder') {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id }));
+
+      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id, uuid: itemData.uuid }));
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);

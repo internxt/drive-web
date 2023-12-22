@@ -1,6 +1,7 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { createContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
@@ -56,8 +57,16 @@ export default function Preferences(): JSX.Element {
     }
   }, []);
 
+  const currentTabTitle = () => {
+    const currentTab = TABS.filter((tab) => tab.id === activeTab);
+    return currentTab[0].label;
+  };
+
   return (
     <div className="flex h-full w-full flex-col">
+      <Helmet>
+        <title>{currentTabTitle()} - Internxt Drive</title>
+      </Helmet>
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       <TabContext.Provider value={{ activeTab, setActiveTab }}>
         {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}

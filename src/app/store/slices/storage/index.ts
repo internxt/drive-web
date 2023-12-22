@@ -8,7 +8,7 @@ import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { SharedNamePath } from 'app/share/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {
@@ -195,7 +195,11 @@ export const storageSlice = createSlice({
     },
     setItemToShare: (
       state: StorageState,
-      action: PayloadAction<{ share?: ShareLink; sharing?: { type: string; id: string }; item: DriveItemData } | null>,
+      action: PayloadAction<{
+        share?: ShareLink;
+        sharing?: { type: string; id: string };
+        item: DriveItemData | (AdvancedSharedItem & { user: { email: string } });
+      } | null>,
     ) => {
       state.itemToShare = action.payload;
     },
@@ -236,6 +240,9 @@ export const storageSlice = createSlice({
       if (!state.namePath.map((path) => path.id).includes(action.payload.id)) {
         state.namePath.push(action.payload);
       }
+    },
+    setNamePath: (state: StorageState, action: PayloadAction<FolderPath[]>) => {
+      state.namePath = action.payload;
     },
     pushNamePathDialog: (state: StorageState, action: PayloadAction<FolderPath>) => {
       if (!state.folderPathDialog.map((path) => path.id).includes(action.payload.id)) {
@@ -401,6 +408,7 @@ export const {
   resetNamePath,
   setCurrentPath,
   pushNamePath,
+  setNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
   patchItem,

@@ -23,6 +23,8 @@ import {
   trackFilePreviewOpened,
   trackFilePreviewClicked,
 } from '../../../analytics/services/analytics.service';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { TopBarActionsMenu } from './FileViewerWrapper';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -33,10 +35,10 @@ interface FileViewerProps {
   progress?: number;
   isShareView?: boolean;
   blob?: Blob | null;
-  setBlob?: (blob: Blob | null) => void;
-  changeFile?;
-  totalFolderIndex?;
-  fileIndex?;
+  changeFile?: (direction: 'next' | 'prev') => void;
+  totalFolderIndex?: number;
+  fileIndex?: number;
+  dropdownItems?: TopBarActionsMenu;
 }
 
 export interface FormatFileViewerProps {
@@ -81,6 +83,7 @@ const FileViewer = ({
   changeFile,
   totalFolderIndex,
   fileIndex,
+  dropdownItems,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
@@ -92,6 +95,9 @@ const FileViewer = ({
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
+
+  const isFirstItemOrShareView = fileIndex === 0 || isShareView;
+  const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
 
   const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
     file_size: file?.size,
@@ -151,16 +157,16 @@ const FileViewer = ({
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
     'right',
-    () => changeFile('next'),
+    () => changeFile?.('next'),
     {
-      enabled: fileIndex !== totalFolderIndex - 1,
+      enabled: () => fileIndex !== totalFolderIndex! - 1,
     },
     [fileIndex, totalFolderIndex],
   );
 
   useHotkeys(
     'left',
-    () => changeFile('prev'),
+    () => changeFile?.('prev'),
     {
       enabled: fileIndex !== 0,
     },
@@ -211,89 +217,85 @@ const FileViewer = ({
           <Dialog.Overlay className="fixed inset-0 bg-black/85 backdrop-blur-md" />
 
           {/* Content */}
-          <>
-            {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
-            {fileIndex === 0 || isShareView ? null : (
-              <button
-                title={translate('actions.previous')}
-                className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-                onClick={() => changeFile('prev')}
-              >
-                <CaretLeft size={24} />
-              </button>
-            )}
+          {file && <ShareItemDialog share={file?.shares?.[0]} isPreviewView item={file as DriveItemData} />}
+          {isFirstItemOrShareView ? null : (
+            <button
+              title={translate('actions.previous')}
+              className="absolute left-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
+              onClick={() => changeFile?.('prev')}
+            >
+              <CaretLeft size={24} />
+            </button>
+          )}
 
-            {isTypeAllowed && isPreviewAvailable ? (
-              <div
-                tabIndex={0}
-                className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
-              >
-                <div onClick={(e) => e.stopPropagation()} className="">
-                  {blob && file ? (
-                    <Suspense fallback={<div></div>}>
-                      <Viewer
-                        blob={blob}
-                        changeFile={changeFile}
-                        file={file}
-                        setIsPreviewAvailable={setIsPreviewAvailable}
-                      />
-                    </Suspense>
-                  ) : (
-                    <>
-                      <div
-                        tabIndex={0}
-                        className={`${
-                          progress === 1 ? 'hidden' : 'flex'
-                        } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
+          {isTypeAllowed && isPreviewAvailable ? (
+            <div
+              tabIndex={0}
+              className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
+            >
+              <div onClick={(e) => e.stopPropagation()} className="">
+                {blob && file ? (
+                  <Suspense fallback={<div></div>}>
+                    <Viewer
+                      blob={blob}
+                      changeFile={changeFile}
+                      file={file}
+                      setIsPreviewAvailable={setIsPreviewAvailable}
+                    />
+                  </Suspense>
+                ) : (
+                  <div
+                    tabIndex={0}
+                    className={`${
+                      progress === 1 ? 'hidden' : 'flex'
+                    } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
                       font-medium outline-none`}
-                      >
-                        <div className="flex h-20 w-20 items-center">
-                          <ItemIconComponent width={80} height={80} />
-                        </div>
-                        <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                          {filename}
-                        </span>
-                        <span className="text-white/50">{translate('drive.loadingFile')}</span>
-                        <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
-                          <div
-                            className="h-1.5 rounded-full bg-white"
-                            style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div
-                tabIndex={0}
-                className="z-10 flex select-none flex-col items-center justify-center space-y-6
-                      rounded-xl font-medium outline-none"
-              >
-                <div className="flex flex-col items-center justify-center">
-                  <div className="flex h-20 w-20 items-center">
-                    <ItemIconComponent width={80} height={80} />
+                  >
+                    <div className="flex h-20 w-20 items-center">
+                      <ItemIconComponent width={80} height={80} />
+                    </div>
+                    <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                      {filename}
+                    </span>
+                    <span className="text-white/50">{translate('drive.loadingFile')}</span>
+                    <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
+                      <div
+                        className="h-1.5 rounded-full bg-white"
+                        style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                      />
+                    </div>
                   </div>
-                  <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                    {filename}
-                  </span>
-                  <span className="text-white/50">{translate('error.noFilePreview')}</span>
-                </div>
-
-                <DownloadFile onDownload={onDownload} translate={translate} />
+                )}
               </div>
-            )}
-            {fileIndex === totalFolderIndex - 1 || isShareView ? null : (
-              <button
-                title={translate('actions.next')}
-                className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
-                onClick={() => changeFile('next')}
-              >
-                <CaretRight size={24} />
-              </button>
-            )}
-          </>
+            </div>
+          ) : (
+            <div
+              tabIndex={0}
+              className="z-10 flex select-none flex-col items-center justify-center space-y-6
+                      rounded-xl font-medium outline-none"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <div className="flex h-20 w-20 items-center">
+                  <ItemIconComponent width={80} height={80} />
+                </div>
+                <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                  {filename}
+                </span>
+                <span className="text-white/50">{translate('error.noFilePreview')}</span>
+              </div>
+
+              <DownloadFile onDownload={onDownload} translate={translate} />
+            </div>
+          )}
+          {isLastItemOrShareView ? null : (
+            <button
+              title={translate('actions.next')}
+              className="absolute right-4 top-1/2 z-30 rounded-full bg-black p-4 text-white outline-none"
+              onClick={() => changeFile?.('next')}
+            >
+              <CaretRight size={24} />
+            </button>
+          )}
 
           {/* Background */}
           <div className="pointer-events-none fixed -inset-x-20 -top-6 z-10 h-16 bg-black blur-2xl" />
@@ -328,6 +330,7 @@ const FileViewer = ({
               file={file as DriveItemData}
               isAuthenticated={isAuthenticated}
               isShareView={isShareView}
+              dropdownItems={dropdownItems as ListItemMenu<DriveItemData>}
             />
           </div>
         </div>

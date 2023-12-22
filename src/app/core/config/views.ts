@@ -17,6 +17,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -32,8 +33,9 @@ import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 import SharedView from '../../share/views/SharedLinksView/SharedView';
-import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
+import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 
 const views: Array<{
   id: string;
@@ -45,6 +47,7 @@ const views: Array<{
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
+  { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
@@ -55,6 +58,8 @@ const views: Array<{
   { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
+  { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
@@ -71,7 +76,7 @@ const views: Array<{
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
-  // { id: AppView.RequestAccess, component: RequestAccess },
+  { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
 
   { id: AppView.NotFound, component: NotFoundView },

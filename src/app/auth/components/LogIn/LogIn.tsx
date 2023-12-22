@@ -12,7 +12,7 @@ import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
-// import analyticsService from 'app/analytics/services/analytics.service';
+
 import { WarningCircle } from '@phosphor-icons/react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
@@ -29,14 +29,17 @@ import notificationsService, { ToastType } from '../../../notifications/services
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const urlParams = new URLSearchParams(window.location.search);
 
   const sharingId = urlParams.get('sharingId');
+  const folderuuidToRedirect = urlParams.get('folderuuid');
+
   const sharingToken = urlParams.get('token');
   const sharingAction = urlParams.get('action');
   const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
-  const dispatch = useAppDispatch();
+
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
@@ -105,20 +108,24 @@ export default function LogIn(): JSX.Element {
     mnemonic: string,
     options?: { universalLinkMode: boolean; isSharingInvitation: boolean },
   ) => {
-    if (user.registerCompleted == false) {
+    if (folderuuidToRedirect) {
+      return navigationService.push(AppView.Shared, { folderuuid: folderuuidToRedirect });
+    }
+
+    if (user.registerCompleted === false) {
       return navigationService.history.push('/appsumo/' + user.email);
     }
 
-    if (user && user.registerCompleted && mnemonic && options?.isSharingInvitation) {
+    if (user?.registerCompleted && mnemonic && options?.isSharingInvitation) {
       return navigationService.push(AppView.Shared);
     }
 
-    if (user && user.registerCompleted && mnemonic && !options?.universalLinkMode) {
+    if (user?.registerCompleted && mnemonic && !options?.universalLinkMode) {
       return navigationService.push(AppView.Drive);
     }
 
     // This is a redirect for universal link for Desktop MacOS
-    if (user && user.registerCompleted && mnemonic && options?.universalLinkMode) {
+    if (user?.registerCompleted && mnemonic && options?.universalLinkMode) {
       return navigationService.push(AppView.UniversalLinkSuccess);
     }
   };
@@ -201,11 +208,14 @@ export default function LogIn(): JSX.Element {
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/login`} />
       </Helmet>
       <div className="flex h-fit w-96 flex-col items-start justify-center space-y-5 px-8 py-10">
-        <h1 className="text-3xl font-medium">{translate('auth.login.title')}</h1>
+        <h1 data-cy="loginTitle" className="text-3xl font-medium">
+          {translate('auth.login.title')}
+        </h1>
 
-        <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+        <form data-cy="loginWrapper" className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
           <TextInput
             placeholder={translate('auth.email')}
+            inputDataCy="emailInput"
             label="email"
             type="email"
             register={register}
@@ -215,6 +225,7 @@ export default function LogIn(): JSX.Element {
 
           <PasswordInput
             placeholder={translate('auth.password')}
+            inputDataCy="passwordInput"
             label="password"
             register={register}
             required={true}
@@ -244,6 +255,8 @@ export default function LogIn(): JSX.Element {
           )}
 
           <Button
+            buttonDataCy="loginButton"
+            textDataCy="loginButtonText"
             disabled={isLoggingIn}
             text={translate('auth.login.title')}
             disabledText={

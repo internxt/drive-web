@@ -1,5 +1,6 @@
 import { CircleWavyCheck, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ChristmasBG from '../../assets/images/banner/christmas_banner_bg.png';
 
 const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -31,6 +32,7 @@ const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClo
          absolute bottom-0 left-0 right-0 top-0 z-10 bg-black bg-opacity-40`}
     >
       <div
+        style={{ backgroundImage: `url(${ChristmasBG})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         className={`absolute left-1/2 top-1/2 flex h-auto w-full max-w-4xl -translate-x-1/2 -translate-y-1/2
         transform flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-black to-primary text-gray-100`}
       >
@@ -45,7 +47,7 @@ const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClo
             </div>
             <button
               onClick={() => {
-                window.open('https://internxt.com/black-friday#priceTable', '_blank', 'noopener noreferrer');
+                window.open('https://internxt.com/lifetime#payment', '_blank', 'noopener noreferrer');
               }}
               className="w-max rounded-lg bg-primary px-5 py-3 text-xl font-medium text-white"
             >
