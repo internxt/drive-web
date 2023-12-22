@@ -722,7 +722,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             />
           </div>
           {isTrash && (
-            <div className="flex items-center justify-center">
+            <div className="flex h-0 items-center justify-center">
               <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
                 {({ open }) => {
                   useEffect(() => {
