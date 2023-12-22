@@ -9,7 +9,7 @@
 :root,
 #root {
   color-scheme: light dark;
-  background-color: 'rgb(var(--color-surface) / <alpha-value>)';
+  background: rgb(var(--color-surface));
   font-family: 'Instrument Sans', sans-serif;
   height: 100%;
   -webkit-touch-callout: none; /* iOS Safari */
