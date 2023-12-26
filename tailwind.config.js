@@ -8,6 +8,7 @@ module.exports = {
   theme: {
     colors: {
       // Base
+      inherit: 'inherit',
       transparent: 'rgb(0,0,0,0)',
       transparentw: 'rgb(255,255,255,0)',
       current: 'currentColor',
@@ -60,6 +61,9 @@ module.exports = {
       dropShadow: {
         soft: '0 6px 12px rgba(0, 0, 0, 0.04)',
         tooltip: ['0px 12px 24px rgba(0,0,0,0.12)', '0px 0px 1px rgba(0,0,0,0.16)'],
+      },
+      zIndex: {
+        1: '1',
       },
       opacity: {
         0: '0',
