@@ -116,7 +116,7 @@ export default function ShareDialog({
         style={{
           zIndex,
         }}
-        className="absolute left-1/2 top-1/2 w-96 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-surface p-3 text-center dark:bg-gray-1"
+        className="absolute left-1/2 top-1/2 z-[100] w-96 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-surface p-3 text-center dark:bg-gray-1"
       >
         <XCircle
           className="absolute right-2 top-2 cursor-pointer text-gray-20"
@@ -156,7 +156,7 @@ export default function ShareDialog({
               <Button variant="secondary" className="flex-1" onClick={onClose}>
                 {translate('modals.sharePhotosModal.buttons.cancel')}
               </Button>
-              <Button variant="primary" className="flex-1" onClick={onClose}>
+              <Button variant="primary" className="flex-1" onClick={onCreateShare}>
                 <p>{translate('modals.sharePhotosModal.buttons.create')}</p> <Link size={20} />
               </Button>
             </>
