@@ -211,6 +211,7 @@ export default function ShareLayout(props: ShareLayoutProps): JSX.Element {
 
           {/* File container */}
           <div className="mb-20 flex h-full flex-col items-center justify-center space-y-10">{props.children}</div>
+
           {/* Bottom bar */}
           <div className="hidden h-20 shrink-0 flex-row items-center justify-end px-6 sm:flex">
             <div className="ml-auto px-4">

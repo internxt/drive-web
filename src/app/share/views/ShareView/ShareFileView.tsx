@@ -13,7 +13,7 @@ import fileExtensionService from '../../../drive/services/file-extension.service
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
 import UilCheck from '@iconscout/react-unicons/icons/uil-check';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
+import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
@@ -273,7 +273,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
+        <div className="flex flex-row items-center justify-center space-x-2">
           {isTypeAllowed() && (
             <Button
               variant="secondary"
@@ -290,37 +290,33 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                   });
               }}
             >
-              <UilEye height={24} width={24} color="text-gray-80" />
+              <Eye size={24} className="text-gray-80" />
               <span className="ml-2">{translate('actions.view')}</span>
             </Button>
           )}
 
-          <button
-            onClick={download}
-            className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}
-          >
+          <Button onClick={download} variant="primary">
             {Number(progress) == 100 ? (
               <>
                 {/* Download completed */}
-                <UilCheck height="24" width="24" />
-                <span className="font-medium">{translate('actions.downloaded')}</span>
+                <Check size={24} />
+                <span>{translate('actions.downloaded')}</span>
               </>
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
-                <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
+                <div className="h-5 w-5 text-white">{Spinner}</div>
                 <span>{translate('actions.downloading')}</span>
-                <span className="font-normal text-primary/20">{progress}%</span>
+                <span className="text-white/50">{progress}%</span>
               </>
             ) : (
               <>
                 {/* Download button */}
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{translate('actions.download')}</span>
+                <DownloadSimple size={24} />
+                <span>{translate('actions.download')}</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </>
     );
