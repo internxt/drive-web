@@ -61,7 +61,7 @@ export default function UsageDetails({
       <div className="flex justify-between">
         <p className="text-gray-80">
           {translate('views.account.tabs.account.usage', {
-            totalUsed: bytesToString(planUsage),
+            totalUsed: bytesToString(planUsage) || '0',
             totalSpace: bytesToString(planLimitInBytes),
           })}
         </p>
