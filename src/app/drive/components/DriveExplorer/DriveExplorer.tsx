@@ -560,6 +560,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [currentFolderId]);
   const onCloseEditNameDialog = useCallback(() => {
     setEditNameItem(null);
+    dispatch(storageActions.setItemToRename(null));
   }, []);
 
   const driveExplorer = (
