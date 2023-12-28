@@ -578,7 +578,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 <div className="flex items-center">
                   <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
                   <p className="ml-2 select-none text-base font-medium">
-                    {translate('modals.shareModal.protectSharingModal.buttons.changePassword')}
+                    {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
                   <Question
                     size={14}
