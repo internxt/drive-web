@@ -54,6 +54,7 @@ const App = (props: AppProps): JSX.Element => {
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
+  const queryParameters = navigationService.history.location.search;
 
   useEffect(() => {
     initialState();
@@ -185,7 +186,7 @@ const App = (props: AppProps): JSX.Element => {
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/account" to="/preferences" />
-            <Redirect from="/app/:section?" to="/:section?" />
+            <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
             {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />

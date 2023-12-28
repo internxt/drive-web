@@ -22,6 +22,7 @@ import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
+import navigationService from 'app/core/services/navigation.service';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -126,15 +127,14 @@ const Navbar = (props: NavbarProps) => {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
 
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id, uuid: itemData.uuid }));
+      navigationService.pushFolder(itemData.uuid);
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);
       setOpenSearchBox(false);
       setPreventBlur(false);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(itemData));
+      navigationService.pushFile(itemData.uuid);
     }
   };
 
