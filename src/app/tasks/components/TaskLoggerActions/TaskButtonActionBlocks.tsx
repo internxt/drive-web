@@ -16,9 +16,9 @@ interface UploadingBlockProps {
 
 const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Element => {
   return (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between space-x-1.5">
       <div className="flex h-8 w-8 items-center justify-center">
-        <span className="text-sm text-primary">{progressPercentage}%</span>
+        <span className="text-sm font-medium text-primary">{progressPercentage}%</span>
       </div>
       <div className="flex h-8 w-8 items-center justify-center">
         <UploadIcon height={20} width={20} />
@@ -29,9 +29,9 @@ const UploadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Elemen
 
 const DownloadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Element => {
   return (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between space-x-1.5">
       <div className="flex h-8 w-8 items-center justify-center">
-        <span className="text-sm text-primary">{progressPercentage}%</span>
+        <span className="text-sm font-medium text-primary">{progressPercentage}%</span>
       </div>
       <div className="flex h-8 w-8 items-center justify-center">
         <DownloadIcon height={20} width={20} />
@@ -44,7 +44,7 @@ const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask }): JSX.El
   const InProgressItem = isUploadTask ? UploadingBlock : DownloadingBlock;
 
   return isHovered ? (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
       <TaskLoggerButton onClick={() => {}} Icon={Pause} />
     </div>
@@ -55,17 +55,17 @@ const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask }): JSX.El
 
 const PausedBlock = ({ isHovered, cancelAction }): JSX.Element => {
   return isHovered ? (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
       <TaskLoggerButton onClick={() => {}} Icon={Play} />
     </div>
   ) : (
-    <span className="text-sm text-gray-60">{t('tasks.paused')}</span>
+    <span className="text-sm font-medium text-gray-60">{t('tasks.paused')}</span>
   );
 };
 
 const PendingBlock = (): JSX.Element => {
-  return <span className="text-sm text-gray-50">{t('tasks.waiting')}</span>;
+  return <span className="text-sm font-medium text-gray-50">{t('tasks.waiting')}</span>;
 };
 
 const SuccessBlock = ({ isHovered }): JSX.Element => {
@@ -80,7 +80,7 @@ const SuccessBlock = ({ isHovered }): JSX.Element => {
 
 const ErrorBlock = ({ isHovered, cancelAction, retryAction }): JSX.Element => {
   return isHovered ? (
-    <div className="flex flex-row justify-between">
+    <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
       <TaskLoggerButton onClick={retryAction} Icon={RestartIcon} />
     </div>
