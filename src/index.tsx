@@ -42,14 +42,14 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <Provider store={store}>
-        <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
+      <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
+        <Provider store={store}>
           <TranslationProvider>
             <App />
             <Intercom />
           </TranslationProvider>
-        </LiveChatLoaderProvider>
-      </Provider>
+        </Provider>
+      </LiveChatLoaderProvider>
     </HelmetProvider>
   </React.StrictMode>,
 );
