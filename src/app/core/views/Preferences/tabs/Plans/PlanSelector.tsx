@@ -17,7 +17,7 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
 import errorService from 'app/core/services/error.service';
 
-const WEBSITE_BASE_URL = envService.isProduction() ? 'https://internxt.com' : 'http://localhost:3001';
+const WEBSITE_BASE_URL = envService.isProduction() ? process.env.REACT_APP_WEBSITE_URL : 'http://localhost:3001';
 
 const productValue = {
   US: 'usd',
