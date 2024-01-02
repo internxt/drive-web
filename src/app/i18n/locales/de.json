@@ -346,9 +346,9 @@
           },
           "viewAllFeatures": "Alle Funktionen anzeigen",
           "card": {
-            "annually": "€{{amount}} Jährliche Rechnung",
-            "monthly": "€{{amount}} pro Monat",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Jährliche Rechnung",
+            "monthly": "{{amount}} pro Monat",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Einmalige Zahlung"
           },
           "features": {

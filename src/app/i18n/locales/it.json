@@ -387,9 +387,9 @@
           },
           "viewAllFeatures": "Visualizza tutte le caratteristiche",
           "card": {
-            "annually": "€{{amount}} fatturato annualmente",
-            "monthly": "€{{amount}} al mese",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} fatturato annualmente",
+            "monthly": "{{amount}} al mese",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Pagamento unico"
           },
           "features": {
