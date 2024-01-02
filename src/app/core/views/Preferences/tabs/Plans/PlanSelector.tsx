@@ -10,7 +10,7 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { planActions, PlanState, planThunks } from '../../../../../store/slices/plan';
+import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
