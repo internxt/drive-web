@@ -15,6 +15,7 @@ import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
+import errorService from 'app/core/services/error.service';
 
 const WEBSITE_BASE_URL = envService.isProduction() ? 'https://internxt.com' : 'http://localhost:3001';
 
@@ -44,14 +45,33 @@ export default function PlanSelector({ className = '' }: { className?: string })
     const app = fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
       method: 'GET',
     });
+
     app
       .then((res) => res.json())
       .then(({ country }) => {
         const currencyValue = productValue[country] ?? 'eur';
-        paymentService.getPrices(currencyValue).then(setPrices);
+        paymentService.getPrices(currencyValue).then((prices) => {
+          // TODO: REMOVE THIS CONDITIONAL WHEN THE CHRISTMAS OFFER IS OVER
+          // setPrices(prices);
+
+          if (currencyValue === 'usd') {
+            paymentService
+              .getPrices('eur')
+              .then((allPrices) => {
+                const lifetimePrices = allPrices.filter((price) => price.interval === 'lifetime');
+                const setLifetimePrices = [...prices, ...lifetimePrices];
+                setPrices(setLifetimePrices);
+              })
+              .catch((err) => {
+                const error = errorService.castError(err);
+                errorService.reportError(error);
+              });
+          }
+        });
       })
       .catch((error) => {
         console.error(error);
+        paymentService.getPrices('eur').then(setPrices);
       });
   }, []);
 
@@ -371,7 +391,6 @@ const ChangePlanDialog = ({
   const selectedPlanInterval = selectedPlan?.interval;
   const currentPlanSizeString = bytesToString(planLimit);
 
-  console.log({ prices });
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
   let subscriptionCurrencySymbol: string | null = null;
