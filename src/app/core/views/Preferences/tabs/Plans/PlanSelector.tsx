@@ -36,7 +36,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
-  const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
+  const [prices, setPrices] = useState<DisplayPrice[]>([]);
   const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceIdSelected, setPriceIdSelected] = useState('');
@@ -52,20 +52,19 @@ export default function PlanSelector({ className = '' }: { className?: string })
         const currencyValue = productValue[country] ?? 'eur';
         paymentService.getPrices(currencyValue).then((prices) => {
           // TODO: REMOVE THIS CONDITIONAL WHEN THE CHRISTMAS OFFER IS OVER
-          // setPrices(prices);
-
           if (currencyValue === 'usd') {
             paymentService
               .getPrices('eur')
               .then((allPrices) => {
                 const lifetimePrices = allPrices.filter((price) => price.interval === 'lifetime');
-                const setLifetimePrices = [...prices, ...lifetimePrices];
-                setPrices(setLifetimePrices);
+                setPrices([...prices, ...lifetimePrices]);
               })
               .catch((err) => {
                 const error = errorService.castError(err);
                 errorService.reportError(error);
               });
+          } else {
+            setPrices(prices);
           }
         });
       })
