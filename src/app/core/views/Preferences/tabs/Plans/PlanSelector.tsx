@@ -334,6 +334,7 @@ function Price({
       </p>
       {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
+          <span>{moneyService.getCurrencySymbol(currency.toUpperCase())}</span>
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
