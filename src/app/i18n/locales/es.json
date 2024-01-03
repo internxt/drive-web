@@ -408,9 +408,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "{{amount}}€ facturado al año",
-            "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€",
+            "annually": "{{amount}} facturado al año",
+            "monthly": "{{amount}} al mes",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Pago único"
           },
           "features": {

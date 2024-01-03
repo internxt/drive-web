@@ -10,12 +10,18 @@ import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { planActions, PlanState, planThunks } from '../../../../../store/slices/plan';
+import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
 import moneyService from 'app/payment/services/money.service';
-import { useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
+import errorService from 'app/core/services/error.service';
+
+const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
+
+const productValue = {
+  US: 'usd',
+};
 
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
@@ -30,13 +36,42 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const priceButtons = subscription?.type === 'subscription' ? 'change' : 'upgrade';
 
-  const [prices, setPrices] = useState<DisplayPrice[] | null>(null);
+  const [prices, setPrices] = useState<DisplayPrice[]>([]);
   const [interval, setInterval] = useState<DisplayPrice['interval']>('year');
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
-    paymentService.getPrices().then(setPrices);
+    const app = fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
+      method: 'GET',
+    });
+
+    app
+      .then((res) => res.json())
+      .then(({ country }) => {
+        const currencyValue = productValue[country] ?? 'eur';
+        paymentService.getPrices(currencyValue).then((prices) => {
+          // TODO: REMOVE THIS CONDITIONAL WHEN THE CHRISTMAS OFFER IS OVER
+          if (currencyValue === 'usd') {
+            paymentService
+              .getPrices('eur')
+              .then((allPrices) => {
+                const lifetimePrices = allPrices.filter((price) => price.interval === 'lifetime');
+                setPrices([...prices, ...lifetimePrices]);
+              })
+              .catch((err) => {
+                const error = errorService.castError(err);
+                errorService.reportError(error);
+              });
+          } else {
+            setPrices(prices);
+          }
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        paymentService.getPrices('eur').then(setPrices);
+      });
   }, []);
 
   let stripe;
@@ -57,7 +92,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
 
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
-  async function onPlanClick(priceId: string) {
+  async function onPlanClick(priceId: string, currency: string) {
     setLoadingPlanAction(priceId);
 
     if (subscription?.type !== 'subscription') {
@@ -68,6 +103,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
           cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
           customer_email: user.email,
           mode: interval === 'lifetime' ? 'payment' : 'subscription',
+          currency: currency,
         });
         localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
@@ -90,6 +126,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
             cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
             customer_email: user.email,
             mode: 'payment',
+            currency: currency,
           });
           localStorage.setItem('sessionId', response.sessionId);
           await paymentService.redirectToCheckout(response).then(async (result) => {
@@ -193,7 +230,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
             />
           </div>
         </div>
-        <div className="mt-5 flex flex-col justify-center gap-y-5 lg:flex-row lg:gap-y-0 lg:gap-x-5">
+        <div className="mt-5 flex flex-col justify-center gap-y-5 lg:flex-row lg:gap-x-5 lg:gap-y-0">
           {pricesFilteredAndSorted?.map((price) => (
             <Price
               key={price.id}
@@ -204,8 +241,9 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
-              onPlanClick={onPlanClick}
+              onPlanClick={() => onPlanClick(price.id, price.currency)}
               priceID={price.id}
+              currency={price.currency}
             />
           ))}
         </div>
@@ -225,7 +263,7 @@ function IntervalSwitch({
 }): JSX.Element {
   return (
     <button
-      className={`${active ? 'bg-white text-gray-100 shadow-sm' : 'text-gray-50'} rounded-lg py-1.5 px-6 font-medium`}
+      className={`${active ? 'bg-white text-gray-100 shadow-sm' : 'text-gray-50'} rounded-lg px-6 py-1.5 font-medium`}
       onClick={onClick}
     >
       {text}
@@ -244,6 +282,7 @@ function Price({
   loading,
   onPlanClick,
   priceID,
+  currency,
 }: DisplayPrice & {
   button: 'change' | 'current' | 'upgrade';
   onClick?: () => void;
@@ -252,6 +291,7 @@ function Price({
   loading: boolean;
   onPlanClick: (value: string) => void;
   priceID: string;
+  currency: string;
 }): JSX.Element {
   let amountMonthly: number | null = null;
   let amountAnnually: number | null = null;
@@ -282,6 +322,7 @@ function Price({
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="border-translate mt-5 border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">
+        <span>{moneyService.getCurrencySymbol(currency.toUpperCase())}</span>
         {interval === 'lifetime'
           ? translate('views.account.tabs.plans.card.lifetime', {
               amount: displayAmount(amount),
@@ -292,6 +333,7 @@ function Price({
       </p>
       {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
+          <span>{moneyService.getCurrencySymbol(currency.toUpperCase())}</span>
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
@@ -335,7 +377,7 @@ const ChangePlanDialog = ({
   prices: DisplayPrice[];
   isDialgOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
-  onPlanClick: (value: string) => void;
+  onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -360,7 +402,7 @@ const ChangePlanDialog = ({
   }
 
   if (subscription?.type === 'subscription') {
-    subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency);
+    subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency.toUpperCase());
     if (subscription.interval === 'month') {
       currentAmountMonthly = subscription.amount;
     } else if (subscription.interval === 'year') {
@@ -414,11 +456,15 @@ const ChangePlanDialog = ({
           </p>
           {selectedPlanInterval === 'lifetime' ? (
             <div>
-              <span className="text-base font-medium">{`€${displayAmount(selectedPlanAmount)}`}</span>
+              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
+                selectedPlanAmount,
+              )}`}</span>
             </div>
           ) : (
             <div>
-              <span className="text-base font-medium">{`€${displayAmount(amountMonthly)}`}</span>
+              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
+                amountMonthly,
+              )}`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
@@ -445,7 +491,7 @@ const ChangePlanDialog = ({
         <Button className="mr-2" variant="secondary" onClick={onClose}>
           {translate('views.account.tabs.plans.dialog.button.back')}
         </Button>
-        <Button variant="primary" onClick={() => onPlanClick(priceIdSelected)}>
+        <Button variant="primary" onClick={() => onPlanClick(priceIdSelected, selectedPlan.currency)}>
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>
       </div>

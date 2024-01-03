@@ -38,6 +38,7 @@ interface BreadcrumbsItemProps {
   totalBreadcrumbsLength: number;
   isHiddenInList?: boolean;
   items: BreadcrumbItemData[];
+  breadcrumbButtonDataCy?: string;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -153,8 +154,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     const foldersList: DriveItemData[] = [];
 
     for (const itemsInAllitems in allItems) {
-      const selectedFolder = allItems[itemsInAllitems].find((item) => item.id === currentBreadcrumb.id);
-      if (selectedFolder) foldersList.push(selectedFolder as DriveItemData);
+      const selectedFolder = allItems[itemsInAllitems].find((item) => item?.id === currentBreadcrumb?.id);
+      if (selectedFolder) foldersList.push(selectedFolder);
     }
     return foldersList;
   };
@@ -400,6 +401,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         }`}
           key={props.item.id}
           onClick={() => onItemClicked(props.item)}
+          onKeyDown={() => {}}
+          data-cy={props?.breadcrumbButtonDataCy}
         >
           {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
           {props.item.icon ? props.item.icon : null}
