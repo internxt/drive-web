@@ -9,13 +9,8 @@ const ContactSupport = () => {
   const { translate } = useTranslationContext();
   const [state, loadChat] = useChat();
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
   const onClick = () => {
-    setIsDialogOpen(!isDialogOpen);
-    setTimeout(() => {
-      loadChat({ open: isDialogOpen });
-    }, 500);
+    loadChat({ open: true });
   };
 
   return (
