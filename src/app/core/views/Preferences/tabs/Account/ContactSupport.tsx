@@ -12,8 +12,10 @@ const ContactSupport = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const onClick = () => {
-    setIsDialogOpen(true);
-    loadChat({ open: isDialogOpen });
+    setIsDialogOpen(!isDialogOpen);
+    setTimeout(() => {
+      loadChat({ open: isDialogOpen });
+    }, 500);
   };
 
   return (
