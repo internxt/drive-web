@@ -274,6 +274,11 @@
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
+          "support": {
+            "title": "Support",
+            "description": "Navigieren Sie durch hilfreiche Artikel oder erhalten Sie Unterstützung von unserem Team.",
+            "cta": "Support-Center öffnen"
+          },
           "deleteAccount": {
             "head": "Lösche Konto",
             "description": "Durch das Löschen deines Kontos löscht Internxt deine Dateien und Daten für immer. Sobald diese Aktion eingeleitet wurde, kann sie nicht mehr rückgängig gemacht werden.",

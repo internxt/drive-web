@@ -324,6 +324,11 @@
               "errorSendingVerification": "Error enviando verificación"
             }
           },
+          "support": {
+            "title": "Soporte",
+            "description": "Navega por artículos útiles o recibe asistencia de nuestro equipo.",
+            "cta": "Abrir Centro de Soporte"
+          },
           "deleteAccount": {
             "head": "Eliminar cuenta",
             "description": "Si eliminas tu cuenta, tus datos se eliminarán para siempre. Esta acción no se puede deshacer.",

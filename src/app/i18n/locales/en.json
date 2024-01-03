@@ -342,6 +342,11 @@
               "errorSendingVerification": "Error sending verification"
             }
           },
+          "support": {
+            "title": "Support",
+            "description": "Navigate helpful articles or get assistance from our team.",
+            "cta": "Open Support Centre"
+          },
           "deleteAccount": {
             "head": "Delete account",
             "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",

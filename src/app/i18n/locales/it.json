@@ -310,6 +310,11 @@
               "errorSendingVerification": "Errore nell'invio della verifica"
             }
           },
+          "support": {
+            "title": "Supporto",
+            "description": "Naviga tra articoli utili o ottieni assistenza dal nostro team.",
+            "cta": "Apri il Centro di supporto"
+          },
           "deleteAccount": {
             "head": "Elimina l'account",
             "description": "Se elimini il tuo account, i tuoi dati verranno cancellati per sempre. Questa azione non può essere annullata.",
