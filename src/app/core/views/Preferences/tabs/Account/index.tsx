@@ -21,11 +21,11 @@ export default function AccountTab({ className = '' }: { className?: string }): 
           <div className="mt-8 flex flex-col flex-wrap gap-x-10 gap-y-8 xl:flex-row">
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
+              <Language />
               <InviteAFriend />
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
-              <Language />
               <ContactSupport />
               <DeleteAccount />
             </div>
@@ -38,11 +38,11 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
               <Language />
+              <DeleteAccount />
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
               <ContactSupport />
-              <DeleteAccount />
             </div>
           </div>
         </div>
