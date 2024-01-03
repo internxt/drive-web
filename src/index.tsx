@@ -46,7 +46,6 @@ root.render(
         <Provider store={store}>
           <TranslationProvider>
             <App />
-            <Intercom />
           </TranslationProvider>
         </Provider>
       </LiveChatLoaderProvider>

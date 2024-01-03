@@ -329,6 +329,11 @@
               "errorSendingVerification": "错误发送验证"
             }
           },
+          "support": {
+            "title": "支持",
+            "description": "浏览有用的文章或向我们的团队寻求帮助。",
+            "cta": "打开支持中心"
+          },
           "deleteAccount": {
             "head": "删除账户",
             "description": "如果你删除你的帐户，你的数据将被永远删除。这一操作不能被撤销",
