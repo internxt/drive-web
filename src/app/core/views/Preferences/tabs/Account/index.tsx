@@ -38,10 +38,10 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
               <Language />
-              <ContactSupport />
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
+              <ContactSupport />
               <DeleteAccount />
             </div>
           </div>
