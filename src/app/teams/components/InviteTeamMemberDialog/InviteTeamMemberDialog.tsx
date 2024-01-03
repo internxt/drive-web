@@ -122,7 +122,7 @@ const InviteTeamMemberDialog = ({ team }: InviteTeamMemberDialogProps) => {
                     <span className="w-72 truncate text-ellipsis">{member.user}</span>
                   </div>
                   <UilTrashAlt
-                    className="h-5 cursor-pointer text-blue-60 transition duration-300 hover:text-blue-80"
+                    className="h-5 cursor-pointer text-primary transition duration-300 hover:text-primary-dark"
                     onClick={() => deleteMembers(member)}
                   />
                 </div>

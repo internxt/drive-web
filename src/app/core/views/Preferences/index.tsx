@@ -79,11 +79,11 @@ function TabSelector({
 }): JSX.Element {
   return (
     <div className="px-8 pt-5">
-      <div className="flex space-x-5 border-b border-gray-5 px-2">
+      <div className="flex space-x-8 border-b border-gray-5">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`flex h-10 items-center border-b-2 px-2 font-medium ${
+            className={`flex h-10 items-center border-b-2 font-medium ${
               tab.id === activeTab
                 ? 'border-primary text-primary'
                 : 'cursor-pointer border-transparent text-gray-60 hover:text-gray-70'

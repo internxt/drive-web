@@ -34,7 +34,7 @@ const BlackFridayBanner = ({ showBanner, onClose }: { showBanner: boolean; onClo
       <div
         style={{ backgroundImage: `url(${ChristmasBG})`, backgroundSize: 'cover', backgroundPosition: 'center' }}
         className={`absolute left-1/2 top-1/2 flex h-auto w-full max-w-4xl -translate-x-1/2 -translate-y-1/2
-        transform flex-col overflow-hidden rounded-2xl text-neutral-900`}
+        transform flex-col overflow-hidden rounded-2xl bg-gradient-to-r from-black to-primary text-gray-100`}
       >
         <button className="absolute right-0 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />

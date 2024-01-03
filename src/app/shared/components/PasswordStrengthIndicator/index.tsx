@@ -15,8 +15,8 @@ export default function PasswordStrengthIndicator({
 
   switch (strength) {
     case 'error':
-      activeBackground = 'bg-red-std';
-      labelColor = 'text-red-std';
+      activeBackground = 'bg-red';
+      labelColor = 'text-red';
       break;
     case 'warning':
       activeBackground = 'bg-orange';

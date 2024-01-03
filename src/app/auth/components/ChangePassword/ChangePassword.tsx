@@ -157,7 +157,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
           />
           <span
             onClick={() => props.setHasBackupKey(undefined)}
-            className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+            className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}
@@ -187,7 +187,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             <>
               <span
                 onClick={() => setBackupKeyContent('')}
-                className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+                className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
               >
                 <CaretLeft size={18} className="mr-0.5" />
                 {translate('auth.recoverAccount.backupKey.title')}
@@ -230,9 +230,9 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
                   {confirmNewPassword && !isEqualPassword && (
                     <div className="flex flex-row items-start pt-1">
                       <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                       </div>
-                      <span className="font-base w-56 text-sm text-red-60">
+                      <span className="font-base w-56 text-sm text-red">
                         {translate('auth.recoverAccount.changePassword.notMatch')}
                       </span>
                     </div>

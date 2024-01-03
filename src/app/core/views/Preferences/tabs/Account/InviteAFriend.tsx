@@ -73,7 +73,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
               {translate('inviteAFriend.actions.sendInvitation')}
             </Button>
           )}
-          <button onClick={() => setModalOpen(true)} className="font-medium text-primary underline">
+          <button onClick={() => setModalOpen(true)} className="font-medium text-primary">
             {translate('inviteAFriend.actions.seeInvitations')}
           </button>
         </div>

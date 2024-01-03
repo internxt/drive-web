@@ -53,7 +53,7 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
       <div className="flex h-1 grow">
         <Sidenav />
 
-        <div className="flex w-1 grow flex-col bg-white">
+        <div className="flex w-1 grow flex-col">
           <Navbar hideSearch={hideSearch} />
           <div className="flex h-1 w-full grow">
             {children}

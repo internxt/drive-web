@@ -37,6 +37,12 @@
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)"
   },
+  "theme": {
+    "title": "Erscheinung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
   "auth": {
     "email": "E-Mail",
     "password": "Passwort",

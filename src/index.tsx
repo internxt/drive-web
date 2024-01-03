@@ -21,6 +21,7 @@ import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
+import { ThemeProvider } from 'app/theme/ThemeProvider';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -42,9 +43,11 @@ root.render(
   <React.StrictMode>
     <HelmetProvider>
       <Provider store={store}>
-        <TranslationProvider>
-          <App />
-        </TranslationProvider>
+        <ThemeProvider>
+          <TranslationProvider>
+            <App />
+          </TranslationProvider>
+        </ThemeProvider>
       </Provider>
     </HelmetProvider>
   </React.StrictMode>,

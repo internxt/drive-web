@@ -173,7 +173,7 @@ const App = (props: AppProps): JSX.Element => {
           {isDev && configService.getAppConfig().debug.enabled && (
             <span
               className="\ \ pointer-events-none absolute -right-7 top-5
-               z-50 w-28 rotate-45 bg-red-50 px-3.5 py-1 text-center text-supporting-2 font-bold
+               z-50 w-28 rotate-45 bg-red px-3.5 py-1 text-center text-supporting-2 font-bold
                tracking-wider text-white/80 drop-shadow-2xl"
             >
               {t('general.stage.development')}
@@ -196,7 +196,12 @@ const App = (props: AppProps): JSX.Element => {
             )}
           </Switch>
 
-          <Toaster position="bottom-center" />
+          <Toaster
+            position="bottom-center"
+            containerStyle={{
+              filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
+            }}
+          />
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}

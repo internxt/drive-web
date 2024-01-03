@@ -9,7 +9,6 @@ import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
-import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
 import { Menu } from '@headlessui/react';
@@ -34,7 +33,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
 
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-  const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';
+  const selectedClassNames: string = isItemSelected(item) ? 'bg-primary/10 grid-item-shadow' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const height = itemRef.current ? itemRef.current.clientWidth + 'px' : 'auto';
 
@@ -109,7 +108,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
       ref={itemRef}
       style={{ height }}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
-        group relative box-border rounded-lg p-4 hover:bg-neutral-10`}
+        group relative box-border rounded-lg p-4 hover:bg-gray-1`}
       onContextMenu={handleRightClick}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
@@ -124,7 +123,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
             <Menu.Button
               id="dropdown-basic"
               ref={itemButton}
-              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
+              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
             >
               <UilEllipsisH className="h-full w-full" />
             </Menu.Button>
@@ -150,8 +149,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         {item.currentThumbnail ? (
           <div className="h-full w-full">
             <img
-              className={`h-full max-h-full w-full max-w-full object-cover pt-5 
-                ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
+              className="h-full max-h-full w-full max-w-full object-contain object-center pt-5"
               src={item.currentThumbnail.urlObject}
             />
           </div>
@@ -164,7 +162,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
           <span
             onKeyDown={() => {}}
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-            className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
+            className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-gray-100 hover:underline`}
             onClick={onNameClicked}
             title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
           >
