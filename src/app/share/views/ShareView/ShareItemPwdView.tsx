@@ -34,7 +34,8 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
   const handlePasswordSubmit = async () => {
     try {
       setIsSubmitting(true);
-      await onPasswordSubmitted(itemPassword);
+      const encodedPassword = encodeURIComponent(itemPassword);
+      await onPasswordSubmitted(encodedPassword);
     } catch (error) {
       if (error instanceof AppError) {
         const { statusCode } = JSON.parse(error.message);
