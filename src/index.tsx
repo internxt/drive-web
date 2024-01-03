@@ -21,7 +21,7 @@ import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
-import { Intercom, LiveChatLoaderProvider } from 'react-live-chat-loader';
+import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
