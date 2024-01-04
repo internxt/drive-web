@@ -12,9 +12,16 @@ const validateSearchText = (value: string): boolean => {
   return alphanumericDotsAndSpaces.test(value);
 };
 
+const validatePasswordInput = (value: string): boolean => {
+  const latinAlphabetAndSymbols = /^[a-zA-Z0-9 ~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]*$/gm;
+
+  return latinAlphabetAndSymbols.test(value);
+};
+
 const validationService = {
   validate2FA,
   validateSearchText,
+  validatePasswordInput,
 };
 
 export default validationService;

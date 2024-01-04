@@ -11,6 +11,7 @@ import transformItemService from 'app/drive/services/item-transform.service';
 import { DriveItemData } from 'app/drive/types';
 import AppError from 'app/core/types';
 import Button from 'app/shared/components/Button/Button';
+import validationService from 'app/core/services/validation.service';
 
 export interface ShareItemPwdViewProps {
   onPasswordSubmitted: (password: string) => Promise<void>;
@@ -28,7 +29,9 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
 
   function handleChange(pwd) {
     const value = pwd.target.value;
-    setItemPassword(value);
+    if (validationService.validatePasswordInput(value)) {
+      setItemPassword(value);
+    }
   }
 
   const handlePasswordSubmit = async () => {

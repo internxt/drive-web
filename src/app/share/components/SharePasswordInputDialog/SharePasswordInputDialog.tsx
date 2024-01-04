@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Spinner } from '@phosphor-icons/react';
 import Input from 'app/shared/components/Input';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import validationService from 'app/core/services/validation.service';
 
 type SharePasswordInputDialogProps = {
   isOpen: boolean;
@@ -39,7 +40,7 @@ export const SharePasswordInputDialog = ({
       </p>
       <Input
         onChange={(value) => {
-          if (value.length <= MAX_PASSWORD_LENGTH) {
+          if (value.length <= MAX_PASSWORD_LENGTH && validationService.validatePasswordInput(value)) {
             setPassword(value);
           }
         }}
