@@ -9,6 +9,8 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import localStorageService from '../../services/local-storage.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../services/error.service';
+import { userThunks } from '../../../store/slices/user';
+import { useDispatch } from 'react-redux';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 
@@ -22,6 +24,7 @@ const STATUS = {
 
 export default function ChangeEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
   const urlParams = new URLSearchParams(window.location.search);
@@ -59,12 +62,15 @@ export default function ChangeEmailView(): JSX.Element {
     setStatus(STATUS.LOADING);
 
     try {
-      const correctPassword = await areCredentialsCorrect(email, password);
-      if (correctPassword) {
+      const isCorrectPassword = await areCredentialsCorrect(email, password);
+      if (isCorrectPassword) {
         setAuth(true);
 
         try {
-          await userService.verifyEmailChange(token);
+          const { newAuthentication } = await userService.verifyEmailChange(token);
+          const { user, token: oldToken, newToken } = newAuthentication;
+          dispatch(userThunks.updateUserEmailCredentialsThunk({ newUserData: user, token: oldToken, newToken }));
+
           setStatus(STATUS.SUCCESS);
         } catch (error) {
           errorService.reportError(error);
@@ -164,9 +170,9 @@ export default function ChangeEmailView(): JSX.Element {
 
             <Link
               className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
-              to={cta[status].path}
+              to={cta[status]?.path}
             >
-              {cta[status].label}
+              {cta[status]?.label}
             </Link>
           </>
         )}
