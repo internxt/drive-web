@@ -18,8 +18,11 @@ const WarningMessageWrapper = ({
 }: WarningMessageWrapperProps): JSX.Element => {
   const isLimitReached = planUsage >= planLimit;
   const isLoading = isLoadingPlanLimit || isLoadingPlanUsage;
+  const plansNotFetched = planUsage === 0 && planLimit === 0;
+  const areNotNumbers =
+    (planUsage !== 0 && !planUsage) || (planLimit !== 0 && !planLimit) || isNaN(planUsage) || isNaN(planLimit);
 
-  if (!isLimitReached || isLoading) return <></>;
+  if (plansNotFetched || areNotNumbers || !isLimitReached || isLoading) return <></>;
 
   return <WarningMessage />;
 };
