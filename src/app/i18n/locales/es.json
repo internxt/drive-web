@@ -50,6 +50,13 @@
     "ru": "Русский (Ruso)",
     "de": "Deutsch (Alemán)"
   },
+  "theme": {
+    "title": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",

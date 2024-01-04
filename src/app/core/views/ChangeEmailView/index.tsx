@@ -83,7 +83,7 @@ export default function ChangeEmailView(): JSX.Element {
       subtitle: translate('views.emailChange.success.subtitle'),
     },
     error: {
-      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      icon: <WarningCircle className="text-red" weight="thin" size={96} />,
       title: translate('views.emailChange.error.title'),
       subtitle: translate('views.emailChange.error.subtitle'),
     },

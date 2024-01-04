@@ -20,18 +20,18 @@ const DeleteAccountDialog = (props: { isOpen: boolean; onClose: () => void }): J
 
   return (
     <BaseDialog title="Are you sure?" isOpen={props.isOpen} onClose={onClose}>
-      <span className="text-center block w-full text-base px-8 text-neutral-900 my-6">
+      <span className="my-6 block w-full px-8 text-center text-base text-gray-100">
         All your files will be gone forever and you will lose access to your Internxt Drive account. Any active
         subscriptions you might have will also be cancelled. Once you click delete account, you will receive a
         confirmation email.
       </span>
 
-      <div className="flex justify-center items-center w-full bg-neutral-20 py-6">
+      <div className="flex w-full items-center justify-center bg-gray-5 py-6">
         <div className="flex w-64 px-8">
-          <BaseButton onClick={() => onClose()} className="transparent w-11/12 mr-2">
+          <BaseButton onClick={() => onClose()} className="transparent mr-2 w-11/12">
             Cancel
           </BaseButton>
-          <BaseButton className="primary w-11/12 ml-2" onClick={() => onAccept()}>
+          <BaseButton className="primary ml-2 w-11/12" onClick={() => onAccept()}>
             Confirm
           </BaseButton>
         </div>

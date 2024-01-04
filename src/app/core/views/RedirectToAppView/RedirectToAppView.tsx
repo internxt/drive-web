@@ -22,7 +22,7 @@ const RedirectToAppView = (): JSX.Element => {
       </div>
       <h1 className="mb-6 text-xl font-semibold">{translate('views.redirectToApp.message')}</h1>
       <a
-        className="w-full max-w-sm rounded-lg bg-blue-60 px-4 py-2 text-white no-underline hover:bg-blue-70 hover:text-white"
+        className="w-full max-w-sm rounded-lg bg-primary px-4 py-2 text-white no-underline hover:bg-primary-dark hover:text-white"
         ref={anchorRef}
         href={appUrl}
       >

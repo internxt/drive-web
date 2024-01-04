@@ -81,7 +81,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
             <div className="text-zinc-900 self-stretch text-base font-medium leading-tight">
               {transformItemService.getItemPlainNameWithExtension(props.itemData as DriveItemData)}
             </div>
-            <div className="self-stretch text-sm font-normal text-neutral-700">
+            <div className="text-neutral-700 self-stretch text-sm font-normal">
               {sizeService.bytesToString(props.itemData?.size ?? 0)}
             </div>
           </div>
@@ -99,17 +99,17 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         {onPasswordError && (
           <div className="flex flex-row items-center space-x-1 pt-1">
             <WarningCircle size={16} color="red" weight="fill" />
-            <p className="text-sm font-normal text-red-std">{translate('error.wrongPassword')}</p>
+            <p className="text-sm font-normal text-red">{translate('error.wrongPassword')}</p>
           </div>
         )}
         <Button
           type="submit"
           loading={isSubmitting}
-          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"
           onClick={(evt) => {
             evt.preventDefault();
             handlePasswordSubmit();
           }}
+          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-primary font-medium text-white"
         >
           {translate('shareItemPwdView.access')}
         </Button>

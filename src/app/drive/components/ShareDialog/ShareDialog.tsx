@@ -626,7 +626,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </Popover.Button>
 
                     <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
                         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                       }`}
                       static
@@ -635,7 +635,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         <>
                           {/* Public */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('public')}
                           >
                             <Globe size={32} weight="light" />
@@ -659,7 +659,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </button>
                           {/* Restricted */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('restricted')}
                           >
                             <Users size={32} weight="light" />
@@ -684,7 +684,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button
-                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                               onClick={() => {
                                 setShowStopSharingConfirmation(true);
                                 close();
@@ -793,7 +793,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </Popover.Button>
 
                           <Popover.Panel
-                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
                               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                             }`}
                             style={{ minWidth: '160px' }}
@@ -903,7 +903,7 @@ export const UserOptions = ({
       }}
     >
       <Popover.Panel
-        className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+        className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
           isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
         }`}
         style={{
@@ -918,7 +918,7 @@ export const UserOptions = ({
           <>
             {/* Editor */}
             <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
               onClick={() => {
                 onChangeRole('editor');
               }}
@@ -931,7 +931,7 @@ export const UserOptions = ({
 
             {/* Reader */}
             <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
               onClick={() => {
                 onChangeRole('reader');
               }}
@@ -947,7 +947,7 @@ export const UserOptions = ({
         )}
         {/* Remove */}
         <button
-          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
           onClick={() => {
             onRemoveUser(userOptionsEmail);
           }}
@@ -1013,7 +1013,7 @@ const User = ({
     ) : (
       <>
         <div
-          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black/0 bg-white px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-black/15 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-black/10 group-hover:shadow-sm"
+          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-gray-10 bg-surface px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-gray-20 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-gray-20 group-hover:shadow-sm dark:bg-gray-5 dark:active:bg-gray-10"
           onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
           tabIndex={-1}
         >

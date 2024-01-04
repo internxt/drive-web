@@ -30,13 +30,13 @@ const NewsletterDialog = (props: { isOpen: boolean }): JSX.Element => {
       panelClasses="px-6 py-8 w-156"
       onClose={onClose}
     >
-      <span className="newsletter mt-2 block w-full px-8 text-center text-sm text-neutral-100">
+      <span className="newsletter mt-2 block w-full px-8 text-center text-sm text-gray-50">
         {translate('newsletter.dialog.message')}
       </span>
 
       <div className="mt-6 flex">
         <input
-          className="no-ring semi-dense mr-2 grow border border-neutral-30"
+          className="no-ring semi-dense mr-2 grow border border-gray-5"
           placeholder={translate('form.fields.email.placeholder') as string}
           type="email"
           value={email}

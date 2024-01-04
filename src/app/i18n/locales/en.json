@@ -71,6 +71,12 @@
     "ru": "Русский (Russian)",
     "de": "Deutsch (German)"
   },
+  "theme": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "auth": {
     "email": "Email",
     "password": "Password",
@@ -301,7 +307,7 @@
             },
             "subscription": {
               "planName": "Subscription",
-              "button": "change",
+              "button": "Change",
               "yearly": "year",
               "monthly": "month"
             }
