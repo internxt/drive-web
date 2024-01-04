@@ -19,6 +19,7 @@ const StopSharingAndMoveToTrashDialog = ({
   isMultipleItems?: boolean;
 }) => {
   const { translate } = useTranslationContext();
+
   return (
     <Modal
       maxWidth="max-w-sm"

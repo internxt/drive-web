@@ -44,6 +44,7 @@ interface DriveExplorerListProps {
   onHoverListItems?: (areHover: boolean) => void;
   title: JSX.Element | string;
   onOpenStopSharingAndMoveToTrashDialog: () => void;
+  showStopSharingConfirmation: boolean;
 }
 
 type ObjectWithId = { id: string | number };
@@ -85,7 +86,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     props.selectedItems?.[0].sharings &&
     props.selectedItems?.[0].sharings.length > 0;
   const isSelectedSharedItems =
-    props.selectedItems.length > 1 && props.selectedItems.some((item) => item.sharings && item.sharings.length > 0);
+    (props.selectedItems.length > 1 && props.selectedItems.some((item) => item.sharings && item.sharings.length > 0)) ||
+    isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
 
@@ -120,8 +122,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       }
     }
 
-    const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
-    dispatch(storageActions.deselectItems(deselecteditems));
+    const deselectedItems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
+    dispatch(storageActions.deselectItems(deselectedItems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
 
@@ -315,7 +317,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               orderable: false,
             },
           ]}
-          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}

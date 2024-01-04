@@ -565,10 +565,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
   }, [currentFolderId]);
 
-  const onCloseEditNameDialog = useCallback(() => {
-    setEditNameItem(null);
-  }, []);
-
   const onOpenStopSharingAndMoveToTrashDialog = useCallback(() => {
     setShowStopSharingConfirmation(true);
   }, []);
@@ -617,7 +613,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item={editNameItem}
           isOpen={true}
           onSuccess={onSuccessEditingName}
-          onClose={onCloseEditNameDialog}
+          onClose={onCloseEditItemDialog}
         />
       )}
 
@@ -828,6 +824,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   }}
                   title={title}
                   onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
+                  showStopSharingConfirmation={showStopSharingConfirmation}
                 />
               </div>
             )}
