@@ -48,7 +48,7 @@ const MenuItemList = ({
   menu?: ListItemMenu<any>;
 }) => (
   <div
-    className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard outline-none"
+    className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard outline-none dark:bg-gray-5"
     style={{
       minWidth: '180px',
       position: 'fixed',
@@ -154,7 +154,7 @@ export default function ListItem<T extends { id: string }>({
       onContextMenu={handleContextMenuClick}
       ref={rootWrapperRef}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
-        selected ? 'bg-primary/10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
+        selected ? 'bg-primary/10 text-gray-100 dark:bg-primary/20' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
@@ -261,7 +261,7 @@ export default function ListItem<T extends { id: string }>({
                     }
                   >
                     <div
-                      className="z-20 mt-0 flex flex-col rounded-lg border border-gray-10 bg-white py-1.5 shadow-subtle-hard"
+                      className="z-20 mt-0 flex flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5"
                       style={{
                         minWidth: '180px',
                       }}
@@ -284,7 +284,7 @@ export default function ListItem<T extends { id: string }>({
                                       }}
                                       className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                                         active
-                                          ? 'bg-gray-5 text-gray-100'
+                                          ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
                                           : disabled
                                           ? 'pointer-events-none font-medium text-gray-100'
                                           : 'text-gray-80'

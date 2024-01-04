@@ -10,7 +10,7 @@ interface TaskLoggerItemProps {
 }
 
 const taskStatusTextColors = {
-  [TaskStatus.Error]: 'text-red-50',
+  [TaskStatus.Error]: 'text-red',
   [TaskStatus.Success]: 'text-gray-50',
   [TaskStatus.Cancelled]: 'text-gray-50',
 };
@@ -42,7 +42,9 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
       <notification.icon className="h-8 w-8" />
 
       <div className="flex flex-1 flex-col overflow-hidden text-left">
-        <span className="truncate text-sm font-medium text-gray-80">{notification.title}</span>
+        <span className="truncate text-sm font-medium text-gray-80" title={notification.title}>
+          {notification.title}
+        </span>
 
         <span className={`text-sm ${messageClassName}`}>{notification.subtitle}</span>
       </div>

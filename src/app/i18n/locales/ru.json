@@ -37,6 +37,13 @@
     "ru": "Русский (Русский)",
     "de": "Deutsch (Немецкий)"
   },
+  "theme": {
+    "title": "Внешний вид",
+    "light": "Светлый",
+    "dark": "Темный",
+    "system": "Система"
+  },
+
   "auth": {
     "email": "Email",
     "password": "Password",

@@ -53,8 +53,8 @@ const PreparingWorkspaceAnimation = (): JSX.Element => {
       </div>
 
       <div className="flex flex-col items-center justify-center">
-        <p className="text-2xl font-semibold text-cool-gray-90">Preparing your workspace</p>
-        <div className="relative text-base font-medium text-cool-gray-40">This may take a few seconds...</div>
+        <p className="text-2xl font-semibold text-gray-90">Preparing your workspace</p>
+        <div className="relative text-base font-medium text-gray-40">This may take a few seconds...</div>
       </div>
     </div>
   );

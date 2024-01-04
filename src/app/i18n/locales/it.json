@@ -58,6 +58,12 @@
     "ru": "Русский (Russo)",
     "de": "Deutsch (Tedesco)"
   },
+  "theme": {
+    "title": "Aspetto",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "system": "Sistema"
+  },
   "auth": {
     "email": "Email",
     "password": "Password",

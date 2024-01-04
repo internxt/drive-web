@@ -8,7 +8,8 @@ import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
-import EmptyPicture from '../../../assets/images/empty-photos.png';
+import EmptyPictureLight from '../../../assets/images/empty-photos-light.png';
+import EmptyPictureDark from '../../../assets/images/empty-photos-dark.png';
 import PhotoThumbnail from '../components/PhotoThumbnail';
 import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
@@ -93,7 +94,20 @@ export default function PhotosView({ className = '' }: { className?: string }): 
             title={translate('views.photos.empty.title')}
             subtitle={translate('views.photos.empty.description')}
             icon={
-              <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
+              <>
+                <img
+                  className="h-auto w-72 dark:hidden"
+                  src={EmptyPictureLight}
+                  draggable="false"
+                  alt="Photos used in the Internxt app"
+                />
+                <img
+                  className="hidden h-auto w-72 dark:flex"
+                  src={EmptyPictureDark}
+                  draggable="false"
+                  alt="Photos used in the Internxt app"
+                />
+              </>
             }
           />
         ) : (

@@ -970,12 +970,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 dispatch(uiActions.setIsInvitationsDialogOpen(true));
               }}
             >
-              <p className="space-x-2">
-                Pending Invitations{' '}
-                <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+              <div className="flex items-center space-x-2">
+                <span>Pending Invitations</span>
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
                   {pendingInvitations.length}
                 </span>
-              </p>
+              </div>
             </Button>
           )}
         </div>
@@ -1037,7 +1037,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
                   <div className="relative flex h-10 w-10 shrink items-center justify-center">
                     <Icon className="flex h-full justify-center drop-shadow-soft" />
-                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
                       <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>
