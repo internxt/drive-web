@@ -50,23 +50,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       .then((res) => res.json())
       .then(({ country }) => {
         const currencyValue = productValue[country] ?? 'eur';
-        paymentService.getPrices(currencyValue).then((prices) => {
-          // TODO: REMOVE THIS CONDITIONAL WHEN THE CHRISTMAS OFFER IS OVER
-          if (currencyValue === 'usd') {
-            paymentService
-              .getPrices('eur')
-              .then((allPrices) => {
-                const lifetimePrices = allPrices.filter((price) => price.interval === 'lifetime');
-                setPrices([...prices, ...lifetimePrices]);
-              })
-              .catch((err) => {
-                const error = errorService.castError(err);
-                errorService.reportError(error);
-              });
-          } else {
-            setPrices(prices);
-          }
-        });
+        paymentService.getPrices(currencyValue).then(setPrices);
       })
       .catch((error) => {
         console.error(error);
