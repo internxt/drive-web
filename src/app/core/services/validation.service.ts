@@ -13,7 +13,7 @@ const validateSearchText = (value: string): boolean => {
 };
 
 const validatePasswordInput = (value: string): boolean => {
-  const latinAlphabetAndSymbols = /^[a-zA-Z0-9 ~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]*$/gm;
+  const latinAlphabetAndSymbols = /^[a-zA-Z0-9ñÑ ~`!@#$%^&*()_\-+={[}\]|\\:;"'<,>.?/]*$/gm;
 
   return latinAlphabetAndSymbols.test(value);
 };
