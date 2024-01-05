@@ -1331,5 +1331,13 @@
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verifica que eres tú",
+    "text1": "Se han detectado demasiados inicios de sesion fallidos.",
+    "text2": "Por motivos de seguridad te hemos enviado un email a tu dirección {{email}} sigue los pasos del email para confirmar que eres tú e iniciar sesión",
+    "forgotPassword": "He olvidado mi contraseña",
+    "text3": "¿No has recibido ningún correo electrónico?",
+    "resend": "Reenviar"
   }
 }

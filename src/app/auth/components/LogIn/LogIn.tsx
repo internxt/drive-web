@@ -172,12 +172,13 @@ export default function LogIn(): JSX.Element {
 
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
-      } else {
-        // analyticsService.signInAttempted(email, castedError);
       }
 
       setLoginError([castedError.message]);
       setShowErrors(true);
+      if (castedError.message.includes('Your account has been blocked for security reasons. Please reach out to us')) {
+        navigationService.push(AppView.BlockedAccount, { email: email });
+      }
     } finally {
       setIsLoggingIn(false);
     }

@@ -41,7 +41,9 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login, loginParams);
+  if (navigationService.history.location.pathname !== '/blocked-account') {
+    navigationService.push(AppView.Login, loginParams);
+  }
 }
 
 export function cancelAccount(): Promise<void> {

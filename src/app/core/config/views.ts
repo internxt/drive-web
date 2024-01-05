@@ -35,6 +35,7 @@ import SharedView from '../../share/views/SharedLinksView/SharedView';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import BlockedAccountView from 'app/auth/views/BlockedAccountView/BlockedAccountView';
 
 const views: Array<{
   id: string;
@@ -44,6 +45,7 @@ const views: Array<{
 }> = [
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
+  { id: AppView.BlockedAccount, component: BlockedAccountView },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
