@@ -54,7 +54,13 @@ export default function PlanSelector({ className = '' }: { className?: string })
       })
       .catch((error) => {
         console.error(error);
-        paymentService.getPrices('eur').then(setPrices);
+        paymentService
+          .getPrices('eur')
+          .then(setPrices)
+          .catch((err) => {
+            const error = errorService.castError(err);
+            errorService.reportError(error);
+          });
       });
   }, []);
 
@@ -92,11 +98,12 @@ export default function PlanSelector({ className = '' }: { className?: string })
         localStorage.setItem('sessionId', response.sessionId);
         await paymentService.redirectToCheckout(response);
       } catch (err) {
-        console.error(err);
+        const error = errorService.castError(err);
         notificationsService.show({
           text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
+        errorService.reportError(error);
       } finally {
         setLoadingPlanAction(null);
         setIsDialogOpen(false);
@@ -127,8 +134,9 @@ export default function PlanSelector({ className = '' }: { className?: string })
               });
             }
           });
-        } catch (error) {
-          console.error(error);
+        } catch (err) {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
           notificationsService.show({
             text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
@@ -153,7 +161,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
                 }
               })
               .catch((err) => {
-                console.error(err);
+                const error = errorService.castError(err);
+                errorService.reportError(error);
                 notificationsService.show({
                   text: translate('notificationMessages.errorCancelSubscription'),
                   type: ToastType.Error,
@@ -164,7 +173,8 @@ export default function PlanSelector({ className = '' }: { className?: string })
             dispatch(planThunks.initializeThunk()).unwrap();
           }
         } catch (err) {
-          console.error(err);
+          const error = errorService.castError(err);
+          errorService.reportError(error);
           notificationsService.show({
             text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
