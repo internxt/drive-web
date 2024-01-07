@@ -9,23 +9,10 @@
     "cta": "达成交易"
   },
   "lifetimeBanner": {
-    "title": "终身计划!",
-    "description": "购买一次，永久获得隐私。",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "达成交易"
+    "label": "需要终身安全存储吗？",
+    "title": "通过我们的终身计划永久保护您的文件！",
+    "cta": "选择您的计划",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
