@@ -22,23 +22,10 @@
     "cta": "Obtén la oferta"
   },
   "lifetimeBanner": {
-    "title": "Oferta lifetime",
-    "description": "¡Privacidad en la nube para siempre!",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Obtén la oferta"
+    "label": "¿Necesitas almacenamiento seguro de por vida?",
+    "title": "¡Asegura tus archivos de por vida con nuestros planes!",
+    "cta": "Elige tu plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",

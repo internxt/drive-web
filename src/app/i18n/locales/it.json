@@ -9,23 +9,10 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Hai bisogno di archiviazione sicura per tutta la vita?",
+    "title": "Proteggi i tuoi file per sempre con i nostri piani a vita!",
+    "cta": "Scegli il tuo piano",
+    "guarantee": "Garanzia soddisfatti o rimborsati entro 30 giorni"
   },
   "notFound": {
     "header": "Error 404",
