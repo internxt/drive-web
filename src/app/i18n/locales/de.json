@@ -9,10 +9,23 @@
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "label": "Brauchen Sie sicheren Speicher fürs Leben?",
-    "title": "Schützen Sie Ihre Dateien für immer mit unseren lebenslangen Plänen!",
-    "cta": "Wählen Sie Ihren Plan",
-    "guarantee": "30-tägige Geld-zurück-Garantie"
+    "title": "Lifetime Deal!",
+    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
+    "cards": {
+      "1": {
+        "space": "10TB",
+        "price": "499"
+      },
+      "2": {
+        "space": "5TB",
+        "price": "249"
+      },
+      "3": {
+        "space": "2TB",
+        "price": "149"
+      }
+    },
+    "cta": "Hol dir das Angebot"
   },
   "lang": {
     "title": "Sprache",

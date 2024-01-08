@@ -1,14 +1,14 @@
-import localStorageService, { STORAGE_KEYS } from '../core/services/local-storage.service';
-import { RootState } from '../store';
-import { useAppSelector } from '../store/hooks';
-import { PlanState } from '../store/slices/plan';
-import { userSelectors } from '../store/slices/user';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import { RootState } from 'app/store';
+import { useAppSelector } from 'app/store/hooks';
+import { PlanState } from 'app/store/slices/plan';
+import { userSelectors } from 'app/store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { getCookie, setCookie } from '../analytics/utils';
-import Banner from './Banner';
+import BlackFridayBanner from './BlackFridayBanner';
+import { getCookie, setCookie } from 'app/analytics/utils';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_banner';
+const SHOW_BANNER_COOKIE_NAME = 'showBanner';
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -17,7 +17,7 @@ const BannerWrapper = (): JSX.Element => {
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
-  const expireDate = new Date('2024-01-10T23:59:59.000Z');
+  const expireDate = new Date('2024-01-01');
   const today = new Date();
 
   const daysLeft = Math.floor((expireDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
@@ -37,7 +37,7 @@ const BannerWrapper = (): JSX.Element => {
     handleBannerDisplay();
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <BlackFridayBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
