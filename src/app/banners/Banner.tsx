@@ -15,7 +15,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
         className={`absolute left-1/2 top-1/2 flex h-auto max-w-4xl -translate-x-1/2 -translate-y-1/2
         flex-col overflow-hidden rounded-2xl bg-primary-dark  text-neutral-900`}
       >
-        <button className="absolute right-0 m-5 flex w-auto text-white" onClick={onClose}>
+        <button className="absolute right-0 z-50 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
         <div className="flex w-screen max-w-[1200px] flex-col py-10 pl-10">
