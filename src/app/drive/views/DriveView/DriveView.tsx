@@ -15,6 +15,7 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
+
 export interface DriveViewProps {
   namePath: FolderPath[];
   isLoading: boolean;
@@ -61,7 +62,7 @@ const DriveView = (props: DriveViewProps) => {
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
           id: folderMeta.id,
-          uuid: folderMeta.uuid as string,
+          uuid: folderMeta.uuid,
         }),
       );
       folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
@@ -74,7 +75,10 @@ const DriveView = (props: DriveViewProps) => {
   const goFile = async (folderUuid) => {
     try {
       const fileMeta = await fileService.getFile(folderUuid);
-      dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
+      // Commented to fix getting unwanted content when opening a file preview,
+      // may need to check this if you want to load the folder where a file is
+      // located which has been accessed directly by URL (without navigating to it).
+      // dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
