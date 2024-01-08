@@ -22,8 +22,6 @@ const BannerWrapper = (): JSX.Element => {
 
   const daysLeft = Math.floor((expireDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
 
-  console.log('daysLeft', daysLeft);
-
   const onCloseBanner = () => {
     setCookie(SHOW_BANNER_COOKIE_NAME, 'false', daysLeft);
     setShowBanner(false);
