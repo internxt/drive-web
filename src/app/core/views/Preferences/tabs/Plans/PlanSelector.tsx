@@ -50,11 +50,23 @@ export default function PlanSelector({ className = '' }: { className?: string })
       .then((res) => res.json())
       .then(({ country }) => {
         const currencyValue = productValue[country] ?? 'eur';
-        paymentService.getPrices(currencyValue).then(setPrices);
+        paymentService
+          .getPrices(currencyValue)
+          .then(setPrices)
+          .catch((err) => {
+            const error = errorService.castError(err);
+            errorService.reportError(error);
+          });
       })
       .catch((error) => {
         console.error(error);
-        paymentService.getPrices('eur').then(setPrices);
+        paymentService
+          .getPrices('eur')
+          .then(setPrices)
+          .catch((err) => {
+            const error = errorService.castError(err);
+            errorService.reportError(error);
+          });
       });
   }, []);
 
