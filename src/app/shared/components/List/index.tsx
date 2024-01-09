@@ -10,10 +10,14 @@ import { useHotkeys } from 'react-hotkeys-hook';
 type HeaderProps<T, F> = {
   label: string;
   width: string;
-} & ({ name: F; orderable: true; defaultDirection: 'ASC' | 'DESC' } | { name: keyof T; orderable: false });
+} & (
+  | { name: F; orderable: true; defaultDirection: 'ASC' | 'DESC'; buttonDataCy?: string; textDataCy?: string }
+  | { name: keyof T; orderable: false }
+);
 
 interface ListProps<T, F> {
   header: HeaderProps<T, F>[];
+  checkboxDataCy?: string;
   items: T[];
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
@@ -51,6 +55,7 @@ const Header = ({
   onOrderableColumnClicked,
   menu,
   isVerticalScrollbarVisible,
+  checkboxDataCy,
 }) => {
   return (
     <div className="flex h-12 shrink-0 flex-row px-5">
@@ -62,6 +67,7 @@ const Header = ({
             checked={selectedItems.length > 0}
             indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
             onClick={onTopSelectionCheckboxClick}
+            checkboxDataCy={checkboxDataCy}
           />
         </div>
 
@@ -69,11 +75,12 @@ const Header = ({
           <button
             onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
             key={column.name.toString()}
+            data-cy={column?.buttonDataCy}
             className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
               column.width
             } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
           >
-            <span>{column.label}</span>
+            <span data-cy={column?.textDataCy}>{column.label}</span>
             {column.name === orderBy?.field &&
               column.orderable &&
               (orderBy?.direction === 'ASC' ? (
@@ -111,6 +118,7 @@ const Header = ({
  */
 export default function List<T extends { id: any }, F extends keyof T>({
   header,
+  checkboxDataCy,
   items,
   itemComposition,
   selectedItems,
@@ -269,6 +277,7 @@ ListProps<T, F>): JSX.Element {
           onOrderableColumnClicked={onOrderableColumnClicked}
           menu={menu}
           isVerticalScrollbarVisible={isVerticalScrollbarVisible}
+          checkboxDataCy={checkboxDataCy}
         />
       ) : null}
 

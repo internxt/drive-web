@@ -12,6 +12,7 @@ export default function Button({
   loading,
   dataTest,
   autofocus,
+  buttonDataCy,
 }: {
   variant?: 'primary' | 'accent' | 'secondary' | 'tertiary';
   type?: 'button' | 'submit';
@@ -23,6 +24,7 @@ export default function Button({
   loading?: boolean;
   dataTest?: string;
   autofocus?: boolean;
+  buttonDataCy?: string;
 }): JSX.Element {
   let styles = '';
 
@@ -46,6 +48,7 @@ export default function Button({
   }
   return (
     <button
+      data-cy={buttonDataCy}
       onClick={onClick}
       disabled={disabled || loading}
       type={type}

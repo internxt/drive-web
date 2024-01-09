@@ -22,23 +22,10 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Need secure storage for life?",
+    "title": "Protect your files forever with our lifetime plans!",
+    "cta": "Choose your plan",
+    "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
     "header": "Error 404",
@@ -348,6 +335,11 @@
               "errorSendingVerification": "Error sending verification"
             }
           },
+          "support": {
+            "title": "Support",
+            "description": "Navigate helpful articles or get assistance from our team.",
+            "cta": "Open Support Centre"
+          },
           "deleteAccount": {
             "head": "Delete account",
             "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
@@ -432,9 +424,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "€{{amount}} billed annually",
-            "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} billed annually",
+            "monthly": "{{amount}} per month",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "One-time payment"
           },
           "features": {

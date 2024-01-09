@@ -25,7 +25,9 @@ export default function AccountPopover({
   const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
 
-  const avatarWrapper = <AvatarWrapper diameter={36} fullName={fullName} avatarSrcURL={user.avatar} />;
+  const avatarWrapper = (
+    <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
+  );
 
   const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
 

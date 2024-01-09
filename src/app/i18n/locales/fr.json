@@ -22,23 +22,10 @@
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Besoin de stockage sécurisé à vie ?",
+    "title": "Protégez vos fichiers à jamais avec nos plans à vie !",
+    "cta": "Choisissez votre plan",
+    "guarantee": "Garantie de remboursement de 30 jours"
   },
   "lang": {
     "title": "Langue",
@@ -312,6 +299,11 @@
               "errorSendingVerification": "Erreur d'envoi de la vérification"
             }
           },
+          "support": {
+            "title": "Support",
+            "description": "Naviguez à travers des articles utiles ou obtenez de l'aide auprès de notre équipe.",
+            "cta": "Ouvrir le Centre de support"
+          },
           "deleteAccount": {
             "head": "Supprimer le compte",
             "description": "Si vous supprimez votre compte, vos données seront supprimées à jamais. Cette action ne peut être annulée.",
@@ -370,9 +362,9 @@
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
           "card": {
-            "annually": "€{{amount}} Facturation annuellement",
-            "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Facturation annuellement",
+            "monthly": "{{amount}} par mois",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Paiement unique"
           },
           "features": {

@@ -219,12 +219,13 @@ const Navbar = (props: NavbarProps) => {
             htmlFor="globalSearchInput"
           >
             <MagnifyingGlass
-              className="z-1 pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
+              className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
               size={20}
             />
             <input
               ref={searchInput}
               id="globalSearchInput"
+              data-cy="globalSearchInput"
               autoComplete="off"
               spellCheck="false"
               type="text"
@@ -255,14 +256,14 @@ const Navbar = (props: NavbarProps) => {
             <div
               className={`${
                 openSearchBox && 'opacity-0'
-              } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
+              } pointer-events-none absolute right-2.5 top-1/2 z-1 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
             >
               {isMacOs ? '⌘F' : 'Ctrl F'}
             </div>
             <X
               className={`${
                 (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
-              } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
+              } absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
               onMouseDownCapture={() => {
                 setQuery('');
                 setSearchResult([]);
