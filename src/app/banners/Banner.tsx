@@ -3,6 +3,8 @@ import LifetimeBig from 'assets/images/banner/discount.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CheckCircle } from '@phosphor-icons/react/dist/ssr';
 
+const WEBSITE_URL = process.env.REACT_APP_WEBSITE_URL;
+
 const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
 
@@ -32,7 +34,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
                 className="relative flex w-max flex-row items-center space-x-4 rounded-lg bg-white px-7 py-3 text-base font-medium text-primary transition duration-100 focus:outline-none focus-visible:bg-gray-1 active:bg-gray-1 sm:text-lg"
                 onClick={() => {
                   onClose();
-                  window.open('/preferences?tab=plans', '_self', 'noopener noreferrer');
+                  window.open(`${WEBSITE_URL}/pricing`, '_self', 'noopener noreferrer');
                 }}
               >
                 {translate('lifetimeBanner.cta')}
