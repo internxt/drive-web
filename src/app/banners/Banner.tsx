@@ -1,5 +1,5 @@
 import { X } from '@phosphor-icons/react';
-import LifetimeBig from 'assets/images/banner/lifetime_big.png';
+import LifetimeBig from 'assets/images/banner/discount.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CheckCircle } from '@phosphor-icons/react/dist/ssr';
 
@@ -13,17 +13,17 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
     >
       <div
         className={`absolute left-1/2 top-1/2 flex h-auto max-w-4xl -translate-x-1/2 -translate-y-1/2
-        flex-col overflow-hidden rounded-2xl bg-primary-dark  text-neutral-900`}
+        flex-col overflow-hidden rounded-2xl bg-gradient-to-b from-[#060C40] to-primary  text-neutral-900`}
       >
         <button className="absolute right-0 z-50 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="flex w-screen max-w-[1200px] flex-col py-10 pl-10">
-          <div className="absolute bottom-3 right-0">
-            <img src={LifetimeBig} alt="Infinity" />
+        <div className="flex w-screen max-w-[800px] flex-col py-10 pl-10">
+          <div className="absolute right-12 top-0">
+            <img src={LifetimeBig} alt="Discount label" height={475} width={190} />
           </div>
-          <div className="z-50 flex w-full flex-col space-y-8">
-            <div className="flex max-w-[550px] flex-col space-y-4">
+          <div className="z-50 flex w-full max-w-[460px] flex-col space-y-8">
+            <div className="flex flex-col space-y-4">
               <p className="text-3xl font-semibold text-white">{translate('lifetimeBanner.label')}</p>
               <p className="text-5xl font-bold text-white">{translate('lifetimeBanner.title')}</p>
             </div>

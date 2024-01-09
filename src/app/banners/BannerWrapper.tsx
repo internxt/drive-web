@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from './Banner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_banner';
+const SHOW_BANNER_COOKIE_NAME = 'show_soft_sale_banner';
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
