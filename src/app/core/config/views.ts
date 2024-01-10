@@ -51,14 +51,12 @@ const views: Array<{
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
-  { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
-  { id: AppView.DriveItems, component: DriveView },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
@@ -78,7 +76,9 @@ const views: Array<{
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
-
+  // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
+  { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.Drive, component: DriveView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 
