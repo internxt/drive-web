@@ -26,7 +26,7 @@ const SummerBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: (
           <div className="flex flex-col items-center justify-center space-y-9 text-center">
             <InternxtLogo />
             <div className="flex flex-col items-center justify-center space-y-6">
-              <div className="flex max-w-[443px] items-center justify-center rounded-xl bg-mint px-10 py-3 text-white">
+              <div className="bg-mint flex max-w-[443px] items-center justify-center rounded-xl px-10 py-3 text-white">
                 <p className="text-4xl font-semibold">SUMMER DEAL!</p>
               </div>
               <div className="flex flex-col items-center text-white">

@@ -18,6 +18,7 @@ interface CheckoutOptions {
   cancel_url: string;
   customer_email: string;
   mode: string | undefined;
+  currency: string;
 }
 
 export default function CheckoutPlanView(): JSX.Element {
@@ -38,18 +39,21 @@ export default function CheckoutPlanView(): JSX.Element {
       const coupon = String(params.get('couponCode'));
       const mode = String(params.get('mode') as string | undefined);
       const freeTrials = Number(params.get('freeTrials'));
-      checkout(planId, coupon, mode, freeTrials);
+      const currency = String(params.get('currency'));
+      checkout(planId, currency, coupon, mode, freeTrials);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, coupon?: string, mode?: string, freeTrials?: number) {
+  async function checkout(planId: string, currency: string, coupon?: string, mode?: string, freeTrials?: number) {
     let response;
+
     const checkoutOptions: CheckoutOptions = {
       price_id: planId,
       success_url: `${window.location.origin}/checkout/success`,
       cancel_url: `${window.location.origin}/checkout/cancel`,
       customer_email: user.email,
       mode: mode,
+      currency,
     };
 
     if (subscription?.type !== 'subscription') {

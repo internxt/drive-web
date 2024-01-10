@@ -39,6 +39,7 @@ interface BreadcrumbsItemProps {
   totalBreadcrumbsLength: number;
   isHiddenInList?: boolean;
   items: BreadcrumbItemData[];
+  breadcrumbButtonDataCy?: string;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -402,6 +403,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         }`}
           key={props.item.id}
           onClick={() => onItemClicked(props.item)}
+          onKeyDown={() => {}}
+          data-cy={props?.breadcrumbButtonDataCy}
         >
           {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
           {props.item.icon ? props.item.icon : null}

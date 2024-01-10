@@ -432,9 +432,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "€{{amount}} billed annually",
-            "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} billed annually",
+            "monthly": "{{amount}} per month",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "One-time payment"
           },
           "features": {

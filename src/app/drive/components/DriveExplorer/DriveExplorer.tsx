@@ -658,12 +658,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                   return (
                                     <div
                                       onClick={onCreateFolderButtonClicked}
+                                      data-cy="contextMenuCreateFolderButton"
                                       className={`${
                                         active && 'bg-gray-5'
                                       } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                     >
                                       <FolderSimplePlus size={20} />
-                                      <p>{translate('actions.upload.folder')}</p>
+                                      <p data-cy="contextMenuCreateFolderButtonText">
+                                        {translate('actions.upload.folder')}
+                                      </p>
                                       <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
                                         <ArrowFatUp size={14} /> F
                                       </span>
@@ -676,12 +679,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                 {({ active }) => (
                                   <div
                                     onClick={onUploadFileButtonClicked}
+                                    data-cy="contextMenuUploadFilesButton"
                                     className={`${
                                       active && 'bg-gray-5'
                                     } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <FileArrowUp size={20} />
-                                    <p className="ml-3">{translate('actions.upload.uploadFiles')}</p>
+                                    <p className="ml-3" data-cy="contextMenuUploadFilesButtonText">
+                                      {translate('actions.upload.uploadFiles')}
+                                    </p>
                                   </div>
                                 )}
                               </Menu.Item>
@@ -689,12 +695,15 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                 {({ active }) => (
                                   <div
                                     onClick={onUploadFolderButtonClicked}
+                                    data-cy="contextMenuUploadFolderButton"
                                     className={`${
                                       active && 'bg-gray-5'
                                     } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <UploadSimple size={20} />
-                                    <p className="ml-3">{translate('actions.upload.uploadFolder')}</p>
+                                    <p className="ml-3" data-cy="contextMenuUploadFolderButtonText">
+                                      {translate('actions.upload.uploadFolder')}
+                                    </p>
                                   </div>
                                 )}
                               </Menu.Item>

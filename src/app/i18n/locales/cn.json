@@ -419,9 +419,9 @@
           },
           "viewAllFeatures": "查看所有功能",
           "card": {
-            "annually": "€{{amount}} 每年计费(欧元)",
-            "monthly": "每月(欧元) €{{amount}}",
-            "lifetime": "欧元€{{amount}}",
+            "annually": "{{amount}} 每年计费(欧元)",
+            "monthly": "每月(欧元) {{amount}}",
+            "lifetime": "欧元{{amount}}",
             "oneTimePayment": "一次性付款"
           },
           "features": {
