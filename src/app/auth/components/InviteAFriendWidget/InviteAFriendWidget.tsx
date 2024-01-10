@@ -33,14 +33,14 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
   };
 
   return (
-    <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-neutral-30 bg-neutral-10 p-6`}>
+    <div className={`${props.className || ''} w-full max-w-lg rounded-lg border border-gray-5 bg-gray-1 p-6`}>
       <span className="mb-1 block w-full text-center font-semibold">{translate('inviteAFriend.title')}</span>
-      <span className="m-auto block max-w-xs text-center text-sm text-neutral-100">
+      <span className="m-auto block max-w-xs text-center text-sm text-gray-50">
         {translate('inviteAFriend.descriptionWidget', { N: inviteAFriendReferral?.steps })}
       </span>
       <div className="mt-6 flex">
         <input
-          className="no-ring semi-dense mr-2 grow border border-neutral-30"
+          className="no-ring semi-dense mr-2 grow border border-gray-5"
           placeholder={translate('form.fields.email.placeholder') as string}
           type="email"
           value={email}
@@ -49,7 +49,7 @@ const InviteAFriendWidget = (props: { className?: string }): JSX.Element => {
         <BaseButton
           //! TODO: isValidEmail should allow user to enter an email with lowercase and uppercase letters
           disabled={isLoading || !email || !isValidEmail(email)}
-          className="primary inverse"
+          className="primary"
           onClick={onSendButtonClicked}
         >
           {translate('inviteAFriend.actions.sendInvitation') as string}

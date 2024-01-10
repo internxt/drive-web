@@ -17,7 +17,7 @@ describe('Recents panel', () => {
     cy.wait('@getFiles', { timeout: 60000 }).then(() => {
       cy.uploadExampleFile();
     });
-    cy.visit('/app/recents');
+    cy.visit('/recents');
   });
 
   it('Should list recents', () => {

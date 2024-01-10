@@ -206,7 +206,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       )}
       <div className={`${className}`}>
         <div className="flex justify-center">
-          <div className="flex flex-row rounded-lg bg-cool-gray-10 p-0.5 text-sm">
+          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
             <IntervalSwitch
               active={interval === 'month'}
               text={translate('general.renewal.monthly')}
@@ -257,7 +257,9 @@ function IntervalSwitch({
 }): JSX.Element {
   return (
     <button
-      className={`${active ? 'bg-white text-gray-100 shadow-sm' : 'text-gray-50'} rounded-lg px-6 py-1.5 font-medium`}
+      className={`${
+        active ? 'bg-surface text-gray-100 shadow-sm dark:bg-gray-20' : 'text-gray-50'
+      } rounded-lg px-6 py-1.5 font-medium`}
       onClick={onClick}
     >
       {text}
@@ -312,7 +314,7 @@ function Price({
       : translate('actions.purchasePlan');
 
   return (
-    <div className={`${className} w-full rounded-xl border border-gray-10 p-6 lg:w-64`}>
+    <div className={`${className} w-full rounded-xl border border-gray-10 p-6 dark:bg-gray-1 lg:w-64`}>
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="border-translate mt-5 border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">
@@ -445,7 +447,7 @@ const ChangePlanDialog = ({
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}
           </p>
-          <p className={`text-2xl font-medium ${selectedPlanSize < planUsage ? 'text-red-std' : 'text-primary'}`}>
+          <p className={`text-2xl font-medium ${selectedPlanSize < planUsage ? 'text-red' : 'text-primary'}`}>
             {selectedPlanSizeString}
           </p>
           {selectedPlanInterval === 'lifetime' ? (
@@ -466,7 +468,7 @@ const ChangePlanDialog = ({
         </div>
       </div>
       {selectedPlanSize < planUsage && (
-        <div className="mb-5 flex flex-col items-center rounded-xl border border-red-30 bg-red-10 px-4 py-5 text-red-std">
+        <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
           <h4 className="mb-1.5 text-center text-xl font-semibold">
             {translate('views.account.tabs.plans.dialog.alert.title')}
             {selectedPlanSizeString}

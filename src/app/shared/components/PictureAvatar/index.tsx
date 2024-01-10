@@ -12,7 +12,7 @@ export default function PictureAvatar({
   return (
     <img
       style={{ width: diameter, height: diameter, ...style }}
-      className={`${className} select-none rounded-full object-cover`}
+      className={`${className} shrink-0 select-none rounded-full object-cover`}
       src={src}
       draggable={false}
     />
