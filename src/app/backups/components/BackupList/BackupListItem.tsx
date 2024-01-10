@@ -75,7 +75,7 @@ export default function BackupsListItem({
         {backup.lastBackupAt ? dateService.format(backup.lastBackupAt, 'DD MMMM YYYY. HH:mm') : 'Not uploaded yet'}
       </div>
       <div className="flex w-2/12 items-center">{backup.size ? sizeService.bytesToString(backup.size, false) : ''}</div>
-      <div className="flex w-1/12 items-center rounded-tr-4px">
+      <div className="rounded-tr-4px flex w-1/12 items-center">
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic" className="file-list-item-actions-button">
             <UilEllipsisH className="h-full w-full" />
