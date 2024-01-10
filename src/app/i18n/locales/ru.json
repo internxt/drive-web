@@ -376,9 +376,9 @@
           },
           "viewAllFeatures": "Просмотреть все функции",
           "card": {
-            "annually": "€{{amount}}, оплачивается ежегодно",
-            "monthly": "€{{amount}} в месяц",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}}, оплачивается ежегодно",
+            "monthly": "{{amount}} в месяц",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Единовременная оплата"
           },
           "features": {

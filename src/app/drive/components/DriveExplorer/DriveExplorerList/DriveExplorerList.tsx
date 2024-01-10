@@ -293,6 +293,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               name: 'name',
               orderable: isRecents || isTrash ? false : true,
               defaultDirection: 'ASC',
+              buttonDataCy: 'driveListHeaderNameButton',
+              textDataCy: 'driveListHeaderNameButtonText',
             },
             {
               label: translate('drive.list.columns.modified'),
@@ -308,6 +310,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
               orderable: false,
             },
           ]}
+          checkboxDataCy="driveListHeaderCheckbox"
           disableKeyboardShortcuts={props.disableKeyboardShortcuts}
           items={props.items}
           isLoading={isLoading}
