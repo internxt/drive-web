@@ -50,7 +50,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
         {onPasswordError && (
           <div className="flex flex-row items-center space-x-1 pt-1">
             <WarningCircle size={16} color="red" weight="fill" />
-            <p className="text-sm font-normal text-red-std">{translate('error.wrongPassword')}</p>
+            <p className="text-sm font-normal text-red">{translate('error.wrongPassword')}</p>
           </div>
         )}
         <button
@@ -69,7 +69,7 @@ const ShareItemPwdView = (props: ShareItemPwdViewProps) => {
               });
             });
           }}
-          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-blue-60 font-medium text-white"
+          className="mt-4 flex h-11 w-full items-center justify-center rounded-lg bg-primary font-medium text-white"
         >
           <p className="text-sm font-medium">{translate('shareItemPwdView.access')}</p>
         </button>

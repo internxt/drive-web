@@ -25,7 +25,7 @@ export default function PlanUsage({
   const subscriptionType = plan.subscription?.type;
 
   const isLimitReached = usage >= limit;
-  const componentColor = isLimitReached ? 'bg-red-std' : 'bg-primary';
+  const componentColor = isLimitReached ? 'bg-red' : 'bg-primary';
 
   const onUpgradeButtonClicked = () => {
     navigationService.push(AppView.Preferences, { tab: 'plans' });
@@ -46,9 +46,7 @@ export default function PlanUsage({
       {subscriptionType === 'free' && (
         <p
           onClick={onUpgradeButtonClicked}
-          className={`mt-3 h-full cursor-pointer text-sm font-medium ${
-            isLimitReached ? 'text-red-std' : 'text-blue-60'
-          }`}
+          className={`mt-3 h-full cursor-pointer text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}
         >
           {translate('actions.upgradeNow')}
         </p>

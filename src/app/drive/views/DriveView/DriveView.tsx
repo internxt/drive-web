@@ -1,4 +1,4 @@
-import { Component, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
@@ -10,7 +10,11 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
-import { DotsThree } from '@phosphor-icons/react';
+import newStorageService from 'app/drive/services/new-storage.service';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
+import fileService from 'app/drive/services/file.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -18,31 +22,73 @@ export interface DriveViewProps {
   items: DriveItemData[];
   currentFolderId: number;
   dispatch: AppDispatch;
-  isGlobalSearch: boolean;
 }
 
-class DriveView extends Component<DriveViewProps> {
-  componentDidMount(): void {
-    const { dispatch } = this.props;
+const DriveView = (props: DriveViewProps) => {
+  const { dispatch, namePath, items, isLoading } = props;
+  const pathname = navigationService.history.location.pathname;
+  const [title, setTitle] = useState('Internxt Drive');
+
+  useEffect(() => {
+    dispatch(uiActions.setIsFileViewerOpen(false));
+
+    const isFolderView = navigationService.isCurrentPath('folder');
+    const isFileView = navigationService.isCurrentPath('file');
+    const itemUuid = navigationService.getUuid();
+
+    if (isFolderView && itemUuid) {
+      goFolder(itemUuid);
+    }
+
+    if (isFileView && itemUuid) {
+      goFile(itemUuid);
+    }
+  }, [pathname]);
+
+  useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
-    this.fetchItems();
-  }
-
-  componentWillUnmount(): void {
-    const { dispatch } = this.props;
-    dispatch(storageActions.resetDrivePagination());
-  }
-
-  fetchItems = (): void => {
-    const { dispatch } = this.props;
-
     dispatch(storageActions.clearSelectedItems());
+    return () => {
+      dispatch(storageActions.resetDrivePagination());
+    };
+  }, []);
+
+  const goFolder = async (folderUuid) => {
+    try {
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
+      dispatch(storageThunks.fetchFolderContentThunk(folderMeta.id));
+      dispatch(
+        storageThunks.goToFolderThunk({
+          name: folderMeta.plainName,
+          id: folderMeta.id,
+          uuid: folderMeta.uuid,
+        }),
+      );
+      folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
+    } catch (error) {
+      navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });
+      errorService.reportError(error);
+    }
   };
 
-  get breadcrumbItems(): BreadcrumbItemData[] {
-    const { isGlobalSearch } = this.props;
-    const { namePath, dispatch } = this.props;
+  const goFile = async (folderUuid) => {
+    try {
+      const fileMeta = await fileService.getFile(folderUuid);
+      // Commented to fix getting unwanted content when opening a file preview,
+      // may need to check this if you want to load the folder where a file is
+      // located which has been accessed directly by URL (without navigating to it).
+      // dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
+      dispatch(uiActions.setIsFileViewerOpen(true));
+      dispatch(uiActions.setFileViewerItem(fileMeta));
+      fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
+    } catch (error) {
+      navigationService.push(AppView.FolderFileNotFound, { itemType: 'file' });
+      errorService.reportError(error);
+    }
+  };
+
+  const breadcrumbItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
 
     if (namePath.length > 0) {
@@ -57,17 +103,9 @@ class DriveView extends Component<DriveViewProps> {
         onClick: () => {
           dispatch(uiActions.setIsGlobalSearch(false));
           dispatch(storageThunks.goToFolderThunk(firstPath));
+          navigationService.push(AppView.Drive);
         },
       });
-
-      isGlobalSearch &&
-        items.push({
-          id: firstPath.id,
-          label: '',
-          icon: <DotsThree className="ml-0.5" />,
-          active: true,
-          isFirstPath: false,
-        });
 
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
@@ -75,31 +113,28 @@ class DriveView extends Component<DriveViewProps> {
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => dispatch(storageThunks.goToFolderThunk(path)),
+          onClick: () => navigationService.pushFolder(path.uuid),
         });
       });
     }
 
     return items;
-  }
+  };
 
-  render(): ReactNode {
-    const { items, isLoading } = this.props;
-
-    return (
-      <>
-        <Helmet>
-          <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/app`} />
-        </Helmet>
-        <DriveExplorer
-          title={<Breadcrumbs items={this.breadcrumbItems} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />}
-          isLoading={isLoading}
-          items={items}
-        />
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <Helmet>
+        <title>{title}</title>
+        <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
+      </Helmet>
+      <DriveExplorer
+        title={<Breadcrumbs items={breadcrumbItems()} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />}
+        isLoading={isLoading}
+        items={items}
+      />
+    </>
+  );
+};
 
 const sortFoldersFirst = (items: DriveItemData[]) =>
   items.sort((a, b) => Number(b?.isFolder ?? false) - Number(a?.isFolder ?? false));
@@ -114,6 +149,5 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId],
     currentFolderId,
     items: sortedItems,
-    isGlobalSearch: state.ui.isGlobalSearch,
   };
 })(DriveView);

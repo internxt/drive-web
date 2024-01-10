@@ -50,6 +50,12 @@
     "ru": "Русский (Russe)",
     "de": "Deutsch (Allemand)"
   },
+  "theme": {
+    "title": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
   "auth": {
     "email": "Email",
     "password": " Mot de passe ",
@@ -1252,6 +1258,16 @@
         "title": "Commençons tout de suite !",
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Dossier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le dossier n'a pas été déplacé ou supprimé."
+    },
+    "file": {
+      "title": "Fichier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
     }
   }
 }

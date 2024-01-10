@@ -37,6 +37,12 @@
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)"
   },
+  "theme": {
+    "title": "Erscheinung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
+  },
   "auth": {
     "email": "E-Mail",
     "password": "Passwort",
@@ -1203,6 +1209,16 @@
         "title": "Lass uns anfangen...",
         "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Map niet gevonden",
+      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+    },
+    "file": {
+      "title": "Bestand niet gevonden",
+      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
     }
   }
 }

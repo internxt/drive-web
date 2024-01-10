@@ -431,7 +431,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const filesEmptyImage = (
     <div className="relative h-32 w-32">
       <FileIcon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-      <FileIcon className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
+      <FileIcon className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
     </div>
   );
 
@@ -465,7 +465,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const MenuItemToGetSize = () => (
     <div
-      className={'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'}
+      className={
+        'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
+      }
       style={{
         minWidth: '180px',
         position: 'fixed',
@@ -476,7 +478,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     >
       {!isTrash && (
         <>
-          <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5">
+          <div className="flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10">
             <FolderSimplePlus size={20} />
             <p>{translate('actions.upload.folder')}</p>
           </div>
@@ -485,7 +487,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
           <div
             className={
-              'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5'
+              'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
             }
           >
             <FileArrowUp size={20} />
@@ -495,7 +497,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       )}
       <div
         className={
-          'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5'
+          'flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10'
         }
       >
         <UploadSimple size={20} />
@@ -560,6 +562,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   }, [currentFolderId]);
   const onCloseEditNameDialog = useCallback(() => {
     setEditNameItem(null);
+    dispatch(storageActions.setItemToRename(null));
   }, []);
 
   const driveExplorer = (
@@ -640,7 +643,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                           {open && (
                             <Menu.Items
                               className={
-                                'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                                'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
                               }
                             >
                               <Menu.Item>
@@ -658,7 +661,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                       data-cy="contextMenuCreateFolderButton"
                                       className={`${
                                         active && 'bg-gray-5'
-                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                      } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                     >
                                       <FolderSimplePlus size={20} />
                                       <p data-cy="contextMenuCreateFolderButtonText">
@@ -679,7 +682,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                     data-cy="contextMenuUploadFilesButton"
                                     className={`${
                                       active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <FileArrowUp size={20} />
                                     <p className="ml-3" data-cy="contextMenuUploadFilesButtonText">
@@ -695,7 +698,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                     data-cy="contextMenuUploadFolderButton"
                                     className={`${
                                       active && 'bg-gray-5'
-                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                    } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                   >
                                     <UploadSimple size={20} />
                                     <p className="ml-3" data-cy="contextMenuUploadFolderButtonText">
@@ -729,7 +732,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
             />
           </div>
           {isTrash && (
-            <div className="flex items-center justify-center">
+            <div className="flex h-0 items-center justify-center">
               <Menu as="div" className={openedWithRightClick ? '' : 'relative'}>
                 {({ open }) => {
                   useEffect(() => {
@@ -756,7 +759,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                         {open && (
                           <Menu.Items
                             className={
-                              'mt-1 rounded-md border border-black/8 bg-white py-1.5 text-base shadow-subtle-hard outline-none'
+                              'mt-1 rounded-md border border-gray-10 bg-surface py-1.5 text-base shadow-subtle-hard outline-none dark:bg-gray-5'
                             }
                           >
                             <Menu.Item>
@@ -765,7 +768,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                                   onClick={onDeletePermanentlyButtonClicked}
                                   className={`${
                                     active && 'bg-gray-5'
-                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5`}
+                                  } flex cursor-pointer items-center space-x-3 whitespace-nowrap py-2 pl-3 pr-5 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                                 >
                                   <Trash size={20} />
                                   <p>{translate('drive.clearTrash.accept')}</p>

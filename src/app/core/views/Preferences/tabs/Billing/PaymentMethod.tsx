@@ -95,14 +95,14 @@ function InitialState({ payment, setIsModalOpen }: { payment: StateProps; setIsM
           <img className="h-9 rounded-md" src={cardBrands[card.brand]} />
           <div className="ml-4 flex-1">
             <div className="flex items-center text-gray-80">
-              <p style={{ lineHeight: 1 }} className="text-2xl font-bold">
+              <p style={{ lineHeight: 1 }} className="font-serif text-2xl">
                 {'···· ···· ····'}
               </p>
               <p className="ml-1.5 text-sm">{card.last4}</p>
             </div>
             <p className="text-xs text-gray-50">{`${card.exp_month}/${card.exp_year}`}</p>
           </div>
-          <Button variant="secondary" size="medium" onClick={() => setIsModalOpen(true)}>
+          <Button variant="secondary" onClick={() => setIsModalOpen(true)}>
             {translate('actions.edit')}
           </Button>
         </>
@@ -117,11 +117,7 @@ function InitialState({ payment, setIsModalOpen }: { payment: StateProps; setIsM
                 {translate('views.account.tabs.billing.paymentMethod.contactUs.description')}
               </p>
             </div>
-            <Button
-              variant="secondary"
-              size="medium"
-              onClick={() => window.open('mailto:hello@internxt.com', '_blank')}
-            >
+            <Button variant="secondary" onClick={() => window.open('mailto:hello@internxt.com', '_blank')}>
               {translate('views.account.tabs.billing.paymentMethod.contactUs.contact')}
             </Button>
           </>
@@ -188,7 +184,7 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
   return (
     <>
       <PaymentElement className="mt-5" />
-      {error && <p className="mt-2 text-sm text-red-std">{error}</p>}
+      {error && <p className="mt-2 text-sm text-red">{error}</p>}
       <div className="mt-3 flex items-center justify-end">
         <Button variant="secondary" onClick={onClose}>
           {translate('actions.cancel')}

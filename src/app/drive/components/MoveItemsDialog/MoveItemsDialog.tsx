@@ -42,6 +42,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
+  const itemParentId: number = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
+  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === currentFolderId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -167,7 +169,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
-      setDriveBreadcrumb();
+      !props.isTrash && setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
@@ -211,7 +213,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                   return (
                     <div
                       className={`cursor-pointer ${
-                        destinationId === folder.id ? 'bg-primary/10 text-primary' : 'hover:bg-gray-1'
+                        destinationId === folder.id
+                          ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                          : 'hover:bg-gray-1 dark:hover:bg-gray-5'
                       } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
                       onClick={() => onFolderClicked(folder.id, folder.name)}
@@ -234,19 +238,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
         {/* Actions */}
         <div className="flex justify-between">
-          <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
-            <div className="flex cursor-pointer items-center text-base font-medium text-primary">
-              <FolderSimplePlus className="mr-2 h-6 w-6" />
-              <span>{translate('actions.upload.folder')}</span>
-            </div>
-          </BaseButton>
+          <Button disabled={isLoading} variant="secondary" onClick={onCreateFolderButtonClicked}>
+            <FolderSimplePlus size={24} />
+            <span>{translate('actions.upload.folder')}</span>
+          </Button>
 
           <div className="flex space-x-2">
             <Button disabled={isLoading} variant="secondary" onClick={onClose}>
               {translate('actions.cancel')}
             </Button>
             <Button
-              disabled={isLoading}
+              disabled={isLoading || isDriveAndCurrentFolder}
               variant="primary"
               onClick={() =>
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)

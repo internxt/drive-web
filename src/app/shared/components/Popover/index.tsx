@@ -25,7 +25,7 @@ export default function Popover({
         leaveTo="scale-95 opacity-0"
         className="z-50"
       >
-        <HPopover.Panel className="absolute right-0 z-50 mt-1 rounded-md border border-gray-10 bg-white py-1.5 shadow-subtle">
+        <HPopover.Panel className="absolute right-0 z-50 mt-1 rounded-md border border-gray-10 bg-surface py-1.5 shadow-subtle dark:bg-gray-5">
           {panel}
         </HPopover.Panel>
       </Transition>

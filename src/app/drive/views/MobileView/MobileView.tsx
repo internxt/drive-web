@@ -9,6 +9,7 @@ import devices from 'assets/images/mobile-app/devices.png';
 import Avatar from 'app/shared/components/Avatar';
 import appStore from 'assets/images/mobile-app/app-store.jpg';
 import googlePlay from 'assets/images/mobile-app/google-play.jpg';
+import Button from 'app/shared/components/Button/Button';
 
 interface MobileProps {
   user: UserSettings | undefined;
@@ -40,7 +41,7 @@ const Mobile = (props: MobileProps): JSX.Element => {
   return (
     <div>
       <header className="flex flex-col items-center bg-gray-1 pb-4 pt-8">
-        <InternxtLogo className="h-auto w-28" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
         <div className="flex w-full flex-row items-center justify-between px-4 pt-8">
           <div className="... mr-2 flex flex-row truncate">
             <Avatar
@@ -54,12 +55,9 @@ const Mobile = (props: MobileProps): JSX.Element => {
               <p className="... truncate text-base text-gray-50">{props.user?.username}</p>
             </div>
           </div>
-          <button
-            onClick={onLogOutClicked}
-            className="min-w-min cursor-pointer whitespace-nowrap rounded-lg border border-gray-10 bg-white px-5 py-2.5 font-medium drop-shadow"
-          >
+          <Button variant="secondary" onClick={onLogOutClicked}>
             {translate('mobileView.logOut')}
-          </button>
+          </Button>
         </div>
       </header>
       <section className="mb-4 mt-10 flex flex-col items-center">
