@@ -9,23 +9,10 @@
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "title": "Lifetime Deal!",
-    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Hol dir das Angebot"
+    "label": "Jahreslagerung zum halben Preis!",
+    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",
@@ -279,6 +266,11 @@
             },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
+          },
+          "support": {
+            "title": "Support",
+            "description": "Navigieren Sie durch hilfreiche Artikel oder erhalten Sie Unterstützung von unserem Team.",
+            "cta": "Support-Center öffnen"
           },
           "deleteAccount": {
             "head": "Lösche Konto",

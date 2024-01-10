@@ -10810,6 +10810,11 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-live-chat-loader@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/react-live-chat-loader/-/react-live-chat-loader-2.8.2.tgz#f672058ad6c802c66e38bdf44d21091a36b6497c"
+  integrity sha512-rGT9BY6s/S9Xb4y+KWXEdnEgVP+PQHELibIlhOuwYyv7M7zb4SwtrVKJeNwbAyHIL1GXjOO//x245OXFZFwEWA==
+
 react-loading-skeleton@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-loading-skeleton/-/react-loading-skeleton-2.2.0.tgz#b8ce516f9a2471e90d7d9ead35d61425367e3340"

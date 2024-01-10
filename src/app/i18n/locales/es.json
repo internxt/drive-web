@@ -22,23 +22,10 @@
     "cta": "Obtén la oferta"
   },
   "lifetimeBanner": {
-    "title": "Oferta lifetime",
-    "description": "¡Privacidad en la nube para siempre!",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Obtén la oferta"
+    "label": "¡Tu plan anual a mitad de precio!",
+    "title": "¡Ahorra un 50% en nuestros planes anuales!",
+    "cta": "Elige un plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",
@@ -330,6 +317,11 @@
               "sucessSendingVerification": "Verificación enviada a {{email}}",
               "errorSendingVerification": "Error enviando verificación"
             }
+          },
+          "support": {
+            "title": "Soporte",
+            "description": "Navega por artículos útiles o recibe asistencia de nuestro equipo.",
+            "cta": "Abrir Centro de Soporte"
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",

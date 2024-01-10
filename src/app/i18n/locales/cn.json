@@ -9,23 +9,10 @@
     "cta": "达成交易"
   },
   "lifetimeBanner": {
-    "title": "终身计划!",
-    "description": "购买一次，永久获得隐私。",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "达成交易"
+    "label": "半价年度存储！",
+    "title": "在我们的年度订阅上节省50％！",
+    "cta": "选择计划",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
@@ -334,6 +321,11 @@
               "sucessSendingVerification": "发送电子邮件到 {{email}}",
               "errorSendingVerification": "错误发送验证"
             }
+          },
+          "support": {
+            "title": "支持",
+            "description": "浏览有用的文章或向我们的团队寻求帮助。",
+            "cta": "打开支持中心"
           },
           "deleteAccount": {
             "head": "删除账户",

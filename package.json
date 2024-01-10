@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.220",
+  "version": "v1.0.230",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
@@ -59,6 +59,7 @@
     "react-i18next": "^12.1.4",
     "react-image-file-resizer": "^0.4.8",
     "react-infinite-scroll-component": "6.1.0",
+    "react-live-chat-loader": "^2.8.2",
     "react-loading-skeleton": "^2.2.0",
     "react-pdf": "^5.4.0",
     "react-popper": "^2.3.0",

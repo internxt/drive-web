@@ -22,23 +22,10 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Annual storage for half the price!",
+    "title": "Save 50% on our yearly subscriptions!",
+    "cta": "Choose plan",
+    "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
     "header": "Error 404",
@@ -347,6 +334,11 @@
               "sucessSendingVerification": "Email verification sent to {{email}}",
               "errorSendingVerification": "Error sending verification"
             }
+          },
+          "support": {
+            "title": "Support",
+            "description": "Navigate helpful articles or get assistance from our team.",
+            "cta": "Open Support Centre"
           },
           "deleteAccount": {
             "head": "Delete account",
