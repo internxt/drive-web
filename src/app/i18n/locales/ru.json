@@ -717,6 +717,19 @@
         "change": "изменять",
         "requestSent": "Запрос отправлен",
         "confirmation": "Вы получите электронное письмо, если файл/папка открыта для вас"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Пароль требуется только для пользователей без доступа на просмотр или редактирование к общему элементу.",
+        "protect": "Защитить паролем",
+        "disablePasswordTitle": "Отключить защиту паролем?",
+        "disablePasswordBody": "При отключении люди с ссылкой смогут получить доступ к содержимому.",
+        "editPasswordTitle": "Изменить пароль",
+        "buttons": {
+          "cancel": "Отмена",
+          "save": "Сохранить",
+          "disable": "Отключить",
+          "changePassword": "Изменить пароль"
+        }
       }
     },
     "sharedInvitationsModal": {
