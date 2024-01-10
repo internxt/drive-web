@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
 import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
@@ -154,6 +155,9 @@ export default function BackupsView(): JSX.Element {
         e.preventDefault();
       }}
     >
+      <Helmet>
+        <title>{translate('sideNav.backups')} - Internxt Drive</title>
+      </Helmet>
       <DeleteBackupDialog items={breadcrumbsItems} goToFolder={goToFolder} />
       <Dialog
         isOpen={isDeleteModalOpen}

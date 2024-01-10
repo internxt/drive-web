@@ -13,6 +13,7 @@ import {
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
+import navigationService from 'app/core/services/navigation.service';
 
 const useDriveItemActions = (item) => {
   const dispatch = useAppDispatch();
@@ -88,11 +89,17 @@ const useDriveItemActions = (item) => {
   };
 
   const onItemDoubleClicked = (): void => {
+    const isRecentsView = navigationService.isCurrentPath('recents');
+
     if (item.isFolder) {
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+      navigationService.pushFolder(item.uuid);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(item));
+      if (isRecentsView) {
+        dispatch(uiActions.setIsFileViewerOpen(true));
+        dispatch(uiActions.setFileViewerItem(item));
+      } else {
+        navigationService.pushFile(item.uuid);
+      }
     }
   };
 

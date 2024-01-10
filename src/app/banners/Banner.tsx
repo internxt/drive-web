@@ -13,7 +13,7 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
     >
       <div
         className={`absolute left-1/2 top-1/2 flex h-auto max-w-4xl -translate-x-1/2 -translate-y-1/2
-        flex-col overflow-hidden rounded-2xl bg-primary-dark  text-neutral-900`}
+         flex-col overflow-hidden rounded-2xl bg-primary-dark  text-gray-100`}
       >
         <button className="absolute right-0 z-50 m-5 flex w-auto text-white" onClick={onClose}>
           <X size={32} />

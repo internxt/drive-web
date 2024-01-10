@@ -5,7 +5,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { LockSimple, CheckCircle } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import './RequestAccess.scss';
 import { logOut } from '../../../auth/services/auth.service';
 
@@ -44,7 +44,7 @@ function RequestAccess(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col items-center overflow-auto bg-white sm:bg-gray-5">
       <div className="flex shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="120" alt="" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
 
       <div className="flex h-full w-full max-w-xs shrink-0 flex-col items-center justify-start pb-8">
@@ -64,13 +64,13 @@ function RequestAccess(): JSX.Element {
                     value={messageText}
                     placeholder={translate('modals.shareModal.requestAccess.textarea')}
                     rows={4}
-                    className="mt-5 w-full max-w-lg resize-none rounded-6px border border-gray-40 bg-gray-1 p-3 pl-4 outline-none ring-primary/10 focus:border-primary focus:ring-3"
+                    className="mt-5 w-full max-w-lg resize-none rounded-md border border-gray-40 bg-gray-1 p-3 pl-4 outline-none ring-primary/10 focus:border-primary focus:ring-3"
                     onChange={(e) => setMessageText(String(e.target.value))}
                     maxLength={1000}
                   />
                   <span
                     className={`font-regular mt-2 flex w-full justify-end text-xs text-gray-50 ${
-                      messageTextLimit && 'text-red-50'
+                      messageTextLimit && 'text-red'
                     }`}
                   >
                     {messageText.length === 0 ? 0 : messageText.length}/1000
@@ -102,7 +102,7 @@ function RequestAccess(): JSX.Element {
           </>
         ) : (
           <div className="flex w-full max-w-xs flex-col items-center rounded-2xl bg-white p-5 text-gray-100 shadow-subtle-hard transition-all duration-100 ease-out">
-            <CheckCircle size={80} weight="thin" className="mt-3 text-blue-60" />
+            <CheckCircle size={80} weight="thin" className="mt-3 text-primary" />
             <h4 className="mt-4 text-center text-xl font-medium">
               {translate('modals.shareModal.requestAccess.requestSent')}
             </h4>

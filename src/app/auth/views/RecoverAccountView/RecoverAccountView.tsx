@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import { Question } from '@phosphor-icons/react';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import ChangePassword from 'app/auth/components/ChangePassword/ChangePassword';
 import RestartAccount from 'app/auth/components/RestartAccount/RestartAccount';
 
@@ -14,7 +14,7 @@ export default function RecoverAccountView(): JSX.Element {
   return (
     <div className="flex h-full w-full flex-col bg-gray-5">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="120" alt="" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
 
       <div className="flex h-full flex-col items-center justify-center">
