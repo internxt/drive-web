@@ -1,4 +1,3 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
 import { Menu } from '@headlessui/react';
 import { DriveItemData } from 'app/drive/types';
@@ -20,24 +19,9 @@ interface FileDropdownActionsProps {
   openDropdown: boolean;
 }
 
-type MenuItem = {
-  id: string;
-  icon: any;
-  text: string;
-  onClick: () => void;
-  className?: string;
-  iconClassName?: string;
-  divider?: boolean;
-  keyboardShortcutOptions?: {
-    keyboardShortcutIcon?: any;
-    keyboardShortcutText?: string;
-  };
-} | null;
-
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
   const dispatch = useAppDispatch();
-  const { translate } = useTranslationContext();
-  const { title, item, openDropdown, closeDropdown } = props;
+  const { title, item, openDropdown } = props;
   const isSharedItem = item?.sharings && item?.sharings?.length > 0;
 
   const {
@@ -118,7 +102,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                   <Menu.Item disabled={option.disabled?.(item)}>
                     {({ active, disabled }) => {
                       return (
-                        <div
+                        <button
                           onClick={(e) => {
                             e.stopPropagation();
                             option.action?.(item);
@@ -141,7 +125,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                             )}
                             {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
                           </span>
-                        </div>
+                        </button>
                       );
                     }}
                   </Menu.Item>
