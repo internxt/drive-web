@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { FolderSimplePlus, CaretRight } from '@phosphor-icons/react';
 import Modal from 'app/shared/components/Modal';
-import BaseButton from 'app/shared/components/forms/BaseButton';
 import errorService from 'app/core/services/error.service';
 import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
@@ -20,6 +19,7 @@ import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
+import navigationService from 'app/core/services/navigation.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -144,10 +144,20 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const setDriveBreadcrumb = () => {
     const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
     dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
-    itemsToMove[0].isFolder &&
+
+    if (itemsToMove.length > 1) {
+      return;
+    } else {
       driveBreadcrumbPath.forEach((item) => {
         dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
       });
+    }
+
+    if (itemsToMove[0].isFolder) {
+      navigationService.pushFolder(itemsToMove[0].uuid);
+    } else {
+      navigationService.pushFolder(itemsToMove[0].folderUuid);
+    }
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
