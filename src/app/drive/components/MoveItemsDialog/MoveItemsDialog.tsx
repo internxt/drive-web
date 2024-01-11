@@ -42,8 +42,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
-  const itemParentId: number = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
-  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === currentFolderId;
+  const itemParentId = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
+  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
