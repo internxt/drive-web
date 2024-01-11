@@ -1,22 +1,7 @@
-import {
-  PencilSimple,
-  Trash,
-  DownloadSimple,
-  Link,
-  Users,
-  Eye,
-  ArrowsOutCardinal,
-  Backspace,
-} from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
 import { Menu } from '@headlessui/react';
-import { storageActions } from 'app/store/slices/storage';
 import { DriveItemData } from 'app/drive/types';
-import shareService from 'app/share/services/share.service';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveFolderNotSharedLink,
