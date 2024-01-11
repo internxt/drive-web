@@ -1,6 +1,6 @@
-import { useAppDispatch } from 'app/store/hooks';
+import { useAppDispatch } from '../../../store/hooks';
 import { Menu } from '@headlessui/react';
-import { DriveItemData } from 'app/drive/types';
+import { DriveItemData } from '../../../drive/types';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveFolderNotSharedLink,
@@ -8,14 +8,12 @@ import {
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
 } from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
 
 interface FileDropdownActionsProps {
   title?: string;
-  onRenameButtonClicked: any;
-  isTrash?: boolean;
   item?: DriveItemData;
-  closeDropdown: () => void;
   openDropdown: boolean;
 }
 
@@ -35,9 +33,18 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
     onOpenPreviewButtonClicked,
   } = useDriveItemActions(item as DriveItemData);
 
-  const menuItems = isSharedItem
-    ? item?.isFolder
-      ? contextMenuDriveFolderShared({
+  const menuItemStyle = (active, disabled) => {
+    return active
+      ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
+      : disabled
+      ? 'pointer-events-none font-medium text-gray-100'
+      : 'text-gray-80';
+  };
+
+  const menuItems = (): ListItemMenu<DriveItemData> => {
+    if (isSharedItem) {
+      if (item?.isFolder) {
+        return contextMenuDriveFolderShared({
           copyLink: onCopyLinkButtonClicked,
           openShareAccessSettings: onLinkSettingsButtonClicked,
           showDetails: onShowDetailsButtonClicked,
@@ -53,8 +60,9 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           moveItem: onMoveItemButtonClicked,
           downloadItem: onDownloadItemButtonClicked,
           moveToTrash: onMoveToTrashButtonClicked,
-        })
-      : contextMenuDriveItemShared({
+        });
+      } else {
+        return contextMenuDriveItemShared({
           openPreview: onOpenPreviewButtonClicked,
           showDetails: onShowDetailsButtonClicked,
           copyLink: onCopyLinkButtonClicked,
@@ -64,36 +72,42 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           moveItem: onMoveItemButtonClicked,
           downloadItem: onDownloadItemButtonClicked,
           moveToTrash: onMoveToTrashButtonClicked,
-        })
-    : item?.isFolder
-    ? contextMenuDriveFolderNotSharedLink({
-        shareLink: onLinkSettingsButtonClicked,
-        showDetails: onShowDetailsButtonClicked,
-        getLink: onCopyLinkButtonClicked,
-        renameItem: onRenameItemButtonClicked,
-        moveItem: onMoveItemButtonClicked,
-        downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
-      })
-    : contextMenuDriveNotSharedLink({
-        shareLink: onLinkSettingsButtonClicked,
-        openPreview: onOpenPreviewButtonClicked,
-        showDetails: onShowDetailsButtonClicked,
-        getLink: onCopyLinkButtonClicked,
-        renameItem: onRenameItemButtonClicked,
-        moveItem: onMoveItemButtonClicked,
-        downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
-      });
+        });
+      }
+    } else {
+      if (item?.isFolder) {
+        return contextMenuDriveFolderNotSharedLink({
+          shareLink: onLinkSettingsButtonClicked,
+          showDetails: onShowDetailsButtonClicked,
+          getLink: onCopyLinkButtonClicked,
+          renameItem: onRenameItemButtonClicked,
+          moveItem: onMoveItemButtonClicked,
+          downloadItem: onDownloadItemButtonClicked,
+          moveToTrash: onMoveToTrashButtonClicked,
+        });
+      } else {
+        return contextMenuDriveNotSharedLink({
+          shareLink: onLinkSettingsButtonClicked,
+          openPreview: onOpenPreviewButtonClicked,
+          showDetails: onShowDetailsButtonClicked,
+          getLink: onCopyLinkButtonClicked,
+          renameItem: onRenameItemButtonClicked,
+          moveItem: onMoveItemButtonClicked,
+          downloadItem: onDownloadItemButtonClicked,
+          moveToTrash: onMoveToTrashButtonClicked,
+        });
+      }
+    }
+  };
 
   return (
     <div className="z-20 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {openDropdown && item && (
         <>
-          {menuItems?.map((option, i) => (
-            <div key={i}>
-              {option && option.separator ? (
+          {menuItems()?.map((option, i) => (
+            <div key={option?.name}>
+              {option?.separator ? (
                 <div className="my-0.5 flex w-full flex-row px-4">
                   <div className="h-px w-full bg-gray-10" />
                 </div>
@@ -107,13 +121,10 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                             e.stopPropagation();
                             option.action?.(item);
                           }}
-                          className={`flex w-full cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
-                            active
-                              ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
-                              : disabled
-                              ? 'pointer-events-none font-medium text-gray-100'
-                              : 'text-gray-80'
-                          }`}
+                          className={`flex w-full cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${menuItemStyle(
+                            active,
+                            disabled,
+                          )}`}
                         >
                           <div className="flex flex-row items-center space-x-2">
                             {option.icon && <option.icon size={20} />}
