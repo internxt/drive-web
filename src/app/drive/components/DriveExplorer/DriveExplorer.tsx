@@ -306,6 +306,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       } else {
         dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+        navigationService.pushFile(item.uuid);
       }
     },
     [dispatch],
