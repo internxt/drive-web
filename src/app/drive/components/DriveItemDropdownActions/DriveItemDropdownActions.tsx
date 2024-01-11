@@ -34,11 +34,13 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   } = useDriveItemActions(item as DriveItemData);
 
   const menuItemStyle = (active, disabled) => {
-    return active
-      ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
-      : disabled
-      ? 'pointer-events-none font-medium text-gray-100'
-      : 'text-gray-80';
+    let style = 'text-gray-80';
+    if (active) {
+      style = 'bg-gray-5 text-gray-100 dark:bg-gray-10';
+    } else if (disabled) {
+      style = 'pointer-events-none font-medium text-gray-100';
+    }
+    return style;
   };
 
   const menuItems = (): ListItemMenu<DriveItemData> => {
