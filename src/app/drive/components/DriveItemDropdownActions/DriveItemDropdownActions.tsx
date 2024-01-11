@@ -87,7 +87,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
       });
 
   return (
-    <div className="flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5">
+    <div className="z-20 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {openDropdown && item && (
         <>
@@ -107,7 +107,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                             e.stopPropagation();
                             option.action?.(item);
                           }}
-                          className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
+                          className={`flex w-full cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
                             active
                               ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
                               : disabled
