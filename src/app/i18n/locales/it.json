@@ -8,6 +8,20 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "blackFridayBanner": {
+    "header": "Risparmia il 70%!",
+    "title": "Preparati per la Settimana della Privacy dei Dati",
+    "cta": "Scegli un piano",
+    "guarantee": "Garanzia di rimborso entro 30 giorni",
+    "features": {
+      "discount": "Risparmia su piani mensili e annuali",
+      "safeCloud": "Archiviazione cloud sicura e protetta",
+      "openSource": "Open source e trasparente",
+      "endToEnd": "Trasferimenti crittografati end-to-end",
+      "unauthorized": "Nessun accesso non autorizzato",
+      "offerEnds": "L'offerta termina il 29 gennaio"
+    }
+  },
   "lifetimeBanner": {
     "label": "Archiviazione annuale a metà prezzo!",
     "title": "Risparmia il 50% sulle nostre sottoscrizioni annuali!",
