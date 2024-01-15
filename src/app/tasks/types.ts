@@ -6,6 +6,7 @@ export enum TaskStatus {
   Encrypting = 'encrypting',
   Decrypting = 'decrypting',
   InProcess = 'in-process',
+  Paused = 'paused',
   Error = 'error',
   Success = 'success',
   Cancelled = 'cancelled',
@@ -35,6 +36,7 @@ export enum TaskEvent {
   TaskUpdated = 'task-updated',
   TaskCompleted = 'task-completed',
   TaskCancelled = 'task-cancelled',
+  TaskRemoved = 'task-removed',
   TaskError = 'task-error',
 }
 
@@ -142,6 +144,7 @@ export type TaskData = (
 
 export interface TaskNotification {
   taskId: string;
+  action: TaskType;
   status: TaskStatus;
   title: string;
   item?: DriveItemData | { name: string; type: string; items?: DriveItemData[] } | { id: number; name: string };

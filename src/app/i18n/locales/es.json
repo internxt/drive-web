@@ -979,6 +979,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}"
     },
+    "waiting": "Esperando",
+    "paused": "Pausado",
     "create-folder": {
       "status": {
         "pending": "Esperando para completar tarea",
@@ -1098,6 +1100,9 @@
         "cancelled": "Cancelado"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Error al subir"
     }
   },
   "shareItemDialog": {

@@ -865,6 +865,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}"
     },
+    "waiting": "Warten",
+    "paused": "Pausiert",
     "create-folder": {
       "status": {
         "pending": "Ordner muss noch erstellt werden",
@@ -982,6 +984,9 @@
         "cancelled": "Umbenennung abgebrochen"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload fehlgeschlagen"
     }
   },
   "success": {

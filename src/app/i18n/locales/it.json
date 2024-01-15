@@ -958,6 +958,8 @@
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
       "processing": "Elaborazione {{pending}} di {{finished}}"
     },
+    "waiting": "In attesa",
+    "paused": "In pausa",
     "create-folder": {
       "status": {
         "pending": "In attesa di creare la cartella",
@@ -1076,6 +1078,9 @@
         "cancelled": "Rinominato annullato"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Caricamento fallito"
     }
   },
   "success": {

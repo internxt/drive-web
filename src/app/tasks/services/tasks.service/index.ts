@@ -50,6 +50,11 @@ class TaskManagerService {
     this.tasks = [];
   }
 
+  public removeTask(taskId: string) {
+    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.eventEmitter.emit(TaskEvent.TaskRemoved);
+  }
+
   public getTasks(filter: TaskFilter = {}) {
     return this.tasks.filter((task) => {
       const meetsTheStatus = !filter.status || filter.status.includes(task.status);
@@ -83,8 +88,9 @@ class TaskManagerService {
   public findNotification(task: TaskData): TaskNotification {
     return {
       taskId: task.id,
+      action: task.action,
       status: task.status,
-      item: task.file || task.folder,
+      item: task.file ?? task.folder,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
@@ -103,7 +109,7 @@ class TaskManagerService {
       },
     });
 
-    await (task?.stop || (() => undefined))();
+    await (task?.stop ?? (() => undefined))();
 
     this.eventEmitter.emit(TaskEvent.TaskCancelled, task);
     this.eventEmitter.emit(`${TaskEvent.TaskCancelled}-${taskId}`, task);
@@ -199,19 +205,7 @@ class TaskManagerService {
     if (task.status === TaskStatus.Error && task.subtitle) {
       return task.subtitle;
     }
-
-    const notExistProgress = task.progress && task.progress === Infinity;
-    if (
-      isFirefox &&
-      task.action === TaskType.DownloadFolder &&
-      task.status === TaskStatus.InProcess &&
-      notExistProgress
-    )
-      return t(`tasks.${task.action}.status.in-process-without-progress`);
-
-    return t(`tasks.${task.action}.status.${task.status}`, {
-      progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
-    });
+    return '';
   }
 
   private getTaskNotificationIcon(task: TaskData): FunctionComponent<SVGProps<SVGSVGElement>> {
