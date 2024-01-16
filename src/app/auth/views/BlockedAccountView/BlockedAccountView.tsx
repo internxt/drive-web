@@ -18,7 +18,7 @@ const COUNTDOWN_TIME = 10;
 export default function BlockedAccountView(): JSX.Element {
   const { translate } = useTranslationContext();
   const [userEmail, setUserEmail] = useState('');
-  const [isLoading, setIsloading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [isInvalidToken, setIsInvalidToken] = useState(false);
   const [sendingEmail, setSendingEmail] = useState(false);
   const [enableResendButton, setEnableResendButton] = useState(true);
@@ -40,7 +40,7 @@ export default function BlockedAccountView(): JSX.Element {
     const unblockAccount = async () => {
       if (token) {
         try {
-          setIsloading(true);
+          setIsLoading(true);
           await authService.unblockAccount(token);
           navigationService.push(AppView.Login);
         } catch (error) {
@@ -48,7 +48,7 @@ export default function BlockedAccountView(): JSX.Element {
           setIsInvalidToken(true);
         }
       }
-      setIsloading(false);
+      setIsLoading(false);
     };
     unblockAccount();
   }, [token]);
@@ -80,6 +80,15 @@ export default function BlockedAccountView(): JSX.Element {
     }
   };
 
+  const ResendButton = () =>
+    enableResendButton ? (
+      <button className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
+        {translate('blockedAccount.resend')}
+      </button>
+    ) : (
+      <span className="ml-2 font-medium">&nbsp;{countDown}</span>
+    );
+
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -93,7 +102,7 @@ export default function BlockedAccountView(): JSX.Element {
   }
 
   return (
-    <div className="bg-surface flex h-full w-full flex-col overflow-auto dark:bg-gray-1">
+    <div className="flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
         <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
@@ -116,15 +125,7 @@ export default function BlockedAccountView(): JSX.Element {
           <span className="mb-5 h-px w-72 bg-gray-10"></span>
           <p className="font-regular flex flex-row items-center justify-center text-base text-gray-80">
             {translate('blockedAccount.text3')}
-            {sendingEmail === true ? (
-              <Spinner className="ml-2 h-5 w-5 text-primary" />
-            ) : enableResendButton ? (
-              <span className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
-                {translate('blockedAccount.resend')}
-              </span>
-            ) : (
-              <span className="ml-2 font-medium">&nbsp;{countDown}</span>
-            )}
+            {sendingEmail === true ? <Spinner className="ml-2 h-5 w-5 text-primary" /> : ResendButton()}
           </p>
         </div>
       </div>
