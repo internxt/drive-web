@@ -225,6 +225,7 @@ const Navbar = (props: NavbarProps) => {
             <input
               ref={searchInput}
               id="globalSearchInput"
+              data-cy="globalSearchInput"
               autoComplete="off"
               spellCheck="false"
               type="text"

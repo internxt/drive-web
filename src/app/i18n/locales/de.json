@@ -3,29 +3,30 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
+  "blackFridayBanner": {
+    "header": "Spare 70%!",
+    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "features": {
+      "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
+      "safeCloud": "Sicherer und geschützter Cloud-Speicher",
+      "openSource": "Open Source und transparent",
+      "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "unauthorized": "Kein unberechtigter Zugriff",
+      "offerEnds": "Angebot endet am 29. Januar"
+    }
+  },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "title": "Lifetime Deal!",
-    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Hol dir das Angebot"
+    "label": "Jahreslagerung zum halben Preis!",
+    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",
@@ -280,6 +281,11 @@
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },
+          "support": {
+            "title": "Support",
+            "description": "Navigieren Sie durch hilfreiche Artikel oder erhalten Sie Unterstützung von unserem Team.",
+            "cta": "Support-Center öffnen"
+          },
           "deleteAccount": {
             "head": "Lösche Konto",
             "description": "Durch das Löschen deines Kontos löscht Internxt deine Dateien und Daten für immer. Sobald diese Aktion eingeleitet wurde, kann sie nicht mehr rückgängig gemacht werden.",
@@ -352,9 +358,9 @@
           },
           "viewAllFeatures": "Alle Funktionen anzeigen",
           "card": {
-            "annually": "€{{amount}} Jährliche Rechnung",
-            "monthly": "€{{amount}} pro Monat",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Jährliche Rechnung",
+            "monthly": "{{amount}} pro Monat",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Einmalige Zahlung"
           },
           "features": {

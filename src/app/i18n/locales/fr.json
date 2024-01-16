@@ -4,16 +4,17 @@
     "logOut": "Déconnexion"
   },
   "blackFridayBanner": {
-    "header": "Choisissez la confidentialité.",
-    "title": "Internxt offre de Noël",
-    "cta": "Obtenez l'offre",
+    "header": "Économisez 70% !",
+    "title": "Préparez-vous pour la Semaine de la Protection des Données",
+    "cta": "Choisir un plan",
+    "guarantee": "Garantie de remboursement de 30 jours",
     "features": {
-      "discount": "-50% sur notre plans lifetime",
-      "safeCloud": "Stockage en nuage sécurisé",
+      "discount": "Économisez sur les plans mensuels et annuels",
+      "safeCloud": "Stockage cloud sûr et sécurisé",
       "openSource": "Open source et transparent",
-      "endToEnd": "Transferts cryptés de bout en bout",
+      "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 7 janvier"
+      "offerEnds": "L'offre se termine le 29 janvier"
     }
   },
   "valentinesBanner": {
@@ -22,23 +23,10 @@
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Stockage annuel à moitié prix !",
+    "title": "Économisez 50% sur nos abonnements annuels !",
+    "cta": "Choisissez un plan",
+    "guarantee": "Garantie de remboursement sous 30 jours"
   },
   "lang": {
     "title": "Langue",
@@ -312,6 +300,11 @@
               "errorSendingVerification": "Erreur d'envoi de la vérification"
             }
           },
+          "support": {
+            "title": "Support",
+            "description": "Naviguez à travers des articles utiles ou obtenez de l'aide auprès de notre équipe.",
+            "cta": "Ouvrir le Centre de support"
+          },
           "deleteAccount": {
             "head": "Supprimer le compte",
             "description": "Si vous supprimez votre compte, vos données seront supprimées à jamais. Cette action ne peut être annulée.",
@@ -370,9 +363,9 @@
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
           "card": {
-            "annually": "€{{amount}} Facturation annuellement",
-            "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Facturation annuellement",
+            "monthly": "{{amount}} par mois",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Paiement unique"
           },
           "features": {

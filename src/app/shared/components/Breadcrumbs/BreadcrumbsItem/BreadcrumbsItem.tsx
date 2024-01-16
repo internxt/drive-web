@@ -32,12 +32,14 @@ import {
 import { SdkFactory } from '../../../../core/factory/sdk';
 import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { getAppConfig } from 'app/core/services/config.service';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
   isHiddenInList?: boolean;
   items: BreadcrumbItemData[];
+  breadcrumbButtonDataCy?: string;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -50,8 +52,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const currentBreadcrumb = namePath[namePath.length - 1];
   const { breadcrumbDirtyName } = useDriveItemStoreProps();
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
-  const pathName = window.location.pathname.split('/')[2];
-  const isSharedView = pathName === 'shared';
+  const path = getAppConfig().views.find((view) => view.path === location.pathname);
+  const pathId = path?.id;
+  const isSharedView = pathId === 'shared';
 
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
@@ -400,6 +403,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         }`}
           key={props.item.id}
           onClick={() => onItemClicked(props.item)}
+          onKeyDown={() => {}}
+          data-cy={props?.breadcrumbButtonDataCy}
         >
           {props.isHiddenInList && <ItemIconComponent className="h-5 w-5" />}
           {props.item.icon ? props.item.icon : null}

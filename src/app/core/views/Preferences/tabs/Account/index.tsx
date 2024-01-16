@@ -8,6 +8,7 @@ import Language from './Language';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
 import Appearance from './Appearance';
+import ContactSupport from './ContactSupport';
 
 export default function AccountTab({ className = '' }: { className?: string }): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -21,12 +22,14 @@ export default function AccountTab({ className = '' }: { className?: string }): 
           <div className="mt-8 flex flex-col flex-wrap gap-x-10 gap-y-8 xl:flex-row">
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
+              <Language />
               <InviteAFriend />
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
               <Language />
               <Appearance />
+              <ContactSupport />
               <DeleteAccount />
             </div>
           </div>
@@ -39,10 +42,11 @@ export default function AccountTab({ className = '' }: { className?: string }): 
               <Usage />
               <Language />
               <Appearance />
+              <DeleteAccount />
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
-              <DeleteAccount />
+              <ContactSupport />
             </div>
           </div>
         </div>
