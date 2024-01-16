@@ -24,7 +24,9 @@ const MenuItem = ({
   <div
     onClick={onClick}
     onKeyDown={() => {}}
-    className={`${active && 'bg-gray-5'} flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5`}
+    className={`${
+      active && 'bg-gray-5 dark:bg-gray-10'
+    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
   >
     {icon}
     <p className="ml-3">{text}</p>
@@ -59,7 +61,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
     <div
       className={`${background} z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg`}
     >
-      <div className="flex flex-row items-center justify-center space-x-2 px-5">
+      <div className="flex flex-row items-center justify-center space-x-2">
         {!isAuthenticated && isShareView && (
           <button
             onClick={copyNavigatorLink}
@@ -81,7 +83,7 @@ const TopBarActions: FC<TopBarActionsProps> = ({
         <Dropdown
           classButton="flex h-11 w-11 cursor-pointer flex-row items-center justify-center rounded-lg bg-white/0 font-medium outline-none transition duration-50 ease-in-out hover:bg-white/10"
           openDirection="right"
-          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard min-w-[180px]"
+          classMenuItems="z-20 right-0 mt-0 flex flex-col rounded-lg bg-surface dark:bg-gray-5 py-1.5 shadow-subtle-hard min-w-[180px]"
           item={file}
           dropdownActionsContext={dropdownItems}
         >

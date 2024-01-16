@@ -14,7 +14,7 @@ const handleReportShare = () => {
 
 const ReportButton = (): JSX.Element => (
   <Button variant="secondary" onClick={handleReportShare}>
-    <WarningCircle height={24} width={24} color="text-gray-80" />
+    <WarningCircle height={24} width={24} className="text-gray-80" />
     <span className="ml-2">{t('actions.report')}</span>
   </Button>
 );

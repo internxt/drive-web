@@ -22,23 +22,10 @@
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Stockage annuel à moitié prix !",
+    "title": "Économisez 50% sur nos abonnements annuels !",
+    "cta": "Choisissez un plan",
+    "guarantee": "Garantie de remboursement sous 30 jours"
   },
   "lang": {
     "title": "Langue",
@@ -49,6 +36,12 @@
     "cn": "简体中文 (Chinois)",
     "ru": "Русский (Russe)",
     "de": "Deutsch (Allemand)"
+  },
+  "theme": {
+    "title": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
   },
   "auth": {
     "email": "Email",
@@ -303,7 +296,8 @@
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
               "sucessSendingVerification": "Vérification par courriel envoyée",
-              "errorSendingVerification": "Erreur d'envoi de la vérification"
+              "errorSendingVerification": "Erreur d'envoi de la vérification",
+              "confirm": "Confirmer"
             }
           },
           "support": {
@@ -688,6 +682,19 @@
         "change": "Changer",
         "requestSent": "Demande envoyée",
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Le mot de passe est uniquement requis pour les utilisateurs sans accès en lecture ou en modification à l'élément partagé.",
+        "protect": "Protéger par mot de passe",
+        "disablePasswordTitle": "Désactiver la protection par mot de passe ?",
+        "disablePasswordBody": "Lorsqu'elle est désactivée, les personnes disposant du lien pourront accéder au contenu.",
+        "editPasswordTitle": "Modifier le mot de passe",
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "disable": "Désactiver",
+          "changePassword": "Changer le mot de passe"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1266,5 +1273,15 @@
     "forgotPassword": "J'ai oublié mon mot de passe",
     "text3": "Vous n'avez pas reçu d'e-mail ?",
     "resend": "Renvoyer"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Dossier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le dossier n'a pas été déplacé ou supprimé."
+    },
+    "file": {
+      "title": "Fichier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
+    }
   }
 }

@@ -22,23 +22,10 @@
     "cta": "Obtén la oferta"
   },
   "lifetimeBanner": {
-    "title": "Oferta lifetime",
-    "description": "¡Privacidad en la nube para siempre!",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Obtén la oferta"
+    "label": "¡Tu plan anual a mitad de precio!",
+    "title": "¡Ahorra un 50% en nuestros planes anuales!",
+    "cta": "Elige un plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",
@@ -50,6 +37,13 @@
     "ru": "Русский (Ruso)",
     "de": "Deutsch (Alemán)"
   },
+  "theme": {
+    "title": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",
@@ -321,7 +315,8 @@
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
               "sucessSendingVerification": "Verificación enviada a {{email}}",
-              "errorSendingVerification": "Error enviando verificación"
+              "errorSendingVerification": "Error enviando verificación",
+              "confirm": "Confirmar"
             }
           },
           "support": {
@@ -755,6 +750,19 @@
         "change": "Cambiar",
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",
+        "protect": "Proteger con contraseña",
+        "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
+        "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
+        "editPasswordTitle": "Editar contraseña",
+        "buttons": {
+          "cancel": "Cancelar",
+          "save": "Guardar",
+          "disable": "Desactivar",
+          "changePassword": "Cambiar contraseña"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1339,5 +1347,15 @@
     "forgotPassword": "He olvidado mi contraseña",
     "text3": "¿No has recibido ningún correo electrónico?",
     "resend": "Reenviar"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Carpeta no encontrada",
+      "description": "Asegúrese de que la URL es correcta y de que la carpeta no se ha movido ni eliminado."
+    },
+    "file": {
+      "title": "Archivo no encontrado",
+      "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
+    }
   }
 }

@@ -22,23 +22,10 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Annual storage for half the price!",
+    "title": "Save 50% on our yearly subscriptions!",
+    "cta": "Choose plan",
+    "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
     "header": "Error 404",
@@ -70,6 +57,12 @@
     "cn": "简体中文 (Chinese)",
     "ru": "Русский (Russian)",
     "de": "Deutsch (German)"
+  },
+  "theme": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
   },
   "auth": {
     "email": "Email",
@@ -234,7 +227,7 @@
     "putPwd": "Please enter the password provided",
     "putPwd1": "by the sender for access.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Access"
   },
   "sideNav": {
@@ -301,7 +294,7 @@
             },
             "subscription": {
               "planName": "Subscription",
-              "button": "change",
+              "button": "Change",
               "yearly": "year",
               "monthly": "month"
             }
@@ -339,7 +332,8 @@
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",
               "sucessSendingVerification": "Email verification sent to {{email}}",
-              "errorSendingVerification": "Error sending verification"
+              "errorSendingVerification": "Error sending verification",
+              "confirm": "Confirm"
             }
           },
           "support": {
@@ -773,6 +767,19 @@
         "change": "Change",
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
+        "protect": "Protect with password",
+        "disablePasswordTitle": "Disable password protection?",
+        "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
+        "editPasswordTitle": "Edit password",
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "disable": "Disable",
+          "changePassword": "Change password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1358,5 +1365,15 @@
     "forgotPassword": "I forgot my password",
     "text3": "Didn’t received any email?",
     "resend": "Resend"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Folder not found",
+      "description": "Make sure that the URL is correct and the folder hasn’t been moved or deleted."
+    },
+    "file": {
+      "title": "File not found",
+      "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
+    }
   }
 }

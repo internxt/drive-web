@@ -7,6 +7,7 @@ import InviteAFriend from './InviteAFriend';
 import Language from './Language';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
+import Appearance from './Appearance';
 import ContactSupport from './ContactSupport';
 
 export default function AccountTab({ className = '' }: { className?: string }): JSX.Element {
@@ -26,6 +27,8 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             </div>
             <div className="flex flex-1 flex-col space-y-8">
               <AccountDetails />
+              <Language />
+              <Appearance />
               <ContactSupport />
               <DeleteAccount />
             </div>
@@ -38,6 +41,7 @@ export default function AccountTab({ className = '' }: { className?: string }): 
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
               <Language />
+              <Appearance />
               <DeleteAccount />
             </div>
             <div className="flex flex-1 flex-col space-y-8">

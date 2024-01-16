@@ -241,6 +241,9 @@ export const storageSlice = createSlice({
         state.namePath.push(action.payload);
       }
     },
+    setNamePath: (state: StorageState, action: PayloadAction<FolderPath[]>) => {
+      state.namePath = action.payload;
+    },
     pushNamePathDialog: (state: StorageState, action: PayloadAction<FolderPath>) => {
       if (!state.folderPathDialog.map((path) => path.id).includes(action.payload.id)) {
         state.folderPathDialog.push(action.payload);
@@ -405,6 +408,7 @@ export const {
   resetNamePath,
   setCurrentPath,
   pushNamePath,
+  setNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
   patchItem,

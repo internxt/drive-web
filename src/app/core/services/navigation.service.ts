@@ -2,7 +2,7 @@ import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
-import { AppView, AppViewConfig } from '../types';
+import { AppView } from '../types';
 import configService from './config.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
@@ -31,9 +31,6 @@ instance.listen((nav) => {
 
 const navigationService = {
   history: instance,
-  getCurrentView(): AppViewConfig | undefined {
-    return configService.getAppConfig().views.find((v) => v.path === instance.location.pathname);
-  },
   push(viewId: AppView, queryMap: Record<string, unknown> = {}): void {
     const viewConfig = configService.getViewConfig({ id: viewId });
     const viewSearch = queryString.stringify(queryMap);
@@ -43,6 +40,22 @@ const navigationService = {
     }
 
     instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
+  },
+  pushFolder(uuid: string | undefined): void {
+    instance.push(`/folder/${uuid}`);
+  },
+  pushFile(uuid: string | undefined): void {
+    instance.push(`/file/${uuid}`);
+  },
+  isCurrentPath(path: string): boolean {
+    const pathname = navigationService.history.location.pathname.split('/');
+    const currentPath = pathname[1];
+    return currentPath === path;
+  },
+  getUuid(): string | undefined {
+    const pathname = navigationService.history.location.pathname.split('/');
+    const currentUuid = pathname[2];
+    return currentUuid;
   },
 };
 

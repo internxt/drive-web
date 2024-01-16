@@ -73,14 +73,14 @@
     {
       "id": "drive",
       "layout": "header-and-sidenav",
-      "path": "/app",
+      "path": "/",
       "exact": true,
       "auth": true
     },
     {
       "id": "recents",
       "layout": "header-and-sidenav",
-      "path": "/app/recents",
+      "path": "/recents",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -88,7 +88,7 @@
     {
       "id": "backups",
       "layout": "header-and-sidenav",
-      "path": "/app/backups",
+      "path": "/backups",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -96,7 +96,7 @@
     {
       "id": "shared-links",
       "layout": "header-and-sidenav",
-      "path": "/app/shared-links",
+      "path": "/shared-links",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -104,7 +104,7 @@
     {
       "id": "shared",
       "layout": "header-and-sidenav",
-      "path": "/app/shared",
+      "path": "/shared",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -112,7 +112,7 @@
     {
       "id": "photos",
       "layout": "header-and-sidenav",
-      "path": "/app/photos",
+      "path": "/photos",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -121,7 +121,7 @@
     {
       "id": "trash",
       "layout": "header-and-sidenav",
-      "path": "/app/trash",
+      "path": "/trash",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -133,6 +133,13 @@
       "exact": true,
       "auth": true,
       "hideSearch": true
+    },
+    {
+      "id": "drive-items",
+      "layout": "header-and-sidenav",
+      "path": "/:itemType/:id",
+      "exact": true,
+      "auth": true
     },
     {
       "id": "teams-join",
@@ -252,6 +259,13 @@
       "id": "request-access",
       "layout": "empty",
       "path": "/request-access",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "folder-file-not-found",
+      "layout": "empty",
+      "path": "/not-found",
       "exact": true,
       "auth": true
     },

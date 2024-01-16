@@ -21,6 +21,7 @@ import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
+import { ThemeProvider } from 'app/theme/ThemeProvider';
 import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 
 // Installs plugins
@@ -44,9 +45,11 @@ root.render(
     <HelmetProvider>
       <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
         <Provider store={store}>
-          <TranslationProvider>
-            <App />
-          </TranslationProvider>
+          <ThemeProvider>
+            <TranslationProvider>
+              <App />
+            </TranslationProvider>
+          </ThemeProvider>
         </Provider>
       </LiveChatLoaderProvider>
     </HelmetProvider>

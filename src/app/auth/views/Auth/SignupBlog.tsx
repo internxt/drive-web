@@ -69,9 +69,9 @@ export default function SignupBlog(): JSX.Element {
       <Helmet>
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/signup-blog`} />
       </Helmet>
-      <div className="flex flex-col items-center justify-center overflow-hidden">
-        <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-blue-20 to-white">
-          <div className="mb-10 mt-5 flex w-full flex-col items-center justify-center px-5 text-center sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">
+      <div className="flex flex-col items-center justify-center overflow-hidden bg-white">
+        <div className="flex w-full flex-row overflow-hidden bg-gradient-to-br from-primary/20 to-white">
+          <div className="mb-10 mt-5 flex w-full flex-col items-center justify-center px-5 text-center text-gray-100 dark:text-gray-1 sm:ml-11 sm:w-full sm:max-w-xs sm:items-start sm:px-0 sm:text-left">
             <p className="text-3xl font-semibold">
               {textContent[lang].title.line1}
               <span className="text-primary">{textContent[lang].title.blueText}</span>
