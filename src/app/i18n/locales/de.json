@@ -264,6 +264,19 @@
               "name": "Name",
               "lastname": "Nachname"
             },
+            "changeEmail": {
+              "title": "E-Mail ändern",
+              "email": "E-Mail",
+              "newEmail": "Neue E-Mail",
+              "password": "Passwort",
+              "errorSameEmail": "Die neue E-Mail muss sich von der aktuellen unterscheiden",
+              "errorPassword": "Falsches Passwort, bitte versuchen Sie es erneut",
+              "sendVerification": "Verifikation senden",
+              "sendingVerification": "Verifikation wird gesendet",
+              "sucessSendingVerification": "Verifikation an {{email}} gesendet",
+              "errorSendingVerification": "Fehler beim Senden der Verifikation",
+              "confirm": "Bestätigen"
+            },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
           },

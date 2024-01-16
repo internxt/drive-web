@@ -160,7 +160,7 @@ export default function ChangeEmailView(): JSX.Element {
               />
 
               <Button loading={status === STATUS.LOADING} type="submit">
-                {translate('views.account.tabs.account.accountDetails.changeEmail.sendingVerification')}
+                {translate('views.account.tabs.account.accountDetails.changeEmail.confirm')}
               </Button>
             </form>
           </>

@@ -332,7 +332,8 @@
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",
               "sucessSendingVerification": "Email verification sent to {{email}}",
-              "errorSendingVerification": "Error sending verification"
+              "errorSendingVerification": "Error sending verification",
+              "confirm": "Confirm"
             }
           },
           "support": {
