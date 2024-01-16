@@ -573,7 +573,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="h-px w-full bg-gray-5" />
 
           {accessMode === 'public' && !isLoading && isUserOwner && (
-            <div className="flex items-end justify-between align-middle">
+            <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
                   <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
@@ -581,8 +581,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
                   <Question
-                    size={14}
-                    className="ml-2 flex items-center justify-center font-medium"
+                    size={20}
+                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
                     data-tooltip-id="uploadFolder-tooltip"
                     data-tooltip-place="top"
                   />
