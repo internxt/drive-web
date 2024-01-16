@@ -44,7 +44,6 @@ function getIsSignUpTutorialCompleted(): boolean {
   return localStorage.getItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) === 'true';
 }
 
-// TODO: Move types before finish the epic
 type TaskState = {
   status: TaskStatus;
 };

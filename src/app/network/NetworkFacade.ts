@@ -12,6 +12,8 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { TaskStatus } from '../tasks/types';
+import { waitForContiueUploadSignal } from '../drive/services/worker.service/upload.service';
+import { WORKER_MESSAGE_STATES } from '../../WebWorker';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -39,39 +41,16 @@ interface UploadTask {
   index: number;
 }
 
-async function waitForSignal(taskId: string): Promise<void> {
-  return new Promise((resolve) => {
-    const checkProgress = async () => {
-      let beginProgress = false;
-      const handleMessage = (msg: MessageEvent) => {
-        if (msg.data.result === 'uploadStatus') {
-          if (taskId === msg.data.uploadStatus.taskId) {
-            beginProgress = msg.data.uploadStatus.status === TaskStatus.InProcess;
-          }
-        }
-      };
-
-      addEventListener('message', handleMessage);
-      while (!beginProgress) {
-        postMessage({ result: 'checkUploadStatus' });
-        await new Promise((timeoutResolve) => setTimeout(timeoutResolve, 1000));
-      }
-
-      removeEventListener('message', handleMessage);
-      resolve();
-    };
-
-    checkProgress();
-  });
-}
-
 /**
  * The entry point for interacting with the network
  */
 export class NetworkFacade {
   private readonly cryptoLib: NetworkModule.Crypto;
+  private isPaused: boolean;
 
   constructor(private readonly network: NetworkModule.Network) {
+    this.isPaused = false;
+
     this.cryptoLib = {
       algorithm: NetworkModule.ALGORITHMS.AES256CTR,
       validateMnemonic: (mnemonic) => {
@@ -83,6 +62,16 @@ export class NetworkFacade {
       randomBytes,
     };
   }
+
+  destroy() {
+    removeEventListener('message', this.handleWorkerMessage);
+  }
+
+  private handleWorkerMessage = (msg) => {
+    if (msg.data.result === WORKER_MESSAGE_STATES.UPLOAD_STATUS) {
+      this.isPaused = msg.data.uploadStatus.status === TaskStatus.Paused;
+    }
+  };
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
     let fileToUpload: Blob;
@@ -106,9 +95,9 @@ export class NetworkFacade {
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
         const isPaused = options.continueUploadOptions?.isPaused;
 
-        postMessage({ result: 'checkUploadStatus' });
+        postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
         if (isPaused && options?.continueUploadOptions?.taskId)
-          await waitForSignal(options?.continueUploadOptions?.taskId);
+          await waitForContiueUploadSignal(options?.continueUploadOptions?.taskId);
 
         await uploadFileBlob(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
@@ -158,22 +147,16 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
-    let isPaused = false;
-
-    addEventListener('message', (msg) => {
-      if (msg.data.result === 'uploadStatus') {
-        isPaused = msg.data.uploadStatus.status === TaskStatus.Paused;
-      }
-    });
+    addEventListener('message', this.handleWorkerMessage);
 
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
 
       const worker = async (upload: UploadTask) => {
-        postMessage({ result: 'checkUploadStatus' });
-        if (isPaused && continueUploadOptions?.taskId) {
-          await waitForSignal(continueUploadOptions?.taskId);
+        postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
+        if (this.isPaused && continueUploadOptions?.taskId) {
+          await waitForContiueUploadSignal(continueUploadOptions?.taskId);
         }
 
         const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {

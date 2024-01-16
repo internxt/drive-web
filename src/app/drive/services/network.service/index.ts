@@ -5,9 +5,7 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
-import { createUploadWebWorker } from '../../../../WebWorker';
-import { TaskStatus } from '../../../tasks/types';
-import tasksService from '../../../tasks/services/tasks.service';
+import { WORKER_MESSAGE_STATES, createUploadWebWorker } from '../../../../WebWorker';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
 
@@ -112,43 +110,25 @@ export class Network {
       new Promise((resolve, reject) => {
         worker.addEventListener('error', reject);
         worker.addEventListener('message', (msg) => {
-          // console.log('[MAIN_THREAD]: Message received from worker', msg);
+          console.log('[MAIN_THREAD]: Message received from worker', msg);
           if (msg.data.progress) {
             params.progressCallback(msg.data.progress, msg.data.uploadedBytes, msg.data.totalBytes);
-          } else if (msg.data.result === 'success') {
+          } else if (msg.data.result === WORKER_MESSAGE_STATES.SUCCESS) {
             resolve(msg.data.fileId);
             worker.terminate();
-          } else if (msg.data.result === 'error') {
+          } else if (msg.data.result === WORKER_MESSAGE_STATES.ERROR) {
             reject(msg.data.error);
             worker.terminate();
-          } else if (msg.data.result == 'abort') {
+          } else if (msg.data.result == WORKER_MESSAGE_STATES.ABORT) {
             console.warn('[MAIN_THREAD]: ABORT SIGNAL', msg.data.fileId);
             reject(msg.data.result);
             worker.terminate();
-          } else if (msg.data.result === 'checkUploadStatus') {
+          } else if (msg.data.result === WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS) {
             const uploadStatus = localStorageService.getUploadState(continueUploadOptions.taskId);
             worker.postMessage({
-              result: 'uploadStatus',
+              result: WORKER_MESSAGE_STATES.UPLOAD_STATUS,
               uploadStatus: { ...uploadStatus, taskId: continueUploadOptions.taskId },
             });
-            // tasksService.updateTask({
-            //   taskId: continueUploadOptions.taskId,
-            //   merge: {
-            //     status: uploadStatus.status,
-            //   },
-            // });
-            // } else if (msg.data.result === 'setUploadStatus') {
-            //   const status = msg.data.status;
-            //   localStorageService.setUploadState(continueUploadOptions.taskId, status);
-
-            //   if (msg.data.status === TaskStatus.Paused) {
-            //     tasksService.updateTask({
-            //       taskId: continueUploadOptions.taskId,
-            //       merge: {
-            //         status: TaskStatus.Paused,
-            //       },
-            //     });
-            //   }
           } else {
             console.warn('[MAIN_THREAD]: Received unknown message from worker');
           }
