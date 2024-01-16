@@ -400,6 +400,16 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
+export const requestUnblockAccount = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.requestUnblockAccount(email);
+};
+
+export const unblockAccount = (token: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.unblockAccount(token);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -413,6 +423,8 @@ const authService = {
   sendChangePasswordEmail,
   updateCredentialsWithToken,
   resetAccountWithToken,
+  requestUnblockAccount,
+  unblockAccount,
 };
 
 export default authService;

@@ -130,6 +130,14 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  const sendUnblockAccountEmail = async (email: string) => {
+    try {
+      await authService.requestUnblockAccount(email);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -177,6 +185,7 @@ export default function LogIn(): JSX.Element {
       setLoginError([castedError.message]);
       setShowErrors(true);
       if (castedError.message.includes('Your account has been blocked for security reasons. Please reach out to us')) {
+        await sendUnblockAccountEmail(email);
         navigationService.push(AppView.BlockedAccount, { email: email });
       }
     } finally {

@@ -30,7 +30,7 @@
     {
       "id": "blocked-account",
       "layout": "empty",
-      "path": "/blocked-account",
+      "path": "/blocked-account/:token?",
       "exact": true
     },
     {

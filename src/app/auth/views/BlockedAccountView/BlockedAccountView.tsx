@@ -6,10 +6,25 @@ import Button from 'app/shared/components/Button/Button';
 import { AppView } from 'app/core/types';
 import { useEffect, useState } from 'react';
 import queryString from 'query-string';
+import { useParams } from 'react-router-dom';
+import Spinner from 'app/shared/components/Spinner/Spinner';
+import authService from 'app/auth/services/auth.service';
+import errorService from 'app/core/services/error.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
+
+const COUNTDOWN_TIME = 10;
 
 export default function BlockedAccountView(): JSX.Element {
   const { translate } = useTranslationContext();
   const [userEmail, setUserEmail] = useState('');
+  const [isLoading, setIsloading] = useState(true);
+  const [isInvalidToken, setIsInvalidToken] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [enableResendButton, setEnableResendButton] = useState(true);
+  const [countDown, setCountDown] = useState<number>(COUNTDOWN_TIME);
+
+  const { token } = useParams<{ token: string }>();
 
   const goToRecoveryLink = () => {
     navigationService.push(AppView.RecoveryLink);
@@ -20,6 +35,62 @@ export default function BlockedAccountView(): JSX.Element {
     const email = queryString.parse(queryParameters).email as string;
     setUserEmail(email);
   }, []);
+
+  useEffect(() => {
+    const unblockAccount = async () => {
+      if (token) {
+        try {
+          setIsloading(true);
+          await authService.unblockAccount(token);
+          navigationService.push(AppView.Login);
+        } catch (error) {
+          errorService.reportError(error);
+          setIsInvalidToken(true);
+        }
+      }
+      setIsloading(false);
+    };
+    unblockAccount();
+  }, [token]);
+
+  useEffect(() => {
+    if (!enableResendButton && countDown > 0) {
+      setTimeout(() => {
+        setCountDown(countDown - 1);
+      }, 1000);
+    } else {
+      setEnableResendButton(true);
+      setCountDown(COUNTDOWN_TIME);
+    }
+  }, [enableResendButton, countDown]);
+
+  const resendAccountUnblockEmail = async () => {
+    setSendingEmail(true);
+    try {
+      await authService.requestUnblockAccount(userEmail);
+      setEnableResendButton(false);
+    } catch (error) {
+      errorService.reportError(error);
+      notificationsService.show({
+        text: translate('error.serverError'),
+        type: ToastType.Error,
+      });
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-full items-center justify-center">
+        <Spinner className="h-7 w-7" />
+      </div>
+    );
+  }
+
+  if (isInvalidToken) {
+    return <ExpiredLink />;
+  }
 
   return (
     <div className="bg-surface flex h-full w-full flex-col overflow-auto dark:bg-gray-1">
@@ -43,9 +114,17 @@ export default function BlockedAccountView(): JSX.Element {
             {translate('blockedAccount.forgotPassword')}
           </Button>
           <span className="mb-5 h-px w-72 bg-gray-10"></span>
-          <p className="font-regular text-base text-gray-80">
-            {translate('blockedAccount.text3')}{' '}
-            <span className="cursor-pointer text-primary">{translate('blockedAccount.resend')}</span>
+          <p className="font-regular flex flex-row items-center justify-center text-base text-gray-80">
+            {translate('blockedAccount.text3')}
+            {sendingEmail === true ? (
+              <Spinner className="ml-2 h-5 w-5 text-primary" />
+            ) : enableResendButton ? (
+              <span className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
+                {translate('blockedAccount.resend')}
+              </span>
+            ) : (
+              <span className="ml-2 font-medium">&nbsp;{countDown}</span>
+            )}
           </p>
         </div>
       </div>
