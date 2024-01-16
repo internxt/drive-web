@@ -550,22 +550,27 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   ))}
                 </>
               ) : (
-                invitedUsers.map((user, index) => (
-                  <User
-                    user={user}
-                    key={user.email}
-                    listPosition={index}
-                    translate={translate}
-                    openUserOptions={openUserOptions}
-                    selectedUserListIndex={selectedUserListIndex}
-                    userOptionsY={userOptionsY}
-                    onRemoveUser={onRemoveUser}
-                    userOptionsEmail={userOptionsEmail}
-                    onChangeRole={handleUserRoleChange}
-                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                    disableRoleChange={currentUserFolderRole !== 'owner'}
-                  />
-                ))
+                invitedUsers
+                  .sort((a, b) => {
+                    if (a.email === props.user.email && b.email !== props.user.email) return -1;
+                    return 0;
+                  })
+                  .map((user, index) => (
+                    <User
+                      user={user}
+                      key={user.email}
+                      listPosition={index}
+                      translate={translate}
+                      openUserOptions={openUserOptions}
+                      selectedUserListIndex={selectedUserListIndex}
+                      userOptionsY={userOptionsY}
+                      onRemoveUser={onRemoveUser}
+                      userOptionsEmail={userOptionsEmail}
+                      onChangeRole={handleUserRoleChange}
+                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                      disableRoleChange={currentUserFolderRole !== 'owner'}
+                    />
+                  ))
               )}
             </div>
           </div>
