@@ -6,6 +6,8 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
+import { TaskStatus } from '../../../tasks/types';
+import tasksService from '../../../tasks/services/tasks.service';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
 
@@ -74,7 +76,13 @@ export class Network {
    * @param params Required params for uploading a file
    * @returns Id of the created file
    */
-  uploadFile(bucketId: string, params: IUploadParams): [Promise<string>, Abortable | undefined] {
+  uploadFile(
+    bucketId: string,
+    params: IUploadParams,
+    continueUploadOptions: {
+      taskId: string;
+    },
+  ): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');
     }
@@ -84,11 +92,19 @@ export class Network {
     }
 
     const worker: Worker = createUploadWebWorker();
-    const payload: Omit<IUploadParams, 'progressCallback'> & { creds: any; mnemonic: string } = {
+    const payload: Omit<IUploadParams, 'progressCallback'> & {
+      creds: any;
+      mnemonic: string;
+      continueUploadOptions: {
+        taskId: string;
+        isPaused?: boolean;
+      };
+    } = {
       filecontent: params.filecontent,
       filesize: params.filesize,
       creds: this.creds,
       mnemonic: this.mnemonic,
+      continueUploadOptions,
     };
     worker.postMessage({ bucketId, params: payload, type: 'upload' });
 
@@ -96,7 +112,7 @@ export class Network {
       new Promise((resolve, reject) => {
         worker.addEventListener('error', reject);
         worker.addEventListener('message', (msg) => {
-          console.log('[MAIN_THREAD]: Message received from worker', msg);
+          // console.log('[MAIN_THREAD]: Message received from worker', msg);
           if (msg.data.progress) {
             params.progressCallback(msg.data.progress, msg.data.uploadedBytes, msg.data.totalBytes);
           } else if (msg.data.result === 'success') {
@@ -109,6 +125,30 @@ export class Network {
             console.warn('[MAIN_THREAD]: ABORT SIGNAL', msg.data.fileId);
             reject(msg.data.result);
             worker.terminate();
+          } else if (msg.data.result === 'checkUploadStatus') {
+            const uploadStatus = localStorageService.getUploadState(continueUploadOptions.taskId);
+            worker.postMessage({
+              result: 'uploadStatus',
+              uploadStatus: { ...uploadStatus, taskId: continueUploadOptions.taskId },
+            });
+            // tasksService.updateTask({
+            //   taskId: continueUploadOptions.taskId,
+            //   merge: {
+            //     status: uploadStatus.status,
+            //   },
+            // });
+            // } else if (msg.data.result === 'setUploadStatus') {
+            //   const status = msg.data.status;
+            //   localStorageService.setUploadState(continueUploadOptions.taskId, status);
+
+            //   if (msg.data.status === TaskStatus.Paused) {
+            //     tasksService.updateTask({
+            //       taskId: continueUploadOptions.taskId,
+            //       merge: {
+            //         status: TaskStatus.Paused,
+            //       },
+            //     });
+            //   }
           } else {
             console.warn('[MAIN_THREAD]: Received unknown message from worker');
           }

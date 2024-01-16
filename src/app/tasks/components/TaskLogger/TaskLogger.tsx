@@ -15,7 +15,7 @@ const TaskLogger = (): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state) => state.ui.isFileLoggerOpen);
   const [hasFinished, setHasFinished] = useState(true);
-  const [isMinimized, setIsMinized] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const allNotifications = useTaskManagerGetNotifications();
   const finishedNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Error, TaskStatus.Success, TaskStatus.Cancelled],
@@ -81,7 +81,7 @@ const TaskLogger = (): JSX.Element => {
 
         <div className="flex items-center text-gray-60">
           <div
-            onClick={() => setIsMinized(!isMinimized)}
+            onClick={() => setIsMinimized(!isMinimized)}
             className={` duration-300 ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}
           >
             <CaretDown size={24} />

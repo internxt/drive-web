@@ -11,10 +11,15 @@ import { uploadFileBlob, UploadProgressCallback } from './upload';
 import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
+import { TaskStatus } from '../tasks/types';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
   abortController?: AbortController;
+  continueUploadOptions?: {
+    taskId: string;
+    isPaused: boolean;
+  };
 }
 
 interface UploadMultipartOptions extends UploadOptions {
@@ -32,6 +37,32 @@ interface UploadTask {
   contentToUpload: Blob;
   urlToUpload: string;
   index: number;
+}
+
+async function waitForSignal(taskId: string): Promise<void> {
+  return new Promise((resolve) => {
+    const checkProgress = async () => {
+      let beginProgress = false;
+      const handleMessage = (msg: MessageEvent) => {
+        if (msg.data.result === 'uploadStatus') {
+          if (taskId === msg.data.uploadStatus.taskId) {
+            beginProgress = msg.data.uploadStatus.status === TaskStatus.InProcess;
+          }
+        }
+      };
+
+      addEventListener('message', handleMessage);
+      while (!beginProgress) {
+        postMessage({ result: 'checkUploadStatus' });
+        await new Promise((timeoutResolve) => setTimeout(timeoutResolve, 1000));
+      }
+
+      removeEventListener('message', handleMessage);
+      resolve();
+    };
+
+    checkProgress();
+  });
 }
 
 /**
@@ -73,6 +104,11 @@ export class NetworkFacade {
       async (url: string) => {
         const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
         const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
+        const isPaused = options.continueUploadOptions?.isPaused;
+
+        postMessage({ result: 'checkUploadStatus' });
+        if (isPaused && options?.continueUploadOptions?.taskId)
+          await waitForSignal(options?.continueUploadOptions?.taskId);
 
         await uploadFileBlob(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
@@ -90,7 +126,15 @@ export class NetworkFacade {
     );
   }
 
-  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
+  uploadMultipart(
+    bucketId: string,
+    mnemonic: string,
+    file: File,
+    options: UploadMultipartOptions,
+    continueUploadOptions?: {
+      taskId: string;
+    },
+  ): Promise<string> {
     const partsUploadedBytes: Record<number, number> = {};
 
     function notifyProgress(partId: number, uploadedBytes: number) {
@@ -114,11 +158,24 @@ export class NetworkFacade {
       fileReadable = encryptStreamInParts(file, cipher, options.parts);
     };
 
+    let isPaused = false;
+
+    addEventListener('message', (msg) => {
+      if (msg.data.result === 'uploadStatus') {
+        isPaused = msg.data.uploadStatus.status === TaskStatus.Paused;
+      }
+    });
+
     const uploadFileMultipart: UploadFileMultipartFunction = async (urls: string[]) => {
       let partIndex = 0;
       const limitConcurrency = 6;
 
       const worker = async (upload: UploadTask) => {
+        postMessage({ result: 'checkUploadStatus' });
+        if (isPaused && continueUploadOptions?.taskId) {
+          await waitForSignal(continueUploadOptions?.taskId);
+        }
+
         const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {
           progressCallback: (_, uploadedBytes) => {
             notifyProgress(upload.index, uploadedBytes);

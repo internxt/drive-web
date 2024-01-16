@@ -40,6 +40,10 @@ export async function uploadFile(
   file: FileToUpload,
   updateProgressCallback: (progress: number) => void,
   options: FileUploadOptions,
+  continueUploadOptions: {
+    taskId: string;
+    isPaused: boolean;
+  },
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
     options.ownerUserAuthenticationData ?? getEnvironmentConfig(options.isTeam);
@@ -75,13 +79,17 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
 
-    const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(bucketId, {
-      filecontent: file.content,
-      filesize: file.size,
-      progressCallback: (progress) => {
-        updateProgressCallback(progress);
+    const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
+      bucketId,
+      {
+        filecontent: file.content,
+        filesize: file.size,
+        progressCallback: (progress) => {
+          updateProgressCallback(progress);
+        },
       },
-    });
+      continueUploadOptions,
+    );
 
     options.abortCallback?.(abort?.abort);
 
@@ -110,7 +118,7 @@ export async function uploadFile(
     }
 
     const generatedThumbnail = await generateThumbnailFromFile(file, response.id, userEmail, options.isTeam);
-    if (generatedThumbnail && generatedThumbnail.thumbnail) {
+    if (generatedThumbnail?.thumbnail) {
       response.thumbnails.push(generatedThumbnail.thumbnail);
       if (generatedThumbnail.thumbnailFile) {
         generatedThumbnail.thumbnail.urlObject = URL.createObjectURL(generatedThumbnail.thumbnailFile);

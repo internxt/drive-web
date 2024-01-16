@@ -1,3 +1,5 @@
+import localStorageService from '../../../core/services/local-storage.service';
+import tasksService from '../../services/tasks.service';
 import { TaskStatus } from '../../types';
 import { ErrorBlock, PauseBlock, PausedBlock, PendingBlock, SuccessBlock } from './TaskButtonActionBlocks';
 
@@ -11,6 +13,7 @@ const ITEM_DEPEND_STATUS = {
 };
 
 type TaskLoggerActionsProps = {
+  taskId: string;
   isHovered: boolean;
   status: string;
   progress: string;
@@ -19,7 +22,28 @@ type TaskLoggerActionsProps = {
   isUploadTask: boolean;
 };
 
+const pauseUpload = (id: string) => {
+  localStorageService.setUploadState(id, TaskStatus.Paused);
+  tasksService.updateTask({
+    taskId: id,
+    merge: { status: TaskStatus.Paused },
+  });
+};
+
+const resumeUpload = (id: string) => {
+  localStorageService.setUploadState(id, TaskStatus.InProcess);
+  tasksService.updateTask({
+    taskId: id,
+    merge: { status: TaskStatus.InProcess },
+  });
+};
+
+const removeUpload = (id: string) => {
+  localStorageService.removeUploadState(id);
+};
+
 export const TaskLoggerActions = ({
+  taskId,
   isHovered,
   status,
   progress,
@@ -33,8 +57,15 @@ export const TaskLoggerActions = ({
     <Action
       isHovered={isHovered}
       progress={progress}
-      cancelAction={cancelAction}
+      cancelAction={() => {
+        cancelAction();
+        removeUpload(taskId);
+      }}
       retryAction={retryAction}
+      pauseAction={() => pauseUpload(taskId)}
+      resumeAction={() => {
+        resumeUpload(taskId);
+      }}
       isUploadTask={isUploadTask}
     />
   );

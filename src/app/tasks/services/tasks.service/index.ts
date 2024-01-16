@@ -16,8 +16,6 @@ import {
   DownloadPhotosTask,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
-import { t } from 'i18next';
-import { isFirefox } from 'react-device-detect';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -90,7 +88,9 @@ class TaskManagerService {
       taskId: task.id,
       action: task.action,
       status: task.status,
-      item: task.file ?? task.folder,
+      item: task.file ?? task.folder ?? task.item,
+      folderToUpload: { folder: task?.folderToUpload, parentFolderId: task.parentFolderId },
+      fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),

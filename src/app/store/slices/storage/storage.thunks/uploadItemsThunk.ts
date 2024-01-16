@@ -27,6 +27,8 @@ interface UploadItemsThunkOptions {
 
 interface UploadItemsPayload {
   files: File[];
+  taskId?: string;
+  fileType?: string;
   parentFolderId: number;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
@@ -52,7 +54,7 @@ const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
  */
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, options }: UploadItemsPayload, { getState, dispatch }) => {
+  async ({ files, parentFolderId, options, taskId, fileType }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
@@ -109,8 +111,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
+      fileType,
       userEmail: user.email,
       parentFolderId,
+      taskId,
       onFinishUploadFile: (driveItemData: DriveFileData) => {
         dispatch(
           storageActions.pushItems({
@@ -124,7 +128,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
+
+    try {
+      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
+    } catch (error) {
+      errors.push(error as Error);
+    }
 
     options.onSuccess?.();
 
@@ -136,8 +145,6 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
-
-      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -268,9 +275,14 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog, undefined, {
-      ownerUserAuthenticationData,
-    });
+
+    try {
+      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog, undefined, {
+        ownerUserAuthenticationData,
+      });
+    } catch (error) {
+      errors.push(error as Error);
+    }
 
     options.onSuccess?.();
 
@@ -282,8 +294,6 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
-
-      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -356,8 +366,12 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
 
+    try {
+      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
+    } catch (error) {
+      errors.push(error as Error);
+    }
     options.onSuccess?.();
 
     setTimeout(() => {
@@ -368,7 +382,6 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       for (const error of errors) {
         notificationsService.show({ text: error.message, type: ToastType.Error });
       }
-      throw new Error(t('error.uploadingItems') as string);
     }
   },
 );
@@ -444,8 +457,18 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog, abortController, options, filesProgress);
 
+    try {
+      await uploadFileWithManager(
+        filesToUploadData,
+        openMaxSpaceOccupiedDialog,
+        abortController,
+        options,
+        filesProgress,
+      );
+    } catch (error) {
+      errors.push(error as Error);
+    }
     options.onSuccess?.();
 
     if (errors.length > 0) {
@@ -518,8 +541,17 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-    await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog, abortController, options, filesProgress);
-
+    try {
+      await uploadFileWithManager(
+        filesToUploadData,
+        openMaxSpaceOccupiedDialog,
+        abortController,
+        options,
+        filesProgress,
+      );
+    } catch (error) {
+      errors.push(error as Error);
+    }
     options.showNotifications = true;
     options.onSuccess?.();
 

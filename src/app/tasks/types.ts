@@ -1,5 +1,6 @@
 import { FunctionComponent, SVGProps } from 'react';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../drive/types';
+import { IRoot } from '../store/slices/storage/storage.thunks/uploadFolderThunk';
 
 export enum TaskStatus {
   Pending = 'pending',
@@ -84,12 +85,15 @@ export interface UploadFileTask extends BaseTask {
   fileName: string;
   fileType: string;
   isFileNameValidated: boolean;
+  item: { uploadFile: File; parentFolderId: number };
 }
 
 export interface UploadFolderTask extends BaseTask {
   action: TaskType.UploadFolder;
   cancellable: true;
   folderName: string;
+  folderToUpload?: IRoot;
+  parentFolderId?: number;
 }
 
 export interface MoveFileTask extends BaseTask {
@@ -140,6 +144,9 @@ export type TaskData = (
   | RenameFolderTask
 ) & { file?: DriveFileData | { name: string; type: string; items?: DriveItemData[] } } & {
   folder?: { id: number; name: string };
+} & { item?: { uploadFile: File; parentFolderId: number } } & { fileType?: string } & {
+  folderToUpload?: IRoot;
+  parentFolderId?: number;
 };
 
 export interface TaskNotification {
@@ -147,11 +154,17 @@ export interface TaskNotification {
   action: TaskType;
   status: TaskStatus;
   title: string;
-  item?: DriveItemData | { name: string; type: string; items?: DriveItemData[] } | { id: number; name: string };
+  item?:
+    | DriveItemData
+    | { name: string; type: string; items?: DriveItemData[] }
+    | { id: number; name: string }
+    | { uploadFile: File; parentFolderId: number };
+  folderToUpload?: { folder?: IRoot; parentFolderId?: number };
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
   isTaskCancellable: boolean;
+  fileType?: string;
 }
 
 export interface TaskFilter {

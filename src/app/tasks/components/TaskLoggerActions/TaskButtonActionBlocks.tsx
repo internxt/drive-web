@@ -40,24 +40,24 @@ const DownloadingBlock = ({ progressPercentage }: UploadingBlockProps): JSX.Elem
   );
 };
 
-const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask }): JSX.Element => {
+const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask, pauseAction }): JSX.Element => {
   const InProgressItem = isUploadTask ? UploadingBlock : DownloadingBlock;
 
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
-      <TaskLoggerButton onClick={() => {}} Icon={Pause} />
+      <TaskLoggerButton onClick={pauseAction} Icon={Pause} />
     </div>
   ) : (
     <InProgressItem progressPercentage={progress} />
   );
 };
 
-const PausedBlock = ({ isHovered, cancelAction }): JSX.Element => {
+const PausedBlock = ({ isHovered, cancelAction, resumeAction }): JSX.Element => {
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
-      <TaskLoggerButton onClick={() => {}} Icon={Play} />
+      <TaskLoggerButton onClick={resumeAction} Icon={Play} />
     </div>
   ) : (
     <span className="text-sm font-medium text-gray-60">{t('tasks.paused')}</span>
