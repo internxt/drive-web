@@ -4,16 +4,17 @@
     "logOut": "Déconnexion"
   },
   "blackFridayBanner": {
-    "header": "Choisissez la confidentialité.",
-    "title": "Internxt offre de Noël",
-    "cta": "Obtenez l'offre",
+    "header": "Économisez 70% !",
+    "title": "Préparez-vous pour la Semaine de la Protection des Données",
+    "cta": "Choisir un plan",
+    "guarantee": "Garantie de remboursement de 30 jours",
     "features": {
-      "discount": "-50% sur notre plans lifetime",
-      "safeCloud": "Stockage en nuage sécurisé",
+      "discount": "Économisez sur les plans mensuels et annuels",
+      "safeCloud": "Stockage cloud sûr et sécurisé",
       "openSource": "Open source et transparent",
-      "endToEnd": "Transferts cryptés de bout en bout",
+      "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 7 janvier"
+      "offerEnds": "L'offre se termine le 29 janvier"
     }
   },
   "valentinesBanner": {
