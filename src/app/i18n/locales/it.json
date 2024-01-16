@@ -209,7 +209,7 @@
     "putPwd": "Per accedere, inserisci la password",
     "putPwd1": " fornita dal mittente.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Login"
   },
   "sideNav": {
@@ -741,6 +741,19 @@
         "change": "Cambia",
         "requestSent": "Richiesta inviata",
         "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La password è richiesta solo per gli utenti senza accesso in lettura o modifica all'elemento condiviso.",
+        "protect": "Proteggi con password",
+        "disablePasswordTitle": "Disabilitare la protezione con password?",
+        "disablePasswordBody": "Quando disabilitato, le persone con il link potranno accedere al contenuto.",
+        "editPasswordTitle": "Modifica password",
+        "buttons": {
+          "cancel": "Annulla",
+          "save": "Salva",
+          "disable": "Disabilita",
+          "changePassword": "Cambia password"
+        }
       }
     },
     "sharedInvitationsModal": {

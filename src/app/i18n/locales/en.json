@@ -228,7 +228,7 @@
     "putPwd": "Please enter the password provided",
     "putPwd1": "by the sender for access.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Access"
   },
   "sideNav": {
@@ -767,6 +767,19 @@
         "change": "Change",
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
+        "protect": "Protect with password",
+        "disablePasswordTitle": "Disable password protection?",
+        "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
+        "editPasswordTitle": "Edit password",
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "disable": "Disable",
+          "changePassword": "Change password"
+        }
       }
     },
     "sharedInvitationsModal": {

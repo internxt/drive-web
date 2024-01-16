@@ -750,6 +750,19 @@
         "change": "Cambiar",
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",
+        "protect": "Proteger con contraseña",
+        "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
+        "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
+        "editPasswordTitle": "Editar contraseña",
+        "buttons": {
+          "cancel": "Cancelar",
+          "save": "Guardar",
+          "disable": "Desactivar",
+          "changePassword": "Cambiar contraseña"
+        }
       }
     },
     "sharedInvitationsModal": {
