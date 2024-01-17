@@ -8,7 +8,6 @@
 
 :root,
 #root {
-  color-scheme: light dark;
   background: rgb(var(--color-surface));
   font-family: 'Instrument Sans', sans-serif;
   height: 100%;
@@ -24,6 +23,8 @@
 
 @media (prefers-color-scheme: light) {
   :root {
+    color-scheme: light;
+
     --color-primary: 0 102 255;
     --color-primary-dark: 0 88 219;
     --color-red: 255 13 0;
@@ -55,6 +56,8 @@
   }
 
   :root.dark {
+    color-scheme: dark;
+
     --color-primary: 20 114 255;
     --color-primary-dark: 0 96 240;
     --color-red: 255 61 51;
@@ -88,6 +91,8 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
+    color-scheme: dark;
+
     --color-primary: 20 114 255;
     --color-primary-dark: 0 96 240;
     --color-red: 255 61 51;
@@ -119,6 +124,8 @@
   }
 
   :root:not(.dark) {
+    color-scheme: light;
+
     --color-primary: 0 102 255;
     --color-primary-dark: 0 88 219;
     --color-red: 255 13 0;
