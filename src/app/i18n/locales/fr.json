@@ -297,7 +297,8 @@
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
               "sucessSendingVerification": "Vérification par courriel envoyée",
-              "errorSendingVerification": "Erreur d'envoi de la vérification"
+              "errorSendingVerification": "Erreur d'envoi de la vérification",
+              "confirm": "Confirmer"
             }
           },
           "support": {

@@ -314,7 +314,8 @@
               "sendVerification": "Invia verifica",
               "sendingVerification": "Invio verifica",
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
-              "errorSendingVerification": "Errore nell'invio della verifica"
+              "errorSendingVerification": "Errore nell'invio della verifica",
+              "confirm": "Confermare"
             }
           },
           "support": {

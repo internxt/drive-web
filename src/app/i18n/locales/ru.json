@@ -298,7 +298,8 @@
               "sendVerification": "Отправить верификацию",
               "sendingVerification": "Отправка верификации",
               "sucessSendingVerification": "Проверка электронной почты отправлена на {{email}}",
-              "errorSendingVerification": "Ошибка при отправке верификации"
+              "errorSendingVerification": "Ошибка при отправке верификации",
+              "confirm": "Подтвердить"
             }
           },
           "support": {
