@@ -68,6 +68,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     handleSubmit,
     control,
     getValues,
+    resetField,
   } = useForm<IFormValues>({
     mode: 'onChange',
     defaultValues: {
@@ -200,6 +201,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       errorService.reportError(err);
       const castedError = errorService.castError(err);
       setSignupError(castedError.message);
+      if (castedError.message.includes('is already registered')) {
+        resetField('password');
+      }
     } finally {
       setShowError(true);
     }
@@ -234,6 +238,7 @@ function SignUp(props: SignUpProps): JSX.Element {
                 label="email"
                 type="email"
                 disabled={hasEmailParam}
+                autoComplete="email"
                 register={register}
                 required={true}
                 minLength={{ value: 1, message: 'Email must not be empty' }}
@@ -245,13 +250,14 @@ function SignUp(props: SignUpProps): JSX.Element {
                   className={passwordState ? passwordState.tag : ''}
                   placeholder={translate('auth.password')}
                   label="password"
+                  autoComplete="new-password"
                   maxLength={MAX_PASSWORD_LENGTH}
                   register={register}
                   onFocus={() => setShowPasswordIndicator(true)}
                   required={true}
                   error={errors.password}
                 />
-                {showPasswordIndicator && passwordState && (
+                {showPasswordIndicator && passwordState && password && (
                   <PasswordStrengthIndicator
                     className="pt-1"
                     strength={passwordState.tag}
@@ -273,7 +279,15 @@ function SignUp(props: SignUpProps): JSX.Element {
                 <p className="text-xs">
                   Internxt doesn't store passwords.{' '}
                   <span className="font-semibold">
-                    In case you forget your password, you will lose access to all your files.
+                    If you forget your password, you can download a backup key to regain access to your files.
+                  </span>
+                  <span className="font-semibold text-primary underline">
+                    <a
+                      href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
+                      target="_blank"
+                    >
+                      Learn more
+                    </a>
                   </span>
                 </p>
               </div>
