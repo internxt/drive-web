@@ -46,7 +46,7 @@ const PauseBlock = ({ isHovered, progress, cancelAction, isUploadTask, pauseActi
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
-      <TaskLoggerButton onClick={pauseAction} Icon={Pause} />
+      {isUploadTask && <TaskLoggerButton onClick={pauseAction} Icon={Pause} />}
     </div>
   ) : (
     <InProgressItem progressPercentage={progress} />
@@ -68,9 +68,9 @@ const PendingBlock = (): JSX.Element => {
   return <span className="text-sm font-medium text-gray-50">{t('tasks.waiting')}</span>;
 };
 
-const SuccessBlock = ({ isHovered }): JSX.Element => {
-  return isHovered ? (
-    <TaskLoggerButton onClick={() => {}} Icon={MagnifyingGlass} />
+const SuccessBlock = ({ isHovered, magnifyingAction, isUploadTask }): JSX.Element => {
+  return isHovered && isUploadTask ? (
+    <TaskLoggerButton onClick={magnifyingAction} Icon={MagnifyingGlass} />
   ) : (
     <div className="flex h-8 w-8 items-center justify-center">
       <Success width={20} height={20} />

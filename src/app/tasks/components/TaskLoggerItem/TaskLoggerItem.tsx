@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { t } from 'i18next';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
+import { useOpenItem } from '../../hooks/useOpen';
 
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus } from '../../types';
@@ -34,6 +35,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const { retryDownload } = useRetryDownload(notification);
   const { retryUpload } = useRetryUpload(notification);
+  const { openItem } = useOpenItem(notification);
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
   const notExistProgress = notification.progress && notification.progress === Infinity;
@@ -87,6 +89,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           cancelAction={onCancelButtonClicked}
           retryAction={isDownloadError ? retryDownload : retryUpload}
           isUploadTask={isUploadTask}
+          openItemAction={openItem}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}

@@ -147,6 +147,7 @@ export type TaskData = (
 } & { item?: { uploadFile: File; parentFolderId: number } } & { fileType?: string } & {
   folderToUpload?: IRoot;
   parentFolderId?: number;
+  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 };
 
 export interface TaskNotification {
@@ -165,6 +166,7 @@ export interface TaskNotification {
   progress: number;
   isTaskCancellable: boolean;
   fileType?: string;
+  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 }
 
 export interface TaskFilter {

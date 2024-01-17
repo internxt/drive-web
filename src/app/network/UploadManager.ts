@@ -191,8 +191,9 @@ class UploadManager {
 
             tasksService.updateTask({
               taskId: taskId,
-              merge: { status: TaskStatus.Success },
+              merge: { status: TaskStatus.Success, itemUUID: { fileUUID: driveFileData.uuid } },
             });
+
             localStorageService.removeUploadState(taskId);
 
             fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
