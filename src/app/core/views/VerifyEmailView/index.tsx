@@ -36,7 +36,7 @@ export default function VerifyEmailView(): JSX.Element {
       subtitle: translate('views.emailVerification.success.subtitle'),
     },
     error: {
-      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      icon: <WarningCircle className="text-red" weight="thin" size={96} />,
       title: translate('views.emailVerification.error.title'),
       subtitle: translate('views.emailVerification.error.subtitle'),
     },

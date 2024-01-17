@@ -59,7 +59,7 @@ const TaskLogger = (): JSX.Element => {
     <div
       className={`absolute bottom-5 right-5 z-40 flex w-96 flex-col shadow-subtle-hard transition-all duration-350 ${
         isMinimized ? 'h-11' : 'h-72'
-      } overflow-hidden rounded-xl border border-gray-10 bg-white ${!isOpen ? 'hidden' : ''}`}
+      } overflow-hidden rounded-xl border border-gray-10 bg-surface dark:bg-gray-1 ${!isOpen ? 'hidden' : ''}`}
     >
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">

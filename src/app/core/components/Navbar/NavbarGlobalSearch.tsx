@@ -22,6 +22,7 @@ import NotFoundState from './NotFoundState';
 import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
+import navigationService from 'app/core/services/navigation.service';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -121,19 +122,19 @@ const Navbar = (props: NavbarProps) => {
   };
 
   const openItem = (item) => {
-    const itemData = { ...item.item, name: getItemPlainName(item.item) };
+    const itemData = { ...item.item, name: getItemPlainName(item.item), uuid: item.itemId };
     if (item.itemType.toLowerCase() === 'folder') {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
-      dispatch(storageThunks.goToFolderThunk({ name: item.name, id: itemData.id }));
+
+      navigationService.pushFolder(itemData.uuid);
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);
       setOpenSearchBox(false);
       setPreventBlur(false);
     } else {
-      dispatch(uiActions.setIsFileViewerOpen(true));
-      dispatch(uiActions.setFileViewerItem(itemData));
+      navigationService.pushFile(itemData.uuid);
     }
   };
 
@@ -206,7 +207,7 @@ const Navbar = (props: NavbarProps) => {
   ];
 
   return (
-    <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40">
+    <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40 dark:bg-gray-1">
       {hideSearch ? (
         <div />
       ) : (
@@ -218,17 +219,18 @@ const Navbar = (props: NavbarProps) => {
             htmlFor="globalSearchInput"
           >
             <MagnifyingGlass
-              className="z-1 pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
+              className="pointer-events-none absolute left-2.5 top-1/2 z-1 -translate-y-1/2 text-gray-60 focus-within:text-gray-80"
               size={20}
             />
             <input
               ref={searchInput}
               id="globalSearchInput"
+              data-cy="globalSearchInput"
               autoComplete="off"
               spellCheck="false"
               type="text"
               value={query}
-              className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-white focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10"
+              className="inxt-input left-icon h-10 w-full appearance-none rounded-lg border border-transparent bg-gray-5 px-9 text-lg text-gray-100 placeholder-gray-60 outline-none ring-1 ring-gray-10 transition-all duration-150 ease-out hover:shadow-sm hover:ring-gray-20 focus:border-primary focus:bg-surface focus:placeholder-gray-80 focus:shadow-none focus:ring-3 focus:ring-primary/10 dark:focus:bg-gray-1 dark:focus:ring-primary/20"
               onChange={(e) => {
                 setQuery(e.target.value);
                 handleSearch();
@@ -254,14 +256,14 @@ const Navbar = (props: NavbarProps) => {
             <div
               className={`${
                 openSearchBox && 'opacity-0'
-              } z-1 pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
+              } pointer-events-none absolute right-2.5 top-1/2 z-1 -translate-y-1/2 rounded-md bg-gray-10 px-2 py-1 text-sm text-gray-50`}
             >
               {isMacOs ? '⌘F' : 'Ctrl F'}
             </div>
             <X
               className={`${
                 (query.length === 0 || !openSearchBox) && 'pointer-events-none opacity-0'
-              } z-1 absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
+              } absolute right-2.5 top-1/2 z-1 -translate-y-1/2 cursor-pointer text-gray-60 transition-all duration-100 ease-out`}
               onMouseDownCapture={() => {
                 setQuery('');
                 setSearchResult([]);
@@ -276,11 +278,11 @@ const Navbar = (props: NavbarProps) => {
               openSearchBox
                 ? 'translate-y-1.5 scale-100 opacity-100'
                 : 'pointer-events-none -translate-y-0.5 scale-98 opacity-0'
-            } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-white text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out`}
+            } absolute top-12 z-10 flex h-80 w-full max-w-screen-sm origin-top flex-col overflow-hidden rounded-xl bg-surface text-gray-100 shadow-subtle-hard ring-1 ring-gray-10 transition-all duration-150 ease-out dark:bg-gray-5`}
             onMouseEnter={() => setPreventBlur(true)}
             onMouseLeave={() => setPreventBlur(false)}
           >
-            <div className="flex w-full shrink-0 items-center justify-between overflow-y-auto border-b border-gray-5 px-2.5 py-2.5">
+            <div className="flex w-full shrink-0 items-center justify-between border-b border-gray-5 px-2.5 py-2.5 dark:border-gray-10">
               <button type="button" className="flex items-center space-x-2">
                 {filterItems.map((item) => (
                   <FilterItem
@@ -297,8 +299,8 @@ const Navbar = (props: NavbarProps) => {
               <button
                 type="button"
                 className={`${
-                  filters.length === 0 && 'pointer-events-none hidden'
-                } ml-4 flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5`}
+                  filters.length === 0 && 'pointer-events-none opacity-0'
+                } flex h-8 cursor-pointer items-center space-x-2 rounded-full bg-gray-1 px-3 text-sm font-medium text-gray-60 transition-all duration-100 ease-out hover:bg-gray-5 dark:hover:bg-surface`}
                 onClick={() => setFilters([])}
               >
                 {translate('general.searchBar.filters.clear')}
@@ -317,7 +319,7 @@ const Navbar = (props: NavbarProps) => {
                       role="option"
                       aria-selected={selectedResult === index}
                       className={`${
-                        selectedResult === index && 'bg-gray-5'
+                        selectedResult === index && 'bg-gray-5 dark:bg-gray-10'
                       } flex h-11 shrink-0 cursor-pointer items-center space-x-2.5 px-4 text-gray-100`}
                       onMouseEnter={() => setSelectedResult(index)}
                       onClickCapture={() => openItem(item)}

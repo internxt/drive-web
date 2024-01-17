@@ -106,9 +106,9 @@ function EnableModal({
   ];
 
   const downloadStep = (
-    <div className="pt-2 pb-5">
+    <div className="pb-5 pt-2">
       <p className="text-gray-80">{translate('views.account.tabs.security.2FA.modal.steps.download.description')}</p>
-      <div className="mt-2 flex flex-row items-center justify-center space-x-4">
+      <div className="mt-4 flex flex-row items-center justify-center space-x-4">
         <a href="https://apps.apple.com/us/app/authy/id494168017" target="_blank" rel="noreferrer">
           <img src={appStoreIcon} height={40} width={135} alt="App Store" />
         </a>
@@ -133,9 +133,11 @@ function EnableModal({
     <div className="mb-1 flex h-40 items-center justify-center">
       {qr ? (
         <>
-          <img className="-m-3" src={qr.img} alt="Bidi code" />
-          <p className="ml-8 text-gray-50">{translate('views.account.tabs.security.2FA.modal.or')}</p>
-          <div className="ml-8 flex flex-col items-center">
+          <div className="flex h-32 w-32 shrink-0 items-center justify-center overflow-hidden rounded-sm">
+            <img src={qr.img} className="h-40 w-40 object-cover" draggable="false" alt="Bidi code" />
+          </div>
+          <p className="mx-4 text-gray-50">{translate('views.account.tabs.security.2FA.modal.or')}</p>
+          <div className="flex flex-col items-center">
             <Copyable className="w-60" text={qr.key} />
             <p className="mt-2 px-2 text-center text-sm text-gray-60">
               {translate('views.account.tabs.security.2FA.modal.steps.qr.description')}

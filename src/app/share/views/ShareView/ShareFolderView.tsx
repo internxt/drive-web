@@ -17,17 +17,14 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import shareService from 'app/share/services/share.service';
-import { downloadSharedFolderUsingReadableStream } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingReadableStream';
-import { downloadSharedFolderUsingBlobs } from 'app/drive/services/download.service/downloadFolder/downloadSharedFolderUsingBlobs';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import errorService from 'app/core/services/error.service';
 import SendBanner from './SendBanner';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import ReportButton from './ReportButon';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -49,13 +46,12 @@ const CHROME_IOS_ERROR_MESSAGE = 'Chrome on iOS is not supported. Use Safari to 
 
 export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const { translate } = useTranslationContext();
-  const FOLDERS_LIMIT_BY_REQUEST = 16;
-  const FILES_LIMIT_BY_REQUEST = 128;
   const sharingId = props.match.params.token;
   const code = props.match.params.code;
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
+  const [itemData, setItemData] = useState<PublicSharedItemInfo>();
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -109,7 +105,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
-    return getPublicSharingMeta(sharingId, code)
+    return getPublicSharingMeta(sharingId, code, password)
       .then((res) => {
         setInfo({ ...res });
         setIsLoaded(true);
@@ -121,14 +117,24 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       .then((folderSize) => {
         setSize(folderSize);
       })
-      .catch((err) => {
+      .catch(async (err) => {
         if (err.message === 'Forbidden') {
+          await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
         throw err;
       });
   }
+
+  const getSharedFolderInfo = async (id: string) => {
+    try {
+      const itemData = await shareService.getPublicSharedItemInfo(id);
+      setItemData(itemData);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
     return getSharedFolderSize(shareId.toString(), folderId.toString());
@@ -199,7 +205,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
             <Spinner />
           </div>
           <span>{translate('actions.downloading')}</span>
-          {!!size && size > 0 && <span className="font-normal text-blue-20">{progress}%</span>}
+          {!!size && size > 0 && <span className="font-normal text-primary/20">{progress}%</span>}
         </>
       ) : (
         <>
@@ -215,18 +221,18 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       <>
         <div className="relative h-32 w-32">
           <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
-          <ItemIconComponent className="absolute -left-7 top-0.5 rotate-10- drop-shadow-soft" />
+          <ItemIconComponent className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">{errorMessage}</span>
+          <span className="text-gray-60">{errorMessage}</span>
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/" className="cursor-pointer text-gray-90 no-underline hover:text-gray-90">
             <div
-              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
+              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"
             >
               <span>Open Internxt Drive</span>
@@ -244,6 +250,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         onPasswordSubmitted={loadFolderInfo}
         itemPassword={itemPassword}
         setItemPassword={setItemPassword}
+        itemData={itemData}
       />
     ) : (
       //WITHOUT PASSWORD
@@ -261,7 +268,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.plainName}>
                 {info?.item?.plainName}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
+              <span className="text-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
             </div>
           </div>
         </div>
@@ -273,7 +280,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               download(itemPassword);
             }}
             className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
+                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-primary'}`}
           >
             {downloadButton}
           </button>
@@ -282,7 +289,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     );
   } else {
     body = (
-      <div className="h-8 w-8 text-cool-gray-30">
+      <div className="h-8 w-8 text-gray-30">
         <Spinner />
       </div>
     );

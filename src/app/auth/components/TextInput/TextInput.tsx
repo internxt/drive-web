@@ -58,7 +58,7 @@ export default function TextInput({
           maxLength,
           pattern,
         })}
-        className={`relative h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
     </div>
   );

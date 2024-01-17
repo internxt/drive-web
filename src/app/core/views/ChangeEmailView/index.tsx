@@ -6,13 +6,31 @@ import Input from 'app/shared/components/Input';
 import Button from 'app/shared/components/Button/Button';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
 import Spinner from 'app/shared/components/Spinner/Spinner';
+import localStorageService from '../../services/local-storage.service';
+import userService from '../../../auth/services/user.service';
+import errorService from '../../services/error.service';
+import { userThunks } from '../../../store/slices/user';
+import { useDispatch } from 'react-redux';
+
+type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
+
+const STATUS = {
+  LOADING: 'loading',
+  AUTH: 'auth',
+  ERROR: 'error',
+  SUCCESS: 'success',
+  EXPIRED: 'expired',
+} as const;
 
 export default function ChangeEmailView(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const { params } = useRouteMatch<{ token: string }>();
   const { token } = params;
+  const urlParams = new URLSearchParams(window.location.search);
+  const newEmailParam = urlParams.get('n');
 
-  const [status, setStatus] = useState<'auth' | 'loading' | 'error' | 'success' | 'expired'>('loading');
+  const [status, setStatus] = useState<StatusType>(STATUS.LOADING);
   const [email, setEmail] = useState<string>('');
   const [newEmail, setNewEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
@@ -20,19 +38,18 @@ export default function ChangeEmailView(): JSX.Element {
   const [auth, setAuth] = useState<boolean>(false);
 
   async function getInfo() {
-    // TODO -> Get user "email", "newEmail" and "expired" from the token
-    const isExpired = false; //! Check if link has expired
+    const isExpired = (await userService.checkChangeEmailLinkExpiration(token)).isExpired;
 
     if (isExpired) {
-      setStatus('expired');
+      setStatus(STATUS.EXPIRED);
       setExpired(true);
     } else {
-      setStatus('auth');
+      setStatus(STATUS.AUTH);
       setExpired(false);
 
-      // TODO -> Set info from "email" and "newEmail"
-      setEmail('current_email@inxt.com'); //! Change with current email
-      setNewEmail('new_email@inxt.com'); //! Change with new email
+      const user = localStorageService.getUser();
+      if (user) setEmail(user.email);
+      if (newEmailParam) setNewEmail(newEmailParam);
     }
   }
 
@@ -42,32 +59,30 @@ export default function ChangeEmailView(): JSX.Element {
 
   async function verify(e) {
     e.preventDefault();
-    setStatus('loading');
+    setStatus(STATUS.LOADING);
 
     try {
-      const correctPassword = await areCredentialsCorrect(email, password);
-      if (correctPassword) {
-        try {
-          // TODO -> Run changeEmail thunk (if chaged successfully return true, if not return false)
-          const emailChanged = true; //! Change for changeEmail thunk
+      const isCorrectPassword = await areCredentialsCorrect(email, password);
+      if (isCorrectPassword) {
+        setAuth(true);
 
-          if (emailChanged) {
-            setStatus('success');
-            setAuth(true);
-          } else {
-            setStatus('error');
-            setAuth(true);
-          }
-        } catch (err) {
-          console.error(err);
-          setStatus('error');
+        try {
+          const { newAuthentication } = await userService.verifyEmailChange(token);
+          const { user, token: oldToken, newToken } = newAuthentication;
+          dispatch(userThunks.updateUserEmailCredentialsThunk({ newUserData: user, token: oldToken, newToken }));
+
+          setStatus(STATUS.SUCCESS);
+        } catch (error) {
+          errorService.reportError(error);
+          setStatus(STATUS.ERROR);
         }
       } else {
-        setStatus('error');
+        setStatus(STATUS.ERROR);
+        setAuth(false);
       }
-    } catch (err) {
-      console.error(err);
-      setStatus('error');
+    } catch (error) {
+      errorService.reportError(error);
+      setStatus(STATUS.ERROR);
     }
   }
 
@@ -83,7 +98,7 @@ export default function ChangeEmailView(): JSX.Element {
       subtitle: translate('views.emailChange.success.subtitle'),
     },
     error: {
-      icon: <WarningCircle className="text-red-std" weight="thin" size={96} />,
+      icon: <WarningCircle className="text-red" weight="thin" size={96} />,
       title: translate('views.emailChange.error.title'),
       subtitle: translate('views.emailChange.error.subtitle'),
     },
@@ -123,27 +138,29 @@ export default function ChangeEmailView(): JSX.Element {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="flex w-full max-w-xs flex-col items-center space-y-5">
-        {status === 'loading' && expired === null ? (
+        {status === STATUS.LOADING && expired === null ? (
           <Spinner size={24} />
         ) : !expired && !auth ? (
           <>
-            <State {...layout['auth']} />
+            <State {...layout[STATUS.AUTH]} />
 
             <form className="flex w-full flex-col space-y-3" onSubmit={verify}>
               <Input
                 required
-                disabled={status === 'loading'}
+                disabled={status === STATUS.LOADING}
                 variant="password"
                 label={translate('views.emailChange.password')}
                 onChange={setPassword}
                 autofocus
-                accent={status === 'error' ? 'error' : undefined}
-                message={status === 'error' ? (translate('views.emailChange.auth.wrongPassword') as string) : undefined}
+                accent={status === STATUS.ERROR ? 'error' : undefined}
+                message={
+                  status === STATUS.ERROR ? (translate('views.emailChange.auth.wrongPassword') as string) : undefined
+                }
                 name="password"
               />
 
-              <Button loading={status === 'loading'} type="submit">
-                {translate('views.account.tabs.account.accountDetails.changeEmail.sendingVerification')}
+              <Button loading={status === STATUS.LOADING} type="submit">
+                {translate('views.account.tabs.account.accountDetails.changeEmail.confirm')}
               </Button>
             </form>
           </>
@@ -153,9 +170,9 @@ export default function ChangeEmailView(): JSX.Element {
 
             <Link
               className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
-              to={cta[status].path}
+              to={cta[status]?.path}
             >
-              {cta[status].label}
+              {cta[status]?.label}
             </Link>
           </>
         )}

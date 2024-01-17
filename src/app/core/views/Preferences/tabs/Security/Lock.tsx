@@ -24,7 +24,8 @@ export default function Lock({
     { tag: 'ready' } | { tag: 'error'; errorMessage: string } | { tag: 'loading' }
   >({ tag: 'ready' });
 
-  async function onAccess() {
+  async function onAccess(e) {
+    e.preventDefault();
     try {
       setFormState({ tag: 'loading' });
 
@@ -45,29 +46,24 @@ export default function Lock({
 
   return (
     <Section className={className} title={translate('views.account.tabs.security.label')}>
-      <Card>
+      <Card className="space-y-3">
         <h1 className="text-lg font-medium text-gray-80">{translate('views.account.tabs.security.lock.title')}</h1>
-        <p className="mt-3 text-gray-80">{translate('views.account.tabs.security.lock.description')}</p>
-        <Input
-          label={translate('views.account.tabs.security.lock.inputLabel') as string}
-          className="mt-3"
-          variant="password"
-          onChange={setPassword}
-          value={password}
-          message={formState.tag === 'error' ? formState.errorMessage : undefined}
-          accent={formState.tag === 'error' ? 'error' : undefined}
-          disabled={formState.tag === 'loading'}
-        />
-        <div className="mt-4 flex justify-end">
-          <Button
-            loading={formState.tag === 'loading'}
-            disabled={!password}
-            onClick={onAccess}
-            dataTest="access-button"
-          >
+        <p className="text-gray-80">{translate('views.account.tabs.security.lock.description')}</p>
+        <form className="flex w-full flex-col items-end space-y-4" onSubmit={onAccess}>
+          <Input
+            label={translate('views.account.tabs.security.lock.inputLabel') as string}
+            className="w-full"
+            variant="password"
+            onChange={setPassword}
+            value={password}
+            message={formState.tag === 'error' ? formState.errorMessage : undefined}
+            accent={formState.tag === 'error' ? 'error' : undefined}
+            disabled={formState.tag === 'loading'}
+          />
+          <Button loading={formState.tag === 'loading'} disabled={!password} type="submit" dataTest="access-button">
             {translate('actions.access')}
           </Button>
-        </div>
+        </form>
       </Card>
     </Section>
   );
