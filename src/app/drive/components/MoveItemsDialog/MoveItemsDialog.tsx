@@ -147,16 +147,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
     if (itemsToMove.length > 1) {
       return;
-    } else {
-      driveBreadcrumbPath.forEach((item) => {
-        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-      });
     }
+
+    driveBreadcrumbPath.forEach((item) => {
+      dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
+    });
 
     if (itemsToMove[0].isFolder) {
       navigationService.pushFolder(itemsToMove[0].uuid);
-    } else {
-      navigationService.pushFolder(itemsToMove[0].folderUuid);
     }
   };
 
