@@ -93,6 +93,7 @@ export class SdkFactory {
     const apiSecurity = this.getApiSecurity();
     return Users.client(apiUrl, appDetails, apiSecurity);
   }
+
   public createNewUsersClient(): Users {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
