@@ -70,6 +70,13 @@
         "cta": "Más información"
       }
     },
+    "downloadBackupKey": {
+      "title": "Clave de respaldo",
+      "description": "La clave de respaldo permite la recuperación de la cuenta en caso de que olvides tu contraseña. Nunca la compartas.",
+      "downloadCta": "Descargar clave de respaldo",
+      "settingsTab": "Puedes acceder a tu clave de respaldo en Configuración > Seguridad",
+      "skip": "Omitir"
+    },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
       "continue": "Continuar",

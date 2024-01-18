@@ -69,6 +69,13 @@
         "cta": "Erfahre mehr"
       }
     },
+    "downloadBackupKey": {
+      "title": "Backup-Schlüssel",
+      "description": "Der Backup-Schlüssel ermöglicht die Wiederherstellung des Kontos, falls Sie Ihr Passwort vergessen. Teilen Sie es niemals.",
+      "downloadCta": "Backup-Schlüssel herunterladen",
+      "settingsTab": "Sie können auf Ihren Backup-Schlüssel zugreifen unter Einstellungen > Sicherheit",
+      "skip": "Überspringen"
+    },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
       "continue": "Weiter",

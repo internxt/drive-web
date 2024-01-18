@@ -90,6 +90,13 @@
         "cta": "了解更多"
       }
     },
+    "downloadBackupKey": {
+      "title": "备份密钥",
+      "description": "备份密钥可在您忘记密码时恢复帐户。永远不要分享它。",
+      "downloadCta": "下载备份密钥",
+      "settingsTab": "您可以在“设置” > “安全”中访问您的备份密钥",
+      "skip": "跳过"
+    },
     "forgotPassword": {
       "title": "账户恢复",
       "continue": "继续",

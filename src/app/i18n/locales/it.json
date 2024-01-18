@@ -90,6 +90,13 @@
         "cta": "Ulteriori informazioni"
       }
     },
+    "downloadBackupKey": {
+      "title": "Chiave di backup",
+      "description": "La chiave di backup consente il recupero dell'account nel caso dimentichi la tua password. Non condividerla mai.",
+      "downloadCta": "Scarica la chiave di backup",
+      "settingsTab": "Puoi accedere alla tua chiave di backup in Impostazioni > Sicurezza",
+      "skip": "Salta"
+    },
     "forgotPassword": {
       "title": "Recupero dell'account",
       "continue": "Continua",

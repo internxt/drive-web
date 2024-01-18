@@ -90,6 +90,13 @@
         "cta": "Learn more"
       }
     },
+    "downloadBackupKey": {
+      "title": "Backup key",
+      "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
+      "downloadCta": "Download backup key",
+      "settingsTab": "You can access your backup key in Settings > Security",
+      "skip": "Skip"
+    },
     "forgotPassword": {
       "title": "Account recovery",
       "continue": "Continue",

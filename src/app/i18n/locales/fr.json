@@ -69,6 +69,13 @@
         "cta": "En savoir plus"
       }
     },
+    "downloadBackupKey": {
+      "title": "Clé de sauvegarde",
+      "description": "La clé de sauvegarde permet la récupération du compte en cas d'oubli de votre mot de passe. Ne la partagez jamais.",
+      "downloadCta": "Télécharger la clé de sauvegarde",
+      "settingsTab": "Vous pouvez accéder à votre clé de sauvegarde dans Paramètres > Sécurité",
+      "skip": "Passer"
+    },
     "forgotPassword": {
       "title": "Récupération de compte",
       "continue": "Continue",
