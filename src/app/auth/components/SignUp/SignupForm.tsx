@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 
-interface FormComponentProps {
+interface SignupFormProps {
   autoSubmit: {
     enabled: boolean;
     credentials?: {
@@ -31,7 +31,7 @@ interface FormComponentProps {
   isLoading: boolean;
 }
 
-const FormComponent = ({ autoSubmit, onSubmit, showError, signupError, isLoading }: FormComponentProps) => {
+const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }: SignupFormProps) => {
   const { translate } = useTranslationContext();
   const [showPasswordIndicator, setShowPasswordIndicator] = useState(false);
   const [passwordState, setPasswordState] = useState<{
@@ -182,4 +182,4 @@ const FormComponent = ({ autoSubmit, onSubmit, showError, signupError, isLoading
   );
 };
 
-export default FormComponent;
+export default SignupForm;

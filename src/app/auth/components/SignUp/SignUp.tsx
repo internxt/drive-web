@@ -21,8 +21,7 @@ import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/Preparin
 import paymentService from 'app/payment/services/payment.service';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import analyticsService from 'app/analytics/services/analytics.service';
-import FormComponent from './FormComponent';
-import Button from '../Button/Button';
+import SignupForm from './SignupForm';
 
 export interface SignUpProps {
   location: {
@@ -134,7 +133,7 @@ function SignUp(props: SignUpProps): JSX.Element {
   const View = ({ view }) => {
     const views = {
       signUp: (
-        <FormComponent
+        <SignupForm
           onSubmit={onSubmit}
           isLoading={isLoading}
           signupError={signupError}
@@ -163,14 +162,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           <PreparingWorkspaceAnimation />
         ) : (
           <div className="flex flex-col items-start space-y-5">
-            {/* <View view="signUp" /> */}
-            <FormComponent
-              onSubmit={onSubmit}
-              isLoading={isLoading}
-              signupError={signupError}
-              autoSubmit={autoSubmit}
-              showError={showError}
-            />
+            <View view="signUp" />
             <span className="mt-2 w-full text-xs text-gray-50">
               {translate('auth.terms1')}{' '}
               <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
