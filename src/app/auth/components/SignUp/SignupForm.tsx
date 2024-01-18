@@ -175,7 +175,7 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
           }
           loading={isLoading}
           style="button-primary"
-          className="flex w-full"
+          className="w-full"
         />
       </form>
     </>
