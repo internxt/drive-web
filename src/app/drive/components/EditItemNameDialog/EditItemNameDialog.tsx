@@ -25,7 +25,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setNewItemName(item?.plainName || '');
+    setNewItemName(item?.plainName ?? '');
   }, [item]);
 
   const handleOnClose = (newName = ''): void => {
