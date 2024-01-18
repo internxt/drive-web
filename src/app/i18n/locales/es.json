@@ -63,7 +63,12 @@
       "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
-      "encrypting": "Cifrando"
+      "encrypting": "Cifrando",
+      "info": {
+        "normalText": "Internxt no almacena contraseñas.",
+        "boldText": "Si olvidas tu contraseña, puedes descargar una clave de respaldo para recuperar el acceso a tus archivos.",
+        "cta": "Más información"
+      }
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",

@@ -277,16 +277,14 @@ function SignUp(props: SignUpProps): JSX.Element {
               <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
                 <Info size={20} className="shrink-0 text-primary" />
                 <p className="text-xs">
-                  Internxt doesn't store passwords.{' '}
-                  <span className="font-semibold">
-                    If you forget your password, you can download a backup key to regain access to your files.
-                  </span>
+                  {translate('auth.signup.info.normalText')}{' '}
+                  <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
                   <span className="font-semibold text-primary underline">
                     <a
                       href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
                       target="_blank"
                     >
-                      Learn more
+                      {translate('auth.signup.info.cta')}
                     </a>
                   </span>
                 </p>

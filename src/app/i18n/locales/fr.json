@@ -62,7 +62,12 @@
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
       "login": " Connexion ",
-      "encrypting": "Encryptant"
+      "encrypting": "Encryptant",
+      "info": {
+        "normalText": "Internxt ne stocke pas les mots de passe.",
+        "boldText": "Si vous oubliez votre mot de passe, vous pouvez télécharger une clé de sauvegarde pour regagner l'accès à vos fichiers.",
+        "cta": "En savoir plus"
+      }
     },
     "forgotPassword": {
       "title": "Récupération de compte",

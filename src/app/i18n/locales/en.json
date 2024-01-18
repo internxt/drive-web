@@ -83,7 +83,12 @@
       "title": "Create account",
       "haveAccount": "Already have an account?",
       "login": "Log in",
-      "encrypting": "Encrypting"
+      "encrypting": "Encrypting",
+      "info": {
+        "normalText": "Internxt doesn’t store passwords.",
+        "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
+        "cta": "Learn more"
+      }
     },
     "forgotPassword": {
       "title": "Account recovery",

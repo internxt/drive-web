@@ -62,7 +62,12 @@
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
-      "encrypting": "Verschlüsselung im Gange"
+      "encrypting": "Verschlüsselung im Gange",
+      "info": {
+        "normalText": "Internxt speichert keine Passwörter.",
+        "boldText": "Wenn Sie Ihr Passwort vergessen, können Sie einen Backup-Schlüssel herunterladen, um wieder Zugriff auf Ihre Dateien zu erhalten.",
+        "cta": "Erfahre mehr"
+      }
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",

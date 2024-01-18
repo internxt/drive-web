@@ -83,7 +83,12 @@
       "title": "创建账户",
       "haveAccount": "已有账户？",
       "login": "登录",
-      "encrypting": "加密中"
+      "encrypting": "加密中",
+      "info": {
+        "normalText": "Internxt 不存储密码。",
+        "boldText": "如果您忘记了密码，您可以下载备份密钥以恢复对文件的访问。",
+        "cta": "了解更多"
+      }
     },
     "forgotPassword": {
       "title": "账户恢复",
