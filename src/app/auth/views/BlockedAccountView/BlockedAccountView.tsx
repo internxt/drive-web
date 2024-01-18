@@ -4,7 +4,7 @@ import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import { ShieldWarning } from '@phosphor-icons/react';
 import Button from 'app/shared/components/Button/Button';
 import { AppView } from 'app/core/types';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import queryString from 'query-string';
 import { useParams } from 'react-router-dom';
 import Spinner from 'app/shared/components/Spinner/Spinner';
@@ -64,7 +64,7 @@ export default function BlockedAccountView(): JSX.Element {
     }
   }, [enableResendButton, countDown]);
 
-  const resendAccountUnblockEmail = async () => {
+  const resendAccountUnblockEmail = useCallback(async () => {
     setSendingEmail(true);
     try {
       await authService.requestUnblockAccount(userEmail);
@@ -78,16 +78,19 @@ export default function BlockedAccountView(): JSX.Element {
     } finally {
       setSendingEmail(false);
     }
-  };
+  }, [userEmail]);
 
-  const ResendButton = () =>
-    enableResendButton ? (
-      <button className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
-        {translate('blockedAccount.resend')}
-      </button>
-    ) : (
-      <span className="ml-2 font-medium">&nbsp;{countDown}</span>
-    );
+  const ResendButton = useCallback(
+    () =>
+      enableResendButton ? (
+        <button className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
+          {translate('blockedAccount.resend')}
+        </button>
+      ) : (
+        <span className="ml-2 font-medium">&nbsp;{countDown}</span>
+      ),
+    [countDown, enableResendButton, resendAccountUnblockEmail],
+  );
 
   if (isLoading) {
     return (
