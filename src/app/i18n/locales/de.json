@@ -160,7 +160,8 @@
     },
     "files": "Dateien",
     "file": "Datei",
-    "folder": "Ordner"
+    "folder": "Ordner",
+    "reloadPageMessage": ""
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",

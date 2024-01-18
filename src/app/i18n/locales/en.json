@@ -202,7 +202,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": ""
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",

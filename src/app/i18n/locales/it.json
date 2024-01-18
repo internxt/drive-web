@@ -183,7 +183,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Le modifiche apportate potrebbero non essere state salvate."
   },
   "shareLayout": {
     "title": "INTERNXT",

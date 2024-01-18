@@ -166,7 +166,8 @@
     },
     "files": "Files",
     "file": "Fichier",
-    "folder": "Dossier"
+    "folder": "Dossier",
+    "reloadPageMessage": "Les modifications que vous avez apportées pourraient ne pas être enregistrées."
   },
   "shareLayout": {
     "title": "",

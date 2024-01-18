@@ -1,4 +1,4 @@
-import { createElement, useEffect } from 'react';
+import { createElement, useEffect, useRef } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -37,6 +37,7 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
+import useBeforeUnload from './hooks/useBeforeUnload';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -55,6 +56,8 @@ const App = (props: AppProps): JSX.Element => {
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+
+  useBeforeUnload();
 
   useEffect(() => {
     initialState();
