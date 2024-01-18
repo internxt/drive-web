@@ -304,8 +304,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
         navigationService.pushFolder(item.uuid);
       } else {
-        dispatch(uiActions.setIsFileViewerOpen(true));
-        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
         navigationService.pushFile(item.uuid);
       }
     },
