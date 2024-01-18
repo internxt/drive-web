@@ -8,7 +8,7 @@ interface OpenItem {
 
 export const useOpenItem = (notification: TaskNotification): OpenItem => {
   const openItem = useCallback(() => {
-    const { item, taskId, action } = notification;
+    const { item, action } = notification;
     const isFolderUpload = action === TaskType.UploadFolder;
 
     if (isFolderUpload) {
@@ -17,7 +17,7 @@ export const useOpenItem = (notification: TaskNotification): OpenItem => {
       if (folder && currentFolderId) {
         navigationService.pushFolder(notification?.itemUUID?.rootFolderUUID);
       }
-    } else if (item && taskId) {
+    } else if (item) {
       navigationService.pushFile(notification?.itemUUID?.fileUUID);
     }
   }, [notification]);
