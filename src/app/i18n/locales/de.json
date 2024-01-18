@@ -3,29 +3,30 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
+  "blackFridayBanner": {
+    "header": "Spare 70%!",
+    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "features": {
+      "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
+      "safeCloud": "Sicherer und geschützter Cloud-Speicher",
+      "openSource": "Open Source und transparent",
+      "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "unauthorized": "Kein unberechtigter Zugriff",
+      "offerEnds": "Angebot endet am 29. Januar"
+    }
+  },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "title": "Lifetime Deal!",
-    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Hol dir das Angebot"
+    "label": "Jahreslagerung zum halben Preis!",
+    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",
@@ -36,6 +37,12 @@
     "cn": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)"
+  },
+  "theme": {
+    "title": "Erscheinung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System"
   },
   "auth": {
     "email": "E-Mail",
@@ -67,6 +74,10 @@
       "successTitle": "Überprüfen Sie Ihren Posteingang",
       "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
       "invalidEmail": "Ungültige E-Mail Adresse"
+    },
+    "linkExpired": {
+      "title": "Link abgelaufen oder gelöscht",
+      "description": "Der von Ihnen besuchte Link oder die Einladung ist abgelaufen oder wurde entfernt"
     },
     "recoverAccount": {
       "title": "Konto wiederherstellen",
@@ -115,6 +126,7 @@
     "new": "Neu",
     "of": "von",
     "terms": "Geschäftsbedingungen",
+    "contactSupport": "Kundensupport kontaktieren",
     "help": "Brauchst du Hilfe?",
     "searchBar": "Durchsuche diesen Ordner",
     "stage": {
@@ -266,8 +278,26 @@
               "name": "Name",
               "lastname": "Nachname"
             },
+            "changeEmail": {
+              "title": "E-Mail ändern",
+              "email": "E-Mail",
+              "newEmail": "Neue E-Mail",
+              "password": "Passwort",
+              "errorSameEmail": "Die neue E-Mail muss sich von der aktuellen unterscheiden",
+              "errorPassword": "Falsches Passwort, bitte versuchen Sie es erneut",
+              "sendVerification": "Verifikation senden",
+              "sendingVerification": "Verifikation wird gesendet",
+              "sucessSendingVerification": "Verifikation an {{email}} gesendet",
+              "errorSendingVerification": "Fehler beim Senden der Verifikation",
+              "confirm": "Bestätigen"
+            },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
+          },
+          "support": {
+            "title": "Support",
+            "description": "Navigieren Sie durch hilfreiche Artikel oder erhalten Sie Unterstützung von unserem Team.",
+            "cta": "Support-Center öffnen"
           },
           "deleteAccount": {
             "head": "Lösche Konto",
@@ -341,9 +371,9 @@
           },
           "viewAllFeatures": "Alle Funktionen anzeigen",
           "card": {
-            "annually": "€{{amount}} Jährliche Rechnung",
-            "monthly": "€{{amount}} pro Monat",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Jährliche Rechnung",
+            "monthly": "{{amount}} pro Monat",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Einmalige Zahlung"
           },
           "features": {
@@ -627,6 +657,10 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
+        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
+        "inviteNewUsersTitle": "Neue benutzer einladen?",
+        "accept": "Akzeptieren",
+        "cancel": "Abbrechen",
         "error": {
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
@@ -642,6 +676,19 @@
         "change": "Ändern",
         "requestSent": "Anfrage gesendet",
         "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Ein Passwort ist nur für Benutzer erforderlich, die keine Viewer- oder Bearbeitungsberechtigungen für das freigegebene Element haben.",
+        "protect": "Mit Passwort schützen",
+        "disablePasswordTitle": "Passwortschutz deaktivieren?",
+        "disablePasswordBody": "Wenn deaktiviert, können Personen mit dem Link auf den Inhalt zugreifen.",
+        "editPasswordTitle": "Passwort bearbeiten",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "save": "Speichern",
+          "disable": "Deaktivieren",
+          "changePassword": "Passwort ändern"
+        }
       }
     },
     "deletePhotosModal": {
@@ -1194,6 +1241,16 @@
         "title": "Lass uns anfangen...",
         "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Map niet gevonden",
+      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+    },
+    "file": {
+      "title": "Bestand niet gevonden",
+      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
     }
   }
 }

@@ -25,11 +25,13 @@ export default function AccountPopover({
   const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
 
-  const avatarWrapper = <AvatarWrapper diameter={36} fullName={fullName} avatarSrcURL={user.avatar} />;
+  const avatarWrapper = (
+    <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
+  );
 
   const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
 
-  const separator = <div className="border-translate my-0.5 mx-3 border-gray-10" />;
+  const separator = <div className="border-translate mx-3 my-0.5 border-gray-10" />;
 
   const getDownloadApp = async () => {
     const download = await desktopService.getDownloadAppUrl();
@@ -62,10 +64,12 @@ export default function AccountPopover({
       <div className="flex items-center p-3">
         {avatarWrapper}
         <div className="ml-2 min-w-0">
-          <h1 className="truncate font-medium text-gray-80" style={{ lineHeight: 1 }}>
+          <p className="truncate font-medium text-gray-80" title={fullName} style={{ lineHeight: 1 }}>
             {fullName}
-          </h1>
-          <h2 className="truncate text-sm text-gray-50">{user.email}</h2>
+          </p>
+          <p className="truncate text-sm text-gray-50" title={user.email}>
+            {user.email}
+          </p>
         </div>
       </div>
       <div className="flex items-center justify-between px-3 pb-1">
@@ -85,7 +89,7 @@ export default function AccountPopover({
       </Item>
       <Link
         to="/preferences"
-        className="flex cursor-pointer items-center py-2 px-3 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 active:bg-gray-5"
+        className="flex cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
       >
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
@@ -111,7 +115,7 @@ export default function AccountPopover({
 function Item({ children, onClick }: { children: ReactNode; onClick: () => void }) {
   return (
     <div
-      className="flex cursor-pointer items-center py-2 px-3 text-gray-80 hover:bg-gray-1 active:bg-gray-5"
+      className="flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
       onClick={onClick}
     >
       {children}

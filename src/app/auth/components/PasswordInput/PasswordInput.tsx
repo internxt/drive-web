@@ -22,7 +22,9 @@ interface InputProps {
   autoFocus?: boolean;
   value?: string;
   autoComplete?: string;
+  inputDataCy?: string;
 }
+
 const PasswordInput = ({
   label,
   disabled,
@@ -39,8 +41,10 @@ const PasswordInput = ({
   className,
   autoFocus,
   autoComplete,
+  inputDataCy,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={`relative flex-1 ${className}`}>
       <input
@@ -51,6 +55,7 @@ const PasswordInput = ({
         required={true}
         autoFocus={autoFocus}
         autoComplete={autoComplete}
+        data-cy={inputDataCy}
         {...register(label, {
           required,
           minLength,
@@ -64,7 +69,7 @@ const PasswordInput = ({
         onBlur={() => {
           if (onBlur) onBlur();
         }}
-        className={`h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
       <div
         onClick={() => setShowPassword(!showPassword)}

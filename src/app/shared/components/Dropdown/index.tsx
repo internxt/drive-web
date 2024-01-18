@@ -26,7 +26,7 @@ export default function Dropdown({
 
   function handleActiveItemStyle(active, disabled) {
     if (active) {
-      return 'bg-gray-5 text-gray-100';
+      return 'bg-gray-5 dark:bg-gray-10 text-gray-100';
     }
     return disabled ? 'pointer-events-none font-medium text-gray-100' : 'text-gray-80';
   }
@@ -49,7 +49,7 @@ export default function Dropdown({
             <Menu.Item key={option.text}>
               <div
                 onKeyDown={() => {}}
-                className="cursor-pointer px-3 py-1.5 text-gray-80 hover:bg-primary hover:text-white active:bg-primary-dark"
+                className="cursor-pointer px-3 py-1.5 text-gray-80 hover:bg-gray-1 dark:hover:bg-gray-10"
                 onClick={option.onClick}
               >
                 {option.text}
@@ -59,7 +59,7 @@ export default function Dropdown({
           {menuItems && (
             <div className="w-full max-w-xs">
               {menuItems?.map((item) => (
-                <Menu.Item key={'menuitem-' + item}>{item}</Menu.Item>
+                <Menu.Item key={'menuitem-' + item}>{({ close }) => <div onClick={close}>{item}</div>}</Menu.Item>
               ))}
             </div>
           )}

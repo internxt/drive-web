@@ -1,9 +1,9 @@
-import dateService from 'app/core/services/date.service';
-import { UploadSimple, Users } from '@phosphor-icons/react';
-import List from 'app/shared/components/List';
+import dateService from '../../../core/services/date.service';
+import { UploadSimple } from '@phosphor-icons/react';
+import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
-import iconService from 'app/drive/services/icon.service';
+import iconService from '../../../drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -28,20 +28,22 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
-import Button from 'app/shared/components/Button/Button';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import NameCollisionContainer from 'app/drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShowInvitationsDialog from 'app/drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { sharedActions, sharedThunks } from 'app/store/slices/sharedLinks';
-import { RootState } from 'app/store';
+import Button from '../../../shared/components/Button/Button';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
+import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
+import { RootState } from '../../../store';
 import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import { connect } from 'react-redux';
+import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
+import { Helmet } from 'react-helmet-async';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -86,6 +88,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const urlParams = new URLSearchParams(window.location.search);
   const folderUUID = urlParams.get('folderuuid');
 
+  const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
+  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
+
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
   const [hasMoreRootFolders, setHasMoreRootFolders] = useState<boolean>(true);
@@ -111,6 +116,14 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
+  // Set the item to rename from preview view
+  useEffect(() => {
+    if (itemToRename) {
+      setEditNameItem(itemToRename);
+      setIsEditNameDialogOpen(true);
+    }
+  }, [itemToRename]);
 
   useEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -684,13 +697,17 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(uiActions.setIsMoveItemsDialogOpen(true));
   };
 
-  const renameItem = (shareItem: AdvancedSharedItem) => {
+  const renameItem = (shareItem: AdvancedSharedItem | DriveItemData) => {
     setEditNameItem(shareItem as unknown as DriveItemData);
     setIsEditNameDialogOpen(true);
   };
 
   const onCloseEditNameItems = (newItem?: DriveItemData) => {
     if (newItem) {
+      if (isFileViewerOpen) {
+        dispatch(uiActions.setCurrentEditingNameDirty(newItem.plainName ?? newItem.name));
+      }
+
       const editNameItemUuid = newItem?.uuid ?? '';
       setShareItems(
         shareItems.map((shareItem) => {
@@ -707,6 +724,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
         }),
       );
     }
+    dispatch(storageActions.setItemToRename(null));
     setIsEditNameDialogOpen(false);
     setEditNameItem(undefined);
   };
@@ -761,20 +779,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
     <div className="h-4 w-24 rounded bg-gray-5" />,
     <div className="h-4 w-20 rounded bg-gray-5" />,
   ];
-
-  const emptyState = (
-    <div className="h-full w-full p-8">
-      <div className="flex h-full flex-col items-center justify-center pb-20">
-        <div className="pointer-events-none mx-auto mb-10 w-max">
-          <Users size={80} weight="thin" />
-        </div>
-        <div className="pointer-events-none text-center">
-          <p className="mb-1 block text-2xl font-medium text-gray-100">{translate('shared-links.empty-state.title')}</p>
-          <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
-        </div>
-      </div>
-    </div>
-  );
 
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     setHasMoreFolders(true);
@@ -839,7 +843,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
         e.preventDefault();
       }}
     >
-      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
+      <Helmet>
+        <title>{translate('sideNav.shared')} - Internxt Drive</title>
+      </Helmet>
+      <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />
         </div>
@@ -880,12 +887,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 dispatch(uiActions.setIsInvitationsDialogOpen(true));
               }}
             >
-              <p className="space-x-2">
-                Pending Invitations{' '}
-                <span className="rounded-full bg-primary px-1.5 py-0.5 text-xs text-white">
+              <div className="flex items-center space-x-2">
+                <span>Pending Invitations</span>
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
                   {pendingInvitations.length}
                 </span>
-              </p>
+              </div>
             </Button>
           )}
         </div>
@@ -938,7 +945,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 <div className={'flex h-full w-full flex-row items-center space-x-4 overflow-hidden'}>
                   <div className="relative flex h-10 w-10 shrink items-center justify-center">
                     <Icon className="flex h-full justify-center drop-shadow-soft" />
-                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-white">
+                    <div className="absolute -bottom-0.5 -right-1.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-white ring-2 ring-surface">
                       <img src={usersIcon} width={13} alt="shared users" />
                     </div>
                   </div>
@@ -996,7 +1003,13 @@ function SharedView(props: SharedViewProps): JSX.Element {
             ),
           ]}
           skinSkeleton={skinSkeleton}
-          emptyState={emptyState}
+          emptyState={
+            <EmptySharedView
+              isCurrentUserViewer={isCurrentUserViewer}
+              onUploadFileButtonClicked={onUploadFileButtonClicked}
+              sharedNamePath={sharedNamePath}
+            />
+          }
           onNextPage={onNextPage}
           hasMoreItems={hasMoreItems}
           menu={
@@ -1010,7 +1023,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   showDetails,
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
@@ -1018,7 +1033,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
-                  openShareAccessSettings,
+                  openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? openShareAccessSettings
+                    : undefined,
                   openPreview: openPreview,
                   showDetails,
                   copyLink,

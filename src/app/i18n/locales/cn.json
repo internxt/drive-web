@@ -3,29 +3,30 @@
     "title": "在应用程序上管理您的文件、帐户和订阅",
     "logOut": "登出"
   },
+  "blackFridayBanner": {
+    "header": "省 70%!",
+    "title": "为数据隐私周做好准备",
+    "cta": "选择计划",
+    "guarantee": "30天退款保证",
+    "features": {
+      "discount": "在月度和年度计划上节省",
+      "safeCloud": "安全可靠的云存储",
+      "openSource": "开源和透明",
+      "endToEnd": "端到端加密传输",
+      "unauthorized": "无未经授权访问",
+      "offerEnds": "优惠截至日期为1月29日"
+    }
+  },
   "valentinesBanner": {
     "title": "爱无极限！",
     "subtitle": "使用代码 VDAY 即可享受2TB的九折套餐",
     "cta": "达成交易"
   },
   "lifetimeBanner": {
-    "title": "终身计划!",
-    "description": "购买一次，永久获得隐私。",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "达成交易"
+    "label": "半价年度存储！",
+    "title": "在我们的年度订阅上节省50％！",
+    "cta": "选择计划",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
@@ -44,6 +45,10 @@
       "description": "请通过 hello@internxt.com 联系我们的支持团队。"
     }
   },
+  "linkExpired": {
+    "title": "链接已过期或已删除",
+    "description": "您访问的链接或邀请已过期或已被删除"
+  },
   "lang": {
     "title": "语言",
     "en": "English (英语)",
@@ -53,6 +58,12 @@
     "cn": "简体中文 (简体中文)",
     "ru": "Русский (俄语)",
     "de": "Deutsch (德国)"
+  },
+  "theme": {
+    "title": "外观",
+    "light": "明亮",
+    "dark": "暗",
+    "system": "系统"
   },
   "auth": {
     "email": "电子邮件",
@@ -138,6 +149,7 @@
     "new": "新建",
     "of": "/",
     "terms": "条款和条件",
+    "contactSupport": "联系支持",
     "help": "需要帮助吗？",
     "searchBar": {
       "oldSearchBarPlaceholder": "搜索该文件夹",
@@ -321,8 +333,14 @@
               "sendVerification": "发送验证",
               "sendingVerification": "发送验证",
               "sucessSendingVerification": "发送电子邮件到 {{email}}",
-              "errorSendingVerification": "错误发送验证"
+              "errorSendingVerification": "错误发送验证",
+              "confirm": "确认"
             }
+          },
+          "support": {
+            "title": "支持",
+            "description": "浏览有用的文章或向我们的团队寻求帮助。",
+            "cta": "打开支持中心"
           },
           "deleteAccount": {
             "head": "删除账户",
@@ -408,9 +426,9 @@
           },
           "viewAllFeatures": "查看所有功能",
           "card": {
-            "annually": "€{{amount}} 每年计费(欧元)",
-            "monthly": "每月(欧元) €{{amount}}",
-            "lifetime": "欧元€{{amount}}",
+            "annually": "{{amount}} 每年计费(欧元)",
+            "monthly": "每月(欧元) {{amount}}",
+            "lifetime": "欧元{{amount}}",
             "oneTimePayment": "一次性付款"
           },
           "features": {
@@ -731,6 +749,10 @@
         "successSentInvitation": "與 {{email}} 成功分享",
         "acceptedSuccessfully": "成功接受共享文件夹邀请",
         "declinedSuccessfully": "成功拒绝共享文件夹邀请",
+        "inviteNewUsersBody": "没有Internxt帐户的人将收到注册邀请电子邮件。",
+        "inviteNewUsersTitle": "邀请新用户？",
+        "accept": "接受",
+        "cancel": "取消",
         "error": {
           "errorInviting": "傳送邀請至 {{email}} 時出錯",
           "acceptedError": "接受共享文件夹邀请时出错",
@@ -746,6 +768,19 @@
         "change": "改变",
         "requestSent": "请求已发送",
         "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "仅对没有查看或编辑访问权限的用户需要密码。",
+        "protect": "使用密码保护",
+        "disablePasswordTitle": "禁用密码保护？",
+        "disablePasswordBody": "禁用后，拥有链接的人将能够访问内容。",
+        "editPasswordTitle": "编辑密码",
+        "buttons": {
+          "cancel": "取消",
+          "save": "保存",
+          "disable": "禁用",
+          "changePassword": "更改密码"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1321,6 +1356,16 @@
         "title": "让我们开始吧...",
         "description": "单击上传按钮上传您的第一个文件。"
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "未找到文件夹",
+      "description": "确保 URL 正确且文件夹未被移动或删除"
+    },
+    "file": {
+      "title": "未找到文件",
+      "description": "确保 URL 正确且文件未被移动或删除"
     }
   }
 }

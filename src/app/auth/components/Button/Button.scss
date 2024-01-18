@@ -32,7 +32,7 @@
   }
 
   .button-danger {
-    @apply h-11 cursor-pointer rounded-lg bg-red-20 px-5 font-medium text-white duration-100 ease-in-out hover:bg-red-30 disabled:bg-gray-30;
+    @apply h-11 cursor-pointer rounded-lg bg-red/20 px-5 font-medium text-white duration-100 ease-in-out hover:bg-red/30 disabled:bg-gray-30;
   }
 
   .button-loading-spinner {

@@ -9,6 +9,7 @@ export type AdvancedSharedItem = SharedFolders &
     credentials: SharedNetworkCredentials;
     sharingId?: string;
     sharingType: 'public' | 'private';
+    encryptedPassword: string | null;
   };
 
 export type SharedNetworkCredentials = {
@@ -19,6 +20,7 @@ export type SharedNetworkCredentials = {
 export type PreviewFileItem = DriveFileData & {
   credentials?: NetworkCredentials;
   mnemonic?: string;
+  folderUuid?: string;
 };
 
 export type OrderBy = { field: 'views' | 'createdAt'; direction: 'ASC' | 'DESC' } | undefined;

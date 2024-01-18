@@ -128,7 +128,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
   ];
 
   return (
-    <div className="flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard">
+    <div className="flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5">
       {title ? <span className="mb-1 text-supporting-2">{title}</span> : null}
       {openDropdown && (
         <>
@@ -145,7 +145,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
                         closeDropdown();
                       }}
                       className={
-                        'flex cursor-pointer flex-row items-center justify-between space-x-3 whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100'
+                        'flex cursor-pointer flex-row items-center justify-between space-x-3 whitespace-nowrap px-4 py-1.5 text-base text-gray-80 hover:bg-gray-5 hover:text-gray-100 dark:hover:bg-gray-10'
                       }
                     >
                       <div className="flex flex-row items-center space-x-2">

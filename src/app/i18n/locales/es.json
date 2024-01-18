@@ -4,16 +4,17 @@
     "logOut": "Cerrar sesión"
   },
   "blackFridayBanner": {
-    "header": "¡Elige la privacidad!",
-    "title": "Oferta navideña de Internxt",
-    "cta": "¡Obtén el descuento!",
+    "header": "¡Ahorra un 70%!",
+    "title": "Prepárate para la Semana de la Privacidad de Datos",
+    "cta": "Elige un plan",
+    "guarantee": "Garantía de devolución de 30 días",
     "features": {
-      "discount": "50% de descuento en planes lifetime",
+      "discount": "Ahorra en suscripciones mensuales y anuales",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
-      "endToEnd": "Cifrado de extremo a extremo",
+      "endToEnd": "Transferencias cifradas de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 7 de Enero"
+      "offerEnds": "La oferta finaliza el 29 de enero"
     }
   },
   "valentinesBanner": {
@@ -22,23 +23,10 @@
     "cta": "Obtén la oferta"
   },
   "lifetimeBanner": {
-    "title": "Oferta lifetime",
-    "description": "¡Privacidad en la nube para siempre!",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Obtén la oferta"
+    "label": "¡Tu plan anual a mitad de precio!",
+    "title": "¡Ahorra un 50% en nuestros planes anuales!",
+    "cta": "Elige un plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",
@@ -50,6 +38,13 @@
     "ru": "Русский (Ruso)",
     "de": "Deutsch (Alemán)"
   },
+  "theme": {
+    "title": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema"
+  },
+
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",
@@ -134,6 +129,7 @@
     "new": "nuevo",
     "of": "de",
     "terms": "Términos y condiciones",
+    "contactSupport": "Contactar con soporte",
     "help": "¿Necesitas ayuda?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Buscar en esta carpeta",
@@ -154,6 +150,10 @@
         "title": "No hay resultados",
         "subtitle": "Ninguna coincidencia para tu búsqueda"
       }
+    },
+    "linkExpired": {
+      "title": "Enlace caducado o eliminado",
+      "description": "El enlace o invitación que visitó ha caducado o ha sido eliminado"
     },
     "stage": {
       "development": "Development",
@@ -316,8 +316,14 @@
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
               "sucessSendingVerification": "Verificación enviada a {{email}}",
-              "errorSendingVerification": "Error enviando verificación"
+              "errorSendingVerification": "Error enviando verificación",
+              "confirm": "Confirmar"
             }
+          },
+          "support": {
+            "title": "Soporte",
+            "description": "Navega por artículos útiles o recibe asistencia de nuestro equipo.",
+            "cta": "Abrir Centro de Soporte"
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
@@ -403,9 +409,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "{{amount}}€ facturado al año",
-            "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€",
+            "annually": "{{amount}} facturado al año",
+            "monthly": "{{amount}} al mes",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Pago único"
           },
           "features": {
@@ -726,6 +732,10 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
+        "inviteNewUsersBody": "Las personas sin una cuenta de Internxt recibirán un correo electrónico de invitación para registrarse.",
+        "inviteNewUsersTitle": "¿Invitar a nuevos usuarios?",
+        "accept": "Aceptar",
+        "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
@@ -741,6 +751,19 @@
         "change": "Cambiar",
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",
+        "protect": "Proteger con contraseña",
+        "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
+        "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
+        "editPasswordTitle": "Editar contraseña",
+        "buttons": {
+          "cancel": "Cancelar",
+          "save": "Guardar",
+          "disable": "Desactivar",
+          "changePassword": "Cambiar contraseña"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1316,6 +1339,16 @@
         "title": "Empecemos...",
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Carpeta no encontrada",
+      "description": "Asegúrese de que la URL es correcta y de que la carpeta no se ha movido ni eliminado."
+    },
+    "file": {
+      "title": "Archivo no encontrado",
+      "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
     }
   }
 }

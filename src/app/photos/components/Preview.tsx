@@ -128,7 +128,7 @@ export default function Preview({
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate z-10" data-test="photos-preview">
+      <div className="absolute inset-0 isolate z-50" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"
@@ -205,7 +205,7 @@ function Toolbar({
       leaveTo="opacity-0"
       show={!isIdle}
     >
-      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
+      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black/75 to-transparent p-5">
         <TopIcon Target={X} onClick={onExit} />
         <div className="flex">
           <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />

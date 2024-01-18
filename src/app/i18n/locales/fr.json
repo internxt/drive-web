@@ -4,16 +4,17 @@
     "logOut": "Déconnexion"
   },
   "blackFridayBanner": {
-    "header": "Choisissez la confidentialité.",
-    "title": "Internxt offre de Noël",
-    "cta": "Obtenez l'offre",
+    "header": "Économisez 70% !",
+    "title": "Préparez-vous pour la Semaine de la Protection des Données",
+    "cta": "Choisir un plan",
+    "guarantee": "Garantie de remboursement de 30 jours",
     "features": {
-      "discount": "-50% sur notre plans lifetime",
-      "safeCloud": "Stockage en nuage sécurisé",
+      "discount": "Économisez sur les plans mensuels et annuels",
+      "safeCloud": "Stockage cloud sûr et sécurisé",
       "openSource": "Open source et transparent",
-      "endToEnd": "Transferts cryptés de bout en bout",
+      "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 7 janvier"
+      "offerEnds": "L'offre se termine le 29 janvier"
     }
   },
   "valentinesBanner": {
@@ -22,23 +23,10 @@
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Stockage annuel à moitié prix !",
+    "title": "Économisez 50% sur nos abonnements annuels !",
+    "cta": "Choisissez un plan",
+    "guarantee": "Garantie de remboursement sous 30 jours"
   },
   "lang": {
     "title": "Langue",
@@ -49,6 +37,12 @@
     "cn": "简体中文 (Chinois)",
     "ru": "Русский (Russe)",
     "de": "Deutsch (Allemand)"
+  },
+  "theme": {
+    "title": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
   },
   "auth": {
     "email": "Email",
@@ -80,6 +74,10 @@
       "successTitle": " Vérifier votre boîte de réception ",
       "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
       "invalidEmail": "Invalide email"
+    },
+    "linkExpired": {
+      "title": "Lien expiré ou supprimé",
+      "description": "Le lien ou l'invitation que vous avez visité a expiré ou a été supprimé"
     },
     "recoverAccount": {
       "title": "Récupération de compte",
@@ -134,9 +132,9 @@
     "new": "Nouveau",
     "of": "de",
     "terms": "Termes et conditions",
+    "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
-
     "stage": {
       "development": "Développement",
       "production": "Production"
@@ -299,8 +297,14 @@
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
               "sucessSendingVerification": "Vérification par courriel envoyée",
-              "errorSendingVerification": "Erreur d'envoi de la vérification"
+              "errorSendingVerification": "Erreur d'envoi de la vérification",
+              "confirm": "Confirmer"
             }
+          },
+          "support": {
+            "title": "Support",
+            "description": "Naviguez à travers des articles utiles ou obtenez de l'aide auprès de notre équipe.",
+            "cta": "Ouvrir le Centre de support"
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -359,11 +363,10 @@
             "business": "Changement de plan pour les entreprises"
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
-
           "card": {
-            "annually": "€{{amount}} Facturation annuellement",
-            "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Facturation annuellement",
+            "monthly": "{{amount}} par mois",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Paiement unique"
           },
           "features": {
@@ -661,6 +664,10 @@
         "successSentInvitation": "Partage réussi avec {{email}}",
         "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
         "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
+        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire.",
+        "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
+        "accept": "Accepter",
+        "cancel": "Annuler",
         "error": {
           "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
           "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
@@ -676,6 +683,19 @@
         "change": "Changer",
         "requestSent": "Demande envoyée",
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Le mot de passe est uniquement requis pour les utilisateurs sans accès en lecture ou en modification à l'élément partagé.",
+        "protect": "Protéger par mot de passe",
+        "disablePasswordTitle": "Désactiver la protection par mot de passe ?",
+        "disablePasswordBody": "Lorsqu'elle est désactivée, les personnes disposant du lien pourront accéder au contenu.",
+        "editPasswordTitle": "Modifier le mot de passe",
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "disable": "Désactiver",
+          "changePassword": "Changer le mot de passe"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -882,7 +902,6 @@
       "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
-
   "trash": {
     "trash": "Corbeille",
     "clearTrash": "La corbeille est vide",
@@ -1246,6 +1265,16 @@
         "title": "Commençons tout de suite !",
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Dossier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le dossier n'a pas été déplacé ou supprimé."
+    },
+    "file": {
+      "title": "Fichier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
     }
   }
 }

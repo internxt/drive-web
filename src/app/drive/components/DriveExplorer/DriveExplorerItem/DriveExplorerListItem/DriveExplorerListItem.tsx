@@ -1,5 +1,4 @@
-import { Fragment, useEffect } from 'react';
-import { PencilSimple } from '@phosphor-icons/react';
+import { useEffect } from 'react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -13,17 +12,9 @@ import './DriveExplorerListItem.scss';
 import usersIcon from 'assets/icons/users.svg';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
-  const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
-  const {
-    nameInputRef,
-    onNameChanged,
-    onNameBlurred,
-    onNameClicked,
-    onEditNameButtonClicked,
-    onNameEnterKeyDown,
-    onItemClicked,
-    onItemDoubleClicked,
-  } = useDriveItemActions(item);
+  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
+  const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
+    useDriveItemActions(item);
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -43,54 +34,15 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     }
   }, [isEditingName(item)]);
 
-  const nameNodefactory = () => {
-    const spanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+  useEffect(() => {
+    downloadAndSetThumbnail();
+  }, [item]);
 
-    return (
-      <Fragment>
-        {((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
-          <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
-            <input
-              className="dense no-ring rect select-text border border-white"
-              onClick={(e) => e.stopPropagation()}
-              onDoubleClick={(e) => e.stopPropagation()}
-              ref={nameInputRef}
-              type="text"
-              value={dirtyName}
-              placeholder="Name"
-              onChange={onNameChanged}
-              onBlur={onNameBlurred}
-              onKeyDown={onNameEnterKeyDown}
-              autoFocus
-              name="fileName"
-            />
-            <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
-          </div>
-        )}
-        <div className="file-list-item-name flex max-w-full items-center">
-          <span
-            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-            className={`${spanDisplayClass} file-list-item-name-span`}
-            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            onClick={
-              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
-                ? onNameClicked
-                : undefined
-            }
-          >
-            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-          </span>
-          {!isEditingName && ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) && (
-            <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
-          )}
-        </div>
-      </Fragment>
-    );
-  };
   const isItemShared = (item.sharings?.length ?? 0) > 0;
 
   const template = (
     <div
+      onKeyDown={() => {}}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onClick={onItemClicked}
       onDoubleClick={
@@ -104,15 +56,27 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
           <div className="flex h-10 w-10 justify-center drop-shadow-soft">
-            <ItemIconComponent
-              className="h-full"
-              data-test={`file-list-${
-                item.isFolder ? 'folder' : 'file'
-              }-${transformItemService.getItemPlainNameWithExtension(item)}`}
-            />
+            {item.currentThumbnail ? (
+              <div className="h-full w-full">
+                <img
+                  className="aspect-square h-full max-h-full object-contain object-center"
+                  src={item.currentThumbnail.urlObject}
+                  data-test={`file-list-${
+                    item.isFolder ? 'folder' : 'file'
+                  }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                />
+              </div>
+            ) : (
+              <ItemIconComponent
+                className="h-full"
+                data-test={`file-list-${
+                  item.isFolder ? 'folder' : 'file'
+                }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+              />
+            )}
             {isItemShared && (
               <img
-                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
+                className="absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white dark:border-surface"
                 src={usersIcon}
                 width={13}
                 alt="shared users"
@@ -123,7 +87,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
 
         {/* NAME */}
         <div className="flex w-activity grow cursor-pointer items-center truncate pr-2">
-          <span
+          <button
             data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
             className="truncate"
             title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
@@ -136,7 +100,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
             <p className="truncate">
               {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
             </p>
-          </span>
+          </button>
         </div>
       </div>
 
