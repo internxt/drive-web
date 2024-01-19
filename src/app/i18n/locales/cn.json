@@ -9,23 +9,10 @@
     "cta": "达成交易"
   },
   "lifetimeBanner": {
-    "title": "终身计划!",
-    "description": "购买一次，永久获得隐私。",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "达成交易"
+    "label": "半价年度存储！",
+    "title": "在我们的年度订阅上节省50％！",
+    "cta": "选择计划",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
@@ -332,8 +319,14 @@
               "sendVerification": "发送验证",
               "sendingVerification": "发送验证",
               "sucessSendingVerification": "发送电子邮件到 {{email}}",
-              "errorSendingVerification": "错误发送验证"
+              "errorSendingVerification": "错误发送验证",
+              "confirm": "确认"
             }
+          },
+          "support": {
+            "title": "支持",
+            "description": "浏览有用的文章或向我们的团队寻求帮助。",
+            "cta": "打开支持中心"
           },
           "deleteAccount": {
             "head": "删除账户",
@@ -419,9 +412,9 @@
           },
           "viewAllFeatures": "查看所有功能",
           "card": {
-            "annually": "€{{amount}} 每年计费(欧元)",
-            "monthly": "每月(欧元) €{{amount}}",
-            "lifetime": "欧元€{{amount}}",
+            "annually": "{{amount}} 每年计费(欧元)",
+            "monthly": "每月(欧元) {{amount}}",
+            "lifetime": "欧元{{amount}}",
             "oneTimePayment": "一次性付款"
           },
           "features": {
@@ -772,6 +765,19 @@
         "change": "改变",
         "requestSent": "请求已发送",
         "confirmation": "如果与您共享文件/文件夹 您将收到一封电子邮件"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "仅对没有查看或编辑访问权限的用户需要密码。",
+        "protect": "使用密码保护",
+        "disablePasswordTitle": "禁用密码保护？",
+        "disablePasswordBody": "禁用后，拥有链接的人将能够访问内容。",
+        "editPasswordTitle": "编辑密码",
+        "buttons": {
+          "cancel": "取消",
+          "save": "保存",
+          "disable": "禁用",
+          "changePassword": "更改密码"
+        }
       }
     },
     "sharedInvitationsModal": {

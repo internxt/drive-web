@@ -925,7 +925,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
       <Helmet>
         <title>{translate('sideNav.shared')} - Internxt Drive</title>
       </Helmet>
-      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
+      <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <Breadcrumbs items={breadcrumbItems()} />
         </div>

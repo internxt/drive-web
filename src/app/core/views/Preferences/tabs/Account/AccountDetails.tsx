@@ -15,7 +15,7 @@ import { useAppDispatch } from '../../../../../store/hooks';
 import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import Section from '../../components/Section';
 import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import envService from '../../../../services/env.service';
+import errorService from '../../../../services/error.service';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -209,14 +209,11 @@ function AccountDetailsModal({
             value={emailValue}
             name="email"
           />
-
-          {!envService.isProduction() && (
-            <div className="flex h-11 items-center">
-              <Button disabled={status.tag === 'loading'} variant="secondary" onClick={openEditEmail}>
-                {translate('actions.change')}
-              </Button>
-            </div>
-          )}
+          <div className="flex h-11 items-center">
+            <Button disabled={status.tag === 'loading'} variant="secondary" onClick={openEditEmail}>
+              {translate('actions.change')}
+            </Button>
+          </div>
         </div>
 
         <div className="flex justify-end">
@@ -261,8 +258,7 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
         setStatus({ tag: 'loading' });
         const correctPassword = await areCredentialsCorrect(email, password);
         if (correctPassword) {
-          // TODO -> Send verificaion email
-          // Send verification to newEmail
+          await userService.changeEmail(newEmail);
           notificationsService.show({
             text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification', {
               email: newEmail,
@@ -273,7 +269,8 @@ function ChangeEmailModal({ isOpen, onClose, email }: { isOpen: boolean; onClose
         } else {
           setStatus({ tag: 'error', type: 'PASSWORD_INVALID' });
         }
-      } catch {
+      } catch (error) {
+        errorService.reportError(error);
         setStatus({ tag: 'error', type: 'UNKNOWN' });
         notificationsService.show({
           text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),

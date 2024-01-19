@@ -16,6 +16,7 @@ export interface BreadcrumbItemData {
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
+  rootBreadcrumbItemDataCy?: string;
 }
 
 export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
@@ -61,7 +62,13 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         );
       } else {
         itemsList.push(
-          <BreadcrumbsItem key={itemKey} item={items[i]} totalBreadcrumbsLength={items.length} items={items} />,
+          <BreadcrumbsItem
+            breadcrumbButtonDataCy={i === 0 ? props?.rootBreadcrumbItemDataCy : undefined}
+            key={itemKey}
+            item={items[i]}
+            totalBreadcrumbsLength={items.length}
+            items={items}
+          />,
         );
         if (i < items.length - 1) {
           itemsList.push(breadcrumbSeparator(separatorKey));
