@@ -8,7 +8,6 @@ import { Helmet } from 'react-helmet-async';
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import Button from '../Button/Button';
 import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
 import localStorageService from 'app/core/services/local-storage.service';
@@ -26,6 +25,7 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import Button from 'app/shared/components/Button/Button';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -253,19 +253,15 @@ export default function LogIn(): JSX.Element {
               <span className="font-base w-56 text-sm text-red">{loginError}</span>
             </div>
           )}
-
           <Button
-            buttonDataCy="loginButton"
-            textDataCy="loginButtonText"
-            disabled={isLoggingIn}
-            text={translate('auth.login.title')}
-            disabledText={
-              isValid ? (translate('auth.decrypting') as string) : (translate('auth.login.title') as string)
-            }
+            type="submit"
             loading={isLoggingIn}
-            style="button-primary"
-            className="w-full"
-          />
+            buttonDataCy="loginButton"
+            variant="primary"
+            disabled={isLoggingIn}
+          >
+            {translate('auth.login.title')}
+          </Button>
         </form>
 
         <Link

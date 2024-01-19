@@ -22,12 +22,19 @@ import paymentService from 'app/payment/services/payment.service';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import analyticsService from 'app/analytics/services/analytics.service';
 import SignupForm from './SignupForm';
+import DownloadBackupKey from 'app/auth/views/DownloadBackupKey/DownloadBackupKey';
 
 export interface SignUpProps {
   location: {
     search: string;
   };
   isNewUser: boolean;
+}
+
+type Views = 'signUp' | 'downloadBackupKey';
+
+interface ViewsProps {
+  view: Views;
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
@@ -48,10 +55,12 @@ function SignUp(props: SignUpProps): JSX.Element {
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [view, setView] = useState<Views>('signUp');
 
   const showPreparingWorkspaceAnimation = useMemo(() => autoSubmit.enabled && !showError, [autoSubmit, showError]);
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
+    console.log('onSubmit');
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
     event?.preventDefault();
     setIsLoading(true);
@@ -111,7 +120,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         if (isUniversalLinkMode) {
           return navigationService.push(AppView.UniversalLinkSuccess);
         } else {
-          return navigationService.push(AppView.Drive);
+          setView('downloadBackupKey');
         }
       }
     } catch (err: unknown) {
@@ -124,13 +133,7 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   };
 
-  const getLoginLink = () => {
-    const currentParams = new URLSearchParams(window.location.search);
-
-    return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
-  };
-
-  const View = ({ view }) => {
+  const View = ({ view }: ViewsProps) => {
     const views = {
       signUp: (
         <SignupForm
@@ -141,6 +144,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           showError={showError}
         />
       ),
+      downloadBackupKey: <DownloadBackupKey />,
     };
 
     return views[view];
@@ -162,25 +166,7 @@ function SignUp(props: SignUpProps): JSX.Element {
           <PreparingWorkspaceAnimation />
         ) : (
           <div className="flex flex-col items-start space-y-5">
-            <View view="signUp" />
-            <span className="mt-2 w-full text-xs text-gray-50">
-              {translate('auth.terms1')}{' '}
-              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
-                {translate('auth.terms2')}
-              </a>
-            </span>
-
-            <div className="w-full border-b border-gray-10" />
-
-            <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
-              <span>{translate('auth.signup.haveAccount')}</span>
-              <Link
-                to={getLoginLink()}
-                className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-              >
-                {translate('auth.signup.login')}
-              </Link>
-            </div>
+            <View view={view} />
           </div>
         )}
       </div>

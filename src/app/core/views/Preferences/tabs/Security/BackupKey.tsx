@@ -8,33 +8,34 @@ import Section from '../../components/Section';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
 import { trackBackupKeyDownloaded } from 'app/analytics/services/analytics.service';
 
-export default function BackupKey({ className = '' }: { className?: string }): JSX.Element {
-  const { translate } = useTranslationContext();
+export function handleExport(translate) {
   const trackBackupKeyDownloadedProperties: TrackingPlan.BackupKeyDownloadedProperties = {
     backup_key_downloaded: true,
   };
-  function handleExport() {
-    const mnemonic = localStorageService.get('xMnemonic');
-    if (!mnemonic) {
-      notificationsService.show({
-        text: translate('views.account.tabs.security.backupKey.error'),
-        type: ToastType.Error,
-      });
-    } else {
-      saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
-      notificationsService.show({
-        text: translate('views.account.tabs.security.backupKey.success'),
-        type: ToastType.Success,
-      });
-      trackBackupKeyDownloaded(trackBackupKeyDownloadedProperties);
-    }
+  const mnemonic = localStorageService.get('xMnemonic');
+  if (!mnemonic) {
+    notificationsService.show({
+      text: translate('views.account.tabs.security.backupKey.error'),
+      type: ToastType.Error,
+    });
+  } else {
+    saveAs(new Blob([mnemonic], { type: 'text/plain' }), 'INTERNXT-BACKUP-KEY.txt');
+    notificationsService.show({
+      text: translate('views.account.tabs.security.backupKey.success'),
+      type: ToastType.Success,
+    });
+    trackBackupKeyDownloaded(trackBackupKeyDownloadedProperties);
   }
+}
+
+export default function BackupKey({ className = '' }: { className?: string }): JSX.Element {
+  const { translate } = useTranslationContext();
 
   return (
     <Section className={className} title={translate('views.account.tabs.security.backupKey.title')}>
       <Card>
         <p className="text-gray-60">{translate('views.account.tabs.security.backupKey.description')}</p>
-        <Button onClick={handleExport} className="mt-3">
+        <Button onClick={() => handleExport(translate)} className="mt-3">
           {translate('views.account.tabs.security.backupKey.button')}
         </Button>
       </Card>

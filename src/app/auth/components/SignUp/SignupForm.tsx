@@ -1,9 +1,8 @@
 import { Info, WarningCircle } from '@phosphor-icons/react';
-import Button from '../Button/Button';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
-import { useForm, useWatch } from 'react-hook-form';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import queryString from 'query-string';
 import navigationService from 'app/core/services/navigation.service';
@@ -12,9 +11,11 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
+import Button from 'app/shared/components/Button/Button';
+import { Link } from 'react-router-dom';
 
 interface SignupFormProps {
-  autoSubmit: {
+  autoSubmit?: {
     enabled: boolean;
     credentials?: {
       email: string;
@@ -25,7 +26,7 @@ interface SignupFormProps {
       };
     };
   };
-  onSubmit: (formData: IFormValues) => void;
+  onSubmit: SubmitHandler<IFormValues>;
   showError: boolean;
   signupError?: Error | string;
   isLoading: boolean;
@@ -50,7 +51,7 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
       return qs.email as string;
     }
 
-    if (autoSubmit.enabled && autoSubmit.credentials?.email) {
+    if (autoSubmit && autoSubmit.enabled && autoSubmit.credentials?.email) {
       return autoSubmit.credentials.email;
     }
   };
@@ -65,14 +66,14 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
     mode: 'onChange',
     defaultValues: {
       email: getInitialEmailValue(),
-      password: autoSubmit.enabled && autoSubmit.credentials ? autoSubmit.credentials.password : '',
+      password: autoSubmit && autoSubmit.enabled && autoSubmit.credentials ? autoSubmit.credentials.password : '',
     },
   });
   const password = useWatch({ control, name: 'password', defaultValue: '' });
   const formInputError = Object.values(errors)[0];
 
   useEffect(() => {
-    if (autoSubmit.enabled && autoSubmit.credentials) {
+    if (autoSubmit && autoSubmit.enabled && autoSubmit.credentials) {
       onSubmit(getValues());
     }
   }, []);
@@ -111,6 +112,12 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
   } else if (showError && signupError) {
     bottomInfoError = signupError.toString();
   }
+
+  const getLoginLink = () => {
+    const currentParams = new URLSearchParams(window.location.search);
+
+    return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
+  };
 
   return (
     <>
@@ -167,17 +174,28 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
           </p>
         </div>
 
-        <Button
-          disabled={isLoading || !isValidPassword}
-          text={translate('auth.signup.title')}
-          disabledText={
-            isValid && isValidPassword ? `${translate('auth.signup.encrypting')}...` : translate('auth.signup.title')
-          }
-          loading={isLoading}
-          style="button-primary"
-          className="w-full"
-        />
+        <Button type="submit" variant="primary" loading={isLoading} disabled={isLoading || !isValidPassword}>
+          {translate('auth.signup.title')}
+        </Button>
       </form>
+      <span className="mt-2 w-full text-xs text-gray-50">
+        {translate('auth.terms1')}{' '}
+        <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
+          {translate('auth.terms2')}
+        </a>
+      </span>
+
+      <div className="w-full border-b border-gray-10" />
+
+      <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+        <span>{translate('auth.signup.haveAccount')}</span>
+        <Link
+          to={getLoginLink()}
+          className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+        >
+          {translate('auth.signup.login')}
+        </Link>
+      </div>
     </>
   );
 };
