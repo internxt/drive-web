@@ -260,9 +260,7 @@ export default function LogIn(): JSX.Element {
             variant="primary"
             disabled={isLoggingIn}
           >
-            {isLoggingIn && isValid
-              ? (translate('auth.decrypting') as string)
-              : (translate('auth.login.title') as string)}
+            {isLoggingIn && isValid ? translate('auth.decrypting') : translate('auth.login.title')}
           </Button>
         </form>
 
