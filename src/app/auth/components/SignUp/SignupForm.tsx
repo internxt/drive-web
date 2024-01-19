@@ -58,7 +58,7 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
 
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     control,
     getValues,
@@ -175,7 +175,9 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
         </div>
 
         <Button type="submit" variant="primary" loading={isLoading} disabled={isLoading || !isValidPassword}>
-          {translate('auth.signup.title')}
+          {isLoading && isValid && isValidPassword
+            ? `${translate('auth.signup.encrypting')}...`
+            : translate('auth.signup.title')}
         </Button>
       </form>
       <span className="mt-2 w-full text-xs text-gray-50">
