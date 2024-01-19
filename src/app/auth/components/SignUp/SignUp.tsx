@@ -14,7 +14,6 @@ import { AppView, IFormValues } from 'app/core/types';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { useSignUp } from './useSignUp';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import authService, { getNewToken } from 'app/auth/services/auth.service';
 import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
 import paymentService from 'app/payment/services/payment.service';

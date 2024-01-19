@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { SubmitHandler } from 'react-hook-form';
 import queryString from 'query-string';
-import { auth } from '@internxt/lib';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import { useAppDispatch } from 'app/store/hooks';

@@ -125,7 +125,7 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
 
       <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
         <TextInput
-          placeholder={translate('auth.email') as string}
+          placeholder={translate('auth.email')}
           label="email"
           type="email"
           disabled={hasEmailParam}
