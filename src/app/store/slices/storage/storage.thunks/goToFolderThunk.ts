@@ -19,6 +19,12 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
   return fullPathParsedNamesList;
 };
 
+export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
+  const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(uuid);
+  const fullPathParsedNames = parsePathNames(breadcrumbsList);
+  dispatch(storageActions.setNamePath(fullPathParsedNames));
+};
+
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
   async (path: FolderPath, { getState, dispatch }) => {
@@ -28,6 +34,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
       // no need to go to the same folder
       return;
     }
+
     dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
@@ -43,9 +50,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     dispatch(storageActions.setCurrentPath(path));
 
     if (path.uuid && !isInNamePath) {
-      const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(path.uuid);
-      const fullPathParsedNames = parsePathNames(breadcrumbsList);
-      dispatch(storageActions.setNamePath(fullPathParsedNames));
+      getAncestorsAndSetNamePath(path.uuid, dispatch);
     }
   },
 );

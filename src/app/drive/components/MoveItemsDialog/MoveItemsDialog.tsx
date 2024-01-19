@@ -8,7 +8,7 @@ import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { RootState } from 'app/store';
 import { DriveItemData, FolderPathDialog } from '../../types';
-import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
+import moveItems from '../../../../../src/use_cases/trash/recover-items-from-trash';
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
@@ -20,6 +20,7 @@ import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
 import navigationService from 'app/core/services/navigation.service';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -141,20 +142,15 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = () => {
-    const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
-    dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
+  const setDriveBreadcrumb = async () => {
+    const currentItemUuid = navigationService.getUuid();
 
     if (itemsToMove.length > 1) {
       return;
     }
 
-    driveBreadcrumbPath.forEach((item) => {
-      dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-    });
-
-    if (itemsToMove[0].isFolder) {
-      navigationService.pushFolder(itemsToMove[0].uuid);
+    if (itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid) {
+      await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
     }
   };
 
@@ -169,8 +165,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        // TODO:  change function name or separate logic to prevent confusions between moving and restoring
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
+
+        await moveItems(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
       props.onItemsMoved?.();
