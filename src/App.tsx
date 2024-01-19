@@ -1,4 +1,4 @@
-import { createElement, useEffect, useRef } from 'react';
+import { createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
