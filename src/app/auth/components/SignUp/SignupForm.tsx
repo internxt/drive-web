@@ -58,7 +58,7 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
 
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     control,
     getValues,

@@ -57,7 +57,6 @@ function SignUp(props: SignUpProps): JSX.Element {
   const showPreparingWorkspaceAnimation = useMemo(() => autoSubmit.enabled && !showError, [autoSubmit, showError]);
 
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
-    console.log('onSubmit');
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
     event?.preventDefault();
     setIsLoading(true);
