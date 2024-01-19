@@ -161,7 +161,7 @@
     "files": "Dateien",
     "file": "Datei",
     "folder": "Ordner",
-    "reloadPageMessage": ""
+    "reloadPageMessage": "Änderungen, die Sie vorgenommen haben, wurden möglicherweise nicht gespeichert."
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
