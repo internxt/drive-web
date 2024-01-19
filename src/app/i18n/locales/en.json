@@ -202,7 +202,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Changes you have made may not have been saved."
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",

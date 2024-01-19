@@ -202,7 +202,8 @@
     },
     "files": "*文件",
     "file": "*文件",
-    "folder": "文件夹"
+    "folder": "文件夹",
+    "reloadPageMessage": "你所做的更改可能尚未保存"
   },
   "shareLayout": {
     "title": "INTERNXT",

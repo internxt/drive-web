@@ -186,7 +186,8 @@
     },
     "files": "Archivos",
     "file": "Archivo",
-    "folder": "Carpeta"
+    "folder": "Carpeta",
+    "reloadPageMessage": "Los cambios que realizaste pueden no haberse guardado."
   },
   "shareLayout": {
     "title": "",

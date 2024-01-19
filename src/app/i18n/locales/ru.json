@@ -167,7 +167,8 @@
     },
     "files": "Файлы",
     "file": "файл",
-    "folder": "папка."
+    "folder": "папка.",
+    "reloadPageMessage": "Изменения, которые вы внесли, могут быть не сохранены."
   },
   "shareLayout": {
     "title": "INTERNXT",
