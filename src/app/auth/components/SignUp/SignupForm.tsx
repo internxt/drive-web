@@ -44,13 +44,13 @@ const SignupForm = ({ autoSubmit, onSubmit, showError, signupError, isLoading }:
   let bottomInfoError: null | string = null;
 
   const qs = queryString.parse(navigationService.history.location.search);
-  const hasEmailParam = (qs.email && auth.isValidEmail(qs.email as string)) || false;
+
+  const hasEmailParam = (qs.email && auth.isValidEmail(decodeURIComponent(qs.email as string))) || false;
 
   const getInitialEmailValue = () => {
     if (hasEmailParam) {
-      return qs.email as string;
+      return decodeURIComponent(qs.email as string);
     }
-
     if (autoSubmit && autoSubmit.enabled && autoSubmit.credentials?.email) {
       return autoSubmit.credentials.email;
     }

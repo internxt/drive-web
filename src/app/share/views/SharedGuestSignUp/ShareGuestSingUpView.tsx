@@ -28,13 +28,6 @@ function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
 
   const qs = queryString.parse(navigationService.history.location.search);
-  const hasEmailParam = (qs.email && auth.isValidEmail(decodeURIComponent(qs.email as string))) || false;
-
-  const getInitialEmailValue = () => {
-    if (hasEmailParam) {
-      return decodeURIComponent(qs.email as string);
-    }
-  };
 
   const dispatch = useAppDispatch();
   const [signupError, setSignupError] = useState<Error | string>();

@@ -46,7 +46,7 @@ export default function LogIn(): JSX.Element {
   );
   const {
     register,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     control,
     getValues,
@@ -260,7 +260,9 @@ export default function LogIn(): JSX.Element {
             variant="primary"
             disabled={isLoggingIn}
           >
-            {translate('auth.login.title')}
+            {isLoggingIn && isValid
+              ? (translate('auth.decrypting') as string)
+              : (translate('auth.login.title') as string)}
           </Button>
         </form>
 
