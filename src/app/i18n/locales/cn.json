@@ -716,6 +716,17 @@
           "error": "无法停止分享，请再试一次"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "移至垃圾桶？",
+        "subtitle": "使用链接或邀请的用户将不再访问“{{name}}”",
+        "multipleItemsSubtitle": "使用链接或邀请的用户将不再访问这些共享项目",
+        "cancel": "取消",
+        "confirm": "移至垃圾桶",
+        "notification": {
+          "success": "不再分享\"{{name}}\"",
+          "error": "无法移至垃圾桶，请重试"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "用户 \"{{name}}\" 已删除",

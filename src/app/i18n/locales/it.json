@@ -690,6 +690,17 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Sposta nel cestino?",
+        "subtitle": "Gli utenti con il link o invitati non avranno più accesso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Gli utenti con il link o invitati non avranno più accesso a questi elementi condivisi",
+        "cancel": "Annulla",
+        "confirm": "Sposta nel cestino",
+        "notification": {
+          "success": "Non più condiviso \"{{name}}\"",
+          "error": "Impossibile spostare nel cestino, riprova"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Utente \"{{name}}\" rimosso",

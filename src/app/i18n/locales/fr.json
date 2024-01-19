@@ -644,6 +644,17 @@
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Déplacer vers la corbeille ?",
+        "subtitle": "Les utilisateurs avec le lien ou invités n'auront plus accès à \"{{name}}\"",
+        "multipleItemsSubtitle": "Les utilisateurs avec le lien ou invités n'auront plus accès à ces éléments partagés",
+        "cancel": "Annuler",
+        "confirm": "Déplacer vers la corbeille",
+        "notification": {
+          "success": "Ne partage plus \"{{name}}\"",
+          "error": "Impossible de déplacer vers la corbeille, veuillez réessayer"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Utilisateur \"{{name}}\" supprimé",

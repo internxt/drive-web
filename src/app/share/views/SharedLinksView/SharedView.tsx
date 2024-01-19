@@ -1,14 +1,17 @@
-import dateService from '../../../core/services/date.service';
 import { UploadSimple } from '@phosphor-icons/react';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
+import _ from 'lodash';
+import usersIcon from 'assets/icons/users.svg';
+
+import dateService from '../../../core/services/date.service';
 import List from '../../../shared/components/List';
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import iconService from '../../../drive/services/icon.service';
-import usersIcon from 'assets/icons/users.svg';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import _ from 'lodash';
-import { ListAllSharedFoldersResponse, ListSharedItemsResponse } from '@internxt/sdk/dist/drive/share/types';
 import { DriveFileData, DriveItemData, DriveItemDetails } from '../../../drive/types';
 import localStorageService from '../../../core/services/local-storage.service';
 import sizeService from '../../../drive/services/size.service';
@@ -36,16 +39,20 @@ import NameCollisionContainer from '../../../drive/components/NameCollisionDialo
 import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import { RootState } from '../../../store';
-import { useHistory } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import { connect } from 'react-redux';
 import EmptySharedView from '../../../share/components/EmptySharedView/EmptySharedView';
 import { Helmet } from 'react-helmet-async';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
+import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 
 export const ITEMS_PER_PAGE = 15;
+
+export const MAX_SHARED_NAME_LENGTH = 32;
 
 const removeDuplicates = (list: AdvancedSharedItem[]) => {
   const hash = {};
@@ -81,6 +88,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
   } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const currentUser = localStorageService.getUser();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const history = useHistory();
@@ -89,7 +97,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const folderUUID = urlParams.get('folderuuid');
 
   const itemToRename = useAppSelector((state: RootState) => state.storage.itemToRename);
-  const isFileViewerOpen = useAppSelector((state: RootState) => state.ui.isFileViewerOpen);
 
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreFolders, setHasMoreFolders] = useState<boolean>(true);
@@ -99,7 +106,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedItems, setSelectedItems] = useState<any[]>([]);
   const [shareItems, setShareItems] = useState<AdvancedSharedItem[]>([]);
+  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData>();
+  const [itemToView, setItemToView] = useState<PreviewFileItem>();
+  const [isFileViewerOpen, setIsFileViewerOpen] = useState<boolean>(false);
   const [isEditNameDialogOpen, setIsEditNameDialogOpen] = useState<boolean>(false);
   const [isDeleteDialogModalOpen, setIsDeleteDialogModalOpen] = useState<boolean>(false);
   const [currentResourcesToken, setCurrentResourcesToken] = useState<string>('');
@@ -116,6 +126,51 @@ function SharedView(props: SharedViewProps): JSX.Element {
   const [ownerBucket, setOwnerBucket] = useState<null | string>(null);
   const [ownerEncryptionKey, setOwnerEncryptionKey] = useState<null | string>(null);
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+  const isNotRootFolder = !!sharedNamePath.length;
+  const stopSharingItemName = itemToView ? itemToView.plainName : selectedItems[0]?.plainName;
+
+  const onItemDropped = async (item, monitor: DropTargetMonitor) => {
+    const droppedData: any = monitor.getItem();
+
+    const transformedObject = droppedData.files.reduce((acc, file, index) => {
+      acc[index] = file;
+      return acc;
+    }, {});
+
+    await onUploadFileInputChanged({
+      files: {
+        ...transformedObject,
+        length: droppedData.files.length,
+      },
+    });
+  };
+
+  const [{ isOver, canDrop }, drop] = useDrop(
+    () => ({
+      accept: [NativeTypes.FILE],
+      collect: (monitor) => ({
+        isOver: monitor.isOver(),
+        canDrop: monitor.canDrop(),
+      }),
+      canDrop: (item: any, monitor): boolean => {
+        const droppedType = monitor.getItemType();
+        const canDrop = droppedType === NativeTypes.FILE && isNotRootFolder && !isCurrentUserViewer();
+
+        return canDrop;
+      },
+      drop: onItemDropped,
+    }),
+    [
+      selectedItems,
+      ownerEncryptionKey,
+      filesOwnerCredentials,
+      ownerBucket,
+      currentFolderId,
+      currentResourcesToken,
+      nextResourcesToken,
+      sharedNamePath,
+    ],
+  );
 
   // Set the item to rename from preview view
   useEffect(() => {
@@ -554,29 +609,20 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
-  const removeItemsFromList = () => {
-    const selectedItemsIDs = new Set(selectedItems.map((selectedItem) => selectedItem.id));
+  const removeItemsFromList = (itemsToRemove) => {
+    const selectedItemsIDs = new Set(itemsToRemove.map((selectedItem) => selectedItem.id));
     const newShareList = shareItems.filter((sharedItem) => !selectedItemsIDs.has(sharedItem.id));
 
     setShareItems(newShareList);
   };
 
-  const moveSelectedItemsToTrash = async () => {
-    const itemsToTrash = selectedItems.map((selectedShareItem) => ({
+  const moveSelectedItemsToTrash = async (items) => {
+    const itemsToTrash = items.map((selectedShareItem) => ({
       ...(selectedShareItem as DriveItemData),
       isFolder: selectedShareItem.isFolder,
     }));
 
-    await moveItemsToTrash(itemsToTrash, removeItemsFromList);
-  };
-
-  const moveToTrash = async (shareItem: AdvancedSharedItem) => {
-    const itemToTrash = {
-      ...(shareItem as unknown as DriveItemData),
-      isFolder: shareItem.isFolder,
-    };
-
-    await moveItemsToTrash([itemToTrash], removeItemsFromList);
+    await moveItemsToTrash(itemsToTrash, () => removeItemsFromList(itemsToTrash));
   };
 
   const onUploadFileButtonClicked = (): void => {
@@ -591,8 +637,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
     fileInputRef.current?.click();
   };
 
-  const onUploadFileInputChanged = async (e) => {
-    const files = e.target.files;
+  const onUploadFileInputChanged = async ({ files }: { files: FileList | null }) => {
+    const items = files;
+
     dispatch(
       storageActions.setItems({
         folderId: currentParentFolderId as number,
@@ -600,7 +647,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
       }),
     );
 
-    if (files.length >= 1000 || !currentParentFolderId) {
+    if (!items) return;
+
+    if (items.length >= 1000 || !currentParentFolderId) {
       dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));
       notificationsService.show({
         text: 'The maximum is 1000 files per upload.',
@@ -609,7 +658,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
       return; // Exit the function if the condition fails
     }
 
-    const currentUser = localStorageService.getUser();
     let ownerUserAuthenticationData;
 
     const isSecondLevelOfFoldersOrMore = sharedNamePath.length > 2;
@@ -638,7 +686,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
     await dispatch(
       storageThunks.uploadSharedItemsThunk({
-        files: Array.from(files),
+        files: Array.from(items),
         parentFolderId: currentParentFolderId,
         currentFolderId,
         ownerUserAuthenticationData,
@@ -737,9 +785,8 @@ function SharedView(props: SharedViewProps): JSX.Element {
 
     try {
       const mnemonic = await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : encryptionKey);
-
-      dispatch(uiActions.setFileViewerItem({ ...previewItem, mnemonic }));
-      dispatch(uiActions.setIsFileViewerOpen(true));
+      setItemToView({ ...previewItem, mnemonic });
+      setIsFileViewerOpen(true);
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
@@ -747,13 +794,45 @@ function SharedView(props: SharedViewProps): JSX.Element {
   };
 
   const isItemOwnedByCurrentUser = (userUUid?: string) => {
-    const currentUser = localStorageService.getUser();
-
     if (currentUser?.uuid && (user?.uuid || userUUid)) {
       if (userUUid) return currentUser.uuid === userUUid;
       else return currentUser.uuid == user?.uuid;
     }
     return false;
+  };
+
+  const isItemsOwnedByCurrentUser = () => {
+    if (currentUser?.uuid && selectedItems && selectedItems.length > 1) {
+      const isOwner = selectedItems.some((itemOwner) => {
+        const userUuid = itemOwner.user?.uuid ?? user?.uuid;
+        return currentUser.uuid === userUuid;
+      });
+
+      return isOwner;
+    }
+
+    return false;
+  };
+
+  const onCloseFileViewer = () => {
+    setItemToView(undefined);
+    setIsFileViewerOpen(false);
+  };
+
+  const onOpenStopSharingDialog = () => {
+    setShowStopSharingConfirmation(true);
+  };
+
+  const onCloseStopSharingDialog = () => {
+    setShowStopSharingConfirmation(false);
+  };
+
+  const moveItemsToTrashOnStopSharing = async (items) => {
+    await moveSelectedItemsToTrash(items);
+
+    if (isFileViewerOpen) {
+      onCloseFileViewer();
+    }
   };
 
   const isCurrentUserViewer = useCallback(() => {
@@ -861,7 +940,11 @@ function SharedView(props: SharedViewProps): JSX.Element {
             className="hidden"
             ref={fileInputRef}
             type="file"
-            onChange={(e) => onUploadFileInputChanged(e)}
+            onChange={(e) =>
+              onUploadFileInputChanged({
+                files: e.target.files,
+              })
+            }
             multiple={true}
             data-test="input-file"
           />
@@ -898,7 +981,16 @@ function SharedView(props: SharedViewProps): JSX.Element {
         </div>
       </div>
       <WarningMessageWrapper />
-      <div className="flex h-full w-full flex-col overflow-y-auto">
+      <div className="flex h-full w-full flex-col overflow-y-auto" ref={drop}>
+        {
+          /* DRAG AND DROP */
+          isOver && canDrop && (
+            <div
+              className="drag-over-effect pointer-events-none\
+                    absolute z-50 flex h-full w-full items-end justify-center"
+            ></div>
+          )
+        }
         <List<any, 'updatedAt' | 'createdAt' | 'createdAt' | 'ownerId' | 'fileSize'>
           header={[
             {
@@ -1017,7 +1109,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
               ? contextMenuMultipleSharedViewAFS({
                   deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser() ? moveToTrash : undefined,
+                  moveToTrash: isItemsOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
@@ -1030,7 +1122,9 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   renameItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? onOpenStopSharingDialog
+                    : undefined,
                 })
               : contextMenuDriveItemSharedAFS({
                   openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
@@ -1043,13 +1137,16 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
-                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveToTrash : undefined,
+                  moveToTrash: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
+                    ? onOpenStopSharingDialog
+                    : undefined,
                 })
           }
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: moveSelectedItemsToTrash,
+            onBackspaceKeyPressed: onOpenStopSharingDialog,
             onRKeyPressed: () => {
-              if (selectedItems.length === 1) {
+              const canUserRenameItem = selectedItems.length === 1 && !isCurrentUserViewer() && isNotRootFolder;
+              if (canUserRenameItem) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
                   ...selectedItem,
@@ -1078,6 +1175,23 @@ function SharedView(props: SharedViewProps): JSX.Element {
         onClose={onCloseEditNameItems}
       />
       <NameCollisionContainer />
+      {itemToView && (
+        <FileViewerWrapper
+          file={selectedItems[0] ?? itemToView}
+          showPreview={isFileViewerOpen}
+          onClose={onCloseFileViewer}
+          onShowStopSharingDialog={onOpenStopSharingDialog}
+        />
+      )}
+      <StopSharingAndMoveToTrashDialogWrapper
+        onClose={onCloseStopSharingDialog}
+        selectedItems={itemToView ? [itemToView] : selectedItems}
+        isItemOwnedByCurrentUser={isItemOwnedByCurrentUser}
+        showStopSharingConfirmation={showStopSharingConfirmation}
+        moveItemsToTrash={moveItemsToTrashOnStopSharing}
+        isMultipleItems={selectedItems.length > 1}
+        itemToShareName={stopSharingItemName}
+      />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
       {isShareDialogOpen && <ShareDialog />}
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}

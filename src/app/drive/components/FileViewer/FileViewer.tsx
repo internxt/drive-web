@@ -39,6 +39,7 @@ interface FileViewerProps {
   totalFolderIndex?: number;
   fileIndex?: number;
   dropdownItems?: TopBarActionsMenu;
+  renameItemFromKeyboard?: () => void;
 }
 
 export interface FormatFileViewerProps {
@@ -84,6 +85,7 @@ const FileViewer = ({
   totalFolderIndex,
   fileIndex,
   dropdownItems,
+  renameItemFromKeyboard,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
@@ -172,6 +174,10 @@ const FileViewer = ({
     },
     [fileIndex],
   );
+
+  useHotkeys('r', () => {
+    renameItemFromKeyboard?.();
+  });
 
   const dispatch = useAppDispatch();
 

@@ -40,6 +40,8 @@ import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { Tooltip } from 'react-tooltip';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -79,7 +81,7 @@ const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const cropSharedName = (name: string) => {
-  if (name.length > 32) {
+  if (name.length > MAX_SHARED_NAME_LENGTH) {
     return name.substring(0, 32).concat('...');
   } else {
     return name;
@@ -100,7 +102,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
-  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -722,31 +724,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           />
 
           {/* Stop sharing confirmation dialog */}
-          <Modal
-            maxWidth="max-w-sm"
-            className="space-y-5 p-5"
-            isOpen={showStopSharingConfirmation}
+          <StopSharingItemDialog
+            showStopSharingConfirmation={showStopSharingConfirmation}
             onClose={() => setShowStopSharingConfirmation(false)}
-            preventClosing={showStopSharingConfirmation && isLoading}
-          >
-            <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
-            <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
-            </p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowStopSharingConfirmation(false)}
-                disabled={showStopSharingConfirmation && isLoading}
-              >
-                {translate('modals.shareModal.stopSharing.cancel')}
-              </Button>
-              <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
-                {isLoading && <Spinner className="h-4 w-4" />}
-                <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
-              </Button>
-            </div>
-          </Modal>
+            itemToShareName={itemToShare?.item.name ?? ''}
+            isLoading={isLoading}
+            onStopSharing={onStopSharing}
+          />
         </>
       ),
       invite: (
@@ -865,7 +849,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>

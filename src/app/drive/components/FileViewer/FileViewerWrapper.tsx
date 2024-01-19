@@ -47,9 +47,15 @@ interface FileViewerWrapperProps {
   file: PreviewFileItem;
   onClose: () => void;
   showPreview: boolean;
+  onShowStopSharingDialog?: () => void;
 }
 
-const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProps): JSX.Element => {
+const FileViewerWrapper = ({
+  file,
+  onClose,
+  showPreview,
+  onShowStopSharingDialog,
+}: FileViewerWrapperProps): JSX.Element => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
@@ -97,7 +103,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         renameItem: onRenameItemButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
+        moveToTrash: () => {
+          onMoveToTrashButtonClicked();
+          onClose();
+        },
       });
     } else {
       return contextMenuDriveNotSharedLink({
@@ -107,7 +116,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
         showDetails: onShowDetailsButtonClicked,
         moveItem: onMoveItemButtonClicked,
         downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: onMoveToTrashButtonClicked,
+        moveToTrash: () => {
+          onMoveToTrashButtonClicked();
+          onClose();
+        },
       });
     }
   };
@@ -120,7 +132,10 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       moveItem: onMoveItemButtonClicked,
       showDetails: onShowDetailsButtonClicked,
       downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: onMoveItemButtonClicked,
+      moveToTrash: () => {
+        onMoveToTrashButtonClicked();
+        onClose();
+      },
     });
   };
 
@@ -133,7 +148,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
       moveItem: isOwner ? onMoveItemButtonClicked : undefined,
       downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: isOwner ? onMoveItemButtonClicked : undefined,
+      moveToTrash: isOwner ? onShowStopSharingDialog : undefined,
     });
   };
 
@@ -142,6 +157,12 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       restoreItem: onRestoreItemButtonClicked,
       deletePermanently: onDeletePermanentlyButtonClicked,
     });
+  };
+
+  const renameItemFromKeyboard = () => {
+    if (isSharedView && !isCurrentUserViewer()) {
+      onRenameItemButtonClicked();
+    }
   };
 
   const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
@@ -353,6 +374,7 @@ const FileViewerWrapper = ({ file, onClose, showPreview }: FileViewerWrapperProp
       changeFile={changeFile}
       dropdownItems={topDropdownBarActionsMenu()}
       isShareView={isSharedView}
+      renameItemFromKeyboard={renameItemFromKeyboard}
     />
   ) : (
     <div className="hidden" />
