@@ -1,6 +1,5 @@
 import { useState, useMemo } from 'react';
 import { SubmitHandler } from 'react-hook-form';
-import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import queryString from 'query-string';
@@ -38,8 +37,6 @@ interface ViewsProps {
 }
 
 function SignUp(props: SignUpProps): JSX.Element {
-  const { translate } = useTranslationContext();
-
   const qs = queryString.parse(navigationService.history.location.search);
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
+import { SubmitHandler } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Helmet } from 'react-helmet-async';
@@ -12,11 +12,9 @@ import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
 import { referralsThunks } from 'app/store/slices/referrals';
-import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { getNewToken } from 'app/auth/services/auth.service';
-import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import shareService from 'app/share/services/share.service';
@@ -28,7 +26,6 @@ import SignupForm from 'app/auth/components/SignUp/SignupForm';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
-  const [isValidPassword, setIsValidPassword] = useState(false);
 
   const qs = queryString.parse(navigationService.history.location.search);
   const hasEmailParam = (qs.email && auth.isValidEmail(decodeURIComponent(qs.email as string))) || false;
@@ -39,21 +36,7 @@ function ShareGuestSingUpView(): JSX.Element {
     }
   };
 
-  const {
-    register,
-    formState: { errors, isValid },
-    handleSubmit,
-    control,
-  } = useForm<IFormValues>({
-    mode: 'onChange',
-    defaultValues: {
-      email: getInitialEmailValue(),
-      password: '',
-    },
-  });
-
   const dispatch = useAppDispatch();
-  const password = useWatch({ control, name: 'password', defaultValue: '' });
   const [signupError, setSignupError] = useState<Error | string>();
   const [showError, setShowError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -66,16 +49,6 @@ function ShareGuestSingUpView(): JSX.Element {
     isLoading: true,
     isValid: false,
   });
-
-  const formInputError = Object.values(errors)[0];
-
-  let bottomInfoError: null | string = null;
-
-  if (formInputError?.message) {
-    bottomInfoError = formInputError.message;
-  } else if (showError && signupError) {
-    bottomInfoError = signupError.toString();
-  }
 
   const validateInvitation = async (id: string) => {
     setInvitationValidation((prev) => ({ ...prev, isLoading: true }));

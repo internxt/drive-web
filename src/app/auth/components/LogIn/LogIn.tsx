@@ -46,7 +46,7 @@ export default function LogIn(): JSX.Element {
   );
   const {
     register,
-    formState: { errors, isValid },
+    formState: { errors },
     handleSubmit,
     control,
     getValues,
