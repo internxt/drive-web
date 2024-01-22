@@ -824,8 +824,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
   };
 
   const onCloseStopSharingDialog = () => {
-    setItemToView(undefined);
-
     setShowStopSharingConfirmation(false);
   };
 
