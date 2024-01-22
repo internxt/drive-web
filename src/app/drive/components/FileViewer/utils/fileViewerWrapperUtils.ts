@@ -191,7 +191,7 @@ export function getFileContentManager(currentFile, downloadFile, handleFileThumb
   };
 }
 
-export const useKeyboardShortcuts = ({
+export const useFileViewerKeyboardShortcuts = ({
   sharedKeyboardShortcuts,
   driveItemActions,
   onClose,

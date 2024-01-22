@@ -25,7 +25,11 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { TopDropdownBarActionsMenu, getFileContentManager, useKeyboardShortcuts } from './utils/fileViewerWrapperUtils';
+import {
+  TopDropdownBarActionsMenu,
+  getFileContentManager,
+  useFileViewerKeyboardShortcuts,
+} from './utils/fileViewerWrapperUtils';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -80,7 +84,7 @@ const FileViewerWrapper = ({
     isCurrentUserViewer,
   });
 
-  const { removeItemFromKeyboard, renameItemFromKeyboard } = useKeyboardShortcuts({
+  const { removeItemFromKeyboard, renameItemFromKeyboard } = useFileViewerKeyboardShortcuts({
     sharedKeyboardShortcuts,
     driveItemActions,
     onClose,
