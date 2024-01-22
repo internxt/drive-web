@@ -320,7 +320,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
           ]}
           checkboxDataCy="driveListHeaderCheckbox"
-          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}

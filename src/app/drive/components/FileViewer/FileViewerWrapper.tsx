@@ -1,5 +1,5 @@
 import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { DriveFileData, DriveItemData } from '../../types';
+import { DriveItemData } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 import FileViewer from './FileViewer';
@@ -48,6 +48,10 @@ interface FileViewerWrapperProps {
   onClose: () => void;
   showPreview: boolean;
   onShowStopSharingDialog?: () => void;
+  sharedKeyboardShortcuts?: {
+    removeItemFromKeyboard?: (item: DriveItemData) => void;
+    renameItemFromKeyboard?: (item: DriveItemData) => void;
+  };
 }
 
 const FileViewerWrapper = ({
@@ -55,6 +59,7 @@ const FileViewerWrapper = ({
   onClose,
   showPreview,
   onShowStopSharingDialog,
+  sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
   const isTeam = useAppSelector(sessionSelectors.isTeam);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
@@ -160,8 +165,19 @@ const FileViewerWrapper = ({
   };
 
   const renameItemFromKeyboard = () => {
-    if (isSharedView && !isCurrentUserViewer()) {
+    if (sharedKeyboardShortcuts?.renameItemFromKeyboard) {
+      sharedKeyboardShortcuts.renameItemFromKeyboard(currentFile as DriveItemData);
+    } else {
       onRenameItemButtonClicked();
+    }
+  };
+
+  const removeItemFromKeyboard = () => {
+    if (sharedKeyboardShortcuts?.removeItemFromKeyboard) {
+      sharedKeyboardShortcuts.removeItemFromKeyboard(currentFile as DriveItemData);
+    } else {
+      onMoveToTrashButtonClicked();
+      onClose();
     }
   };
 
@@ -374,7 +390,10 @@ const FileViewerWrapper = ({
       changeFile={changeFile}
       dropdownItems={topDropdownBarActionsMenu()}
       isShareView={isSharedView}
-      renameItemFromKeyboard={renameItemFromKeyboard}
+      keyboardShortcuts={{
+        removeItemFromKeyboard,
+        renameItemFromKeyboard,
+      }}
     />
   ) : (
     <div className="hidden" />
