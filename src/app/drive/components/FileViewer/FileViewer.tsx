@@ -40,8 +40,8 @@ interface FileViewerProps {
   fileIndex?: number;
   dropdownItems?: TopBarActionsMenu;
   keyboardShortcuts?: {
-    renameItemFromKeyboard: () => void;
-    removeItemFromKeyboard: () => void;
+    renameItemFromKeyboard: ((item) => void) | undefined;
+    removeItemFromKeyboard: ((item) => void) | undefined;
   };
 }
 
@@ -179,11 +179,15 @@ const FileViewer = ({
   );
 
   useHotkeys('r', () => {
-    keyboardShortcuts?.renameItemFromKeyboard();
+    if (keyboardShortcuts?.renameItemFromKeyboard) {
+      keyboardShortcuts.renameItemFromKeyboard(file);
+    }
   });
 
   useHotkeys('backspace', () => {
-    keyboardShortcuts?.removeItemFromKeyboard();
+    if (keyboardShortcuts?.removeItemFromKeyboard) {
+      keyboardShortcuts?.removeItemFromKeyboard(file);
+    }
   });
 
   const dispatch = useAppDispatch();

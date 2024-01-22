@@ -25,11 +25,7 @@ import localStorageService from 'app/core/services/local-storage.service';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import {
-  TopDropdownBarActionsMenu,
-  getFileContentManager,
-  useFileViewerShortcuts,
-} from './utils/fileViewerWrapperUtils';
+import { TopDropdownBarActionsMenu, getFileContentManager } from './utils/fileViewerWrapperUtils';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -84,12 +80,22 @@ const FileViewerWrapper = ({
     isCurrentUserViewer,
   });
 
-  const { renameItemFromKeyboard, removeItemFromKeyboard } = useFileViewerShortcuts({
-    currentFile: currentFile as DriveItemData,
-    driveItemActions,
-    sharedKeyboardShortcuts,
-    onClose,
-  });
+  const keyboardShortcuts = () => {
+    if (sharedKeyboardShortcuts) {
+      return {
+        renameItemFromKeyboard: sharedKeyboardShortcuts.renameItemFromKeyboard,
+        removeItemFromKeyboard: sharedKeyboardShortcuts.removeItemFromKeyboard,
+      };
+    }
+
+    return {
+      renameItemFromKeyboard: driveItemActions.onRenameItemButtonClicked,
+      removeItemFromKeyboard: () => {
+        driveItemActions.onMoveToTrashButtonClicked();
+        onClose();
+      },
+    };
+  };
 
   useEffect(() => {
     setBlob(null);
@@ -243,8 +249,8 @@ const FileViewerWrapper = ({
       dropdownItems={topActionsMenu}
       isShareView={isSharedView}
       keyboardShortcuts={{
-        removeItemFromKeyboard,
-        renameItemFromKeyboard,
+        removeItemFromKeyboard: keyboardShortcuts().removeItemFromKeyboard,
+        renameItemFromKeyboard: keyboardShortcuts().renameItemFromKeyboard,
       }}
     />
   ) : (

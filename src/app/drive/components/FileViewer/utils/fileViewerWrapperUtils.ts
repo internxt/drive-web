@@ -17,14 +17,15 @@ import {
 import dateService from 'app/core/services/date.service';
 import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import localStorageService from 'app/core/services/local-storage.service';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
 interface FileViewerShortcuts {
-  renameItemFromKeyboard: () => void;
-  removeItemFromKeyboard: () => void;
+  renameItemFromKeyboard: (item) => void;
+  removeItemFromKeyboard: (item) => void;
 }
 
 export const TopDropdownBarActionsMenu = ({
@@ -193,45 +194,3 @@ export function getFileContentManager(currentFile, downloadFile, handleFileThumb
     },
   };
 }
-
-export const useFileViewerShortcuts = ({
-  currentFile = {} as DriveItemData,
-  onClose,
-  driveItemActions,
-  sharedKeyboardShortcuts,
-}: {
-  currentFile: DriveItemData;
-  onClose: () => void;
-  driveItemActions: {
-    onMoveToTrashButtonClicked: () => void;
-    onRenameItemButtonClicked: () => void;
-  };
-  sharedKeyboardShortcuts?: {
-    renameItemFromKeyboard?: (file: DriveItemData) => void;
-    removeItemFromKeyboard?: (file: DriveItemData) => void;
-  };
-}): FileViewerShortcuts => {
-  const { onMoveToTrashButtonClicked, onRenameItemButtonClicked } = driveItemActions;
-
-  const renameItemFromKeyboard = useCallback(() => {
-    if (sharedKeyboardShortcuts?.renameItemFromKeyboard) {
-      sharedKeyboardShortcuts.renameItemFromKeyboard(currentFile);
-    } else {
-      onRenameItemButtonClicked();
-    }
-  }, [currentFile, sharedKeyboardShortcuts, onRenameItemButtonClicked]);
-
-  const removeItemFromKeyboard = () => {
-    if (sharedKeyboardShortcuts?.removeItemFromKeyboard) {
-      sharedKeyboardShortcuts.removeItemFromKeyboard(currentFile);
-    } else {
-      onMoveToTrashButtonClicked();
-      onClose();
-    }
-  };
-
-  return {
-    renameItemFromKeyboard: renameItemFromKeyboard,
-    removeItemFromKeyboard: removeItemFromKeyboard,
-  };
-};
