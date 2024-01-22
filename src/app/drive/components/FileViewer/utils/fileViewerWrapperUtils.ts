@@ -67,7 +67,6 @@ export const TopDropdownBarActionsMenu = ({
       return contextMenuDriveItemShared({
         copyLink: onCopyLinkButtonClicked,
         openShareAccessSettings: onLinkSettingsButtonClicked,
-        deleteLink: () => ({}),
         showDetails: onShowDetailsButtonClicked,
         renameItem: onRenameItemButtonClicked,
         moveItem: onMoveItemButtonClicked,
@@ -112,7 +111,6 @@ export const TopDropdownBarActionsMenu = ({
     return contextMenuDriveItemSharedAFS({
       openShareAccessSettings: isOwner ? onLinkSettingsButtonClicked : undefined,
       copyLink: onCopyLinkButtonClicked,
-      deleteLink: () => undefined,
       showDetails: onShowDetailsButtonClicked,
       renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
       moveItem: isOwner ? onMoveItemButtonClicked : undefined,

@@ -1107,14 +1107,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
           menu={
             selectedItems.length > 1
               ? contextMenuMultipleSharedViewAFS({
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
                   moveToTrash: isItemsOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
                     ? openShareAccessSettings
                     : undefined,
@@ -1133,7 +1131,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   openPreview: openPreview,
                   showDetails,
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
