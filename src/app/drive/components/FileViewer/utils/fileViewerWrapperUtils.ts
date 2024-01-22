@@ -1,4 +1,3 @@
-import { useCallback } from 'react';
 import {
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
@@ -17,15 +16,14 @@ import {
 import dateService from 'app/core/services/date.service';
 import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import localStorageService from 'app/core/services/local-storage.service';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
 interface FileViewerShortcuts {
-  renameItemFromKeyboard: (item) => void;
-  removeItemFromKeyboard: (item) => void;
+  renameItemFromKeyboard: ((item) => void) | undefined;
+  removeItemFromKeyboard: ((item) => void) | undefined;
 }
 
 export const TopDropdownBarActionsMenu = ({
@@ -194,3 +192,31 @@ export function getFileContentManager(currentFile, downloadFile, handleFileThumb
     },
   };
 }
+
+export const useKeyboardShortcuts = ({
+  sharedKeyboardShortcuts,
+  driveItemActions,
+  onClose,
+}: {
+  sharedKeyboardShortcuts?: {
+    renameItemFromKeyboard?: (item) => void;
+    removeItemFromKeyboard?: (item) => void;
+  };
+  driveItemActions: DriveItemActions;
+  onClose: () => void;
+}): FileViewerShortcuts => {
+  if (sharedKeyboardShortcuts) {
+    return {
+      renameItemFromKeyboard: sharedKeyboardShortcuts.renameItemFromKeyboard,
+      removeItemFromKeyboard: sharedKeyboardShortcuts.removeItemFromKeyboard,
+    };
+  }
+
+  return {
+    renameItemFromKeyboard: driveItemActions.onRenameItemButtonClicked,
+    removeItemFromKeyboard: () => {
+      driveItemActions.onMoveToTrashButtonClicked();
+      onClose();
+    },
+  };
+};
