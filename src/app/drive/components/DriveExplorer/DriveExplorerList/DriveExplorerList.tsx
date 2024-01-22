@@ -429,10 +429,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 })
               : contextMenuDriveNotSharedLink({
                   shareLink: openLinkSettings,
-                  openPreview: () => {
-                    console.log(props.selectedItems[0]);
-                    openPreview(props.selectedItems[0]);
-                  },
+                  openPreview: openPreview,
                   showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
