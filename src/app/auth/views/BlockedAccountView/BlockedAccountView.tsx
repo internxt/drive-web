@@ -12,8 +12,9 @@ import authService from 'app/auth/services/auth.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
+import { ResendButton } from '../../components/ResendButton/ResendButton';
 
-const COUNTDOWN_TIME = 10;
+const COUNTDOWN_TIME = 30;
 
 export default function BlockedAccountView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -80,18 +81,6 @@ export default function BlockedAccountView(): JSX.Element {
     }
   }, [userEmail]);
 
-  const ResendButton = useCallback(
-    () =>
-      enableResendButton ? (
-        <button className="ml-2 cursor-pointer text-primary" onClick={resendAccountUnblockEmail}>
-          {translate('blockedAccount.resend')}
-        </button>
-      ) : (
-        <span className="ml-2 font-medium">&nbsp;{countDown}</span>
-      ),
-    [countDown, enableResendButton, resendAccountUnblockEmail],
-  );
-
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
@@ -128,7 +117,15 @@ export default function BlockedAccountView(): JSX.Element {
           <span className="mb-5 h-px w-72 bg-gray-10"></span>
           <p className="font-regular flex flex-row items-center justify-center text-base text-gray-80">
             {translate('blockedAccount.text3')}
-            {sendingEmail === true ? <Spinner className="ml-2 h-5 w-5 text-primary" /> : ResendButton()}
+            {sendingEmail === true ? (
+              <Spinner className="ml-2 h-5 w-5 text-primary" />
+            ) : (
+              <ResendButton
+                enableButton={enableResendButton}
+                onClick={resendAccountUnblockEmail}
+                countDown={countDown}
+              />
+            )}
           </p>
         </div>
       </div>

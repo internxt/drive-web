@@ -41,7 +41,7 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  if (navigationService.history.location.pathname !== '/blocked-account') {
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount)) {
     navigationService.push(AppView.Login, loginParams);
   }
 }
@@ -158,7 +158,9 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
+      console.log(error, 'hola', error.message, error.status);
       if (error instanceof UserAccessError) {
+        console.log('instance');
         analyticsService.signInAttempted(email, error.message);
       }
       throw error;
