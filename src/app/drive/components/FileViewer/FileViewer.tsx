@@ -149,7 +149,7 @@ const FileViewer = ({
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file && file.type ? String(file.type).toLowerCase() : '');
+    isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];

@@ -4,16 +4,9 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
 import FileViewer from './FileViewer';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
-import downloadService from '../../services/download.service';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import {
-  getDatabaseFileSourceData,
-  getDatabaseFilePreviewData,
-  updateDatabaseFilePreviewData,
-  canFileBeCached,
-  updateDatabaseFileSourceData,
-} from '../../services/database.service';
-import dateService from '../../../core/services/date.service';
+import downloadService from '../../services/download.service';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
 import {
   compareThumbnail,
   getThumbnailFrom,
@@ -29,15 +22,14 @@ import { OrderDirection } from '../../../core/types';
 import { uiActions } from '../../../store/slices/ui';
 import { RootState } from '../../../store';
 import localStorageService from 'app/core/services/local-storage.service';
-import {
-  contextMenuDriveItemShared,
-  contextMenuDriveItemSharedAFS,
-  contextMenuDriveNotSharedLink,
-  contextMenuTrashItems,
-} from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import {
+  TopDropdownBarActionsMenu,
+  getFileContentManager,
+  useFileViewerShortcuts,
+} from './utils/fileViewerWrapperUtils';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -75,119 +67,29 @@ const FileViewerWrapper = ({
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
-  const isRecentsView = pathId === 'recents';
   const isSharedView = pathId === 'shared';
-  const isTrashView = pathId === 'trash';
 
-  const isSharedItem = file.sharings && file.sharings?.length > 0;
-  const isOwner = file.credentials?.user === user?.email;
-
-  const {
-    onDownloadItemButtonClicked,
-    onMoveItemButtonClicked,
-    onCopyLinkButtonClicked,
-    onShowDetailsButtonClicked,
-    onLinkSettingsButtonClicked,
-    onMoveToTrashButtonClicked,
-    onRenameItemButtonClicked,
-    onRestoreItemButtonClicked,
-    onDeletePermanentlyButtonClicked,
-  } = useDriveItemActions(currentFile);
+  const driveItemActions = useDriveItemActions(currentFile);
 
   const isCurrentUserViewer = useCallback(() => {
     return currentUserRole === UserRoles.Reader;
   }, [currentUserRole]);
 
-  const driveActionsMenu = (): ListItemMenu<DriveItemData> => {
-    if (isSharedItem) {
-      return contextMenuDriveItemShared({
-        copyLink: onCopyLinkButtonClicked,
-        openShareAccessSettings: onLinkSettingsButtonClicked,
-        deleteLink: () => ({}),
-        showDetails: onShowDetailsButtonClicked,
-        renameItem: onRenameItemButtonClicked,
-        moveItem: onMoveItemButtonClicked,
-        downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: () => {
-          onMoveToTrashButtonClicked();
-          onClose();
-        },
-      });
-    } else {
-      return contextMenuDriveNotSharedLink({
-        shareLink: onLinkSettingsButtonClicked,
-        getLink: onCopyLinkButtonClicked,
-        renameItem: onRenameItemButtonClicked,
-        showDetails: onShowDetailsButtonClicked,
-        moveItem: onMoveItemButtonClicked,
-        downloadItem: onDownloadItemButtonClicked,
-        moveToTrash: () => {
-          onMoveToTrashButtonClicked();
-          onClose();
-        },
-      });
-    }
-  };
+  const topActionsMenu = TopDropdownBarActionsMenu({
+    currentFile,
+    user,
+    onClose,
+    onShowStopSharingDialog,
+    driveItemActions,
+    isCurrentUserViewer,
+  });
 
-  const recentsActionsMenu = (): ListItemMenu<DriveItemData> => {
-    return contextMenuDriveNotSharedLink({
-      shareLink: onLinkSettingsButtonClicked,
-      getLink: onCopyLinkButtonClicked,
-      renameItem: onRenameItemButtonClicked,
-      moveItem: onMoveItemButtonClicked,
-      showDetails: onShowDetailsButtonClicked,
-      downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: () => {
-        onMoveToTrashButtonClicked();
-        onClose();
-      },
-    });
-  };
-
-  const sharedActionsMenu = (): ListItemMenu<AdvancedSharedItem> => {
-    return contextMenuDriveItemSharedAFS({
-      openShareAccessSettings: isOwner ? onLinkSettingsButtonClicked : undefined,
-      copyLink: onCopyLinkButtonClicked,
-      deleteLink: () => undefined,
-      showDetails: onShowDetailsButtonClicked,
-      renameItem: !isCurrentUserViewer() ? onRenameItemButtonClicked : undefined,
-      moveItem: isOwner ? onMoveItemButtonClicked : undefined,
-      downloadItem: onDownloadItemButtonClicked,
-      moveToTrash: isOwner ? onShowStopSharingDialog : undefined,
-    });
-  };
-
-  const trashActionsMenu = (): ListItemMenu<DriveItemData> => {
-    return contextMenuTrashItems({
-      restoreItem: onRestoreItemButtonClicked,
-      deletePermanently: onDeletePermanentlyButtonClicked,
-    });
-  };
-
-  const renameItemFromKeyboard = () => {
-    if (sharedKeyboardShortcuts?.renameItemFromKeyboard) {
-      sharedKeyboardShortcuts.renameItemFromKeyboard(currentFile as DriveItemData);
-    } else {
-      onRenameItemButtonClicked();
-    }
-  };
-
-  const removeItemFromKeyboard = () => {
-    if (sharedKeyboardShortcuts?.removeItemFromKeyboard) {
-      sharedKeyboardShortcuts.removeItemFromKeyboard(currentFile as DriveItemData);
-    } else {
-      onMoveToTrashButtonClicked();
-      onClose();
-    }
-  };
-
-  const topDropdownBarActionsMenu = (): TopBarActionsMenu => {
-    if (isSharedView) return sharedActionsMenu();
-    if (isRecentsView) return recentsActionsMenu();
-    if (isTrashView) return trashActionsMenu();
-
-    return driveActionsMenu();
-  };
+  const { renameItemFromKeyboard, removeItemFromKeyboard } = useFileViewerShortcuts({
+    currentFile: currentFile as DriveItemData,
+    driveItemActions,
+    sharedKeyboardShortcuts,
+    onClose,
+  });
 
   useEffect(() => {
     setBlob(null);
@@ -302,57 +204,7 @@ const FileViewerWrapper = ({
     }
   };
 
-  function getFileContentManager() {
-    const abortController = new AbortController();
-
-    return {
-      download: async (): Promise<Blob> => {
-        const shouldFileBeCached = canFileBeCached(currentFile);
-
-        const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
-        const isCached = !!fileSource;
-        let fileContent: Blob;
-
-        if (isCached) {
-          const isCacheExpired = !fileSource?.updatedAt
-            ? true
-            : dateService.isDateOneBefore({
-                dateOne: fileSource?.updatedAt,
-                dateTwo: currentFile?.updatedAt,
-              });
-          if (isCacheExpired) {
-            fileContent = await downloadFile(currentFile, abortController);
-            await updateDatabaseFileSourceData({
-              folderId: currentFile.folderId,
-              sourceBlob: fileContent,
-              fileId: currentFile.id,
-              updatedAt: currentFile.updatedAt,
-            });
-          } else {
-            fileContent = fileSource.source as Blob;
-            await handleFileThumbnail(currentFile, fileSource.source as File);
-          }
-        } else {
-          fileContent = await downloadFile(currentFile, abortController);
-          if (shouldFileBeCached) {
-            await updateDatabaseFileSourceData({
-              folderId: currentFile.folderId,
-              sourceBlob: fileContent,
-              fileId: currentFile.id,
-              updatedAt: currentFile.updatedAt,
-            });
-          }
-        }
-
-        return fileContent;
-      },
-      abort: () => {
-        abortController.abort();
-      },
-    };
-  }
-
-  const fileContentManager = getFileContentManager();
+  const fileContentManager = getFileContentManager(currentFile, downloadFile, handleFileThumbnail);
 
   useEffect(() => {
     setBlob(null);
@@ -388,7 +240,7 @@ const FileViewerWrapper = ({
       fileIndex={fileIndex}
       totalFolderIndex={totalFolderIndex}
       changeFile={changeFile}
-      dropdownItems={topDropdownBarActionsMenu()}
+      dropdownItems={topActionsMenu}
       isShareView={isSharedView}
       keyboardShortcuts={{
         removeItemFromKeyboard,
