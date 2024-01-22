@@ -4,6 +4,7 @@ import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import QueryString from 'qs';
 
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
@@ -186,7 +187,10 @@ export default function LogIn(): JSX.Element {
       setShowErrors(true);
       if (castedError.message.includes('Your account has been blocked for security reasons. Please reach out to us')) {
         await sendUnblockAccountEmail(email);
-        navigationService.push(AppView.BlockedAccount, { email: email });
+        navigationService.history.push({
+          pathname: AppView.BlockedAccount,
+          search: QueryString.stringify({ email: email }),
+        });
       }
     } finally {
       setIsLoggingIn(false);
