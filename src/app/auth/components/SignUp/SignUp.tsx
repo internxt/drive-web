@@ -219,91 +219,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
 
-  const View = ({ view }: ViewsProps) => {
-    const views = {
-      signUp: (
-        <div className="flex flex-col items-start space-y-5">
-          <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
-
-          <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
-            <TextInput
-              placeholder={translate('auth.email') as string}
-              label="email"
-              type="email"
-              disabled={hasEmailParam}
-              register={register}
-              required={true}
-              minLength={{ value: 1, message: 'Email must not be empty' }}
-              error={errors.email}
-            />
-
-            <label className="space-y-0.5">
-              <PasswordInput
-                className={passwordState ? passwordState.tag : ''}
-                placeholder={translate('auth.password')}
-                label="password"
-                maxLength={MAX_PASSWORD_LENGTH}
-                register={register}
-                onFocus={() => setShowPasswordIndicator(true)}
-                required={true}
-                error={errors.password}
-              />
-              {showPasswordIndicator && passwordState && (
-                <PasswordStrengthIndicator className="pt-1" strength={passwordState.tag} label={passwordState.label} />
-              )}
-              {bottomInfoError && (
-                <div className="flex flex-row items-start pt-1">
-                  <div className="flex h-5 flex-row items-center">
-                    <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
-                  </div>
-                  <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
-                </div>
-              )}
-            </label>
-
-            <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
-              <Info size={20} className="shrink-0 text-primary" />
-              <p className="text-xs">
-                Internxt doesn't store passwords.{' '}
-                <span className="font-semibold">
-                  In case you forget your password, you will lose access to all your files.
-                </span>
-              </p>
-            </div>
-
-            <Button disabled={isLoading || !isValidPassword} loading={isLoading} variant="primary" className="w-full">
-              {isValid && isValidPassword
-                ? `${translate('auth.signup.encrypting')}...`
-                : translate('auth.signup.title')}
-            </Button>
-          </form>
-
-          <span className="mt-2 w-full text-xs text-gray-50">
-            {translate('auth.terms1')}{' '}
-            <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
-              {translate('auth.terms2')}
-            </a>
-          </span>
-
-          <div className="w-full border-b border-gray-10" />
-
-          <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
-            <span>{translate('auth.signup.haveAccount')}</span>
-            <Link
-              to={getLoginLink()}
-              className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-            >
-              {translate('auth.signup.login')}
-            </Link>
-          </div>
-        </div>
-      ),
-      downloadBackupKey: <DownloadBackupKey />,
-    };
-
-    return views[view];
-  };
-
   return (
     <>
       <Helmet>
@@ -318,9 +233,105 @@ function SignUp(props: SignUpProps): JSX.Element {
       >
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
+        ) : view === 'downloadBackupKey' ? (
+          <DownloadBackupKey />
         ) : (
           <div className="flex flex-col items-start space-y-5">
-            <View view={view} />
+            <div className="flex flex-col items-start space-y-5">
+              <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
+
+              <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+                <TextInput
+                  placeholder={translate('auth.email') as string}
+                  label="email"
+                  type="email"
+                  disabled={hasEmailParam}
+                  register={register}
+                  required={true}
+                  minLength={{ value: 1, message: 'Email must not be empty' }}
+                  error={errors.email}
+                />
+
+                <label className="space-y-0.5">
+                  <PasswordInput
+                    className={passwordState ? passwordState.tag : ''}
+                    placeholder={translate('auth.password')}
+                    label="password"
+                    maxLength={MAX_PASSWORD_LENGTH}
+                    register={register}
+                    onFocus={() => setShowPasswordIndicator(true)}
+                    required={true}
+                    error={errors.password}
+                  />
+                  {showPasswordIndicator && passwordState && (
+                    <PasswordStrengthIndicator
+                      className="pt-1"
+                      strength={passwordState.tag}
+                      label={passwordState.label}
+                    />
+                  )}
+                  {bottomInfoError && (
+                    <div className="flex flex-row items-start pt-1">
+                      <div className="flex h-5 flex-row items-center">
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
+                      </div>
+                      <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
+                    </div>
+                  )}
+                </label>
+
+                <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                  <Info size={20} className="shrink-0 text-primary" />
+                  <p className="text-xs">
+                    {translate('auth.signup.info.normalText')}{' '}
+                    <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
+                    <span className="font-semibold text-primary underline">
+                      <a
+                        href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
+                        target="_blank"
+                      >
+                        {translate('auth.signup.info.cta')}
+                      </a>
+                    </span>
+                  </p>
+                </div>
+
+                <Button
+                  disabled={isLoading || !isValidPassword}
+                  loading={isLoading}
+                  type="submit"
+                  variant="primary"
+                  className="w-full"
+                >
+                  {isLoading && isValid && isValidPassword
+                    ? `${translate('auth.signup.encrypting')}...`
+                    : translate('auth.signup.title')}
+                </Button>
+              </form>
+
+              <span className="mt-2 w-full text-xs text-gray-50">
+                {translate('auth.terms1')}{' '}
+                <a
+                  href="https://internxt.com/legal"
+                  target="_blank"
+                  className="text-xs text-gray-50 hover:text-gray-60"
+                >
+                  {translate('auth.terms2')}
+                </a>
+              </span>
+
+              <div className="w-full border-b border-gray-10" />
+
+              <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+                <span>{translate('auth.signup.haveAccount')}</span>
+                <Link
+                  to={getLoginLink()}
+                  className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+                >
+                  {translate('auth.signup.login')}
+                </Link>
+              </div>
+            </div>
           </div>
         )}
       </div>
