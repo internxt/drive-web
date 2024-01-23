@@ -13,6 +13,7 @@ import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { ResendButton } from '../../components/ResendButton/ResendButton';
+import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 
 const COUNTDOWN_TIME = 30;
 
@@ -69,6 +70,7 @@ export default function BlockedAccountView(): JSX.Element {
     setSendingEmail(true);
     try {
       await authService.requestUnblockAccount(userEmail);
+      trackAccountUnblockEmailSent({ email: userEmail });
       setEnableResendButton(false);
     } catch (error) {
       errorService.reportError(error);

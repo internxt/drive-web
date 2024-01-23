@@ -18,7 +18,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';
-import { AppView, IFormValues } from 'app/core/types';
+import AppError, { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
@@ -27,6 +27,7 @@ import { referralsThunks } from 'app/store/slices/referrals';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -185,8 +186,9 @@ export default function LogIn(): JSX.Element {
 
       setLoginError([castedError.message]);
       setShowErrors(true);
-      if (castedError.message.includes('Your account has been blocked for security reasons. Please reach out to us')) {
+      if ((err as AppError)?.status === 403) {
         await sendUnblockAccountEmail(email);
+        trackAccountUnblockEmailSent({ email });
         navigationService.history.push({
           pathname: AppView.BlockedAccount,
           search: QueryString.stringify({ email: email }),

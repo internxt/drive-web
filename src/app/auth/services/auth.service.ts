@@ -158,11 +158,7 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      console.log(error, 'hola', error.message, error.status);
-      if (error instanceof UserAccessError) {
-        console.log('instance');
-        analyticsService.signInAttempted(email, error.message);
-      }
+      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
