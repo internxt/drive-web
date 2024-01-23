@@ -26,7 +26,7 @@ interface FileViewerShortcuts {
   removeItemFromKeyboard: ((item) => void) | undefined;
 }
 
-export const TopDropdownBarActionsMenu = ({
+const topDropdownBarActionsMenu = ({
   currentFile,
   user,
   onClose,
@@ -141,7 +141,7 @@ export const TopDropdownBarActionsMenu = ({
   return contextMenuActions();
 };
 
-export function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
+function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
   const abortController = new AbortController();
 
   return {
@@ -191,7 +191,7 @@ export function getFileContentManager(currentFile, downloadFile, handleFileThumb
   };
 }
 
-export const useFileViewerKeyboardShortcuts = ({
+const useFileViewerKeyboardShortcuts = ({
   sharedKeyboardShortcuts,
   driveItemActions,
   onClose,
@@ -218,3 +218,5 @@ export const useFileViewerKeyboardShortcuts = ({
     },
   };
 };
+
+export { topDropdownBarActionsMenu, getFileContentManager, useFileViewerKeyboardShortcuts };

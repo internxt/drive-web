@@ -26,7 +26,7 @@ import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { getAppConfig } from 'app/core/services/config.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
-  TopDropdownBarActionsMenu,
+  topDropdownBarActionsMenu,
   getFileContentManager,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
@@ -75,7 +75,7 @@ const FileViewerWrapper = ({
     return currentUserRole === UserRoles.Reader;
   }, [currentUserRole]);
 
-  const topActionsMenu = TopDropdownBarActionsMenu({
+  const topActionsMenu = topDropdownBarActionsMenu({
     currentFile,
     user,
     onClose,
