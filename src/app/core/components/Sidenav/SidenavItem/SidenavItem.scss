@@ -1,16 +1,16 @@
 @layer components {
   a.nav-link.active {
-    @apply text-blue-60;
+    @apply text-primary;
   }
 
   .side-navigator-item {
-    @apply relative cursor-pointer hover:text-blue-60 mb-1;
+    @apply relative cursor-pointer hover:text-primary mb-1;
 
     &.collapsed {
       @apply hover:shadow-b;
 
       a.nav-link.active {
-        @apply bg-neutral-20;
+        @apply bg-gray-5;
 
         &::after {
           content: "";
@@ -19,13 +19,13 @@
           bottom: 12;
           right: 0%;
 
-          @apply absolute bg-blue-60;
+          @apply absolute bg-primary;
         }
       }
     }
   }
 
   a.nav-link {
-    @apply text-neutral-900 no-underline hover:text-blue-60 w-full;
+    @apply text-gray-100 no-underline hover:text-primary w-full;
   }
 }

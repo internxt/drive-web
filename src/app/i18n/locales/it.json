@@ -8,24 +8,25 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "blackFridayBanner": {
+    "header": "Risparmia il 70%!",
+    "title": "Preparati per la Settimana della Privacy dei Dati",
+    "cta": "Scegli un piano",
+    "guarantee": "Garanzia di rimborso entro 30 giorni",
+    "features": {
+      "discount": "Risparmia su piani mensili e annuali",
+      "safeCloud": "Archiviazione cloud sicura e protetta",
+      "openSource": "Open source e trasparente",
+      "endToEnd": "Trasferimenti crittografati end-to-end",
+      "unauthorized": "Nessun accesso non autorizzato",
+      "offerEnds": "L'offerta termina il 29 gennaio"
+    }
+  },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Archiviazione annuale a metà prezzo!",
+    "title": "Risparmia il 50% sulle nostre sottoscrizioni annuali!",
+    "cta": "Scegli il piano",
+    "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
   "notFound": {
     "header": "Error 404",
@@ -57,6 +58,12 @@
     "cn": "简体中文 (Cinese)",
     "ru": "Русский (Russo)",
     "de": "Deutsch (Tedesco)"
+  },
+  "theme": {
+    "title": "Aspetto",
+    "light": "Chiaro",
+    "dark": "Scuro",
+    "system": "Sistema"
   },
   "auth": {
     "email": "Email",
@@ -202,7 +209,7 @@
     "putPwd": "Per accedere, inserisci la password",
     "putPwd1": " fornita dal mittente.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Login"
   },
   "sideNav": {
@@ -307,8 +314,14 @@
               "sendVerification": "Invia verifica",
               "sendingVerification": "Invio verifica",
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
-              "errorSendingVerification": "Errore nell'invio della verifica"
+              "errorSendingVerification": "Errore nell'invio della verifica",
+              "confirm": "Confermare"
             }
+          },
+          "support": {
+            "title": "Supporto",
+            "description": "Naviga tra articoli utili o ottieni assistenza dal nostro team.",
+            "cta": "Apri il Centro di supporto"
           },
           "deleteAccount": {
             "head": "Elimina l'account",
@@ -387,9 +400,9 @@
           },
           "viewAllFeatures": "Visualizza tutte le caratteristiche",
           "card": {
-            "annually": "€{{amount}} fatturato annualmente",
-            "monthly": "€{{amount}} al mese",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} fatturato annualmente",
+            "monthly": "{{amount}} al mese",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Pagamento unico"
           },
           "features": {
@@ -729,6 +742,19 @@
         "change": "Cambia",
         "requestSent": "Richiesta inviata",
         "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La password è richiesta solo per gli utenti senza accesso in lettura o modifica all'elemento condiviso.",
+        "protect": "Proteggi con password",
+        "disablePasswordTitle": "Disabilitare la protezione con password?",
+        "disablePasswordBody": "Quando disabilitato, le persone con il link potranno accedere al contenuto.",
+        "editPasswordTitle": "Modifica password",
+        "buttons": {
+          "cancel": "Annulla",
+          "save": "Salva",
+          "disable": "Disabilita",
+          "changePassword": "Cambia password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1304,6 +1330,16 @@
         "title": "Iniziamo...",
         "description": "Fare clic sul pulsante _____ per caricare il primo file."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Cartella non trovata",
+      "description": "Assicurarsi che l'URL sia corretto e che la cartella non sia stata spostata o eliminata."
+    },
+    "file": {
+      "title": "File non trovato",
+      "description": "Assicuratevi che l'URL sia corretto e che il file non sia stato spostato o cancellato."
     }
   }
 }

@@ -9,6 +9,7 @@ import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { t } from 'i18next';
+import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 
 export function updateMetaData(
   fileId: string,
@@ -94,12 +95,20 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
+export function getFile(uuid: string): Promise<FileMeta> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const [responsePromise] = storageClient.getFile(uuid);
+
+  return responsePromise;
+}
+
 const fileService = {
   updateMetaData,
   moveFile,
   fetchRecents,
   uploadFile,
   fetchDeleted,
+  getFile,
 };
 
 export default fileService;

@@ -5,7 +5,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 import squareLogo from 'assets/icons/square-logo-64.svg';
 import { useEffect, useMemo } from 'react';
 
@@ -38,7 +38,7 @@ export default function UniversalLinkSuccessView(): JSX.Element {
   return (
     <main className="flex h-full w-full flex-col bg-gray-5">
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="120" alt="" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
       <div className="flex flex-1 items-center justify-center">
         <div className="w-96 rounded-lg bg-white px-8 py-10 shadow-soft">

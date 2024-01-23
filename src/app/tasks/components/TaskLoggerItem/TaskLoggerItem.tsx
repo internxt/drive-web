@@ -16,7 +16,7 @@ interface TaskLoggerItemProps {
 }
 
 const taskStatusTextColors = {
-  [TaskStatus.Error]: 'text-red-50',
+  [TaskStatus.Error]: 'text-red',
   [TaskStatus.Success]: 'text-gray-50',
   [TaskStatus.Cancelled]: 'text-gray-50',
 };

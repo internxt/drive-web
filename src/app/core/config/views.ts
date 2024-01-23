@@ -17,6 +17,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -32,9 +33,9 @@ import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
 import SharedView from '../../share/views/SharedLinksView/SharedView';
-import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 
 const views: Array<{
   id: string;
@@ -50,13 +51,13 @@ const views: Array<{
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
-  { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
+  { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
@@ -75,7 +76,9 @@ const views: Array<{
   { id: AppView.ChangeEmail, component: ChangeEmailView },
   { id: AppView.RequestAccess, component: RequestAccess },
   { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
-
+  // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
+  { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.Drive, component: DriveView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

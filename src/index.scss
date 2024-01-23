@@ -1,16 +1,15 @@
+// @tailwind base;
 @tailwind components;
-
-iframe#webpack-dev-server-client-overlay {
-  display: none !important;
-}
+// @tailwind utilities;
 
 @import url('./assets/fonts/InstrumentSans/font.css');
 
+// COLORS
+
+:root,
 #root {
+  background: rgb(var(--color-surface));
   font-family: 'Instrument Sans', sans-serif;
-
-  --footer-height: 1rem;
-
   height: 100%;
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
@@ -18,6 +17,150 @@ iframe#webpack-dev-server-client-overlay {
   -moz-user-select: none; /* Old versions of Firefox */
   -ms-user-select: none; /* Internet Explorer/Edge */
   user-select: none; /* Non-prefixed version, currently supported by Chrome, Edge, Opera and Firefox */
+
+  --footer-height: 1rem;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --color-primary: 0 102 255;
+    --color-primary-dark: 0 88 219;
+    --color-red: 255 13 0;
+    --color-red-dark: 230 11 0;
+    --color-orange: 255 149 0;
+    --color-orange-dark: 230 134 0;
+    --color-yellow: 255 204 0;
+    --color-yellow-dark: 230 184 0;
+    --color-green: 50 195 86;
+    --color-green-dark: 45 174 77;
+    --color-pink: 255 36 76;
+    --color-pink-dark: 235 0 63;
+    --color-indigo: 81 78 212;
+    --color-indigo-dark: 60 58 207;
+    --color-surface: 255 255 255;
+    --color-highlight: 17 17 17;
+    --color-gray-1: 249 249 252;
+    --color-gray-5: 243 243 248;
+    --color-gray-10: 229 229 235;
+    --color-gray-20: 209 209 215;
+    --color-gray-30: 199 199 205;
+    --color-gray-40: 174 174 179;
+    --color-gray-50: 142 142 148;
+    --color-gray-60: 99 99 103;
+    --color-gray-70: 72 72 75;
+    --color-gray-80: 58 58 59;
+    --color-gray-90: 44 44 48;
+    --color-gray-100: 24 24 27;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+
+    --color-primary: 20 114 255;
+    --color-primary-dark: 0 96 240;
+    --color-red: 255 61 51;
+    --color-red-dark: 255 36 26;
+    --color-orange: 255 164 36;
+    --color-orange-dark: 255 153 10;
+    --color-yellow: 255 214 51;
+    --color-yellow-dark: 255 209 26;
+    --color-green: 72 208 106;
+    --color-green-dark: 52 203 90;
+    --color-pink: 255 71 105;
+    --color-pink-dark: 255 15 80;
+    --color-indigo: 106 103 218;
+    --color-indigo-dark: 85 83 213;
+    --color-surface: 17 17 17;
+    --color-highlight: 255 255 255;
+    --color-gray-1: 24 24 27;
+    --color-gray-5: 44 44 48;
+    --color-gray-10: 58 58 59;
+    --color-gray-20: 72 72 75;
+    --color-gray-30: 99 99 103;
+    --color-gray-40: 142 142 148;
+    --color-gray-50: 174 174 179;
+    --color-gray-60: 199 199 205;
+    --color-gray-70: 209 209 215;
+    --color-gray-80: 229 229 235;
+    --color-gray-90: 243 243 248;
+    --color-gray-100: 249 249 252;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-primary: 20 114 255;
+    --color-primary-dark: 0 96 240;
+    --color-red: 255 61 51;
+    --color-red-dark: 255 36 26;
+    --color-orange: 255 164 36;
+    --color-orange-dark: 255 153 10;
+    --color-yellow: 255 214 51;
+    --color-yellow-dark: 255 209 26;
+    --color-green: 72 208 106;
+    --color-green-dark: 52 203 90;
+    --color-pink: 255 71 105;
+    --color-pink-dark: 255 15 80;
+    --color-indigo: 106 103 218;
+    --color-indigo-dark: 85 83 213;
+    --color-surface: 17 17 17;
+    --color-highlight: 255 255 255;
+    --color-gray-1: 24 24 27;
+    --color-gray-5: 44 44 48;
+    --color-gray-10: 58 58 59;
+    --color-gray-20: 72 72 75;
+    --color-gray-30: 99 99 103;
+    --color-gray-40: 142 142 148;
+    --color-gray-50: 174 174 179;
+    --color-gray-60: 199 199 205;
+    --color-gray-70: 209 209 215;
+    --color-gray-80: 229 229 235;
+    --color-gray-90: 243 243 248;
+    --color-gray-100: 249 249 252;
+  }
+
+  :root:not(.dark) {
+    color-scheme: light;
+
+    --color-primary: 0 102 255;
+    --color-primary-dark: 0 88 219;
+    --color-red: 255 13 0;
+    --color-red-dark: 230 11 0;
+    --color-orange: 255 149 0;
+    --color-orange-dark: 230 134 0;
+    --color-yellow: 255 204 0;
+    --color-yellow-dark: 230 184 0;
+    --color-green: 50 195 86;
+    --color-green-dark: 45 174 77;
+    --color-pink: 255 36 76;
+    --color-pink-dark: 235 0 63;
+    --color-indigo: 81 78 212;
+    --color-indigo-dark: 60 58 207;
+    --color-surface: 255 255 255;
+    --color-highlight: 17 17 17;
+    --color-gray-1: 249 249 252;
+    --color-gray-5: 243 243 248;
+    --color-gray-10: 229 229 235;
+    --color-gray-20: 209 209 215;
+    --color-gray-30: 199 199 205;
+    --color-gray-40: 174 174 179;
+    --color-gray-50: 142 142 148;
+    --color-gray-60: 99 99 103;
+    --color-gray-70: 72 72 75;
+    --color-gray-80: 58 58 59;
+    --color-gray-90: 44 44 48;
+    --color-gray-100: 24 24 27;
+  }
+}
+
+// COMPONENTS
+
+iframe#webpack-dev-server-client-overlay {
+  display: none !important;
 }
 
 body {
@@ -35,42 +178,10 @@ code {
 
 /* TAILWIND FALLBACKS */
 
-.will-change {
-  will-change: auto;
-}
-
-.max-w-fit {
-  max-width: fit-content;
-}
-
-.min-w-fit {
-  min-width: fit-content;
-}
-
-.aspect-auto {
-  aspect-ratio: auto;
-}
-
-.aspect-square {
-  aspect-ratio: 1 / 1;
-}
-
 .text-supporting-2 {
   font-size: 10px;
   font-stretch: normal;
   font-style: normal;
-}
-
-.ratio-auto {
-  aspect-ratio: auto;
-}
-
-.ratio-square {
-  aspect-ratio: 1 / 1;
-}
-
-.ratio-video {
-  aspect-ratio: 16 / 9;
 }
 
 @layer components {
@@ -93,47 +204,23 @@ code {
     @apply text-white;
   }
 
-  /* DROPDOWNS */
-  .dropdown-menu {
-    border-radius: 8px;
-    box-shadow: 0 2px 15px 0 rgba(179, 186, 197, 0.5);
-    z-index: 100;
-
-    @apply flex flex-col bg-white py-2;
-  }
-
-  .dropdown-item {
-    min-width: 175px;
-    max-width: 250px;
-
-    @apply flex w-full items-center rounded-1px px-5 py-1 text-base text-neutral-900 no-underline hover:bg-neutral-20 hover:text-neutral-900 active:bg-neutral-30;
-
-    img {
-      height: 14px;
-    }
-  }
-
-  .dropdown-item + .dropdown-item {
-    @apply mt-2;
-  }
-
   /* INPUTS */
   input[type='checkbox']:not(.base-checkbox) {
-    @apply h-4 w-4 rounded border-2 border-neutral-500 text-xs text-neutral-500;
+    @apply h-4 w-4 rounded border-2 border-gray-70 text-xs text-gray-70;
   }
 
   input:not([type]):not(.inxt-input),
   input[type='text']:not(.inxt-input),
   input[type='email']:not(.inxt-input),
   input[type='password']:not(.inxt-input) {
-    @apply rounded-md px-3 py-2 text-base text-neutral-500 placeholder-neutral-60 ring-1 ring-neutral-100 focus:ring-blue-60;
+    @apply rounded-md px-3 py-2 text-base text-gray-70 placeholder-gray-30 ring-1 ring-gray-50 focus:ring-primary;
 
     &:focus {
       outline: none !important;
     }
 
     &.error {
-      @apply bg-white ring-1 ring-1 ring-red-50; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
+      @apply bg-white ring-1 ring-1 ring-red; //border-l-8 border-pink bg-pink bg-opacity-10 ring-pink focus:ring-pink;
     }
 
     &.warning {
@@ -161,7 +248,7 @@ code {
     }
 
     &.no-ring {
-      @apply ring-0 focus:ring-1 focus:ring-blue-60;
+      @apply ring-0 focus:ring-1 focus:ring-primary;
     }
 
     &.no-ring-at-all {
@@ -174,7 +261,7 @@ code {
   }
 
   .input-number {
-    @apply appearance-none border-neutral-60 text-center outline-none;
+    @apply appearance-none border-gray-30 text-center outline-none;
 
     -moz-appearance: textfield;
   }
@@ -207,25 +294,21 @@ code {
 
   button.primary,
   .base-button.primary {
-    @apply bg-blue-60 text-white hover:bg-primary-dark;
-
-    &.inverse {
-      @apply bg-blue-20 text-blue-60 hover:bg-blue-30;
-    }
+    @apply bg-primary text-white hover:bg-primary-dark;
 
     &:disabled {
-      @apply bg-neutral-30 text-neutral-80 hover:bg-neutral-30;
+      @apply bg-gray-5 text-gray-40 hover:bg-gray-5;
     }
   }
 
   button.secondary,
   .base-button.secondary {
-    @apply bg-white text-blue-60 hover:bg-blue-60 hover:text-white;
+    @apply bg-white text-primary hover:bg-primary hover:text-white;
   }
 
   button.dark,
   .base-button.dark {
-    @apply bg-white text-neutral-500 hover:bg-neutral-500 hover:text-white;
+    @apply bg-white text-gray-70 hover:bg-gray-70 hover:text-white;
   }
 
   button.tertiary,
@@ -248,12 +331,12 @@ code {
 
   button.delete-red,
   .base-button.delete-red {
-    @apply bg-red-60 text-white hover:bg-red-dark;
+    @apply bg-red text-white hover:bg-red-dark;
   }
 
   button.cancel,
   .base-button.cancel {
-    @apply bg-opacity-0 text-red-60;
+    @apply bg-opacity-0 text-red;
   }
 
   .base-button.square {
@@ -278,9 +361,9 @@ code {
 
   /* DRAG AND DROP */
   .drag-over-effect {
-    box-shadow: inset 0 0 0 0.15rem var(--color-blue-40);
+    box-shadow: inset 0 0 0 0.15rem var(--color-primary);
 
-    @apply rounded-6px bg-blue-50/30;
+    @apply rounded-md bg-primary/30;
   }
 }
 

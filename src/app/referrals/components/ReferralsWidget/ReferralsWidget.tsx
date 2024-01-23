@@ -58,9 +58,9 @@ const ReferralsWidget = (props: { className?: string }): JSX.Element => {
   return isWidgetHidden || referralsList.length === 0 ? (
     <div className="grow"></div>
   ) : (
-    <div className="flex grow flex-col justify-end">
+    <div className="flex grow flex-col justify-end pt-8">
       <div
-        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle ${
+        className={`flex flex-col overflow-y-hidden rounded-xl border border-gray-10 p-5 shadow-subtle dark:bg-gray-1 ${
           props.className || ''
         }`}
       >

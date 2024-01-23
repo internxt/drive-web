@@ -1605,10 +1605,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@1.4.59":
-  version "1.4.59"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.59/879fe7c663a48083c97cc2d1b8672635b59e9cd6#879fe7c663a48083c97cc2d1b8672635b59e9cd6"
-  integrity sha512-pcbIIQtY1mFd+QJCIpppsKnors6aVHifJq8v2xHha7TORyH4qlNGihSfWo+wzV0JSc2qMO/ty7KLuu4ASQkTkQ==
+"@internxt/sdk@^1.4.63":
+  version "1.4.63"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.63/195d258ea4cb19cd81e6874e1208ad95a7e64611#195d258ea4cb19cd81e6874e1208ad95a7e64611"
+  integrity sha512-WDeS39CJ+pOBR8XCESoQ1+0J9b+6Bn/ZqEQPcx8OQThb+EcJwU5hwmNRiISnGlJioiXUsMJq09BBVxCY5E2g+w==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -10809,6 +10809,11 @@ react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-live-chat-loader@^2.8.2:
+  version "2.8.2"
+  resolved "https://registry.yarnpkg.com/react-live-chat-loader/-/react-live-chat-loader-2.8.2.tgz#f672058ad6c802c66e38bdf44d21091a36b6497c"
+  integrity sha512-rGT9BY6s/S9Xb4y+KWXEdnEgVP+PQHELibIlhOuwYyv7M7zb4SwtrVKJeNwbAyHIL1GXjOO//x245OXFZFwEWA==
 
 react-loading-skeleton@^2.2.0:
   version "2.2.0"

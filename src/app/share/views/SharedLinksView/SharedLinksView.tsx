@@ -283,7 +283,7 @@ export default function SharedLinksView(): JSX.Element {
           }}
         />
       )}
-      <div className="flex h-14 w-full shrink-0 flex-row items-center px-5">
+      <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <p className="text-lg">{translate('shared-links.shared-links')}</p>
         </div>

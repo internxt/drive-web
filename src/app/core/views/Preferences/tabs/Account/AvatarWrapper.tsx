@@ -34,10 +34,12 @@ const AvatarWrapper = memo(
     avatarSrcURL,
     fullName,
     diameter,
+    style,
   }: {
     avatarSrcURL: string | null;
     fullName: string;
     diameter: number;
+    style?: Record<string, string | number>;
   }): JSX.Element => {
     const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
 
@@ -88,7 +90,14 @@ const AvatarWrapper = memo(
       setAvatarBlob(databaseAvatarData.avatarBlob);
     };
 
-    return <Avatar diameter={diameter} fullName={fullName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />;
+    return (
+      <Avatar
+        diameter={diameter}
+        fullName={fullName}
+        src={avatarBlob ? URL.createObjectURL(avatarBlob) : null}
+        style={style}
+      />
+    );
   },
 );
 
