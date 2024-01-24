@@ -144,12 +144,13 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const setDriveBreadcrumb = async () => {
     const currentItemUuid = navigationService.getUuid();
+    const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
 
     if (itemsToMove.length > 1) {
       return;
     }
 
-    if (itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid) {
+    if (shouldUpdateBreadcrumb) {
       await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
     }
   };
