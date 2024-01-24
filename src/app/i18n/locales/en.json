@@ -1370,6 +1370,14 @@
       }
     }
   },
+  "blockedAccount": {
+    "title": "Verify it’s you",
+    "text1": "Too many failed logins were attempted.",
+    "text2": "For security reasons we sent an email to your address {{email}} follow the email steps to confirm it’s you and login",
+    "forgotPassword": "I forgot my password",
+    "text3": "Didn’t received any email?",
+    "resend": "Resend"
+  },
   "itemNotFound": {
     "folder": {
       "title": "Folder not found",

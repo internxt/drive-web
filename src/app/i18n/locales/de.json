@@ -1240,6 +1240,14 @@
       }
     }
   },
+  "blockedAccount": {
+    "title": "Überprüfen Sie, dass Sie es sind",
+    "text1": "Es wurden zu viele fehlgeschlagene Anmeldeversuche unternommen.",
+    "text2": "Aus Sicherheitsgründen haben wir eine E-Mail an Ihre Adresse {{email}} gesendet. Folgen Sie den Schritten in der E-Mail, um zu bestätigen, dass Sie es sind, und sich anzumelden",
+    "forgotPassword": "Ich habe mein Passwort vergessen",
+    "text3": "Haben Sie keine E-Mail erhalten?",
+    "resend": "Erneut senden"
+  },
   "itemNotFound": {
     "folder": {
       "title": "Map niet gevonden",

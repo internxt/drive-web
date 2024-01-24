@@ -1277,6 +1277,14 @@
       }
     }
   },
+  "blockedAccount": {
+    "title": "Vérifier que c'est bien vous",
+    "text1": "Trop d'échecs de connexion ont été tentés",
+    "text2": "Pour des raisons de sécurité, nous avons envoyé un courriel à votre adresse {{email}}, suivez les étapes du courriel pour confirmer qu'il s'agit bien de vous et vous connecter",
+    "forgotPassword": "J'ai oublié mon mot de passe",
+    "text3": "Vous n'avez pas reçu d'e-mail ?",
+    "resend": "Renvoyer"
+  },
   "itemNotFound": {
     "folder": {
       "title": "Dossier non trouvé",

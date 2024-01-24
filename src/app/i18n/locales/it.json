@@ -1324,6 +1324,14 @@
       }
     }
   },
+  "blockedAccount": {
+    "title": "Verifica di essere tu",
+    "text1": "Sono stati tentati troppi login non riusciti",
+    "text2": "Per motivi di sicurezza abbiamo inviato un'e-mail al tuo indirizzo {{email}} segui i passaggi dell'e-mail per confermare che sei tu e accedere",
+    "forgotPassword": "Ho dimenticato la password",
+    "text3": "Non hai ricevuto nessuna email?",
+    "resend": "Reinvia"
+  },
   "itemNotFound": {
     "folder": {
       "title": "Cartella non trovata",
