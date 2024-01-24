@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 import { useAppDispatch } from 'app/store/hooks';
@@ -215,12 +215,10 @@ function ShareGuestSingUpView(): JSX.Element {
           <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}/shared-guest`} />
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
-          <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-            <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
-
+          <form className="flex w-full flex-col space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
             <div className="flex flex-col space-y-3">
               <label className="space-y-0.5">
-                <span>{translate('auth.email')}</span>
                 <TextInput
                   placeholder={translate('auth.email')}
                   label="email"
@@ -234,7 +232,6 @@ function ShareGuestSingUpView(): JSX.Element {
               </label>
 
               <label className="space-y-0.5">
-                <span>{translate('auth.password')}</span>
                 <PasswordInput
                   className={passwordState ? passwordState.tag : ''}
                   placeholder={translate('auth.password')}
@@ -262,6 +259,22 @@ function ShareGuestSingUpView(): JSX.Element {
                 )}
               </label>
 
+              <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                <Info size={20} className="shrink-0 text-primary" />
+                <p className="text-xs">
+                  {translate('auth.signup.info.normalText')}{' '}
+                  <span className="font-semibold">{translate('auth.signup.info.boldText')}</span>{' '}
+                  <span className="font-semibold text-primary underline">
+                    <a
+                      href="https://help.internxt.com/en/articles/8450457-how-do-i-create-a-backup-key"
+                      target="_blank"
+                    >
+                      {translate('auth.signup.info.cta')}
+                    </a>
+                  </span>
+                </p>
+              </div>
+
               <Button
                 disabled={isLoading || !isValidPassword}
                 loading={isLoading}
@@ -274,13 +287,13 @@ function ShareGuestSingUpView(): JSX.Element {
                   : translate('auth.signup.title')}
               </Button>
             </div>
+            <span className="mt-2 w-full text-xs text-gray-50">
+              {translate('auth.terms1')}{' '}
+              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
+                {translate('auth.terms2')}
+              </a>
+            </span>
           </form>
-          <span className="mt-2 w-full text-xs text-gray-50">
-            {translate('auth.terms1')}{' '}
-            <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
-              {translate('auth.terms2')}
-            </a>
-          </span>
         </div>
       </div>
 
