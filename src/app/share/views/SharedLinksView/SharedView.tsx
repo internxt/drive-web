@@ -1024,7 +1024,7 @@ function SharedView(props: SharedViewProps): JSX.Element {
           ]}
           items={shareItems}
           isLoading={isLoading}
-          disableKeyboardShortcuts={disableKeyboardShortcuts}
+          disableKeyboardShortcuts={disableKeyboardShortcuts || showStopSharingConfirmation}
           onClick={(item) => {
             const unselectedDevices = selectedItems.map((deviceSelected) => ({ props: deviceSelected, value: false }));
             onSelectedItemsChanged([...unselectedDevices, { props: item, value: true }]);
@@ -1107,14 +1107,12 @@ function SharedView(props: SharedViewProps): JSX.Element {
           menu={
             selectedItems.length > 1
               ? contextMenuMultipleSharedViewAFS({
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: downloadItem,
                   moveToTrash: isItemsOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
                 })
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderSharedAFS({
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid)
                     ? openShareAccessSettings
                     : undefined,
@@ -1133,7 +1131,6 @@ function SharedView(props: SharedViewProps): JSX.Element {
                   openPreview: openPreview,
                   showDetails,
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   renameItem: !isCurrentUserViewer() ? renameItem : undefined,
                   moveItem: isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid) ? moveItem : undefined,
                   downloadItem: downloadItem,
@@ -1143,9 +1140,20 @@ function SharedView(props: SharedViewProps): JSX.Element {
                 })
           }
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: onOpenStopSharingDialog,
+            onBackspaceKeyPressed: () => {
+              if (selectedItems.length === 1) {
+                isItemOwnedByCurrentUser(selectedItems[0].user?.uuid) && onOpenStopSharingDialog();
+              } else if (selectedItems.length > 1) {
+                isItemsOwnedByCurrentUser() && onOpenStopSharingDialog();
+              }
+            },
             onRKeyPressed: () => {
-              const canUserRenameItem = selectedItems.length === 1 && !isCurrentUserViewer() && isNotRootFolder;
+              const isUserAllowedToRenameItem = isNotRootFolder
+                ? !isCurrentUserViewer()
+                : isItemOwnedByCurrentUser(selectedItems[0]?.user?.uuid);
+
+              const canUserRenameItem = selectedItems.length === 1 && isUserAllowedToRenameItem;
+
               if (canUserRenameItem) {
                 const selectedItem = selectedItems[0];
                 const itemToRename = {
@@ -1181,6 +1189,10 @@ function SharedView(props: SharedViewProps): JSX.Element {
           showPreview={isFileViewerOpen}
           onClose={onCloseFileViewer}
           onShowStopSharingDialog={onOpenStopSharingDialog}
+          sharedKeyboardShortcuts={{
+            renameItemFromKeyboard: !isCurrentUserViewer() ? renameItem : undefined,
+            removeItemFromKeyboard: isItemOwnedByCurrentUser() ? onOpenStopSharingDialog : undefined,
+          }}
         />
       )}
       <StopSharingAndMoveToTrashDialogWrapper

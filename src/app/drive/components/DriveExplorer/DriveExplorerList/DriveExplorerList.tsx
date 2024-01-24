@@ -320,7 +320,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
           ]}
           checkboxDataCy="driveListHeaderCheckbox"
-          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
@@ -391,14 +391,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                       openLinkSettings(item);
                     },
                     showDetails,
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
@@ -411,7 +403,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
-                    deleteLink: () => ({}),
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,

@@ -39,7 +39,10 @@ interface FileViewerProps {
   totalFolderIndex?: number;
   fileIndex?: number;
   dropdownItems?: TopBarActionsMenu;
-  renameItemFromKeyboard?: () => void;
+  keyboardShortcuts?: {
+    renameItemFromKeyboard: ((item) => void) | undefined;
+    removeItemFromKeyboard: ((item) => void) | undefined;
+  };
 }
 
 export interface FormatFileViewerProps {
@@ -85,7 +88,7 @@ const FileViewer = ({
   totalFolderIndex,
   fileIndex,
   dropdownItems,
-  renameItemFromKeyboard,
+  keyboardShortcuts,
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
@@ -146,7 +149,7 @@ const FileViewer = ({
   let fileExtensionGroup: number | null = null;
 
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file && file.type ? String(file.type).toLowerCase() : '');
+    isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
 
     if (isTypeAllowed) {
       fileExtensionGroup = FileExtensionGroup[groupKey];
@@ -176,7 +179,15 @@ const FileViewer = ({
   );
 
   useHotkeys('r', () => {
-    renameItemFromKeyboard?.();
+    if (keyboardShortcuts?.renameItemFromKeyboard) {
+      keyboardShortcuts.renameItemFromKeyboard(file);
+    }
+  });
+
+  useHotkeys('backspace', () => {
+    if (keyboardShortcuts?.removeItemFromKeyboard) {
+      keyboardShortcuts?.removeItemFromKeyboard(file);
+    }
   });
 
   const dispatch = useAppDispatch();
