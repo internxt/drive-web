@@ -52,6 +52,18 @@ export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedPro
   analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
 }
 
+function trackFileUploadPaused(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadPause, properties);
+}
+
+function trackFileUploadResumed(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadResume, properties);
+}
+
+function trackFileUploadRetried(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadRetry, properties);
+}
+
 export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
   analytics.track(TrackingPlan.EventNames.FileDownloadStarted, properties);
 }
@@ -499,6 +511,9 @@ const analyticsService = {
   trackFileUploadCompleted,
   trackFileUploadAborted,
   trackFileUploadError,
+  trackFileUploadPaused,
+  trackFileUploadResumed,
+  trackFileUploadRetried,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,

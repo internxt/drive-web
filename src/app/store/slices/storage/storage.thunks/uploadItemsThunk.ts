@@ -23,6 +23,7 @@ interface UploadItemsThunkOptions {
   showErrors: boolean;
   abortController?: AbortController;
   onSuccess: () => void;
+  isRetriedUpload?: boolean;
 }
 
 interface UploadItemsPayload {

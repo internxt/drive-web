@@ -43,6 +43,7 @@ export async function uploadFile(
   continueUploadOptions: {
     taskId: string;
     isPaused: boolean;
+    isRetriedUpload: boolean;
   },
 ): Promise<DriveFileData> {
   const { bridgeUser, bridgePass, encryptionKey, bucketId } =
@@ -64,6 +65,10 @@ export async function uploadFile(
   try {
     analyticsService.trackFileUploadStarted(trackingUploadProperties);
 
+    if (continueUploadOptions?.isRetriedUpload) {
+      analyticsService.trackFileUploadRetried(trackingUploadProperties);
+    }
+
     if (!bucketId) {
       analyticsService.trackFileUploadError({
         ...trackingUploadProperties,
@@ -79,6 +84,11 @@ export async function uploadFile(
       throw new Error('Bucket not found!');
     }
 
+    const analyticsCallbacks = {
+      pauseUploadCallback: () => analyticsService.trackFileUploadPaused(trackingUploadProperties),
+      resumeUploadCallback: () => analyticsService.trackFileUploadResumed(trackingUploadProperties),
+    };
+
     const [promise, abort] = new Network(bridgeUser, bridgePass, encryptionKey).uploadFile(
       bucketId,
       {
@@ -89,6 +99,7 @@ export async function uploadFile(
         },
       },
       continueUploadOptions,
+      analyticsCallbacks,
     );
 
     options.abortCallback?.(abort?.abort);

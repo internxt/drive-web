@@ -6,6 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
 import { WORKER_MESSAGE_STATES, createUploadWebWorker } from '../../../../WebWorker';
+import { TaskStatus } from '../../../tasks/types';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
 
@@ -80,6 +81,10 @@ export class Network {
     continueUploadOptions: {
       taskId: string;
     },
+    analyticsServiceCallbacks?: {
+      pauseUploadCallback: () => void;
+      resumeUploadCallback: () => void;
+    },
   ): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');
@@ -109,8 +114,11 @@ export class Network {
     return [
       new Promise((resolve, reject) => {
         worker.addEventListener('error', reject);
+        let uploadPaused = false;
+
         worker.addEventListener('message', (msg) => {
           console.log('[MAIN_THREAD]: Message received from worker', msg);
+
           if (msg.data.progress) {
             params.progressCallback(msg.data.progress, msg.data.uploadedBytes, msg.data.totalBytes);
           } else if (msg.data.result === WORKER_MESSAGE_STATES.SUCCESS) {
@@ -125,6 +133,17 @@ export class Network {
             worker.terminate();
           } else if (msg.data.result === WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS) {
             const uploadStatus = localStorageService.getUploadState(continueUploadOptions.taskId);
+            const isPausingUpload = !uploadPaused && uploadStatus?.status === TaskStatus.Paused;
+            const isResumingUpload = uploadPaused && uploadStatus?.status === TaskStatus.InProcess;
+
+            if (isPausingUpload) {
+              analyticsServiceCallbacks?.pauseUploadCallback();
+              uploadPaused = true;
+            } else if (isResumingUpload) {
+              analyticsServiceCallbacks?.resumeUploadCallback();
+              uploadPaused = false;
+            }
+
             worker.postMessage({
               result: WORKER_MESSAGE_STATES.UPLOAD_STATUS,
               uploadStatus: { ...uploadStatus, taskId: continueUploadOptions.taskId },

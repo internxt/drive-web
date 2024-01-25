@@ -64,7 +64,7 @@ function setUploadState(id: string, status?: TaskStatus) {
   return localStorage.setItem(STORAGE_KEYS.UPLOAD_STATES, parsedStates);
 }
 
-function getUploadState(id: string): TaskState {
+function getUploadState(id: string): TaskState | undefined {
   const storageUploadStates = localStorage.getItem(STORAGE_KEYS.UPLOAD_STATES) ?? '{}';
   const uploadStates = JSON.parse(storageUploadStates);
 

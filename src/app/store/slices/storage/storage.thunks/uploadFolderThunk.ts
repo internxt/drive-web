@@ -61,8 +61,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);
 
     let taskId = options?.taskId;
+    const isRetriedUpload = !!taskId;
 
-    if (taskId) {
+    if (isRetriedUpload && taskId) {
       tasksService.updateTask({
         taskId,
         merge: {
@@ -129,6 +130,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
                 showNotifications: false,
                 showErrors: false,
                 abortController: uploadFolderAbortController,
+                isRetriedUpload,
               },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),
