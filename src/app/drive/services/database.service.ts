@@ -8,7 +8,6 @@ import { LRUFilesCacheManager } from '../../database/services/database.service/L
 import { LRUFilesPreviewCacheManager } from '../../database/services/database.service/LRUFilesPreviewCacheManager';
 import { LRUPhotosCacheManager } from '../../database/services/database.service/LRUPhotosCacheManager';
 import { LRUPhotosPreviewsCacheManager } from '../../database/services/database.service/LRUPhotosPreviewCacheManager';
-import { TaskStatus } from '../../tasks/types';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
