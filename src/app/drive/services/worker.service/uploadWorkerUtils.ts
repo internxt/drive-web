@@ -125,7 +125,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
  * @returns {[Promise<string>, Abortable | undefined]} A tuple containing a Promise that resolves to a file ID
  * and an Abortable object for aborting the upload (if applicable).
  */
-const createWorkerPromise = (
+const createWorkerMessageHandlerPromise = (
   worker: Worker,
   params: IUploadParams,
   continueUploadOptions: {
@@ -148,4 +148,4 @@ const createWorkerPromise = (
   ];
 };
 
-export { waitForContiueUploadSignal, createWorkerPromise };
+export { waitForContiueUploadSignal, createWorkerMessageHandlerPromise };

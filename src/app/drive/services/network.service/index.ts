@@ -6,7 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
 import { createUploadWebWorker } from '../../../../WebWorker';
-import { createWorkerPromise } from '../worker.service/uploadWorkerUtils';
+import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
 
@@ -108,7 +108,7 @@ export class Network {
 
     worker.postMessage({ bucketId, params: payload, type: 'upload' });
 
-    return createWorkerPromise(worker, params, continueUploadOptions);
+    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions);
   }
 
   /**
