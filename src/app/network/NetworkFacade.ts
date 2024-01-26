@@ -12,7 +12,7 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { TaskStatus } from '../tasks/types';
-import { waitForContiueUploadSignal } from '../drive/services/worker.service/upload.service';
+import { waitForContiueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
 
 interface UploadOptions {
@@ -115,15 +115,7 @@ export class NetworkFacade {
     );
   }
 
-  uploadMultipart(
-    bucketId: string,
-    mnemonic: string,
-    file: File,
-    options: UploadMultipartOptions,
-    continueUploadOptions?: {
-      taskId: string;
-    },
-  ): Promise<string> {
+  uploadMultipart(bucketId: string, mnemonic: string, file: File, options: UploadMultipartOptions): Promise<string> {
     const partsUploadedBytes: Record<number, number> = {};
 
     function notifyProgress(partId: number, uploadedBytes: number) {
@@ -155,8 +147,8 @@ export class NetworkFacade {
 
       const worker = async (upload: UploadTask) => {
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
-        if (this.isPaused && continueUploadOptions?.taskId) {
-          await waitForContiueUploadSignal(continueUploadOptions?.taskId);
+        if (this.isPaused && options?.continueUploadOptions?.taskId) {
+          await waitForContiueUploadSignal(options.continueUploadOptions.taskId);
         }
 
         const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {

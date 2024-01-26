@@ -1,7 +1,6 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
-import { TaskStatus } from '../../tasks/types';
 
 export const STORAGE_KEYS = {
   SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
@@ -44,41 +43,6 @@ function getIsSignUpTutorialCompleted(): boolean {
   return localStorage.getItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) === 'true';
 }
 
-type TaskState = {
-  status: TaskStatus;
-};
-
-function setUploadState(id: string, status?: TaskStatus) {
-  const storageUploadStates = localStorage.getItem(STORAGE_KEYS.UPLOAD_STATES) ?? '{}';
-  const uploadStates = JSON.parse(storageUploadStates);
-  const uploadState = uploadStates[id];
-
-  const newUploadStates = {
-    ...uploadStates,
-    [id]: {
-      ...uploadState,
-      status: status ?? uploadState?.status,
-    },
-  };
-  const parsedStates = JSON.stringify(newUploadStates);
-  return localStorage.setItem(STORAGE_KEYS.UPLOAD_STATES, parsedStates);
-}
-
-function getUploadState(id: string): TaskState {
-  const storageUploadStates = localStorage.getItem(STORAGE_KEYS.UPLOAD_STATES) ?? '{}';
-  const uploadStates = JSON.parse(storageUploadStates);
-
-  return uploadStates?.[id];
-}
-
-function removeUploadState(id: string) {
-  const storageUploadStates = localStorage.getItem(STORAGE_KEYS.UPLOAD_STATES) ?? '{}';
-  const uploadStates = JSON.parse(storageUploadStates);
-  const { [id]: _, ...rest } = uploadStates;
-  const parsedStates = JSON.stringify(rest);
-  return localStorage.setItem(STORAGE_KEYS.UPLOAD_STATES, parsedStates);
-}
-
 function clear(): void {
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
@@ -105,9 +69,6 @@ const localStorageService = {
   removeItem,
   exists,
   clear,
-  setUploadState,
-  getUploadState,
-  removeUploadState,
 };
 
 export default localStorageService;

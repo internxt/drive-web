@@ -1133,6 +1133,9 @@
     },
     "subtitles": {
       "upload-failed": "Upload failed"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again"
     }
   },
   "success": {

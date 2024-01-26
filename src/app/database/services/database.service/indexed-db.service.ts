@@ -14,9 +14,10 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       }
       if (oldVersion <= 3) {
         db.createObjectStore('account_settings');
+        db.createObjectStore('move_levels');
       }
       if (oldVersion <= 4) {
-        db.createObjectStore('move_levels');
+        db.createObjectStore('upload_item_status');
       }
     },
     blocked: () => undefined,
@@ -27,6 +28,7 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
 
 const indexedDBIsAvailable = async () =>
   !(await browserService.isBrowser({ browser: Browser.Firefox, incognito: true }));
+
 const indexedDBService: DatabaseService = (databaseName, databaseVersion) => ({
   isAvailable: indexedDBIsAvailable,
   put: async (collectionName, key, value) => {

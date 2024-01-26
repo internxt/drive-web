@@ -89,7 +89,6 @@ class TaskManagerService {
       action: task.action,
       status: task.status,
       item: task.file ?? task.folder ?? task.item,
-      folderToUpload: { folder: task?.folderToUpload, parentFolderId: task.parentFolderId },
       fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),

@@ -1107,6 +1107,9 @@
     },
     "subtitles": {
       "upload-failed": "Caricamento fallito"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo"
     }
   },
   "success": {

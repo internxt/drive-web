@@ -131,17 +131,12 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
   params.abortController?.signal.addEventListener('abort', onAbort);
 
   if (useMultipart) {
-    uploadPromise = facade.uploadMultipart(
-      bucketId,
-      params.mnemonic,
-      file,
-      {
-        uploadingCallback: params.progressCallback,
-        abortController: uploadAbortController,
-        parts: Math.ceil(params.filesize / partSize),
-      },
-      params?.continueUploadOptions,
-    );
+    uploadPromise = facade.uploadMultipart(bucketId, params.mnemonic, file, {
+      uploadingCallback: params.progressCallback,
+      abortController: uploadAbortController,
+      parts: Math.ceil(params.filesize / partSize),
+      continueUploadOptions: params?.continueUploadOptions,
+    });
   } else {
     uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,

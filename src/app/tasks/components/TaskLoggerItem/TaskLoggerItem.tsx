@@ -1,15 +1,9 @@
 import { useState } from 'react';
-import { t } from 'i18next';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
 import tasksService from '../../services/tasks.service';
-import { TaskNotification, TaskStatus } from '../../types';
+import { TaskNotification, TaskStatus, TaskType } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
-
-const DOWNLOAD_CANCELLED_TRANSLATION = t('tasks.download-file.status.cancelled');
-const DOWNLOAD_ERROR_TRANSLATION = t('tasks.download-file.status.error');
-const DOWNLOAD_FOLDER_CANCELLED_TRANSLATION = t('tasks.download-folder.status.cancelled');
-const DOWNLOAD_FOLDER_ERROR_TRANSLATION = t('tasks.download-folder.status.error');
 
 interface TaskLoggerItemProps {
   notification: TaskNotification;
@@ -52,10 +46,13 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
 
   const isDownloadError =
     [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status) &&
-    (notification.subtitle.includes(DOWNLOAD_CANCELLED_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_ERROR_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_FOLDER_CANCELLED_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_FOLDER_ERROR_TRANSLATION));
+    (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder);
+
+  const getRetryActionFunction = (isDownload: boolean) => {
+    return isDownload ? retryDownload : retryUpload;
+  };
+
+  const retryFunction = getRetryActionFunction(isDownloadError);
 
   const messageClassName = taskStatusTextColors[notification.status] ?? 'text-primary';
 
@@ -85,7 +82,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           status={notification.status}
           progress={progress.toString()}
           cancelAction={onCancelButtonClicked}
-          retryAction={isDownloadError ? retryDownload : retryUpload}
+          retryAction={retryFunction}
           isUploadTask={isUploadTask}
         />
       </div>

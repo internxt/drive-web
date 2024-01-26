@@ -1047,6 +1047,9 @@
     },
     "subtitles": {
       "upload-failed": "Échec du téléchargement"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau"
     }
   },
   "success": {

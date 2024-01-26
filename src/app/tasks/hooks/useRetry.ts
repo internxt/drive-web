@@ -5,10 +5,12 @@ import {
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
-import { TaskNotification, TaskType } from '../types';
+import { TaskNotification, TaskType, UploadFolderData } from '../types';
 import { createFilesIterator, createFoldersIterator } from '../../drive/services/folder.service';
 import { uploadItemsThunk } from '../../store/slices/storage/storage.thunks/uploadItemsThunk';
-import { IRoot, uploadFolderThunk } from '../../store/slices/storage/storage.thunks/uploadFolderThunk';
+import { uploadFolderThunk } from '../../store/slices/storage/storage.thunks/uploadFolderThunk';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
+import { t } from 'i18next';
 
 interface RetryDownload {
   retryDownload: () => void;
@@ -50,12 +52,14 @@ export const useRetryUpload = (notification: TaskNotification): RetryUpload => {
     const isFolderUpload = action === TaskType.UploadFolder;
 
     if (isFolderUpload) {
-      const folder = notification?.folderToUpload?.folder;
-      const currentFolderId = notification?.folderToUpload?.parentFolderId;
+      const uploadFolderData: UploadFolderData | undefined = notification?.item as UploadFolderData;
+      const folder = uploadFolderData?.folder;
+      const currentFolderId = uploadFolderData?.parentFolderId;
+
       if (folder && currentFolderId)
         dispatch(
           uploadFolderThunk({
-            root: notification?.folderToUpload?.folder as IRoot,
+            root: folder,
             currentFolderId: currentFolderId,
             options: {
               taskId,
@@ -72,6 +76,8 @@ export const useRetryUpload = (notification: TaskNotification): RetryUpload => {
           fileType: notification.fileType,
         }),
       );
+    } else {
+      notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
     }
   }, [notification, dispatch]);
 
