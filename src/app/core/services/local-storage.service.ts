@@ -4,7 +4,6 @@ import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
   SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
-  UPLOAD_STATES: 'uploadStates',
 };
 
 function get(key: string): string | null {
@@ -56,7 +55,6 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
-  localStorage.removeItem(STORAGE_KEYS.UPLOAD_STATES);
 }
 
 const localStorageService = {
