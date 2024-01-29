@@ -65,8 +65,11 @@ const App = (props: AppProps): JSX.Element => {
   const changeLanguage = () => {
     const websiteLanguage = getCookie('LOCALE');
 
-    websiteLanguage && websiteLanguage === 'zh' ? i18next.changeLanguage('cn') : '';
-    websiteLanguage && websiteLanguage != 'zh' ? i18next.changeLanguage(websiteLanguage) : '';
+    if (websiteLanguage && websiteLanguage === 'zh') {
+      i18next.changeLanguage('cn');
+    } else if (websiteLanguage && websiteLanguage != 'zh') {
+      i18next.changeLanguage(websiteLanguage);
+    }
   };
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
