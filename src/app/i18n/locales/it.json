@@ -83,7 +83,9 @@
       "title": "Creare un account",
       "haveAccount": "Hai già un account?",
       "login": "Accedi",
-      "encrypting": "Crittografia in corso"
+      "encrypting": "Crittografia in corso",
+      "info1": "Internxt non memorizza le password.",
+      "info2": "Nel caso in cui dimentichi la password, perdarai l'accesso a tutti tuoi file."
     },
     "forgotPassword": {
       "title": "Recupero dell'account",
