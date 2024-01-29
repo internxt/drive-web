@@ -37,6 +37,8 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
+import i18next from 'i18next';
+import { getCookie } from 'app/analytics/utils';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -55,9 +57,12 @@ const App = (props: AppProps): JSX.Element => {
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const websiteLanguage = getCookie('LOCALE');
 
   useEffect(() => {
     initialState();
+    websiteLanguage && websiteLanguage === 'zh' ? i18next.changeLanguage('cn') : '';
+    websiteLanguage && websiteLanguage != 'zh' ? i18next.changeLanguage(websiteLanguage) : '';
   }, []);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
