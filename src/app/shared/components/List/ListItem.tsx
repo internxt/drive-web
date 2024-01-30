@@ -226,11 +226,11 @@ export default function ListItem<T extends { id: string }>({
               }
             }, [open]);
 
-            const handleRPress = () => {
+            const handleCloseMenu = () => {
               close();
             };
 
-            useHotkeys('r', handleRPress);
+            useHotkeys(['r', 'backspace'], handleCloseMenu);
 
             return (
               <>

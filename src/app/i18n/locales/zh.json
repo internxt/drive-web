@@ -732,6 +732,17 @@
           "error": "无法停止分享，请再试一次"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "移至垃圾桶？",
+        "subtitle": "使用链接或邀请的用户将不再访问“{{name}}”",
+        "multipleItemsSubtitle": "使用链接或邀请的用户将不再访问这些共享项目",
+        "cancel": "取消",
+        "confirm": "移至垃圾桶",
+        "notification": {
+          "success": "不再分享\"{{name}}\"",
+          "error": "无法移至垃圾桶，请重试"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "用户 \"{{name}}\" 已删除",
@@ -1359,6 +1370,14 @@
         "description": "单击上传按钮上传您的第一个文件。"
       }
     }
+  },
+  "blockedAccount": {
+    "title": "确认是你",
+    "text1": "尝试登录失败次数过多",
+    "text2": "出于安全原因 我们向您的地址 {{email}} 发送了一封电子邮件 请按照邮件步骤确认是您并登录",
+    "forgotPassword": "我忘记密码了",
+    "text3": "没有收到任何邮件",
+    "resend": "重新发送"
   },
   "itemNotFound": {
     "folder": {
