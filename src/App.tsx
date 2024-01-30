@@ -27,7 +27,7 @@ import { LRUFilesPreviewCacheManager } from './app/database/services/database.se
 import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import i18next, { t } from 'i18next';
+import { t } from 'i18next';
 import authService from './app/auth/services/auth.service';
 import localStorageService from './app/core/services/local-storage.service';
 import Mobile from './app/drive/views/MobileView/MobileView';
@@ -37,7 +37,7 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
-import { getCookie } from 'app/analytics/utils';
+import { handleWebsiteLanguage } from 'app/i18n/services/translation.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -59,18 +59,8 @@ const App = (props: AppProps): JSX.Element => {
 
   useEffect(() => {
     initialState();
-    changeLanguage();
+    handleWebsiteLanguage();
   }, []);
-
-  const changeLanguage = () => {
-    const websiteLanguage = getCookie('LOCALE');
-
-    if (websiteLanguage && websiteLanguage === 'zh') {
-      i18next.changeLanguage('cn');
-    } else if (websiteLanguage && websiteLanguage != 'zh') {
-      i18next.changeLanguage(websiteLanguage);
-    }
-  };
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
