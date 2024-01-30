@@ -167,6 +167,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   // LISTEN NOTIFICATION STATES
   const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
+  const inProcessNotifications = useTaskManagerGetNotifications({
+    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
+  });
 
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
@@ -176,6 +179,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
     !isSignUpTutorialCompleted &&
@@ -203,7 +207,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
 
-      if (folderId === currentFolderId) {
+      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
