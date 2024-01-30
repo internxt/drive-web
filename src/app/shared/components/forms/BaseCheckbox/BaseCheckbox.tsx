@@ -1,4 +1,5 @@
-import { Check, Minus } from '@phosphor-icons/react';
+import { ReactComponent as Check } from './Check.svg';
+import { ReactComponent as Minus } from './Minus.svg';
 import React from 'react';
 
 interface BaseCheckboxProps {
@@ -34,7 +35,7 @@ const BaseCheckbox = ({
           indeterminate || checked ? 'border-primary bg-primary' : 'border-gray-30 hover:border-gray-40'
         }`}
       >
-        {indeterminate ? <Minus size={16} weight="bold" /> : checked && <Check size={16} weight="bold" />}
+        {indeterminate ? <Minus className="absolute -inset-px" /> : checked && <Check className="absolute -inset-px" />}
       </div>
       <input
         id={id}

@@ -552,22 +552,27 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   ))}
                 </>
               ) : (
-                invitedUsers.map((user, index) => (
-                  <User
-                    user={user}
-                    key={user.email}
-                    listPosition={index}
-                    translate={translate}
-                    openUserOptions={openUserOptions}
-                    selectedUserListIndex={selectedUserListIndex}
-                    userOptionsY={userOptionsY}
-                    onRemoveUser={onRemoveUser}
-                    userOptionsEmail={userOptionsEmail}
-                    onChangeRole={handleUserRoleChange}
-                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                    disableRoleChange={currentUserFolderRole !== 'owner'}
-                  />
-                ))
+                invitedUsers
+                  .sort((a, b) => {
+                    if (a.email === props.user.email && b.email !== props.user.email) return -1;
+                    return 0;
+                  })
+                  .map((user, index) => (
+                    <User
+                      user={user}
+                      key={user.email}
+                      listPosition={index}
+                      translate={translate}
+                      openUserOptions={openUserOptions}
+                      selectedUserListIndex={selectedUserListIndex}
+                      userOptionsY={userOptionsY}
+                      onRemoveUser={onRemoveUser}
+                      userOptionsEmail={userOptionsEmail}
+                      onChangeRole={handleUserRoleChange}
+                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                      disableRoleChange={currentUserFolderRole !== 'owner'}
+                    />
+                  ))
               )}
             </div>
           </div>
@@ -575,7 +580,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="h-px w-full bg-gray-5" />
 
           {accessMode === 'public' && !isLoading && isUserOwner && (
-            <div className="flex items-end justify-between align-middle">
+            <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
                   <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
@@ -583,8 +588,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
                   <Question
-                    size={14}
-                    className="ml-2 flex items-center justify-center font-medium"
+                    size={20}
+                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
                     data-tooltip-id="uploadFolder-tooltip"
                     data-tooltip-place="top"
                   />

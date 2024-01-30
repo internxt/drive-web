@@ -268,8 +268,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
     })
-    .then(() => {
+    .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
+      const { token, newToken } = res as any;
+      if (token) localStorageService.set('xToken', token);
+      if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
       // !TODO: Add the correct analytics event when change password fails

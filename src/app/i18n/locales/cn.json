@@ -3,6 +3,20 @@
     "title": "在应用程序上管理您的文件、帐户和订阅",
     "logOut": "登出"
   },
+  "blackFridayBanner": {
+    "header": "省 70%!",
+    "title": "为数据隐私周做好准备",
+    "cta": "选择计划",
+    "guarantee": "30天退款保证",
+    "features": {
+      "discount": "在月度和年度计划上节省",
+      "safeCloud": "安全可靠的云存储",
+      "openSource": "开源和透明",
+      "endToEnd": "端到端加密传输",
+      "unauthorized": "无未经授权访问",
+      "offerEnds": "优惠截至日期为1月29日"
+    }
+  },
   "valentinesBanner": {
     "title": "爱无极限！",
     "subtitle": "使用代码 VDAY 即可享受2TB的九折套餐",
