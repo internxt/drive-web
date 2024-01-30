@@ -37,7 +37,7 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
-import { handleWebsiteLanguage } from 'app/i18n/services/translation.service';
+import { handleWebsiteLanguage } from 'app/i18n/services/i18n.service';
 
 interface AppProps {
   isAuthenticated: boolean;

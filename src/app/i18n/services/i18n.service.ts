@@ -9,6 +9,7 @@ import cn from 'dayjs/locale/zh-cn';
 import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
 import dayjs from 'dayjs';
+import { getCookie } from 'app/analytics/utils';
 
 const dayJsLocale = {
   es,
@@ -23,7 +24,7 @@ const deviceLang = localStorageService.get('language') || navigator.language.spl
 
 dayjs.locale(dayJsLocale[deviceLang] || 'en');
 
-i18next
+export default i18next
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources: {
@@ -63,4 +64,12 @@ i18next
     },
   });
 
-export default i18next;
+export const handleWebsiteLanguage = () => {
+  const websiteLanguage = getCookie('LOCALE');
+
+  if (websiteLanguage && websiteLanguage === 'zh') {
+    i18next.changeLanguage('cn');
+  } else if (websiteLanguage && websiteLanguage != 'zh') {
+    i18next.changeLanguage(websiteLanguage);
+  }
+};
