@@ -37,6 +37,7 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
+import { handleWebsiteLanguage } from 'app/i18n/services/i18n.service';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -58,6 +59,7 @@ const App = (props: AppProps): JSX.Element => {
 
   useEffect(() => {
     initialState();
+    handleWebsiteLanguage();
   }, []);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {

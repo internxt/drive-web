@@ -83,7 +83,9 @@
       "title": "创建账户",
       "haveAccount": "已有账户？",
       "login": "登录",
-      "encrypting": "加密中"
+      "encrypting": "加密中",
+      "info1": "Internxt 不存储密码",
+      "info2": "如果忘记密码，您将无法访问所有文件"
     },
     "forgotPassword": {
       "title": "账户恢复",
