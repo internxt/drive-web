@@ -9,10 +9,12 @@ import it from 'dayjs/locale/it';
 import zh from 'dayjs/locale/zh-cn';
 import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
+import en from 'dayjs/locale/en';
 import dayjs from 'dayjs';
 
 const dayJsLocale = {
   es,
+  en,
   fr,
   it,
   zh,
