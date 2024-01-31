@@ -93,8 +93,8 @@ export interface UploadFolderTask extends BaseTask {
   action: TaskType.UploadFolder;
   cancellable: true;
   folderName: string;
-  item?: IRoot;
-  parentFolderId?: number;
+  item: IRoot;
+  parentFolderId: number;
 }
 
 export interface MoveFileTask extends BaseTask {

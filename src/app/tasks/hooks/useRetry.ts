@@ -50,6 +50,7 @@ export const useRetryUpload = ({
 }: RetryUploadArgs): RetryUpload => {
   const retryUpload = useCallback(() => {
     const { item, taskId, action } = notification;
+
     const isFolderUpload = action === TaskType.UploadFolder;
 
     if (isFolderUpload) {
@@ -57,12 +58,15 @@ export const useRetryUpload = ({
       const folder = uploadFolderData?.folder;
       const currentFolderId = uploadFolderData?.parentFolderId;
 
-      if (folder && currentFolderId)
+      if (folder && currentFolderId) {
         uploadFolder({
           folder,
           parentFolderId: currentFolderId,
           taskId,
         });
+      } else {
+        showErrorNotification();
+      }
     } else if (item && taskId) {
       const uploadItemData = item as { uploadFile: File; parentFolderId: number };
       uploadItem({
