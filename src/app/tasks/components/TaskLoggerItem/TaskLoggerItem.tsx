@@ -4,6 +4,9 @@ import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus, TaskType } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { t } from 'i18next';
+import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 
 interface TaskLoggerItemProps {
   notification: TaskNotification;
@@ -26,8 +29,21 @@ const ProgressBar = ({ progress, isPaused }) => {
 
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
-  const { retryDownload } = useRetryDownload(notification);
-  const { retryUpload } = useRetryUpload(notification);
+
+  const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem } = useReduxActions();
+  const { retryDownload } = useRetryDownload({
+    notification,
+    downloadItemsAsZip,
+    downloadItems,
+  });
+  const { retryUpload } = useRetryUpload({
+    notification,
+    uploadFolder,
+    uploadItem,
+    showErrorNotification() {
+      notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
+    },
+  });
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
   const notExistProgress = notification.progress && notification.progress === Infinity;
