@@ -55,7 +55,7 @@ export default i18next
     },
     debug: !envService.isProduction(),
     fallbackLng: 'en',
-    lng: deviceLang,
+    // lng: deviceLang,
     detection: {
       order: ['querystring', 'cookie', 'navigator', 'localStorage'],
       caches: ['localStorage'],
