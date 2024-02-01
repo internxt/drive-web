@@ -272,7 +272,7 @@
   ],
   "database": {
     "name": "app-database",
-    "version": 4,
+    "version": 5,
     "provider": "indexed-db"
   }
 }

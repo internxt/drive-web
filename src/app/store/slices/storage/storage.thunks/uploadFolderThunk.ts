@@ -75,7 +75,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       taskId = tasksService.create<UploadFolderTask>({
         action: TaskType.UploadFolder,
         folderName: renamedRoot.name,
-        folderToUpload: root,
+        item: root,
         parentFolderId: currentFolderId,
         showNotification: !!options.withNotification,
         cancellable: true,
@@ -251,7 +251,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       taskId = tasksService.create<UploadFolderTask>({
         action: TaskType.UploadFolder,
         folderName: root.name,
-        folderToUpload: root,
+        item: root,
         parentFolderId: currentFolderId,
         showNotification: !!options.withNotification,
         cancellable: true,

@@ -9,7 +9,7 @@ import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
 import { HTTP_CODES } from '../core/services/http.service';
-import localStorageService from '../core/services/local-storage.service';
+import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -42,13 +42,14 @@ type UploadManagerFileParams = {
   fileType?: string;
   userEmail: string;
   parentFolderId: number;
-  onFinishUploadFile?: (driveItemData: DriveFileData) => void;
+  onFinishUploadFile?: (driveItemData: DriveFileData, taskId: string) => void;
   abortController?: AbortController;
 };
 
 export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
   maxSpaceOccupiedCallback: () => void,
+  uploadRepository: PersistUploadRepository,
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
@@ -56,6 +57,7 @@ export const uploadFileWithManager = (
   const uploadManager = new UploadManager(
     files,
     maxSpaceOccupiedCallback,
+    uploadRepository,
     abortController,
     options,
     relatedTaskProgress,
@@ -115,11 +117,12 @@ class UploadManager {
       });
 
       const existsRelatedTask = !!this.options?.relatedTaskId;
-      if (!existsRelatedTask) localStorageService.setUploadState(taskId, TaskStatus.InProcess);
+
+      if (!existsRelatedTask) this.uploadRepository?.setUploadState(taskId, TaskStatus.InProcess);
 
       const retyUploadType = fileData.fileType;
 
-      const upload = () => {
+      const upload = async () => {
         uploadAttempts++;
         const isMultipleUpload = this.items.length > 1 ? 1 : 0;
 
@@ -131,8 +134,8 @@ class UploadManager {
             },
           });
 
-        const uploadStatus = localStorageService.getUploadState(this.options?.relatedTaskId ?? taskId);
-        const isPaused = uploadStatus?.status === TaskStatus.Paused;
+        const uploadStatus = this.uploadRepository?.getUploadState(this.options?.relatedTaskId ?? taskId);
+        const isPaused = (await uploadStatus) === TaskStatus.Paused;
         const continueUploadOptions = {
           taskId: this.options?.relatedTaskId ?? taskId,
           isPaused,
@@ -199,9 +202,7 @@ class UploadManager {
               merge: { status: TaskStatus.Success, itemUUID: { fileUUID: driveFileData.uuid } },
             });
 
-            localStorageService.removeUploadState(taskId);
-
-            fileData.onFinishUploadFile?.(driveFileDataWithNameParsed);
+            fileData.onFinishUploadFile?.(driveFileDataWithNameParsed, taskId);
 
             errorService.addBreadcrumb({
               level: 'info',
@@ -299,10 +300,12 @@ class UploadManager {
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private uploadUUIDV4: string;
   private maxSpaceOccupiedCallback: () => void;
+  private uploadRepository?: PersistUploadRepository;
 
   constructor(
     items: UploadManagerFileParams[],
     maxSpaceOccupiedCallback: () => void,
+    uploadRepository?: PersistUploadRepository,
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
@@ -313,6 +316,7 @@ class UploadManager {
     this.relatedTaskProgress = relatedTaskProgress;
     this.uploadUUIDV4 = analyticsService.getTrackingActionId();
     this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
+    this.uploadRepository = uploadRepository;
   }
 
   private classifyFilesBySize(
