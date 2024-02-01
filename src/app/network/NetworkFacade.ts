@@ -12,7 +12,7 @@ import { buildProgressStream } from 'app/core/services/stream.service';
 import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
 import { TaskStatus } from '../tasks/types';
-import { waitForContiueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
 
 interface UploadOptions {
@@ -97,7 +97,7 @@ export class NetworkFacade {
 
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
         if (isPaused && options?.continueUploadOptions?.taskId)
-          await waitForContiueUploadSignal(options?.continueUploadOptions?.taskId);
+          await waitForContinueUploadSignal(options?.continueUploadOptions?.taskId);
 
         await uploadFileBlob(fileToUpload, fetchUrl, {
           progressCallback: options.uploadingCallback,
@@ -148,7 +148,7 @@ export class NetworkFacade {
       const worker = async (upload: UploadTask) => {
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
         if (this.isPaused && options?.continueUploadOptions?.taskId) {
-          await waitForContiueUploadSignal(options.continueUploadOptions.taskId);
+          await waitForContinueUploadSignal(options.continueUploadOptions.taskId);
         }
 
         const { etag } = await uploadFileBlob(upload.contentToUpload, upload.urlToUpload, {

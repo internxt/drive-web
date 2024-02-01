@@ -45,7 +45,7 @@ const checkProgress = async (taskId: string, resolve: (value: void | PromiseLike
  *
  * @returns {Promise<void>} - A promise that resolves once the upload continuation signal is received.
  */
-async function waitForContiueUploadSignal(taskId: string): Promise<void> {
+function waitForContinueUploadSignal(taskId: string): Promise<void> {
   return new Promise((resolve) => {
     checkProgress(taskId, resolve);
   });
@@ -148,4 +148,4 @@ const createWorkerMessageHandlerPromise = (
   ];
 };
 
-export { waitForContiueUploadSignal, createWorkerMessageHandlerPromise };
+export { waitForContinueUploadSignal, createWorkerMessageHandlerPromise };

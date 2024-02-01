@@ -1049,7 +1049,8 @@
       "upload-failed": "Échec du téléchargement"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau"
+      "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau",
+      "retryDownloadFailed": "Quelque chose s'est mal passé lors de la nouvelle tentative de téléchargement. Veuillez réessayer le téléchargement."
     }
   },
   "success": {

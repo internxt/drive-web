@@ -29,8 +29,8 @@ class DatabaseUploadRepository implements PersistUploadRepository {
     await this.db.put(DatabaseCollection.UploadItemStatus, id, status);
   }
 
-  async getUploadState(id: string): Promise<TaskStatus | undefined> {
-    return await this.db.get(DatabaseCollection.UploadItemStatus, id);
+  getUploadState(id: string): Promise<TaskStatus | undefined> {
+    return this.db.get(DatabaseCollection.UploadItemStatus, id);
   }
 
   async removeUploadState(id: string): Promise<void> {

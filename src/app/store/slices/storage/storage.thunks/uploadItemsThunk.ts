@@ -151,7 +151,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -308,7 +308,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -402,7 +402,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -496,7 +496,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
       throw new Error(t('error.uploadingItems') as string);
@@ -581,7 +581,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
       throw new Error(t('error.uploadingItems') as string);

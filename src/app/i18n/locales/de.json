@@ -1027,7 +1027,8 @@
       "upload-failed": "Upload fehlgeschlagen"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut"
+      "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
+      "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut."
     }
   },
   "success": {

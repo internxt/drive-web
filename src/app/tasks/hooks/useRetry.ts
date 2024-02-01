@@ -10,12 +10,14 @@ type RetryDownloadArgs = {
   notification: TaskNotification;
   downloadItemsAsZip: (items: DriveItemData[], existingTaskId: string) => void;
   downloadItems: (item: DriveItemData, existingTaskId: string) => void;
+  showErrorNotification: () => void;
 };
 
 export const useRetryDownload = ({
   notification,
   downloadItemsAsZip,
   downloadItems,
+  showErrorNotification,
 }: RetryDownloadArgs): RetryDownload => {
   const retryDownload = useCallback(() => {
     const { item, taskId } = notification;
@@ -25,6 +27,8 @@ export const useRetryDownload = ({
       downloadItemsAsZip(item.items as DriveItemData[], taskId);
     } else if (item && taskId) {
       downloadItems(item as DriveItemData, taskId);
+    } else {
+      showErrorNotification();
     }
   }, [notification]);
 

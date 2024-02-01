@@ -1134,7 +1134,8 @@
       "upload-failed": "上传失败"
     },
     "generalErrorMessages": {
-      "retryUploadFailed": "重试上传时出了问题。请再次上传"
+      "retryUploadFailed": "重试上传时出了问题。请再次上传",
+      "retryDownloadFailed": "重试下载时出现问题。请重试下载"
     }
   },
   "success": {

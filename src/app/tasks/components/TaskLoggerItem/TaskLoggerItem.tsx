@@ -35,6 +35,9 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
     notification,
     downloadItemsAsZip,
     downloadItems,
+    showErrorNotification() {
+      notificationsService.show({ text: t('tasks.generalErrorMessages.retryDownloadFailed'), type: ToastType.Error });
+    },
   });
   const { retryUpload } = useRetryUpload({
     notification,
