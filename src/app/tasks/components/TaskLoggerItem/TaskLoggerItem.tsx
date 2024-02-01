@@ -1,15 +1,12 @@
 import { useState } from 'react';
-import { t } from 'i18next';
-import { useRetryDownload } from '../../hooks/useRetryDownload';
+import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
 import tasksService from '../../services/tasks.service';
-import { TaskNotification, TaskStatus } from '../../types';
+import { TaskNotification, TaskStatus, TaskType } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
-
-const DOWNLOAD_CANCELLED_TRANSLATION = t('tasks.download-file.status.cancelled');
-const DOWNLOAD_ERROR_TRANSLATION = t('tasks.download-file.status.error');
-const DOWNLOAD_FOLDER_CANCELLED_TRANSLATION = t('tasks.download-folder.status.cancelled');
-const DOWNLOAD_FOLDER_ERROR_TRANSLATION = t('tasks.download-folder.status.error');
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { t } from 'i18next';
+import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 
 interface TaskLoggerItemProps {
   notification: TaskNotification;
@@ -32,7 +29,24 @@ const ProgressBar = ({ progress, isPaused }) => {
 
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
-  const { retryDownload } = useRetryDownload(notification);
+
+  const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem } = useReduxActions();
+  const { retryDownload } = useRetryDownload({
+    notification,
+    downloadItemsAsZip,
+    downloadItems,
+    showErrorNotification() {
+      notificationsService.show({ text: t('tasks.generalErrorMessages.retryDownloadFailed'), type: ToastType.Error });
+    },
+  });
+  const { retryUpload } = useRetryUpload({
+    notification,
+    uploadFolder,
+    uploadItem,
+    showErrorNotification() {
+      notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
+    },
+  });
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
   const notExistProgress = notification.progress && notification.progress === Infinity;
@@ -51,10 +65,13 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
 
   const isDownloadError =
     [TaskStatus.Error, TaskStatus.Cancelled].includes(notification.status) &&
-    (notification.subtitle.includes(DOWNLOAD_CANCELLED_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_ERROR_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_FOLDER_CANCELLED_TRANSLATION) ||
-      notification.subtitle.includes(DOWNLOAD_FOLDER_ERROR_TRANSLATION));
+    (notification.action === TaskType.DownloadFile || notification.action === TaskType.DownloadFolder);
+
+  const getRetryActionFunction = (isDownload: boolean) => {
+    return isDownload ? retryDownload : retryUpload;
+  };
+
+  const retryFunction = getRetryActionFunction(isDownloadError);
 
   const messageClassName = taskStatusTextColors[notification.status] ?? 'text-primary';
 
@@ -72,17 +89,19 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
         onMouseLeave={handleMouseLeave}
       >
         <notification.icon className="h-8 w-8 drop-shadow-sm" />
-        <div className="flex flex-1 flex-col overflow-hidden text-left" title={notification.title}>
-          <span className="truncate text-sm font-medium text-gray-80">{notification.title}</span>
-
+        <div className="flex flex-1 flex-col overflow-hidden text-left">
+          <span className="truncate text-sm font-medium text-gray-80" title={notification.title}>
+            {notification.title}
+          </span>
           <span className={`text-sm ${messageClassName}`}>{notification.subtitle}</span>
         </div>
         <TaskLoggerActions
+          taskId={notification.taskId}
           isHovered={isHovered}
           status={notification.status}
           progress={progress.toString()}
           cancelAction={onCancelButtonClicked}
-          retryAction={isDownloadError ? retryDownload : () => {}}
+          retryAction={retryFunction}
           isUploadTask={isUploadTask}
         />
       </div>

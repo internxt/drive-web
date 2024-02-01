@@ -26,6 +26,7 @@ interface UploadFolderThunkPayload {
   root: IRoot;
   currentFolderId: number;
   options?: {
+    taskId?: string;
     withNotification?: boolean;
     onSuccess?: () => void;
   };
@@ -57,29 +58,46 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     const levels = [renamedRoot];
 
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);
-    const taskId = tasksService.create<UploadFolderTask>({
-      action: TaskType.UploadFolder,
-      folderName: renamedRoot.name,
-      showNotification: !!options.withNotification,
-      cancellable: true,
-      stop: async () => {
-        uploadFolderAbortController.abort();
-        const relatedTasks = tasksService.getTasks({ relatedTaskId: requestId });
-        const promises: Promise<void>[] = [];
 
-        // Cancels related tasks
-        promises.push(
-          ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
-        );
+    let taskId = options?.taskId;
 
-        // Deletes the root folder
-        if (rootFolderItem) {
-          promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-        }
+    if (taskId) {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+          progress: 0,
+        },
+      });
+    } else {
+      taskId = tasksService.create<UploadFolderTask>({
+        action: TaskType.UploadFolder,
+        folderName: renamedRoot.name,
+        item: root,
+        parentFolderId: currentFolderId,
+        showNotification: !!options.withNotification,
+        cancellable: true,
+        stop: async () => {
+          uploadFolderAbortController.abort();
+          const relatedTasks = tasksService.getTasks({ relatedTaskId: requestId });
+          const promises: Promise<void>[] = [];
 
-        await Promise.all(promises);
-      },
-    });
+          // Cancels related tasks
+          promises.push(
+            ...(relatedTasks
+              .map((task) => task.stop?.())
+              .filter((promise) => promise !== undefined) as Promise<void>[]),
+          );
+
+          // Deletes the root folder
+          if (rootFolderItem) {
+            promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+          }
+
+          await Promise.all(promises);
+        },
+      });
+    }
 
     try {
       renamedRoot.folderId = currentFolderId;
@@ -117,9 +135,8 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
               alreadyUploaded += 1;
 
               tasksService.updateTask({
-                taskId: taskId,
+                taskId: taskId as string,
                 merge: {
-                  status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
                 },
               });
@@ -133,6 +150,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         levels.push(...childrenFolders);
       }
+      tasksService.isTaskProgressCompleted(taskId);
 
       tasksService.updateTask({
         taskId: taskId,
@@ -211,30 +229,46 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
     let rootFolderItem: DriveFolderData | undefined;
     const levels = [root];
     const itemsUnderRoot = countItemsUnderRoot(root);
-    const taskId = tasksService.create<UploadFolderTask>({
-      action: TaskType.UploadFolder,
-      folderName: root.name,
-      showNotification: !!options.withNotification,
-      cancellable: true,
-      stop: async () => {
-        uploadFolderAbortController.abort();
-        const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
-        const promises: Promise<void>[] = [];
 
-        // Cancels related tasks
-        promises.push(
-          ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
-        );
+    let taskId = options?.taskId;
 
-        // Deletes the root folder
-        if (rootFolderItem) {
-          promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-          const storageClient = SdkFactory.getInstance().createStorageClient();
-          promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
-        }
-        await Promise.all(promises);
-      },
-    });
+    if (taskId) {
+      tasksService.updateTask({
+        taskId,
+        merge: {
+          status: TaskStatus.InProcess,
+        },
+      });
+    } else {
+      taskId = tasksService.create<UploadFolderTask>({
+        action: TaskType.UploadFolder,
+        folderName: root.name,
+        item: root,
+        parentFolderId: currentFolderId,
+        showNotification: !!options.withNotification,
+        cancellable: true,
+        stop: async () => {
+          uploadFolderAbortController.abort();
+          const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
+          const promises: Promise<void>[] = [];
+
+          // Cancels related tasks
+          promises.push(
+            ...(relatedTasks
+              .map((task) => task.stop?.())
+              .filter((promise) => promise !== undefined) as Promise<void>[]),
+          );
+
+          // Deletes the root folder
+          if (rootFolderItem) {
+            promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+            const storageClient = SdkFactory.getInstance().createStorageClient();
+            promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+          }
+          await Promise.all(promises);
+        },
+      });
+    }
 
     try {
       root.folderId = currentFolderId;
@@ -275,9 +309,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
               alreadyUploaded += 1;
               if (uploadFolderAbortController.signal.aborted) return;
               tasksService.updateTask({
-                taskId: taskId,
+                taskId: taskId as string,
                 merge: {
-                  status: TaskStatus.InProcess,
                   progress: alreadyUploaded / itemsUnderRoot,
                 },
               });
