@@ -1,11 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WritableStream } from 'streamsaver';
 import { match } from 'react-router';
-import {
-  downloadPublicSharedFolder,
-  getPublicSharingMeta,
-  getSharedFolderSize,
-} from 'app/share/services/share.service';
+import { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -60,6 +56,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
+  const [folderSize, setFolderSize] = useState<string>();
 
   const canUseReadableStreamMethod =
     'WritableStream' in window &&
@@ -110,8 +107,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setInfo({ ...res });
         setIsLoaded(true);
         setRequiresPassword(false);
-        // TODO: Commented until apply some fixes to the endpoint
-        // return loadSize((sharedFolderInfo as unknown as { id: number }).id, sharedFolderInfo.item.id);
+        getFolderSize(res.id);
         return Promise.resolve(0);
       })
       .then((folderSize) => {
@@ -134,10 +130,6 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     } catch (error) {
       errorService.reportError(error);
     }
-  };
-
-  const loadSize = (shareId: number, folderId: number): Promise<number> => {
-    return getSharedFolderSize(shareId.toString(), folderId.toString());
   };
 
   const updateProgress = (progress: number) => {
@@ -180,6 +172,17 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
     e.returnValue = confirmationMessage; //Trident, Chrome 34+
     return confirmationMessage; // WebKit, Chrome <34
+  };
+
+  const getFolderSize = async (folderId) => {
+    try {
+      const folderSize = await shareService.getSharedFolderSize(folderId);
+
+      const folderSizeToString = sizeService.bytesToString(folderSize.size);
+      setFolderSize(folderSizeToString);
+    } catch (error) {
+      errorService.reportError(error);
+    }
   };
 
   useEffect(() => {
@@ -268,7 +271,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.plainName}>
                 {info?.item?.plainName}
               </abbr>
-              <span className="text-gray-60">{sizeService.bytesToString(info?.item?.size || 0)}</span>
+              <span className="text-gray-60">{folderSize}</span>
             </div>
           </div>
         </div>

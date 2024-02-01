@@ -7,7 +7,7 @@ export function bytesToString(
   decimals = 1,
   hideSizeString = false,
 ): string {
-  if (size > 0) {
+  if (size >= 0) {
     return PrettySize(size, removeSpace, useSingleChar, decimals, hideSizeString);
   } else {
     return '';
