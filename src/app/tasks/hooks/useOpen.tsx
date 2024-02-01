@@ -6,19 +6,29 @@ interface OpenItem {
   openItem: () => void;
 }
 
-export const useOpenItem = (notification: TaskNotification): OpenItem => {
+type OpenItemProps = {
+  notification: TaskNotification;
+  showOpenFileError: () => void;
+  showOpenFolderError: () => void;
+};
+
+export const useOpenItem = ({ notification, showOpenFileError, showOpenFolderError }: OpenItemProps): OpenItem => {
   const openItem = useCallback(() => {
     const { item, action } = notification;
     const isFolderUpload = action === TaskType.UploadFolder;
 
     if (isFolderUpload) {
-      const folder = notification?.folderToUpload?.folder;
-      const currentFolderId = notification?.folderToUpload?.parentFolderId;
-      if (folder && currentFolderId) {
+      if (notification?.itemUUID?.rootFolderUUID) {
         navigationService.pushFolder(notification?.itemUUID?.rootFolderUUID);
+      } else {
+        showOpenFolderError();
       }
     } else if (item) {
-      navigationService.pushFile(notification?.itemUUID?.fileUUID);
+      if (notification?.itemUUID?.fileUUID) {
+        navigationService.pushFile(notification?.itemUUID?.fileUUID);
+      } else {
+        showOpenFileError();
+      }
     }
   }, [notification]);
 

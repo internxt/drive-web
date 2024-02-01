@@ -30,7 +30,21 @@ const ProgressBar = ({ progress, isPaused }) => {
 
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
-  const { openItem } = useOpenItem(notification);
+  const { openItem } = useOpenItem({
+    notification,
+    showOpenFolderError() {
+      notificationsService.show({
+        text: t('tasks.generalErrorMessages.openUploadedFileFailed'),
+        type: ToastType.Error,
+      });
+    },
+    showOpenFileError() {
+      notificationsService.show({
+        text: t('tasks.generalErrorMessages.openUploadedFolderFailed'),
+        type: ToastType.Error,
+      });
+    },
+  });
   const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,

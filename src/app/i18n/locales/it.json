@@ -1111,7 +1111,9 @@
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",
-      "retryDownloadFailed": "Qualcosa è andato storto nel tentativo di ripetere il download. Riprova il download."
+      "retryDownloadFailed": "Qualcosa è andato storto nel tentativo di ripetere il download. Riprova il download.",
+      "openUploadedFileFailed": "Qualcosa è andato storto nel tentativo di aprire il file",
+      "openUploadedFolderFailed": "Qualcosa è andato storto nel tentativo di navigare nella cartella"
     }
   },
   "success": {
