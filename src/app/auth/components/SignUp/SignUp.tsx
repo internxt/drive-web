@@ -271,10 +271,8 @@ function SignUp(props: SignUpProps): JSX.Element {
               <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
                 <Info size={20} className="shrink-0 text-primary" />
                 <p className="text-xs">
-                  Internxt doesn't store passwords.{' '}
-                  <span className="font-semibold">
-                    In case you forget your password, you will lose access to all your files.
-                  </span>
+                  {translate('auth.signup.info1')}{' '}
+                  <span className="font-semibold">{translate('auth.signup.info2')}</span>
                 </p>
               </div>
 
