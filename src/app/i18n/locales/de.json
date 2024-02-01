@@ -160,7 +160,8 @@
     },
     "files": "Dateien",
     "file": "Datei",
-    "folder": "Ordner"
+    "folder": "Ordner",
+    "reloadPageMessage": "Änderungen, die Sie vorgenommen haben, wurden möglicherweise nicht gespeichert."
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
@@ -1028,7 +1029,9 @@
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
-      "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut."
+      "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut.",
+      "openUploadedFileFailed": "Etwas ist schief gelaufen beim Versuch, die Datei zu öffnen",
+      "openUploadedFolderFailed": "Etwas ist schief gelaufen beim Versuch, zum Ordner zu navigieren"
     }
   },
   "success": {

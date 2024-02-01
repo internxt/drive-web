@@ -148,6 +148,7 @@ export type TaskData = (
 } & { item?: UploadFileData } & { fileType?: string } & {
   item?: IRoot;
   parentFolderId?: number;
+  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 };
 
 export type DownloadFilesData = { name: string; type: string; items?: DriveItemData[] };
@@ -166,6 +167,7 @@ export interface TaskNotification {
   progress: number;
   isTaskCancellable: boolean;
   fileType?: string;
+  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 }
 
 export interface TaskFilter {

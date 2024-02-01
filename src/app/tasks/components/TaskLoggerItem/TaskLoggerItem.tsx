@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
+import { useOpenItem } from '../../hooks/useOpen';
 
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus, TaskType } from '../../types';
@@ -29,7 +30,21 @@ const ProgressBar = ({ progress, isPaused }) => {
 
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
-
+  const { openItem } = useOpenItem({
+    notification,
+    showOpenFolderError() {
+      notificationsService.show({
+        text: t('tasks.generalErrorMessages.openUploadedFileFailed'),
+        type: ToastType.Error,
+      });
+    },
+    showOpenFileError() {
+      notificationsService.show({
+        text: t('tasks.generalErrorMessages.openUploadedFolderFailed'),
+        type: ToastType.Error,
+      });
+    },
+  });
   const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,
@@ -103,6 +118,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           cancelAction={onCancelButtonClicked}
           retryAction={retryFunction}
           isUploadTask={isUploadTask}
+          openItemAction={openItem}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}

@@ -202,7 +202,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Changes you have made may not have been saved."
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
@@ -1136,7 +1137,9 @@
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",
-      "retryDownloadFailed": "Something went wrong while retrying the download. Please try downloading again."
+      "retryDownloadFailed": "Something went wrong while retrying the download. Please try downloading again.",
+      "openUploadedFileFailed": "Something went wrong while trying to open the file",
+      "openUploadedFolderFailed": "Something went wrong while trying to navigate to the folder"
     }
   },
   "success": {

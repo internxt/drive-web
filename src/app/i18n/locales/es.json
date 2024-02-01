@@ -186,7 +186,8 @@
     },
     "files": "Archivos",
     "file": "Archivo",
-    "folder": "Carpeta"
+    "folder": "Carpeta",
+    "reloadPageMessage": "Los cambios que realizaste pueden no haberse guardado."
   },
   "shareLayout": {
     "title": "",
@@ -1120,7 +1121,9 @@
     },
     "generalErrorMessages": {
       "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
-      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo"
+      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo",
+      "openUploadedFileFailed": "Algo salió mal al intentar abrir el archivo",
+      "openUploadedFolderFailed": "Algo salió mal al intentar navegar hasta la carpeta"
     }
   },
   "shareItemDialog": {

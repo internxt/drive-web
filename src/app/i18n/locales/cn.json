@@ -202,7 +202,8 @@
     },
     "files": "*文件",
     "file": "*文件",
-    "folder": "文件夹"
+    "folder": "文件夹",
+    "reloadPageMessage": "你所做的更改可能尚未保存"
   },
   "shareLayout": {
     "title": "INTERNXT",
@@ -1135,7 +1136,9 @@
     },
     "generalErrorMessages": {
       "retryUploadFailed": "重试上传时出了问题。请再次上传",
-      "retryDownloadFailed": "重试下载时出现问题。请重试下载"
+      "retryDownloadFailed": "重试下载时出现问题。请重试下载",
+      "openUploadedFileFailed": "尝试打开文件时出现问题",
+      "openUploadedFolderFailed": "尝试访问文件夹时出现问题"
     }
   },
   "success": {

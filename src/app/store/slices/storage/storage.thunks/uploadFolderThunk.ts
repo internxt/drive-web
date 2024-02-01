@@ -53,6 +53,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
+    let rootFolderData: DriveFolderData | undefined;
 
     const renamedRoot = await handleFoldersRename(root, currentFolderId);
     const levels = [renamedRoot];
@@ -114,6 +115,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         await wait(500);
 
         rootFolderItem = createdFolder;
+        if (!rootFolderData) {
+          rootFolderData = createdFolder;
+        }
 
         if (level.childrenFiles) {
           await dispatch(
@@ -156,6 +160,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         taskId: taskId,
         merge: {
           status: TaskStatus.Success,
+          itemUUID: { rootFolderUUID: rootFolderData?.uuid },
         },
       });
 
@@ -227,6 +232,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
     const uploadFolderAbortController = new AbortController();
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
+    let rootFolderData: DriveFolderData | undefined;
     const levels = [root];
     const itemsUnderRoot = countItemsUnderRoot(root);
 
@@ -287,6 +293,9 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         await wait(500);
 
         rootFolderItem = createdFolder;
+        if (!rootFolderData) {
+          rootFolderData = createdFolder;
+        }
 
         if (level.childrenFiles) {
           if (uploadFolderAbortController.signal.aborted) return;
@@ -328,6 +337,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
       tasksService.updateTask({
         taskId: taskId,
         merge: {
+          itemUUID: { rootFolderUUID: rootFolderData?.uuid },
           status: TaskStatus.Success,
         },
       });

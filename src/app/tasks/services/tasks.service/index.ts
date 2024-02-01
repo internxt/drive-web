@@ -99,6 +99,7 @@ class TaskManagerService {
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
       isTaskCancellable: task.cancellable,
+      itemUUID: task?.itemUUID,
     };
   }
 
