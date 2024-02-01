@@ -1118,6 +1118,10 @@
     },
     "subtitles": {
       "upload-failed": "Error al subir"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
+      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo"
     }
   },
   "shareItemDialog": {

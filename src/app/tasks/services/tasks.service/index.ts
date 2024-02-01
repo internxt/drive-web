@@ -14,6 +14,10 @@ import {
   UpdateTaskPayload,
   BaseTask,
   DownloadPhotosTask,
+  DownloadFilesData,
+  DownloadFolderData,
+  UploadFileData,
+  UploadFolderData,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
 
@@ -88,8 +92,7 @@ class TaskManagerService {
       taskId: task.id,
       action: task.action,
       status: task.status,
-      item: task.file ?? task.folder ?? task.item,
-      folderToUpload: { folder: task?.folderToUpload, parentFolderId: task.parentFolderId },
+      item: this.parseNotifcationItem(task),
       fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
@@ -98,6 +101,17 @@ class TaskManagerService {
       isTaskCancellable: task.cancellable,
       itemUUID: task?.itemUUID,
     };
+  }
+
+  private parseNotifcationItem(
+    task: TaskData,
+  ): DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData {
+    const parsedItem =
+      task.file ?? task.folder ?? task.action === TaskType.UploadFolder
+        ? { folder: task.item, parentFolderId: task.parentFolderId }
+        : task.item;
+
+    return parsedItem as DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
   }
 
   public async cancelTask(taskId: string) {

@@ -5,12 +5,13 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
-import { WORKER_MESSAGE_STATES, createUploadWebWorker } from '../../../../WebWorker';
+import { createUploadWebWorker } from '../../../../WebWorker';
+import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
 
 type ProgressCallback = (progress: number, uploadedBytes: number | null, totalBytes: number | null) => void;
-interface IUploadParams {
+export interface IUploadParams {
   filesize: number;
   filecontent: File;
   progressCallback: ProgressCallback;
@@ -104,42 +105,10 @@ export class Network {
       mnemonic: this.mnemonic,
       continueUploadOptions,
     };
+
     worker.postMessage({ bucketId, params: payload, type: 'upload' });
 
-    return [
-      new Promise((resolve, reject) => {
-        worker.addEventListener('error', reject);
-        worker.addEventListener('message', (msg) => {
-          console.log('[MAIN_THREAD]: Message received from worker', msg);
-          if (msg.data.progress) {
-            params.progressCallback(msg.data.progress, msg.data.uploadedBytes, msg.data.totalBytes);
-          } else if (msg.data.result === WORKER_MESSAGE_STATES.SUCCESS) {
-            resolve(msg.data.fileId);
-            worker.terminate();
-          } else if (msg.data.result === WORKER_MESSAGE_STATES.ERROR) {
-            reject(msg.data.error);
-            worker.terminate();
-          } else if (msg.data.result == WORKER_MESSAGE_STATES.ABORT) {
-            console.warn('[MAIN_THREAD]: ABORT SIGNAL', msg.data.fileId);
-            reject(msg.data.result);
-            worker.terminate();
-          } else if (msg.data.result === WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS) {
-            const uploadStatus = localStorageService.getUploadState(continueUploadOptions.taskId);
-            worker.postMessage({
-              result: WORKER_MESSAGE_STATES.UPLOAD_STATUS,
-              uploadStatus: { ...uploadStatus, taskId: continueUploadOptions.taskId },
-            });
-          } else {
-            console.warn('[MAIN_THREAD]: Received unknown message from worker');
-          }
-        });
-      }),
-      {
-        abort: () => {
-          worker.postMessage({ type: 'upload', abort: true });
-        },
-      },
-    ];
+    return createWorkerMessageHandlerPromise(worker, params, continueUploadOptions);
   }
 
   /**

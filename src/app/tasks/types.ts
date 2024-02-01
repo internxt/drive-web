@@ -58,6 +58,7 @@ export interface CreateFolderTask extends BaseTask {
   cancellable: false;
   folderName: string;
   parentFolderId: number;
+  item?: IRoot;
 }
 
 export interface DownloadFileTask extends BaseTask {
@@ -92,8 +93,8 @@ export interface UploadFolderTask extends BaseTask {
   action: TaskType.UploadFolder;
   cancellable: true;
   folderName: string;
-  folderToUpload?: IRoot;
-  parentFolderId?: number;
+  item: IRoot;
+  parentFolderId: number;
 }
 
 export interface MoveFileTask extends BaseTask {
@@ -142,25 +143,25 @@ export type TaskData = (
   | DownloadPhotosTask
   | RenameFileTask
   | RenameFolderTask
-) & { file?: DriveFileData | { name: string; type: string; items?: DriveItemData[] } } & {
-  folder?: { id: number; name: string };
-} & { item?: { uploadFile: File; parentFolderId: number } } & { fileType?: string } & {
-  folderToUpload?: IRoot;
+) & { file?: DriveFileData | DownloadFilesData } & {
+  folder?: DownloadFolderData;
+} & { item?: UploadFileData } & { fileType?: string } & {
+  item?: IRoot;
   parentFolderId?: number;
   itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 };
+
+export type DownloadFilesData = { name: string; type: string; items?: DriveItemData[] };
+export type DownloadFolderData = { id: number; name: string };
+export type UploadFileData = { uploadFile: File; parentFolderId: number };
+export type UploadFolderData = { folder: IRoot; parentFolderId: number };
 
 export interface TaskNotification {
   taskId: string;
   action: TaskType;
   status: TaskStatus;
   title: string;
-  item?:
-    | DriveItemData
-    | { name: string; type: string; items?: DriveItemData[] }
-    | { id: number; name: string }
-    | { uploadFile: File; parentFolderId: number };
-  folderToUpload?: { folder?: IRoot; parentFolderId?: number };
+  item?: DriveItemData | DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;

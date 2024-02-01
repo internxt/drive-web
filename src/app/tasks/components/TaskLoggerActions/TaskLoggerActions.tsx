@@ -1,4 +1,4 @@
-import localStorageService from '../../../core/services/local-storage.service';
+import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import tasksService from '../../services/tasks.service';
 import { TaskStatus } from '../../types';
 import { ErrorBlock, PauseBlock, PausedBlock, PendingBlock, SuccessBlock } from './TaskButtonActionBlocks';
@@ -23,24 +23,29 @@ type TaskLoggerActionsProps = {
   openItemAction: () => void;
 };
 
-const pauseUpload = (id: string) => {
-  localStorageService.setUploadState(id, TaskStatus.Paused);
+const pauseUpload = async (id: string) => {
+  const uploadRespository = DatabaseUploadRepository.getInstance();
+  await uploadRespository.setUploadState(id, TaskStatus.Paused);
+
   tasksService.updateTask({
     taskId: id,
     merge: { status: TaskStatus.Paused },
   });
 };
 
-const resumeUpload = (id: string) => {
-  localStorageService.setUploadState(id, TaskStatus.InProcess);
+const resumeUpload = async (id: string) => {
+  const uploadRespository = DatabaseUploadRepository.getInstance();
+  await uploadRespository.setUploadState(id, TaskStatus.InProcess);
+
   tasksService.updateTask({
     taskId: id,
     merge: { status: TaskStatus.InProcess },
   });
 };
 
-const removeUpload = (id: string) => {
-  localStorageService.removeUploadState(id);
+const removeUpload = async (id: string) => {
+  const uploadRespository = DatabaseUploadRepository.getInstance();
+  await uploadRespository.removeUploadState(id);
 };
 
 export const TaskLoggerActions = ({

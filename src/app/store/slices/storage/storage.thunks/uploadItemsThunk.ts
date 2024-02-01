@@ -16,6 +16,7 @@ import { t } from 'i18next';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import shareService from '../../../../share/services/share.service';
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
+import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -115,7 +116,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       userEmail: user.email,
       parentFolderId,
       taskId,
-      onFinishUploadFile: (driveItemData: DriveFileData) => {
+      onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
+        const uploadRespository = DatabaseUploadRepository.getInstance();
+        uploadRespository.removeUploadState(taskId);
+
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -130,7 +134,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
+      await uploadFileWithManager(
+        filesToUploadData,
+        openMaxSpaceOccupiedDialog,
+        DatabaseUploadRepository.getInstance(),
+      );
     } catch (error) {
       errors.push(error as Error);
     }
@@ -143,7 +151,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -262,7 +270,9 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       filecontent: file,
       userEmail: user.email,
       parentFolderId,
-      onFinishUploadFile: (driveItemData: DriveFileData) => {
+      onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
+        const uploadRespository = DatabaseUploadRepository.getInstance();
+        uploadRespository.removeUploadState(taskId);
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -277,9 +287,15 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog, undefined, {
-        ownerUserAuthenticationData,
-      });
+      await uploadFileWithManager(
+        filesToUploadData,
+        openMaxSpaceOccupiedDialog,
+        DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData,
+        },
+      );
     } catch (error) {
       errors.push(error as Error);
     }
@@ -292,7 +308,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -353,7 +369,9 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
       filecontent: file,
       userEmail: user.email,
       parentFolderId,
-      onFinishUploadFile: (driveItemData: DriveFileData) => {
+      onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
+        const uploadRespository = DatabaseUploadRepository.getInstance();
+        uploadRespository.removeUploadState(taskId);
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -368,7 +386,11 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
 
     try {
-      await uploadFileWithManager(filesToUploadData, openMaxSpaceOccupiedDialog);
+      await uploadFileWithManager(
+        filesToUploadData,
+        openMaxSpaceOccupiedDialog,
+        DatabaseUploadRepository.getInstance(),
+      );
     } catch (error) {
       errors.push(error as Error);
     }
@@ -380,7 +402,7 @@ export const uploadItemsThunkNoCheck = createAsyncThunk<void, UploadItemsPayload
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
     }
   },
@@ -462,6 +484,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
+        DatabaseUploadRepository.getInstance(),
         abortController,
         options,
         filesProgress,
@@ -473,7 +496,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
       throw new Error(t('error.uploadingItems') as string);
@@ -545,6 +568,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       await uploadFileWithManager(
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
+        DatabaseUploadRepository.getInstance(),
         abortController,
         options,
         filesProgress,
@@ -557,7 +581,7 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
 
     if (errors.length > 0) {
       for (const error of errors) {
-        notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
       }
 
       throw new Error(t('error.uploadingItems') as string);
