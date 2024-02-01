@@ -6,12 +6,22 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 interface SidenavItemProps {
   label: string;
   showNew?: boolean;
+  notifications?: number;
   to?: string;
   Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   onClick?: () => void;
+  iconDataCy?: string;
 }
 
-const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): JSX.Element => {
+const SidenavItem = ({
+  label,
+  to,
+  Icon,
+  onClick,
+  showNew,
+  notifications,
+  iconDataCy,
+}: SidenavItemProps): JSX.Element => {
   const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
 
   const { translate } = useTranslationContext();
@@ -19,12 +29,24 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
   const content: ReactNode = (
     <div className="flex h-10 w-full items-center justify-between">
       <div className="flex items-center">
-        <Icon weight={isActive ? 'fill' : undefined} size={24} />
-        <span className="ml-2">{label}</span>
+        <Icon
+          weight={isActive ? 'fill' : undefined}
+          size={24}
+          data-cy={iconDataCy}
+          className={isActive ? 'text-primary' : 'text-gray-80'}
+        />
+        <span className={`ml-2 ${isActive ? 'text-primary dark:text-white' : 'text-gray-80 hover:text-gray-80'}`}>
+          {label}
+        </span>
       </div>
       {showNew && (
         <div className="h-5 rounded-full bg-primary px-2.5 text-xs font-medium uppercase text-white">
           <p className="leading-5">{translate('general.new')}</p>
+        </div>
+      )}
+      {!!notifications && (
+        <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
+          <span>{notifications}</span>
         </div>
       )}
     </div>
@@ -35,18 +57,12 @@ const SidenavItem = ({ label, to, Icon, onClick, showNew }: SidenavItemProps): J
   return (
     <div
       onClick={onClick}
-      className={`cursor-pointer rounded-lg pl-6 pr-3 font-medium text-gray-60 ${
-        isActive ? 'bg-primary bg-opacity-10' : 'hover:bg-gray-1 active:bg-gray-5'
+      className={`cursor-pointer rounded-lg pl-6 pr-3 font-medium ${
+        isActive ? 'bg-primary/10 dark:bg-primary/20' : 'hover:bg-gray-1 active:bg-gray-5'
       }`}
     >
       {to ? (
-        <NavLink
-          className={`text-current no-underline hover:text-current ${
-            isActive ? 'text-primary hover:text-primary' : ''
-          }`}
-          exact
-          to={to}
-        >
+        <NavLink className="no-underline" exact to={to}>
           {content}
         </NavLink>
       ) : (

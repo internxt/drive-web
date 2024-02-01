@@ -1,84 +1,59 @@
-import { Fragment, createRef, useEffect, useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { createRef, useEffect, useRef, useState } from 'react';
 import UilEllipsisH from '@iconscout/react-unicons/icons/uil-ellipsis-h';
 import { items } from '@internxt/lib';
 
 import DriveItemDropdownActions from '../../../DriveItemDropdownActions/DriveItemDropdownActions';
 import iconService from '../../../../services/icon.service';
-import transformItemService from '../../../../../drive/services/item-transform.service';
 import useForceUpdate from '../../../../../core/hooks/useForceUpdate';
-import { DriveItemAction, DriveExplorerItemProps } from '..';
+import { DriveExplorerItemProps } from '..';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
-import { thumbnailablePdfExtension } from 'app/drive/types/file-types';
 
 import './DriveExplorerGridItem.scss';
+import { Menu } from '@headlessui/react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import transformItemService from 'app/drive/services/item-transform.service';
 
 const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   const [itemRef] = useState(createRef<HTMLDivElement>());
+  const itemButton = useRef<HTMLButtonElement | null>(null);
+  const [lastRowItem, setLastRowItem] = useState(false);
   const { item } = props;
-  const { isItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
-  const {
-    nameInputRef,
-    onNameChanged,
-    onNameBlurred,
-    onNameClicked,
-    onNameEnterKeyDown,
-    onDownloadButtonClicked,
-    onRenameButtonClicked,
-    onInfoButtonClicked,
-    onDeleteButtonClicked,
-    onDeletePermanentlyButtonClicked,
-    onShareButtonClicked,
-    onShareCopyButtonClicked,
-    onShareSettingsButtonClicked,
-    onShareDeleteButtonClicked,
-    onItemClicked,
-    onItemRightClicked,
-    onItemDoubleClicked,
-    downloadAndSetThumbnail,
-  } = useDriveItemActions(item);
+  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
+  const { onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } = useDriveItemActions(
+    props.item,
+  );
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
   const forceUpdate = useForceUpdate();
   const updateHeight = () => forceUpdate();
-  const nameNodeFactory = () => {
-    const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+  const ṣpanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
 
-    return (
-      <Fragment>
-        <div className={isEditingName(item) ? 'flex' : 'hidden'}>
-          <input
-            className="dense no-ring rect w-full select-text border border-white"
-            onClick={(e) => e.stopPropagation()}
-            ref={nameInputRef}
-            type="text"
-            value={dirtyName}
-            placeholder="Name"
-            onChange={onNameChanged}
-            onBlur={onNameBlurred}
-            onKeyDown={onNameEnterKeyDown}
-            autoFocus
-          />
-          <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
-        </div>
-        <span
-          data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-          className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden overflow-ellipsis whitespace-nowrap px-1 text-base text-neutral-900 hover:underline`}
-          onClick={onNameClicked}
-          title={items.getItemDisplayName(item)}
-        >
-          {items.getItemDisplayName(item)}
-        </span>
-      </Fragment>
-    );
-  };
   const isDraggingClassNames: string = isDraggingThisItem ? 'opacity-50' : '';
   const isDraggingOverClassNames: string = isDraggingOverThisItem ? 'drag-over-effect' : '';
-  const selectedClassNames: string = isItemSelected(item) ? 'bg-blue-10 grid-item-shadow' : '';
+  const selectedClassNames: string = isItemSelected(item) ? 'bg-primary/10 grid-item-shadow' : '';
   const ItemIconComponent = iconService.getItemIcon(item.isFolder, item.type);
   const height = itemRef.current ? itemRef.current.clientWidth + 'px' : 'auto';
+
+  const handleContextMenu = () => {
+    const itemElement = itemRef.current;
+
+    if (!itemElement) return;
+
+    const rect = itemElement.getBoundingClientRect();
+    const screenWidth = window.innerWidth;
+
+    const menuLeft = rect.right;
+    const menuRight = menuLeft + 100;
+
+    if (menuRight > screenWidth) {
+      setLastRowItem(true);
+    } else {
+      setLastRowItem(false);
+    }
+  };
 
   useEffect(() => {
     updateHeight();
@@ -91,64 +66,90 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
   }, []);
 
   useEffect(() => {
+    if (isItemSelected(item)) {
+      handleContextMenu();
+    }
+  }, [isItemSelected(item)]);
+
+  useEffect(() => {
     downloadAndSetThumbnail();
   }, [item]);
 
-  useEffect(() => {
-    if (isEditingName(item)) {
-      const current = nameInputRef.current;
-      if (current && current !== null) {
-        nameInputRef.current.selectionStart = nameInputRef.current.value.length;
-        nameInputRef.current.selectionEnd = nameInputRef.current.value.length;
-        nameInputRef.current.focus();
-      }
+  useHotkeys('backspace', () => {
+    if (isItemSelected(item)) {
+      moveItemsToTrash([item]);
     }
-  }, [isEditingName(item)]);
+  });
+  useHotkeys(
+    'r',
+    (e) => {
+      e.preventDefault();
+      if (isItemSelected(item)) {
+        props.setEditNameItem?.(item);
+      }
+    },
+    [isItemSelected(item)],
+  );
+
+  const handleRightClick = (e) => {
+    e.preventDefault();
+    if (isItemSelected(item)) {
+      itemButton.current?.click();
+    } else {
+      onItemClicked();
+      setTimeout(() => {
+        itemButton.current?.click();
+      }, 100);
+    }
+  };
 
   const template = connectDropTarget(
     <div
       ref={itemRef}
       style={{ height }}
-      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} group 
-        relative box-border rounded-lg bg-white p-4 hover:bg-neutral-10`}
-      onContextMenu={onItemRightClicked}
+      className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames}
+        group relative box-border rounded-lg p-4 hover:bg-gray-1`}
+      onContextMenu={handleRightClick}
       onClick={onItemClicked}
       onDoubleClick={onItemDoubleClicked}
+      onMouseEnter={props.onMouseEnter}
+      onMouseLeave={props.onMouseLeave}
       draggable={false}
+      onKeyDown={(e) => {}}
     >
-      <Dropdown>
-        <Dropdown.Toggle
-          variant="success"
-          id="dropdown-basic"
-          className="absolute top-2 right-2 h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-blue-60 opacity-0 transition group-hover:opacity-100"
-        >
-          <UilEllipsisH className="h-full w-full" />
-        </Dropdown.Toggle>
-        <Dropdown.Menu>
-          <DriveItemDropdownActions
-            hiddenActions={
-              item?.shares?.length || 0 > 0
-                ? [DriveItemAction.ShareGetLink]
-                : [DriveItemAction.ShareCopyLink, DriveItemAction.ShareDeleteLink, DriveItemAction.ShareSettings]
-            }
-            onRenameButtonClicked={onRenameButtonClicked}
-            onDownloadButtonClicked={onDownloadButtonClicked}
-            onShareButtonClicked={onShareButtonClicked}
-            onShareCopyButtonClicked={onShareCopyButtonClicked}
-            onShareSettingsButtonClicked={onShareSettingsButtonClicked}
-            onShareDeleteButtonClicked={onShareDeleteButtonClicked}
-            onInfoButtonClicked={onInfoButtonClicked}
-            onDeleteButtonClicked={onDeleteButtonClicked}
-            onDeletePermanentlyButtonClicked={onDeletePermanentlyButtonClicked}
-          />
-        </Dropdown.Menu>
-      </Dropdown>
-      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft filter">
+      <Menu as="div" className="absolute right-2 top-2 z-10">
+        {({ open, close }) => (
+          <div className="relative">
+            <Menu.Button
+              id="dropdown-basic"
+              ref={itemButton}
+              className="h-5 w-5 cursor-pointer rounded-1/2 bg-white font-bold text-primary opacity-0 transition group-hover:opacity-100"
+            >
+              <UilEllipsisH className="h-full w-full" />
+            </Menu.Button>
+            <Menu.Items
+              data-tooltip-place="top"
+              style={{
+                position: 'absolute',
+                zIndex: 999,
+                right: lastRowItem ? 5 : 'auto',
+              }}
+            >
+              <DriveItemDropdownActions
+                openDropdown={open}
+                closeDropdown={close}
+                onRenameButtonClicked={() => props.setEditNameItem?.(item)}
+                item={item}
+              />
+            </Menu.Items>
+          </div>
+        )}
+      </Menu>
+      <div className="flex h-4/6 w-full items-center justify-center drop-shadow-soft">
         {item.currentThumbnail ? (
           <div className="h-full w-full">
             <img
-              className={`h-full max-h-full w-full max-w-full object-cover pt-5 
-                ${thumbnailablePdfExtension.includes(item.type) ? 'object-top' : 'object-center'}`}
+              className="h-full max-h-full w-full max-w-full object-contain object-center pt-5"
               src={item.currentThumbnail.urlObject}
             />
           </div>
@@ -157,7 +158,17 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
         )}
       </div>
       <div className="mt-3 text-center">
-        <div className="mb-1">{nameNodeFactory()}</div>
+        <div className="mb-1">
+          <span
+            onKeyDown={() => {}}
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className={`${ṣpanDisplayClass} cursor-pointer overflow-hidden text-ellipsis whitespace-nowrap px-1 text-base text-gray-100 hover:underline`}
+            onClick={onNameClicked}
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+          >
+            {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+          </span>
+        </div>
       </div>
     </div>,
   );

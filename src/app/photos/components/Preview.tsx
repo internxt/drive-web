@@ -121,14 +121,14 @@ export default function Preview({
     <Transition
       as={Fragment}
       show={photosState.previewIndex !== null}
-      enter="transform origin-center overflow-hidden transition-all duration-100 ease-out"
+      enter="origin-center overflow-hidden transition-all duration-100 ease-out"
       enterFrom="opacity-0 scale-95"
       enterTo="opacity-100 scale-100"
-      leave="transform origin-center overflow-hidden transition-all duration-100 ease-in"
+      leave="origin-center overflow-hidden transition-all duration-100 ease-in"
       leaveFrom="opacity-100 scale-100"
       leaveTo="opacity-0 scale-95"
     >
-      <div className="absolute inset-0 isolate z-10" data-test="photos-preview">
+      <div className="absolute inset-0 isolate z-50" data-test="photos-preview">
         <Transition.Child
           as={Fragment}
           enter="transition-all duration-200 ease-out"
@@ -161,7 +161,7 @@ export default function Preview({
             )}
           </Transition.Child>
         ) : (
-          <div className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 transform">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
             {thumbnailSrc && <img className="h-64 w-64 rounded-xl object-cover" src={thumbnailSrc} />}
             <div className="mt-4 flex items-center justify-center text-lg font-medium text-gray-20">
               <Spinner />
@@ -205,7 +205,7 @@ function Toolbar({
       leaveTo="opacity-0"
       show={!isIdle}
     >
-      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black-75 to-transparent p-5">
+      <div className="absolute top-0 z-10 flex h-32 w-full items-start justify-between bg-gradient-to-b from-black/75 to-transparent p-5">
         <TopIcon Target={X} onClick={onExit} />
         <div className="flex">
           <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
@@ -293,10 +293,10 @@ function Arrow({
 }) {
   return (
     <div
-      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black bg-opacity-50 text-white backdrop-blur backdrop-filter`}
+      className={`${className} flex h-16 w-16 cursor-pointer items-center justify-center rounded-full bg-black/50 text-white backdrop-blur`}
       onClick={onClick}
     >
-      <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180 transform' : ''} />
+      <CaretLeft size={40} className={pointsTo === 'right' ? ' rotate-180' : ''} />
     </div>
   );
 }

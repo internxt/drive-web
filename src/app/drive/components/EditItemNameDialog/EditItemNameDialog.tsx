@@ -9,11 +9,14 @@ import { DriveFolderMetadataPayload } from 'app/drive/types/index';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 type EditItemNameDialogProps = {
-  item: DriveItemData;
-  onClose?: () => void;
+  item: DriveItemData | undefined;
+  isOpen: boolean;
+  resourceToken?: string;
+  onClose?: (newItem?: DriveItemData) => void;
+  onSuccess?: () => void;
 };
 
-const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
+const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourceToken, onClose, onSuccess }) => {
   const [newItemName, setNewItemName] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -22,14 +25,13 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setTimeout(() => {
-      setNewItemName(item.name);
-    }, 0);
+    setNewItemName(item?.plainName || '');
   }, [item]);
 
-  const handleOnClose = (): void => {
+  const handleOnClose = (newName = ''): void => {
     setIsLoading(false);
-    onClose?.();
+    const newItem = newName.length > 0 ? ({ ...item, plainName: newName } as DriveItemData) : undefined;
+    onClose?.(newItem);
   };
 
   const renameItem = async () => {
@@ -37,13 +39,14 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
 
     if (newItemName === item?.name) {
       handleOnClose();
-    } else if (newItemName && newItemName.trim().length > 0) {
+    } else if (item && newItemName && newItemName.trim().length > 0) {
       setIsLoading(true);
-      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata }))
+      await dispatch(storageThunks.updateItemMetadataThunk({ item, metadata, resourceToken }))
         .unwrap()
         .then(() => {
           setIsLoading(false);
-          handleOnClose();
+          handleOnClose(newItemName);
+          onSuccess?.();
         })
         .catch((e) => {
           const errorMessage = e?.message?.includes('already exists') && translate('error.creatingFolder');
@@ -64,7 +67,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, onClose }) => {
   };
 
   return (
-    <Modal maxWidth="max-w-sm" isOpen={true} onClose={handleOnClose}>
+    <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={handleOnClose}>
       <form className="flex flex-col space-y-5" onSubmit={onRenameButtonClicked}>
         <p className="text-2xl font-medium text-gray-100">{translate('modals.renameItemDialog.title')}</p>
 

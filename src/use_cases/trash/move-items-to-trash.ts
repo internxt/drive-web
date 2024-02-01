@@ -42,7 +42,7 @@ async function sendItemsToTrashConcurrent({
   }
 }
 
-const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> => {
+const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
   const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
     return {
       id: item.isFolder ? item.id : item.fileId,
@@ -72,7 +72,7 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[]): Promise<void> =>
 
     store.dispatch(storageActions.popItems({ updateRecents: true, items: itemsToTrash }));
     store.dispatch(storageActions.clearSelectedItems());
-
+    onSuccess && onSuccess();
     notificationsService.dismiss(movingItemsToastId);
 
     const id = notificationsService.show({

@@ -9,8 +9,14 @@ import * as uuid from 'uuid';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SdkFactory } from '../../../core/factory/sdk';
 import { t } from 'i18next';
+import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 
-export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayload, bucketId: string): Promise<void> {
+export function updateMetaData(
+  fileId: string,
+  metadata: DriveFileMetadataPayload,
+  bucketId: string,
+  resourcesToken?: string,
+): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.UpdateFilePayload = {
     fileId: fileId,
@@ -19,7 +25,7 @@ export function updateMetaData(fileId: string, metadata: DriveFileMetadataPayloa
     destinationPath: uuid.v4(),
   };
 
-  return storageClient.updateFile(payload).then(() => {
+  return storageClient.updateFile(payload, resourcesToken).then(() => {
     const user = localStorageService.getUser() as UserSettings;
     analyticsService.trackFileRename({
       file_id: fileId,
@@ -89,12 +95,20 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
+export function getFile(uuid: string): Promise<FileMeta> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const [responsePromise] = storageClient.getFile(uuid);
+
+  return responsePromise;
+}
+
 const fileService = {
   updateMetaData,
   moveFile,
   fetchRecents,
   uploadFile,
   fetchDeleted,
+  getFile,
 };
 
 export default fileService;

@@ -7,6 +7,7 @@ interface TutorialProps {
   steps: Step[];
   currentStep: number;
   passToNextStep?: () => void;
+  children: React.ReactNode;
 }
 
 export type Step = {
@@ -54,12 +55,12 @@ export const Tutorial: FC<TutorialProps> = ({ show, steps, children, currentStep
   };
 
   if (isTutorialFinished || !show) {
-    return <div className="flex h-full flex-grow">{children}</div>;
+    return <div className="flex h-full grow">{children}</div>;
   }
 
   return (
-    <div className="flex h-full flex-grow" onClick={handleNextStep}>
-      <div className="fixed inset-0 z-10 flex bg-black opacity-40" />
+    <div className="flex h-full grow" onClick={handleNextStep} onKeyDown={() => {}}>
+      <div className="fixed inset-0 z-10 flex bg-black/40" />
       {children}
       <div ref={popperRef} className="z-50" style={existsRef ? styles.popper : centeredStyle} {...attributes.popper}>
         <div>{content}</div>

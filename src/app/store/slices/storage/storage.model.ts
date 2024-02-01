@@ -1,6 +1,7 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, FileViewMode, FolderPath, FolderPathDialog } from '../../../drive/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 export interface StorageFilters {
@@ -11,6 +12,7 @@ export interface StorageState {
   loadingFolders: Record<number, boolean>;
   isDeletingItems: boolean;
   levels: Record<number, DriveItemData[]>;
+  moveDialogLevels: Record<number, DriveItemData[]>;
   levelsFoldersLength: Record<number, number>;
   levelsFilesLength: Record<number, number>;
   hasMoreDriveFolders: boolean;
@@ -21,7 +23,11 @@ export interface StorageState {
   filters: StorageFilters;
   order: OrderSettings;
   selectedItems: DriveItemData[];
-  itemToShare: { share?: ShareLink; item: DriveItemData } | null;
+  itemToShare: {
+    share?: ShareLink;
+    sharings?: { type: string; id: string }[];
+    item: DriveItemData | (AdvancedSharedItem & { user: { email: string } });
+  } | null;
   itemsToDelete: DriveItemData[];
   itemsToMove: DriveItemData[];
   itemToRename: DriveItemData | null;
@@ -38,6 +44,8 @@ export interface StorageState {
   folderPathDialog: FolderPathDialog[];
   driveItemsSort: string;
   driveItemsOrder: string;
+  sharedNamePath: SharedNamePath[];
+  currentPath: FolderPath;
 }
 
 export interface StorageSetFiltersPayload {

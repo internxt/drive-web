@@ -2,12 +2,11 @@ import { useEffect, useRef, useState } from 'react';
 import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
 
 const FileVideoViewer = ({
-  file,
   blob,
+  setIsPreviewAvailable,
 }: {
-  file: DriveFileData;
   blob: Blob;
-  setIsErrorWhileDownloading: (isError: boolean) => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
 }): JSX.Element => {
   const [dimensions, setDimensions] = useState({ width: 640, height: 480 });
   const videoPlayerRef = useRef<HTMLVideoElement>(null);
@@ -21,24 +20,26 @@ const FileVideoViewer = ({
       setDimensions({ width: videoWidth, height: videoHeight });
     });
 
-    // Set the video src.
     videoPlayer.src = URL.createObjectURL(blob);
 
-    // Cleanup.
+    videoPlayer.play().catch((err) => {
+      const error = err as Error;
+      console.error('[ERROR WHILE PLAYING VIDEO/STACK]: ', error.stack || error.message);
+      setIsPreviewAvailable(false);
+    });
+
+    // Cleanup
     return () => {
       URL.revokeObjectURL(videoPlayer.src);
     };
   }, []);
 
   return (
-    <div className={'flex h-full w-full flex-col items-center justify-center'}>
+    <div className={'flex max-h-screen w-full flex-col items-center justify-center'}>
       <video
         ref={videoPlayerRef}
         controls
-        className={`${dimensions.width > dimensions.height ? 'w-full' : 'h-full'}`}
-        style={{
-          aspectRatio: `${dimensions.width}/${dimensions.height}`,
-        }}
+        className={`${dimensions.width > dimensions.height ? 'w-full' : 'max-h-screen'}`}
       ></video>
     </div>
   );

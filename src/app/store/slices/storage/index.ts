@@ -8,12 +8,14 @@ import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {
   loadingFolders: {},
   isDeletingItems: false,
   levels: {},
+  moveDialogLevels: {},
   levelsFoldersLength: {},
   levelsFilesLength: {},
   hasMoreDriveFolders: true,
@@ -33,6 +35,7 @@ const initialState: StorageState = {
   filesOnTrashLength: 0,
   viewMode: FileViewMode.List,
   namePath: [],
+  currentPath: { id: 0, name: '' },
   filesToRename: [],
   driveFilesToRename: [],
   foldersToRename: [],
@@ -41,6 +44,7 @@ const initialState: StorageState = {
   folderPathDialog: [],
   driveItemsSort: 'plainName',
   driveItemsOrder: 'ASC',
+  sharedNamePath: [],
 };
 
 export const removeDuplicates = (list: DriveItemData[]) => {
@@ -71,6 +75,9 @@ export const storageSlice = createSlice({
     },
     setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
+    },
+    setMoveDialogItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+      state.moveDialogLevels[action.payload.folderId] = action.payload.items;
     },
     addItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
       const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);
@@ -186,7 +193,14 @@ export const storageSlice = createSlice({
     clearSelectedItems: (state: StorageState) => {
       state.selectedItems = [];
     },
-    setItemToShare: (state: StorageState, action: PayloadAction<{ share?: ShareLink; item: DriveItemData } | null>) => {
+    setItemToShare: (
+      state: StorageState,
+      action: PayloadAction<{
+        share?: ShareLink;
+        sharing?: { type: string; id: string };
+        item: DriveItemData | (AdvancedSharedItem & { user: { email: string } });
+      } | null>,
+    ) => {
       state.itemToShare = action.payload;
     },
     setItemsToDelete: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
@@ -227,13 +241,32 @@ export const storageSlice = createSlice({
         state.namePath.push(action.payload);
       }
     },
+    setNamePath: (state: StorageState, action: PayloadAction<FolderPath[]>) => {
+      state.namePath = action.payload;
+    },
     pushNamePathDialog: (state: StorageState, action: PayloadAction<FolderPath>) => {
       if (!state.folderPathDialog.map((path) => path.id).includes(action.payload.id)) {
         state.folderPathDialog.push(action.payload);
       }
     },
+    resetSharedNamePath: (state: StorageState) => {
+      state.sharedNamePath = [];
+    },
+    pushSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
+      if (!state.sharedNamePath.map((path) => path.uuid).includes(action.payload.uuid)) {
+        state.sharedNamePath.push(action.payload);
+      }
+    },
+    popSharedNamePath: (state: StorageState, action: PayloadAction<SharedNamePath>) => {
+      const folderIndex: number = state.sharedNamePath.map((path) => path.uuid).indexOf(action.payload.uuid);
+
+      state.sharedNamePath = state.sharedNamePath.slice(0, folderIndex + 1);
+    },
     pathChangeWorkSpace: (state: StorageState, action: PayloadAction<FolderPath>) => {
       state.namePath = [action.payload];
+    },
+    setCurrentPath: (state: StorageState, action: PayloadAction<FolderPath>) => {
+      state.currentPath = action.payload;
     },
     patchItem: (
       state: StorageState,
@@ -373,12 +406,15 @@ export const {
   setItemsToMove,
   setViewMode,
   resetNamePath,
+  setCurrentPath,
   pushNamePath,
+  setNamePath,
   popNamePathUpTo,
   pathChangeWorkSpace,
   patchItem,
   pushItems,
   clearCurrentThumbnailItems,
+  resetSharedNamePath,
 } = storageSlice.actions;
 
 export const storageSelectors = selectors;

@@ -15,6 +15,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 3) {
         db.createObjectStore('account_settings');
       }
+      if (oldVersion <= 4) {
+        db.createObjectStore('move_levels');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,

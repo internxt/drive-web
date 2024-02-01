@@ -12,6 +12,8 @@ import { CaretLeft, FileArrowUp, Warning, WarningCircle, CheckCircle } from '@ph
 import { validateMnemonic } from 'bip39';
 import errorService from 'app/core/services/error.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
+import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
 
 interface ChangePasswordProps {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -116,6 +118,10 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
     const password = newPassword;
     const mnemonic = backupKeyContent;
 
+    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
+      method: 'backup_key',
+    };
+
     if (!token) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.tokenError'),
@@ -127,6 +133,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
       await authService.updateCredentialsWithToken(token, password, mnemonic, '');
       localStorageService.clear();
       setIsEmailSent(true);
+      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.recoverAccount.changePassword.serverError'),
@@ -150,13 +157,13 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
           />
           <span
             onClick={() => props.setHasBackupKey(undefined)}
-            className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+            className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}
           </span>
           <h3 className="mb-5 text-2xl font-medium">{translate('auth.recoverAccount.backupKey.title')}</h3>
-          <div className="font-regular mb-4 flex rounded-md border border-orange border-opacity-30 bg-orange bg-opacity-5 p-4 text-sm text-orange-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-orange/30 bg-orange/5 p-4 text-sm text-orange-dark">
             <span className="mr-1.5 pt-0.5">
               <Warning size={18} weight="fill" />
             </span>
@@ -180,7 +187,7 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
             <>
               <span
                 onClick={() => setBackupKeyContent('')}
-                className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+                className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
               >
                 <CaretLeft size={18} className="mr-0.5" />
                 {translate('auth.recoverAccount.backupKey.title')}
@@ -223,9 +230,9 @@ export default function ChangePassword(props: ChangePasswordProps): JSX.Element 
                   {confirmNewPassword && !isEqualPassword && (
                     <div className="flex flex-row items-start pt-1">
                       <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                        <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                       </div>
-                      <span className="font-base w-56 text-sm text-red-60">
+                      <span className="font-base w-56 text-sm text-red">
                         {translate('auth.recoverAccount.changePassword.notMatch')}
                       </span>
                     </div>

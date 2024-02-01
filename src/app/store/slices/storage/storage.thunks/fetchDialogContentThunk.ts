@@ -15,37 +15,40 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
   async (folderId, { dispatch }) => {
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const [responsePromise] = storageClient.getFolderContent(folderId);
-    const databaseContent = await databaseService.get<DatabaseCollection.Levels>(DatabaseCollection.Levels, folderId);
-
-    dispatch(storageActions.resetOrder());
+    const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(
+      DatabaseCollection.MoveDialogLevels,
+      folderId,
+    );
 
     if (databaseContent) {
       dispatch(
-        storageActions.setItems({
+        storageActions.setMoveDialogItems({
           folderId,
           items: databaseContent,
         }),
       );
-    } else {
-      await responsePromise;
     }
 
-    responsePromise.then((response) => {
+    await responsePromise.then(async (response) => {
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
-        storageActions.setItems({
+        storageActions.setMoveDialogItems({
           folderId,
           items,
         }),
       );
-      databaseService.put(DatabaseCollection.Levels, folderId, items);
+      await databaseService.delete(DatabaseCollection.MoveDialogLevels, folderId);
+      await databaseService.put(DatabaseCollection.MoveDialogLevels, folderId, items);
     });
   },
 );
 
 export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder.addCase(fetchDialogContentThunk.rejected, (state, action) => {
-    notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-  });
+  builder
+    .addCase(fetchDialogContentThunk.pending, () => undefined)
+    .addCase(fetchDialogContentThunk.fulfilled, () => undefined)
+    .addCase(fetchDialogContentThunk.rejected, (state, action) => {
+      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+    });
 };

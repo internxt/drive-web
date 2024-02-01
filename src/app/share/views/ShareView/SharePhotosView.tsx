@@ -1,14 +1,12 @@
 import { useState, useEffect } from 'react';
-import streamSaver from 'streamsaver';
 import { match } from 'react-router';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
 import { Link } from 'react-router-dom';
 import { useAppSelector } from '../../../store/hooks';
-import UilCheck from '@iconscout/react-unicons/icons/uil-check';
+import { Check, DownloadSimple } from '@phosphor-icons/react';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import errorService from 'app/core/services/error.service';
 import Spinner from '../../../shared/components/Spinner/Spinner';
@@ -16,11 +14,11 @@ import { GetPhotoShareResponse, PhotoId } from '@internxt/sdk/dist/photos';
 import { SdkFactory } from '../../../core/factory/sdk';
 import network from 'app/network';
 import downloadService from '../../../drive/services/download.service';
-import JSZip from 'jszip';
-import { Readable } from 'stream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
+import { FlatFolderZip } from 'app/core/services/zipFolder.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import Button from 'app/shared/components/Button/Button';
 
 interface SharePhotosProps {
   match: match<{
@@ -106,11 +104,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
         if (!canUseReadableStreamMethod) {
           await loadWritableStreamPonyfill();
         }
-
-        const zip = new JSZip();
-
-        const writableStream = streamSaver.createWriteStream('photos.zip', {});
-        const writer = writableStream.getWriter();
+        const folderName = `photos_${Date.now()}`;
+        const zip = new FlatFolderZip(folderName, {});
 
         const generalProgress: Record<PhotoId, number> = {};
 
@@ -139,27 +134,16 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
             },
           });
 
-          zip.file(photoName, await photoStreamPromise, { compression: 'DEFLATE' });
+          try {
+            const photoData = await photoStreamPromise;
+            zip.addFile(photoName, photoData);
+          } catch (error) {
+            errorService.reportError(error);
+            throw new Error('Error generating zip');
+          }
         }
-        await new Promise<void>((resolve, reject) => {
-          const zipStream = zip.generateInternalStream({
-            type: 'uint8array',
-            streamFiles: true,
-            compression: 'DEFLATE',
-          }) as Readable;
-          zipStream
-            ?.on('data', (chunk: Buffer) => {
-              writer.write(chunk);
-            })
-            .on('end', () => {
-              writer.close();
-              resolve();
-            })
-            .on('error', (err) => {
-              reject(err);
-            });
-          zipStream.resume();
-        });
+
+        zip.close();
       }
     } catch (err) {
       setIsError(true);
@@ -186,24 +170,24 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
   if (!isDownloading) {
     downloadButton = (
       <>
-        <UilImport height="20" width="20" />
-        <span className="font-medium">{translate('actions.download')}</span>
+        <DownloadSimple size={24} />
+        <span>{translate('actions.download')}</span>
       </>
     );
   } else {
     downloadButton =
       progress < 100 ? (
         <>
-          <div className="mr-1 h-5 w-5 text-white">
+          <div className="h-5 w-5 text-white">
             <Spinner />
           </div>
           <span>{translate('actions.downloading')}</span>
-          {<span className="font-normal text-blue-20">{progress}%</span>}
+          {<span className="text-white/50">{progress}%</span>}
         </>
       ) : (
         <>
-          <UilCheck height="24" width="24" />
-          <span className="font-medium">{translate('actions.downloaded')}</span>
+          <Check size={24} />
+          <span>{translate('actions.downloaded')}</span>
         </>
       );
   }
@@ -214,19 +198,19 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     body = (
       <>
         <div className="relative h-32 w-32">
-          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-          <ItemIconComponent className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+          <ItemIconComponent className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared photos no longer available</span>
-          <span className="text-cool-gray-60">{errorMessage}</span>
+          <span className="text-gray-60">{errorMessage}</span>
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/" className="cursor-pointer text-gray-90 no-underline hover:text-gray-90">
             <div
-              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
+              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"
             >
               <span>Open Internxt Drive</span>
@@ -245,8 +229,8 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
     body = (
       <>
         {/* File info */}
-        <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
-          <div className="h-32 w-32 drop-shadow-soft filter">
+        <div className="flex grow-0 flex-col items-center justify-center space-y-4">
+          <div className="h-32 w-32 drop-shadow-soft">
             <FileIcon />
           </div>
 
@@ -255,26 +239,22 @@ const SharePhotosView = (props: SharePhotosProps): JSX.Element => {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={title}>
                 {title}
               </abbr>
-              <span className="text-cool-gray-60">{sizeService.bytesToString(size)}</span>
+              <span className="text-gray-60">{sizeService.bytesToString(size)}</span>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
-          <button
-            onClick={download}
-            className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
-          >
+        <div className="flex flex-row items-center justify-center space-x-2">
+          <Button onClick={download} variant="primary">
             {downloadButton}
-          </button>
+          </Button>
         </div>
       </>
     );
   } else {
     body = (
-      <div className="h-8 w-8 text-cool-gray-30">
+      <div className="h-8 w-8 text-gray-30">
         <Spinner />
       </div>
     );
@@ -286,8 +266,8 @@ function ImagesIcon() {
   const Icon = iconService.getItemIcon(false, 'png');
   return (
     <div className="relative h-32 w-32">
-      <Icon className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-      <Icon className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+      <Icon className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+      <Icon className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
     </div>
   );
 }

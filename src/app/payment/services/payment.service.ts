@@ -79,9 +79,9 @@ const paymentService = {
     return paymentsClient.getUserSubscription();
   },
 
-  async getPrices(): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices();
+    return paymentsClient.getPrices(currency);
   },
 
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
@@ -102,10 +102,13 @@ const paymentService = {
     });
   },
 
-  async updateSubscriptionPrice(priceId: string): Promise<UserSubscription> {
+  async updateSubscriptionPrice(
+    priceId: string,
+    coupon?: string,
+  ): Promise<{ userSubscription: UserSubscription; request3DSecure: boolean; clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.updateSubscriptionPrice(priceId);
+    return paymentsClient.updateSubscriptionPrice(priceId, coupon);
   },
 
   async cancelSubscription(): Promise<void> {
@@ -126,7 +129,7 @@ const paymentService = {
   async handlePaymentTeams(priceId: string, quantity: number, mode: StripeSessionMode): Promise<void> {
     const mnemonicTeam = generateMnemonic(256);
     const encMnemonicTeam = await encryptPGP(mnemonicTeam);
-    const codMnemonicTeam = Buffer.from(encMnemonicTeam.data).toString('base64');
+    const codMnemonicTeam = Buffer.from(encMnemonicTeam).toString('base64');
     const payload: CreateTeamsPaymentSessionPayload = {
       mode,
       priceId,

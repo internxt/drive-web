@@ -16,11 +16,16 @@ import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 import { ConnectionLostError } from '../../../../network/requests';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 
 interface DownloadFileThunkOptions {
   taskId: string;
   showNotifications?: boolean;
   showErrors?: boolean;
+  sharingOptions?: {
+    credentials: any;
+    mnemonic: string;
+  };
 }
 
 interface DownloadFileThunkPayload {
@@ -38,7 +43,7 @@ export const checkIfCachedSourceIsOlder = ({
   file,
 }: {
   cachedFile: DriveItemBlobData | undefined;
-  file: DriveFileData;
+  file: DriveFileData | SharedFiles;
 }): boolean => {
   const isCachedFileOlder = !cachedFile?.updatedAt
     ? true
@@ -93,7 +98,13 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         const completeFileName = file.type ? `${file.name}.${file.type}` : file.name;
         saveAs(cachedFile?.source, completeFileName);
       } else {
-        await downloadService.downloadFile(file, isTeam, updateProgressCallback, abortController);
+        await downloadService.downloadFile(
+          file,
+          isTeam,
+          updateProgressCallback,
+          abortController,
+          options.sharingOptions,
+        );
       }
 
       tasksService.updateTask({

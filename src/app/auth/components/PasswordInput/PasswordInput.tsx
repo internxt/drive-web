@@ -22,7 +22,9 @@ interface InputProps {
   autoFocus?: boolean;
   value?: string;
   autoComplete?: string;
+  inputDataCy?: string;
 }
+
 const PasswordInput = ({
   label,
   disabled,
@@ -39,8 +41,10 @@ const PasswordInput = ({
   className,
   autoFocus,
   autoComplete,
+  inputDataCy,
 }: InputProps): JSX.Element => {
   const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className={`relative flex-1 ${className}`}>
       <input
@@ -51,6 +55,7 @@ const PasswordInput = ({
         required={true}
         autoFocus={autoFocus}
         autoComplete={autoComplete}
+        data-cy={inputDataCy}
         {...register(label, {
           required,
           minLength,
@@ -64,13 +69,13 @@ const PasswordInput = ({
         onBlur={() => {
           if (onBlur) onBlur();
         }}
-        className={`h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
       <div
         onClick={() => setShowPassword(!showPassword)}
         onKeyDown={(e) => (e['code'] === 'Space' || e['code'] === 'Enter') && setShowPassword(!showPassword)}
         tabIndex={0}
-        className="absolute right-4 top-1/2 flex -translate-y-1/2 transform cursor-pointer items-center justify-center text-gray-100"
+        className="absolute right-4 top-1/2 flex -translate-y-1/2 cursor-pointer items-center justify-center text-gray-100"
       >
         {showPassword ? <Eye className="h-6 w-6" /> : <EyeSlash className="h-6 w-6" />}
       </div>

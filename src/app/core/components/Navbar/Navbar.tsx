@@ -72,7 +72,7 @@ const Navbar = (props: NavbarProps) => {
   if (!user) throw new Error('User is not defined');
 
   return (
-    <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40">
+    <div className="flex h-14 w-full items-center justify-between border-b border-gray-5 text-gray-40 dark:bg-gray-1">
       {hideSearch ? (
         <div />
       ) : (
@@ -82,7 +82,7 @@ const Navbar = (props: NavbarProps) => {
             onChange={onSearchInputChange}
             type="text"
             placeholder={translate('general.searchBar.oldSearchBarPlaceholder') as string}
-            className="no-ring-at-all h-9 w-80 max-w-md transform bg-gray-5 px-3 duration-200 focus:ring-0"
+            className="no-ring-at-all h-9 w-80 max-w-md bg-gray-5 px-3 duration-200 focus:ring-0"
           />
           <MagnifyingGlass
             onClick={onSearchButtonClicked}

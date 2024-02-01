@@ -30,24 +30,25 @@ function RecoveryLink(): JSX.Element {
       }
     } else {
       setShowErrors(true);
-      setEmailErrors(translate('auth.forgotPassword.ivalidEmail'));
+      setEmailErrors(translate('auth.forgotPassword.invalidEmail'));
     }
   };
 
   return (
     <>
       {step === 1 ? (
-        <div className="flex w-96 flex-col rounded-2xl bg-white p-8 shadow-soft">
-          <h1 className="text-2xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
+        <div className="flex w-96 flex-col space-y-5 p-8">
+          <h1 className="text-3xl font-medium text-gray-100">{translate('auth.forgotPassword.title')}</h1>
+
           <form
-            className="mt-5 w-full"
+            className="flex w-full flex-col items-start space-y-2"
             onSubmit={(event) => {
               onSendEmail(event);
             }}
           >
             <Input
               placeholder={translate('auth.email')}
-              label={translate('auth.email')}
+              className="w-full"
               value={email}
               onFocus={() => setShowErrors(false)}
               onChange={(email) => {
@@ -55,31 +56,38 @@ function RecoveryLink(): JSX.Element {
               }}
               required={true}
             />
+
             {showErrors && (
               <div className="mt-2 flex flex-row items-start pb-3">
                 <div className="flex h-5 flex-row items-center">
-                  <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                  <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                 </div>
-                <span className="font-base w-56 text-sm text-red-60">{emailErrors}</span>
+                <span className="font-base w-56 text-sm text-red">{emailErrors}</span>
               </div>
             )}
-            <Button type="submit" variant="primary" className="mt-4 w-full">
+
+            <Button type="submit" variant="primary" className="w-full">
               {translate('auth.forgotPassword.continue')}
             </Button>
           </form>
-          <div className="mt-4 flex w-full justify-center">
-            <p className="font-regular mr-2 text-base">{translate('auth.forgotPassword.password')}</p>
-            <Link to="/login" className="cursor-pointer text-base font-medium text-primary no-underline">
+
+          <div className="w-full border-b border-gray-10" />
+
+          <div className="flex w-full justify-center space-x-1.5 font-medium">
+            <span>{translate('auth.forgotPassword.password')}</span>
+            <Link to="/login" className="cursor-pointer text-primary no-underline">
               {translate('auth.forgotPassword.login')}
             </Link>
           </div>
         </div>
       ) : (
-        <div className="flex w-80 flex-col items-center justify-center rounded-2xl bg-white p-8 text-center shadow-soft">
+        <div className="flex w-80 flex-col items-center justify-center space-y-5 p-8 text-center">
           <Envelope size={80} className="text-primary" weight="thin" />
-          <div>
-            <h4 className="mt-4 text-xl font-medium">{translate('auth.forgotPassword.successTitle')}</h4>
-            <p className="font-regular mt-1 w-64 text-base text-gray-60">
+
+          <div className="flex flex-col items-center space-y-2">
+            <h1 className="text-3xl font-medium">{translate('auth.forgotPassword.successTitle')}</h1>
+
+            <p className="font-regular w-64 text-base text-gray-80">
               {translate('auth.forgotPassword.successDescription')}
             </p>
           </div>

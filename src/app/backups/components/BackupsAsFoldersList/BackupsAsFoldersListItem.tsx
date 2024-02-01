@@ -11,7 +11,7 @@ export default function BackupsAsFoldersListItem({
 }: {
   item: DriveItemData;
   onClick: (target: typeof item) => void;
-  onDoubleClick: (target: typeof item) => void;
+  onDoubleClick?: (target: typeof item) => void;
   dataTest?: string;
 }): JSX.Element {
   const Icon = iconService.getItemIcon(item.isFolder, item.type);
@@ -20,19 +20,19 @@ export default function BackupsAsFoldersListItem({
 
   return (
     <div
-      className={'flex flex-grow items-center'}
+      className={'flex grow cursor-pointer items-center'}
       onClick={() => onClick(item)}
-      onDoubleClick={() => onDoubleClick(item)}
+      onDoubleClick={() => onDoubleClick?.(item)}
       data-test={dataTest}
     >
-      <div className="box-content flex w-0.5/12 items-center justify-center px-3">
+      <div className="box-content flex w-0.5/12 items-center justify-center pr-3">
         <Icon className={'h-8 w-8'} />
       </div>
       <p className="flex-1 truncate pr-3">{displayName}</p>
-      <div className="hidden w-3/12 items-center lg:flex">
+      <div className="w-3/12 min-w-date items-center lg:flex">
         {dateService.format(item.createdAt, 'DD MMMM YYYY. HH:mm')}
       </div>
-      <div className="flex w-2/12 items-center">{size}</div>
+      <div className="flex w-2/12 min-w-breadcrumb items-center">{size}</div>
     </div>
   );
 }

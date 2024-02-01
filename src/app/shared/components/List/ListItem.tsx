@@ -4,17 +4,20 @@ import { DotsThree } from '@phosphor-icons/react';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { useHotkeys } from 'react-hotkeys-hook';
 
-export type ListItemMenu<T> = Array<{
-  separator?: boolean;
-  name: string;
-  icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
-  keyboardShortcutOptions?: {
-    keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
-    keyboardShortcutText?: string;
-  };
-  action: (target: T) => void;
-  disabled?: (target: T) => boolean;
-}>;
+export type ListItemMenu<T> = Array<
+  | {
+      separator?: boolean;
+      name: string;
+      icon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+      keyboardShortcutOptions?: {
+        keyboardShortcutIcon?: React.ForwardRefExoticComponent<{ size?: number | string }>;
+        keyboardShortcutText?: string;
+      };
+      action: (target: T) => void;
+      disabled?: (target: T) => boolean;
+    }
+  | undefined
+>;
 
 interface ItemProps<T> {
   item: T;
@@ -33,6 +36,55 @@ interface ItemProps<T> {
 }
 
 const MENU_BUTTON_HEIGHT = 40;
+
+// This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
+// As the size of the list is not fixed we need to create an item equal to the list to be rendered
+// at the same time as the view to get the size and make the necessary positional adjustments.
+const MenuItemList = ({
+  menuItemsRef,
+  menu,
+}: {
+  menuItemsRef: React.MutableRefObject<HTMLDivElement | null>;
+  menu?: ListItemMenu<any>;
+}) => (
+  <div
+    className="z-20 mt-0 flex flex-col rounded-lg bg-surface py-1.5 shadow-subtle-hard outline-none dark:bg-gray-5"
+    style={{
+      minWidth: '180px',
+      position: 'fixed',
+      top: -9999,
+      left: -9999,
+    }}
+    ref={menuItemsRef}
+  >
+    {menu?.map((option, i) => (
+      <div key={i}>
+        {option && option.separator ? (
+          <div className="my-0.5 flex w-full flex-row px-4">
+            <div className="h-px w-full bg-gray-10" />
+          </div>
+        ) : (
+          option && (
+            <div>
+              <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
+                <div className="flex flex-row items-center space-x-2">
+                  {option.icon && <option.icon size={20} />}
+                  <span>{option.name}</span>
+                </div>
+                <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
+                  {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                    <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                  )}
+                  {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                </span>
+              </div>
+            </div>
+          )
+        )}
+      </div>
+    ))}
+  </div>
+);
 
 export default function ListItem<T extends { id: string }>({
   item,
@@ -95,47 +147,6 @@ export default function ListItem<T extends { id: string }>({
     menuButtonRef.current?.click();
   };
 
-  // This is used to get the size of the menu item list and adjust its position depending on where you are trying to open it.
-  // As the size of the list is not fixed we need to create an item equal to the list to be rendered
-  // at the same time as the view to get the size and make the necessary positional adjustments.
-  const MenuItemList = () => (
-    <div
-      className="outline-none z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
-      style={{
-        minWidth: '180px',
-        position: 'fixed',
-        top: -9999,
-        left: -9999,
-      }}
-      ref={menuItemsRef}
-    >
-      {menu?.map((option, i) => (
-        <div key={i}>
-          {option.separator ? (
-            <div className="my-0.5 flex w-full flex-row px-4">
-              <div className="h-px w-full bg-gray-10" />
-            </div>
-          ) : (
-            <div>
-              <div className={'flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base'}>
-                <div className="flex flex-row items-center space-x-2">
-                  {option.icon && <option.icon size={20} />}
-                  <span>{option.name}</span>
-                </div>
-                <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
-                  {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
-                    <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
-                  )}
-                  {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
-                </span>
-              </div>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
     <div
       onDoubleClick={onDoubleClick}
@@ -143,12 +154,12 @@ export default function ListItem<T extends { id: string }>({
       onContextMenu={handleContextMenuClick}
       ref={rootWrapperRef}
       className={`group relative flex h-14 flex-row items-center pl-14 pr-5 ${
-        selected ? 'bg-primary bg-opacity-10 text-gray-100' : 'focus-within:bg-gray-1 hover:bg-gray-1'
+        selected ? 'bg-primary/10 text-gray-100 dark:bg-primary/20' : 'focus-within:bg-gray-1 hover:bg-gray-1'
       }`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      <MenuItemList />
+      <MenuItemList menu={menu} menuItemsRef={menuItemsRef} />
       <div
         className={`absolute left-5 top-0 flex h-full w-0 flex-row items-center justify-start p-0 opacity-0 focus-within:opacity-100 group-hover:opacity-100 ${
           selected && 'opacity-100'
@@ -165,8 +176,8 @@ export default function ListItem<T extends { id: string }>({
       {disableItemCompositionStyles ? (
         <div
           key={0}
-          className={`flex-grow-1 relative flex h-full w-full flex-row items-center border-b ${
-            selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+          className={`grow-1 relative flex h-full w-full flex-row items-center border-b ${
+            selected ? 'border-primary/5' : 'border-gray-5'
           }`}
         >
           {itemComposition[0](item)}
@@ -175,8 +186,8 @@ export default function ListItem<T extends { id: string }>({
         new Array(itemComposition.length).fill(0).map((col, i) => (
           <div
             key={i}
-            className={`relative flex h-full flex-shrink-0 flex-row items-center border-b ${
-              selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+            className={`relative flex h-full shrink-0 flex-row items-center border-b ${
+              selected ? 'border-primary/5' : 'border-gray-5'
             } ${columnsWidth[i]}`}
           >
             {itemComposition[i](item)}
@@ -184,23 +195,25 @@ export default function ListItem<T extends { id: string }>({
         ))
       )}
       <div
-        className={`flex h-14 w-12 flex-shrink-0 flex-col items-center justify-center border-b ${
-          selected ? 'border-primary border-opacity-5' : 'border-gray-5'
+        className={`flex h-14 w-12 shrink-0 flex-col items-center justify-center border-b ${
+          selected ? 'border-primary/5' : 'border-gray-5'
         }`}
       >
         <Menu as="div" className={openedFromRightClick ? '' : 'relative'}>
           {({ open, close }) => {
-            const [isHalfwayDown, setIsHalfwayDown] = useState(false);
+            const [isContextMenuCutOff, setIsContextMenuCutOff] = useState(false);
 
             function handleOpenPosition() {
               const element = menuButtonRef.current;
+              const contextMenuHeight = menuItemsRef?.current?.offsetHeight || 300;
               if (!element) return;
+              if (!contextMenuHeight) return;
 
               const { bottom } = element.getBoundingClientRect();
               const windowHeight = window.innerHeight;
 
-              const isHalfway = bottom > windowHeight / 2;
-              setIsHalfwayDown(isHalfway);
+              const isContextCutOff = bottom + contextMenuHeight > windowHeight;
+              setIsContextMenuCutOff(isContextCutOff);
             }
 
             useEffect(() => {
@@ -224,9 +237,9 @@ export default function ListItem<T extends { id: string }>({
                 <Menu.Button
                   id={'list-item-menu-button'}
                   ref={menuButtonRef as LegacyRef<HTMLButtonElement>}
-                  className={`outline-none flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 focus-visible:opacity-100 group-hover:opacity-100 ${
+                  className={`flex h-10 w-10 flex-col items-center justify-center rounded-md opacity-0 outline-none focus-visible:opacity-100 group-hover:opacity-100 ${
                     selected
-                      ? 'text-gray-80 hover:bg-primary hover:bg-opacity-10 focus-visible:bg-primary focus-visible:bg-opacity-10'
+                      ? 'text-gray-80 hover:bg-primary/10 focus-visible:bg-primary/10'
                       : 'text-gray-60 hover:bg-gray-10 focus-visible:bg-gray-10'
                   }`}
                   onClick={() => onThreeDotsButtonPressed?.(item)}
@@ -235,61 +248,63 @@ export default function ListItem<T extends { id: string }>({
                 </Menu.Button>
                 {open && (
                   <Menu.Items
-                    className="outline-none"
+                    className="flex outline-none"
                     style={
                       openedFromRightClick
                         ? { position: 'absolute', left: posX, top: posY, zIndex: 99 }
                         : {
                             position: 'absolute',
                             right: 0,
-                            [isHalfwayDown ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
-                            zIndex: 99,
+                            [isContextMenuCutOff ? 'bottom' : 'top']: MENU_BUTTON_HEIGHT,
+                            zIndex: 9999,
                           }
                     }
                   >
                     <div
-                      className="z-20 mt-0 flex flex-col rounded-lg bg-white py-1.5 shadow-subtle-hard"
+                      className="z-20 mt-0 flex flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-subtle-hard dark:bg-gray-5"
                       style={{
                         minWidth: '180px',
                       }}
                     >
                       {menu?.map((option, i) => (
                         <div key={i}>
-                          {option.separator ? (
+                          {option && option.separator ? (
                             <div className="my-0.5 flex w-full flex-row px-4">
                               <div className="h-px w-full bg-gray-10" />
                             </div>
                           ) : (
-                            <Menu.Item disabled={option.disabled?.(item)}>
-                              {({ active, disabled }) => {
-                                return (
-                                  <div
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      option.action?.(item);
-                                    }}
-                                    className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
-                                      active
-                                        ? 'bg-gray-5 text-gray-100'
-                                        : disabled
-                                        ? 'pointer-events-none font-medium text-gray-100'
-                                        : 'text-gray-80'
-                                    }`}
-                                  >
-                                    <div className="flex flex-row items-center space-x-2">
-                                      {option.icon && <option.icon size={20} />}
-                                      <span>{option.name}</span>
+                            option && (
+                              <Menu.Item disabled={option.disabled?.(item)}>
+                                {({ active, disabled }) => {
+                                  return (
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        option.action?.(item);
+                                      }}
+                                      className={`flex cursor-pointer flex-row whitespace-nowrap px-4 py-1.5 text-base ${
+                                        active
+                                          ? 'bg-gray-5 text-gray-100 dark:bg-gray-10'
+                                          : disabled
+                                          ? 'pointer-events-none font-medium text-gray-100'
+                                          : 'text-gray-80'
+                                      }`}
+                                    >
+                                      <div className="flex flex-row items-center space-x-2">
+                                        {option.icon && <option.icon size={20} />}
+                                        <span>{option.name}</span>
+                                      </div>
+                                      <span className="ml-5 flex grow items-center justify-end text-sm text-gray-40">
+                                        {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
+                                          <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
+                                        )}
+                                        {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
+                                      </span>
                                     </div>
-                                    <span className="ml-5 flex flex-grow items-center justify-end text-sm text-gray-40">
-                                      {option.keyboardShortcutOptions?.keyboardShortcutIcon && (
-                                        <option.keyboardShortcutOptions.keyboardShortcutIcon size={14} />
-                                      )}
-                                      {option.keyboardShortcutOptions?.keyboardShortcutText ?? ''}
-                                    </span>
-                                  </div>
-                                );
-                              }}
-                            </Menu.Item>
+                                  );
+                                }}
+                              </Menu.Item>
+                            )
                           )}
                         </div>
                       ))}

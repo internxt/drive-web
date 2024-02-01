@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 import { join } from 'path';
 import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
 
@@ -16,7 +17,7 @@ describe('Recents panel', () => {
     cy.wait('@getFiles', { timeout: 60000 }).then(() => {
       cy.uploadExampleFile();
     });
-    cy.visit('/app/recents');
+    cy.visit('/recents');
   });
 
   it('Should list recents', () => {

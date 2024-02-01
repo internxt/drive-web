@@ -10,6 +10,8 @@ export default function Button({
   leftIcon,
   rightIcon,
   onClick,
+  buttonDataCy,
+  textDataCy,
 }: {
   text: string;
   style: string;
@@ -19,19 +21,22 @@ export default function Button({
   className?: string;
   leftIcon?: JSX.Element;
   rightIcon?: JSX.Element;
-  onClick?:()=> void;
+  onClick?: () => void;
+  buttonDataCy?: string;
+  textDataCy?: string;
 }): JSX.Element {
   return (
     <button
       disabled={disabled}
       type="submit"
-      onClick= {onClick}
+      data-cy={buttonDataCy}
+      onClick={onClick}
       className={`flex h-11 flex-row items-center justify-center space-x-3 whitespace-nowrap ${style} ${className} ${
-        loading && 'loading'
+        loading ? 'loading' : ''
       } ${disabled && !loading ? 'disabled' : ''}`}
     >
       {!loading && leftIcon}
-      <span>{!disabled ? text : disabledText}</span>
+      <span data-cy={textDataCy}>{!disabled ? text : disabledText}</span>
       {!loading && rightIcon}
       <svg
         role="status"

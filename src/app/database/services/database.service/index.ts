@@ -10,6 +10,7 @@ export enum DatabaseProvider {
 
 export enum DatabaseCollection {
   Levels = 'levels',
+  MoveDialogLevels = 'move_levels',
   Photos = 'photos',
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
@@ -44,6 +45,11 @@ export type AvatarBlobData = {
 
 export interface AppDatabase extends DBSchema {
   levels: {
+    key: number;
+    value: DriveItemData[];
+    indexes?: Record<string, IDBValidKey>;
+  };
+  move_levels: {
     key: number;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;

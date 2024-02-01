@@ -10,10 +10,14 @@ import { useHotkeys } from 'react-hotkeys-hook';
 type HeaderProps<T, F> = {
   label: string;
   width: string;
-} & ({ name: F; orderable: true; defaultDirection: 'ASC' | 'DESC' } | { name: keyof T; orderable: false });
+} & (
+  | { name: F; orderable: true; defaultDirection: 'ASC' | 'DESC'; buttonDataCy?: string; textDataCy?: string }
+  | { name: keyof T; orderable: false }
+);
 
 interface ListProps<T, F> {
   header: HeaderProps<T, F>[];
+  checkboxDataCy?: string;
   items: T[];
   itemComposition: Array<(props: T) => JSX.Element>;
   selectedItems: T[];
@@ -42,6 +46,57 @@ interface ListProps<T, F> {
   };
 }
 
+const Header = ({
+  selectedItems,
+  onTopSelectionCheckboxClick,
+  items,
+  header,
+  orderBy,
+  onOrderableColumnClicked,
+  menu,
+  isVerticalScrollbarVisible,
+  checkboxDataCy,
+}) => {
+  return (
+    <div className="flex h-12 shrink-0 flex-row px-5">
+      {/* COLUMN */}
+      <div className="flex h-full min-w-full flex-row items-center border-b border-gray-10">
+        {/* SELECTION CHECKBOX */}
+        <div className="flex h-full flex-row items-center justify-between pr-4">
+          <BaseCheckbox
+            checked={selectedItems.length > 0}
+            indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
+            onClick={onTopSelectionCheckboxClick}
+            checkboxDataCy={checkboxDataCy}
+          />
+        </div>
+
+        {header.map((column) => (
+          <button
+            onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
+            key={column.name.toString()}
+            data-cy={column?.buttonDataCy}
+            className={`flex h-full shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
+              column.width
+            } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
+          >
+            <span data-cy={column?.textDataCy}>{column.label}</span>
+            {column.name === orderBy?.field &&
+              column.orderable &&
+              (orderBy?.direction === 'ASC' ? (
+                <ArrowUp size={14} weight="bold" />
+              ) : (
+                <ArrowDown size={14} weight="bold" />
+              ))}
+          </button>
+        ))}
+        {isVerticalScrollbarVisible && <div className="mr-15px" />}
+        {menu && <div className="flex h-full w-12 shrink-0" />}
+      </div>
+    </div>
+  );
+};
+
 /**
  *
  * Generic arguments:
@@ -63,6 +118,7 @@ interface ListProps<T, F> {
  */
 export default function List<T extends { id: any }, F extends keyof T>({
   header,
+  checkboxDataCy,
   items,
   itemComposition,
   selectedItems,
@@ -90,6 +146,9 @@ ListProps<T, F>): JSX.Element {
   const isItemSelected = (item: T) => {
     return selectedItems.some((i) => item.id === i.id);
   };
+  const container = document.getElementById('scrollableList');
+  const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
+  const isEmptyState = !hasMoreItems && items.length === 0 && !isLoading;
 
   const loader = new Array(25)
     .fill(0)
@@ -111,7 +170,7 @@ ListProps<T, F>): JSX.Element {
     }
   }, [isLoading, isScrollable, hasMoreItems, node]);
 
-  const handleNexstPage = () => {
+  const handleNextPage = () => {
     onNextPage?.();
   };
 
@@ -160,10 +219,9 @@ ListProps<T, F>): JSX.Element {
     }
   }
 
-  const handleKeyPress = (action) => {
-    return () => {
-      if (!disableKeyboardShortcuts) action();
-    };
+  const handleKeyPress = (action, e) => {
+    e.preventDefault();
+    if (!disableKeyboardShortcuts) action();
   };
 
   const handleRKeyPressed = () => {
@@ -174,19 +232,20 @@ ListProps<T, F>): JSX.Element {
     keyBoardShortcutActions?.onBackspaceKeyPressed?.();
   };
 
-  useHotkeys(
-    'ctrl+a, cmd+a',
-    (e) => {
-      e.preventDefault();
-      handleKeyPress(selectAllItems);
-    },
-    [items, selectedItems, disableKeyboardShortcuts],
-  );
+  useHotkeys('ctrl+a, meta+a', (e) => handleKeyPress(selectAllItems, e), [
+    items,
+    selectedItems,
+    disableKeyboardShortcuts,
+  ]);
 
-  useHotkeys('esc', handleKeyPress(unselectAllItems), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('enter', handleKeyPress(executeClickOnSelectedItem), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('r', handleKeyPress(handleRKeyPressed), [selectedItems, disableKeyboardShortcuts]);
-  useHotkeys('backspace', handleKeyPress(handleBackspaceKeyPressed), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('esc', (e) => handleKeyPress(unselectAllItems, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('enter', (e) => handleKeyPress(executeClickOnSelectedItem, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('r', (e) => handleKeyPress(handleRKeyPressed, e), [selectedItems, disableKeyboardShortcuts]);
+  useHotkeys('backspace', (e) => handleKeyPress(handleBackspaceKeyPressed, e), [
+    selectedItems,
+    disableKeyboardShortcuts,
+  ]);
+  useHotkeys('delete', (e) => handleKeyPress(handleBackspaceKeyPressed, e), [selectedItems, disableKeyboardShortcuts]);
 
   function onItemClick(itemClicked: T, e: React.MouseEvent<HTMLDivElement>) {
     if (e.metaKey || e.ctrlKey) {
@@ -204,81 +263,60 @@ ListProps<T, F>): JSX.Element {
   }
 
   return (
-    <div id="generic-list-component" className={`relative flex h-full flex-col overflow-y-hidden ${className}`}>
-      {/* HEAD */}
-      <div className="relative flex h-12 flex-shrink-0 flex-row px-5">
-        {/* COLUMN */}
-        <div className="relative flex h-full min-w-full flex-row items-center border-b border-gray-10 pl-9">
-          {/* SELECTION CHECKBOX */}
-          <div className="absolute left-0 top-0 flex h-full w-0 flex-row items-center justify-start p-0">
-            <BaseCheckbox
-              checked={selectedItems.length > 0}
-              indeterminate={items.length > selectedItems.length && selectedItems.length > 0}
-              onClick={onTopSelectionCheckboxClick}
-            />
-          </div>
-
-          {header.map((column) => (
-            <div
-              onClick={column.orderable ? () => onOrderableColumnClicked(column) : undefined}
-              key={column.name.toString()}
-              className={`flex h-full flex-shrink-0  flex-row items-center space-x-1.5 text-base font-medium text-gray-60  ${
-                column.width
-              } ${column.orderable ? 'cursor-pointer hover:text-gray-80' : ''}`}
-            >
-              <span>{column.label}</span>
-              {column.name === orderBy?.field &&
-                column.orderable &&
-                (orderBy?.direction === 'ASC' ? (
-                  <ArrowUp size={14} weight="bold" />
-                ) : (
-                  <ArrowDown size={14} weight="bold" />
-                ))}
-            </div>
-          ))}
-
-          {menu && <div className="flex h-full w-12 flex-shrink-0" />}
-        </div>
-      </div>
+    <div
+      id="generic-list-component"
+      className={`relative flex h-full flex-col overflow-x-hidden overflow-y-hidden ${className}`}
+    >
+      {!isEmptyState ? (
+        <Header
+          selectedItems={selectedItems}
+          onTopSelectionCheckboxClick={onTopSelectionCheckboxClick}
+          items={items}
+          header={header}
+          orderBy={orderBy}
+          onOrderableColumnClicked={onOrderableColumnClicked}
+          menu={menu}
+          isVerticalScrollbarVisible={isVerticalScrollbarVisible}
+          checkboxDataCy={checkboxDataCy}
+        />
+      ) : null}
 
       {/* BODY */}
-      <div id="scrollableList" className="flex h-full flex-col overflow-y-auto" ref={ref}>
-        {(!hasMoreItems ?? false) && items.length === 0 && !isLoading ? (
+      <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
+        {isEmptyState ? (
           emptyState
         ) : items.length > 0 ? (
-          <>
-            <InfiniteScroll
-              dataLength={items.length}
-              next={handleNexstPage}
-              hasMore={!!hasMoreItems}
-              loader={loader}
-              scrollThreshold={0.7}
-              scrollableTarget="scrollableList"
-              className="h-full"
-              style={{ overflow: 'visible' }}
-            >
-              {items.map((item) => (
-                <ListItem<T>
-                  key={item.id}
-                  item={item}
-                  itemComposition={itemComposition}
-                  selected={isItemSelected(item)}
-                  onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
-                  onClick={(e) => onItemClick(item, e)}
-                  onClickContextMenu={(e) => onRightItemClick(item, e)}
-                  onThreeDotsButtonPressed={(item) => {
-                    if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
-                  }}
-                  columnsWidth={header.map((column) => column.width)}
-                  menu={menu}
-                  onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
-                  disableItemCompositionStyles={disableItemCompositionStyles}
-                  onMouseEnter={onMouseEnter}
-                  onMouseLeave={onMouseLeave}
-                />
-              ))}
-            </InfiniteScroll>
-          </>
+          <InfiniteScroll
+            dataLength={items.length}
+            next={handleNextPage}
+            hasMore={!!hasMoreItems}
+            loader={loader}
+            scrollThreshold={0.7}
+            scrollableTarget="scrollableList"
+            className="h-full"
+            style={{ overflow: 'visible' }}
+          >
+            {items.map((item) => (
+              <ListItem<T>
+                key={item.id}
+                item={item}
+                itemComposition={itemComposition}
+                selected={isItemSelected(item)}
+                onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}
+                onClick={(e) => onItemClick(item, e)}
+                onClickContextMenu={(e) => onRightItemClick(item, e)}
+                onThreeDotsButtonPressed={(item) => {
+                  if (!isItemSelected(item)) unselectAllItemsAndSelectOne(item);
+                }}
+                columnsWidth={header.map((column) => column.width)}
+                menu={menu}
+                onSelectedChanged={(value) => onSelectedItemsChanged([{ props: item, value }])}
+                disableItemCompositionStyles={disableItemCompositionStyles}
+                onMouseEnter={onMouseEnter}
+                onMouseLeave={onMouseLeave}
+              />
+            ))}
+          </InfiniteScroll>
         ) : (
           <>{loader}</>
         )}

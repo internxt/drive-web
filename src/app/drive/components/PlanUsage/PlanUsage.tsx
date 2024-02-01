@@ -24,6 +24,9 @@ export default function PlanUsage({
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const subscriptionType = plan.subscription?.type;
 
+  const isLimitReached = usage >= limit;
+  const componentColor = isLimitReached ? 'bg-red' : 'bg-primary';
+
   const onUpgradeButtonClicked = () => {
     navigationService.push(AppView.Preferences, { tab: 'plans' });
   };
@@ -38,10 +41,13 @@ export default function PlanUsage({
         </p>
       )}
       <div className="mt-1 flex h-1.5 w-full justify-start overflow-hidden rounded-lg bg-gray-5">
-        <div className="h-full bg-primary" style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
+        <div className={`h-full ${componentColor}`} style={{ width: isLoading ? 0 : `${usagePercent}%` }} />
       </div>
       {subscriptionType === 'free' && (
-        <p onClick={onUpgradeButtonClicked} className="mt-3 cursor-pointer text-sm font-medium text-blue-60">
+        <p
+          onClick={onUpgradeButtonClicked}
+          className={`mt-3 h-full cursor-pointer text-sm font-medium ${isLimitReached ? 'text-red' : 'text-primary'}`}
+        >
           {translate('actions.upgradeNow')}
         </p>
       )}

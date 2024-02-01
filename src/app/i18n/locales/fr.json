@@ -3,29 +3,30 @@
     "title": "Gérez vos fichiers, votre compte et votre abonnement sur l'application",
     "logOut": "Déconnexion"
   },
+  "blackFridayBanner": {
+    "header": "Économisez 70% !",
+    "title": "Préparez-vous pour la Semaine de la Protection des Données",
+    "cta": "Choisir un plan",
+    "guarantee": "Garantie de remboursement de 30 jours",
+    "features": {
+      "discount": "Économisez sur les plans mensuels et annuels",
+      "safeCloud": "Stockage cloud sûr et sécurisé",
+      "openSource": "Open source et transparent",
+      "endToEnd": "Transferts chiffrés de bout en bout",
+      "unauthorized": "Aucun accès non autorisé",
+      "offerEnds": "L'offre se termine le 29 janvier"
+    }
+  },
   "valentinesBanner": {
     "title": "L'amour sans limites !",
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+    "label": "Stockage annuel à moitié prix !",
+    "title": "Économisez 50% sur nos abonnements annuels !",
+    "cta": "Choisissez un plan",
+    "guarantee": "Garantie de remboursement sous 30 jours"
   },
   "lang": {
     "title": "Langue",
@@ -37,15 +38,21 @@
     "ru": "Русский (Russe)",
     "de": "Deutsch (Allemand)"
   },
+  "theme": {
+    "title": "Apparence",
+    "light": "Clair",
+    "dark": "Sombre",
+    "system": "Système"
+  },
   "auth": {
-    "email": "Adresse électronique",
-    "password": "Mot de passe",
-    "terms1": "En créant un compte, vous acceptez",
-    "terms2": "les termes et conditions, et la politique de confidentialité",
+    "email": "Email",
+    "password": " Mot de passe ",
+    "terms1": "En créant un compte,",
+    "terms2": "vous acceptez les termes et conditions",
     "decrypting": "Décryptage...",
     "login": {
-      "title": "Connexion",
-      "forgotPwd": "Mot de passe oublié ?",
+      "title": " Connexion ",
+      "forgotPwd": "Mot de passe oublié?",
       "dontHaveAccount": "Vous n'avez pas de compte ?",
       "createAccount": "Créer un compte",
       "2FA": "Code à deux facteurs",
@@ -54,70 +61,80 @@
     "signup": {
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
-      "login": "Connexion",
-      "encrypting": "Cryptage"
+      "login": " Connexion ",
+      "encrypting": "Encryptant"
     },
     "forgotPassword": {
       "title": "Récupération de compte",
-      "continue": "Continuer",
-      "sending": "Envoi...",
-      "notFound": "L'adresse électronique n'a pas été trouvée, veuillez réessayer",
-      "password": "Rappelez-vous votre mot de passe ?",
-      "login": "Connexion",
-      "successTitle": "Vérifiez votre boîte de réception",
-      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte.",
-      "ivalidEmail": "Adresse e-mail invalide"
+      "continue": "Continue",
+      "sending": "Envoi en cours...",
+      "notFound": " Adresse électronique non trouvée, veuillez réessayer ",
+      "password": "Vous vous souvenez de votre mot de passe ?",
+      "login": " Connexion ",
+      "successTitle": " Vérifier votre boîte de réception ",
+      "successDescription": "Nous vous avons envoyé un lien unique pour récupérer le mot de passe de votre compte",
+      "invalidEmail": "Invalide email"
+    },
+    "linkExpired": {
+      "title": "Lien expiré ou supprimé",
+      "description": "Le lien ou l'invitation que vous avez visité a expiré ou a été supprimé"
     },
     "recoverAccount": {
-      "title": "Récupération du compte",
-      "subtitle": "Avez-vous une clé de secours ?",
-      "info": "À quoi ressemble la clé de sauvegarde ?",
-      "info1": "Le nom du fichier de clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
-      "info2": "La clé de secours fait 24 mots",
-      "haveKeyButton": "Oui, j'ai une clé de secours",
+      "title": "Récupération de compte",
+      "subtitle": "Avez-vous une clé de sauvegarde ?",
+      "info": "À quoi ressemble la clé de sauvegarde ?",
+      "info1": "Le nom du fichier de la clé de sauvegarde est 'INTERNXT-BACKUP-KEY.txt'",
+      "info2": "La clé de sauvegarde comporte 24 mots",
+      "haveKeyButton": "Oui, j'ai une clé de sauvegarde",
       "notKeyButton": "Non, je n'en ai pas",
       "backupKey": {
         "title": "Vérifier la clé de sauvegarde",
-        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte.",
+        "alert": "Si vous téléchargez une mauvaise clé de sauvegarde, vos données seront corrompues, veuillez vous assurer que votre clé de sauvegarde est correcte",
         "button": "Télécharger la clé de sauvegarde"
       },
       "changePassword": {
-        "title": "Modifier le mot de passe",
+        "title": " Changer le mot de passe ",
         "newPassword": "Nouveau mot de passe",
-        "repeatNewPassword": "Répéter le mot de passe",
+        "repeatNewPassword": "Répéter le nouveau mot de passe",
         "notMatch": "Les mots de passe ne correspondent pas",
-        "submitButton": "Modifier le mot de passe",
+        "submitButton": " Changer le mot de passe ",
         "notPasswordStrength": "Le mot de passe doit comporter un chiffre",
         "shortPasswordStrength": "Le mot de passe doit comporter au moins 8 caractères",
-        "warningPasswordStrength": "Le mot de passe est wea",
+        "warningPasswordStrength": "Le mot de passe est faible",
         "successPasswordStrength": "Le mot de passe est fort",
-        "serverError": "Un problème s'est produit lors de la modification du mot de passe",
+        "serverError": "Quelque chose s'est mal passé lors de la modification du mot de passe",
         "tokenError": "Une erreur s'est produite lors de la validation de la clé de sauvegarde",
-        "backupKeyError": "La clé de sauvegarde téléchargée est invalide",
+        "backupKeyError": "La clé de sauvegarde téléchargée n'est pas valide",
         "emailSent": {
-          "title": "Mot de passe modifié",
-          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées.",
-          "redirect": "Redirection vers Internxt Drive in",
-          "button": "Aller à Internxt Drive"
+          "title": " Mot de passe modifié ",
+          "description": "Toutes vos données ont été recryptées et toutes vos sessions actives ont été déconnectées",
+          "redirect": "Redirection vers Internxt Drive",
+          "button": "Aller sur Internxt Drive"
         }
       }
     },
     "restartAccount": {
       "title": "Redémarrer le compte",
-      "description": "Grâce à notre politique de cryptage de bout en bout et d'absence de connaissance, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde.",
+      "description": "En raison de notre cryptage et de notre politique de connaissance zéro, vous ne pouvez pas accéder à vos données sans votre mot de passe ou une clé de sauvegarde",
       "alert1": "En redémarrant votre compte, vous comprenez que tous vos fichiers, photos et sauvegardes seront définitivement supprimés.",
       "button": "Envoyer la vérification du redémarrage du compte",
       "successDescription": "Votre compte et votre mot de passe ont été réinitialisés",
-      "error": "Un problème s'est produit lors du redémarrage du compte"
+      "error": "Quelque chose s'est mal passé lors du redémarrage du compte"
+    },
+    "universalLinkSuccess": {
+      "loginAs": "Se connecter comme",
+      "openDesktopApp": "Ouvrir l'application de bureau",
+      "anotherAccount": "Utiliser un autre compte ?",
+      "login": "Connexion"
     }
   },
   "general": {
     "new": "Nouveau",
     "of": "de",
     "terms": "Termes et conditions",
+    "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
     "searchBar": "Rechercher dans ce dossier",
-
     "stage": {
       "development": "Développement",
       "production": "Production"
@@ -153,10 +170,10 @@
   },
   "shareLayout": {
     "title": "",
-    "subtitle": "Stockage sécurisé dans le nuage",
+    "subtitle": "Stockage cloud sécurisé avec une confidentialité inégalée",
     "labels": {
       "privacy": "Privé par conception",
-      "end-to-end": "Chiffrement de bout en bout",
+      "open-source": "Open source et transparent",
       "military-grade": "Cryptage de qualité militaire",
       "zero-knowledge": "Zéro connaissance"
     },
@@ -182,7 +199,7 @@
     "drive": "Drive",
     "photos": "Photos",
     "backups": "Sauvegardes",
-    "sharedLinks": "Liens partagés",
+    "shared": "Partagé",
     "recents": "Récent",
     "trash": "Corbeille",
     "desktop": "App de bureau"
@@ -280,8 +297,14 @@
               "sendVerification": "Envoyer la vérification",
               "sendingVerification": "Envoi de la vérification",
               "sucessSendingVerification": "Vérification par courriel envoyée",
-              "errorSendingVerification": "Erreur d'envoi de la vérification"
+              "errorSendingVerification": "Erreur d'envoi de la vérification",
+              "confirm": "Confirmer"
             }
+          },
+          "support": {
+            "title": "Support",
+            "description": "Naviguez à travers des articles utiles ou obtenez de l'aide auprès de notre équipe.",
+            "cta": "Ouvrir le Centre de support"
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
@@ -340,11 +363,10 @@
             "business": "Changement de plan pour les entreprises"
           },
           "viewAllFeatures": "Voir toutes les caractéristiques",
-
           "card": {
-            "annually": "€{{amount}} Facturation annuellement",
-            "monthly": "€{{amount}} par mois",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Facturation annuellement",
+            "monthly": "{{amount}} par mois",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Paiement unique"
           },
           "features": {
@@ -545,6 +567,21 @@
       "deleteLinks": "Supprimer les liens",
       "deleteLink": "Supprimer le lien"
     },
+    "itemDetailsModal": {
+      "title": "Détails",
+      "fileCta": "Ouvrir l'aperçu",
+      "folderCta": "Ouvrir le dossier",
+      "itemDetails": {
+        "name": "Nom",
+        "type": "Type",
+        "uploaded": "Téléchargé",
+        "uploadedBy": "Téléchargé par",
+        "shared": "Partagé",
+        "size": "Taille",
+        "modified": "Modifié",
+        "location": "Emplacement"
+      }
+    },
     "newFolderModal": {
       "title": "Nouveau dossier",
       "label": "Nom",
@@ -560,10 +597,15 @@
           "roles": {
             "owner": "Propriétaire",
             "editor": "Éditeur",
-            "viewer": " Visualisateur "
+            "reader": " Visualisateur "
           },
           "remove": "Supprimer"
         }
+      },
+      "errors": {
+        "updatingRole": "Le rôle n'a pas pu être mis à jour, veuillez réessayer plus tard.",
+        "copy-to-clipboard": "Erreur lors du partage de l'élément, réessayez plus tard.",
+        "update-sharing-access": "Le mode d'accès n'a pas pu être mis à jour, veuillez réessayer plus tard"
       },
       "general": {
         "generalAccess": "Accès général",
@@ -589,7 +631,7 @@
           "deny": "Refuser",
           "roles": {
             "editor": "Editeur",
-            "viewer": "Lecteur"
+            "reader": "Lecteur"
           }
         }
       },
@@ -603,6 +645,12 @@
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
         }
       },
+      "removeUser": {
+        "notification": {
+          "success": "Utilisateur \"{{name}}\" supprimé",
+          "error": "Impossible de supprimer l'utilisateur \"{{name}}\", veuillez réessayer"
+        }
+      },
       "invite": {
         "title": "Inviter des personnes",
         "textarea": "Entrez le texte de votre message (facultatif)",
@@ -611,8 +659,20 @@
         "email": "Type d'email",
         "invite": "Inviter",
         "editor": "Éditeur",
-        "viewer": "Visualiseur",
-        "listUsers": "Utilisateurs à inviter"
+        "reader": "Visualiseur",
+        "listUsers": "Utilisateurs à inviter",
+        "successSentInvitation": "Partage réussi avec {{email}}",
+        "acceptedSuccessfully": "Invitation à un dossier partagé acceptée avec succès",
+        "declinedSuccessfully": "Invitation à un dossier partagé refusée avec succès",
+        "inviteNewUsersBody": "Les personnes sans compte Internxt recevront un courriel d'invitation à s'inscrire.",
+        "inviteNewUsersTitle": "Inviter de nouveaux utilisateurs ?",
+        "accept": "Accepter",
+        "cancel": "Annuler",
+        "error": {
+          "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+          "acceptedError": "Erreur lors de l'acceptation de l'invitation au dossier partagé",
+          "declinedError": "Erreur lors du refus de l'invitation au dossier partagé"
+        }
       },
       "requestAccess": {
         "title": "Vous n'avez pas accès",
@@ -623,7 +683,28 @@
         "change": "Changer",
         "requestSent": "Demande envoyée",
         "confirmation": "Vous recevrez un e-mail si le fichier/dossier est partagé avec vous"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Le mot de passe est uniquement requis pour les utilisateurs sans accès en lecture ou en modification à l'élément partagé.",
+        "protect": "Protéger par mot de passe",
+        "disablePasswordTitle": "Désactiver la protection par mot de passe ?",
+        "disablePasswordBody": "Lorsqu'elle est désactivée, les personnes disposant du lien pourront accéder au contenu.",
+        "editPasswordTitle": "Modifier le mot de passe",
+        "buttons": {
+          "cancel": "Annuler",
+          "save": "Enregistrer",
+          "disable": "Désactiver",
+          "changePassword": "Changer le mot de passe"
+        }
       }
+    },
+    "sharedInvitationsModal": {
+      "empty": "Aucune invitation restante",
+      "title": "Invitations en attente",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "sharedWith": "Partagé avec vous ",
+      "todayAt": "aujourd'hui à "
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
@@ -728,6 +809,7 @@
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
     "storageIsFull": "Your storage is full",
+    "storageIsFullDescription": "Vous ne pouvez pas télécharger, synchroniser ou sauvegarder des fichiers.",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
     "titleSharedFolderTooBig": "Unsupported Action",
@@ -771,21 +853,30 @@
     },
     "dropdown": {
       "download": "Télécharger",
-      "delete": "Supprimer"
+      "delete": "Effacé définitivement"
+    }
+  },
+  "shared": {
+    "errors": {
+      "notSharedFolder": "Ce dossier n'est pas partagé avec vous",
+      "folderNotExists": "Ce dossier n'existe pas",
+      "generic": "Impossible d'accéder au dossier"
     }
   },
   "shared-links": {
-    "shared-links": "Liens partagés",
+    "shared-links": "Partagé",
     "view": "Vues",
     "list": {
+      "name": "Nom",
       "link-content": "Contenu du lien",
       "shared": "Partagé",
       "created": "Créé",
-      "size": "Taille"
+      "size": "Taille",
+      "owner": "Propriétaire"
     },
     "empty-state": {
-      "title": "Rien n'a encore été partagé",
-      "subtitle": "Partagez un fichier ou un dossier pour commencer"
+      "title": "Rien n'a encore été partagé avec vous",
+      "subtitle": "Les dossiers que d'autres personnes partagent avec vous apparaîtront ici"
     },
     "item-menu": {
       "copy-link": "Copier le lien",
@@ -807,10 +898,10 @@
       "copy-to-clipboard": "Copier le lien dans le presse-papiers",
       "link-updated": "Mise à jour des paramètres de lien",
       "link-deleted": "Lien supprimé",
-      "links-deleted": "Lien(s) supprimé"
+      "links-deleted": "Lien(s) supprimé",
+      "error-deleting-links": "Une erreur s'est produite lors de la suppression des liens partagés"
     }
   },
-
   "trash": {
     "trash": "Corbeille",
     "clearTrash": "La corbeille est vide",
@@ -1009,7 +1100,9 @@
     "download": "Télécharger",
     "downloading": "Téléchargement",
     "downloaded": "Téléchargé",
-    "view": "Afficher",
+    "delete": "Supprimer",
+    "share": "Partager",
+    "view": "Aperçu",
     "accessFile": "Fichier d'accès",
     "upgradeNow": "Acheter de l'espace",
     "purchasePlan": "Acheter de l'espace",
@@ -1040,7 +1133,10 @@
     "rename": "Renommer",
     "restore": "Restaurer",
     "copyLink": "Copier le lien",
-    "report": "Signaler un abus"
+    "report": "Signaler un abus",
+    "yes": "Oui",
+    "no": "Non",
+    "more": "Plus"
   },
   "drive": {
     "usage": "Usage",
@@ -1064,7 +1160,10 @@
     "dropdown": {
       "openPreview": "Ouvrir la prévisualisation",
       "getLink": "Copier le lien",
+      "details": "Détails",
       "rename": "Renommer",
+      "manageLinkAccess": "Gestion de l'accès",
+      "manageAccess": "Gestion de l'accès",
       "download": "Télécharger",
       "moveToTrash": "Déplacer vers la corbeille",
       "copyLink": "Copier le lien",
@@ -1166,6 +1265,16 @@
         "title": "Commençons tout de suite !",
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
+    }
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Dossier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le dossier n'a pas été déplacé ou supprimé."
+    },
+    "file": {
+      "title": "Fichier non trouvé",
+      "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
     }
   }
 }

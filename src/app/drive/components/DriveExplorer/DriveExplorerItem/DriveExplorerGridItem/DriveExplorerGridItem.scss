@@ -1,5 +1,7 @@
+@tailwind components;
+
 @layer components {
   .grid-item-shadow {
-    box-shadow: inset 0 0 0 2px var(--color-blue-50);
+    box-shadow: inset 0 0 0 2px var(--color-primary);
   }
 }

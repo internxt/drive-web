@@ -1,5 +1,4 @@
-import { Fragment, useEffect } from 'react';
-import { Link, PencilSimple, Users } from '@phosphor-icons/react';
+import { useEffect } from 'react';
 import { items } from '@internxt/lib';
 import sizeService from '../../../../../drive/services/size.service';
 import dateService from '../../../../../core/services/date.service';
@@ -10,34 +9,12 @@ import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
-import { DriveItemData } from '../../../../types';
-import envService from '../../../../../core/services/env.service';
-
-const getItemPlainNameWithExtension = (item: DriveItemData) => {
-  const plainName = item?.plainName ?? item?.plain_name;
-  const type = item.type;
-
-  if (!plainName || !type) return;
-  else if (type === 'folder') return plainName;
-
-  return plainName + '.' + type;
-};
+import usersIcon from 'assets/icons/users.svg';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
-  const { isItemSelected, isSomeItemSelected, isEditingName, dirtyName } = useDriveItemStoreProps();
-  const {
-    nameInputRef,
-    onNameChanged,
-    onNameBlurred,
-    onNameClicked,
-    onEditNameButtonClicked,
-    onNameEnterKeyDown,
-    onDownloadButtonClicked,
-    onDeleteButtonClicked,
-    onShareButtonClicked,
-    onItemClicked,
-    onItemDoubleClicked,
-  } = useDriveItemActions(item);
+  const { isItemSelected, isEditingName } = useDriveItemStoreProps();
+  const { nameInputRef, onNameClicked, onItemClicked, onItemDoubleClicked, downloadAndSetThumbnail } =
+    useDriveItemActions(item);
 
   const { connectDragSource, isDraggingThisItem } = useDriveItemDrag(item);
   const { connectDropTarget, isDraggingOverThisItem } = useDriveItemDrop(item);
@@ -57,96 +34,89 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
     }
   }, [isEditingName(item)]);
 
-  const nameNodefactory = () => {
-    const spanDisplayClass: string = !isEditingName(item) ? 'block' : 'hidden';
+  useEffect(() => {
+    downloadAndSetThumbnail();
+  }, [item]);
 
-    return (
-      <Fragment>
-        {!item.deleted && (
-          <div className={`${isEditingName(item) ? 'flex' : 'hidden'}`}>
-            <input
-              className="dense no-ring rect select-text border border-white"
-              onClick={(e) => e.stopPropagation()}
-              onDoubleClick={(e) => e.stopPropagation()}
-              ref={nameInputRef}
-              type="text"
-              value={dirtyName}
-              placeholder="Name"
-              onChange={onNameChanged}
-              onBlur={onNameBlurred}
-              onKeyDown={onNameEnterKeyDown}
-              autoFocus
-              name="fileName"
-            />
-            <span className="ml-1">{transformItemService.showItemExtensionType(item)}</span>
-          </div>
-        )}
-        <div className="file-list-item-name flex max-w-full items-center">
-          <span
-            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
-            className={`${spanDisplayClass} file-list-item-name-span`}
-            title={getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-            onClick={!item.deleted || !item.isFolder ? onNameClicked : undefined}
-          >
-            {getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
-          </span>
-          {!isEditingName && !item.deleted && (
-            <PencilSimple onClick={onEditNameButtonClicked} className="file-list-item-edit-name-button" />
-          )}
-        </div>
-      </Fragment>
-    );
-  };
-  const itemIsShared = item.shares?.length || 0 > 0;
-  const isProduction = envService.isProduction();
+  const isItemShared = (item.sharings?.length ?? 0) > 0;
 
   const template = (
     <div
+      onKeyDown={() => {}}
       className={`${selectedClassNames} ${isDraggingOverClassNames} ${isDraggingClassNames} file-list-item group`}
       onClick={onItemClicked}
-      onDoubleClick={!item.deleted || !item.isFolder ? onItemDoubleClicked : undefined}
+      onDoubleClick={
+        (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+          ? onItemDoubleClicked
+          : undefined
+      }
       data-test={`file-list-${item.isFolder ? 'folder' : 'file'}`}
     >
-      {/* ICON */}
-      <div className="box-content flex w-1/12 items-center px-3">
-        <div className="flex h-10 w-10 justify-center drop-shadow-soft filter">
-          <ItemIconComponent
-            className="h-full"
-            data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${getItemPlainNameWithExtension(item)}`}
-          />
-          {itemIsShared &&
-            (isProduction ? (
-              <Link
-                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
-              />
+      <div className="flex min-w-activity grow items-center pr-3">
+        {/* ICON */}
+        <div className="box-content flex items-center pr-4">
+          <div className="flex h-10 w-10 justify-center drop-shadow-soft">
+            {item.currentThumbnail ? (
+              <div className="h-full w-full">
+                <img
+                  className="aspect-square h-full max-h-full object-contain object-center"
+                  src={item.currentThumbnail.urlObject}
+                  data-test={`file-list-${
+                    item.isFolder ? 'folder' : 'file'
+                  }-${transformItemService.getItemPlainNameWithExtension(item)}`}
+                />
+              </div>
             ) : (
-              <Users
-                className="group-hover:border-slate-50 absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white caret-white group-active:border-blue-100"
-                data-test={`file-list-${item.isFolder ? 'folder' : 'file'}-${item.plainName}-shared-icon`}
+              <ItemIconComponent
+                className="h-full"
+                data-test={`file-list-${
+                  item.isFolder ? 'folder' : 'file'
+                }-${transformItemService.getItemPlainNameWithExtension(item)}`}
               />
-            ))}
+            )}
+            {isItemShared && (
+              <img
+                className="absolute -bottom-1 -right-2 ml-3 flex h-5 w-5 flex-col items-center justify-center place-self-end rounded-full border-2 border-white bg-primary p-0.5 text-white dark:border-surface"
+                src={usersIcon}
+                width={13}
+                alt="shared users"
+              />
+            )}
+          </div>
+        </div>
+
+        {/* NAME */}
+        <div className="flex w-activity grow cursor-pointer items-center truncate pr-2">
+          <button
+            data-test={`${item.isFolder ? 'folder' : 'file'}-name`}
+            className="truncate"
+            title={transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            onClick={
+              (item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')
+                ? onNameClicked
+                : undefined
+            }
+          >
+            <p className="truncate">
+              {transformItemService.getItemPlainNameWithExtension(item) ?? items.getItemDisplayName(item)}
+            </p>
+          </button>
         </div>
       </div>
 
-      {/* NAME */}
-      <div className="flex w-1 flex-grow items-center pr-2">{nameNodefactory()}</div>
-
-      {/* HOVER ACTIONS */}
-      <div className="hidden w-2/12 items-center pl-3 xl:flex"></div>
-
       {
         /* DROPPABLE ZONE */
-        !item.deleted && connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
+        ((item.isFolder && !item.deleted) || (!item.isFolder && item.status === 'EXISTS')) &&
+          connectDropTarget(<div className="absolute top-0 h-full w-1/2 group-hover:invisible"></div>)
       }
 
       {/* DATE */}
-      <div className="hidden w-3/12 items-center overflow-ellipsis whitespace-nowrap lg:flex">
+      <div className="block w-date items-center whitespace-nowrap">
         {dateService.format(item.updatedAt, 'DD MMMM YYYY. HH:mm')}
       </div>
 
       {/* SIZE */}
-      <div className="flex w-1/12 items-center overflow-ellipsis whitespace-nowrap">
+      <div className="w-size items-center whitespace-nowrap">
         {sizeService.bytesToString(item.size, false) === '' ? (
           <span className="opacity-25">—</span>
         ) : (

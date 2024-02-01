@@ -36,12 +36,12 @@ import RealtimeService from 'app/core/services/socket.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import { validateMnemonic, generateMnemonic } from 'bip39';
 
-export async function logOut(): Promise<void> {
+export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login);
+  navigationService.push(AppView.Login, loginParams);
 }
 
 export function cancelAccount(): Promise<void> {
@@ -71,15 +71,26 @@ const generateNewKeysWithEncrypted = async (password: string) => {
   };
 };
 
+const getAuthClient = (authType: 'web' | 'desktop') => {
+  const AUTH_CLIENT = {
+    web: SdkFactory.getInstance().createAuthClient(),
+    desktop: SdkFactory.getInstance().createDesktopAuthClient(),
+  };
+
+  return AUTH_CLIENT[authType];
+};
+
 export const doLogin = async (
   email: string,
   password: string,
   twoFactorCode: string,
+  loginType: 'web' | 'desktop' | undefined = 'web',
 ): Promise<{
   user: UserSettings;
   token: string;
+  mnemonic: string;
 }> => {
-  const authClient = SdkFactory.getInstance().createAuthClient();
+  const authClient = getAuthClient(loginType);
   const loginDetails: LoginDetails = {
     email: email.toLowerCase(),
     password: password,
@@ -141,6 +152,7 @@ export const doLogin = async (
       return {
         user: clearUser,
         token: token,
+        mnemonic: clearMnemonic,
       };
     })
     .catch((error) => {
@@ -256,8 +268,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
     })
-    .then(() => {
+    .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
+      const { token, newToken } = res as any;
+      if (token) localStorageService.set('xToken', token);
+      if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
       // !TODO: Add the correct analytics event when change password fails

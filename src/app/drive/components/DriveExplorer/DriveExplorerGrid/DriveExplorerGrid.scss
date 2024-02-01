@@ -1,7 +1,9 @@
+@tailwind components;
+
 @layer components {
   .files-grid {
     max-width: fit-content;
 
-    @apply overflow-x-hidden overflow-y-auto min-w-full grid grid-cols-2 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 auto-rows-min gap-2 mb-2;
+    @apply mb-2 grid min-w-full auto-rows-min grid-cols-2 gap-2 overflow-y-auto overflow-x-hidden sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6;
   }
 }

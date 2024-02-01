@@ -1,6 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 
-import Navbar from '../../components/Navbar/Navbar';
+import Navbar from '../../components/Navbar/NavbarGlobalSearch';
 import Sidenav from '../../components/Sidenav/Sidenav';
 import { uiActions } from 'app/store/slices/ui';
 import ReachedPlanLimitDialog from 'app/drive/components/ReachedPlanLimitDialog/ReachedPlanLimitDialog';
@@ -13,7 +13,6 @@ import TaskLogger from 'app/tasks/components/TaskLogger/TaskLogger';
 import DriveItemInfoMenu from 'app/drive/components/DriveItemInfoMenu/DriveItemInfoMenu';
 import SharedFolderTooBigDialog from '../../../drive/components/SharedFolderTooBigDialog/SharedFolderTooBigDialog';
 import { getAppConfig } from '../../services/config.service';
-import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import ShareItemDialog from '../../../share/components/ShareItemDialog/ShareItemDialog';
 
 export interface HeaderAndSidenavLayoutProps {
@@ -26,7 +25,6 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const isShareItemDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpen);
-  const isShareDialogOpen = useAppSelector((state) => state.ui.isShareDialogOpen);
   const isReachedPlanLimitDialogOpen = useAppSelector((state) => state.ui.isReachedPlanLimitDialogOpen);
   const isSharedFolderTooBigDialogOpen = useAppSelector((state) => state.ui.isSharedFolderTooBigDialogOpen);
   const isInviteMemberDialogOpen = useAppSelector((state) => state.ui.isInviteMemberDialogOpen);
@@ -46,19 +44,18 @@ export default function HeaderAndSidenavLayout(props: HeaderAndSidenavLayoutProp
 
   return isAuthenticated ? (
     <div className="flex h-auto min-h-full flex-col">
-      {isShareDialogOpen && itemToShare && <ShareDialog />}
       {isShareItemDialogOpen && itemToShare && <ShareItemDialog share={itemToShare?.share} item={itemToShare.item} />}
       {isReachedPlanLimitDialogOpen && <ReachedPlanLimitDialog />}
       {isSharedFolderTooBigDialogOpen && <SharedFolderTooBigDialog />}
       {isInviteMemberDialogOpen && <InviteTeamMemberDialog />}
       {isGuestInviteDialogOpen && <GuestDialog />}
 
-      <div className="flex h-1 flex-grow">
+      <div className="flex h-1 grow">
         <Sidenav />
 
-        <div className="flex w-1 flex-grow flex-col bg-white">
+        <div className="flex w-1 grow flex-col">
           <Navbar hideSearch={hideSearch} />
-          <div className="flex h-1 w-full flex-grow">
+          <div className="flex h-1 w-full grow">
             {children}
 
             {isDriveItemInfoMenuOpen && driveItemInfo && (

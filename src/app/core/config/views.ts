@@ -17,7 +17,7 @@ import GuestAcceptInvitationView from 'app/guests/views/GuestAcceptInviteView/Gu
 import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
-import SharedLinksView from 'app/share/views/SharedLinksView/SharedLinksView';
+import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
 
 import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
@@ -32,7 +32,10 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
-import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
+import SharedView from '../../share/views/SharedLinksView/SharedView';
+import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
+import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 
 const views: Array<{
   id: string;
@@ -44,16 +47,17 @@ const views: Array<{
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
+  { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
-  { id: AppView.Drive, component: DriveView },
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
-  { id: AppView.SharedLinks, component: SharedLinksView },
+  { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
+  { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
   { id: AppView.Deactivation, component: DeactivationView },
@@ -70,7 +74,11 @@ const views: Array<{
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },
-  // { id: AppView.RequestAccess, component: RequestAccess },
+  { id: AppView.RequestAccess, component: RequestAccess },
+  { id: AppView.UniversalLinkSuccess, component: UniversalLinkSuccessView },
+  // Leave these routes last, otherwise it will match react router and may cause malfunctioning.
+  { id: AppView.DriveItems, component: DriveView },
+  { id: AppView.Drive, component: DriveView },
   { id: AppView.NotFound, component: NotFoundView },
 ];
 

@@ -116,8 +116,11 @@ export enum AppView {
   Trash = 'trash',
   Backups = 'backups',
   SharedLinks = 'shared-links',
+  Shared = 'shared',
   Photos = 'photos',
   Preferences = 'preferences',
+  DriveItems = 'drive-items',
+  FolderFileNotFound = 'folder-file-not-found',
   TeamsJoin = 'teams-join',
   Deactivation = 'deactivation',
   TeamsDeactivation = 'teams-deactivation',
@@ -130,12 +133,14 @@ export enum AppView {
   ShareFileToken = 'share-token',
   ShareFolderToken = 'share-folder-token',
   SharePhotosToken = 'share-photos-token',
+  ShareGuestAcceptInvite = 'share-guest-accept-invite',
   GuestAcceptInvite = 'guest-accept-invite',
   RedirectToApp = 'redirect-to-app',
   NotFound = 'not-found',
   VerifyEmail = 'verify-email',
   ChangeEmail = 'change-email',
   RequestAccess = 'request-access',
+  UniversalLinkSuccess = 'auth-success',
 }
 
 export enum SignupDeviceSource {

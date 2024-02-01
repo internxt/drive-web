@@ -57,9 +57,9 @@ const TaskLogger = (): JSX.Element => {
 
   return (
     <div
-      className={`absolute bottom-0 right-0 z-40 mr-6 mb-6 flex w-80 flex-col shadow-subtle-hard transition-all duration-350  ${
+      className={`absolute bottom-6 right-6 z-40 flex w-80 flex-col shadow-subtle-hard transition-[height] duration-350 ${
         isMinimized ? 'h-11' : 'h-64'
-      } overflow-hidden rounded-lg border border-gray-10 bg-white ${!isOpen ? 'hidden' : ''}`}
+      } overflow-hidden rounded-lg border border-gray-10 bg-surface dark:bg-gray-1 ${!isOpen ? 'hidden' : ''}`}
     >
       <div className="flex select-none justify-between border-b border-gray-10 bg-gray-5 px-3 py-2.5">
         <div className="flex w-max items-center text-sm font-medium text-gray-60">
@@ -82,7 +82,7 @@ const TaskLogger = (): JSX.Element => {
         <div className="flex items-center text-gray-60">
           <div
             onClick={() => setIsMinized(!isMinimized)}
-            className={`transform  duration-300 ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}
+            className={` duration-300 ${isMinimized ? 'rotate-180' : 'rotate-0'} cursor-pointer`}
           >
             <CaretDown size={24} />
           </div>

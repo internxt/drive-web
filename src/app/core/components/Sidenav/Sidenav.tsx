@@ -1,4 +1,4 @@
-import { Clock, ClockCounterClockwise, Link, Desktop, FolderSimple, ImageSquare, Trash } from '@phosphor-icons/react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare, Trash, Users } from '@phosphor-icons/react';
 import { connect } from 'react-redux';
 
 import { AppView } from '../../types';
@@ -11,11 +11,11 @@ import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
 import { planSelectors } from 'app/store/slices/plan';
 
-import './Sidenav.scss';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppSelector } from 'app/store/hooks';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -52,31 +52,34 @@ const Sidenav = (props: SidenavProps) => {
 
   const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = props;
 
+  const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
+
   return (
     <div className="flex w-64 flex-col">
       <div
-        className="flex h-14 flex-shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8"
+        className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}
       >
-        <InternxtLogo className="h-auto w-28" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
-      <div className="flex flex-grow flex-col overflow-x-auto border-r border-gray-5 px-2">
+      <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          <SidenavItem label={translate('sideNav.drive')} to="/app" Icon={FolderSimple} />
-          <SidenavItem label={translate('sideNav.photos')} to="/app/photos" Icon={ImageSquare} />
-          <SidenavItem label={translate('sideNav.backups')} to="/app/backups" Icon={ClockCounterClockwise} />
-          <SidenavItem label={translate('sideNav.sharedLinks')} to="/app/shared-links" Icon={Link} />
-          <SidenavItem label={translate('sideNav.recents')} to="/app/recents" Icon={Clock} />
-          <SidenavItem label={translate('sideNav.trash')} to="/app/trash" Icon={Trash} />
+          <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
+          <SidenavItem label={translate('sideNav.photos')} to="/photos" Icon={ImageSquare} />
+          <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
+          <SidenavItem
+            label={translate('sideNav.shared')}
+            to="/shared"
+            Icon={Users}
+            notifications={pendingInvitations.length}
+          />
+          <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />
+          <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
           <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
         </div>
-        {props.subscription && props.subscription.type === 'free' ? (
-          <ReferralsWidget />
-        ) : (
-          <div className="flex-grow"></div>
-        )}
+        {props.subscription && props.subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 
-        <div className="mt-8 mb-11 px-5">
+        <div className="mb-11 mt-8 px-5">
           <PlanUsage
             limit={planLimit}
             usage={planUsage}

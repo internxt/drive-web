@@ -3,7 +3,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import queryString from 'query-string';
 import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
-import { WarningCircle } from '@phosphor-icons/react';
+import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
 import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
 
@@ -15,9 +15,9 @@ import navigationService from 'app/core/services/navigation.service';
 import { productsThunks } from 'app/store/slices/products';
 import { AppView, IFormValues } from 'app/core/types';
 import { referralsThunks } from 'app/store/slices/referrals';
-import TextInput from '../../components/TextInput/TextInput';
-import PasswordInput from '../../components/PasswordInput/PasswordInput';
-import Button from '../../components/Button/Button';
+import TextInput from '../TextInput/TextInput';
+import PasswordInput from '../PasswordInput/PasswordInput';
+import Button from '../Button/Button';
 import testPasswordStrength from '@internxt/lib/dist/src/auth/testPasswordStrength';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
 import { useSignUp } from './useSignUp';
@@ -28,6 +28,7 @@ import PreparingWorkspaceAnimation from '../PreparingWorkspaceAnimation/Preparin
 import paymentService from 'app/payment/services/payment.service';
 import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
+import analyticsService from 'app/analytics/services/analytics.service';
 
 export interface SignUpProps {
   location: {
@@ -153,9 +154,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       const xNewToken = await getNewToken();
       localStorageService.set('xNewToken', xNewToken);
 
-      const privateKey = xUser.privateKey ? 
-        Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64') : 
-        undefined;
+      const privateKey = xUser.privateKey
+        ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+        : undefined;
 
       const user = {
         ...xUser,
@@ -171,10 +172,12 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(referralsThunks.initializeThunk());
       }
 
-      window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
-      window.rudderanalytics.track('User Signup', { email });
+      await analyticsService.trackSignUp(xUser.uuid, email);
 
-      const redirectUrl = authService.getRedirectUrl(new URLSearchParams(window.location.search), xToken);
+      const urlParams = new URLSearchParams(window.location.search);
+      const isUniversalLinkMode = urlParams.get('universalLink') == 'true';
+
+      const redirectUrl = authService.getRedirectUrl(urlParams, xToken);
 
       if (redirectUrl) {
         window.location.replace(redirectUrl);
@@ -186,7 +189,11 @@ function SignUp(props: SignUpProps): JSX.Element {
         dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
       } else {
-        navigationService.push(AppView.Drive);
+        if (isUniversalLinkMode) {
+          return navigationService.push(AppView.UniversalLinkSuccess);
+        } else {
+          return navigationService.push(AppView.Drive);
+        }
       }
     } catch (err: unknown) {
       setIsLoading(false);
@@ -212,93 +219,98 @@ function SignUp(props: SignUpProps): JSX.Element {
         className={`flex ${
           showPreparingWorkspaceAnimation
             ? 'h-full w-full'
-            : 'h-fit w-96 flex-col items-center justify-center rounded-2xl bg-white px-8 py-10 sm:shadow-soft'
+            : 'h-fit w-96 flex-col items-center justify-center px-8 py-10'
         }`}
       >
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
         ) : (
-          <>
-            <form className="flex w-full flex-col space-y-6" onSubmit={handleSubmit(onSubmit)}>
-              <span className="text-2xl font-medium">{translate('auth.signup.title')}</span>
+          <div className="flex flex-col items-start space-y-5">
+            <h1 className="text-3xl font-medium">{translate('auth.signup.title')}</h1>
 
-              <div className="flex flex-col space-y-3">
-                <label className="space-y-0.5">
-                  <span>{translate('auth.email')}</span>
-                  <TextInput
-                    placeholder={translate('auth.email') as string}
-                    label="email"
-                    type="email"
-                    disabled={hasEmailParam}
-                    register={register}
-                    required={true}
-                    minLength={{ value: 1, message: 'Email must not be empty' }}
-                    error={errors.email}
-                  />
-                </label>
+            <form className="flex w-full flex-col space-y-2" onSubmit={handleSubmit(onSubmit)}>
+              <TextInput
+                placeholder={translate('auth.email') as string}
+                label="email"
+                type="email"
+                disabled={hasEmailParam}
+                register={register}
+                required={true}
+                minLength={{ value: 1, message: 'Email must not be empty' }}
+                error={errors.email}
+              />
 
-                <label className="space-y-0.5">
-                  <span>{translate('auth.password')}</span>
-                  <PasswordInput
-                    className={passwordState ? passwordState.tag : ''}
-                    placeholder={translate('auth.password')}
-                    label="password"
-                    maxLength={MAX_PASSWORD_LENGTH}
-                    register={register}
-                    onFocus={() => setShowPasswordIndicator(true)}
-                    required={true}
-                    error={errors.password}
-                  />
-                  {showPasswordIndicator && passwordState && (
-                    <PasswordStrengthIndicator
-                      className="pt-1"
-                      strength={passwordState.tag}
-                      label={passwordState.label}
-                    />
-                  )}
-                  {bottomInfoError && (
-                    <div className="flex flex-row items-start pt-1">
-                      <div className="flex h-5 flex-row items-center">
-                        <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
-                      </div>
-                      <span className="font-base w-56 text-sm text-red-60">{bottomInfoError}</span>
-                    </div>
-                  )}
-                </label>
-
-                <Button
-                  disabled={isLoading || !isValidPassword}
-                  text={translate('auth.signup.title')}
-                  disabledText={
-                    isValid && isValidPassword
-                      ? `${translate('auth.signup.encrypting')}...`
-                      : translate('auth.signup.title')
-                  }
-                  loading={isLoading}
-                  style="button-primary"
-                  className="w-full"
+              <label className="space-y-0.5">
+                <PasswordInput
+                  className={passwordState ? passwordState.tag : ''}
+                  placeholder={translate('auth.password')}
+                  label="password"
+                  maxLength={MAX_PASSWORD_LENGTH}
+                  register={register}
+                  onFocus={() => setShowPasswordIndicator(true)}
+                  required={true}
+                  error={errors.password}
                 />
+                {showPasswordIndicator && passwordState && (
+                  <PasswordStrengthIndicator
+                    className="pt-1"
+                    strength={passwordState.tag}
+                    label={passwordState.label}
+                  />
+                )}
+                {bottomInfoError && (
+                  <div className="flex flex-row items-start pt-1">
+                    <div className="flex h-5 flex-row items-center">
+                      <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
+                    </div>
+                    <span className="font-base w-56 text-sm text-red">{bottomInfoError}</span>
+                  </div>
+                )}
+              </label>
+
+              <div className="flex space-x-2.5 rounded-lg bg-primary/10 p-3 pr-4 dark:bg-primary/20">
+                <Info size={20} className="shrink-0 text-primary" />
+                <p className="text-xs">
+                  Internxt doesn't store passwords.{' '}
+                  <span className="font-semibold">
+                    In case you forget your password, you will lose access to all your files.
+                  </span>
+                </p>
               </div>
+
+              <Button
+                disabled={isLoading || !isValidPassword}
+                text={translate('auth.signup.title')}
+                disabledText={
+                  isValid && isValidPassword
+                    ? `${translate('auth.signup.encrypting')}...`
+                    : translate('auth.signup.title')
+                }
+                loading={isLoading}
+                style="button-primary"
+                className="w-full"
+              />
             </form>
+
             <span className="mt-2 w-full text-xs text-gray-50">
               {translate('auth.terms1')}{' '}
-              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-80">
+              <a href="https://internxt.com/legal" target="_blank" className="text-xs text-gray-50 hover:text-gray-60">
                 {translate('auth.terms2')}
               </a>
             </span>
 
-            <div className="mt-4 flex w-full items-center justify-center">
-              <span className="select-none text-sm text-gray-80">
-                {translate('auth.signup.haveAccount')}{' '}
-                <Link
-                  to={getLoginLink()}
-                  className="cursor-pointer appearance-none text-center text-sm font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
-                >
-                  {translate('auth.signup.login')}
-                </Link>
-              </span>
+            <div className="w-full border-b border-gray-10" />
+
+            <div className="flex w-full items-center justify-center space-x-1.5 font-medium">
+              <span>{translate('auth.signup.haveAccount')}</span>
+              <Link
+                to={getLoginLink()}
+                className="cursor-pointer font-medium text-primary no-underline hover:text-primary focus:text-primary-dark"
+              >
+                {translate('auth.signup.login')}
+              </Link>
             </div>
-          </>
+          </div>
         )}
       </div>
     </>

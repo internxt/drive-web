@@ -1,0 +1,13 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "JR4S3SY396.internxt.InternxtDesktop",
+        "paths": [
+          "/universal-link-auth/*"
+        ]
+      }
+    ]
+  }
+}

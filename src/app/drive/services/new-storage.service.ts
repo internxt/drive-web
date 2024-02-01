@@ -1,4 +1,4 @@
-import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFileData, FolderAncestor, FolderMeta } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../core/factory/sdk';
 
 export async function searchItemsByName(name: string): Promise<DriveFileData[]> {
@@ -7,8 +7,21 @@ export async function searchItemsByName(name: string): Promise<DriveFileData[]> 
 
   return result;
 }
+
+export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.getFolderAncestors(uuid);
+}
+
+export async function getFolderMeta(uuid: string): Promise<FolderMeta> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.getFolderMeta(uuid);
+}
+
 const newStorageService = {
   searchItemsByName,
+  getFolderAncestors,
+  getFolderMeta,
 };
 
 export default newStorageService;

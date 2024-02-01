@@ -11,8 +11,15 @@ import { DriveItemData } from 'app/drive/types';
 import { AnalyticsTrackNames } from '../types';
 import { TrackingPlan } from '../TrackingPlan';
 import { v4 as uuidv4 } from 'uuid';
+import { getCookie } from '../utils';
+import axios from 'axios';
+import dayjs from 'dayjs';
+
+const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
 const analytics: Analytics = Analytics.getInstance();
+const anonymousID = getCookie('impactAnonymousId');
+const source = getCookie('impactSource');
 
 export function getTrackingActionId() {
   return uuidv4();
@@ -26,7 +33,7 @@ export const PATH_NAMES = {
   '/settings': 'Settings',
   '/invite': 'Invite',
   '/remove': 'Remove Account',
-  '/app': 'App',
+  '/': 'App',
 };
 
 export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
@@ -63,6 +70,38 @@ export function trackFileDownloadAborted(properties: TrackingPlan.DownloadProper
 
 export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubscriptionProperties): void {
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
+}
+
+export function trackPublicShared(properties: TrackingPlan.PublicSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.PublicShared, properties);
+}
+
+export function trackRestrictedShared(properties: TrackingPlan.RestrictedSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.RestrictedShared, properties);
+}
+
+export function trackSharedInvitationsAccepted(properties: TrackingPlan.SharedInvitationsAcceptedProperties): void {
+  analytics.track(TrackingPlan.EventNames.SharedInvitationsAccepted, properties);
+}
+
+export function trackFilePreviewOpened(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewOpened, properties);
+}
+
+export function trackFilePreviewed(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewed, properties);
+}
+
+export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
+}
+
+export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownloadedProperties): void {
+  analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
+}
+
+export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecoveredProperties): void {
+  analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
 }
 
 function trackData(properties, actionName) {
@@ -148,23 +187,27 @@ export function signInAttempted(email: string, error: string | Error): void {
   }); */
 }
 
-export function trackSignUp(payload: {
-  properties: { signup_source; email: string };
-  traits: {
-    member_tier?: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    usage: number;
-    createdAt: string;
-    signup_device_source: string;
-    acquisition_channel;
-  };
-  userId: string;
-}): void {
-  /* window.analytics.identify(payload.userId, payload.traits);
-  window.analytics.track(AnalyticsTrackNames.SignUp, payload.properties); */
-  trackSignUpServer(payload);
+export async function trackSignUp(uuid, email) {
+  try {
+    window.rudderanalytics.identify(uuid, { email, uuid: uuid });
+    window.rudderanalytics.track('User Signup', { email });
+    window.gtag('event', 'User Signup');
+
+    if (source && source !== 'direct') {
+      await axios.post(IMPACT_API, {
+        anonymousId: anonymousID,
+        timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+        messageId: uuidv4(),
+        userId: uuid,
+        type: 'track',
+        event: 'User Signup',
+      });
+    }
+  } catch (e) {
+    const castedError = errorService.castError(e);
+    console.error(castedError);
+    errorService.reportError(castedError);
+  }
 }
 
 export function trackUserEnterPayments(priceId: string): void {
@@ -253,12 +296,12 @@ export async function trackCancelPayment(priceId: string) {
       amount_total,
       id: sessionId,
       customer_email,
-    } = await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+    } = (await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
       params: {
         sessionId: checkoutSessionId,
       },
       headers: httpService.getHeaders(true, false),
-    });
+    })) as any;
 
     const amount = amount_total * 0.01;
 
@@ -277,7 +320,7 @@ export async function trackCancelPayment(priceId: string) {
 export async function trackPaymentConversion() {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = await httpService.get(
+    const { metadata, amount_total, currency, customer, subscription, payment_intent } = (await httpService.get(
       `${process.env.REACT_APP_API_URL}/api/stripe/session`,
       {
         params: {
@@ -285,7 +328,7 @@ export async function trackPaymentConversion() {
         },
         headers: httpService.getHeaders(true, false),
       },
-    );
+    )) as any;
     const { username, uuid } = getUser();
     const amount = amount_total * 0.01;
 
@@ -313,6 +356,40 @@ export async function trackPaymentConversion() {
       subscription_id: subscription,
       payment_intent,
     });
+
+    window.gtag('event', 'purchase', {
+      transaction_id: uuidv4(),
+      value: amount,
+      currency: currency.toUpperCase(),
+      items: [
+        {
+          item_id: metadata.priceId,
+          item_name: metadata.name,
+          quantity: 1,
+          price: amount,
+        },
+      ],
+    });
+
+    if (source && source !== 'direct') {
+      axios
+        .post(IMPACT_API, {
+          anonymousId: anonymousID,
+          timestamp: dayjs().format('YYYY-MM-DDTHH:mm:ss.sssZ'),
+          properties: {
+            impact_value: amount_total === 0 ? 5 : amount,
+            subscription_id: subscription,
+            payment_intent,
+          },
+          userId: uuid,
+          type: 'track',
+          event: 'Payment Conversion',
+        })
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+        });
+    }
   } catch (err) {
     const castedError = errorService.castError(err);
     window.rudderanalytics.track('Error Signup After Payment Conversion', {

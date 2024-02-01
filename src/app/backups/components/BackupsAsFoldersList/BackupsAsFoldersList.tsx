@@ -9,13 +9,15 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
-import BackupsAsFoldersListItem from './BackupsAsFoldersListItem';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { deleteFile } from '../../../drive/services/file.service';
 import List from '../../../shared/components/List';
 import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import iconService from '../../../drive/services/icon.service';
+import dateService from '../../../core/services/date.service';
+import sizeService from '../../../drive/services/size.service';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -39,6 +41,7 @@ export default function BackupsAsFoldersList({
 
   async function refreshFolderContent() {
     setIsloading(true);
+    setSelectedItems([]);
     const storageClient = SdkFactory.getInstance().createStorageClient();
     const [responsePromise] = storageClient.getFolderContent(folderId);
     const response = await responsePromise;
@@ -68,9 +71,12 @@ export default function BackupsAsFoldersList({
     dispatch(deleteItemsThunk(selectedItems));
   }
 
-  const onDoubleClick = (item: DriveItemData) => {
+  const onClick = (item: DriveItemData) => {
     if (item.isFolder) {
-      onFolderPush(item as DriveFolderData);
+      if (!isLoading) {
+        setIsloading(true);
+        onFolderPush(item as DriveFolderData);
+      }
     } else {
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(item));
@@ -89,73 +95,94 @@ export default function BackupsAsFoldersList({
   };
 
   return (
-    <div className={`${className} flex min-h-0 flex-grow flex-col`}>
+    <div className={`${className} flex min-h-0 grow flex-col`}>
       <div className="flex h-full w-full flex-col overflow-y-auto">
-        <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
-          header={[
-            {
-              label: translate('drive.list.columns.name'),
-              width: 'flex flex-grow cursor-pointer items-center pl-6',
-              name: 'name',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.modified'),
-              width: 'hidden w-3/12 lg:flex pl-4',
-              name: 'updatedAt',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-            {
-              label: translate('drive.list.columns.size'),
-              width: 'flex w-2/12 cursor-pointer items-center',
-              name: 'size',
-              orderable: true,
-              defaultDirection: 'ASC',
-            },
-          ]}
-          items={currentItems}
-          isLoading={isLoading}
-          itemComposition={[
-            (item) => (
-              <BackupsAsFoldersListItem
-                key={`${item.isFolder ? 'folder' : 'file'}-${item.id}`}
-                item={item}
-                onClick={(item) => {
-                  const unselectedDevices = selectedItems.map((deviceSelected) => {
-                    return { device: deviceSelected, isSelected: false };
-                  });
-                  onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
-                }}
-                onDoubleClick={onDoubleClick}
-                dataTest="backup-list-folder"
+        {isLoading ? (
+          Skeleton
+        ) : (
+          <List<DriveItemData, 'name' | 'updatedAt' | 'size'>
+            header={[
+              {
+                label: translate('drive.list.columns.name'),
+                width: 'flex-1 min-w-activity truncate cursor-pointer',
+                name: 'name',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+              {
+                label: translate('drive.list.columns.modified'),
+                width: 'w-date',
+                name: 'updatedAt',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+              {
+                label: translate('drive.list.columns.size'),
+                width: 'cursor-pointer items-center w-size',
+                name: 'size',
+                orderable: true,
+                defaultDirection: 'ASC',
+              },
+            ]}
+            items={currentItems}
+            isLoading={isLoading}
+            itemComposition={[
+              (item) => {
+                const displayName = item.type ? `${item.name}.${item.type}` : item.name;
+                const Icon = iconService.getItemIcon(item.isFolder, item.type);
+
+                return (
+                  <div className="flex min-w-activity grow items-center justify-start pr-3">
+                    <div className="mr-3 h-8 w-8">
+                      <Icon className="h-8 w-8" />
+                    </div>
+                    <div className="grow cursor-default truncate">
+                      <span className="z-10 shrink cursor-pointer truncate" onClick={() => onClick(item)}>
+                        {displayName}
+                      </span>
+                    </div>
+                  </div>
+                );
+              },
+              (item) => {
+                return <div>{dateService.format(item.createdAt, 'DD MMMM YYYY. HH:mm')}</div>;
+              },
+              (item) => {
+                const size = 'size' in item ? sizeService.bytesToString(item.size) : '';
+                return <div>{size}</div>;
+              },
+            ]}
+            onClick={(item) => {
+              const unselectedDevices = selectedItems.map((deviceSelected) => ({
+                device: deviceSelected,
+                isSelected: false,
+              }));
+              onItemSelected([...unselectedDevices, { device: item, isSelected: true }]);
+            }}
+            onDoubleClick={onClick}
+            skinSkeleton={Skeleton}
+            emptyState={
+              <Empty
+                icon={<img className="w-36" alt="" src={folderEmptyImage} />}
+                title="This folder is empty"
+                subtitle="Use Internxt Desktop to upload your data"
               />
-            ),
-          ]}
-          skinSkeleton={Skeleton}
-          emptyState={
-            <Empty
-              icon={<img className="w-36" alt="" src={folderEmptyImage} />}
-              title="This folder is empty"
-              subtitle="Use Internxt Desktop to upload your data"
-            />
-          }
-          menu={contextMenuSelectedBackupItems({
-            onDownloadSelectedItems,
-            onDeleteSelectedItems,
-          })}
-          selectedItems={selectedItems}
-          keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
-          onSelectedItemsChanged={(changes) => {
-            const selectedDevicesParsed = changes.map((change) => ({
-              device: change.props,
-              isSelected: change.value,
-            }));
-            onItemSelected(selectedDevicesParsed);
-          }}
-          disableItemCompositionStyles={true}
-        />
+            }
+            menu={contextMenuSelectedBackupItems({
+              onDownloadSelectedItems,
+              onDeleteSelectedItems,
+            })}
+            selectedItems={selectedItems}
+            keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
+            onSelectedItemsChanged={(changes) => {
+              const selectedDevicesParsed = changes.map((change) => ({
+                device: change.props,
+                isSelected: change.value,
+              }));
+              onItemSelected(selectedDevicesParsed);
+            }}
+          />
+        )}
       </div>
     </div>
   );

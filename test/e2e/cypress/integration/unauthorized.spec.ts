@@ -1,3 +1,4 @@
+/* eslint-disable cypress/unsafe-to-chain-command */
 describe('Unauthorized user', () => {
   const WAIT_MILLISECONDS = 10000;
 
@@ -20,7 +21,7 @@ describe('Unauthorized user', () => {
     cy.window().then((win) => {
       win.localStorage.setItem('signUpTutorialCompleted', 'true');
     });
-    cy.get(':nth-child(1) > .flex-grow-1 > [data-test="file-list-folder"] > .absolute')
+    cy.get(':nth-child(1) > .grow-1 > [data-test="file-list-folder"] > .absolute')
       .dblclick({ force: true })
       .then(() => {
         cy.url().should('include', '/login');

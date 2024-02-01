@@ -40,6 +40,13 @@
       "exact": true
     },
     {
+      "id": "auth-success",
+      "layout": "empty",
+      "path": "/auth-success",
+      "exact": true,
+      "auth": true
+    },
+    {
       "id": "signup-blog",
       "layout": "empty",
       "path": "/signup-blog",
@@ -60,21 +67,22 @@
     {
       "id": "drive",
       "layout": "header-and-sidenav",
-      "path": "/app",
+      "path": "/",
       "exact": true,
       "auth": true
     },
     {
       "id": "recents",
       "layout": "header-and-sidenav",
-      "path": "/app/recents",
+      "path": "/recents",
       "exact": true,
-      "auth": true
+      "auth": true,
+      "hideSearch": true
     },
     {
       "id": "backups",
       "layout": "header-and-sidenav",
-      "path": "/app/backups",
+      "path": "/backups",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -82,7 +90,15 @@
     {
       "id": "shared-links",
       "layout": "header-and-sidenav",
-      "path": "/app/shared-links",
+      "path": "/shared-links",
+      "exact": true,
+      "auth": true,
+      "hideSearch": true
+    },
+    {
+      "id": "shared",
+      "layout": "header-and-sidenav",
+      "path": "/shared",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -90,7 +106,7 @@
     {
       "id": "photos",
       "layout": "header-and-sidenav",
-      "path": "/app/photos",
+      "path": "/photos",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -99,7 +115,7 @@
     {
       "id": "trash",
       "layout": "header-and-sidenav",
-      "path": "/app/trash",
+      "path": "/trash",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -111,6 +127,13 @@
       "exact": true,
       "auth": true,
       "hideSearch": true
+    },
+    {
+      "id": "drive-items",
+      "layout": "header-and-sidenav",
+      "path": "/:itemType/:id",
+      "exact": true,
+      "auth": true
     },
     {
       "id": "teams-join",
@@ -174,13 +197,19 @@
     {
       "id": "share-token",
       "layout": "share",
-      "path": "/sh/file/:token([a-z0-9]{20})/:code?",
+      "path": "/sh/file/:token/:code?",
       "exact": false
     },
     {
       "id": "share-folder-token",
       "layout": "share",
-      "path": "/sh/folder/:token([a-z0-9]{20})/:code",
+      "path": "/sh/folder/:token/:code?",
+      "exact": false
+    },
+    {
+      "id": "share-guest-accept-invite",
+      "layout": "empty",
+      "path": "/shared-guest",
       "exact": false
     },
     {
@@ -224,6 +253,13 @@
       "id": "request-access",
       "layout": "empty",
       "path": "/request-access",
+      "exact": true,
+      "auth": true
+    },
+    {
+      "id": "folder-file-not-found",
+      "layout": "empty",
+      "path": "/not-found",
       "exact": true,
       "auth": true
     },

@@ -1,4 +1,4 @@
-type FileExtensionMap = Record<string, string[]>;
+export type FileExtensionMap = Record<string, string[]>;
 export interface VideoExtensions {
   webm: 'webm';
   mkv: 'mkv';
@@ -173,7 +173,6 @@ const previewableImageExtensionGroups: string[] = ['jpg', 'png', 'bmp', 'gif', '
 const pdfExtensions: FileExtensionMap = {
   pdf: ['pdf'],
 };
-const previewablePdfExtensionGroups: string[] = ['pdf'];
 
 const pptExtensions: FileExtensionMap = {
   ppt: ['ppt', 'pptx', 'pptm'],
@@ -291,11 +290,13 @@ const previewAudioExtensionsGroup: string[] = Object.values(audioExtensions)
   .filter((extension) => !excludeUnsupportedAudioExtensions.includes(extension));
 
 const WordExtensions: FileExtensionMap = {
-  doc: ['doc', 'docx'],
+  doc: ['doc'],
+  docx: ['docx'],
 };
 
 const xlsExtensions: FileExtensionMap = {
-  xls: ['xls', 'xlsx'],
+  xls: ['xls'],
+  xlsx: ['xlsx'],
 };
 
 const xmlExtensions: FileExtensionMap = {
@@ -310,6 +311,12 @@ const csvExtensions: FileExtensionMap = {
 const zipExtensions: FileExtensionMap = {
   zip: ['zip', 'zipx'],
 };
+
+const previewablePdfExtensionGroups: string[] = ['pdf'];
+
+const previewExcelFormatExtensionGroup: string[] = ['xlsx'];
+
+const previewDocsGroup: string[] = ['doc', 'docx'];
 
 const defaultExtensions: FileExtensionMap = {};
 
@@ -361,8 +368,8 @@ export const fileExtensionPreviewableGroups: fileExtensionsPreviewableDictionary
   [FileExtensionGroup.Ppt]: [],
   [FileExtensionGroup.Txt]: [],
   [FileExtensionGroup.Video]: previewVideoExtensionsGroup,
-  [FileExtensionGroup.Word]: [],
-  [FileExtensionGroup.Xls]: [],
+  [FileExtensionGroup.Word]: previewDocsGroup,
+  [FileExtensionGroup.Xls]: previewExcelFormatExtensionGroup,
   [FileExtensionGroup.Xml]: [],
   [FileExtensionGroup.Csv]: [],
   [FileExtensionGroup.Zip]: [],

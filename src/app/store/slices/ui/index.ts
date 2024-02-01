@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-import { DriveFileData, DriveItemData, FileInfoMenuItem } from '../../../drive/types';
+import { PreviewFileItem } from '../../../share/types';
+import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from '../../../drive/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -9,6 +9,8 @@ interface UISliceState {
   isFileInfoMenuOpen: boolean;
   isNameCollisionDialogOpen: boolean;
   isShareDialogOpen: boolean;
+  isInvitationsDialogOpen: boolean;
+  isItemDetailsDialogOpen: boolean;
   isCreateFolderDialogOpen: boolean;
   isDeleteItemsDialogOpen: boolean;
   isMoveItemsDialogOpen: boolean;
@@ -26,12 +28,14 @@ interface UISliceState {
   isGuestInviteDialogOpen: boolean;
   isDeleteBackupDialogOpen: boolean;
   isFileViewerOpen: boolean;
-  fileViewerItem: DriveFileData | null;
+  fileViewerItem: PreviewFileItem | null;
+  itemDetails: DriveItemDetails | null;
   currentFileInfoMenuItem: FileInfoMenuItem | null;
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
   isToastNotificacionOpen: boolean;
+  isGlobalSearch: boolean;
 }
 
 const initialState: UISliceState = {
@@ -41,6 +45,8 @@ const initialState: UISliceState = {
   isFileInfoMenuOpen: false,
   isNameCollisionDialogOpen: false,
   isShareDialogOpen: false,
+  isInvitationsDialogOpen: false,
+  isItemDetailsDialogOpen: false,
   isCreateFolderDialogOpen: false,
   isDeleteItemsDialogOpen: false,
   isMoveItemsDialogOpen: false,
@@ -59,11 +65,13 @@ const initialState: UISliceState = {
   isDeleteBackupDialogOpen: false,
   isFileViewerOpen: false,
   fileViewerItem: null,
+  itemDetails: null,
   currentFileInfoMenuItem: null,
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
   isToastNotificacionOpen: false,
+  isGlobalSearch: false,
 };
 
 export const uiSlice = createSlice({
@@ -87,6 +95,12 @@ export const uiSlice = createSlice({
     },
     setIsShareDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isShareDialogOpen = action.payload;
+    },
+    setIsInvitationsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isInvitationsDialogOpen = action.payload;
+    },
+    setIsItemDetailsDialogOpen(state: UISliceState, action: PayloadAction<boolean>) {
+      state.isItemDetailsDialogOpen = action.payload;
     },
     setIsCreateFolderDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isCreateFolderDialogOpen = action.payload;
@@ -142,6 +156,9 @@ export const uiSlice = createSlice({
     setFileViewerItem: (state: UISliceState, action: PayloadAction<UISliceState['fileViewerItem']>) => {
       state.fileViewerItem = action.payload;
     },
+    setItemDetailsItem: (state: UISliceState, action: PayloadAction<UISliceState['itemDetails']>) => {
+      state.itemDetails = action.payload;
+    },
     setFileInfoItem: (state: UISliceState, action: PayloadAction<FileInfoMenuItem | null>) => {
       state.currentFileInfoMenuItem = action.payload;
     },
@@ -168,6 +185,9 @@ export const uiSlice = createSlice({
     },
     setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isToastNotificacionOpen = action.payload;
+    },
+    setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isGlobalSearch = action.payload;
     },
   },
 });
@@ -196,6 +216,8 @@ export const {
   setCurrentEditingNameDirty,
   setIsEditFolderNameDialog,
   setIsToastNotificacionOpen,
+  setIsGlobalSearch,
+  setIsItemDetailsDialogOpen,
 } = uiSlice.actions;
 
 export const uiActions = uiSlice.actions;

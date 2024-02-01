@@ -1,13 +1,15 @@
 import { PhotoId } from '@internxt/sdk/dist/photos';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { Helmet } from 'react-helmet-async';
 import Empty from '../../shared/components/Empty/Empty';
 import { getPhotoPreview } from 'app/network/download';
 import Dialog from '../../shared/components/Dialog/Dialog';
 import { RootState } from '../../store';
 import { photosSlice, PhotosState, SerializablePhoto } from '../../store/slices/photos';
 import photosThunks from '../../store/slices/photos/thunks';
-import EmptyPicture from '../../../assets/images/empty-photos.png';
+import EmptyPictureLight from '../../../assets/images/empty-photos-light.png';
+import EmptyPictureDark from '../../../assets/images/empty-photos-dark.png';
 import PhotoThumbnail from '../components/PhotoThumbnail';
 import Preview from '../components/Preview';
 import ShareDialog from '../components/ShareDialog';
@@ -15,6 +17,7 @@ import Skeleton from '../components/Skeleton';
 import Toolbar from '../components/Toolbar';
 import * as Sentry from '@sentry/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import WarningMessageWrapper from '../../drive/components/WarningMessage/WarningMessageWrapper';
 
 export default function PhotosView({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
@@ -82,12 +85,29 @@ export default function PhotosView({ className = '' }: { className?: string }): 
   return (
     <>
       <div className={`${className} flex h-full w-full flex-col overflow-y-hidden`} data-test="photos-gallery">
+        <Helmet>
+          <title>{translate('sideNav.photos')} - Internxt Drive</title>
+        </Helmet>
+        <WarningMessageWrapper />
         {showEmpty ? (
           <Empty
             title={translate('views.photos.empty.title')}
             subtitle={translate('views.photos.empty.description')}
             icon={
-              <img className="h-auto w-72" src={EmptyPicture} draggable="false" alt="Photos used in the Internxt app" />
+              <>
+                <img
+                  className="h-auto w-72 dark:hidden"
+                  src={EmptyPictureLight}
+                  draggable="false"
+                  alt="Photos used in the Internxt app"
+                />
+                <img
+                  className="hidden h-auto w-72 dark:flex"
+                  src={EmptyPictureDark}
+                  draggable="false"
+                  alt="Photos used in the Internxt app"
+                />
+              </>
             }
           />
         ) : (

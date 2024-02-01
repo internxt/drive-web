@@ -37,8 +37,9 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   }, [isOpen]);
 
   const onClose = (): void => {
-    setIsLoading(false);
-    dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+    if (!isLoading) {
+      dispatch(uiActions.setIsCreateFolderDialogOpen(false));
+    }
   };
 
   const createFolder = async () => {
@@ -52,12 +53,14 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
       )
         .unwrap()
         .then(() => {
-          setIsLoading(false);
-          onClose();
           onFolderCreated && onFolderCreated();
           dispatch(storageActions.setHasMoreDriveFolders(true));
           dispatch(storageActions.setHasMoreDriveFiles(true));
-          dispatch(fetchSortedFolderContentThunk(currentFolderId));
+          setTimeout(() => {
+            dispatch(fetchSortedFolderContentThunk(currentFolderId));
+            setIsLoading(false);
+            onClose();
+          }, 500);
         })
         .catch((e) => {
           errorService.reportError(e, { extra: { folderName, parentFolderId: currentFolderId } });

@@ -3,11 +3,12 @@ import { randomBytes } from 'crypto';
 import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
 import { DriveFileData } from '../drive/types';
 import tasksService from '../tasks/services/tasks.service';
-import { TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
+import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
 import errorService from '../core/services/error.service';
 import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
+import { HTTP_CODES } from '../core/services/http.service';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -20,7 +21,18 @@ enum FileSizeType {
   Small = 'small',
 }
 
-type Options = { relatedTaskId?: string; showNotifications?: boolean; showErrors?: boolean };
+type Options = {
+  relatedTaskId?: string;
+  showNotifications?: boolean;
+  showErrors?: boolean;
+  ownerUserAuthenticationData?: {
+    token: string;
+    bridgeUser: string;
+    bridgePass: string;
+    encryptionKey: string;
+    bucketId: string;
+  };
+};
 
 type UploadManagerFileParams = {
   filecontent: FileToUpload;
@@ -32,11 +44,18 @@ type UploadManagerFileParams = {
 
 export const uploadFileWithManager = (
   files: UploadManagerFileParams[],
+  maxSpaceOccupiedCallback: () => void,
   abortController?: AbortController,
   options?: Options,
   relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
 ): Promise<DriveFileData[]> => {
-  const uploadManager = new UploadManager(files, abortController, options, relatedTaskProgress);
+  const uploadManager = new UploadManager(
+    files,
+    maxSpaceOccupiedCallback,
+    abortController,
+    options,
+    relatedTaskProgress,
+  );
   return uploadManager.run();
 };
 
@@ -104,10 +123,8 @@ class UploadManager {
             content: file.content,
             parentFolderId: file.parentFolderId,
           },
-          false,
           (uploadProgress) => {
             this.uploadsProgress[uploadId] = uploadProgress;
-
             if (task?.status !== TaskStatus.Cancelled) {
               tasksService.updateTask({
                 taskId: taskId,
@@ -118,8 +135,19 @@ class UploadManager {
               });
             }
           },
-          { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
-          this.abortController ?? fileData.abortController,
+          {
+            isTeam: false,
+            trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
+            abortController: this.abortController ?? fileData.abortController,
+            ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,
+            abortCallback: (abort?: () => void) =>
+              tasksService.addListener({
+                event: TaskEvent.TaskCancelled,
+                listener: () => {
+                  abort?.();
+                },
+              }),
+          },
         )
           .then((driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
@@ -163,8 +191,9 @@ class UploadManager {
             next(null, driveFileDataWithNameParsed);
           })
           .catch((err) => {
-            const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
-            const isLostConnectionError = err instanceof ConnectionLostError;
+            const isUploadAborted =
+              this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted ?? err === 'abort';
+            const isLostConnectionError = err instanceof ConnectionLostError || err.message === 'Network Error';
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
               upload();
@@ -178,19 +207,25 @@ class UploadManager {
                 filesUploaded: this.relatedTaskProgress
                   ? this.relatedTaskProgress?.filesUploaded / this.relatedTaskProgress?.totalFilesToUpload
                   : 'unknown',
+                context: err?.context,
+                errStatus: err?.status,
               };
 
               if (isLostConnectionError) {
                 errorService.reportError(err, {
                   extra: fileInfoToReport,
                 });
-                return tasksService.updateTask({
+                tasksService.updateTask({
                   taskId,
-                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') as string },
+                  merge: { status: TaskStatus.Error, subtitle: t('error.connectionLostError') ?? undefined },
                 });
+                this.errored = true;
+                next(err);
+                return;
               }
 
-              if (task?.status !== TaskStatus.Cancelled) {
+              const isUnexpectedError = task?.status !== TaskStatus.Cancelled && !isUploadAborted;
+              if (isUnexpectedError) {
                 tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Error },
@@ -198,20 +233,24 @@ class UploadManager {
                 errorService.reportError(err, {
                   extra: fileInfoToReport,
                 });
-              }
 
-              if (!this.errored) {
-                this.uploadQueue.kill();
+                if (err?.status === HTTP_CODES.MAX_SPACE_USED) {
+                  this.maxSpaceOccupiedCallback();
+                }
               }
 
               if (isUploadAborted) {
-                return tasksService.updateTask({
+                tasksService.updateTask({
                   taskId: taskId,
                   merge: { status: TaskStatus.Cancelled },
                 });
               }
 
-              this.errored = true;
+              if (!this.errored && !isUploadAborted) {
+                this.uploadQueue.kill();
+              }
+
+              if (!isUploadAborted) this.errored = true;
 
               next(err);
             }
@@ -228,9 +267,11 @@ class UploadManager {
   private options?: Options;
   private relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number };
   private uploadUUIDV4: string;
+  private maxSpaceOccupiedCallback: () => void;
 
   constructor(
     items: UploadManagerFileParams[],
+    maxSpaceOccupiedCallback: () => void,
     abortController?: AbortController,
     options?: Options,
     relatedTaskProgress?: { filesUploaded: number; totalFilesToUpload: number },
@@ -240,6 +281,7 @@ class UploadManager {
     this.options = options;
     this.relatedTaskProgress = relatedTaskProgress;
     this.uploadUUIDV4 = analyticsService.getTrackingActionId();
+    this.maxSpaceOccupiedCallback = maxSpaceOccupiedCallback;
   }
 
   private classifyFilesBySize(

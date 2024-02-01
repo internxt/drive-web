@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import App from './App';
@@ -14,12 +14,15 @@ import { taskManagerThunks } from './app/store/slices/taskManager';
 import { sessionActions } from './app/store/slices/session';
 import { referralsThunks } from 'app/store/slices/referrals';
 
+import 'react-tooltip/dist/react-tooltip.css';
 import './index.scss';
 import { SdkFactory } from './app/core/factory/sdk';
 import localStorageService from './app/core/services/local-storage.service';
 import './app/i18n/services/i18n.service';
 import { TranslationProvider } from 'app/i18n/provider/TranslationProvider';
 import { HelmetProvider } from 'react-helmet-async';
+import { ThemeProvider } from 'app/theme/ThemeProvider';
+import { LiveChatLoaderProvider } from 'react-live-chat-loader';
 
 // Installs plugins
 plugins.forEach((plugin) => plugin.install(store));
@@ -35,17 +38,22 @@ store.dispatch(planThunks.initializeThunk());
 store.dispatch(taskManagerThunks.initializeThunk());
 store.dispatch(referralsThunks.initializeThunk());
 
-ReactDOM.render(
+const container = document.getElementById('root') as HTMLElement;
+const root = createRoot(container);
+root.render(
   <React.StrictMode>
     <HelmetProvider>
-      <Provider store={store}>
-        <TranslationProvider>
-          <App />
-        </TranslationProvider>
-      </Provider>
+      <LiveChatLoaderProvider provider="intercom" providerKey={process.env.REACT_APP_INTERCOM_PROVIDER_KEY as string}>
+        <Provider store={store}>
+          <ThemeProvider>
+            <TranslationProvider>
+              <App />
+            </TranslationProvider>
+          </ThemeProvider>
+        </Provider>
+      </LiveChatLoaderProvider>
     </HelmetProvider>
   </React.StrictMode>,
-  document.getElementById('root'),
 );
 
 // If you want to start measuring performance in your app, pass a function
