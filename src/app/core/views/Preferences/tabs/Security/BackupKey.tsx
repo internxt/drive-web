@@ -8,6 +8,10 @@ import Section from '../../components/Section';
 import { TrackingPlan } from 'app/analytics/TrackingPlan';
 import { trackBackupKeyDownloaded } from 'app/analytics/services/analytics.service';
 
+/**
+ * Downloads the backup key of the user and shows a notification
+ * @param translate used for the notification message
+ */
 export function handleExport(translate) {
   const trackBackupKeyDownloadedProperties: TrackingPlan.BackupKeyDownloadedProperties = {
     backup_key_downloaded: true,
