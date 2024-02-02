@@ -107,7 +107,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setInfo({ ...res });
         setIsLoaded(true);
         setRequiresPassword(false);
-        getFolderContentSize(res.id);
+        getFolderSize(res.id);
         return Promise.resolve(0);
       })
       .then((folderSize) => {
@@ -174,11 +174,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     return confirmationMessage; // WebKit, Chrome <34
   };
 
-  const getFolderContentSize = async (folderId: string) => {
+  const getFolderSize = async (folderId: string) => {
     try {
-      const folderSize = await shareService.getSharedFolderSize(folderId);
+      const folderData = await shareService.getSharedFolderSize(folderId);
 
-      const folderSizeToString = sizeService.bytesToString(folderSize.size);
+      const folderSizeToString = sizeService.bytesToString(folderData.size);
       setFolderSize(folderSizeToString);
     } catch (error) {
       errorService.reportError(error);
