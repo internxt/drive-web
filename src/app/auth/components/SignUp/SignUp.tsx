@@ -40,10 +40,6 @@ export interface SignUpProps {
 
 type Views = 'signUp' | 'downloadBackupKey';
 
-interface ViewsProps {
-  view: Views;
-}
-
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
   const [isValidPassword, setIsValidPassword] = useState(false);
