@@ -81,6 +81,10 @@ export class Network {
     continueUploadOptions: {
       taskId: string;
     },
+    analyticsServiceCallbacks?: {
+      pauseUploadCallback: () => void;
+      resumeUploadCallback: () => void;
+    },
   ): [Promise<string>, Abortable | undefined] {
     if (!bucketId) {
       throw new Error('Bucket id not provided');

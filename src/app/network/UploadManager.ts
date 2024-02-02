@@ -23,6 +23,7 @@ enum FileSizeType {
 }
 
 type Options = {
+  isRetriedUpload?: boolean;
   relatedTaskId?: string;
   showNotifications?: boolean;
   showErrors?: boolean;
@@ -135,7 +136,11 @@ class UploadManager {
 
         const uploadStatus = this.uploadRepository?.getUploadState(this.options?.relatedTaskId ?? taskId);
         const isPaused = (await uploadStatus) === TaskStatus.Paused;
-        const continueUploadOptions = { taskId: this.options?.relatedTaskId ?? taskId, isPaused };
+        const continueUploadOptions = {
+          taskId: this.options?.relatedTaskId ?? taskId,
+          isPaused,
+          isRetriedUpload: !!this.options?.isRetriedUpload,
+        };
 
         uploadFile(
           fileData.userEmail,
@@ -347,6 +352,11 @@ class UploadManager {
               status: TaskStatus.Encrypting,
             },
           });
+          if (this.options) {
+            this.options.isRetriedUpload = true;
+          } else {
+            this.options = { isRetriedUpload: true };
+          }
         } else {
           taskId = tasksService.create<UploadFileTask>({
             relatedTaskId: this.options?.relatedTaskId,
