@@ -168,7 +168,8 @@
     },
     "files": "Files",
     "file": "Fichier",
-    "folder": "Dossier"
+    "folder": "Dossier",
+    "reloadPageMessage": "Les modifications que vous avez apportées pourraient ne pas être enregistrées."
   },
   "shareLayout": {
     "title": "",
@@ -937,6 +938,8 @@
       "allProcessesHaveFinished": "Tous les processus ont été complétés",
       "processing": "Traitement {{pending}} de {{finished}}"
     },
+    "waiting": "En attente",
+    "paused": "En pause",
     "create-folder": {
       "status": {
         "pending": "En attente de création de dossier",
@@ -1055,6 +1058,15 @@
         "cancelled": "Annulation du renommage"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Échec du téléchargement"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Quelque chose s'est mal passé en réessayant de télécharger. Essayez de télécharger à nouveau",
+      "retryDownloadFailed": "Quelque chose s'est mal passé lors de la nouvelle tentative de téléchargement. Veuillez réessayer le téléchargement.",
+      "openUploadedFileFailed": "Quelque chose s'est mal passé lors de la tentative d'ouverture du fichier",
+      "openUploadedFolderFailed": "Quelque chose s'est mal passé lors de la tentative d'accès au dossier"
     }
   },
   "success": {

@@ -19,6 +19,7 @@ interface CreateFolderPayload {
   parentFolderId: number;
   folderName: string;
   options?: Partial<CreateFolderThunkOptions>;
+  uuid?: string;
 }
 
 export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderPayload, { state: RootState }>(
