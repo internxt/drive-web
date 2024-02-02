@@ -63,7 +63,9 @@
       "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
-      "encrypting": "Cifrando"
+      "encrypting": "Cifrando",
+      "info1": "Internxt no almacena contraseñas.",
+      "info2": "En caso de que se olvide de su contraseña, perderá el acceso a todos sus archivos."
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
@@ -714,6 +716,13 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "¿Mover a la papelera?",
+        "subtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a estos elementos compartidos",
+        "cancel": "Cancelar",
+        "confirm": "Mover a la papelera"
+      },
       "removeUser": {
         "notification": {
           "success": "Usuario \"{{name}}\" eliminado",
@@ -1352,6 +1361,14 @@
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verifica que eres tú",
+    "text1": "Se han detectado demasiados inicios de sesion fallidos.",
+    "text2": "Por motivos de seguridad te hemos enviado un email a tu dirección {{email}} sigue los pasos del email para confirmar que eres tú e iniciar sesión",
+    "forgotPassword": "He olvidado mi contraseña",
+    "text3": "¿No has recibido ningún correo electrónico?",
+    "resend": "Reenviar"
   },
   "itemNotFound": {
     "folder": {

@@ -1,18 +1,18 @@
 import { LinkBreak } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import bigLogo from 'assets/icons/big-logo.svg';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
 
 function ExpiredLink(): JSX.Element {
   const { translate } = useTranslationContext();
 
   return (
-    <div className="flex h-full w-full flex-col items-center overflow-auto bg-white sm:bg-gray-5">
+    <div className="flex h-full w-full flex-col items-center overflow-auto bg-gray-1">
       <div className="flex shrink-0 flex-row justify-center self-stretch py-10 sm:justify-start sm:pl-20">
-        <img src={bigLogo} width="120" alt="" />
+        <InternxtLogo className="h-auto w-28 text-gray-100" />
       </div>
 
-      <div className="flex h-full w-full max-w-xs flex-1 shrink-0 flex-col items-center items-center justify-center">
-        <div className="flex w-full flex-col items-center items-center rounded-2xl bg-white p-5 text-gray-100 transition-all duration-100 ease-out sm:shadow-subtle-hard">
+      <div className="flex h-full w-full max-w-xs flex-1 shrink-0 flex-col items-center justify-center">
+        <div className="flex w-full flex-col items-center rounded-2xl border border-gray-10 bg-gray-1 p-5 text-gray-100 transition-all duration-100 ease-out dark:bg-gray-5 sm:shadow-subtle-hard">
           <LinkBreak size={80} weight="thin" className="mt-3" />
           <h4 className="mt-4 text-center text-xl font-medium">{translate('linkExpired.title')}</h4>
           <p className="font-regular mb-3 mt-1 text-center text-base text-gray-60">

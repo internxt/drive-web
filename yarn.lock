@@ -1138,6 +1138,13 @@
   dependencies:
     regenerator-runtime "^0.14.0"
 
+"@babel/runtime@^7.23.2":
+  version "7.23.9"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.23.9.tgz#47791a15e4603bb5f905bc0753801cf21d6345f7"
+  integrity sha512-0CX6F+BI2s9dkUqr08KFrAIZgNFj75rdBU/DjCyYLIaV/quFjkk6T+EJ2LkZHyZTbEV4L5p97mNkUsHl2wLFAw==
+  dependencies:
+    regenerator-runtime "^0.14.0"
+
 "@babel/template@^7.22.15", "@babel/template@^7.22.5", "@babel/template@^7.3.3":
   version "7.22.15"
   resolved "https://registry.yarnpkg.com/@babel/template/-/template-7.22.15.tgz#09576efc3830f0430f4548ef971dde1350ef2f38"
@@ -1605,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.4.63":
-  version "1.4.63"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.63/195d258ea4cb19cd81e6874e1208ad95a7e64611#195d258ea4cb19cd81e6874e1208ad95a7e64611"
-  integrity sha512-WDeS39CJ+pOBR8XCESoQ1+0J9b+6Bn/ZqEQPcx8OQThb+EcJwU5hwmNRiISnGlJioiXUsMJq09BBVxCY5E2g+w==
+"@internxt/sdk@^1.4.67":
+  version "1.4.67"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.67/86fe22ae1a418a1fd29fd586e7dda5f391c490fb#86fe22ae1a418a1fd29fd586e7dda5f391c490fb"
+  integrity sha512-jiDue0BRNm/uAEiah/19EL5bXd3GKUdPmyFkzTTEQjpk+xGhUWAkOgTw+Bp6jN5KL9WqleOnKdWIiGKoKj24XQ==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -7143,6 +7150,13 @@ husky@^7.0.2:
   version "7.0.4"
   resolved "https://registry.yarnpkg.com/husky/-/husky-7.0.4.tgz#242048245dc49c8fb1bf0cc7cfb98dd722531535"
   integrity sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==
+
+i18next-browser-languagedetector@^7.2.0:
+  version "7.2.0"
+  resolved "https://registry.yarnpkg.com/i18next-browser-languagedetector/-/i18next-browser-languagedetector-7.2.0.tgz#de0321cba6881be37d82e20e4d6f05aa75f6e37f"
+  integrity sha512-U00DbDtFIYD3wkWsr2aVGfXGAj2TgnELzOX9qv8bT0aJtvPV9CRO77h+vgmHFBMe7LAxdwvT/7VkCWGya6L3tA==
+  dependencies:
+    "@babel/runtime" "^7.23.2"
 
 i18next@^22.4.9:
   version "22.5.1"

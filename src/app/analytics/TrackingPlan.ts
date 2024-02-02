@@ -106,6 +106,10 @@ export namespace TrackingPlan {
     method: string;
   }
 
+  export interface AccountUnblockProperties {
+    email: string;
+  }
+
   export enum EventNames {
     FileUploadStart = 'Upload Started',
     FileUploadError = 'Upload Error',
@@ -127,5 +131,7 @@ export namespace TrackingPlan {
     FilePreviewClicked = 'File Preview Clicked',
     BackupKeyDownloaded = 'Backup Key Downloaded',
     PasswordRecovered = 'Password Recovered',
+    UnblockAccountEmailSent = 'Unblock Account Email Sent',
+    AccountUnblocked = 'Account Unblocked',
   }
 }

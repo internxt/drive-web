@@ -477,6 +477,16 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       filecontent: file,
       userEmail: user.email,
       parentFolderId,
+      // TODO: EXTRACT WHEN MANAGE UPLOAD TASK IS MERGED
+      onFinishUploadFile: (driveItemData: DriveFileData) => {
+        dispatch(
+          storageActions.pushItems({
+            updateRecents: true,
+            folderIds: [parentFolderId],
+            items: [driveItemData as DriveItemData],
+          }),
+        );
+      },
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
@@ -562,6 +572,16 @@ export const uploadItemsParallelThunkNoCheck = createAsyncThunk<void, UploadItem
       filecontent: file,
       userEmail: user.email,
       parentFolderId,
+      // TODO: EXTRACT WHEN MANAGE UPLOAD TASK IS MERGED
+      onFinishUploadFile: (driveItemData: DriveFileData) => {
+        dispatch(
+          storageActions.pushItems({
+            updateRecents: true,
+            folderIds: [parentFolderId],
+            items: [driveItemData as DriveItemData],
+          }),
+        );
+      },
     }));
 
     const openMaxSpaceOccupiedDialog = () => dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
