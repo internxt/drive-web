@@ -107,7 +107,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setInfo({ ...res });
         setIsLoaded(true);
         setRequiresPassword(false);
-        getFolderSize(res.id);
+        getFolderContentSize(res.id);
         return Promise.resolve(0);
       })
       .then((folderSize) => {
@@ -174,7 +174,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
     return confirmationMessage; // WebKit, Chrome <34
   };
 
-  const getFolderSize = async (folderId) => {
+  const getFolderContentSize = async (folderId: string) => {
     try {
       const folderSize = await shareService.getSharedFolderSize(folderId);
 
@@ -271,7 +271,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.plainName}>
                 {info?.item?.plainName}
               </abbr>
-              <span className="text-gray-60">{folderSize}</span>
+              <span className="text-gray-60">{folderSize || '0MB'}</span>
             </div>
           </div>
         </div>
