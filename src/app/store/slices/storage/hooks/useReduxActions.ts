@@ -2,9 +2,9 @@ import { useDispatch } from 'react-redux';
 import { downloadItemsAsZipThunk, downloadItemsThunk } from '../storage.thunks/downloadItemsThunk';
 import { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
 import { uploadFolderThunk } from '../storage.thunks/uploadFolderThunk';
-import { uploadItemsThunk } from '../storage.thunks/uploadItemsThunk';
+import { uploadItemsThunk, uploadSharedItemsThunk } from '../storage.thunks/uploadItemsThunk';
 import { DriveItemData } from '../../../../drive/types';
-import { UploadFolderData } from '../../../../tasks/types';
+import { SharedItemAuthenticationData, UploadFolderData } from '../../../../tasks/types';
 
 export const useReduxActions = () => {
   const dispatch = useDispatch();
@@ -45,5 +45,25 @@ export const useReduxActions = () => {
     );
   };
 
-  return { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem };
+  const uploadSharedItem = (data: {
+    uploadFile: File;
+    parentFolderId: number;
+    taskId: string;
+    fileType: string;
+    sharedItemAuthenticationData: SharedItemAuthenticationData;
+  }) => {
+    dispatch(
+      uploadSharedItemsThunk({
+        files: [data.uploadFile],
+        parentFolderId: data.parentFolderId,
+        currentFolderId: data.sharedItemAuthenticationData.currentFolderId,
+        taskId: data.taskId,
+        fileType: data.fileType,
+        ownerUserAuthenticationData: data.sharedItemAuthenticationData.ownerUserAuthenticationData,
+        isDeepFolder: data.sharedItemAuthenticationData.isDeepFolder,
+      }),
+    );
+  };
+
+  return { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem };
 };

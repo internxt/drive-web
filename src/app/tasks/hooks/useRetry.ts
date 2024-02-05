@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { DriveItemData } from '../../drive/types';
-import { TaskNotification, TaskType, UploadFolderData } from '../types';
+import { SharedItemAuthenticationData, TaskNotification, TaskType, UploadFolderData } from '../types';
 
 interface RetryDownload {
   retryDownload: () => void;
@@ -43,6 +43,13 @@ type RetryUploadArgs = {
   notification: TaskNotification;
   uploadFolder: (data: UploadFolderData & { taskId: string }) => void;
   uploadItem: (data: { uploadFile: File; parentFolderId: number; taskId: string; fileType: string }) => void;
+  uploadSharedItem: (data: {
+    uploadFile: File;
+    parentFolderId: number;
+    taskId: string;
+    fileType: string;
+    sharedItemAuthenticationData: SharedItemAuthenticationData;
+  }) => void;
   showErrorNotification: () => void;
 };
 
@@ -50,10 +57,11 @@ export const useRetryUpload = ({
   notification,
   uploadFolder,
   uploadItem,
+  uploadSharedItem,
   showErrorNotification,
 }: RetryUploadArgs): RetryUpload => {
   const retryUpload = useCallback(() => {
-    const { item, taskId, action } = notification;
+    const { item, taskId, action, sharedItemAuthenticationData } = notification;
 
     const isFolderUpload = action === TaskType.UploadFolder;
 
@@ -73,12 +81,24 @@ export const useRetryUpload = ({
       }
     } else if (item && taskId) {
       const uploadItemData = item as { uploadFile: File; parentFolderId: number };
-      uploadItem({
-        uploadFile: uploadItemData.uploadFile,
-        parentFolderId: uploadItemData.parentFolderId,
-        taskId: notification.taskId,
-        fileType: notification.fileType as string,
-      });
+
+      const isSharedItem = !!sharedItemAuthenticationData;
+      if (isSharedItem) {
+        uploadSharedItem({
+          uploadFile: uploadItemData.uploadFile,
+          parentFolderId: uploadItemData.parentFolderId,
+          taskId: notification.taskId,
+          fileType: notification.fileType as string,
+          sharedItemAuthenticationData,
+        });
+      } else {
+        uploadItem({
+          uploadFile: uploadItemData.uploadFile,
+          parentFolderId: uploadItemData.parentFolderId,
+          taskId: notification.taskId,
+          fileType: notification.fileType as string,
+        });
+      }
     } else {
       showErrorNotification();
     }

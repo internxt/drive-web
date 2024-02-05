@@ -104,7 +104,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       filesToUpload.push({
         name: finalFilename,
         size: file.size,
-        type: extension,
+        type: extension ?? fileType,
         content: fileContent,
         parentFolderId,
       });
@@ -158,11 +158,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   },
 );
 
-interface UploadSharedItemsPayload {
-  files: File[];
-  parentFolderId: number;
-  options?: Partial<UploadItemsThunkOptions>;
-  filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
+interface UploadSharedItemsPayload extends UploadItemsPayload {
   currentFolderId: string;
   ownerUserAuthenticationData?: {
     token: string;
@@ -183,6 +179,8 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
   async (
     {
       files,
+      taskId,
+      fileType,
       parentFolderId,
       options,
       ownerUserAuthenticationData,
@@ -260,7 +258,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       filesToUpload.push({
         name: finalFilename,
         size: file.size,
-        type: extension,
+        type: fileType ?? extension,
         content: fileContent,
         parentFolderId,
       });
@@ -269,7 +267,9 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
+      fileType: file.type,
       userEmail: user.email,
+      taskId,
       parentFolderId,
       onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
         const uploadRespository = DatabaseUploadRepository.getInstance();
@@ -295,6 +295,10 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         undefined,
         {
           ownerUserAuthenticationData,
+          sharedItemData: {
+            isDeepFolder,
+            currentFolderId,
+          },
         },
       );
     } catch (error) {

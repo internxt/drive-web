@@ -34,6 +34,10 @@ type Options = {
     encryptionKey: string;
     bucketId: string;
   };
+  sharedItemData?: {
+    isDeepFolder?: boolean;
+    currentFolderId?: string;
+  };
 };
 
 type UploadManagerFileParams = {
@@ -358,6 +362,14 @@ class UploadManager {
             this.options = { isRetriedUpload: true };
           }
         } else {
+          const sharedItemAuthenticationData = this.options?.ownerUserAuthenticationData
+            ? {
+                ownerUserAuthenticationData: { ...this.options?.ownerUserAuthenticationData },
+                isDeepFolder: !!this.options?.sharedItemData?.isDeepFolder,
+                currentFolderId: this.options?.sharedItemData?.currentFolderId as string,
+              }
+            : undefined;
+
           taskId = tasksService.create<UploadFileTask>({
             relatedTaskId: this.options?.relatedTaskId,
             action: TaskType.UploadFile,
@@ -367,6 +379,7 @@ class UploadManager {
             isFileNameValidated: true,
             showNotification: this.options?.showNotifications ?? true,
             cancellable: true,
+            sharedItemAuthenticationData,
             stop: async () => {
               if (this.abortController) this.abortController?.abort();
               else file?.abortController?.abort();
