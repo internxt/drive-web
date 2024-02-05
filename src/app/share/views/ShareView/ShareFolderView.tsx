@@ -56,7 +56,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [requiresPassword, setRequiresPassword] = useState(false);
   const [itemPassword, setItemPassword] = useState('');
   const [sendBannerVisible, setIsSendBannerVisible] = useState(false);
-  const [folderSize, setFolderSize] = useState<string>();
+  const [folderSize, setFolderSize] = useState<string | null>(null);
 
   const canUseReadableStreamMethod =
     'WritableStream' in window &&
@@ -271,7 +271,11 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={info?.item?.plainName}>
                 {info?.item?.plainName}
               </abbr>
-              <span className="text-gray-60">{folderSize || '0MB'}</span>
+              {folderSize === null ? (
+                <Spinner size={24} />
+              ) : (
+                <span className="text-gray-60"> {folderSize || '0MB'}</span>
+              )}
             </div>
           </div>
         </div>
