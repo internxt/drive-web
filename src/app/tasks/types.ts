@@ -87,6 +87,7 @@ export interface UploadFileTask extends BaseTask {
   fileType: string;
   isFileNameValidated: boolean;
   item: { uploadFile: File; parentFolderId: number };
+  sharedItemAuthenticationData?: SharedItemAuthenticationData;
 }
 
 export interface UploadFolderTask extends BaseTask {
@@ -148,6 +149,7 @@ export type TaskData = (
 } & { item?: UploadFileData } & { fileType?: string } & {
   item?: IRoot;
   parentFolderId?: number;
+  sharedItemAuthenticationData?: SharedItemAuthenticationData;
   itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 };
 
@@ -155,6 +157,18 @@ export type DownloadFilesData = { name: string; type: string; items?: DriveItemD
 export type DownloadFolderData = { id: number; name: string };
 export type UploadFileData = { uploadFile: File; parentFolderId: number };
 export type UploadFolderData = { folder: IRoot; parentFolderId: number };
+export type UploadSharedItemData = UploadFileData & SharedItemAuthenticationData;
+export type SharedItemAuthenticationData = {
+  currentFolderId: string;
+  ownerUserAuthenticationData: {
+    token: string;
+    bridgeUser: string;
+    bridgePass: string;
+    encryptionKey: string;
+    bucketId: string;
+  };
+  isDeepFolder: boolean;
+};
 
 export interface TaskNotification {
   taskId: string;
@@ -162,12 +176,13 @@ export interface TaskNotification {
   status: TaskStatus;
   title: string;
   item?: DriveItemData | DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
+  sharedItemAuthenticationData?: SharedItemAuthenticationData;
+  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
+  fileType?: string;
   subtitle: string;
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
   isTaskCancellable: boolean;
-  fileType?: string;
-  itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
 }
 
 export interface TaskFilter {
