@@ -118,6 +118,11 @@ const getLocalUserData = () => {
   return onwerData;
 };
 
+// TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
+const filterEditorAndReader = (users: Role[]): Role[] => {
+  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
+};
+
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
@@ -169,8 +174,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles([...roles, OWNER_ROLE]);
-        setInviteDialogRoles(roles);
+        const parsedRoles = filterEditorAndReader(roles);
+        setRoles([...parsedRoles, OWNER_ROLE]);
+        setInviteDialogRoles(parsedRoles);
       });
     }
 
