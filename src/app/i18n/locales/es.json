@@ -34,7 +34,7 @@
     "es": "Español (Español)",
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
-    "cn": "简体中文 (Chino)",
+    "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
     "de": "Deutsch (Alemán)"
   },
@@ -1235,6 +1235,7 @@
     },
     "dropdown": {
       "openPreview": "Abrir previsualización",
+      "shareLink": "Compartir",
       "getLink": "Copiar enlace",
       "details": "Detalles",
       "rename": "Renombrar",
@@ -1339,7 +1340,7 @@
       },
       "stepTwo": {
         "title": "Empecemos...",
-        "description": "Haga clic en el botón Cargar para cargar su primer archivo."
+        "description": "Haga clic en el botón Subir archivos para cargar su primer archivo."
       }
     }
   },
