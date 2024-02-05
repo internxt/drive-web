@@ -45,7 +45,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
       });
     },
   });
-  const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem } = useReduxActions();
+  const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
     notification,
     downloadItemsAsZip,
@@ -58,6 +58,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
     notification,
     uploadFolder,
     uploadItem,
+    uploadSharedItem,
     showErrorNotification() {
       notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
     },
