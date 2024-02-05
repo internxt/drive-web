@@ -72,7 +72,7 @@
     "terms2": "accetti i termini e le condizioni",
     "decrypting": "Decriptazione...",
     "login": {
-      "title": "Log in",
+      "title": "Accedere",
       "forgotPwd": "Hai dimenticato la password?",
       "dontHaveAccount": "Non hai un account?",
       "createAccount": "Creare un account",
@@ -153,7 +153,26 @@
     "terms": "Termini e condizioni",
     "contactSupport": "Contatta il supporto",
     "help": "Hai bisogno di aiuto?",
-    "searchBar": "Cerca in questa cartella",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Cerca in questa cartella",
+      "placeholder": "Cerca in Drive",
+      "filters": {
+        "folder": "Cartella",
+        "pdf": "PDF",
+        "image": "Immagine",
+        "video": "Video",
+        "audio": "Audio",
+        "clear": "Libero"
+      },
+      "emptyState": {
+        "title": "Trovare file e cartelle",
+        "subtitle": "Ricerca per nome e tipo"
+      },
+      "notFoundState": {
+        "title": "Nessun risultato trovato",
+        "subtitle": "Nessun file o cartella corrisponde alla ricerca"
+      }
+    },
     "stage": {
       "development": "Development",
       "production": "Production"
@@ -814,13 +833,13 @@
       "title": "Modifica la password",
       "newPassword": "Nuova password",
       "confirmPassword": "Conferma la nuova password",
-      "strongPassword": "Password is strong",
+      "strongPassword": "La password è forte",
       "errors": {
         "longPassword": "La password può contenere un massimo di 50 caratteri",
-        "shortPassword": "Password has to be at least 8 characters long",
-        "notComplex": "Password is not complex enough",
-        "weakPassword": "Password is weak",
-        "doesntMatch": "Password confirmation does not match the password"
+        "shortPassword": "La password deve avere almeno 8 caratteri",
+        "notComplex": "La password non è abbastanza complessa",
+        "weakPassword": "La password è debole",
+        "doesntMatch": "La conferma della password non corrisponde alla password"
       }
     },
     "deleteBackupModal": {
@@ -869,7 +888,7 @@
     "renamingItem": "Error when renaming item/s",
     "linkExpired": "This secure link has expired",
     "teamInvitation": "The invitation email could not be sent",
-    "storageIsFull": "Your storage is full",
+    "storageIsFull": "Lo spazio di archiviazione è pieno",
     "storageIsFullDescription": "Non puoi caricare, sincronizzare o eseguire il backup dei file",
     "noSpaceAvailable": "You’ve reached the limits of your current plan and sync has stopped. Upgrade now to keep your files synced securely.",
     "sharedFolderTooBig": "Internxt Drive does not support sharing folders of more than 1GB.",
@@ -877,7 +896,7 @@
     "workingOnIt": "We are working to bring you a better experience.",
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({{userAgent}})",
-    "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "inviteAFriend": "Errore nell'invio dell'invito a un amico: {{message}}",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
@@ -1221,6 +1240,7 @@
     },
     "dropdown": {
       "openPreview": "Anteprima aperta",
+      "shareLink": "Condividi",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",
@@ -1325,7 +1345,7 @@
       },
       "stepTwo": {
         "title": "Iniziamo...",
-        "description": "Fare clic sul pulsante _____ per caricare il primo file."
+        "description": "Fare clic sul pulsante Carica file per caricare il primo file."
       }
     }
   },
