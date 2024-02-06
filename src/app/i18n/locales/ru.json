@@ -1050,6 +1050,7 @@
     "joinedToTheTeam": "Вы успешно присоединились к команде",
     "done": "Готово",
     "inviteAFriend": "Приглашение было отправлено на {{email}}",
+    "inviteAFriendEmpty": "Ошибка при отправке приглашения Необходимо указать электронную почту",
     "subscribeToNewsletter": "{{email}} успешно подписан на рассылку"
   },
   "shareItemDialog": {

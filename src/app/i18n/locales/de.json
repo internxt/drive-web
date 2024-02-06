@@ -810,6 +810,7 @@
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
     "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
+    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",

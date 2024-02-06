@@ -904,6 +904,7 @@
     "noFilePreview": "没有可用的文件预览",
     "browserNotSupported": "浏览器不支持 ({{userAgent}})",
     "inviteAFriend": "向朋友发送邀请时出错: {{message}}",
+    "inviteAFriendEmpty": "发送邀请时出错 您必须指定电子邮件地址",
     "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
     "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
     "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
