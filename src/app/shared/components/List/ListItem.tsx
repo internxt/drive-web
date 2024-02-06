@@ -21,6 +21,7 @@ export type ListItemMenu<T> = Array<
 
 interface ItemProps<T> {
   item: T;
+  listIndex: number;
   itemComposition: Array<(props: T) => JSX.Element>;
   selected: boolean;
   columnsWidth: Array<string>;
@@ -88,6 +89,7 @@ const MenuItemList = ({
 
 export default function ListItem<T extends { id: string }>({
   item,
+  listIndex,
   itemComposition,
   selected,
   columnsWidth,
@@ -171,6 +173,7 @@ export default function ListItem<T extends { id: string }>({
             onSelectedChanged(!selected);
           }}
           checked={selected}
+          checkboxDataCy={`driveListItemCheckbox${listIndex}`}
         />
       </div>
       {disableItemCompositionStyles ? (
@@ -243,6 +246,7 @@ export default function ListItem<T extends { id: string }>({
                       : 'text-gray-60 hover:bg-gray-10 focus-visible:bg-gray-10'
                   }`}
                   onClick={() => onThreeDotsButtonPressed?.(item)}
+                  data-cy={`driveListThreeDotsMenuButton${listIndex}`}
                 >
                   <DotsThree size={24} weight="bold" />
                 </Menu.Button>
