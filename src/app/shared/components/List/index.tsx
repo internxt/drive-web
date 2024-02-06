@@ -296,10 +296,11 @@ ListProps<T, F>): JSX.Element {
             className="h-full"
             style={{ overflow: 'visible' }}
           >
-            {items.map((item) => (
+            {items.map((item, index) => (
               <ListItem<T>
                 key={item.id}
                 item={item}
+                listIndex={index}
                 itemComposition={itemComposition}
                 selected={isItemSelected(item)}
                 onDoubleClick={onDoubleClick && (() => onDoubleClick(item))}

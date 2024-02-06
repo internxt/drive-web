@@ -34,6 +34,7 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
@@ -98,6 +99,30 @@ const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is
   return item['encryptionKey'];
 };
 
+const getLocalUserData = () => {
+  const user = localStorageService.getUser() as UserSettings;
+  const onwerData = {
+    name: user.name,
+    lastname: user.lastname,
+    email: user.email,
+    sharingId: '',
+    avatar: user.avatar,
+    uuid: user.uuid,
+    role: {
+      id: 'NONE',
+      name: 'OWNER',
+      createdAt: '',
+      updatedAt: '',
+    },
+  };
+  return onwerData;
+};
+
+// TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
+const filterEditorAndReader = (users: Role[]): Role[] => {
+  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
+};
+
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
@@ -149,8 +174,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles([...roles, OWNER_ROLE]);
-        setInviteDialogRoles(roles);
+        const parsedRoles = filterEditorAndReader(roles);
+        setRoles([...parsedRoles, OWNER_ROLE]);
+        setInviteDialogRoles(parsedRoles);
       });
     }
 
@@ -195,6 +221,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       setInvitedUsers(invitedUsersListParsed);
     } catch (error) {
+      // the server throws an error when there are no users with shared item,
+      // that means that the local user is the owner as there is nobody else with this shared file.
+      if (isUserOwner) {
+        const onwerData = getLocalUserData();
+        setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
+      }
       errorService.reportError(error);
     }
   }, [itemToShare, roles]);

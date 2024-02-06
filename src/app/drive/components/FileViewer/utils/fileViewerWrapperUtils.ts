@@ -48,7 +48,12 @@ const topDropdownBarActionsMenu = ({
   const isTrashView = pathId === 'trash';
 
   const isSharedItem = (currentFile.sharings && currentFile.sharings?.length > 0) ?? false;
-  const isOwner = currentFile.credentials?.user === user?.email;
+
+  // TODO: QUICK FIX TO THE RELEASE
+  // Check why the user field is networkUser in some cases instead of user
+  // maybe needs backend changes
+  const credentialsEmail = currentFile.credentials?.user ?? (currentFile.credentials as any)?.networkUser;
+  const isOwner = credentialsEmail === user?.email;
 
   const {
     onDownloadItemButtonClicked,
