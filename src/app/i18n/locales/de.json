@@ -1139,9 +1139,11 @@
     },
     "dropdown": {
       "openPreview": "Öffne Vorschau",
+      "details": "Einzelheiten",
+      "shareLink": "Teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
-      "download": "Download",
+      "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
       "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",
