@@ -64,6 +64,8 @@ import { DriveTopBarItems } from './DriveTopBarItems';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
 import DriveTopBarActions from './components/DriveTopBarActions';
 import { AdvancedSharedItem } from '../../../share/types';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -138,6 +140,10 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
+  const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
+  const totalItemsWithSharing = itemsWithSharing.length;
+
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
   const [fileInputKey, setFileInputKey] = useState<number>(Date.now());
@@ -160,6 +166,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   // LISTEN NOTIFICATION STATES
   const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
+  const inProcessNotifications = useTaskManagerGetNotifications({
+    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
+  });
 
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
@@ -169,6 +178,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
     !isSignUpTutorialCompleted &&
@@ -196,7 +206,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
 
-      if (folderId === currentFolderId) {
+      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -560,10 +570,27 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onSuccessEditingName = useCallback(() => {
     setTimeout(() => dispatch(fetchSortedFolderContentThunk(currentFolderId)), 500);
   }, [currentFolderId]);
-  const onCloseEditNameDialog = useCallback(() => {
-    setEditNameItem(null);
-    dispatch(storageActions.setItemToRename(null));
+
+  const onOpenStopSharingAndMoveToTrashDialog = useCallback(() => {
+    setShowStopSharingConfirmation(true);
   }, []);
+
+  const onCloseStopSharingAndMoveToTrashDialog = useCallback(() => {
+    setShowStopSharingConfirmation(false);
+  }, []);
+
+  const moveItemsToTrashOnStopSharing = async (items) => {
+    const itemsToTrash = items.map((selectedShareItem) => ({
+      ...selectedShareItem,
+      isFolder: selectedShareItem.isFolder,
+    }));
+
+    await moveItemsToTrash(itemsToTrash);
+
+    setTimeout(async () => {
+      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+    }, 500);
+  };
 
   const driveExplorer = (
     <div
@@ -592,7 +619,18 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           item={editNameItem}
           isOpen={true}
           onSuccess={onSuccessEditingName}
-          onClose={onCloseEditNameDialog}
+          onClose={onCloseEditItemDialog}
+        />
+      )}
+
+      {!isTrash && showStopSharingConfirmation && (
+        <StopSharingAndMoveToTrashDialogWrapper
+          selectedItems={selectedItems}
+          showStopSharingConfirmation={showStopSharingConfirmation}
+          onClose={onCloseStopSharingAndMoveToTrashDialog}
+          moveItemsToTrash={moveItemsToTrashOnStopSharing}
+          isMultipleItems={totalItemsWithSharing > 1}
+          itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
 
@@ -800,6 +838,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                     setIsListElementsHovered(areHovered);
                   }}
                   title={title}
+                  onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
+                  showStopSharingConfirmation={showStopSharingConfirmation}
                 />
               </div>
             )}

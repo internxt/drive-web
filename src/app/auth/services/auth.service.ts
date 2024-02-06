@@ -41,7 +41,9 @@ export async function logOut(loginParams?: Record<string, string>): Promise<void
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login, loginParams);
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount)) {
+    navigationService.push(AppView.Login, loginParams);
+  }
 }
 
 export function cancelAccount(): Promise<void> {
@@ -156,9 +158,7 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
-      }
+      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
@@ -401,6 +401,16 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
+export const requestUnblockAccount = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.requestUnblockAccount(email);
+};
+
+export const unblockAccount = (token: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.unblockAccount(token);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -414,6 +424,8 @@ const authService = {
   sendChangePasswordEmail,
   updateCredentialsWithToken,
   resetAccountWithToken,
+  requestUnblockAccount,
+  unblockAccount,
 };
 
 export default authService;

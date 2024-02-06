@@ -99,13 +99,15 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     responsePromise.then((response) => {
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+      const parsedItems = items.map((item) => ({ ...item, plainName: item?.plain_name }));
+
       dispatch(
         storageActions.setItems({
           folderId,
-          items,
+          items: parsedItems,
         }),
       );
-      databaseService.put(DatabaseCollection.Levels, folderId, items);
+      databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
     });
   },
 );
