@@ -25,7 +25,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setNewItemName(item?.plainName || '');
+    setNewItemName(item?.plainName ?? '');
   }, [item]);
 
   const handleOnClose = (newName = ''): void => {
@@ -54,7 +54,7 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
           setIsLoading(false);
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty') as string);
+      setError(translate('error.folderCannotBeEmpty'));
     }
   };
 
@@ -68,13 +68,17 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
 
   return (
     <Modal maxWidth="max-w-sm" isOpen={isOpen} onClose={handleOnClose}>
-      <form className="flex flex-col space-y-5" onSubmit={onRenameButtonClicked}>
-        <p className="text-2xl font-medium text-gray-100">{translate('modals.renameItemDialog.title')}</p>
+      <form className="flex flex-col space-y-5" data-cy="editItemNameDialog" onSubmit={onRenameButtonClicked}>
+        <p className="text-2xl font-medium text-gray-100" data-cy="editItemNameDialogTitle">
+          {translate('modals.renameItemDialog.title')}
+        </p>
 
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label={translate('modals.renameItemDialog.label') as string}
+          labelDataCy="editItemNameDialogInputTitle"
+          inputDataCy="editItemNameDialogInput"
+          label={translate('modals.renameItemDialog.label')}
           value={newItemName}
           placeholder={newItemName}
           onChange={(name) => {
@@ -87,10 +91,22 @@ const EditItemNameDialog: FC<EditItemNameDialogProps> = ({ item, isOpen, resourc
         />
 
         <div className="flex flex-row items-center justify-end space-x-2">
-          <Button disabled={isLoading} variant="secondary" onClick={handleOnClose}>
+          <Button
+            disabled={isLoading}
+            variant="secondary"
+            onClick={handleOnClose}
+            buttonDataCy="editItemNameDialogCancelButton"
+            buttonChildrenDataCy="editItemNameDialogCancelButtonText"
+          >
             {translate('actions.cancel')}
           </Button>
-          <Button type="submit" loading={isLoading} variant="primary">
+          <Button
+            type="submit"
+            loading={isLoading}
+            variant="primary"
+            buttonDataCy="editItemNameDialogAcceptButton"
+            buttonChildrenDataCy="editItemNameDialogAcceptButtonText"
+          >
             {translate('actions.rename')}
           </Button>
         </div>

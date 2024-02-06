@@ -19,6 +19,8 @@ export default function Input({
   dataTest,
   name,
   required = false,
+  labelDataCy,
+  inputDataCy,
 }: {
   className?: string;
   label?: string;
@@ -37,6 +39,8 @@ export default function Input({
   dataTest?: string;
   name?: string;
   required?: boolean;
+  labelDataCy?: string;
+  inputDataCy?: string;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -104,6 +108,7 @@ export default function Input({
         autoComplete={autoComplete}
         value={value}
         data-test={dataTest}
+        data-cy={inputDataCy}
         name={name}
         required={required}
       />
@@ -167,7 +172,9 @@ export default function Input({
     <div className={`${className}`}>
       {label ? (
         <label>
-          <span className={`text-sm ${disabled ? 'text-gray-40' : 'text-gray-80'}`}>{label}</span>
+          <span data-cy={labelDataCy} className={`text-sm ${disabled ? 'text-gray-40' : 'text-gray-80'}`}>
+            {label}
+          </span>
           {input}
         </label>
       ) : (

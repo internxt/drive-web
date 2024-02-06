@@ -15,7 +15,26 @@ import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/ser
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
 import navigationService from 'app/core/services/navigation.service';
 
-const useDriveItemActions = (item) => {
+export interface DriveItemActions {
+  nameInputRef: React.RefObject<HTMLInputElement>;
+  onRenameItemButtonClicked: () => void;
+  onMoveItemButtonClicked: () => void;
+  onRestoreItemButtonClicked: () => void;
+  onDeletePermanentlyButtonClicked: () => void;
+  onOpenPreviewButtonClicked: () => void;
+  onGetLinkButtonClicked: () => void;
+  onCopyLinkButtonClicked: () => void;
+  onLinkSettingsButtonClicked: () => void;
+  onDownloadItemButtonClicked: () => void;
+  onShowDetailsButtonClicked: () => void;
+  onMoveToTrashButtonClicked: () => void;
+  onNameClicked: (e) => void;
+  onItemClicked: () => void;
+  onItemDoubleClicked: () => void;
+  downloadAndSetThumbnail: () => void;
+}
+
+const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const isTeam = useAppSelector(sessionSelectors.isTeam);

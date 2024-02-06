@@ -34,7 +34,7 @@ interface UISliceState {
   currentEditingNameDriveItem: DriveItemData | null;
   currentEditingNameDirty: string;
   currentEditingBreadcrumbNameDirty: string;
-  isToastNotificacionOpen: boolean;
+  isToastNotificationOpen: boolean;
   isGlobalSearch: boolean;
 }
 
@@ -70,7 +70,7 @@ const initialState: UISliceState = {
   currentEditingNameDriveItem: null,
   currentEditingNameDirty: '',
   currentEditingBreadcrumbNameDirty: '',
-  isToastNotificacionOpen: false,
+  isToastNotificationOpen: false,
   isGlobalSearch: false,
 };
 
@@ -184,7 +184,7 @@ export const uiSlice = createSlice({
       Object.assign(state, initialState);
     },
     setIsToastNotificacionOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
-      state.isToastNotificacionOpen = action.payload;
+      state.isToastNotificationOpen = action.payload;
     },
     setIsGlobalSearch: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isGlobalSearch = action.payload;

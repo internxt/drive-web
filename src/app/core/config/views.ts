@@ -35,6 +35,7 @@ import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCan
 import SharedView from '../../share/views/SharedLinksView/SharedView';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
+import BlockedAccountView from 'app/auth/views/BlockedAccountView/BlockedAccountView';
 import FolderFileNotFound from 'app/drive/views/FolderFileNotFound/FolderFileNotFound';
 
 const views: Array<{
@@ -45,6 +46,7 @@ const views: Array<{
 }> = [
   { id: AppView.Signup, component: SignUpView, componentProps: { isNewUser: true } },
   { id: AppView.AppSumo, component: SignUpView, componentProps: { isNewUser: false } },
+  { id: AppView.BlockedAccount, component: BlockedAccountView },
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },

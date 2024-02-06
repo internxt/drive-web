@@ -49,7 +49,7 @@ function copyShareLink(type: string, code: string, token: string) {
   notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
 }
 
-export default function SharedLinksView(): JSX.Element {
+function SharedLinksView(): JSX.Element {
   const { translate } = useTranslationContext();
   const ITEMS_PER_PAGE = 50;
 
@@ -395,7 +395,6 @@ export default function SharedLinksView(): JSX.Element {
           menu={
             selectedItems.length > 1
               ? contextMenuMultipleSharedView({
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   downloadItem: () => {
                     const itemsToDownload = selectedItems.map((selectedShareLink) => ({
                       ...(selectedShareLink.item as DriveItemData),
@@ -408,7 +407,6 @@ export default function SharedLinksView(): JSX.Element {
               : selectedItems[0]?.isFolder
               ? contextMenuDriveFolderShared({
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
                   showDetails,
                   renameItem: renameItem,
@@ -423,7 +421,6 @@ export default function SharedLinksView(): JSX.Element {
                   },
                   showDetails,
                   copyLink,
-                  deleteLink: () => setIsDeleteDialogModalOpen(true),
                   openShareAccessSettings,
                   renameItem: renameItem,
                   moveItem: moveItem,

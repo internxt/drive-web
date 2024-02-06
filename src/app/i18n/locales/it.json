@@ -725,6 +725,17 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Sposta nel cestino?",
+        "subtitle": "Gli utenti con il link o invitati non avranno più accesso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Gli utenti con il link o invitati non avranno più accesso a questi elementi condivisi",
+        "cancel": "Annulla",
+        "confirm": "Sposta nel cestino",
+        "notification": {
+          "success": "Non più condiviso \"{{name}}\"",
+          "error": "Impossibile spostare nel cestino, riprova"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Utente \"{{name}}\" rimosso",
@@ -1349,6 +1360,14 @@
         "description": "Fare clic sul pulsante Carica file per caricare il primo file."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verifica di essere tu",
+    "text1": "Sono stati tentati troppi login non riusciti",
+    "text2": "Per motivi di sicurezza abbiamo inviato un'e-mail al tuo indirizzo {{email}} segui i passaggi dell'e-mail per confermare che sei tu e accedere",
+    "forgotPassword": "Ho dimenticato la password",
+    "text3": "Non hai ricevuto nessuna email?",
+    "resend": "Reinvia"
   },
   "itemNotFound": {
     "folder": {
