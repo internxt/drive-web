@@ -62,7 +62,9 @@
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
-      "encrypting": "Verschlüsselung im Gange"
+      "encrypting": "Verschlüsselung im Gange",
+      "info1": "Internxt speichert keine Passwörter.",
+      "info2": "Falls Sie Ihr Passwort vergessen, verlieren Sie den Zugriff auf alle Ihre Dateien."
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
@@ -636,6 +638,17 @@
         "notification": {
           "success": "Nicht mehr teilen \"{{name}}",
           "error": "Die Freigabe konnte nicht beendet werden, bitte versuchen Sie es erneut"
+        }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "In den Papierkorb verschieben?",
+        "subtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf \"{{name}}\"",
+        "multipleItemsSubtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf diese geteilten Elemente",
+        "cancel": "Abbrechen",
+        "confirm": "In den Papierkorb verschieben",
+        "notification": {
+          "success": "Nicht mehr teilen \"{{name}}\"",
+          "error": "Konnte nicht in den Papierkorb verschoben werden, bitte versuchen Sie es erneut"
         }
       },
       "removeUser": {
@@ -1242,6 +1255,14 @@
         "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Überprüfen Sie, dass Sie es sind",
+    "text1": "Es wurden zu viele fehlgeschlagene Anmeldeversuche unternommen.",
+    "text2": "Aus Sicherheitsgründen haben wir eine E-Mail an Ihre Adresse {{email}} gesendet. Folgen Sie den Schritten in der E-Mail, um zu bestätigen, dass Sie es sind, und sich anzumelden",
+    "forgotPassword": "Ich habe mein Passwort vergessen",
+    "text3": "Haben Sie keine E-Mail erhalten?",
+    "resend": "Erneut senden"
   },
   "itemNotFound": {
     "folder": {

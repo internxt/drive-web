@@ -104,6 +104,13 @@ export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecovere
   analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
 }
 
+export function trackAccountUnblockEmailSent(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.UnblockAccountEmailSent, properties);
+}
+export function trackAccountUnblocked(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.AccountUnblocked, properties);
+}
+
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
   httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {

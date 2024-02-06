@@ -62,7 +62,9 @@
       "title": "Créer un compte",
       "haveAccount": "Vous avez déjà un compte ?",
       "login": " Connexion ",
-      "encrypting": "Encryptant"
+      "encrypting": "Encryptant",
+      "info1": "Internxt ne stocke pas de mots de passe.",
+      "info2": "Si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers."
     },
     "forgotPassword": {
       "title": "Récupération de compte",
@@ -643,6 +645,17 @@
         "notification": {
           "success": "Ne plus partager \"{{name}}\"",
           "error": "Impossible d'arrêter le partage, veuillez réessayer"
+        }
+      },
+      "stopSharingAndMoveToTrash": {
+        "title": "Déplacer vers la corbeille ?",
+        "subtitle": "Les utilisateurs avec le lien ou invités n'auront plus accès à \"{{name}}\"",
+        "multipleItemsSubtitle": "Les utilisateurs avec le lien ou invités n'auront plus accès à ces éléments partagés",
+        "cancel": "Annuler",
+        "confirm": "Déplacer vers la corbeille",
+        "notification": {
+          "success": "Ne partage plus \"{{name}}\"",
+          "error": "Impossible de déplacer vers la corbeille, veuillez réessayer"
         }
       },
       "removeUser": {
@@ -1266,6 +1279,14 @@
         "description": "Cliquez sur le bouton Charger des fichiers pour charger votre premier fichier."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Vérifier que c'est bien vous",
+    "text1": "Trop d'échecs de connexion ont été tentés",
+    "text2": "Pour des raisons de sécurité, nous avons envoyé un courriel à votre adresse {{email}}, suivez les étapes du courriel pour confirmer qu'il s'agit bien de vous et vous connecter",
+    "forgotPassword": "J'ai oublié mon mot de passe",
+    "text3": "Vous n'avez pas reçu d'e-mail ?",
+    "resend": "Renvoyer"
   },
   "itemNotFound": {
     "folder": {

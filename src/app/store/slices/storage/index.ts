@@ -337,7 +337,8 @@ export const storageSlice = createSlice({
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
       folderIds.forEach((folderId) => {
-        const items = itemsListService.pushItems(itemsToPush, state.levels[folderId]);
+        const folderList = state.levels[folderId] ?? [];
+        const items = itemsListService.pushItems(itemsToPush, folderList);
 
         state.levels[folderId] = items;
 
