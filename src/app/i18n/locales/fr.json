@@ -136,7 +136,26 @@
     "terms": "Termes et conditions",
     "contactSupport": "Contacter le support",
     "help": "Besoin d'aide ?",
-    "searchBar": "Rechercher dans ce dossier",
+    "searchBar": {
+      "oldSearchBarPlaceholder": "Rechercher dans ce dossier",
+      "placeholder": "Recherche dans Drive",
+      "filters": {
+        "folder": "Dossier",
+        "pdf": "PDF",
+        "image": "Image",
+        "video": "Vidéo",
+        "audio": "Audio",
+        "clear": "Clair"
+      },
+      "emptyState": {
+        "title": "Rechercher des fichiers et des dossiers",
+        "subtitle": "Recherche par nom et par type"
+      },
+      "notFoundState": {
+        "title": "Aucun résultat trouvé",
+        "subtitle": "Aucun fichier ou dossier ne correspond à la recherche"
+      }
+    },
     "stage": {
       "development": "Développement",
       "production": "Production"
