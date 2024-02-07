@@ -116,6 +116,7 @@
   "devDependencies": {
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@craco/craco": "^7.1.0",
+    "@cypress/code-coverage": "^3.12.20",
     "@internxt/eslint-config-internxt": "^1.0.3",
     "@internxt/prettier-config": "^1.0.1",
     "@testing-library/dom": "^7.26.0",
