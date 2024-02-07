@@ -56,8 +56,8 @@ export default i18next
     debug: !envService.isProduction(),
     fallbackLng: 'en',
     detection: {
-      order: ['querystring', 'cookie', 'navigator', 'localStorage'],
-      caches: ['localStorage'],
+      order: ['querystring', 'localStorage', 'cookie', 'navigator'],
+      caches: ['localStorage', 'cookie'],
     },
     defaultNS: 'translation',
     ns: ['translation'],
