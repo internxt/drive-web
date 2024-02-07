@@ -27,7 +27,7 @@ import { LRUFilesPreviewCacheManager } from './app/database/services/database.se
 import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import i18next, { t } from 'i18next';
+import { t } from 'i18next';
 import authService from './app/auth/services/auth.service';
 import localStorageService from './app/core/services/local-storage.service';
 import Mobile from './app/drive/views/MobileView/MobileView';
@@ -58,7 +58,6 @@ const App = (props: AppProps): JSX.Element => {
 
   useEffect(() => {
     initialState();
-    i18next.changeLanguage();
   }, []);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
