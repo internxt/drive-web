@@ -1,15 +1,13 @@
 import Button from '../../../shared/components/Button/Button';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { handleExport } from '../../../core/views/Preferences/tabs/Security/BackupKey';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 
-const DownloadBackupKey = () => {
+const DownloadBackupKey = ({ onRedirect }: { onRedirect: () => void }) => {
   const { translate } = useTranslationContext();
 
   const handleKeyDownload = () => {
     handleExport(translate);
-    navigationService.push(AppView.Drive);
+    onRedirect();
   };
 
   return (
@@ -29,7 +27,7 @@ const DownloadBackupKey = () => {
           className="w-full"
           variant="secondary"
           onClick={() => {
-            navigationService.push(AppView.Drive);
+            onRedirect();
           }}
         >
           {translate('auth.downloadBackupKey.skip')}

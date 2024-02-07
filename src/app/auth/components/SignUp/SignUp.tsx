@@ -38,7 +38,7 @@ export interface SignUpProps {
   isNewUser: boolean;
 }
 
-type Views = 'signUp' | 'downloadBackupKey';
+export type Views = 'signUp' | 'downloadBackupKey';
 
 function SignUp(props: SignUpProps): JSX.Element {
   const { translate } = useTranslationContext();
@@ -215,6 +215,10 @@ function SignUp(props: SignUpProps): JSX.Element {
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
 
+  function onRedirect() {
+    navigationService.push(AppView.Drive);
+  }
+
   return (
     <>
       <Helmet>
@@ -230,7 +234,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
         ) : view === 'downloadBackupKey' ? (
-          <DownloadBackupKey />
+          <DownloadBackupKey onRedirect={onRedirect} />
         ) : (
           <div className="flex flex-col items-start space-y-5">
             <div className="flex flex-col items-start space-y-5">
