@@ -66,6 +66,7 @@ import DriveTopBarActions from './components/DriveTopBarActions';
 import { AdvancedSharedItem } from '../../../share/types';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
+import BannerWrapper from '../../../banners/BannerWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -633,6 +634,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
+      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full grow">
         <div className="flex w-1 grow flex-col">

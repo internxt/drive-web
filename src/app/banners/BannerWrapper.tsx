@@ -5,9 +5,10 @@ import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import FeaturesBanner from './FeaturesBanner';
+import Banner from './Banner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_data_privacy_banner';
+const SHOW_BANNER_COOKIE_NAME = 'show_soft_banner_sale';
+const OFFER_OFF_DAY = new Date('2024-02-12');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -16,7 +17,9 @@ const BannerWrapper = (): JSX.Element => {
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
-  const shouldShowBanner = userPlan === 'free' && !isLocalStorage;
+  const isOfferOffDay = new Date() > OFFER_OFF_DAY;
+
+  const shouldShowBanner = userPlan === 'free' && !isLocalStorage && !isOfferOffDay;
 
   useEffect(() => {
     handleBannerDisplay();
@@ -33,7 +36,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
