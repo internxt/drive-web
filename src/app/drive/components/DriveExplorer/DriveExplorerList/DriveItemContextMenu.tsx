@@ -37,15 +37,6 @@ const shareLinkMenuItem = (shareLink: (target) => void) => ({
   },
 });
 
-const getDeleteLinkMenuItem = (deleteLink: (target?) => void) => ({
-  name: t('drive.dropdown.deleteLink'),
-  icon: LinkBreak,
-  action: deleteLink,
-  disabled: () => {
-    return false;
-  },
-});
-
 const manageLinkAccessMenuItem = (manageAccess: (target) => void) => ({
   name: t('drive.dropdown.manageLinkAccess'),
   icon: Users,
@@ -222,7 +213,6 @@ const contextMenuDriveItemShared = ({
   showDetails,
   copyLink,
   openShareAccessSettings,
-  deleteLink,
   renameItem,
   moveItem,
   downloadItem,
@@ -232,7 +222,6 @@ const contextMenuDriveItemShared = ({
   showDetails: (item: DriveItemData) => void;
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
-  deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   renameItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
@@ -253,7 +242,6 @@ const contextMenuDriveFolderShared = ({
   copyLink,
   openShareAccessSettings,
   showDetails,
-  deleteLink,
   renameItem,
   moveItem,
   downloadItem,
@@ -262,7 +250,6 @@ const contextMenuDriveFolderShared = ({
   copyLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   openShareAccessSettings: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   showDetails: (item: DriveItemData) => void;
-  deleteLink: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   renameItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   moveItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
   downloadItem: (item: DriveItemData | (ListShareLinksItem & { code: string })) => void;
@@ -279,11 +266,9 @@ const contextMenuDriveFolderShared = ({
 ];
 
 const contextMenuMultipleSharedView = ({
-  deleteLink,
   downloadItem,
   moveToTrash,
 }: {
-  deleteLink: (item: ListShareLinksItem) => void;
   downloadItem: (item: ListShareLinksItem) => void;
   moveToTrash: (item: ListShareLinksItem) => void;
 }): ListItemMenu<ListShareLinksItem> => [
@@ -374,11 +359,9 @@ const contextMenuSelectedBackupItems = ({
 const contextMenuDriveItemSharedsView = ({
   copyShareLink,
   openShareAccessSettings,
-  deleteLink,
 }: {
   copyShareLink: (item) => void;
   openShareAccessSettings: (item) => void;
-  deleteLink: (open: boolean) => void;
 }): ListItemMenu<DriveItemData> => [
   ...[manageLinkAccessMenuItem(openShareAccessSettings), getCopyLinkMenuItem(copyShareLink)],
 ];
@@ -388,7 +371,6 @@ const contextMenuDriveItemSharedAFS = ({
   showDetails,
   copyLink,
   openShareAccessSettings,
-  deleteLink,
   renameItem,
   moveItem,
   downloadItem,
@@ -398,7 +380,6 @@ const contextMenuDriveItemSharedAFS = ({
   showDetails: (item: AdvancedSharedItem) => void;
   copyLink: (item: AdvancedSharedItem) => void;
   openShareAccessSettings?: (item: AdvancedSharedItem) => void;
-  deleteLink: (item: AdvancedSharedItem) => void;
   renameItem?: (item: AdvancedSharedItem) => void;
   moveItem?: (item: AdvancedSharedItem) => void;
   downloadItem: (item: AdvancedSharedItem) => void;
@@ -418,7 +399,6 @@ const contextMenuDriveFolderSharedAFS = ({
   copyLink,
   openShareAccessSettings,
   showDetails,
-  deleteLink,
   renameItem,
   moveItem,
   downloadItem,
@@ -426,7 +406,6 @@ const contextMenuDriveFolderSharedAFS = ({
 }: {
   copyLink: (item: any) => void;
   openShareAccessSettings?: (item: any) => void;
-  deleteLink: (item: any) => void;
   showDetails: (item: any) => void;
   renameItem?: (item: any) => void;
   moveItem?: (item: any) => void;
@@ -444,11 +423,9 @@ const contextMenuDriveFolderSharedAFS = ({
 ];
 
 const contextMenuMultipleSharedViewAFS = ({
-  deleteLink,
   downloadItem,
   moveToTrash,
 }: {
-  deleteLink: (item: AdvancedSharedItem) => void;
   downloadItem: (item: AdvancedSharedItem) => Promise<void>;
   moveToTrash?: (item: AdvancedSharedItem) => void;
 }): ListItemMenu<AdvancedSharedItem> => [

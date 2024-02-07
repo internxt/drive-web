@@ -34,12 +34,15 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
 import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
 import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
 import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
 import { Tooltip } from 'react-tooltip';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -79,7 +82,7 @@ const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const cropSharedName = (name: string) => {
-  if (name.length > 32) {
+  if (name.length > MAX_SHARED_NAME_LENGTH) {
     return name.substring(0, 32).concat('...');
   } else {
     return name;
@@ -96,11 +99,35 @@ const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is
   return item['encryptionKey'];
 };
 
+const getLocalUserData = () => {
+  const user = localStorageService.getUser() as UserSettings;
+  const onwerData = {
+    name: user.name,
+    lastname: user.lastname,
+    email: user.email,
+    sharingId: '',
+    avatar: user.avatar,
+    uuid: user.uuid,
+    role: {
+      id: 'NONE',
+      name: 'OWNER',
+      createdAt: '',
+      updatedAt: '',
+    },
+  };
+  return onwerData;
+};
+
+// TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
+const filterEditorAndReader = (users: Role[]): Role[] => {
+  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
+};
+
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
-  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -147,8 +174,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles([...roles, OWNER_ROLE]);
-        setInviteDialogRoles(roles);
+        const parsedRoles = filterEditorAndReader(roles);
+        setRoles([...parsedRoles, OWNER_ROLE]);
+        setInviteDialogRoles(parsedRoles);
       });
     }
 
@@ -193,6 +221,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       setInvitedUsers(invitedUsersListParsed);
     } catch (error) {
+      // the server throws an error when there are no users with shared item,
+      // that means that the local user is the owner as there is nobody else with this shared file.
+      if (isUserOwner) {
+        const onwerData = getLocalUserData();
+        setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
+      }
       errorService.reportError(error);
     }
   }, [itemToShare, roles]);
@@ -550,22 +584,27 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   ))}
                 </>
               ) : (
-                invitedUsers.map((user, index) => (
-                  <User
-                    user={user}
-                    key={user.email}
-                    listPosition={index}
-                    translate={translate}
-                    openUserOptions={openUserOptions}
-                    selectedUserListIndex={selectedUserListIndex}
-                    userOptionsY={userOptionsY}
-                    onRemoveUser={onRemoveUser}
-                    userOptionsEmail={userOptionsEmail}
-                    onChangeRole={handleUserRoleChange}
-                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                    disableRoleChange={currentUserFolderRole !== 'owner'}
-                  />
-                ))
+                invitedUsers
+                  .sort((a, b) => {
+                    if (a.email === props.user.email && b.email !== props.user.email) return -1;
+                    return 0;
+                  })
+                  .map((user, index) => (
+                    <User
+                      user={user}
+                      key={user.email}
+                      listPosition={index}
+                      translate={translate}
+                      openUserOptions={openUserOptions}
+                      selectedUserListIndex={selectedUserListIndex}
+                      userOptionsY={userOptionsY}
+                      onRemoveUser={onRemoveUser}
+                      userOptionsEmail={userOptionsEmail}
+                      onChangeRole={handleUserRoleChange}
+                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                      disableRoleChange={currentUserFolderRole !== 'owner'}
+                    />
+                  ))
               )}
             </div>
           </div>
@@ -573,7 +612,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="h-px w-full bg-gray-5" />
 
           {accessMode === 'public' && !isLoading && isUserOwner && (
-            <div className="flex items-end justify-between align-middle">
+            <div className="flex items-center justify-between">
               <div className="flex flex-col space-y-2.5">
                 <div className="flex items-center">
                   <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
@@ -581,8 +620,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     {translate('modals.shareModal.protectSharingModal.protect')}
                   </p>
                   <Question
-                    size={14}
-                    className="ml-2 flex items-center justify-center font-medium"
+                    size={20}
+                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
                     data-tooltip-id="uploadFolder-tooltip"
                     data-tooltip-place="top"
                   />
@@ -722,31 +761,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           />
 
           {/* Stop sharing confirmation dialog */}
-          <Modal
-            maxWidth="max-w-sm"
-            className="space-y-5 p-5"
-            isOpen={showStopSharingConfirmation}
+          <StopSharingItemDialog
+            showStopSharingConfirmation={showStopSharingConfirmation}
             onClose={() => setShowStopSharingConfirmation(false)}
-            preventClosing={showStopSharingConfirmation && isLoading}
-          >
-            <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
-            <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
-            </p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowStopSharingConfirmation(false)}
-                disabled={showStopSharingConfirmation && isLoading}
-              >
-                {translate('modals.shareModal.stopSharing.cancel')}
-              </Button>
-              <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
-                {isLoading && <Spinner className="h-4 w-4" />}
-                <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
-              </Button>
-            </div>
-          </Modal>
+            itemToShareName={itemToShare?.item.name ?? ''}
+            isLoading={isLoading}
+            onStopSharing={onStopSharing}
+          />
         </>
       ),
       invite: (
@@ -865,7 +886,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>

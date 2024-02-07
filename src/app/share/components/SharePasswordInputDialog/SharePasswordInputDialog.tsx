@@ -53,7 +53,6 @@ export const SharePasswordInputDialog = ({
           {translate('modals.shareModal.protectSharingModal.buttons.cancel')}
         </Button>
         <Button variant="primary" onClick={handleConfirm} loading={isLoading} disabled={!password}>
-          {isLoading && <Spinner className="h-4 w-4" />}
           {translate('modals.shareModal.protectSharingModal.buttons.save')}
         </Button>
       </div>

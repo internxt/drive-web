@@ -12,10 +12,8 @@ import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
 import fileExtensionService from '../../../drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
-import UilCheck from '@iconscout/react-unicons/icons/uil-check';
 import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
 
 import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';

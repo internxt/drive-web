@@ -4,6 +4,7 @@ import { auth } from '@internxt/lib';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import QueryString from 'qs';
 
 import { initializeUserThunk, userActions } from 'app/store/slices/user';
 import { RootState } from 'app/store';
@@ -16,7 +17,7 @@ import { WarningCircle } from '@phosphor-icons/react';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import errorService from 'app/core/services/error.service';
-import { AppView, IFormValues } from 'app/core/types';
+import AppError, { AppView, IFormValues } from 'app/core/types';
 import navigationService from 'app/core/services/navigation.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import TextInput from '../TextInput/TextInput';
@@ -26,6 +27,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import shareService from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import Button from 'app/shared/components/Button/Button';
+import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -130,6 +132,14 @@ export default function LogIn(): JSX.Element {
     }
   };
 
+  const sendUnblockAccountEmail = async (email: string) => {
+    try {
+      await authService.requestUnblockAccount(email);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoggingIn(true);
@@ -172,12 +182,18 @@ export default function LogIn(): JSX.Element {
 
       if (castedError.message.includes('not activated') && auth.isValidEmail(email)) {
         navigationService.history.push(`/activate/${email}`);
-      } else {
-        // analyticsService.signInAttempted(email, castedError);
       }
 
       setLoginError([castedError.message]);
       setShowErrors(true);
+      if ((err as AppError)?.status === 403) {
+        await sendUnblockAccountEmail(email);
+        trackAccountUnblockEmailSent({ email });
+        navigationService.history.push({
+          pathname: AppView.BlockedAccount,
+          search: QueryString.stringify({ email: email }),
+        });
+      }
     } finally {
       setIsLoggingIn(false);
     }

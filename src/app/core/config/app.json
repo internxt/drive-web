@@ -28,6 +28,12 @@
       "exact": true
     },
     {
+      "id": "blocked-account",
+      "layout": "empty",
+      "path": "/blocked-account/:token?",
+      "exact": true
+    },
+    {
       "id": "login",
       "layout": "empty",
       "path": "/login",

@@ -742,6 +742,18 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Move to trash?",
+        "subtitle": "Users with the link or invited will no longer have access to \"{{name}}\"",
+        "multipleItemsSubtitle": "Users with the link or invited will no longer have access to these shared items",
+        "cancel": "Cancel",
+        "confirm": "Move to trash",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "successForMultipleItems": "No longer sharing these items",
+          "error": "Couldn't move to trash, please try again"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "User \"{{name}}\" removed",
@@ -1370,6 +1382,14 @@
         "description": "Click Upload button to upload your first file."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verify it’s you",
+    "text1": "Too many failed logins were attempted.",
+    "text2": "For security reasons we sent an email to your address {{email}} follow the email steps to confirm it’s you and login",
+    "forgotPassword": "I forgot my password",
+    "text3": "Didn’t received any email?",
+    "resend": "Resend"
   },
   "itemNotFound": {
     "folder": {
