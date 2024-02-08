@@ -22,7 +22,7 @@ const DownloadBackupKey = ({ onRedirect }: { onRedirect: () => void }) => {
         </Button>
         <p className="text-xs text-gray-60">{translate('auth.downloadBackupKey.settingsTab')}</p>
       </div>
-      <div className="flex w-full">
+      <div className="flex w-full pt-4">
         <Button
           className="w-full"
           variant="secondary"
