@@ -1,6 +1,5 @@
 import { initReactI18next } from 'react-i18next';
 import i18next from 'i18next';
-import LanguageDetector from 'i18next-browser-languagedetector';
 import localStorageService from 'app/core/services/local-storage.service';
 import envService from 'app/core/services/env.service';
 import es from 'dayjs/locale/es';
@@ -27,7 +26,6 @@ const deviceLang = localStorageService.get('language') || navigator.language.spl
 dayjs.locale(dayJsLocale[deviceLang] || 'en');
 
 export default i18next
-  .use(LanguageDetector)
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
     resources: {
@@ -55,6 +53,7 @@ export default i18next
     },
     debug: !envService.isProduction(),
     fallbackLng: 'en',
+    lng: deviceLang,
     detection: {
       order: ['querystring', 'localStorage', 'cookie', 'navigator'],
       caches: ['localStorage', 'cookie'],
