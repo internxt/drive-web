@@ -37,7 +37,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
       const castedError = errorService.castError(err);
       if (castedError.message !== 'Mail invitation daily limit reached') {
         notificationsService.show({
-          text: translate('error.inviteAFriend', { message: castedError.message }),
+          text: translate('error.inviteAFriendEmpty'),
           type: ToastType.Error,
         });
         setStatus('READY');

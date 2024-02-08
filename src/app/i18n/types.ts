@@ -3,7 +3,7 @@ export enum Locale {
   Spanish = 'es',
   French = 'fr',
   Italian = 'it',
-  Chinese = 'cn',
+  Chinese = 'zh',
   Russian = 'ru',
   German = 'de',
 }

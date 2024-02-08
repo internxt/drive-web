@@ -19,7 +19,7 @@ const EmptySharedView = ({ onUploadFileButtonClicked, sharedNamePath, isCurrentU
           <div className="pointer-events-none mx-auto mb-10 w-max">
             <Users size={80} weight="thin" />
           </div>
-          <div className="pointer-events-none text-center">
+          <div className="pointer-events-none flex flex-col items-center justify-center text-center">
             <p className="mb-1 block text-2xl font-medium text-gray-100">
               {translate('shared-links.empty-state.title')}
             </p>
