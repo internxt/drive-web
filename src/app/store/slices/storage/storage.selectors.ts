@@ -54,13 +54,6 @@ const storageSelectors = {
         return fullName.toLowerCase().match(filters.text.toLowerCase());
       });
 
-      // UNCOMMENT TO REORDER THE ITEMS
-      // itemsListService.sort(
-      //   filteredItems,
-      //   state.storage.order.by as 'name' | 'type' | 'updatedAt' | 'size',
-      //   state.storage.order.direction,
-      // );
-
       return filteredItems;
     };
   },

@@ -4,16 +4,17 @@
     "logOut": "Cerrar sesión"
   },
   "blackFridayBanner": {
-    "header": "¡Elige la privacidad!",
-    "title": "Oferta navideña de Internxt",
-    "cta": "¡Obtén el descuento!",
+    "header": "¡Ahorra un 70%!",
+    "title": "Prepárate para la Semana de la Privacidad de Datos",
+    "cta": "Elige un plan",
+    "guarantee": "Garantía de devolución de 30 días",
     "features": {
-      "discount": "50% de descuento en planes lifetime",
+      "discount": "Ahorra en suscripciones mensuales y anuales",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
-      "endToEnd": "Cifrado de extremo a extremo",
+      "endToEnd": "Transferencias cifradas de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 7 de Enero"
+      "offerEnds": "La oferta finaliza el 29 de enero"
     }
   },
   "valentinesBanner": {
@@ -22,9 +23,9 @@
     "cta": "Obtén la oferta"
   },
   "lifetimeBanner": {
-    "label": "¡Tu plan anual a mitad de precio!",
-    "title": "¡Ahorra un 50% en nuestros planes anuales!",
-    "cta": "Elige un plan",
+    "label": "¿Necesitas almacenamiento seguro de por vida?",
+    "title": "¡Asegura tus archivos de por vida con nuestros planes!",
+    "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
@@ -62,7 +63,9 @@
       "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
-      "encrypting": "Cifrando"
+      "encrypting": "Cifrando",
+      "info1": "Internxt no almacena contraseñas.",
+      "info2": "En caso de que se olvide de su contraseña, perderá el acceso a todos sus archivos."
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
@@ -315,7 +318,8 @@
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
               "sucessSendingVerification": "Verificación enviada a {{email}}",
-              "errorSendingVerification": "Error enviando verificación"
+              "errorSendingVerification": "Error enviando verificación",
+              "confirm": "Confirmar"
             }
           },
           "support": {
@@ -711,6 +715,13 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "¿Mover a la papelera?",
+        "subtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a estos elementos compartidos",
+        "cancel": "Cancelar",
+        "confirm": "Mover a la papelera"
+      },
       "removeUser": {
         "notification": {
           "success": "Usuario \"{{name}}\" eliminado",
@@ -749,6 +760,19 @@
         "change": "Cambiar",
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",
+        "protect": "Proteger con contraseña",
+        "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
+        "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
+        "editPasswordTitle": "Editar contraseña",
+        "buttons": {
+          "cancel": "Cancelar",
+          "save": "Guardar",
+          "disable": "Desactivar",
+          "changePassword": "Cambiar contraseña"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1325,6 +1349,14 @@
         "description": "Haga clic en el botón Cargar para cargar su primer archivo."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verifica que eres tú",
+    "text1": "Se han detectado demasiados inicios de sesion fallidos.",
+    "text2": "Por motivos de seguridad te hemos enviado un email a tu dirección {{email}} sigue los pasos del email para confirmar que eres tú e iniciar sesión",
+    "forgotPassword": "He olvidado mi contraseña",
+    "text3": "¿No has recibido ningún correo electrónico?",
+    "resend": "Reenviar"
   },
   "itemNotFound": {
     "folder": {

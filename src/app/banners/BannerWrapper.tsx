@@ -7,7 +7,8 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Banner from './Banner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_soft_sale_banner';
+const SHOW_BANNER_COOKIE_NAME = 'show_soft_banner_sale';
+const OFFER_OFF_DAY = new Date('2024-02-12');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -16,11 +17,13 @@ const BannerWrapper = (): JSX.Element => {
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
-  const shouldShowBanner = userPlan === 'free' && !isLocalStorage;
-  const expireDate = new Date('2024-01-10T23:59:59.000Z');
-  const today = new Date();
+  const isOfferOffDay = new Date() > OFFER_OFF_DAY;
 
-  const daysLeft = Math.floor((expireDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
+  const shouldShowBanner = userPlan === 'free' && !isLocalStorage && !isOfferOffDay;
+
+  useEffect(() => {
+    handleBannerDisplay();
+  }, [isTutorialCompleted, userPlan, isNewAccount]);
 
   const onCloseBanner = () => {
     localStorageService.set(SHOW_BANNER_COOKIE_NAME, 'false');
@@ -32,10 +35,6 @@ const BannerWrapper = (): JSX.Element => {
       setShowBanner(true);
     }
   }
-
-  useEffect(() => {
-    handleBannerDisplay();
-  }, [isTutorialCompleted, userPlan, isNewAccount]);
 
   return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };

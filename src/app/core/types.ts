@@ -106,6 +106,7 @@ export enum CampaignLinks {
 export enum AppView {
   Signup = 'signup',
   AppSumo = 'appsumo',
+  BlockedAccount = 'blocked-account',
   Login = 'login',
   SignupBlog = 'signup-blog',
   Auth = 'auth',

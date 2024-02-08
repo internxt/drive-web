@@ -8,7 +8,18 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
+import {
+  ArrowLeft,
+  CaretDown,
+  Check,
+  CheckCircle,
+  Globe,
+  Link,
+  Question,
+  UserPlus,
+  Users,
+  X,
+} from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -23,6 +34,15 @@ import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
+import { Tooltip } from 'react-tooltip';
+import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -62,7 +82,7 @@ const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const cropSharedName = (name: string) => {
-  if (name.length > 32) {
+  if (name.length > MAX_SHARED_NAME_LENGTH) {
     return name.substring(0, 32).concat('...');
   } else {
     return name;
@@ -79,11 +99,35 @@ const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is
   return item['encryptionKey'];
 };
 
+const getLocalUserData = () => {
+  const user = localStorageService.getUser() as UserSettings;
+  const onwerData = {
+    name: user.name,
+    lastname: user.lastname,
+    email: user.email,
+    sharingId: '',
+    avatar: user.avatar,
+    uuid: user.uuid,
+    role: {
+      id: 'NONE',
+      name: 'OWNER',
+      createdAt: '',
+      updatedAt: '',
+    },
+  };
+  return onwerData;
+};
+
+// TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
+const filterEditorAndReader = (users: Role[]): Role[] => {
+  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
+};
+
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
-  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
 
   const [roles, setRoles] = useState<Role[]>([]);
@@ -95,6 +139,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
   const [currentUserFolderRole, setCurrentUserFolderRole] = useState<string | undefined>('');
+  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [openPasswordInput, setOpenPasswordInput] = useState(false);
+  const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
+  const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -118,14 +166,17 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
+    setIsPasswordProtected(false);
+    setSharingMeta(null);
   };
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles([...roles, OWNER_ROLE]);
-        setInviteDialogRoles(roles);
+        const parsedRoles = filterEditorAndReader(roles);
+        setRoles([...parsedRoles, OWNER_ROLE]);
+        setInviteDialogRoles(parsedRoles);
       });
     }
 
@@ -135,8 +186,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   useEffect(() => {
     if (roles.length === 0) dispatch(sharedThunks.getSharedFolderRoles());
 
-    if (roles.length > 0) loadShareInfo();
-  }, [roles]);
+    if (roles.length > 0 && isOpen) loadShareInfo();
+  }, [roles, isOpen]);
 
   useEffect(() => {
     const removeDeniedRequests = () => {
@@ -170,25 +221,37 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       setInvitedUsers(invitedUsersListParsed);
     } catch (error) {
+      // the server throws an error when there are no users with shared item,
+      // that means that the local user is the owner as there is nobody else with this shared file.
+      if (isUserOwner) {
+        const onwerData = getLocalUserData();
+        setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
+      }
       errorService.reportError(error);
     }
   }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
+    if (!itemToShare?.item) return;
+
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
     let sharingType = 'public';
+    let isAlreadyPasswordProtected = false;
 
-    if (props.isDriveItem) {
-      sharingType = (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]
-        ?.type;
-    } else {
-      const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
-      const itemId = itemToShare?.item.uuid ?? '';
+    const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+    const itemId = itemToShare?.item.uuid ?? '';
+
+    const isItemNotSharedYet =
+      !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+
+    if (!isItemNotSharedYet) {
       try {
         const sharingData = await shareService.getSharingType(itemId, itemType);
         sharingType = sharingData.type;
+        isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
+        setSharingMeta(sharingData);
       } catch (error) {
         errorService.reportError(error);
       }
@@ -198,8 +261,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       shareAccessMode = 'restricted';
     }
     setAccessMode(shareAccessMode);
-
-    if (!itemToShare?.item) return;
+    setIsPasswordProtected(isAlreadyPasswordProtected);
 
     try {
       await getAndUpdateInvitedUsers();
@@ -275,11 +337,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       trackPublicShared(trackingPublicSharedProperties);
       const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
-      await shareService.getPublicShareLink(
+      const sharingInfo = await shareService.getPublicShareLink(
         itemToShare?.item.uuid,
         itemToShare.item.isFolder ? 'folder' : 'file',
         encryptionKey,
       );
+      if (sharingInfo) {
+        setSharingMeta(sharingInfo);
+      }
       props.onShareItem?.();
       closeSelectedUserPopover();
     }
@@ -308,6 +373,51 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
+  const onPasswordCheckboxChange = useCallback(() => {
+    if (!isPasswordProtected) {
+      setOpenPasswordInput(true);
+    } else {
+      setOpenPasswordDisableDialog(true);
+    }
+  }, [isPasswordProtected]);
+
+  const onSavePublicSharePassword = useCallback(
+    async (plainPassword: string) => {
+      try {
+        let sharingInfo = sharingMeta;
+
+        if (!sharingInfo?.encryptedCode) {
+          const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+          const itemId = itemToShare?.item.uuid ?? '';
+          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
+          setSharingMeta(sharingInfo);
+        } else {
+          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
+        }
+
+        setIsPasswordProtected(true);
+      } catch (error) {
+        errorService.castError(error);
+      } finally {
+        setOpenPasswordInput(false);
+      }
+    },
+    [sharingMeta, itemToShare],
+  );
+
+  const onDisablePassword = useCallback(async () => {
+    try {
+      if (sharingMeta) {
+        await shareService.removeSharingPassword(sharingMeta.id);
+        setIsPasswordProtected(false);
+      }
+    } catch (error) {
+      errorService.castError(error);
+    } finally {
+      setOpenPasswordDisableDialog(false);
+    }
+  }, [sharingMeta]);
+
   const changeAccess = async (mode: AccessMode) => {
     closeSelectedUserPopover();
     if (mode != accessMode) {
@@ -319,7 +429,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
         await shareService.updateSharingType(itemId, itemType, sharingType);
         if (sharingType === 'public') {
-          await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          const shareInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          setSharingMeta(shareInfo);
+          setIsPasswordProtected(false);
         }
         setAccessMode(mode);
       } catch (error) {
@@ -472,28 +584,61 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                   ))}
                 </>
               ) : (
-                invitedUsers.map((user, index) => (
-                  <User
-                    user={user}
-                    key={user.email}
-                    listPosition={index}
-                    translate={translate}
-                    openUserOptions={openUserOptions}
-                    selectedUserListIndex={selectedUserListIndex}
-                    userOptionsY={userOptionsY}
-                    onRemoveUser={onRemoveUser}
-                    userOptionsEmail={userOptionsEmail}
-                    onChangeRole={handleUserRoleChange}
-                    disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
-                    disableRoleChange={currentUserFolderRole !== 'owner'}
-                  />
-                ))
+                invitedUsers
+                  .sort((a, b) => {
+                    if (a.email === props.user.email && b.email !== props.user.email) return -1;
+                    return 0;
+                  })
+                  .map((user, index) => (
+                    <User
+                      user={user}
+                      key={user.email}
+                      listPosition={index}
+                      translate={translate}
+                      openUserOptions={openUserOptions}
+                      selectedUserListIndex={selectedUserListIndex}
+                      userOptionsY={userOptionsY}
+                      onRemoveUser={onRemoveUser}
+                      userOptionsEmail={userOptionsEmail}
+                      onChangeRole={handleUserRoleChange}
+                      disableUserOptionsPanel={currentUserFolderRole !== 'owner' && user.email !== props.user.email}
+                      disableRoleChange={currentUserFolderRole !== 'owner'}
+                    />
+                  ))
               )}
             </div>
           </div>
 
           <div className="h-px w-full bg-gray-5" />
 
+          {accessMode === 'public' && !isLoading && isUserOwner && (
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2.5">
+                <div className="flex items-center">
+                  <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
+                  <p className="ml-2 select-none text-base font-medium">
+                    {translate('modals.shareModal.protectSharingModal.protect')}
+                  </p>
+                  <Question
+                    size={20}
+                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
+                    data-tooltip-id="uploadFolder-tooltip"
+                    data-tooltip-place="top"
+                  />
+                  <Tooltip id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} className="z-40 rounded-md">
+                    <p className="break-word w-60 text-center text-white">
+                      {translate('modals.shareModal.protectSharingModal.protectTooltipText')}
+                    </p>
+                  </Tooltip>
+                </div>
+              </div>
+              {isPasswordProtected && (
+                <Button variant="secondary" onClick={() => setOpenPasswordInput(true)}>
+                  <span>{translate('modals.shareModal.protectSharingModal.buttons.changePassword')}</span>
+                </Button>
+              )}
+            </div>
+          )}
           <div className="flex items-end justify-between">
             <div className="flex flex-col space-y-2.5">
               <p className="font-medium">{translate('modals.shareModal.general.generalAccess')}</p>
@@ -603,32 +748,26 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             </Button>
           </div>
 
+          <SharePasswordInputDialog
+            onClose={() => setOpenPasswordInput(false)}
+            isOpen={openPasswordInput}
+            onSavePassword={onSavePublicSharePassword}
+            isAlreadyProtected={isPasswordProtected}
+          />
+          <SharePasswordDisableDialog
+            isOpen={openPasswordDisableDialog}
+            onClose={() => setOpenPasswordDisableDialog(false)}
+            onConfirmHandler={onDisablePassword}
+          />
+
           {/* Stop sharing confirmation dialog */}
-          <Modal
-            maxWidth="max-w-sm"
-            className="space-y-5 p-5"
-            isOpen={showStopSharingConfirmation}
+          <StopSharingItemDialog
+            showStopSharingConfirmation={showStopSharingConfirmation}
             onClose={() => setShowStopSharingConfirmation(false)}
-            preventClosing={showStopSharingConfirmation && isLoading}
-          >
-            <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
-            <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
-            </p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowStopSharingConfirmation(false)}
-                disabled={showStopSharingConfirmation && isLoading}
-              >
-                {translate('modals.shareModal.stopSharing.cancel')}
-              </Button>
-              <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
-                {isLoading && <Spinner className="h-4 w-4" />}
-                <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
-              </Button>
-            </div>
-          </Modal>
+            itemToShareName={itemToShare?.item.name ?? ''}
+            isLoading={isLoading}
+            onStopSharing={onStopSharing}
+          />
         </>
       ),
       invite: (
@@ -747,7 +886,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>

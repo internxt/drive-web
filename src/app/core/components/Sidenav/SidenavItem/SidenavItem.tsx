@@ -32,8 +32,8 @@ const SidenavItem = ({
         <Icon
           weight={isActive ? 'fill' : undefined}
           size={24}
-          className={isActive ? 'text-primary' : 'text-gray-80'}
           data-cy={iconDataCy}
+          className={isActive ? 'text-primary' : 'text-gray-80'}
         />
         <span className={`ml-2 ${isActive ? 'text-primary dark:text-white' : 'text-gray-80 hover:text-gray-80'}`}>
           {label}

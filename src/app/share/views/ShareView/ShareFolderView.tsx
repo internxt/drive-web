@@ -17,7 +17,8 @@ import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import shareService from 'app/share/services/share.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
@@ -50,6 +51,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
   const [progress, setProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
+  const [itemData, setItemData] = useState<PublicSharedItemInfo>();
   const [size, setSize] = useState<number | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -103,7 +105,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       throw new Error(CHROME_IOS_ERROR_MESSAGE);
     }
 
-    return getPublicSharingMeta(sharingId, code)
+    return getPublicSharingMeta(sharingId, code, password)
       .then((res) => {
         setInfo({ ...res });
         setIsLoaded(true);
@@ -115,14 +117,24 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
       .then((folderSize) => {
         setSize(folderSize);
       })
-      .catch((err) => {
+      .catch(async (err) => {
         if (err.message === 'Forbidden') {
+          await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
         throw err;
       });
   }
+
+  const getSharedFolderInfo = async (id: string) => {
+    try {
+      const itemData = await shareService.getPublicSharedItemInfo(id);
+      setItemData(itemData);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   const loadSize = (shareId: number, folderId: number): Promise<number> => {
     return getSharedFolderSize(shareId.toString(), folderId.toString());
@@ -238,6 +250,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         onPasswordSubmitted={loadFolderInfo}
         itemPassword={itemPassword}
         setItemPassword={setItemPassword}
+        itemData={itemData}
       />
     ) : (
       //WITHOUT PASSWORD

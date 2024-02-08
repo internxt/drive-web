@@ -3,16 +3,30 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
+  "blackFridayBanner": {
+    "header": "Spare 70%!",
+    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "features": {
+      "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
+      "safeCloud": "Sicherer und geschützter Cloud-Speicher",
+      "openSource": "Open Source und transparent",
+      "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "unauthorized": "Kein unberechtigter Zugriff",
+      "offerEnds": "Angebot endet am 29. Januar"
+    }
+  },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "label": "Jahreslagerung zum halben Preis!",
-    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "label": "Suchen Sie einen sicheren Datenspeicher fürs Leben?",
+    "title": "Schützen Sie Ihre Dateien mit lebenslangen Internxt-Plänen!",
     "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie"
+    "guarantee": "Geld-zurück-Garantie innerhalb von 30 Tagen"
   },
   "lang": {
     "title": "Sprache",
@@ -48,7 +62,9 @@
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
-      "encrypting": "Verschlüsselung im Gange"
+      "encrypting": "Verschlüsselung im Gange",
+      "info1": "Internxt speichert keine Passwörter.",
+      "info2": "Falls Sie Ihr Passwort vergessen, verlieren Sie den Zugriff auf alle Ihre Dateien."
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
@@ -263,6 +279,19 @@
             "editProfile": {
               "name": "Name",
               "lastname": "Nachname"
+            },
+            "changeEmail": {
+              "title": "E-Mail ändern",
+              "email": "E-Mail",
+              "newEmail": "Neue E-Mail",
+              "password": "Passwort",
+              "errorSameEmail": "Die neue E-Mail muss sich von der aktuellen unterscheiden",
+              "errorPassword": "Falsches Passwort, bitte versuchen Sie es erneut",
+              "sendVerification": "Verifikation senden",
+              "sendingVerification": "Verifikation wird gesendet",
+              "sucessSendingVerification": "Verifikation an {{email}} gesendet",
+              "errorSendingVerification": "Fehler beim Senden der Verifikation",
+              "confirm": "Bestätigen"
             },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
@@ -611,6 +640,17 @@
           "error": "Die Freigabe konnte nicht beendet werden, bitte versuchen Sie es erneut"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "In den Papierkorb verschieben?",
+        "subtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf \"{{name}}\"",
+        "multipleItemsSubtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf diese geteilten Elemente",
+        "cancel": "Abbrechen",
+        "confirm": "In den Papierkorb verschieben",
+        "notification": {
+          "success": "Nicht mehr teilen \"{{name}}\"",
+          "error": "Konnte nicht in den Papierkorb verschoben werden, bitte versuchen Sie es erneut"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Benutzer \"{{name}}\" entfernt",
@@ -649,6 +689,19 @@
         "change": "Ändern",
         "requestSent": "Anfrage gesendet",
         "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Ein Passwort ist nur für Benutzer erforderlich, die keine Viewer- oder Bearbeitungsberechtigungen für das freigegebene Element haben.",
+        "protect": "Mit Passwort schützen",
+        "disablePasswordTitle": "Passwortschutz deaktivieren?",
+        "disablePasswordBody": "Wenn deaktiviert, können Personen mit dem Link auf den Inhalt zugreifen.",
+        "editPasswordTitle": "Passwort bearbeiten",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "save": "Speichern",
+          "disable": "Deaktivieren",
+          "changePassword": "Passwort ändern"
+        }
       }
     },
     "deletePhotosModal": {
@@ -1202,6 +1255,14 @@
         "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Überprüfen Sie, dass Sie es sind",
+    "text1": "Es wurden zu viele fehlgeschlagene Anmeldeversuche unternommen.",
+    "text2": "Aus Sicherheitsgründen haben wir eine E-Mail an Ihre Adresse {{email}} gesendet. Folgen Sie den Schritten in der E-Mail, um zu bestätigen, dass Sie es sind, und sich anzumelden",
+    "forgotPassword": "Ich habe mein Passwort vergessen",
+    "text3": "Haben Sie keine E-Mail erhalten?",
+    "resend": "Erneut senden"
   },
   "itemNotFound": {
     "folder": {

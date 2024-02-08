@@ -47,7 +47,7 @@ export default function Dialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100"
         leaveTo="opacity-0"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 z-50 bg-gray-100/50 dark:bg-black/75"
         onClick={onClose}
       ></Transition.Child>
       <Transition.Child
@@ -57,16 +57,18 @@ export default function Dialog({
         leave="ease-in duration-100"
         leaveFrom="opacity-100 scale-100"
         leaveTo="opacity-0 scale-95"
-        className="absolute left-1/2 top-1/2 w-80 -translate-x-1/2 -translate-y-1/2 rounded-2xl bg-surface p-3 text-center dark:bg-gray-1"
+        className="absolute left-1/2 top-1/2 z-[51] flex w-full max-w-sm -translate-x-1/2 -translate-y-1/2 flex-col space-y-5 rounded-2xl bg-surface p-5 dark:bg-gray-1"
       >
-        <p className="mt-4 text-xl font-semibold text-gray-100">{title}</p>
-        <p className="font-medium text-gray-50">{subtitle}</p>
-        <div className="mt-6 flex h-10 space-x-2">
-          <Button className="flex-1" variant="secondary" onClick={onSecondaryAction} disabled={isLoading}>
+        <div className="flex flex-col space-y-2">
+          <p className="text-2xl font-medium text-gray-100">{title}</p>
+          <p className="text-gray-60">{subtitle}</p>
+        </div>
+
+        <div className="flex justify-end space-x-2">
+          <Button variant="secondary" onClick={onSecondaryAction} disabled={isLoading}>
             {secondaryAction}
           </Button>
           <Button
-            className="flex-1"
             onClick={onPrimaryAction}
             loading={isLoading}
             variant={primaryActionColor === 'primary' ? 'primary' : 'accent'}

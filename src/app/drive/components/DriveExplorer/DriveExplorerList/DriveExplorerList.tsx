@@ -43,6 +43,8 @@ interface DriveExplorerListProps {
   isTrash?: boolean;
   onHoverListItems?: (areHover: boolean) => void;
   title: JSX.Element | string;
+  onOpenStopSharingAndMoveToTrashDialog: () => void;
+  showStopSharingConfirmation: boolean;
 }
 
 type ObjectWithId = { id: string | number };
@@ -83,6 +85,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     props.selectedItems.length === 1 &&
     props.selectedItems?.[0].sharings &&
     props.selectedItems?.[0].sharings.length > 0;
+  const isSelectedSharedItems =
+    (props.selectedItems.length > 1 && props.selectedItems.some((item) => item.sharings && item.sharings.length > 0)) ||
+    isSelectedSharedItem;
 
   const { translate } = useTranslationContext();
 
@@ -117,8 +122,8 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       }
     }
 
-    const deselecteditems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
-    dispatch(storageActions.deselectItems(deselecteditems));
+    const deselectedItems = findUniqueItems<DriveItemData>(updatedSelectedItems, props.selectedItems);
+    dispatch(storageActions.deselectItems(deselectedItems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
 
@@ -241,8 +246,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
         }),
       );
       dispatch(uiActions.setIsShareDialogOpen(true));
-      // Use to share with specific user
-      // dispatch(sharedThunks.shareFileWithUser({ email: 'email_of_user_to_share@example.com' }));
     },
     [dispatch, storageActions, uiActions],
   );
@@ -256,9 +259,15 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 
   const moveToTrash = useCallback(
     (item: ContextMenuDriveItem) => {
-      moveItemsToTrash([item as DriveItemData]);
+      const driveItem = item as DriveItemData;
+
+      if (isSelectedSharedItem) {
+        props.onOpenStopSharingAndMoveToTrashDialog();
+      } else {
+        moveItemsToTrash([driveItem]);
+      }
     },
-    [moveItemsToTrash],
+    [isSelectedSharedItem, props.onOpenStopSharingAndMoveToTrashDialog, moveItemsToTrash],
   );
 
   const skinSkeleton = [
@@ -311,7 +320,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
             },
           ]}
           checkboxDataCy="driveListHeaderCheckbox"
-          disableKeyboardShortcuts={props.disableKeyboardShortcuts}
+          disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
@@ -347,7 +356,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     dispatch(storageThunks.downloadItemsThunk(props.selectedItems));
                   },
                   moveToTrash: () => {
-                    moveItemsToTrash(props.selectedItems);
+                    isSelectedSharedItems
+                      ? props.onOpenStopSharingAndMoveToTrashDialog()
+                      : moveItemsToTrash(props.selectedItems);
                   },
                 })
               : props.isTrash
@@ -380,18 +391,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                       openLinkSettings(item);
                     },
                     showDetails,
-                    deleteLink: (item) => {
-                      dispatch(
-                        sharedThunks.deleteLinkThunk({
-                          linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                          item: item as DriveItemData,
-                        }),
-                      );
-                    },
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
-                    moveToTrash: moveToTrash,
+                    moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
                   })
                 : contextMenuDriveItemShared({
                     openPreview: openPreview,
@@ -400,20 +403,14 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                     openShareAccessSettings: (item) => {
                       openLinkSettings(item);
                     },
-                    deleteLink: () => ({}),
                     renameItem: renameItem,
                     moveItem: moveItem,
                     downloadItem: downloadItem,
-                    moveToTrash: moveToTrash,
+                    moveToTrash: props.onOpenStopSharingAndMoveToTrashDialog,
                   })
               : props.selectedItems[0]?.isFolder
               ? contextMenuDriveFolderNotSharedLink({
-                  shareLink: (item) => {
-                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    // WAITING BACKEND ENDPOINTS
-                    // openAdvancedShareLinkSettings(item);
-                    openLinkSettings(item);
-                  },
+                  shareLink: openLinkSettings,
                   showDetails,
                   getLink: getLink,
                   renameItem: renameItem,
@@ -422,10 +419,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                   moveToTrash: moveToTrash,
                 })
               : contextMenuDriveNotSharedLink({
-                  shareLink: (item) => {
-                    //TODO: ADD OPEN SHARE DIALOG WITH PUBLIC SHARED LINK, MAYBE NOT NEED TO DO SOMETHING
-                    openLinkSettings(item);
-                  },
+                  shareLink: openLinkSettings,
                   openPreview: openPreview,
                   showDetails,
                   getLink: getLink,
@@ -438,7 +432,10 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           selectedItems={props.selectedItems}
           keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
           keyBoardShortcutActions={{
-            onBackspaceKeyPressed: () => moveItemsToTrash(props.selectedItems),
+            onBackspaceKeyPressed: () =>
+              isSelectedSharedItems
+                ? props.onOpenStopSharingAndMoveToTrashDialog()
+                : moveItemsToTrash(props.selectedItems),
             onRKeyPressed: () => {
               if (props.selectedItems.length === 1) {
                 const selectedItem = props.selectedItems[0];

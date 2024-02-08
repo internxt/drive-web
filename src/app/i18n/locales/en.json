@@ -4,16 +4,17 @@
     "logOut": "Log Out"
   },
   "blackFridayBanner": {
-    "header": "Save big on privacy.",
-    "title": "Internxt’s Christmas Deal",
-    "cta": "Get the deal!",
+    "header": "Save 70%!",
+    "title": "Get ready for Data Privacy Week",
+    "cta": "Choose plan",
+    "guarantee": "30-day money-back guarantee",
     "features": {
-      "discount": "Get 50% discount on all annual plans",
+      "discount": "Save on monthly & annual plans",
       "safeCloud": "Safe and secure cloud storage",
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends January 7th"
+      "offerEnds": "Offer ends January 29th"
     }
   },
   "valentinesBanner": {
@@ -22,9 +23,9 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "label": "Annual storage for half the price!",
-    "title": "Save 50% on our yearly subscriptions!",
-    "cta": "Choose plan",
+    "label": "Need secure storage for life?",
+    "title": "Protect your files forever with our lifetime plans!",
+    "cta": "Choose your plan",
     "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
@@ -82,7 +83,9 @@
       "title": "Create account",
       "haveAccount": "Already have an account?",
       "login": "Log in",
-      "encrypting": "Encrypting"
+      "encrypting": "Encrypting",
+      "info1": "Internxt doesn't store passwords.",
+      "info2": "In case you forget your password, you will lose access to all your files."
     },
     "forgotPassword": {
       "title": "Account recovery",
@@ -227,7 +230,7 @@
     "putPwd": "Please enter the password provided",
     "putPwd1": "by the sender for access.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Access"
   },
   "sideNav": {
@@ -332,7 +335,8 @@
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",
               "sucessSendingVerification": "Email verification sent to {{email}}",
-              "errorSendingVerification": "Error sending verification"
+              "errorSendingVerification": "Error sending verification",
+              "confirm": "Confirm"
             }
           },
           "support": {
@@ -728,6 +732,18 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Move to trash?",
+        "subtitle": "Users with the link or invited will no longer have access to \"{{name}}\"",
+        "multipleItemsSubtitle": "Users with the link or invited will no longer have access to these shared items",
+        "cancel": "Cancel",
+        "confirm": "Move to trash",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "successForMultipleItems": "No longer sharing these items",
+          "error": "Couldn't move to trash, please try again"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "User \"{{name}}\" removed",
@@ -766,6 +782,19 @@
         "change": "Change",
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
+        "protect": "Protect with password",
+        "disablePasswordTitle": "Disable password protection?",
+        "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
+        "editPasswordTitle": "Edit password",
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "disable": "Disable",
+          "changePassword": "Change password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1343,6 +1372,14 @@
         "description": "Click Upload button to upload your first file."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verify it’s you",
+    "text1": "Too many failed logins were attempted.",
+    "text2": "For security reasons we sent an email to your address {{email}} follow the email steps to confirm it’s you and login",
+    "forgotPassword": "I forgot my password",
+    "text3": "Didn’t received any email?",
+    "resend": "Resend"
   },
   "itemNotFound": {
     "folder": {

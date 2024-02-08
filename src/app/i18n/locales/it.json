@@ -8,9 +8,23 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
+  "blackFridayBanner": {
+    "header": "Risparmia il 70%!",
+    "title": "Preparati per la Settimana della Privacy dei Dati",
+    "cta": "Scegli un piano",
+    "guarantee": "Garanzia di rimborso entro 30 giorni",
+    "features": {
+      "discount": "Risparmia su piani mensili e annuali",
+      "safeCloud": "Archiviazione cloud sicura e protetta",
+      "openSource": "Open source e trasparente",
+      "endToEnd": "Trasferimenti crittografati end-to-end",
+      "unauthorized": "Nessun accesso non autorizzato",
+      "offerEnds": "L'offerta termina il 29 gennaio"
+    }
+  },
   "lifetimeBanner": {
-    "label": "Archiviazione annuale a metà prezzo!",
-    "title": "Risparmia il 50% sulle nostre sottoscrizioni annuali!",
+    "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
+    "title": "Proteggete i vostri file con i piani a vita di Internxt!",
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
@@ -69,7 +83,9 @@
       "title": "Creare un account",
       "haveAccount": "Hai già un account?",
       "login": "Accedi",
-      "encrypting": "Crittografia in corso"
+      "encrypting": "Crittografia in corso",
+      "info1": "Internxt non memorizza le password.",
+      "info2": "Nel caso in cui dimentichi la password, perdarai l'accesso a tutti tuoi file."
     },
     "forgotPassword": {
       "title": "Recupero dell'account",
@@ -195,7 +211,7 @@
     "putPwd": "Per accedere, inserisci la password",
     "putPwd1": " fornita dal mittente.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Login"
   },
   "sideNav": {
@@ -300,7 +316,8 @@
               "sendVerification": "Invia verifica",
               "sendingVerification": "Invio verifica",
               "sucessSendingVerification": "Verifica e-mail inviata a {{email}}",
-              "errorSendingVerification": "Errore nell'invio della verifica"
+              "errorSendingVerification": "Errore nell'invio della verifica",
+              "confirm": "Confermare"
             }
           },
           "support": {
@@ -689,6 +706,17 @@
           "error": "Non è stato possibile smettere di condividere, provare di nuovo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Sposta nel cestino?",
+        "subtitle": "Gli utenti con il link o invitati non avranno più accesso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Gli utenti con il link o invitati non avranno più accesso a questi elementi condivisi",
+        "cancel": "Annulla",
+        "confirm": "Sposta nel cestino",
+        "notification": {
+          "success": "Non più condiviso \"{{name}}\"",
+          "error": "Impossibile spostare nel cestino, riprova"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Utente \"{{name}}\" rimosso",
@@ -727,6 +755,19 @@
         "change": "Cambia",
         "requestSent": "Richiesta inviata",
         "confirmation": "Riceverai un'e-mail se il file/cartella è condiviso con te"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La password è richiesta solo per gli utenti senza accesso in lettura o modifica all'elemento condiviso.",
+        "protect": "Proteggi con password",
+        "disablePasswordTitle": "Disabilitare la protezione con password?",
+        "disablePasswordBody": "Quando disabilitato, le persone con il link potranno accedere al contenuto.",
+        "editPasswordTitle": "Modifica password",
+        "buttons": {
+          "cancel": "Annulla",
+          "save": "Salva",
+          "disable": "Disabilita",
+          "changePassword": "Cambia password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -1298,6 +1339,14 @@
         "description": "Fare clic sul pulsante _____ per caricare il primo file."
       }
     }
+  },
+  "blockedAccount": {
+    "title": "Verifica di essere tu",
+    "text1": "Sono stati tentati troppi login non riusciti",
+    "text2": "Per motivi di sicurezza abbiamo inviato un'e-mail al tuo indirizzo {{email}} segui i passaggi dell'e-mail per confermare che sei tu e accedere",
+    "forgotPassword": "Ho dimenticato la password",
+    "text3": "Non hai ricevuto nessuna email?",
+    "resend": "Reinvia"
   },
   "itemNotFound": {
     "folder": {
