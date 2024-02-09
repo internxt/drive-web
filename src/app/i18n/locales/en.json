@@ -3,18 +3,19 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
-  "blackFridayBanner": {
-    "header": "Save 70%!",
-    "title": "Get ready for Data Privacy Week",
+  "featuresBanner": {
+    "label": "Save 69%",
+    "title": "Sweet Valentine's treats!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
+    "lastCta": "*Offer is for free accounts or new customers",
     "features": {
       "discount": "Save on monthly & annual plans",
       "safeCloud": "Safe and secure cloud storage",
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends January 29th"
+      "offerEnds": "Offer ends February 25th"
     }
   },
   "valentinesBanner": {
