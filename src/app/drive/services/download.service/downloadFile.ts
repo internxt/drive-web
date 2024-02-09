@@ -8,6 +8,7 @@ import fetchFileStream from './fetchFileStream';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import { isFirefox } from 'react-device-detect';
 import { ConnectionLostError } from '../../../network/requests';
+import { Band } from 'app/drive/services/network.service';
 import fetchFileStreamWithCreds from './fetchFileStreamWithCreds';
 
 interface BlobWritable {
@@ -144,7 +145,12 @@ export default async function downloadFile(
     };
     window.addEventListener('offline', connectionLostListener);
 
+    const band = new Band();
     await downloadToFs(completeFilename, fileStreamPromise, support, isFirefox, abortController);
+
+    band.addEndTime();
+    band.setSize = Number(itemData.size);
+    trackingDownloadProperties.bandwidth = band.getBandwith();
   } catch (err) {
     const errMessage = err instanceof Error ? err.message : (err as string);
 

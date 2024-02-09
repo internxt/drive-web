@@ -18,6 +18,7 @@ import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
 import { TrackingPlan } from '../../analytics/TrackingPlan';
+import { Band } from 'app/drive/services/network.service';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 
 export interface IFolders {
@@ -549,6 +550,7 @@ async function downloadFolderAsZip(
             band_utilization: 0,
           };
           analyticsService.trackFileDownloadStarted(trackingDownloadProperties);
+          const band = new Band();
 
           const creds = options?.credentials
             ? (options.credentials as Record<'user' | 'pass', string>)
@@ -560,7 +562,15 @@ async function downloadFolderAsZip(
             fileId: file.fileId,
             creds: creds,
             mnemonic: mnemonic,
+            options: {
+              notifyProgress: (totalBytes, downloadedBytes) => {
+                band.addEndTime();
+                band.setSize = Number(downloadedBytes);
+              },
+            },
           });
+
+          trackingDownloadProperties.bandwidth = band.getBandwith();
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
           const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
