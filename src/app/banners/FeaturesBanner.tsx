@@ -1,4 +1,4 @@
-import { CheckCircle, CircleWavyCheck, Heart, X } from '@phosphor-icons/react';
+import { CheckCircle, Heart, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const WEBSITE_URL = process.env.REACT_APP_WEBSITE_URL;
