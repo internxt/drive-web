@@ -136,6 +136,10 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
+  function onRedirect() {
+    navigationService.push(AppView.Drive);
+  }
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
     event?.preventDefault();
@@ -196,7 +200,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         if (isUniversalLinkMode) {
           return navigationService.push(AppView.UniversalLinkSuccess);
         } else {
-          setView('downloadBackupKey');
+          onRedirect();
         }
       }
     } catch (err: unknown) {
@@ -214,10 +218,6 @@ function SignUp(props: SignUpProps): JSX.Element {
 
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
-
-  function onRedirect() {
-    navigationService.push(AppView.Drive);
-  }
 
   return (
     <>

@@ -151,6 +151,10 @@ function ShareGuestSingUpView(): JSX.Element {
     }
   }
 
+  function onRedirect() {
+    navigationService.push(AppView.Shared);
+  }
+
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoading(true);
@@ -188,7 +192,7 @@ function ShareGuestSingUpView(): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      setView('downloadBackupKey');
+      onRedirect();
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -205,10 +209,6 @@ function ShareGuestSingUpView(): JSX.Element {
 
   if (!invitationValidation.isValid) {
     return <ExpiredLink />;
-  }
-
-  function onRedirect() {
-    navigationService.push(AppView.Shared);
   }
 
   return (
