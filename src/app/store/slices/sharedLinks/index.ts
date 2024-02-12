@@ -1,6 +1,5 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService, {
-  getSharedFolderInvitations,
   getSharedFolderInvitationsAsInvitedUser,
   getSharingRoles,
   inviteUserToSharedFolder,

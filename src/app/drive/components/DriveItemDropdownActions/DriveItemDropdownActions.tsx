@@ -8,7 +8,6 @@ import {
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
 } from '../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
 import { ListItemMenu } from '../../../shared/components/List/ListItem';
 
 interface FileDropdownActionsProps {
