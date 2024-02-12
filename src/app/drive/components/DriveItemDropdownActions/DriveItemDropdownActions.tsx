@@ -17,7 +17,6 @@ interface FileDropdownActionsProps {
 }
 
 const FileDropdownActions = (props: FileDropdownActionsProps) => {
-  const dispatch = useAppDispatch();
   const { title, item, openDropdown } = props;
   const isSharedItem = item?.sharings && item?.sharings?.length > 0;
 
