@@ -195,6 +195,8 @@ function SignUp(props: SignUpProps): JSX.Element {
         if (isUniversalLinkMode) {
           return navigationService.push(AppView.UniversalLinkSuccess);
         } else {
+          //TODO: Use this setState when we have to implement the download of the backup key
+          // setView('downloadBackupKey');
           return navigationService.push(AppView.Drive);
         }
       }
