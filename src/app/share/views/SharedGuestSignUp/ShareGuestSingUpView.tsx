@@ -108,7 +108,7 @@ function ShareGuestSingUpView(): JSX.Element {
     if (inviteId) {
       validateInvitation(inviteId);
     } else {
-      setView('signUp');
+      return navigationService.push(AppView.Signup);
     }
   }, [invitationId]);
 
@@ -151,10 +151,6 @@ function ShareGuestSingUpView(): JSX.Element {
     }
   }
 
-  function onRedirect() {
-    navigationService.push(AppView.Shared);
-  }
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsLoading(true);
@@ -192,7 +188,7 @@ function ShareGuestSingUpView(): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      onRedirect();
+      return navigationService.push(AppView.Shared);
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -223,7 +219,9 @@ function ShareGuestSingUpView(): JSX.Element {
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           {view === 'downloadBackupKey' ? (
-            <DownloadBackupKey onRedirect={onRedirect} />
+            //TODO: Use this component when we have to implement the download of the backup key
+            // <DownloadBackupKey onRedirect={onRedirect} />
+            <></>
           ) : (
             <>
               <div className="flex flex-col items-start space-y-5">

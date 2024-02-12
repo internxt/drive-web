@@ -136,10 +136,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     }
   }
 
-  function onRedirect() {
-    navigationService.push(AppView.Drive);
-  }
-
   const onSubmit: SubmitHandler<IFormValues> = async (formData, event) => {
     const redeemCodeObject = autoSubmit.credentials && autoSubmit.credentials.redeemCodeObject;
     event?.preventDefault();
@@ -200,7 +196,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         if (isUniversalLinkMode) {
           return navigationService.push(AppView.UniversalLinkSuccess);
         } else {
-          onRedirect();
+          return navigationService.push(AppView.Drive);
         }
       }
     } catch (err: unknown) {
@@ -234,7 +230,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
         ) : view === 'downloadBackupKey' ? (
-          <DownloadBackupKey onRedirect={onRedirect} />
+          //TODO: Use this component when we have to implement the download of the backup key
+          // <DownloadBackupKey onRedirect={onRedirect} />
+          <></>
         ) : (
           <div className="flex flex-col items-start space-y-5">
             <div className="flex flex-col items-start space-y-5">
