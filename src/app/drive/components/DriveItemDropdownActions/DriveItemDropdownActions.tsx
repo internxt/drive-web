@@ -50,14 +50,6 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           copyLink: onCopyLinkButtonClicked,
           openShareAccessSettings: onLinkSettingsButtonClicked,
           showDetails: onShowDetailsButtonClicked,
-          deleteLink: (item) => {
-            dispatch(
-              sharedThunks.deleteLinkThunk({
-                linkId: (item as DriveItemData)?.shares?.[0]?.id as string,
-                item: item as DriveItemData,
-              }),
-            );
-          },
           renameItem: onRenameItemButtonClicked,
           moveItem: onMoveItemButtonClicked,
           downloadItem: onDownloadItemButtonClicked,
@@ -69,7 +61,6 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           showDetails: onShowDetailsButtonClicked,
           copyLink: onCopyLinkButtonClicked,
           openShareAccessSettings: onOpenPreviewButtonClicked,
-          deleteLink: () => ({}),
           renameItem: onRenameItemButtonClicked,
           moveItem: onMoveItemButtonClicked,
           downloadItem: onDownloadItemButtonClicked,
