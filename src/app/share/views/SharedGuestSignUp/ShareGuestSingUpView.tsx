@@ -30,7 +30,6 @@ import { RootState } from 'app/store';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import Button from 'app/shared/components/Button/Button';
 import { Views } from 'app/auth/components/SignUp/SignUp';
-import DownloadBackupKey from 'app/auth/views/DownloadBackupKey/DownloadBackupKey';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();

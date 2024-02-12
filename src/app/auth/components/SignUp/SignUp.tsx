@@ -29,7 +29,6 @@ import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from '../../../crypto/services/keys.service';
 import analyticsService from '../../../analytics/services/analytics.service';
 import Button from '../../../shared/components/Button/Button';
-import DownloadBackupKey from '../../../auth/views/DownloadBackupKey/DownloadBackupKey';
 
 export interface SignUpProps {
   location: {
