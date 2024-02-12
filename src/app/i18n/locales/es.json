@@ -3,18 +3,19 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "blackFridayBanner": {
-    "header": "¡Ahorra un 70%!",
-    "title": "Prepárate para la Semana de la Privacidad de Datos",
+  "featuresBanner": {
+    "label": "Ahorra un 69%",
+    "title": "¡Dulces regalos de San Valentín!",
     "cta": "Elige un plan",
-    "guarantee": "Garantía de devolución de 30 días",
+    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": {
       "discount": "Ahorra en suscripciones mensuales y anuales",
       "safeCloud": "Almacenamiento seguro en la nube",
       "openSource": "Código abierto y transparente",
       "endToEnd": "Transferencias cifradas de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta finaliza el 29 de enero"
+      "offerEnds": "La oferta finaliza el 25 de febrero"
     }
   },
   "valentinesBanner": {

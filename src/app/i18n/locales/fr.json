@@ -3,18 +3,19 @@
     "title": "Gérez vos fichiers, votre compte et votre abonnement sur l'application",
     "logOut": "Déconnexion"
   },
-  "blackFridayBanner": {
-    "header": "Économisez 70% !",
-    "title": "Préparez-vous pour la Semaine de la Protection des Données",
-    "cta": "Choisir un plan",
+  "featuresBanner": {
+    "label": "Économisez 69%",
+    "title": "Délices sucrés de la Saint-Valentin!",
+    "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": {
       "discount": "Économisez sur les plans mensuels et annuels",
       "safeCloud": "Stockage cloud sûr et sécurisé",
       "openSource": "Open source et transparent",
       "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 29 janvier"
+      "offerEnds": "L'offre se termine le 25 février"
     }
   },
   "valentinesBanner": {

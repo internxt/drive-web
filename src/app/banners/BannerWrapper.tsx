@@ -5,10 +5,10 @@ import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Banner from './Banner';
+import FeaturesBanner from './FeaturesBanner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_soft_banner_sale';
-const OFFER_OFF_DAY = new Date('2024-02-12');
+const SHOW_BANNER_COOKIE_NAME = 'show_valentines_banner_sale';
+const OFFER_OFF_DAY = new Date('2024-02-25');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -36,7 +36,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
