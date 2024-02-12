@@ -64,8 +64,18 @@
       "haveAccount": "Vous avez déjà un compte ?",
       "login": " Connexion ",
       "encrypting": "Encryptant",
-      "info1": "Internxt ne stocke pas de mots de passe.",
-      "info2": "Si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers."
+      "info": {
+        "normalText": "Internxt ne stocke pas les mots de passe.",
+        "boldText": "Si vous oubliez votre mot de passe, vous pouvez télécharger une clé de sauvegarde pour regagner l'accès à vos fichiers.",
+        "cta": "En savoir plus"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Clé de sauvegarde",
+      "description": "La clé de sauvegarde permet la récupération du compte en cas d'oubli de votre mot de passe. Ne la partagez jamais.",
+      "downloadCta": "Télécharger la clé de sauvegarde",
+      "settingsTab": "Vous pouvez accéder à votre clé de sauvegarde dans Paramètres > Sécurité",
+      "skip": "Passer"
     },
     "forgotPassword": {
       "title": "Récupération de compte",

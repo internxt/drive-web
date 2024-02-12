@@ -85,8 +85,18 @@
       "haveAccount": "Hai già un account?",
       "login": "Accedi",
       "encrypting": "Crittografia in corso",
-      "info1": "Internxt non memorizza le password.",
-      "info2": "Nel caso in cui dimentichi la password, perdarai l'accesso a tutti tuoi file."
+      "info": {
+        "normalText": "Internxt non memorizza le password.",
+        "boldText": "Se dimentichi la tua password, puoi scaricare una chiave di backup per recuperare l'accesso ai tuoi file.",
+        "cta": "Ulteriori informazioni"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Chiave di backup",
+      "description": "La chiave di backup consente il recupero dell'account nel caso dimentichi la tua password. Non condividerla mai.",
+      "downloadCta": "Scarica la chiave di backup",
+      "settingsTab": "Puoi accedere alla tua chiave di backup in Impostazioni > Sicurezza",
+      "skip": "Salta"
     },
     "forgotPassword": {
       "title": "Recupero dell'account",

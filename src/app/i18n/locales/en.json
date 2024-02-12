@@ -85,8 +85,18 @@
       "haveAccount": "Already have an account?",
       "login": "Log in",
       "encrypting": "Encrypting",
-      "info1": "Internxt doesn't store passwords.",
-      "info2": "In case you forget your password, you will lose access to all your files."
+      "info": {
+        "normalText": "Internxt doesn’t store passwords.",
+        "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
+        "cta": "Learn more"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup key",
+      "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
+      "downloadCta": "Download backup key",
+      "settingsTab": "You can access your backup key in Settings > Security",
+      "skip": "Skip"
     },
     "forgotPassword": {
       "title": "Account recovery",

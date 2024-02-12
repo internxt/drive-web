@@ -64,8 +64,18 @@
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
       "encrypting": "Verschlüsselung im Gange",
-      "info1": "Internxt speichert keine Passwörter.",
-      "info2": "Falls Sie Ihr Passwort vergessen, verlieren Sie den Zugriff auf alle Ihre Dateien."
+      "info": {
+        "normalText": "Internxt speichert keine Passwörter.",
+        "boldText": "Wenn Sie Ihr Passwort vergessen, können Sie einen Backup-Schlüssel herunterladen, um wieder Zugriff auf Ihre Dateien zu erhalten.",
+        "cta": "Erfahre mehr"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup-Schlüssel",
+      "description": "Der Backup-Schlüssel ermöglicht die Wiederherstellung des Kontos, falls Sie Ihr Passwort vergessen. Teilen Sie es niemals.",
+      "downloadCta": "Backup-Schlüssel herunterladen",
+      "settingsTab": "Sie können auf Ihren Backup-Schlüssel zugreifen unter Einstellungen > Sicherheit",
+      "skip": "Überspringen"
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
