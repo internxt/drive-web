@@ -3,18 +3,19 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
-  "blackFridayBanner": {
-    "header": "Spare 70%!",
-    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
-    "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
+  "featuresBanner": {
+    "label": "Spare 69%",
+    "title": "Süße Valentinstagsgeschenke!",
+    "cta": "Wähle einen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": {
       "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
       "safeCloud": "Sicherer und geschützter Cloud-Speicher",
       "openSource": "Open Source und transparent",
       "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
       "unauthorized": "Kein unberechtigter Zugriff",
-      "offerEnds": "Angebot endet am 29. Januar"
+      "offerEnds": "Angebot endet am 25. Februar"
     }
   },
   "valentinesBanner": {
@@ -23,10 +24,10 @@
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "label": "Jahreslagerung zum halben Preis!",
-    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "label": "Suchen Sie einen sicheren Datenspeicher fürs Leben?",
+    "title": "Schützen Sie Ihre Dateien mit lebenslangen Internxt-Plänen!",
     "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie"
+    "guarantee": "Geld-zurück-Garantie innerhalb von 30 Tagen"
   },
   "lang": {
     "title": "Sprache",
@@ -34,7 +35,7 @@
     "es": "Español (Spanisch)",
     "fr": "Français (Französisch)",
     "it": "Italiano (Italienisch)",
-    "cn": "简体中文 (Chinesisch)",
+    "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)"
   },
@@ -831,6 +832,7 @@
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
     "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
+    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
@@ -1159,9 +1161,11 @@
     },
     "dropdown": {
       "openPreview": "Öffne Vorschau",
+      "details": "Einzelheiten",
+      "shareLink": "Teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
-      "download": "Download",
+      "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
       "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",

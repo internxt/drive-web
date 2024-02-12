@@ -10,9 +10,9 @@ import dayjs from 'dayjs';
 import ItemsDropdown from './components/ItemsDropdown';
 import MenuItem from './components/MenuItem';
 
-const localStorageLanguage = localStorageService.get('language');
+const localStorageLanguage = localStorageService.get('i18nextLng');
 
-const languages = ['en', 'es', 'fr', 'it', 'cn', 'ru', 'de'];
+const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de'];
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -31,7 +31,6 @@ export default function Language(): JSX.Element {
   }, []);
 
   useEffect(() => {
-    localStorageService.set('language', lang as string);
     changeLang(i18next.language);
   }, [lang]);
   return (

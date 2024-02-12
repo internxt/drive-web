@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.239",
+  "version": "v1.0.242",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
@@ -33,6 +33,7 @@
     "history": "^4.10.1",
     "https-browserify": "^1.0.0",
     "i18next": "^22.4.9",
+    "i18next-browser-languagedetector": "^7.2.0",
     "idb": "^6.1.5",
     "js-file-download": "^0.4.12",
     "jszip": "=3.2.2",
