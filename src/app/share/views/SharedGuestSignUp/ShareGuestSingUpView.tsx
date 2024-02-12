@@ -30,7 +30,6 @@ import { RootState } from 'app/store';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import Button from 'app/shared/components/Button/Button';
 import { Views } from 'app/auth/components/SignUp/SignUp';
-import DownloadBackupKey from 'app/auth/views/DownloadBackupKey/DownloadBackupKey';
 
 function ShareGuestSingUpView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -108,7 +107,7 @@ function ShareGuestSingUpView(): JSX.Element {
     if (inviteId) {
       validateInvitation(inviteId);
     } else {
-      setView('signUp');
+      return navigationService.push(AppView.Signup);
     }
   }, [invitationId]);
 
@@ -188,7 +187,9 @@ function ShareGuestSingUpView(): JSX.Element {
       window.rudderanalytics.identify(xUser.uuid, { email, uuid: xUser.uuid });
       window.rudderanalytics.track('User Signup', { email });
 
-      setView('downloadBackupKey');
+      //TODO: Use this setState when we have to implement the download of the backup key
+      // setView('downloadBackupKey');
+      return navigationService.push(AppView.Shared);
     } catch (err: unknown) {
       setIsLoading(false);
       errorService.reportError(err);
@@ -207,10 +208,6 @@ function ShareGuestSingUpView(): JSX.Element {
     return <ExpiredLink />;
   }
 
-  function onRedirect() {
-    navigationService.push(AppView.Shared);
-  }
-
   return (
     <div className={'flex h-full w-full flex-col overflow-auto bg-surface dark:bg-gray-1'}>
       <div className="flex shrink-0 flex-row justify-center py-10 sm:justify-start sm:pl-20">
@@ -223,7 +220,9 @@ function ShareGuestSingUpView(): JSX.Element {
         </Helmet>
         <div className={'flex h-fit w-96 flex-col items-center justify-center rounded-2xl px-8 py-10'}>
           {view === 'downloadBackupKey' ? (
-            <DownloadBackupKey onRedirect={onRedirect} />
+            //TODO: Use this component when we have to implement the download of the backup key
+            // <DownloadBackupKey onRedirect={onRedirect} />
+            <></>
           ) : (
             <>
               <div className="flex flex-col items-start space-y-5">

@@ -29,7 +29,6 @@ import { MAX_PASSWORD_LENGTH } from '../../../shared/components/ValidPassword';
 import { decryptPrivateKey } from '../../../crypto/services/keys.service';
 import analyticsService from '../../../analytics/services/analytics.service';
 import Button from '../../../shared/components/Button/Button';
-import DownloadBackupKey from '../../../auth/views/DownloadBackupKey/DownloadBackupKey';
 
 export interface SignUpProps {
   location: {
@@ -196,7 +195,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         if (isUniversalLinkMode) {
           return navigationService.push(AppView.UniversalLinkSuccess);
         } else {
-          setView('downloadBackupKey');
+          //TODO: Use this setState when we have to implement the download of the backup key
+          // setView('downloadBackupKey');
+          return navigationService.push(AppView.Drive);
         }
       }
     } catch (err: unknown) {
@@ -215,10 +216,6 @@ function SignUp(props: SignUpProps): JSX.Element {
     return currentParams.toString() ? '/login?' + currentParams.toString() : '/login';
   };
 
-  function onRedirect() {
-    navigationService.push(AppView.Drive);
-  }
-
   return (
     <>
       <Helmet>
@@ -234,7 +231,9 @@ function SignUp(props: SignUpProps): JSX.Element {
         {showPreparingWorkspaceAnimation ? (
           <PreparingWorkspaceAnimation />
         ) : view === 'downloadBackupKey' ? (
-          <DownloadBackupKey onRedirect={onRedirect} />
+          //TODO: Use this component when we have to implement the download of the backup key
+          // <DownloadBackupKey onRedirect={onRedirect} />
+          <></>
         ) : (
           <div className="flex flex-col items-start space-y-5">
             <div className="flex flex-col items-start space-y-5">
