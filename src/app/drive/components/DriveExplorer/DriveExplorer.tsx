@@ -629,8 +629,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           showStopSharingConfirmation={showStopSharingConfirmation}
           onClose={onCloseStopSharingAndMoveToTrashDialog}
           moveItemsToTrash={moveItemsToTrashOnStopSharing}
-          isMultipleItems={totalItemsWithSharing > 1}
-          itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
 

@@ -93,6 +93,7 @@ type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
+  onCloseDialog?: () => void;
 };
 
 const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
@@ -129,6 +130,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const { onCloseDialog } = props;
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
@@ -168,6 +170,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setView('general');
     setIsPasswordProtected(false);
     setSharingMeta(null);
+    onCloseDialog?.();
   };
 
   useEffect(() => {
