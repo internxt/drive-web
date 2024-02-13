@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WritableStream } from 'streamsaver';
 import { match } from 'react-router';
-import { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
+import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
 import { TaskProgress } from 'app/tasks/types';
@@ -14,7 +14,6 @@ import './ShareView.scss';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import shareService from 'app/share/services/share.service';
 import { loadWritableStreamPonyfill } from 'app/network/download';
 import ShareItemPwdView from './ShareItemPwdView';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
