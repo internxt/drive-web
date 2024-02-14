@@ -153,7 +153,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
 
-  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem).user?.email;
+  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem)?.user?.email;
   const isUserOwner = (!!itemOwnerEmail && itemOwnerEmail === props?.user?.email) || !!props?.isDriveItem;
 
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);

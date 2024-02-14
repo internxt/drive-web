@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import _ from 'lodash';
 
 import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useEffect, useRef, useCallback, useLayoutEffect } from 'react';
+import { useEffect, useRef, useCallback, useLayoutEffect, ChangeEvent } from 'react';
 import shareService, { decryptMnemonic } from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { DriveItemData } from '../../../drive/types';
@@ -118,7 +118,7 @@ function SharedView({
   } = state;
 
   const shareItems = [...shareFolders, ...shareFiles];
-  const { fetchRootFolders, fetchFiles, fetchFolders } = useFetchSharedData();
+  const { fetchRootFolders, fetchFiles } = useFetchSharedData();
 
   useLayoutEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
@@ -466,6 +466,16 @@ function SharedView({
     }
   };
 
+  const handleOnCloseShareDialog = () => {
+    setTimeout(() => {
+      if (!isShareDialogOpen && !folderUUID && isRootFolder) {
+        // This is added so that in case the element is no longer shared due to changes in the share dialog it will disappear from the list.
+        resetSharedViewState();
+        fetchRootFolders();
+      }
+    }, 200);
+  };
+
   // TODO: REFACTOR IN BREADCRUMBS REFACTOR TASK
   const goToFolderBredcrumb = (id, name, uuid, token?) => {
     if (!isLoading) {
@@ -511,6 +521,16 @@ function SharedView({
     return items;
   };
 
+  const handleOnTopBarInputChanges = (e: ChangeEvent<HTMLInputElement>) => {
+    onUploadFileInputChanged({
+      files: e.target.files,
+    });
+  };
+
+  const onClickPendingInvitationsButton = () => {
+    dispatch(uiActions.setIsInvitationsDialogOpen(true));
+  };
+
   return (
     <div
       className="flex w-full shrink-0 flex-col"
@@ -527,17 +547,11 @@ function SharedView({
         </div>
         <TopBarButtons
           fileInputRef={fileInputRef}
-          onUploadFileInputChanged={(e) =>
-            onUploadFileInputChanged({
-              files: e.target.files,
-            })
-          }
+          onUploadFileInputChanged={handleOnTopBarInputChanges}
           onUploadFileButtonClicked={onUploadFileButtonClicked}
           showUploadFileButton={!!(!isRootFolder && currentUserRole && !isCurrentUserViewer(currentUserRole))}
           numberOfPendingInvitations={pendingInvitations.length}
-          onClickPendingInvitationsButton={() => {
-            dispatch(uiActions.setIsInvitationsDialogOpen(true));
-          }}
+          onClickPendingInvitationsButton={onClickPendingInvitationsButton}
           disableUploadFileButton={isRootFolder}
         />
       </div>
@@ -600,20 +614,7 @@ function SharedView({
         moveItemsToTrash={moveItemsToTrashOnStopSharing}
       />
       <ItemDetailsDialog onDetailsButtonClicked={handleDetailsButtonClicked} />
-      {isShareDialogOpen && (
-        <ShareDialog
-          onCloseDialog={() => {
-            if (!currentFolderId && !isShareDialogOpen && !folderUUID) {
-              setTimeout(() => {
-                resetSharedViewState();
-                fetchRootFolders();
-              }, 200);
-            } else if (currentFolderId && !isShareDialogOpen && !folderUUID) {
-              setTimeout(fetchFolders, 200);
-            }
-          }}
-        />
-      )}
+      <ShareDialog onCloseDialog={handleOnCloseShareDialog} />
       {isShowInvitationsOpen && <ShowInvitationsDialog onClose={onShowInvitationsModalClose} />}
       <DeleteDialog
         isOpen={isDeleteDialogModalOpen && selectedItems.length > 0}
