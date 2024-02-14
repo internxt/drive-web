@@ -3,18 +3,19 @@
     "title": "Gérez vos fichiers, votre compte et votre abonnement sur l'application",
     "logOut": "Déconnexion"
   },
-  "blackFridayBanner": {
-    "header": "Économisez 70% !",
-    "title": "Préparez-vous pour la Semaine de la Protection des Données",
-    "cta": "Choisir un plan",
+  "featuresBanner": {
+    "label": "Économisez 69%",
+    "title": "Délices sucrés de la Saint-Valentin!",
+    "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
+    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": {
       "discount": "Économisez sur les plans mensuels et annuels",
       "safeCloud": "Stockage cloud sûr et sécurisé",
       "openSource": "Open source et transparent",
       "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 29 janvier"
+      "offerEnds": "L'offre se termine le 25 février"
     }
   },
   "valentinesBanner": {
@@ -23,9 +24,9 @@
     "cta": "Obtenir l'offre"
   },
   "lifetimeBanner": {
-    "label": "Stockage annuel à moitié prix !",
-    "title": "Économisez 50% sur nos abonnements annuels !",
-    "cta": "Choisissez un plan",
+    "label": "Cherchez-vous un espace de stockage sécurisé à vie?",
+    "title": "Protégez vos fichiers avec les plans à vie d'Internxt!",
+    "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement sous 30 jours"
   },
   "lang": {
@@ -63,8 +64,18 @@
       "haveAccount": "Vous avez déjà un compte ?",
       "login": " Connexion ",
       "encrypting": "Encryptant",
-      "info1": "Internxt ne stocke pas de mots de passe.",
-      "info2": "Si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers."
+      "info": {
+        "normalText": "Internxt ne stocke pas les mots de passe.",
+        "boldText": "Si vous oubliez votre mot de passe, vous pouvez télécharger une clé de sauvegarde pour regagner l'accès à vos fichiers.",
+        "cta": "En savoir plus"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Clé de sauvegarde",
+      "description": "La clé de sauvegarde permet la récupération du compte en cas d'oubli de votre mot de passe. Ne la partagez jamais.",
+      "downloadCta": "Télécharger la clé de sauvegarde",
+      "settingsTab": "Vous pouvez accéder à votre clé de sauvegarde dans Paramètres > Sécurité",
+      "skip": "Passer"
     },
     "forgotPassword": {
       "title": "Récupération de compte",

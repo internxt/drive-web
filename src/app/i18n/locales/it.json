@@ -8,23 +8,24 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
-  "blackFridayBanner": {
-    "header": "Risparmia il 70%!",
-    "title": "Preparati per la Settimana della Privacy dei Dati",
+  "featuresBanner": {
+    "label": "Risparmia il 69%",
+    "title": "Dolci regali di San Valentino!",
     "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni",
+    "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
     "features": {
       "discount": "Risparmia su piani mensili e annuali",
       "safeCloud": "Archiviazione cloud sicura e protetta",
       "openSource": "Open source e trasparente",
       "endToEnd": "Trasferimenti crittografati end-to-end",
       "unauthorized": "Nessun accesso non autorizzato",
-      "offerEnds": "L'offerta termina il 29 gennaio"
+      "offerEnds": "L'offerta termina il 25 febbraio"
     }
   },
   "lifetimeBanner": {
-    "label": "Archiviazione annuale a metà prezzo!",
-    "title": "Risparmia il 50% sulle nostre sottoscrizioni annuali!",
+    "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
+    "title": "Proteggete i vostri file con i piani a vita di Internxt!",
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
@@ -84,8 +85,18 @@
       "haveAccount": "Hai già un account?",
       "login": "Accedi",
       "encrypting": "Crittografia in corso",
-      "info1": "Internxt non memorizza le password.",
-      "info2": "Nel caso in cui dimentichi la password, perdarai l'accesso a tutti tuoi file."
+      "info": {
+        "normalText": "Internxt non memorizza le password.",
+        "boldText": "Se dimentichi la tua password, puoi scaricare una chiave di backup per recuperare l'accesso ai tuoi file.",
+        "cta": "Ulteriori informazioni"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Chiave di backup",
+      "description": "La chiave di backup consente il recupero dell'account nel caso dimentichi la tua password. Non condividerla mai.",
+      "downloadCta": "Scarica la chiave di backup",
+      "settingsTab": "Puoi accedere alla tua chiave di backup in Impostazioni > Sicurezza",
+      "skip": "Salta"
     },
     "forgotPassword": {
       "title": "Recupero dell'account",

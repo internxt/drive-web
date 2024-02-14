@@ -3,18 +3,19 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
-  "blackFridayBanner": {
-    "header": "Save 70%!",
-    "title": "Get ready for Data Privacy Week",
+  "featuresBanner": {
+    "label": "Save 69%",
+    "title": "Sweet Valentine's treats!",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
+    "lastCta": "*Offer is for free accounts or new customers",
     "features": {
       "discount": "Save on monthly & annual plans",
       "safeCloud": "Safe and secure cloud storage",
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends January 29th"
+      "offerEnds": "Offer ends February 25th"
     }
   },
   "valentinesBanner": {
@@ -23,9 +24,9 @@
     "cta": "Get the deal"
   },
   "lifetimeBanner": {
-    "label": "Annual storage for half the price!",
-    "title": "Save 50% on our yearly subscriptions!",
-    "cta": "Choose plan",
+    "label": "Need secure storage for life?",
+    "title": "Protect your files forever with our lifetime plans!",
+    "cta": "Choose your plan",
     "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
@@ -84,8 +85,18 @@
       "haveAccount": "Already have an account?",
       "login": "Log in",
       "encrypting": "Encrypting",
-      "info1": "Internxt doesn't store passwords.",
-      "info2": "In case you forget your password, you will lose access to all your files."
+      "info": {
+        "normalText": "Internxt doesn’t store passwords.",
+        "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
+        "cta": "Learn more"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup key",
+      "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
+      "downloadCta": "Download backup key",
+      "settingsTab": "You can access your backup key in Settings > Security",
+      "skip": "Skip"
     },
     "forgotPassword": {
       "title": "Account recovery",
