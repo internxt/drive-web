@@ -79,7 +79,7 @@ function SharedView({
   currentShareId,
   currentUserRole,
   disableKeyboardShortcuts,
-}: SharedViewProps): JSX.Element {
+}: Readonly<SharedViewProps>): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const history = useHistory();
@@ -129,11 +129,15 @@ function SharedView({
     }
 
     if (folderUUID) {
+      const onRedirectionToFolderError = () => {
+        fetchRootFolders();
+      };
+
       handlePrivateSharedFolderAccess({
         folderUUID,
         navigateToFolder: handleOnItemDoubleClick,
         history,
-        onError: fetchRootFolders,
+        onError: onRedirectionToFolderError,
       });
     }
   }, []);

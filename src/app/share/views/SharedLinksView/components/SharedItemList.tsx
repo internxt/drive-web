@@ -11,13 +11,13 @@ import { t } from 'i18next';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 
 const skinSkeleton = [
-  <div className="flex flex-row items-center space-x-4">
-    <div className="h-8 w-8 rounded-md bg-gray-5" />
-    <div className="h-4 w-40 rounded bg-gray-5" />
+  <div key="1" className="flex flex-row items-center space-x-4">
+    <div key="2" className="h-8 w-8 rounded-md bg-gray-5" />
+    <div key="3" className="h-4 w-40 rounded bg-gray-5" />
   </div>,
-  <div className="h-4 w-20 rounded bg-gray-5" />,
-  <div className="h-4 w-24 rounded bg-gray-5" />,
-  <div className="h-4 w-20 rounded bg-gray-5" />,
+  <div key="4" className="h-4 w-20 rounded bg-gray-5" />,
+  <div key="5" className="h-4 w-24 rounded bg-gray-5" />,
+  <div key="6" className="h-4 w-20 rounded bg-gray-5" />,
 ];
 
 type SharedListItem = {
@@ -73,6 +73,14 @@ export const SharedItemList = ({
     return selectedItems.some((i) => item.id === i.id);
   };
 
+  const itemComposition = getSharedListItemComposition({
+    onItemDoubleClicked,
+    onNameClicked,
+    user,
+    getOwnerAvatarSrc,
+    checkIfIsItemSelected,
+  });
+
   return (
     <List<any, 'updatedAt' | 'createdAt' | 'ownerId' | 'fileSize'>
       header={[
@@ -109,27 +117,7 @@ export const SharedItemList = ({
       disableKeyboardShortcuts={disableKeyboardShortcuts}
       onClick={onClickItem}
       onDoubleClick={onItemDoubleClicked}
-      itemComposition={[
-        (shareItem: AdvancedSharedItem) => (
-          <ShareItemNameField
-            shareItem={shareItem}
-            onItemDoubleClicked={onItemDoubleClicked}
-            onNameClicked={onNameClicked}
-          />
-        ),
-        (shareItem: AdvancedSharedItem) => (
-          <ShareItemOwnerField
-            shareItem={shareItem}
-            user={user}
-            ownerAvatarSrc={getOwnerAvatarSrc(shareItem)}
-            isItemSelected={checkIfIsItemSelected(shareItem)}
-          />
-        ),
-        (shareItem: AdvancedSharedItem) => <ShareItemSizeField shareItem={shareItem} />,
-        (shareItem: AdvancedSharedItem) => (
-          <ShareItemCreatedField shareItem={shareItem} isItemSelected={checkIfIsItemSelected(shareItem)} />
-        ),
-      ]}
+      itemComposition={itemComposition}
       skinSkeleton={skinSkeleton}
       emptyState={emptyStateElement}
       onNextPage={onNextPage}
@@ -144,6 +132,30 @@ export const SharedItemList = ({
   );
 };
 
+const getSharedListItemComposition = ({
+  onItemDoubleClicked,
+  onNameClicked,
+  user,
+  getOwnerAvatarSrc,
+  checkIfIsItemSelected,
+}) => [
+  (shareItem: AdvancedSharedItem) => (
+    <ShareItemNameField shareItem={shareItem} onItemDoubleClicked={onItemDoubleClicked} onNameClicked={onNameClicked} />
+  ),
+  (shareItem: AdvancedSharedItem) => (
+    <ShareItemOwnerField
+      shareItem={shareItem}
+      user={user}
+      ownerAvatarSrc={getOwnerAvatarSrc(shareItem)}
+      isItemSelected={checkIfIsItemSelected(shareItem)}
+    />
+  ),
+  (shareItem: AdvancedSharedItem) => <ShareItemSizeField shareItem={shareItem} />,
+  (shareItem: AdvancedSharedItem) => (
+    <ShareItemCreatedField shareItem={shareItem} isItemSelected={checkIfIsItemSelected(shareItem)} />
+  ),
+];
+
 const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) => {
   const Icon = iconService.getItemIcon(shareItem.isFolder, (shareItem as unknown as DriveFileData)?.type);
 
@@ -155,12 +167,18 @@ const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) =
           <img src={usersIcon} width={13} alt="shared users" />
         </div>
       </div>
-      <div className="w-full max-w-full truncate pr-16" onDoubleClick={() => onItemDoubleClicked(shareItem)}>
+      <div
+        className="w-full max-w-full truncate pr-16"
+        onDoubleClick={() => onItemDoubleClicked(shareItem)}
+        role="button"
+        onKeyDown={() => ({})}
+      >
         <span
           onClick={(e) => {
             e.stopPropagation();
             onNameClicked(shareItem);
           }}
+          role="button"
           className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
           title={shareItem.plainName}
         >

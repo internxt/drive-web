@@ -141,8 +141,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
-  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
-  const totalItemsWithSharing = itemsWithSharing.length;
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());

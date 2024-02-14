@@ -52,29 +52,45 @@ const useSharedContextMenu = ({
     const getFolderContextMenu = (folder: AdvancedSharedItem) => {
       const userUUID = folder?.user?.uuid;
 
+      const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
+        ? {
+            openShareAccessSettings: openShareAccessSettings,
+            renameItem: renameItem,
+            moveItem: moveItem,
+            moveToTrash: onOpenStopSharingDialog,
+          }
+        : undefined;
+
       return contextMenuDriveFolderSharedAFS({
         copyLink,
-        openShareAccessSettings: isItemOwnedByCurrentUser(userUUID) ? openShareAccessSettings : undefined,
         showDetails,
-        renameItem: isItemOwnedByCurrentUser(userUUID) ? renameItem : undefined,
-        moveItem: isItemOwnedByCurrentUser(userUUID) ? moveItem : undefined,
         downloadItem,
-        moveToTrash: isItemOwnedByCurrentUser(userUUID) ? onOpenStopSharingDialog : undefined,
+        ...ownerCurrentUserOptions,
       });
     };
 
     const getItemContextMenu = (item: AdvancedSharedItem) => {
       const userUUID = item?.user?.uuid;
 
+      const ownerCurrentUserOptions = isItemOwnedByCurrentUser(userUUID)
+        ? {
+            openShareAccessSettings: openShareAccessSettings,
+            moveItem: moveItem,
+            moveToTrash: onOpenStopSharingDialog,
+          }
+        : undefined;
+
+      const handleDownload = (item: AdvancedSharedItem) => {
+        downloadItem(item);
+      };
+
       return contextMenuDriveItemSharedAFS({
-        openShareAccessSettings: isItemOwnedByCurrentUser(userUUID) ? openShareAccessSettings : undefined,
         openPreview,
         showDetails,
         copyLink,
+        downloadItem: handleDownload,
         renameItem: !isCurrentUserViewer ? renameItem : undefined,
-        moveItem: isItemOwnedByCurrentUser(userUUID) ? moveItem : undefined,
-        downloadItem,
-        moveToTrash: isItemOwnedByCurrentUser(userUUID) ? onOpenStopSharingDialog : undefined,
+        ...ownerCurrentUserOptions,
       });
     };
 

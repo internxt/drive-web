@@ -81,7 +81,7 @@ const SharedItemListContainer = ({
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
-  const downloadItem = async (shareItem: AdvancedSharedItem) => {
+  const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
         await shareService.downloadSharedFiles({
@@ -190,7 +190,9 @@ const SharedItemListContainer = ({
       showDetails,
       renameItem,
       moveItem,
-      openPreview,
+      openPreview(item) {
+        openPreview(item);
+      },
     },
     isItemsOwnedByCurrentUser: checkIfIsItemsOwnedByCurrentUser(),
     isCurrentUserViewer: isCurrentUserViewer(),
