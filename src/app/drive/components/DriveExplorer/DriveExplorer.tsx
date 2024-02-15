@@ -165,12 +165,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // LISTEN NOTIFICATION STATES
-  const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
-  const inProcessNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
-  });
-
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
@@ -196,8 +190,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     },
     {
       onNextStepClicked: () => {
-        passToNextStep();
         localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+        passToNextStep();
       },
     },
   );
@@ -206,8 +200,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const handleFileCreatedEvent = (data) => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
-
-      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
+      if (folderId === currentFolderId) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -218,11 +211,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       }
     }
   };
-  const handleOnEventCreation = () => {
-    const isEventCreated = realtimeService.onEvent(handleFileCreatedEvent);
-    if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
-    else setTimeout(handleOnEventCreation, 10000);
-  };
 
   useEffect(() => {
     if (itemToRename) {
@@ -232,9 +220,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      if (!folderListenerList.includes(currentFolderId)) {
-        handleOnEventCreation();
-      }
+      realtimeService.removeAllListeners();
+      realtimeService.onEvent(handleFileCreatedEvent);
     } catch (err) {
       errorService.reportError(err);
     }
