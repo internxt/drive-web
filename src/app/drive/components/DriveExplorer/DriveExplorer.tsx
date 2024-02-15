@@ -125,6 +125,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    user,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -175,7 +176,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
   const stepOneTutorialRef = useRef(null);
-  const isSignUpTutorialCompleted = localStorageService.getIsSignUpTutorialCompleted();
+  const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
@@ -197,7 +198,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     {
       onNextStepClicked: () => {
         passToNextStep();
-        localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+        localStorageService.set(STORAGE_KEYS.TUTORIAL_COMPLETED_ID, user?.userId as string);
       },
     },
   );
