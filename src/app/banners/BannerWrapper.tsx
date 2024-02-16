@@ -1,4 +1,4 @@
-import localStorageService, { STORAGE_KEYS } from '../core/services/local-storage.service';
+import localStorageService from '../core/services/local-storage.service';
 import { RootState } from '../store';
 import { useAppSelector } from '../store/hooks';
 import { PlanState } from '../store/slices/plan';
@@ -6,14 +6,16 @@ import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import FeaturesBanner from './FeaturesBanner';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_valentines_banner_sale';
 const OFFER_OFF_DAY = new Date('2024-02-25');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+  const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
   const userPlan = plan.subscription?.type;
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
