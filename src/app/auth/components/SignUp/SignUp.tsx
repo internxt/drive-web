@@ -147,8 +147,6 @@ function SignUp(props: SignUpProps): JSX.Element {
         ? await doRegister(email, password, token)
         : await updateInfo(email, password);
 
-      localStorageService.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
-
       localStorageService.clear();
 
       localStorageService.set('xToken', xToken);
