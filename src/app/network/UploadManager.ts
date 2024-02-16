@@ -189,6 +189,7 @@ class UploadManager {
             }
 
             const driveFileDataWithNameParsed = { ...driveFileData, name: file.name };
+            this.filesUploadedList.push({ ...driveFileDataWithNameParsed, taskId });
 
             if (this.relatedTaskProgress && this.options?.relatedTaskId) {
               this.relatedTaskProgress.filesUploaded += 1;
@@ -305,6 +306,7 @@ class UploadManager {
   private uploadUUIDV4: string;
   private maxSpaceOccupiedCallback: () => void;
   private uploadRepository?: PersistUploadRepository;
+  private filesUploadedList: (DriveFileData & { taskId: string })[] = [];
 
   constructor(
     items: UploadManagerFileParams[],
@@ -341,9 +343,28 @@ class UploadManager {
     ];
   }
 
+  private handleFailedUploads(filesWithTaskId: (UploadManagerFileParams & { taskId: string })[]): void {
+    const filesUploadedTaskId = this.filesUploadedList.map((fileUploaded) => fileUploaded.taskId);
+    const failedUploadFiles = filesWithTaskId.filter((file) => !filesUploadedTaskId.includes(file.taskId));
+
+    failedUploadFiles.forEach((fileErrored) => {
+      this.updateTaskStatusOnError(fileErrored.taskId);
+    });
+  }
+
+  private updateTaskStatusOnError(taskId: string): void {
+    tasksService.updateTask({
+      taskId: taskId,
+      merge: {
+        status: TaskStatus.Error,
+      },
+    });
+  }
+
   async run(): Promise<DriveFileData[]> {
+    const filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
+
     try {
-      const filesWithTaskId = [] as (UploadManagerFileParams & { taskId: string })[];
       for (const file of this.items) {
         const item = { uploadFile: file.filecontent.content, parentFolderId: file.parentFolderId };
 
@@ -390,7 +411,7 @@ class UploadManager {
       }
 
       const [bigSizedFiles, mediumSizedFiles, smallSizedFiles] = this.classifyFilesBySize(filesWithTaskId);
-      const filesReferences: DriveFileData[] = [];
+      const uploadedFilesData: DriveFileData[] = [];
 
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
         if (this.abortController?.signal.aborted) return [];
@@ -410,7 +431,7 @@ class UploadManager {
         const uploadedFiles = await Promise.all(uploadPromises);
 
         for (const uploadedFile of uploadedFiles) {
-          filesReferences.push(uploadedFile);
+          uploadedFilesData.push(uploadedFile);
         }
       };
 
@@ -420,8 +441,10 @@ class UploadManager {
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
 
-      return filesReferences;
+      return uploadedFilesData;
     } catch (error) {
+      this.handleFailedUploads(filesWithTaskId);
+
       errorService.reportError(error);
       throw error;
     }
