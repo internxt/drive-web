@@ -175,7 +175,7 @@ export interface TaskNotification {
   action: TaskType;
   status: TaskStatus;
   title: string;
-  item?: DriveItemData | DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
+  item?: DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
   sharedItemAuthenticationData?: SharedItemAuthenticationData;
   itemUUID?: { rootFolderUUID?: string; fileUUID?: string };
   fileType?: string;
