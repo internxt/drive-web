@@ -1,6 +1,6 @@
 import { OrderDirection } from '../../../../core/types';
 import { DriveItemData } from '../../../../drive/types';
-import { AdvancedSharedItem, OrderBy, PreviewFileItem } from '../../../types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../types';
 import { OrderField } from '../components/SharedItemList';
 import { Action, ActionTypes } from './SharedViewContext';
 

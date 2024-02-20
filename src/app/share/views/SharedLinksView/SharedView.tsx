@@ -60,8 +60,6 @@ import {
 } from './context/SharedViewContext.actions';
 import useFetchSharedData from './hooks/useFetchSharedData';
 import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
-import navigationService from '../../../core/services/navigation.service';
-import { AppView } from '../../../core/types';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 

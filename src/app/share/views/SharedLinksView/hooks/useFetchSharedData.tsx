@@ -78,7 +78,6 @@ const useFetchSharedData = () => {
     isLoading,
     hasMoreFiles,
     hasMoreFolders,
-    orderBy,
     currentFolderId,
     currentFolderLevelResourcesToken,
     shareFolders,
