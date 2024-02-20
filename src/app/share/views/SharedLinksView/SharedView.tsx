@@ -60,6 +60,8 @@ import {
 } from './context/SharedViewContext.actions';
 import useFetchSharedData from './hooks/useFetchSharedData';
 import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView } from '../../../core/types';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -129,7 +131,8 @@ function SharedView({
     }
 
     if (folderUUID) {
-      const onRedirectionToFolderError = () => {
+      const onRedirectionToFolderError = (errorMessage: string) => {
+        notificationsService.show({ text: errorMessage, type: ToastType.Error });
         fetchRootFolders();
       };
 
@@ -469,7 +472,8 @@ function SharedView({
   const handleOnCloseShareDialog = () => {
     setTimeout(() => {
       if (!isShareDialogOpen && !folderUUID && isRootFolder) {
-        // This is added so that in case the element is no longer shared due to changes in the share dialog it will disappear from the list.
+        // This is added so that in case the element is no longer shared due
+        // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
         fetchRootFolders();
       }

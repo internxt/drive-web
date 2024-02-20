@@ -1,6 +1,8 @@
 import { createContext, Dispatch } from 'react';
-import { AdvancedSharedItem, OrderBy, PreviewFileItem } from '../../../types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../types';
 import { DriveItemData } from '../../../../drive/types';
+import { OrderDirection } from '../../../../core/types';
+import { OrderField } from '../components/SharedItemList';
 
 export interface ShareViewState {
   hasMoreFiles: boolean;
@@ -9,7 +11,7 @@ export interface ShareViewState {
   isLoading: boolean;
   shareFolders: AdvancedSharedItem[];
   shareFiles: AdvancedSharedItem[];
-  orderBy?: OrderBy;
+  orderBy?: { field: OrderField; direction: OrderDirection };
   selectedItems: AdvancedSharedItem[];
   itemToView?: PreviewFileItem;
   editNameItem?: DriveItemData;
@@ -39,7 +41,7 @@ export type Action =
   | { type: 'SET_IS_LOADING'; payload: boolean }
   | { type: 'SET_SHARE_FOLDERS'; payload: AdvancedSharedItem[] }
   | { type: 'SET_SHARE_FILES'; payload: AdvancedSharedItem[] }
-  | { type: 'SET_ORDER_BY'; payload?: OrderBy }
+  | { type: 'SET_ORDER_BY'; payload?: { field: OrderField; direction: OrderDirection } }
   | { type: 'SET_SELECTED_ITEMS'; payload: AdvancedSharedItem[] }
   | { type: 'SET_ITEM_TO_VIEW'; payload?: PreviewFileItem }
   | { type: 'SET_EDIT_NAME_ITEM'; payload?: DriveItemData }

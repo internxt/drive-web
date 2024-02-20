@@ -43,6 +43,7 @@ import { Tooltip } from 'react-tooltip';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
+import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -153,9 +154,11 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
 
-  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem)?.user?.email;
-  const isUserOwner = (!!itemOwnerEmail && itemOwnerEmail === props?.user?.email) || !!props?.isDriveItem;
-
+  const isUserOwner = isUserItemOwner({
+    isDriveItem: !!props?.isDriveItem,
+    item: itemToShare?.item as AdvancedSharedItem,
+    userEmail: props?.user?.email,
+  });
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
   const resetDialogData = () => {

@@ -1,5 +1,7 @@
+import { OrderDirection } from '../../../../core/types';
 import { DriveItemData } from '../../../../drive/types';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem } from '../../../types';
+import { OrderField } from '../components/SharedItemList';
 import { Action, ActionTypes } from './SharedViewContext';
 
 const setHasMoreFiles = (payload: boolean): Action => ({
@@ -32,7 +34,7 @@ const setSharedFiles = (payload: AdvancedSharedItem[]): Action => ({
   payload,
 });
 
-const setOrderBy = (payload?: OrderBy): Action => ({
+const setOrderBy = (payload?: { field: OrderField; direction: OrderDirection }): Action => ({
   type: ActionTypes.SET_ORDER_BY,
   payload,
 });

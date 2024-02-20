@@ -1,7 +1,6 @@
 import { t } from 'i18next';
 import navigationService from '../../core/services/navigation.service';
 import { AppView } from '../../core/types';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import shareService from './share.service';
 import { History } from 'history';
 import { AdvancedSharedItem } from '../types';
@@ -13,9 +12,9 @@ import { AdvancedSharedItem } from '../types';
  * @param {string} options.folderUUID - The UUID of the folder to access.
  * @param {History} options.history - The history object for navigation.
  * @param {(sharedFolder: AdvancedSharedItem) => void} options.navigateToFolder - Function to navigate to the accessed folder.
- * @param {() => void} options.onError - Function to be executed if an error occurs during the process.
+ * @param {(errorMessage: string) => void} options.onError - Function to be executed if an error occurs during the process.
  */
-const handlePrivateSharedFolderAccess = ({
+const handlePrivateSharedFolderAccess = async ({
   folderUUID,
   history,
   navigateToFolder,
@@ -24,36 +23,41 @@ const handlePrivateSharedFolderAccess = ({
   folderUUID: string;
   history: History;
   navigateToFolder: (sharedFolder: AdvancedSharedItem) => void;
-  onError: () => void;
+  onError: (errorMessage: string) => void;
 }) => {
   let statusError: null | number = null;
+  try {
+    const sharedFolderData = await getPrivateSharedFolderAccessData(folderUUID);
+    navigateToFolder(sharedFolderData as AdvancedSharedItem);
+  } catch (error: any) {
+    let errorMessage;
+    switch (error.status) {
+      case 403:
+        statusError = 403;
+        navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
+        return;
+      case 404:
+        errorMessage = t('shared.errors.folderNotExists');
+        break;
+      default:
+        errorMessage = t('shared.errors.generic');
+        break;
+    }
+    navigationService.push(AppView.Shared);
+    onError(errorMessage);
+  } finally {
+    if (statusError !== 403) {
+      updateURL(history);
+    }
+  }
+};
 
-  if (folderUUID)
-    shareService
-      .getSharedFolderContent(folderUUID, 'folders', '', 0, 15)
-      .then((item) => {
-        // TODO: Check getSharedFolderContent response types and add it to SDK
-        const shareItem = { plainName: (item as any).name, uuid: folderUUID, isFolder: true };
-        navigateToFolder(shareItem as AdvancedSharedItem);
-      })
-      .catch((error) => {
-        if (error.status === 403) {
-          statusError = 403;
-          navigationService.push(AppView.RequestAccess, { folderuuid: folderUUID });
-          return;
-        } else if (error.status === 404) {
-          notificationsService.show({ text: t('shared.errors.folderNotExists'), type: ToastType.Error });
-        } else {
-          notificationsService.show({ text: t('shared.errors.generic'), type: ToastType.Error });
-        }
-        navigationService.push(AppView.Shared);
-        onError();
-      })
-      .finally(() => {
-        if (statusError !== 403) {
-          updateURL(history);
-        }
-      });
+const getPrivateSharedFolderAccessData = async (folderUUID: string) => {
+  const response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);
+
+  // TODO: ADD TO SDK TYPES THE NECESSARY FIELDS
+  const sharedFolderData = { plainName: (response as any).name, uuid: folderUUID, isFolder: true };
+  return sharedFolderData;
 };
 
 const updateURL = (history: History) => {

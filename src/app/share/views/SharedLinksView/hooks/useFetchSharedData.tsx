@@ -121,11 +121,7 @@ const useFetchSharedData = () => {
     actionDispatch(setCurrentShareOwnerAvatar(''));
 
     try {
-      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(
-        page,
-        ITEMS_PER_PAGE,
-        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-      );
+      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(page, ITEMS_PER_PAGE);
 
       const folders = parseSharedFolderResponseItems({
         sharedFolderResponseItems: response.folders,
@@ -152,11 +148,7 @@ const useFetchSharedData = () => {
     actionDispatch(setIsLoading(true));
 
     try {
-      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFiles(
-        page,
-        ITEMS_PER_PAGE,
-        orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
-      );
+      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFiles(page, ITEMS_PER_PAGE);
 
       const files = parseSharedFolderResponseItems({
         sharedFolderResponseItems: response.files,
@@ -188,7 +180,6 @@ const useFetchSharedData = () => {
           currentFolderLevelResourcesToken,
           page,
           ITEMS_PER_PAGE,
-          orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
         )) as ListSharedItemsResponse & { role: string };
 
         const token = response.token;
@@ -230,7 +221,6 @@ const useFetchSharedData = () => {
             currentFolderLevelResourcesToken,
             page,
             ITEMS_PER_PAGE,
-            orderBy ? `${orderBy.field}:${orderBy.direction}` : undefined,
           )) as ListSharedItemsResponse & { bucket: string; encryptionKey: string };
 
         const token = response.token;

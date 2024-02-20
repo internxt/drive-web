@@ -1,6 +1,7 @@
 import errorService from '../../../core/services/error.service';
 import shareService from '../../services/share.service';
 import { AdvancedSharedItem, UserRoles } from '../../types';
+import { OrderField } from './components/SharedItemList';
 
 /**
  * Checks if the current user role is that of a reader.
@@ -77,4 +78,100 @@ const getFolderUserRole = async ({
   }
 };
 
-export { isCurrentUserViewer, isItemsOwnedByCurrentUser, getFolderUserRole, isItemOwnedByCurrentUser };
+/**
+ * Parse the specified field of an AdvancedSharedItem.
+ *
+ * @param {AdvancedSharedItem} item - The item to parse.
+ * @param {OrderField} field - The item field to parse.
+ * @returns {number | string} - The parsed value.
+ */
+const parseField = (item: AdvancedSharedItem, field: OrderField): number | string => {
+  const isSizeField = field === 'size';
+  return isSizeField ? parseFloat(item[field]) : String(item[field]).toLowerCase();
+};
+
+/**
+ * Compare function for sorting AdvancedSharedItems based on the provided orderBy configuration.
+ *
+ * @param {AdvancedSharedItem} itemA - The first item to compare.
+ * @param {AdvancedSharedItem} itemB - The second item to compare.
+ * @param {{ field: OrderField; direction: 'ASC' | 'DESC' } | undefined} orderBy - The ordering configuration.
+ * @returns {number} - Result of the comparison.
+ */
+const compareFunction = (
+  itemA: AdvancedSharedItem,
+  itemB: AdvancedSharedItem,
+  orderBy?: { field: OrderField; direction: 'ASC' | 'DESC' },
+): number => {
+  if (!orderBy) return 0;
+
+  const isOnlyItemAFolder = itemA.isFolder && !itemB.isFolder;
+  const isOnlyItemBFolder = !itemA.isFolder && itemB.isFolder;
+
+  if (isOnlyItemAFolder) {
+    return -1;
+  } else if (isOnlyItemBFolder) {
+    return 1;
+  }
+
+  const valueA = parseField(itemA, orderBy.field);
+  const valueB = parseField(itemB, orderBy.field);
+
+  if (valueA === valueB) {
+    return 0;
+  }
+
+  const ascOrderResult = valueA > valueB ? 1 : -1;
+  const descOrderResult = valueA < valueB ? 1 : -1;
+  return orderBy.direction === 'ASC' ? ascOrderResult : descOrderResult;
+};
+
+/**
+ * Sorts a list of AdvancedSharedItems based on the provided orderBy configuration.
+ *
+ * @param {AdvancedSharedItem[]} itemList - The list of items to be sorted.
+ * @param {{ field: OrderField; direction: 'ASC' | 'DESC' } | undefined} orderBy - The ordering configuration.
+ * @returns {AdvancedSharedItem[]} - The sorted list of items.
+ */
+const sortSharedItems = (
+  itemList: AdvancedSharedItem[],
+  orderBy?: { field: OrderField; direction: 'ASC' | 'DESC' },
+): AdvancedSharedItem[] => {
+  return [...itemList].sort((a, b) => compareFunction(a, b, orderBy));
+};
+
+/**
+ * Determines whether a user is the owner of an item.
+ *
+ * @param {Object} param - Input parameters for the function.
+ * @param {boolean} [param.isDriveItem] - Indicates whether the item is a drive item.
+ * @param {AdvancedSharedItem} [param.item] - AdvancedShareItem item.
+ * @param {string} param.userEmail - Current account user email.
+ * @returns {boolean} - Returns true if the user is the owner of the item, false otherwise.
+ */
+const isUserItemOwner = ({
+  isDriveItem,
+  item,
+  userEmail,
+}: {
+  isDriveItem?: boolean;
+  item?: AdvancedSharedItem;
+  userEmail: string;
+}): boolean => {
+  if (isDriveItem) return true;
+  if (!item) return false;
+
+  const itemOwnerEmail = item.user?.email;
+  const isUserOwner = itemOwnerEmail === userEmail;
+
+  return isUserOwner;
+};
+
+export {
+  isCurrentUserViewer,
+  isItemsOwnedByCurrentUser,
+  getFolderUserRole,
+  isItemOwnedByCurrentUser,
+  sortSharedItems,
+  isUserItemOwner,
+};

@@ -9,6 +9,7 @@ import sizeService from '../../../../drive/services/size.service';
 import dateService from '../../../../core/services/date.service';
 import { t } from 'i18next';
 import { ListItemMenu } from '../../../../shared/components/List/ListItem';
+import { OrderDirection } from '../../../../core/types';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -20,12 +21,13 @@ const skinSkeleton = [
   <div key="6" className="h-4 w-20 rounded bg-gray-5" />,
 ];
 
+export type OrderField = 'name' | 'updatedAt' | 'createdAt' | 'size';
+
 type SharedListItem = {
   onClickItem: (item) => void;
   keyBoardShortcutActions: {
-    onShiftFKeysPressed?: () => void;
-    onRKeyPressed?: () => void;
-    onBackspaceKeyPressed?: () => void;
+    onRKeyPressed: () => void;
+    onBackspaceKeyPressed: () => void;
   };
   emptyStateElement: JSX.Element;
   shareItems: AdvancedSharedItem[];
@@ -40,6 +42,8 @@ type SharedListItem = {
   contextMenu: ListItemMenu<AdvancedSharedItem> | undefined;
   currentShareOwnerAvatar: string;
   user?: AdvancedSharedItem['user'];
+  orderBy?: { field: OrderField; direction: OrderDirection };
+  sortBy: (value: { field: OrderField; direction: 'ASC' | 'DESC' }) => void;
 };
 
 export const SharedItemList = ({
@@ -58,6 +62,8 @@ export const SharedItemList = ({
   contextMenu,
   currentShareOwnerAvatar,
   user,
+  orderBy,
+  sortBy,
 }: SharedListItem) => {
   const getOwnerAvatarSrc = useCallback(
     (shareItem: AdvancedSharedItem): string | null => {
@@ -82,25 +88,25 @@ export const SharedItemList = ({
   });
 
   return (
-    <List<any, 'updatedAt' | 'createdAt' | 'ownerId' | 'fileSize'>
+    <List<AdvancedSharedItem, OrderField>
       header={[
         {
           label: t('shared-links.list.name'),
           width: 'flex-1 min-w-activity truncate whitespace-nowrap',
-          name: 'folder',
-          orderable: false,
-        },
-        {
-          label: t('shared-links.list.owner'),
-          width: 'w-64',
-          name: 'ownerId',
+          name: 'name',
           orderable: true,
           defaultDirection: 'ASC',
         },
         {
+          label: t('shared-links.list.owner'),
+          width: 'w-64',
+          name: 'user',
+          orderable: false,
+        },
+        {
           label: t('shared-links.list.size'),
           width: 'w-40',
-          name: 'fileSize',
+          name: 'size',
           orderable: true,
           defaultDirection: 'ASC',
         },
@@ -128,6 +134,8 @@ export const SharedItemList = ({
       selectedItems={selectedItems}
       keyboardShortcuts={['unselectAll', 'selectAll', 'multiselect']}
       onSelectedItemsChanged={onSelectedItemsChanged}
+      orderBy={orderBy}
+      onOrderByChanged={sortBy}
     />
   );
 };

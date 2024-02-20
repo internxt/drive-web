@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
 import EmptySharedView from '../../../components/EmptySharedView/EmptySharedView';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../types';
-import { SharedItemList } from '../components/SharedItemList';
+import { OrderField, SharedItemList } from '../components/SharedItemList';
 import { useDispatch } from 'react-redux';
 import { storageActions } from '../../../../store/slices/storage';
 import { uiActions } from '../../../../store/slices/ui';
@@ -12,9 +12,10 @@ import errorService from '../../../../core/services/error.service';
 import useSharedContextMenu from '../hooks/useSharedContextMenu';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
-import { setPage, setSelectedItems } from '../context/SharedViewContext.actions';
-import { isItemsOwnedByCurrentUser } from '../sharedViewUtils';
+import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
+import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 import localStorageService from '../../../../core/services/local-storage.service';
+import { OrderDirection } from '../../../../core/types';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -54,8 +55,11 @@ const SharedItemListContainer = ({
     currentShareOwnerAvatar,
     clickedShareItemUser: sharedItemUser,
     clickedShareItemEncryptionKey: sharedItemEncryptionKey,
+    orderBy,
   } = state;
   const shareItems = [...shareFolders, ...shareFiles];
+  const reorderedSharedItems = sortSharedItems(shareItems, orderBy);
+
   const hasMoreItems = hasMoreFiles || hasMoreFolders;
   const currentUser = localStorageService.getUser();
 
@@ -180,6 +184,16 @@ const SharedItemListContainer = ({
     onItemDoubleClicked(shareItem);
   };
 
+  const sortBy = (value: { field: OrderField; direction: 'ASC' | 'DESC' }) => {
+    const isSameField = orderBy?.field === value.field;
+    const isDescOrder = orderBy?.direction === OrderDirection.Desc;
+
+    const hasDescOrder = isSameField && isDescOrder;
+    const direction = hasDescOrder ? OrderDirection.Asc : OrderDirection.Desc;
+
+    actionDispatch(setOrderBy({ field: value.field, direction }));
+  };
+
   const contextMenu = useSharedContextMenu({
     selectedItems,
     sharedContextMenuActions: {
@@ -235,7 +249,7 @@ const SharedItemListContainer = ({
           sharedNamePath={sharedNamePath}
         />
       }
-      shareItems={shareItems}
+      shareItems={reorderedSharedItems}
       isLoading={isLoading}
       disableKeyboardShortcuts={disableKeyboardShortcuts}
       selectedItems={selectedItems}
@@ -247,6 +261,8 @@ const SharedItemListContainer = ({
       contextMenu={contextMenu}
       currentShareOwnerAvatar={currentShareOwnerAvatar}
       user={sharedItemUser}
+      sortBy={sortBy}
+      orderBy={orderBy}
     />
   );
 };
