@@ -15,7 +15,7 @@ import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { BreadcrumbItemData } from '../Breadcrumbs';
+import { BreadcrumbItemData } from '../types';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData, DriveItemDetails } from 'app/drive/types';

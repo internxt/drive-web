@@ -7,7 +7,7 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { backupsThunks } from 'app/store/slices/backups';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
 import Dialog from '../../../shared/components/Dialog/Dialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 

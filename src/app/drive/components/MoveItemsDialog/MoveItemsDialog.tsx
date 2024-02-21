@@ -12,7 +12,8 @@ import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-it
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
