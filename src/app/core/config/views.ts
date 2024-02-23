@@ -32,7 +32,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
-import SharedView from '../../share/views/SharedLinksView/SharedView';
+import SharedViewWrapper from '../../share/views/SharedLinksView/SharedViewWrapper';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
 import BlockedAccountView from 'app/auth/views/BlockedAccountView/BlockedAccountView';
@@ -56,7 +56,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
-  { id: AppView.Shared, component: SharedView },
+  { id: AppView.Shared, component: SharedViewWrapper },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
