@@ -33,9 +33,6 @@ const DriveView = (props: DriveViewProps) => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
-    return () => {
-      dispatch(storageActions.resetDrivePagination());
-    };
   }, []);
 
   useEffect(() => {
@@ -53,7 +50,7 @@ const DriveView = (props: DriveViewProps) => {
   const goFolder = async (folderUuid: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
-      dispatch(storageThunks.fetchFolderContentThunk(folderMeta.id));
+
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,

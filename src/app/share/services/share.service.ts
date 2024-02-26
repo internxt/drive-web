@@ -20,6 +20,7 @@ import {
   CreateSharingPayload,
   SharingMeta,
   PublicSharedItemInfo,
+  SharedFolderSize,
 } from '@internxt/sdk/dist/drive/share/types';
 import { domainManager } from './DomainManager';
 import _ from 'lodash';
@@ -227,14 +228,6 @@ export function getSharedFileInfo(
 export function getSharedFolderInfo(token: string, password?: string): Promise<ShareTypes.ShareLink> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareLink(token, password).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getSharedFolderSize(shareId: string, folderId: string): Promise<any> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinkFolderSize({ itemId: shareId, folderId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -866,6 +859,13 @@ export function removeSharingPassword(sharingId: string): Promise<void> {
   });
 }
 
+export async function getSharedFolderSize(id: string): Promise<SharedFolderSize> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderSize(id).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const shareService = {
   createShare,
   createShareLink,
@@ -906,6 +906,7 @@ const shareService = {
   decryptPublicSharingCodeWithOwner,
   validateSharingInvitation,
   getPublicSharedItemInfo,
+  getSharedFolderSize,
 };
 
 export default shareService;

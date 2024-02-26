@@ -6,7 +6,7 @@ import envService from 'app/core/services/env.service';
 import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
 import it from 'dayjs/locale/it';
-import zh from 'dayjs/locale/zh-cn';
+import zh from 'dayjs/locale/zh';
 import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
@@ -22,7 +22,7 @@ const dayJsLocale = {
   de,
 };
 
-const deviceLang = localStorageService.get('language') || navigator.language.split('-')[0];
+const deviceLang = localStorageService.get('i18nextLng') || navigator.language.split('-')[0];
 
 dayjs.locale(dayJsLocale[deviceLang] || 'en');
 
@@ -56,8 +56,8 @@ export default i18next
     debug: !envService.isProduction(),
     fallbackLng: 'en',
     detection: {
-      order: ['querystring', 'cookie', 'navigator', 'localStorage'],
-      caches: ['localStorage'],
+      order: ['querystring', 'localStorage', 'cookie', 'navigator'],
+      caches: ['localStorage', 'cookie'],
     },
     defaultNS: 'translation',
     ns: ['translation'],

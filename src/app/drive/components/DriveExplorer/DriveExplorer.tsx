@@ -67,6 +67,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import BannerWrapper from '../../../banners/BannerWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -125,6 +126,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    user,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -163,17 +165,11 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
-  // LISTEN NOTIFICATION STATES
-  const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
-  const inProcessNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
-  });
-
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
   const stepOneTutorialRef = useRef(null);
-  const isSignUpTutorialCompleted = localStorageService.getIsSignUpTutorialCompleted();
+  const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
@@ -195,7 +191,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     {
       onNextStepClicked: () => {
         passToNextStep();
-        localStorageService.set(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED, 'true');
+        localStorageService.set(STORAGE_KEYS.TUTORIAL_COMPLETED_ID, user?.userId as string);
       },
     },
   );
@@ -204,8 +200,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const handleFileCreatedEvent = (data) => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
-
-      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
+      if (folderId === currentFolderId) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -216,11 +211,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       }
     }
   };
-  const handleOnEventCreation = () => {
-    const isEventCreated = realtimeService.onEvent(handleFileCreatedEvent);
-    if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
-    else setTimeout(handleOnEventCreation, 10000);
-  };
 
   useEffect(() => {
     if (itemToRename) {
@@ -230,9 +220,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      if (!folderListenerList.includes(currentFolderId)) {
-        handleOnEventCreation();
-      }
+      realtimeService.removeAllListeners();
+      realtimeService.onEvent(handleFileCreatedEvent);
     } catch (err) {
       errorService.reportError(err);
     }
@@ -629,6 +618,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           moveItemsToTrash={moveItemsToTrashOnStopSharing}
         />
       )}
+      <BannerWrapper />
 
       <div className="z-0 flex h-full w-full max-w-full grow">
         <div className="flex w-1 grow flex-col">

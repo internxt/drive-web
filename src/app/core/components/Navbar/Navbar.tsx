@@ -1,14 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AppDispatch, RootState } from '../../../store';
-import { userThunks } from '../../../store/slices/user';
-import { uiActions } from '../../../store/slices/ui';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import validationService from '../../services/validation.service';
 import { StorageFilters } from '../../../store/slices/storage/storage.model';
 import { sessionSelectors } from '../../../store/slices/session/session.selectors';
-import sessionThunks from '../../../store/slices/session/session.thunks';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { Workspace } from '../../types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { TeamsSettings } from '../../../teams/types';
@@ -35,27 +31,6 @@ const Navbar = (props: NavbarProps) => {
 
   const onSearchButtonClicked = (): void => {
     // TODO: do search
-  };
-
-  const onSupportButtonClicked = (): void => {
-    window.open('https://help.internxt.com/');
-  };
-
-  const onChangeWorkspaceButtonClicked = (): void => {
-    const { dispatch, currentFolderId } = props;
-
-    dispatch(sessionThunks.changeWorkspaceThunk());
-    dispatch(storageThunks.resetNamePathThunk());
-    dispatch(storageThunks.fetchFolderContentThunk(currentFolderId));
-    dispatch(storageThunks.fetchRecentsThunk());
-  };
-
-  const onLogoutButtonClicked = (): void => {
-    props.dispatch(userThunks.logoutThunk());
-  };
-
-  const onInviteMemberClick = (): void => {
-    props.dispatch(uiActions.setIsInviteMemberDialogOpen(true));
   };
 
   const onSearchInputChange = (e: React.ChangeEvent<HTMLInputElement>): void => {

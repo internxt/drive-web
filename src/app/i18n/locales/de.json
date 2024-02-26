@@ -3,18 +3,19 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
-  "blackFridayBanner": {
-    "header": "Spare 70%!",
-    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
-    "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
+  "featuresBanner": {
+    "label": "Spare 69%",
+    "title": "Süße Valentinstagsgeschenke!",
+    "cta": "Wähle einen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": {
       "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
       "safeCloud": "Sicherer und geschützter Cloud-Speicher",
       "openSource": "Open Source und transparent",
       "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
       "unauthorized": "Kein unberechtigter Zugriff",
-      "offerEnds": "Angebot endet am 29. Januar"
+      "offerEnds": "Angebot endet am 25. Februar"
     }
   },
   "valentinesBanner": {
@@ -23,10 +24,10 @@
     "cta": "Hol dir das Angebot"
   },
   "lifetimeBanner": {
-    "label": "Jahreslagerung zum halben Preis!",
-    "title": "Sparen Sie 50% bei unseren Jahresabonnements!",
+    "label": "Suchen Sie einen sicheren Datenspeicher fürs Leben?",
+    "title": "Schützen Sie Ihre Dateien mit lebenslangen Internxt-Plänen!",
     "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie"
+    "guarantee": "Geld-zurück-Garantie innerhalb von 30 Tagen"
   },
   "lang": {
     "title": "Sprache",
@@ -34,7 +35,7 @@
     "es": "Español (Spanisch)",
     "fr": "Français (Französisch)",
     "it": "Italiano (Italienisch)",
-    "cn": "简体中文 (Chinesisch)",
+    "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
     "de": "Deutsch (Deutsch)"
   },
@@ -63,8 +64,18 @@
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
       "encrypting": "Verschlüsselung im Gange",
-      "info1": "Internxt speichert keine Passwörter.",
-      "info2": "Falls Sie Ihr Passwort vergessen, verlieren Sie den Zugriff auf alle Ihre Dateien."
+      "info": {
+        "normalText": "Internxt speichert keine Passwörter.",
+        "boldText": "Wenn Sie Ihr Passwort vergessen, können Sie einen Backup-Schlüssel herunterladen, um wieder Zugriff auf Ihre Dateien zu erhalten.",
+        "cta": "Erfahre mehr"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup-Schlüssel",
+      "description": "Der Backup-Schlüssel ermöglicht die Wiederherstellung des Kontos, falls Sie Ihr Passwort vergessen. Teilen Sie es niemals.",
+      "downloadCta": "Backup-Schlüssel herunterladen",
+      "settingsTab": "Sie können auf Ihren Backup-Schlüssel zugreifen unter Einstellungen > Sicherheit",
+      "skip": "Überspringen"
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
@@ -162,7 +173,8 @@
     },
     "files": "Dateien",
     "file": "Datei",
-    "folder": "Ordner"
+    "folder": "Ordner",
+    "reloadPageMessage": "Änderungen, die Sie vorgenommen haben, wurden möglicherweise nicht gespeichert."
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
@@ -821,6 +833,7 @@
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
     "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
+    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
@@ -916,6 +929,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}"
     },
+    "waiting": "Warten",
+    "paused": "Pausiert",
     "create-folder": {
       "status": {
         "pending": "Ordner muss noch erstellt werden",
@@ -1033,6 +1048,15 @@
         "cancelled": "Umbenennung abgebrochen"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload fehlgeschlagen"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
+      "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut.",
+      "openUploadedFileFailed": "Etwas ist schief gelaufen beim Versuch, die Datei zu öffnen",
+      "openUploadedFolderFailed": "Etwas ist schief gelaufen beim Versuch, zum Ordner zu navigieren"
     }
   },
   "success": {
@@ -1149,9 +1173,11 @@
     },
     "dropdown": {
       "openPreview": "Öffne Vorschau",
+      "details": "Einzelheiten",
+      "shareLink": "Teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
-      "download": "Download",
+      "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
       "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",

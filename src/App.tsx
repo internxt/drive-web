@@ -37,6 +37,7 @@ import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import { getRoutes } from './app/routes/routes';
+import useBeforeUnload from './hooks/useBeforeUnload';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -70,6 +71,8 @@ const App = (props: AppProps): JSX.Element => {
   const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
     path: navigationService.history.location.pathname,
   });
+
+  useBeforeUnload();
 
   useEffect(() => {
     initializeInitialAppState();
