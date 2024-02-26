@@ -12,14 +12,13 @@ import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-it
 import folderImage from 'assets/icons/light/folder.svg';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
+import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -47,24 +46,6 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
-  };
-
-  const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-
-    if (currentFolderPaths.length > 0) {
-      currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
-        items.push({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          dialog: isOpen,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
-        });
-      });
-    }
-    return items;
   };
 
   useEffect(() => {
@@ -198,7 +179,14 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         {/* Folder list */}
         <div className="flex flex-col">
           <div className="flex h-10 items-center">
-            {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+            {isLoading ? (
+              <Spinner className="h-5 w-5" />
+            ) : (
+              <BreadcrumbsMoveItemsDialogView
+                onShowFolderContentClicked={onShowFolderContentClicked}
+                currentNamePaths={currentNamePaths}
+              />
+            )}
           </div>
 
           <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">

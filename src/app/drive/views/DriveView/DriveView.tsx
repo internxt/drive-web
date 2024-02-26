@@ -13,7 +13,7 @@ import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
-import BreadcrumbsDrive from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
+import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -94,8 +94,7 @@ const DriveView = (props: DriveViewProps) => {
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
       </Helmet>
       <DriveExplorer
-        // title={<Breadcrumbs items={breadcrumbItems()} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />}
-        title={<BreadcrumbsDrive namePath={namePath} dispatch={dispatch} />}
+        title={<BreadcrumbsDriveView namePath={namePath} dispatch={dispatch} />}
         isLoading={isLoading}
         items={items}
       />
