@@ -529,7 +529,7 @@ function SharedView({
   const onClickPendingInvitationsButton = () => {
     dispatch(uiActions.setIsInvitationsDialogOpen(true));
   };
-  console.log({ isLoading });
+
   return (
     <div
       className="flex w-full shrink-0 flex-col"
