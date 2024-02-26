@@ -7,12 +7,12 @@ import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/d
 import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
 import { backupsThunks } from 'app/store/slices/backups';
 import { SdkFactory } from '../../../core/factory/sdk';
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import Dialog from '../../../shared/components/Dialog/Dialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface DeleteBackupDialogProps {
-  items: BreadcrumbItemData[];
+  backupsAsFoldersPath: DriveFolderData[];
   goToFolder: (folderId: number) => void;
 }
 
@@ -21,16 +21,16 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteBackupDialogOpen);
   const currentDevice = useAppSelector((state) => state.backups.currentDevice);
-  const breadcrumbsItems = props.items;
-  const currentBreadcrumb = props.items[props.items.length - 1];
-  const previousBreadcrumb = props.items[props.items.length - 2];
+  const backupsAsFoldersPath = props.backupsAsFoldersPath;
+  const currentBackupsAsFoldersPath = props.backupsAsFoldersPath[props.backupsAsFoldersPath.length - 1];
+  const previousBackupsAsFoldersPath = props.backupsAsFoldersPath[props.backupsAsFoldersPath.length - 2];
 
   const onClose = (): void => {
     dispatch(uiActions.setIsDeleteBackupDialog(false));
   };
 
   const onAccept = async (): Promise<void> => {
-    if (breadcrumbsItems.length === 2) {
+    if (backupsAsFoldersPath.length === 2) {
       try {
         if (currentDevice && 'mac' in currentDevice) dispatch(backupsThunks.deleteDeviceThunk(currentDevice));
         else {
@@ -39,17 +39,17 @@ const DeleteBackupDialog = (props: DeleteBackupDialogProps): JSX.Element => {
           await dispatch(backupsThunks.fetchDevicesThunk());
         }
         onClose();
-        props.goToFolder(previousBreadcrumb.id);
+        props.goToFolder(previousBackupsAsFoldersPath.id);
       } catch (e: unknown) {
         errorService.reportError(e);
       }
     } else {
       try {
         const storageClient = SdkFactory.getInstance().createStorageClient();
-        await storageClient.deleteFolder(currentBreadcrumb.id);
+        await storageClient.deleteFolder(currentBackupsAsFoldersPath.id);
         await dispatch(backupsThunks.fetchDevicesThunk());
         onClose();
-        props.goToFolder(previousBreadcrumb.id);
+        props.goToFolder(previousBackupsAsFoldersPath.id);
       } catch (e: unknown) {
         errorService.reportError(e);
       }
