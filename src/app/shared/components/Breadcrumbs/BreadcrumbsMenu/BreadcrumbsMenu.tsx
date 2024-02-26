@@ -136,111 +136,111 @@ const BreadcrumbsMenu = (props: BreadcrumbsMenu) => {
             <>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onCreateFolderButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <FolderSimplePlus size={20} />
                     <p className="ml-3">{translate('actions.upload.folder')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <div className="mx-3 my-0.5 border-t border-gray-10" />
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onShareLinkButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <Users size={20} />
                     <p className="ml-3">{translate('drive.dropdown.shareLink')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onCopyLinkButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <Link size={20} />
                     <p className="ml-3">{translate('drive.dropdown.copyLink')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onKeyDown={() => {
                       // No op
                     }}
                     onClick={onDetailsItemButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <Info size={20} />
                     <p className="ml-3">{translate('drive.dropdown.details')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onEditButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <PencilSimple size={20} />
                     <p className="ml-3">{translate('drive.dropdown.rename')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onMoveButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <MoveActionIcon className="h-5 w-5" />
                     <p className="ml-3">{translate('drive.dropdown.move')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onDownloadButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <DownloadSimple size={20} />
                     <p className="ml-3">{translate('drive.dropdown.download')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <div className="mx-3 my-0.5 border-t border-gray-10" />
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onMoveToTrashButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <Trash size={20} />
                     <p className="ml-3">{translate('drive.dropdown.moveToTrash')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
             </>
@@ -248,28 +248,28 @@ const BreadcrumbsMenu = (props: BreadcrumbsMenu) => {
             <>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onDownloadBackupButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <DownloadSimple size={20} />
                     <p className="ml-3">{translate('backups.dropdown.download')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
               <Menu.Item>
                 {({ active }) => (
-                  <div
+                  <button
                     onClick={onDeleteBackupButtonClicked}
                     className={`${
                       active && 'bg-gray-5'
-                    } flex cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
+                    } flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 hover:bg-gray-5 dark:hover:bg-gray-10`}
                   >
                     <Trash size={20} />
                     <p className="ml-3">{translate('backups.dropdown.delete')}</p>
-                  </div>
+                  </button>
                 )}
               </Menu.Item>
             </>
