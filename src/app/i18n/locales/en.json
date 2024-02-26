@@ -215,7 +215,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Changes you have made may not have been saved."
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
@@ -1036,6 +1037,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}"
     },
+    "waiting": "Waiting",
+    "paused": "Paused",
     "create-folder": {
       "status": {
         "pending": "Pending to create folder",
@@ -1154,6 +1157,15 @@
         "cancelled": "Cancelled renaming"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload failed"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",
+      "retryDownloadFailed": "Something went wrong while retrying the download. Please try downloading again.",
+      "openUploadedFileFailed": "Something went wrong while trying to open the file",
+      "openUploadedFolderFailed": "Something went wrong while trying to navigate to the folder"
     }
   },
   "success": {

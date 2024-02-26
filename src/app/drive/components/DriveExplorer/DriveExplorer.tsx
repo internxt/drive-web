@@ -143,8 +143,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
-  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
-  const totalItemsWithSharing = itemsWithSharing.length;
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -165,12 +163,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [posY, setPosY] = useState(0);
   const [openedWithRightClick, setOpenedWithRightClick] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-
-  // LISTEN NOTIFICATION STATES
-  const [folderListenerList, setFolderListenerList] = useState<number[]>([]);
-  const inProcessNotifications = useTaskManagerGetNotifications({
-    status: [TaskStatus.InProcess, TaskStatus.Encrypting],
-  });
 
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
@@ -207,8 +199,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const handleFileCreatedEvent = (data) => {
     if (data.event === SOCKET_EVENTS.FILE_CREATED) {
       const folderId = data.payload.folderId;
-
-      if (folderId === currentFolderId && inProcessNotifications.length === 0) {
+      if (folderId === currentFolderId) {
         dispatch(
           storageActions.pushItems({
             updateRecents: true,
@@ -219,11 +210,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
       }
     }
   };
-  const handleOnEventCreation = () => {
-    const isEventCreated = realtimeService.onEvent(handleFileCreatedEvent);
-    if (isEventCreated) setFolderListenerList([...folderListenerList, currentFolderId]);
-    else setTimeout(handleOnEventCreation, 10000);
-  };
 
   useEffect(() => {
     if (itemToRename) {
@@ -233,9 +219,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
   useEffect(() => {
     try {
-      if (!folderListenerList.includes(currentFolderId)) {
-        handleOnEventCreation();
-      }
+      realtimeService.removeAllListeners();
+      realtimeService.onEvent(handleFileCreatedEvent);
     } catch (err) {
       errorService.reportError(err);
     }
@@ -631,8 +616,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           showStopSharingConfirmation={showStopSharingConfirmation}
           onClose={onCloseStopSharingAndMoveToTrashDialog}
           moveItemsToTrash={moveItemsToTrashOnStopSharing}
-          isMultipleItems={totalItemsWithSharing > 1}
-          itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
       <BannerWrapper />

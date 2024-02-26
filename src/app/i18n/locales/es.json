@@ -199,7 +199,8 @@
     },
     "files": "Archivos",
     "file": "Archivo",
-    "folder": "Carpeta"
+    "folder": "Carpeta",
+    "reloadPageMessage": "Los cambios que realizaste pueden no haberse guardado."
   },
   "shareLayout": {
     "title": "",
@@ -1014,6 +1015,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}"
     },
+    "waiting": "Esperando",
+    "paused": "Pausado",
     "create-folder": {
       "status": {
         "pending": "Esperando para completar tarea",
@@ -1133,6 +1136,15 @@
         "cancelled": "Cancelado"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Error al subir"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
+      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo",
+      "openUploadedFileFailed": "Algo salió mal al intentar abrir el archivo",
+      "openUploadedFolderFailed": "Algo salió mal al intentar navegar hasta la carpeta"
     }
   },
   "shareItemDialog": {
