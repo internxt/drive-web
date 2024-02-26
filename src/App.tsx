@@ -1,5 +1,5 @@
-import { createElement, useEffect } from 'react';
-import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
+import { useEffect } from 'react';
+import { Switch, Route, Redirect, Router } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
 import { DndProvider } from 'react-dnd';
@@ -9,14 +9,12 @@ import errorService from './app/core/services/error.service';
 import envService from './app/core/services/env.service';
 import { AppViewConfig } from './app/core/types';
 import navigationService from './app/core/services/navigation.service';
-import layouts from './app/core/layouts';
 import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
 import { sessionActions } from './app/store/slices/session';
 import { AppDispatch, RootState } from './app/store';
 import { initializeUserThunk } from './app/store/slices/user';
 import { uiActions } from './app/store/slices/ui';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import views from './app/core/config/views';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
@@ -37,6 +35,8 @@ import { PreviewFileItem } from './app/share/types';
 import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
+import SharingRedirect from './app/routes/Share/ShareRedirection';
+import { getRoutes } from './app/routes/routes';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -51,13 +51,28 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    fileViewerItem,
+    dispatch,
+  } = props;
+
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const routes = getRoutes();
+  const isDev = !envService.isProduction();
+  const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
+    path: navigationService.history.location.pathname,
+  });
 
   useEffect(() => {
-    initialState();
+    initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
 
@@ -72,12 +87,6 @@ const App = (props: AppProps): JSX.Element => {
     }
   }
 
-  const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
-    path: navigationService.history.location.pathname,
-  });
-
-  const dispatch: AppDispatch = props.dispatch;
-
   window.addEventListener('offline', () => {
     dispatch(sessionActions.setHasConnection(false));
   });
@@ -85,7 +94,7 @@ const App = (props: AppProps): JSX.Element => {
     dispatch(sessionActions.setHasConnection(true));
   });
 
-  const initialState = async () => {
+  const initializeInitialAppState = async () => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
@@ -107,34 +116,6 @@ const App = (props: AppProps): JSX.Element => {
     }
   };
 
-  const routes = (): JSX.Element[] => {
-    const routes: JSX.Element[] = views.map((v) => {
-      const viewConfig: AppViewConfig | undefined = configService.getViewConfig({ id: v.id });
-      const layoutConfig = layouts.find((l) => l.id === viewConfig?.layout) || layouts[0];
-      const componentProps: RouteProps = {
-        exact: !!viewConfig?.exact,
-        path: viewConfig?.path || '',
-        render: (props) =>
-          createElement(layoutConfig.component, {
-            children: createElement(v.component, { ...props, ...v.componentProps }),
-          }),
-      };
-
-      return <Route key={v.id} {...componentProps} />;
-    });
-
-    return routes;
-  };
-
-  const isDev = !envService.isProduction();
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isSurveyDialogOpen,
-    fileViewerItem,
-  } = props;
   const pathName = window.location.pathname.split('/')[1];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
@@ -154,10 +135,9 @@ const App = (props: AppProps): JSX.Element => {
 
   const onCloseFileViewer = () => {
     const isRecentsView = navigationService.isCurrentPath('recents');
-    const isSharedView = navigationService.isCurrentPath('shared');
     const isRootDrive = props.namePath.length === 1;
 
-    if (isRecentsView || isSharedView) {
+    if (isRecentsView) {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
@@ -193,7 +173,7 @@ const App = (props: AppProps): JSX.Element => {
                 <Mobile user={props.user} />
               </Route>
             ) : (
-              routes()
+              routes
             )}
           </Switch>
 
@@ -216,22 +196,6 @@ const App = (props: AppProps): JSX.Element => {
   }
 
   return template;
-};
-
-const SharingRedirect = () => {
-  const params = useParams();
-  const history = useHistory();
-
-  useEffect(() => {
-    const token = new URLSearchParams(window.location.search).get('token');
-    const sharingId = (params as any).sharingId;
-    const action = (params as any).action;
-    const redirectURL = `/login?sharingId=${sharingId}&action=${action}&token=${token}`;
-
-    history.push(redirectURL);
-  }, [params, history]);
-
-  return null;
 };
 
 export default connect((state: RootState) => ({
