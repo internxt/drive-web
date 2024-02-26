@@ -31,8 +31,6 @@ import errorService from '../../../core/services/error.service';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
 import Avatar from '../../../shared/components/Avatar';
 import { AdvancedSharedItem, OrderBy, PreviewFileItem, SharedNamePath, UserRoles } from '../../../share/types';
-import Breadcrumbs from '../../../shared/components/Breadcrumbs/Breadcrumbs';
-import { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/types';
 import { getItemPlainName } from '../../../../app/crypto/services/utils';
 import Button from '../../../shared/components/Button/Button';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
@@ -50,6 +48,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
+import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
 
 export const ITEMS_PER_PAGE = 15;
 
@@ -875,38 +874,15 @@ function SharedView(props: SharedViewProps): JSX.Element {
     dispatch(storageActions.popSharedNamePath({ id: id, name: name, token: token, uuid: uuid }));
   };
 
-  const breadcrumbItems = (): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-
-    items.push({
-      id: 1,
-      label: translate('shared-links.shared-links'),
-      icon: null,
-      active: true,
-      isFirstPath: true,
-      onClick: () => {
-        setPage(0);
-        setShareItems([]);
-        setHasMoreRootFolders(true);
-        setHasMoreFolders(true);
-        setHasMoreItems(true);
-        setCurrentFolderId('');
-        goToFolderBredcrumb(1, translate('shared-links.shared-links'), '');
-        fetchRootFolders();
-      },
-    });
-
-    sharedNamePath.slice().forEach((path: SharedNamePath, i: number, namePath: SharedNamePath[]) => {
-      items.push({
-        id: path.id,
-        label: path.name,
-        icon: null,
-        active: i < namePath.length - 1,
-        onClick: () => goToFolderBredcrumb(path.id, path.name, path.uuid, path.token),
-      });
-    });
-
-    return items;
+  const goToRootSharedBreadcrumb = () => {
+    setPage(0);
+    setShareItems([]);
+    setHasMoreRootFolders(true);
+    setHasMoreFolders(true);
+    setHasMoreItems(true);
+    setCurrentFolderId('');
+    goToFolderBredcrumb(1, translate('shared-links.shared-links'), '');
+    fetchRootFolders();
   };
 
   const handleDetailsButtonClicked = useCallback(
@@ -928,7 +904,11 @@ function SharedView(props: SharedViewProps): JSX.Element {
       </Helmet>
       <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
-          <Breadcrumbs items={breadcrumbItems()} />
+          <BreadcrumbsSharedView
+            goToRootSharedBreadcrumb={goToRootSharedBreadcrumb}
+            goToFolderBredcrumb={goToFolderBredcrumb}
+            sharedNamePath={sharedNamePath}
+          />
         </div>
 
         <div
