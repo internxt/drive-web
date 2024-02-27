@@ -3,7 +3,7 @@ import { NativeTypes } from 'react-dnd-html5-backend';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { BreadcrumbItemData } from '../types';
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
 import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
 import { DragAndDropType } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
@@ -15,14 +15,13 @@ import {
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import BreadcrumbsMenu from '../BreadcrumbsMenu/BreadcrumbsMenu';
-
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
   isHiddenInList?: boolean;
   items: BreadcrumbItemData[];
   breadcrumbButtonDataCy?: string;
+  menu?: (props: BreadcrumbsMenuProps) => JSX.Element;
 }
 
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
@@ -130,8 +129,8 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
   return (
     <>
-      {!props.item.active && !props.item.dialog ? (
-        <BreadcrumbsMenu item={props.item} items={props.items} onItemClicked={onItemClicked} />
+      {!props.item.active && !props.item.dialog && props.menu ? (
+        <props.menu item={props.item} items={props.items} onItemClicked={onItemClicked} />
       ) : (
         <div
           ref={drop}

@@ -8,3 +8,9 @@ export interface BreadcrumbItemData {
   isBackup?: boolean;
   onClick?: () => void;
 }
+
+export interface BreadcrumbsMenuProps {
+  item: BreadcrumbItemData;
+  items: BreadcrumbItemData[];
+  onItemClicked: (item: BreadcrumbItemData) => void;
+}

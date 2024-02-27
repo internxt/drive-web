@@ -7,7 +7,7 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
-
+import BreadcrumbsMenuDrive from '../BreadcrumbsMenu/BreadcrumbsMenuDrive';
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
   dispatch: AppDispatch;
@@ -48,7 +48,13 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
 
     return items;
   };
-  return <Breadcrumbs items={breadcrumbDriveViewItems()} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />;
+  return (
+    <Breadcrumbs
+      items={breadcrumbDriveViewItems()}
+      rootBreadcrumbItemDataCy="driveViewRootBreadcrumb"
+      menu={BreadcrumbsMenuDrive}
+    />
+  );
 };
 
 export default BreadcrumbsDriveView;

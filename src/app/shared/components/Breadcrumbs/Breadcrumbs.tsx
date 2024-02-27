@@ -2,14 +2,15 @@ import { CaretRight, DotsThree } from '@phosphor-icons/react';
 import { forwardRef, ReactNode } from 'react';
 import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
-import { BreadcrumbItemData } from './types';
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from './types';
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
   rootBreadcrumbItemDataCy?: string;
+  menu?: (props: BreadcrumbsMenuProps) => JSX.Element;
 }
 
-export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
+export default function Breadcrumbs(props: Readonly<BreadcrumbsProps>): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
     return (
@@ -58,6 +59,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
             item={items[i]}
             totalBreadcrumbsLength={items.length}
             items={items}
+            menu={props.menu}
           />,
         );
         if (i < items.length - 1) {

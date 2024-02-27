@@ -19,17 +19,11 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
 import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
 import { getAppConfig } from 'app/core/services/config.service';
-import { BreadcrumbItemData } from '../types';
+import { BreadcrumbsMenuProps } from '../types';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
 
-interface BreadcrumbsMenu {
-  item: BreadcrumbItemData;
-  items: BreadcrumbItemData[];
-  onItemClicked: (item: BreadcrumbItemData) => void;
-}
-
-const BreadcrumbsMenu = (props: BreadcrumbsMenu) => {
+const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
@@ -280,4 +274,4 @@ const BreadcrumbsMenu = (props: BreadcrumbsMenu) => {
   );
 };
 
-export default BreadcrumbsMenu;
+export default BreadcrumbsMenuDrive;
