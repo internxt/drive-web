@@ -1,13 +1,13 @@
 import { useState } from 'react';
-import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 import { useOpenItem } from '../../hooks/useOpen';
+import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
+import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { t } from 'i18next';
-import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 
 const THREE_HUNDRED_MB_IN_BYTES = 314572800;
 interface TaskLoggerItemProps {
@@ -29,7 +29,7 @@ const ProgressBar = ({ progress, isPaused }) => {
   );
 };
 
-const isUploadFileData = (item: TaskNotification['item']): item is UploadFileData => {
+const isASingleFileUpload = (item: TaskNotification['item']): item is UploadFileData => {
   if (!item) return false;
 
   return 'uploadFile' in item && 'parentFolderId' in item;
@@ -41,8 +41,13 @@ const isUploadFolderData = (item: TaskNotification['item']): item is UploadFolde
   return 'folder' in item && 'parentFolderId' in item;
 };
 
-const shouldDisplayPauseButton = (item: TaskNotification['item']): boolean => {
-  if (isUploadFileData(item)) {
+const shouldDisplayPauseButton = (notification: TaskNotification): boolean => {
+  const item = notification.item;
+  const isProgressBiggerThanEightyFivePercent = notification?.progress > 0.85;
+
+  if (isProgressBiggerThanEightyFivePercent) return false;
+
+  if (isASingleFileUpload(item)) {
     const isBiggerThan300MB = item?.uploadFile?.size >= THREE_HUNDRED_MB_IN_BYTES;
     return isBiggerThan300MB;
   } else if (isUploadFolderData(item)) {
@@ -144,7 +149,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           retryAction={retryFunction}
           isUploadTask={isUploadTask}
           openItemAction={openItem}
-          showPauseButton={shouldDisplayPauseButton(notification.item)}
+          showPauseButton={shouldDisplayPauseButton(notification)}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}
