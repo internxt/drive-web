@@ -909,7 +909,7 @@
     "errorMovingToTrash": "При перемещении элементов в корзину произошла ошибка.",
     "errorDeletingFromTrash": "При удалении элементов из корзины произошла ошибка.",
     "braveNotSupportMultiplePhotosDowload": "Brave не поддерживает загрузку нескольких фотографий.",
-    "maxSizeUploadLimitError": "Слишком большой файл (более 10 ГБ)",
+    "maxSizeUploadLimitError": "Слишком большой файл (более 20 ГБ)",
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины"
   },

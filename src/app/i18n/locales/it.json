@@ -928,7 +928,7 @@
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "braveNotSupportMultiplePhotosDowload": "Brave non supporta il download di più foto.",
-    "maxSizeUploadLimitError": "File troppo grande (superiore a 10GB)",
+    "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
   },

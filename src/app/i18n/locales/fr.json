@@ -868,7 +868,7 @@
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "braveNotSupportMultiplePhotosDowload": "Brave ne prend pas en charge le téléchargement de plusieurs photos.",
-    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 10GB)",
+    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 20GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },
