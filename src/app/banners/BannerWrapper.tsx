@@ -5,8 +5,9 @@ import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import FeaturesBanner from './FeaturesBanner';
+
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import Banner from './Banner';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_soft_banner';
 const OFFER_OFF_DAY = new Date('2024-02-29');
@@ -40,7 +41,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
