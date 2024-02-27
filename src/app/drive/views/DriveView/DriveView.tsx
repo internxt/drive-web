@@ -86,11 +86,7 @@ const DriveView = (props: DriveViewProps) => {
         <title>{title}</title>
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
       </Helmet>
-      <DriveExplorer
-        title={<BreadcrumbsDriveView namePath={namePath} dispatch={dispatch} />}
-        isLoading={isLoading}
-        items={items}
-      />
+      <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
     </>
   );
 };

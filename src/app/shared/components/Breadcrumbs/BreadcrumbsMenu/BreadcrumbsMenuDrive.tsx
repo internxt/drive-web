@@ -13,7 +13,6 @@ import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { DriveItemData, DriveItemDetails } from 'app/drive/types';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
 import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { uiActions } from '../../../../store/slices/ui';
@@ -22,6 +21,7 @@ import { getAppConfig } from 'app/core/services/config.service';
 import { BreadcrumbsMenuProps } from '../types';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { storageActions } from '../../../../store/slices/storage';
+import shareService from 'app/share/services/share.service';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
@@ -74,7 +74,7 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
 
   const onCopyLinkButtonClicked = () => {
     const item = currentFolder[0];
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
+    shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
   };
 
   const onMoveButtonClicked = () => {

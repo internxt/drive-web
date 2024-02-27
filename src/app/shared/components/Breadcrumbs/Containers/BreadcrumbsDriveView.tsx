@@ -1,7 +1,7 @@
 import { FolderPath } from 'app/drive/types';
 import { BreadcrumbItemData } from '../types';
-import { AppDispatch } from 'app/store';
 import { t } from 'i18next';
+import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import navigationService from 'app/core/services/navigation.service';
@@ -10,11 +10,11 @@ import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import BreadcrumbsMenuDrive from '../BreadcrumbsMenu/BreadcrumbsMenuDrive';
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
-  dispatch: AppDispatch;
 }
 
 const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
-  const { namePath, dispatch } = props;
+  const { namePath } = props;
+  const dispatch = useAppDispatch();
 
   const breadcrumbDriveViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
