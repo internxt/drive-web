@@ -184,7 +184,7 @@ class UploadManager {
           },
           continueUploadOptions,
         )
-          .then((driveFileData) => {
+          .then(async (driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
 
             if (isUploadAborted) {
@@ -197,12 +197,16 @@ class UploadManager {
             if (this.relatedTaskProgress && this.options?.relatedTaskId) {
               this.relatedTaskProgress.filesUploaded += 1;
 
-              tasksService.updateTask({
-                taskId: this.options?.relatedTaskId,
-                merge: {
-                  progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
-                },
-              });
+              const uploadStatus = this.uploadRepository?.getUploadState(this.options.relatedTaskId);
+              const isPaused = (await uploadStatus) === TaskStatus.Paused;
+
+              if (!isPaused)
+                tasksService.updateTask({
+                  taskId: this.options?.relatedTaskId,
+                  merge: {
+                    progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
+                  },
+                });
             }
 
             tasksService.updateTask({
@@ -419,14 +423,18 @@ class UploadManager {
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
         if (this.abortController?.signal.aborted) return [];
 
-        if (this.options?.relatedTaskId)
-          tasksService.updateTask({
-            taskId: this.options?.relatedTaskId,
-            merge: {
-              status: TaskStatus.InProcess,
-            },
-          });
-
+        if (this.options?.relatedTaskId) {
+          const uploadStatus = this.uploadRepository?.getUploadState(this.options?.relatedTaskId);
+          const isPaused = (await uploadStatus) === TaskStatus.Paused;
+          if (!isPaused) {
+            tasksService.updateTask({
+              taskId: this.options?.relatedTaskId,
+              merge: {
+                status: TaskStatus.InProcess,
+              },
+            });
+          }
+        }
         this.uploadQueue.concurrency = concurrency;
 
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
