@@ -9,7 +9,7 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { t } from 'i18next';
 import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 
-const THREE_HUNDRED_MB_IN_BYTES = 314572800;
+const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
 }
@@ -29,7 +29,7 @@ const ProgressBar = ({ progress, isPaused }) => {
   );
 };
 
-const isUploadFileData = (item: TaskNotification['item']): item is UploadFileData => {
+const isASingleFileUpload = (item: TaskNotification['item']): item is UploadFileData => {
   if (!item) return false;
 
   return 'uploadFile' in item && 'parentFolderId' in item;
@@ -42,7 +42,7 @@ const isUploadFolderData = (item: TaskNotification['item']): item is UploadFolde
 };
 
 const shouldDisplayPauseButton = (item: TaskNotification['item']): boolean => {
-  if (isUploadFileData(item)) {
+  if (isASingleFileUpload(item)) {
     const isBiggerThan300MB = item?.uploadFile?.size >= THREE_HUNDRED_MB_IN_BYTES;
     return isBiggerThan300MB;
   } else if (isUploadFolderData(item)) {
