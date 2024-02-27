@@ -1,65 +1,65 @@
+import _ from 'lodash';
 import { connect } from 'react-redux';
 import { useHistory } from 'react-router-dom';
-import _ from 'lodash';
 
-import DeleteDialog from '../../../shared/components/Dialog/Dialog';
-import { useEffect, useRef, useCallback, useLayoutEffect, ChangeEvent } from 'react';
-import shareService, { decryptMnemonic } from '../../../share/services/share.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { DriveItemData } from '../../../drive/types';
+import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
 import localStorageService from '../../../core/services/local-storage.service';
+import { DriveItemData } from '../../../drive/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import shareService, { decryptMnemonic } from '../../../share/services/share.service';
+import DeleteDialog from '../../../shared/components/Dialog/Dialog';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { Helmet } from 'react-helmet-async';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
-import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
-import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
 import errorService from '../../../core/services/error.service';
+import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/EditItemNameDialog';
+import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
+import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
+import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
+import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
 import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
 import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
-import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import { RootState } from '../../../store';
-import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
-import { Helmet } from 'react-helmet-async';
-import { NativeTypes } from 'react-dnd-html5-backend';
-import { DropTargetMonitor, useDrop } from 'react-dnd';
-import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
-import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
-import SharedItemListContainer from './containers/SharedItemListContainer';
+import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
 import TopBarButtons from './components/TopBarButtons';
-import { isCurrentUserViewer, getFolderUserRole, isItemOwnedByCurrentUser } from './sharedViewUtils';
-import { useShareViewContext } from './context/SharedViewContextProvider';
+import SharedItemListContainer from './containers/SharedItemListContainer';
 import {
-  setHasMoreFiles,
-  setHasMoreFolders,
-  setPage,
-  setIsLoading,
-  setSelectedItems,
-  setItemToView,
-  setEditNameItem,
-  setShowStopSharingConfirmation,
-  setIsFileViewerOpen,
-  setIsEditNameDialogOpen,
-  setIsDeleteDialogModalOpen,
-  setCurrentFolderLevelResourcesToken,
-  setNextFolderLevelResourcesToken,
-  setClickedShareItemUser,
   setClickedShareItemEncryptionKey,
+  setClickedShareItemUser,
   setCurrentFolderId,
+  setCurrentFolderLevelResourcesToken,
   setCurrentParentFolderId,
   setCurrentShareOwnerAvatar,
-  setSharedFolders,
+  setEditNameItem,
+  setHasMoreFiles,
+  setHasMoreFolders,
+  setIsDeleteDialogModalOpen,
+  setIsEditNameDialogOpen,
+  setIsFileViewerOpen,
+  setIsLoading,
+  setItemToView,
+  setNextFolderLevelResourcesToken,
+  setPage,
+  setSelectedItems,
   setSharedFiles,
+  setSharedFolders,
+  setShowStopSharingConfirmation,
 } from './context/SharedViewContext.actions';
+import { useShareViewContext } from './context/SharedViewContextProvider';
 import useFetchSharedData from './hooks/useFetchSharedData';
-import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
+import { getFolderUserRole, isCurrentUserViewer, isItemOwnedByCurrentUser } from './sharedViewUtils';
 
 export const MAX_SHARED_NAME_LENGTH = 32;
 
@@ -452,12 +452,9 @@ function SharedView({
     actionDispatch(setShowStopSharingConfirmation(false));
   };
 
-  const handleDetailsButtonClicked = useCallback(
-    (item: DriveItemData | AdvancedSharedItem) => {
-      handleOnItemDoubleClick(item as AdvancedSharedItem);
-    },
-    [nextFolderLevelResourcesToken],
-  );
+  const handleDetailsButtonClicked = (item: DriveItemData | AdvancedSharedItem) => {
+    handleOnItemDoubleClick(item as AdvancedSharedItem);
+  };
 
   const moveItemsToTrashOnStopSharing = async (items: DriveItemData[]) => {
     await moveSelectedItemsToTrash(items);
