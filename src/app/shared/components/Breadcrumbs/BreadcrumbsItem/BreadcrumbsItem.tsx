@@ -1,38 +1,37 @@
-import { DropTargetMonitor, useDrop } from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
 import { Menu, Transition } from '@headlessui/react';
 import {
   CaretDown,
-  FolderSimplePlus,
-  Trash,
-  PencilSimple,
-  Link,
   DownloadSimple,
-  Users,
+  FolderSimplePlus,
   Info,
+  Link,
+  PencilSimple,
+  Trash,
+  Users,
 } from '@phosphor-icons/react';
-import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import { getAppConfig } from 'app/core/services/config.service';
+import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { DragAndDropType } from 'app/core/types';
+import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import iconService from 'app/drive/services/icon.service';
+import { DriveItemData, DriveItemDetails } from 'app/drive/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { BreadcrumbItemData } from '../Breadcrumbs';
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { DragAndDropType } from 'app/core/types';
-import { DriveItemData, DriveItemDetails } from 'app/drive/types';
-import iconService from 'app/drive/services/icon.service';
-import { sharedThunks } from 'app/store/slices/sharedLinks';
-import { storageActions } from '../../../../store/slices/storage';
+import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { SdkFactory } from '../../../../core/factory/sdk';
+import { storageActions } from '../../../../store/slices/storage';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { downloadItemsThunk } from 'app/store/slices/storage/storage.thunks/downloadItemsThunk';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { getAppConfig } from 'app/core/services/config.service';
+import { uiActions } from '../../../../store/slices/ui';
+import { BreadcrumbItemData } from '../Breadcrumbs';
 
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
@@ -190,10 +189,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
     dispatch(uiActions.setIsItemDetailsDialogOpen(true));
   };
 
-  const onCopyLinkButtonClicked = () => {
-    const item = currentFolder[0];
-    dispatch(sharedThunks.getSharedLinkThunk({ item }));
-  };
+  const onCopyLinkButtonClicked = () => {};
 
   const onMoveButtonClicked = () => {
     dispatch(storageActions.setItemsToMove(currentFolder));
