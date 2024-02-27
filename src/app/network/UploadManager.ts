@@ -1,15 +1,15 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
-import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
-import { DriveFileData } from '../drive/types';
-import tasksService from '../tasks/services/tasks.service';
-import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
-import errorService from '../core/services/error.service';
-import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
+import errorService from '../core/services/error.service';
 import { HTTP_CODES } from '../core/services/http.service';
+import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
+import { DriveFileData } from '../drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
+import tasksService from '../tasks/services/tasks.service';
+import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
+import { ConnectionLostError } from './requests';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -157,7 +157,10 @@ class UploadManager {
           },
           (uploadProgress) => {
             this.uploadsProgress[uploadId] = uploadProgress;
-            if (task?.status !== TaskStatus.Cancelled) {
+            const isTaskPaused = task?.status === TaskStatus.Paused;
+            const isTaskCancelled = task?.status === TaskStatus.Cancelled;
+
+            if (!isTaskCancelled && !isTaskPaused) {
               tasksService.updateTask({
                 taskId: taskId,
                 merge: {
