@@ -22,13 +22,13 @@ import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/Edi
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
-import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
-import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
-import Breadcrumbs, { BreadcrumbItemData } from '../../../shared/components/Breadcrumbs/Breadcrumbs';
+import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
+import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
+import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import { RootState } from '../../../store';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
@@ -475,51 +475,6 @@ function SharedView({
     }, 200);
   };
 
-  // TODO: REFACTOR IN BREADCRUMBS REFACTOR TASK
-  const goToFolderBredcrumb = (id, name, uuid, token?) => {
-    if (!isLoading) {
-      actionDispatch(setPage(0));
-      actionDispatch(setHasMoreFolders(true));
-      actionDispatch(setHasMoreFiles(true));
-      resetSharedItems();
-      actionDispatch(setSelectedItems([]));
-      actionDispatch(setCurrentFolderLevelResourcesToken(token));
-      if (id === 1) {
-        actionDispatch(setCurrentFolderId(''));
-      } else {
-        actionDispatch(setCurrentFolderId(uuid));
-      }
-      dispatch(storageActions.popSharedNamePath({ id: id, name: name, token: token, uuid: uuid }));
-    }
-  };
-
-  const breadcrumbItems = (): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-    const ROOT_FOLDER_ID = 1;
-    items.push({
-      id: ROOT_FOLDER_ID,
-      label: translate('shared-links.shared-links'),
-      icon: null,
-      active: true,
-      isFirstPath: true,
-      onClick: () => {
-        goToFolderBredcrumb(ROOT_FOLDER_ID, translate('shared-links.shared-links'), '');
-      },
-    });
-
-    sharedNamePath.slice().forEach((path: SharedNamePath, i: number, namePath: SharedNamePath[]) => {
-      items.push({
-        id: path.id,
-        label: path.name,
-        icon: null,
-        active: i < namePath.length - 1,
-        onClick: () => goToFolderBredcrumb(path.id, path.name, path.uuid, path.token),
-      });
-    });
-
-    return items;
-  };
-
   const handleOnTopBarInputChanges = (e: ChangeEvent<HTMLInputElement>) => {
     onUploadFileInputChanged({
       files: e.target.files,
@@ -542,7 +497,7 @@ function SharedView({
       </Helmet>
       <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
-          <Breadcrumbs items={breadcrumbItems()} />
+          <BreadcrumbsSharedView resetSharedItems={resetSharedItems} sharedNamePath={sharedNamePath} />
         </div>
         <TopBarButtons
           fileInputRef={fileInputRef}
