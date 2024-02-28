@@ -177,8 +177,10 @@ class UploadManager {
             abortCallback: (abort?: () => void) =>
               tasksService.addListener({
                 event: TaskEvent.TaskCancelled,
-                listener: () => {
-                  abort?.();
+                listener: (task) => {
+                  if (task.id === taskId) {
+                    abort?.();
+                  }
                 },
               }),
           },
@@ -232,7 +234,7 @@ class UploadManager {
           })
           .catch((err) => {
             const isUploadAborted =
-              this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted ?? err === 'abort';
+              !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || err === 'abort';
             const isLostConnectionError = err instanceof ConnectionLostError || err.message === 'Network Error';
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
@@ -296,6 +298,9 @@ class UploadManager {
                 taskId: this.options?.relatedTaskId ?? taskId,
                 merge: { status: TaskStatus.Error },
               });
+
+              if (isUploadAborted) next(null);
+
               next(err);
             }
           });
@@ -356,6 +361,7 @@ class UploadManager {
 
     failedUploadFiles.forEach((fileErrored) => {
       this.updateTaskStatusOnError(fileErrored.taskId);
+      this.uploadRepository?.removeUploadState(fileErrored.taskId);
     });
   }
 

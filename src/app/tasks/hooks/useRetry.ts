@@ -11,6 +11,7 @@ type RetryDownloadArgs = {
   downloadItemsAsZip: (items: DriveItemData[], existingTaskId: string) => void;
   downloadItems: (item: DriveItemData, existingTaskId: string) => void;
   showErrorNotification: () => void;
+  resetProgress: (notification: TaskNotification) => void;
 };
 
 export const useRetryDownload = ({
@@ -18,6 +19,7 @@ export const useRetryDownload = ({
   downloadItemsAsZip,
   downloadItems,
   showErrorNotification,
+  resetProgress,
 }: RetryDownloadArgs): RetryDownload => {
   const retryDownload = useCallback(() => {
     const { item, taskId } = notification;
@@ -25,8 +27,10 @@ export const useRetryDownload = ({
     const hasOneItemAndTaskID = item && taskId;
 
     if (isZipAndMultipleItems) {
+      resetProgress(notification);
       downloadItemsAsZip(item.items as DriveItemData[], taskId);
     } else if (hasOneItemAndTaskID) {
+      resetProgress(notification);
       downloadItems(item as DriveItemData, taskId);
     } else {
       showErrorNotification();
@@ -52,6 +56,7 @@ type RetryUploadArgs = {
     sharedItemAuthenticationData: SharedItemAuthenticationData;
   }) => void;
   showErrorNotification: () => void;
+  resetProgress: (notification: TaskNotification) => void;
 };
 
 export const useRetryUpload = ({
@@ -60,6 +65,7 @@ export const useRetryUpload = ({
   uploadItem,
   uploadSharedItem,
   showErrorNotification,
+  resetProgress,
 }: RetryUploadArgs): RetryUpload => {
   const retryUpload = useCallback(() => {
     const { item, taskId, action, sharedItemAuthenticationData } = notification;
@@ -85,6 +91,7 @@ export const useRetryUpload = ({
 
       const isSharedItem = !!sharedItemAuthenticationData;
       if (isSharedItem) {
+        resetProgress(notification);
         uploadSharedItem({
           uploadFile: uploadItemData.uploadFile,
           parentFolderId: uploadItemData.parentFolderId,
@@ -93,6 +100,7 @@ export const useRetryUpload = ({
           sharedItemAuthenticationData,
         });
       } else {
+        resetProgress(notification);
         uploadItem({
           uploadFile: uploadItemData.uploadFile,
           parentFolderId: uploadItemData.parentFolderId,
