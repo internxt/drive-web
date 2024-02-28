@@ -57,8 +57,17 @@ const shouldDisplayPauseButton = (notification: TaskNotification): boolean => {
   return false;
 };
 
+const resetTaskProgress = (notification: TaskNotification) => {
+  tasksService.updateTask({
+    taskId: notification.taskId,
+    merge: { status: TaskStatus.InProcess, progress: 0 },
+  });
+};
+
 const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
+
   const { openItem } = useOpenItem({
     notification,
     showOpenFolderError() {
@@ -82,6 +91,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
     showErrorNotification() {
       notificationsService.show({ text: t('tasks.generalErrorMessages.retryDownloadFailed'), type: ToastType.Error });
     },
+    resetProgress: resetTaskProgress,
   });
   const { retryUpload } = useRetryUpload({
     notification,
@@ -91,6 +101,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
     showErrorNotification() {
       notificationsService.show({ text: t('tasks.generalErrorMessages.retryUploadFailed'), type: ToastType.Error });
     },
+    resetProgress: resetTaskProgress,
   });
 
   const progressInPercentage = notification.progress ? (notification.progress * 100).toFixed(0) : 0;
@@ -117,6 +128,16 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
   };
 
   const retryFunction = getRetryActionFunction(isDownloadError);
+
+  const handleRetryClick = () => {
+    if (!isRetryActionDisabled) {
+      retryFunction();
+      setIsRetryActionDisabled(true);
+      setTimeout(() => {
+        setIsRetryActionDisabled(false);
+      }, 3000);
+    }
+  };
 
   const messageClassName = taskStatusTextColors[notification.status] ?? 'text-primary';
 
@@ -146,7 +167,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           status={notification.status}
           progress={progress.toString()}
           cancelAction={onCancelButtonClicked}
-          retryAction={retryFunction}
+          retryAction={handleRetryClick}
           isUploadTask={isUploadTask}
           openItemAction={openItem}
           showPauseButton={shouldDisplayPauseButton(notification)}
