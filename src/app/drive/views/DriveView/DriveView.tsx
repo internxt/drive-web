@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 import { AppDispatch, RootState } from 'app/store';
 import { storageActions, storageSelectors } from 'app/store/slices/storage';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { t } from 'i18next';
 import { Helmet } from 'react-helmet-async';
 import { uiActions } from 'app/store/slices/ui';
 import newStorageService from 'app/drive/services/new-storage.service';
@@ -16,6 +14,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -77,50 +76,13 @@ const DriveView = (props: DriveViewProps) => {
     }
   };
 
-  const breadcrumbItems = (): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-
-    if (namePath.length > 0) {
-      const firstPath = namePath[0];
-
-      items.push({
-        id: firstPath.id,
-        label: t('sideNav.drive'),
-        icon: null,
-        active: true,
-        isFirstPath: true,
-        onClick: () => {
-          dispatch(uiActions.setIsGlobalSearch(false));
-          dispatch(storageThunks.goToFolderThunk(firstPath));
-          navigationService.push(AppView.Drive);
-        },
-      });
-
-      namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
-        items.push({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          onClick: () => navigationService.pushFolder(path.uuid),
-        });
-      });
-    }
-
-    return items;
-  };
-
   return (
     <>
       <Helmet>
         <title>{title}</title>
         <link rel="canonical" href={`${process.env.REACT_APP_HOSTNAME}`} />
       </Helmet>
-      <DriveExplorer
-        title={<Breadcrumbs items={breadcrumbItems()} rootBreadcrumbItemDataCy="driveViewRootBreadcrumb" />}
-        isLoading={isLoading}
-        items={items}
-      />
+      <DriveExplorer title={<BreadcrumbsDriveView namePath={namePath} />} isLoading={isLoading} items={items} />
     </>
   );
 };

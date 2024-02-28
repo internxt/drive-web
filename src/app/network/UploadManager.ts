@@ -1,15 +1,15 @@
 import { queue, QueueObject } from 'async';
 import { randomBytes } from 'crypto';
-import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
-import { DriveFileData } from '../drive/types';
-import tasksService from '../tasks/services/tasks.service';
-import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
-import errorService from '../core/services/error.service';
-import { ConnectionLostError } from './requests';
 import { t } from 'i18next';
 import analyticsService from '../analytics/services/analytics.service';
+import errorService from '../core/services/error.service';
 import { HTTP_CODES } from '../core/services/http.service';
+import uploadFile, { FileToUpload } from '../drive/services/file.service/uploadFile';
+import { DriveFileData } from '../drive/types';
 import { PersistUploadRepository } from '../repositories/DatabaseUploadRepository';
+import tasksService from '../tasks/services/tasks.service';
+import { TaskEvent, TaskStatus, TaskType, UploadFileTask } from '../tasks/types';
+import { ConnectionLostError } from './requests';
 
 const TWENTY_MEGABYTES = 20 * 1024 * 1024;
 const USE_MULTIPART_THRESHOLD_BYTES = 50 * 1024 * 1024;
@@ -157,7 +157,10 @@ class UploadManager {
           },
           (uploadProgress) => {
             this.uploadsProgress[uploadId] = uploadProgress;
-            if (task?.status !== TaskStatus.Cancelled) {
+            const isTaskPaused = task?.status === TaskStatus.Paused;
+            const isTaskCancelled = task?.status === TaskStatus.Cancelled;
+
+            if (!isTaskCancelled && !isTaskPaused) {
               tasksService.updateTask({
                 taskId: taskId,
                 merge: {
@@ -174,14 +177,17 @@ class UploadManager {
             abortCallback: (abort?: () => void) =>
               tasksService.addListener({
                 event: TaskEvent.TaskCancelled,
-                listener: () => {
-                  abort?.();
+                listener: (task) => {
+                  if (task.id === taskId) {
+                    console.log('aborted task id', taskId);
+                    abort?.();
+                  }
                 },
               }),
           },
           continueUploadOptions,
         )
-          .then((driveFileData) => {
+          .then(async (driveFileData) => {
             const isUploadAborted = this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted;
 
             if (isUploadAborted) {
@@ -194,12 +200,16 @@ class UploadManager {
             if (this.relatedTaskProgress && this.options?.relatedTaskId) {
               this.relatedTaskProgress.filesUploaded += 1;
 
-              tasksService.updateTask({
-                taskId: this.options?.relatedTaskId,
-                merge: {
-                  progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
-                },
-              });
+              const uploadStatus = this.uploadRepository?.getUploadState(this.options.relatedTaskId);
+              const isPaused = (await uploadStatus) === TaskStatus.Paused;
+
+              if (!isPaused)
+                tasksService.updateTask({
+                  taskId: this.options?.relatedTaskId,
+                  merge: {
+                    progress: this.relatedTaskProgress.filesUploaded / this.relatedTaskProgress.totalFilesToUpload,
+                  },
+                });
             }
 
             tasksService.updateTask({
@@ -225,7 +235,7 @@ class UploadManager {
           })
           .catch((err) => {
             const isUploadAborted =
-              this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted ?? err === 'abort';
+              !!this.abortController?.signal.aborted || !!fileData.abortController?.signal.aborted || err === 'abort';
             const isLostConnectionError = err instanceof ConnectionLostError || err.message === 'Network Error';
 
             if (uploadAttempts < MAX_UPLOAD_ATTEMPS && !isUploadAborted && !isLostConnectionError) {
@@ -289,6 +299,9 @@ class UploadManager {
                 taskId: this.options?.relatedTaskId ?? taskId,
                 merge: { status: TaskStatus.Error },
               });
+
+              if (isUploadAborted) next(null);
+
               next(err);
             }
           });
@@ -349,6 +362,7 @@ class UploadManager {
 
     failedUploadFiles.forEach((fileErrored) => {
       this.updateTaskStatusOnError(fileErrored.taskId);
+      this.uploadRepository?.removeUploadState(fileErrored.taskId);
     });
   }
 
@@ -416,14 +430,18 @@ class UploadManager {
       const uploadFiles = async (files: UploadManagerFileParams[], concurrency: number) => {
         if (this.abortController?.signal.aborted) return [];
 
-        if (this.options?.relatedTaskId)
-          tasksService.updateTask({
-            taskId: this.options?.relatedTaskId,
-            merge: {
-              status: TaskStatus.InProcess,
-            },
-          });
-
+        if (this.options?.relatedTaskId) {
+          const uploadStatus = this.uploadRepository?.getUploadState(this.options?.relatedTaskId);
+          const isPaused = (await uploadStatus) === TaskStatus.Paused;
+          if (!isPaused) {
+            tasksService.updateTask({
+              taskId: this.options?.relatedTaskId,
+              merge: {
+                status: TaskStatus.InProcess,
+              },
+            });
+          }
+        }
         this.uploadQueue.concurrency = concurrency;
 
         const uploadPromises: Promise<DriveFileData>[] = await this.uploadQueue.pushAsync(files);
