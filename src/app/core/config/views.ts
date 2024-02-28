@@ -1,5 +1,7 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
+import { AppView } from '../types';
+
 import SignUpView from 'app/auth/views/SignUpView/SignUpView';
 import SignInView from 'app/auth/views/SignInView/SignInView';
 import AuthView from 'app/auth/views/Auth/AuthView';
@@ -18,8 +20,6 @@ import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
-
-import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import RecoverAccountView from 'app/auth/views/RecoverAccountView/RecoverAccountView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';

@@ -1,4 +1,5 @@
 import APP_CONFIG from '../config/app.json';
+import ROUTES from '../../routes/paths.json';
 import { DatabaseProvider } from '../../database/services/database.service';
 import { AppConfig, AppViewConfig, AppViewLayout } from '../types';
 import { DownloadFolderMethod } from '../../drive/types';
@@ -27,7 +28,7 @@ export function getAppConfig(): AppConfig {
           },
         },
       },
-      views: APP_CONFIG.views.map((v) => ({
+      views: ROUTES.views.map((v) => ({
         ...v,
         layout: v.layout as AppViewLayout,
         path: getPath(v.id, v.path),

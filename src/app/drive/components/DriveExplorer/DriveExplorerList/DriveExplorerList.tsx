@@ -339,8 +339,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
                 }),
               );
             } else {
-              dispatch(uiActions.setIsFileViewerOpen(true));
-              dispatch(uiActions.setFileViewerItem(driveItem));
+              navigationService.pushFile(driveItem.uuid);
             }
           }}
           hasMoreItems={hasMoreItems}
