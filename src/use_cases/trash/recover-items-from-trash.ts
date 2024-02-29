@@ -127,7 +127,7 @@ async function afterMoving(
   }
 }
 
-const recoverItemsFromTrash = async (
+const moveItems = async (
   itemsToRecover: DriveItemData[],
   destinationId: number,
   t: TFunction,
@@ -144,4 +144,4 @@ const recoverItemsFromTrash = async (
   return afterMoving(itemsToRecover, destinationId, failedItems, t, isTrash);
 };
 
-export default recoverItemsFromTrash;
+export default moveItems;

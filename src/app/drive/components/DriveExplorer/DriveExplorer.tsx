@@ -67,6 +67,7 @@ import { AdvancedSharedItem } from '../../../share/types';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 import BannerWrapper from '../../../banners/BannerWrapper';
+import navigationService from 'app/core/services/navigation.service';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -312,9 +313,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
         dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
+        navigationService.pushFolder(item.uuid);
       } else {
-        dispatch(uiActions.setIsFileViewerOpen(true));
-        dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+        navigationService.pushFile(item.uuid);
       }
     },
     [dispatch],

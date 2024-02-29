@@ -2,14 +2,15 @@ import { UploadSimple, Users } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Empty from '../../../shared/components/Empty/Empty';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import { SharedNamePath } from 'app/share/types';
 
 interface EmptySharedViewProps {
   onUploadFileButtonClicked: () => void;
-  sharedNamePath: string[];
+  sharedNamePath: SharedNamePath[];
   isCurrentUserViewer: () => boolean;
 }
 
-const EmptySharedView = ({ onUploadFileButtonClicked, sharedNamePath, isCurrentUserViewer }) => {
+const EmptySharedView = ({ onUploadFileButtonClicked, sharedNamePath, isCurrentUserViewer }: EmptySharedViewProps) => {
   const { translate } = useTranslationContext();
 
   const emptyState = {

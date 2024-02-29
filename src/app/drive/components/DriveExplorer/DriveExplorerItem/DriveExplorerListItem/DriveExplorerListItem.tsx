@@ -55,7 +55,7 @@ const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element =>
       <div className="flex min-w-activity grow items-center pr-3">
         {/* ICON */}
         <div className="box-content flex items-center pr-4">
-          <div className="flex h-10 w-10 justify-center drop-shadow-soft">
+          <div className="relative flex h-10 w-10 justify-center drop-shadow-soft">
             {item.currentThumbnail ? (
               <div className="h-full w-full">
                 <img

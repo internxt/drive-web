@@ -135,12 +135,7 @@ const DriveExplorerGridItem = (props: DriveExplorerItemProps): JSX.Element => {
                 right: lastRowItem ? 5 : 'auto',
               }}
             >
-              <DriveItemDropdownActions
-                openDropdown={open}
-                closeDropdown={close}
-                onRenameButtonClicked={() => props.setEditNameItem?.(item)}
-                item={item}
-              />
+              <DriveItemDropdownActions openDropdown={open} item={item} />
             </Menu.Items>
           </div>
         )}
