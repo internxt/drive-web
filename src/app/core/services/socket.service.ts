@@ -72,6 +72,10 @@ export default class RealtimeService {
     return true;
   }
 
+  removeAllListeners() {
+    this.socket?.removeAllListeners();
+  }
+
   stop(): void {
     console.log('[REALTIME] STOPING...');
 

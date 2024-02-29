@@ -10,7 +10,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Banner from './Banner';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_soft_banner';
-const OFFER_OFF_DAY = new Date('2024-02-29');
+const OFFER_OFF_DAY = new Date('2024-03-04');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);

@@ -104,6 +104,9 @@ module.exports = {
         50: '50ms',
         250: '250ms',
       },
+      transitionProperty: {
+        height: 'height',
+      },
       width: {
         activity: '296px',
         driveNameHeader: '364px',

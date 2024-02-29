@@ -333,12 +333,16 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
-      const folderItems = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => parseInt(folderId));
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
+
+      const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
 
       folderIds.forEach((folderId) => {
         const folderList = state.levels[folderId] ?? [];
-        const items = itemsListService.pushItems(itemsToPush, folderList);
+
+        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id));
+        const items = [...filteredItems, ...itemsToPush];
 
         state.levels[folderId] = items;
 
@@ -346,7 +350,10 @@ export const storageSlice = createSlice({
       });
 
       if (action.payload.updateRecents) {
-        state.recents = [...itemsToPush.filter((item) => !item.isFolder), ...state.recents];
+        state.recents = [
+          ...state.recents.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id)),
+          ...itemsToPush.filter((item) => !item.isFolder),
+        ];
       }
     },
     popItems(

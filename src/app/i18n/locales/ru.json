@@ -199,7 +199,8 @@
     },
     "files": "Файлы",
     "file": "файл",
-    "folder": "папка."
+    "folder": "папка.",
+    "reloadPageMessage": "Изменения, которые вы внесли, могут быть не сохранены."
   },
   "shareLayout": {
     "title": "INTERNXT",
@@ -908,7 +909,7 @@
     "errorMovingToTrash": "При перемещении элементов в корзину произошла ошибка.",
     "errorDeletingFromTrash": "При удалении элементов из корзины произошла ошибка.",
     "braveNotSupportMultiplePhotosDowload": "Brave не поддерживает загрузку нескольких фотографий.",
-    "maxSizeUploadLimitError": "Слишком большой файл (более 10 ГБ)",
+    "maxSizeUploadLimitError": "Слишком большой файл (более 20 ГБ)",
     "connectionLostError": "Потеряно подключение к Интернету",
     "errorLoadingTrashItems": "Ошибка при загрузке элементов корзины"
   },
@@ -1009,6 +1010,8 @@
       "allProcessesHaveFinished": "Все процессы завершены",
       "processing": "Обработка {{pending}} из {{finished}}"
     },
+    "waiting": "Ожидание",
+    "paused": "Приостановлено",
     "create-folder": {
       "status": {
         "pending": "Ожидается создание папки",
@@ -1127,6 +1130,15 @@
         "cancelled": "Отмена переименования"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Не удалось загрузить"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Что-то пошло не так при повторной попытке загрузки. Попробуйте загрузить снова",
+      "retryDownloadFailed": "Что-то пошло не так при повторной попытке загрузки. Повторите попытку загрузки.",
+      "openUploadedFileFailed": "Что-то пошло не так при попытке открыть файл",
+      "openUploadedFolderFailed": "Что-то пошло не так при попытке перейти к папке"
     }
   },
   "success": {

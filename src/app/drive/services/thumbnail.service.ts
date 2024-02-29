@@ -21,6 +21,7 @@ import { Downloadable } from 'app/network/download';
 import { storageActions } from 'app/store/slices/storage';
 import { AppDispatch } from 'app/store';
 import { pdfjs } from 'react-pdf';
+import errorService from '../../core/services/error.service';
 
 export interface ThumbnailToUpload {
   fileId: number;
@@ -199,7 +200,7 @@ export const generateThumbnailFromFile = async (
         };
       }
     } catch (error) {
-      console.log(error);
+      errorService.reportError(error);
     }
   }
   return null;

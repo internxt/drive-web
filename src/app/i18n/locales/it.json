@@ -215,7 +215,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Le modifiche apportate potrebbero non essere state salvate."
   },
   "shareLayout": {
     "title": "INTERNXT",
@@ -927,7 +928,7 @@
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "braveNotSupportMultiplePhotosDowload": "Brave non supporta il download di più foto.",
-    "maxSizeUploadLimitError": "File troppo grande (superiore a 10GB)",
+    "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
   },
@@ -1028,6 +1029,8 @@
       "allProcessesHaveFinished": "Tutti i processi sono stati completati",
       "processing": "Elaborazione {{pending}} di {{finished}}"
     },
+    "waiting": "In attesa",
+    "paused": "In pausa",
     "create-folder": {
       "status": {
         "pending": "In attesa di creare la cartella",
@@ -1146,6 +1149,15 @@
         "cancelled": "Rinominato annullato"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Caricamento fallito"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Qualcosa è andato storto nel riprovare a caricare. Prova a caricare di nuovo",
+      "retryDownloadFailed": "Qualcosa è andato storto nel tentativo di ripetere il download. Riprova il download.",
+      "openUploadedFileFailed": "Qualcosa è andato storto nel tentativo di aprire il file",
+      "openUploadedFolderFailed": "Qualcosa è andato storto nel tentativo di navigare nella cartella"
     }
   },
   "success": {
