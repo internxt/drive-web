@@ -967,11 +967,12 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly
       await dispatch(
-        storageThunks.uploadItemsThunkNoCheck({
+        storageThunks.uploadItemsThunk({
           files: unrepeatedUploadedFiles,
           parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
+            disableDuplicatedNamesCheck: true,
           },
         }),
       ).then(() => {
