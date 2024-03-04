@@ -25,7 +25,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
         <button className="absolute  right-0 m-7 flex text-black" onClick={onClose}>
           <X size={32} />
         </button>
-        <div className="flex w-full max-w-[800px] flex-col py-14 lg:flex-row">
+        <div className="flex w-full max-w-[800px] flex-col space-x-10 py-14 lg:flex-row">
           <div className="flex w-full flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <div className="flex rounded-lg bg-white px-3 py-1.5 ring-4 ring-primary/7">
               <p className="text-2xl font-bold text-primary">{translate('featuresBanner.label')}</p>
