@@ -6,14 +6,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Check Out Repo
+        uses: actions/checkout@v2
       - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
       - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
       # You cannot read packages from other private repos with GITHUB_TOKEN
       # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
       - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
       - run: echo "always-auth=true" >> .npmrc
-
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -28,7 +28,7 @@ jobs:
           file: ./infrastructure/preview.Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-dev:preview-${{ github.event.number }}-${{ github.event.pull_request.head.sha }}
-  add_preview_label:
+  add_ready_for_preview_label:
     if: github.event.pull_request.draft == false
     runs-on: ubuntu-latest
     needs: build
@@ -36,9 +36,9 @@ jobs:
     - uses: actions-ecosystem/action-add-labels@v1
       with:
         labels: |
-          preview
+          ready-for-preview
   dispatch_update_deployment:
-    needs: add_preview_label
+    needs: add_ready_for_preview_label
     runs-on: ubuntu-latest
     if: ${{ contains(github.event.pull_request.labels.*.name, 'deployed') }}
     steps:
@@ -73,8 +73,9 @@ jobs:
               } 
             }
   dispatch_check_deployment:
-    needs: add_preview_label
+    needs: add_ready_for_preview_label
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'preview') }}
     steps:
       - name: Dispatch Check Preview Repository Command
         uses: myrotvorets/trigger-repository-dispatch-action@1.0.0
