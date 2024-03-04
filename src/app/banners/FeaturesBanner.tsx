@@ -1,10 +1,10 @@
 import { CheckCircle, Flower, X } from '@phosphor-icons/react';
-import { useTranslation } from 'react-i18next';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
-  const { t } = useTranslation();
+  const { translate } = useTranslationContext();
 
-  const features = t('featuresBanner.features', { returnObjects: true }) as string[];
+  const features = translate('featuresBanner.features', { returnObjects: true }) as string[];
 
   const handleOnClick = () => {
     window.open('https://internxt.com/pricing', '_blank', 'nofollow noreferrer');
@@ -28,10 +28,10 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
         <div className="flex w-full max-w-[800px] flex-col py-14 lg:flex-row">
           <div className="flex w-full flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
             <div className="flex rounded-lg bg-white px-3 py-1.5 ring-4 ring-primary/7">
-              <p className="text-2xl font-bold text-primary">{t('featuresBanner.label')}</p>
+              <p className="text-2xl font-bold text-primary">{translate('featuresBanner.label')}</p>
             </div>
             <p className="w-full max-w-[380px] text-4xl font-bold leading-tight text-black">
-              {t('featuresBanner.title')}
+              {translate('featuresBanner.title')}
             </p>
 
             <div className="flex flex-col items-center space-y-3 lg:items-start">
@@ -39,14 +39,14 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
                 onClick={handleOnClick}
                 className="flex w-max items-center rounded-lg bg-primary px-5 py-3 text-lg font-medium text-white hover:bg-primary-dark"
               >
-                {t('featuresBanner.cta')}
+                {translate('featuresBanner.cta')}
               </button>
               <div className="flex flex-row items-center space-x-3 pt-2 text-gray-80 dark:text-gray-20">
                 <CheckCircle size={24} className="" />
-                <p className="whitespace-nowrap font-medium lg:text-lg">{t('featuresBanner.guarantee')}</p>
+                <p className="whitespace-nowrap font-medium lg:text-lg">{translate('featuresBanner.guarantee')}</p>
               </div>
 
-              <p className="text-sm font-medium text-gray-50">{t('featuresBanner.lastCta')}</p>
+              <p className="text-sm font-medium text-gray-50">{translate('featuresBanner.lastCta')}</p>
             </div>
           </div>
           <div className="hidden items-center lg:flex">

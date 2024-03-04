@@ -2,7 +2,7 @@ import React, { createContext, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 interface TranslationContextProps {
-  translate: (key: string, props?: Record<string, unknown>) => string;
+  translate: (key: string, props?: Record<string, unknown>) => string | string[] | undefined;
 }
 
 const TranslationContext = createContext<TranslationContextProps>({ translate: () => '' });
