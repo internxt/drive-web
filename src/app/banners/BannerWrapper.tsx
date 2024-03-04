@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import Banner from './Banner';
 import FeaturesBanner from './FeaturesBanner';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_spring_banner';
