@@ -4,8 +4,8 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 69%",
-    "title": "Sweet Valentine's treats!",
+    "header": "Save 70%!",
+    "title": "Get ready for Data Privacy Week",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -15,7 +15,7 @@
       "openSource": "Open source and transparent",
       "endToEnd": "End-to-end encrypted transfers",
       "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends February 25th"
+      "offerEnds": "Offer ends February 29th"
     }
   },
   "valentinesBanner": {
@@ -936,7 +936,7 @@
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
-    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
   },

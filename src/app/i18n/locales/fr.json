@@ -4,8 +4,8 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 69%",
-    "title": "Délices sucrés de la Saint-Valentin!",
+    "header": "Économisez 70% !",
+    "title": "Préparez-vous pour la Semaine de la Protection des Données",
     "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
@@ -15,7 +15,7 @@
       "openSource": "Open source et transparent",
       "endToEnd": "Transferts chiffrés de bout en bout",
       "unauthorized": "Aucun accès non autorisé",
-      "offerEnds": "L'offre se termine le 25 février"
+      "offerEnds": "L'offre se termine le 29 février"
     }
   },
   "valentinesBanner": {
@@ -868,7 +868,7 @@
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
     "braveNotSupportMultiplePhotosDowload": "Brave ne prend pas en charge le téléchargement de plusieurs photos.",
-    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 10GB)",
+    "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 20GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
   },

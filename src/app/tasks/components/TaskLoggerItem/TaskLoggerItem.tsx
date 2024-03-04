@@ -9,7 +9,7 @@ import tasksService from '../../services/tasks.service';
 import { TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
 
-const THREE_HUNDRED_MB_IN_BYTES = 314572800;
+const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
   notification: TaskNotification;
 }

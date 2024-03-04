@@ -5,11 +5,12 @@ import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import FeaturesBanner from './FeaturesBanner';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_valentines_banner_sale';
-const OFFER_OFF_DAY = new Date('2024-02-25');
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import Banner from './Banner';
+
+const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_soft_banner';
+const OFFER_OFF_DAY = new Date('2024-03-04');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -17,11 +18,13 @@ const BannerWrapper = (): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
   const userPlan = plan.subscription?.type;
+
+  const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
   const isOfferOffDay = new Date() > OFFER_OFF_DAY;
 
-  const shouldShowBanner = userPlan === 'free' && !isLocalStorage && !isOfferOffDay;
+  const shouldShowBanner = isNewUser && !isLocalStorage && !isOfferOffDay;
 
   useEffect(() => {
     handleBannerDisplay();
@@ -38,7 +41,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
