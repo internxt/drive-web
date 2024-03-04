@@ -156,6 +156,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
   const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
+  const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
 
   // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
@@ -822,7 +823,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   items={items}
                   isLoading={isTrash ? isLoadingTrashItems : isLoading}
                   onEndOfScroll={fetchItems}
-                  hasMoreItems={hasMoreItems}
+                  hasMoreItems={hasMoreItemsToLoad}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => {
                     setIsListElementsHovered(areHovered);
@@ -1045,6 +1046,8 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
+  const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
@@ -1063,7 +1066,7 @@ export default connect((state: RootState) => {
     planUsage: state.plan.planUsage,
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
-    hasMoreFolders: state.storage.hasMoreDriveFolders,
-    hasMoreFiles: state.storage.hasMoreDriveFiles,
+    hasMoreFolders,
+    hasMoreFiles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));
