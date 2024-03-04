@@ -9,19 +9,19 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "header": "Risparmia il 70%!",
-    "title": "Preparati per la Settimana della Privacy dei Dati",
+    "label": "Risparmia il 75%",
+    "title": "Inizia la tua pulizia digitale di primavera",
     "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni",
     "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
-    "features": {
-      "discount": "Risparmia su piani mensili e annuali",
-      "safeCloud": "Archiviazione cloud sicura e protetta",
-      "openSource": "Open source e trasparente",
-      "endToEnd": "Trasferimenti crittografati end-to-end",
-      "unauthorized": "Nessun accesso non autorizzato",
-      "offerEnds": "L'offerta termina il 29 febbraio"
-    }
+    "features": [
+      "Risparmia su tutti i nostri piani",
+      "Archiviazione cloud sicura e protetta",
+      "Open source e trasparente",
+      "Trasferimenti crittografati end-to-end",
+      "Nessun accesso non autorizzato",
+      "L'offerta termina il 18 marzo"
+    ]
   },
   "lifetimeBanner": {
     "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
