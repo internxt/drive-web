@@ -7,7 +7,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
   const features = translate('featuresBanner.features', { returnObjects: true }) as string[];
 
   const handleOnClick = () => {
-    window.open('https://internxt.com/pricing', '_blank', 'nofollow noreferrer');
+    window.open('https://internxt.com/pricing', '_blank', 'noopener noreferrer');
   };
 
   return (
