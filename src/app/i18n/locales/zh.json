@@ -4,8 +4,8 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "省69%",
-    "title": "甜蜜的情人节礼物!",
+    "header": "省 70%!",
+    "title": "为数据隐私周做好准备",
     "cta": "选择计划",
     "guarantee": "30 天内退款保证",
     "lastCta": "*此优惠仅适用于免费账户或新客户",
@@ -15,7 +15,7 @@
       "openSource": "开源和透明",
       "endToEnd": "端到端加密传输",
       "unauthorized": "无未经授权访问",
-      "offerEnds": "优惠截止日期为2月25日"
+      "offerEnds": "优惠截止日期为2月29日"
     }
   },
   "valentinesBanner": {
@@ -935,7 +935,7 @@
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "braveNotSupportMultiplePhotosDowload": "Brave 浏览器不支持多张照片下载。",
-    "maxSizeUploadLimitError": "文件太大（大于10GB）",
+    "maxSizeUploadLimitError": "文件太大（大于20GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
   },

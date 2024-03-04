@@ -179,7 +179,6 @@ class UploadManager {
                 event: TaskEvent.TaskCancelled,
                 listener: (task) => {
                   if (task.id === taskId) {
-                    console.log('aborted task id', taskId);
                     abort?.();
                   }
                 },

@@ -24,11 +24,12 @@ export const useRetryDownload = ({
   const retryDownload = useCallback(() => {
     const { item, taskId } = notification;
     const isZipAndMultipleItems = item && 'items' in item && item?.items && item?.type === 'zip';
+    const hasOneItemAndTaskID = item && taskId;
 
     if (isZipAndMultipleItems) {
       resetProgress(notification);
       downloadItemsAsZip(item.items as DriveItemData[], taskId);
-    } else if (item && taskId) {
+    } else if (hasOneItemAndTaskID) {
       resetProgress(notification);
       downloadItems(item as DriveItemData, taskId);
     } else {

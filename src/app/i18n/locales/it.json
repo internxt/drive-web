@@ -9,8 +9,8 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia il 69%",
-    "title": "Dolci regali di San Valentino!",
+    "header": "Risparmia il 70%!",
+    "title": "Preparati per la Settimana della Privacy dei Dati",
     "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni",
     "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
@@ -20,7 +20,7 @@
       "openSource": "Open source e trasparente",
       "endToEnd": "Trasferimenti crittografati end-to-end",
       "unauthorized": "Nessun accesso non autorizzato",
-      "offerEnds": "L'offerta termina il 25 febbraio"
+      "offerEnds": "L'offerta termina il 29 febbraio"
     }
   },
   "lifetimeBanner": {
@@ -928,7 +928,7 @@
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
     "braveNotSupportMultiplePhotosDowload": "Brave non supporta il download di più foto.",
-    "maxSizeUploadLimitError": "File troppo grande (superiore a 10GB)",
+    "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
   },

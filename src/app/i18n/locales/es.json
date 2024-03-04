@@ -4,10 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra un 69%",
-    "title": "¡Dulces regalos de San Valentín!",
+    "header": "¡Ahorra un 70%!",
+    "title": "Prepárate para la Semana de la Privacidad de Datos",
     "cta": "Elige un plan",
-    "guarantee": "Garantía de devolución de dinero de 30 días",
+    "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": {
       "discount": "Ahorra en suscripciones mensuales y anuales",
@@ -15,7 +15,7 @@
       "openSource": "Código abierto y transparente",
       "endToEnd": "Transferencias cifradas de extremo a extremo",
       "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta finaliza el 25 de febrero"
+      "offerEnds": "La oferta finaliza el 29 de febrero"
     }
   },
   "valentinesBanner": {
@@ -914,7 +914,7 @@
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
-    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
