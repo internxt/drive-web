@@ -51,6 +51,84 @@ const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   }
 };
 
+const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: File[]; dispatch }): boolean => {
+  try {
+    const planLimit = state.plan.planLimit;
+    const planUsage = state.plan.planUsage;
+    const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
+    const totalItemsSize = uploadItemsSize + planUsage;
+
+    if (planLimit && totalItemsSize >= planLimit) {
+      dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
+      return false;
+    }
+  } catch (err: unknown) {
+    errorService.reportError(err);
+  }
+
+  const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
+  if (showSizeWarning) {
+    notificationsService.show({
+      text: t('error.maxSizeUploadLimitError'),
+      type: ToastType.Warning,
+    });
+    return false;
+  }
+
+  return true;
+};
+
+const prepareFilesToUpload = async ({
+  files,
+  parentFolderId,
+  disableDuplicatedNamesCheck,
+  fileType,
+}: {
+  files: File[];
+  parentFolderId: number;
+  disableDuplicatedNamesCheck?: boolean;
+  fileType?: string;
+}): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
+  const filesToUpload: FileToUpload[] = [];
+  const storageClient = SdkFactory.getInstance().createStorageClient();
+
+  let parentFolderContent;
+  if (!disableDuplicatedNamesCheck) {
+    const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
+    parentFolderContent = await parentFolderContentPromise;
+  }
+
+  let zeroLengthFilesNumber = 0;
+
+  for (const file of files) {
+    if (file.size === 0) {
+      zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
+      continue;
+    }
+    const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
+    let fileContent;
+    let finalFilename = filename;
+
+    if (!disableDuplicatedNamesCheck) {
+      const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
+      finalFilename = renamedFilename;
+      fileContent = renameFile(file, renamedFilename);
+    } else {
+      fileContent = renameFile(file, filename);
+    }
+
+    filesToUpload.push({
+      name: finalFilename,
+      size: file.size,
+      type: extension ?? fileType,
+      content: fileContent,
+      parentFolderId,
+    });
+  }
+
+  return { filesToUpload, zeroLengthFilesNumber };
+};
+
 /**
  * @description
  *  1. Prepare files to upload
@@ -60,65 +138,20 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   'storage/uploadItems',
   async ({ files, parentFolderId, options, taskId, fileType }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
-    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
-    const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
 
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
-    try {
-      const planLimit = getState().plan.planLimit;
-      const planUsage = getState().plan.planUsage;
-      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
-      const totalItemsSize = uploadItemsSize + planUsage;
+    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    if (!continueWithUpload) return;
 
-      if (planLimit && totalItemsSize >= planLimit) {
-        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-        return;
-      }
-    } catch (err: unknown) {
-      errorService.reportError(err);
-    }
+    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+      files,
+      parentFolderId,
+      disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+      fileType,
+    });
 
-    if (showSizeWarning) {
-      notificationsService.show({
-        text: t('error.maxSizeUploadLimitError'),
-        type: ToastType.Warning,
-      });
-      return;
-    }
-
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-
-    let zeroLengthFilesNumber = 0;
-    for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
-      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-      let fileContent;
-      let finalFilename = filename;
-
-      if (options.disableDuplicatedNamesCheck) {
-        fileContent = renameFile(file, filename);
-      } else {
-        const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
-
-        const parentFolderContent = await parentFolderContentPromise;
-        const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-        finalFilename = renamedFilename;
-        fileContent = renameFile(file, renamedFilename);
-      }
-
-      filesToUpload.push({
-        name: finalFilename,
-        size: file.size,
-        type: extension ?? fileType,
-        content: fileContent,
-        parentFolderId,
-      });
-    }
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
@@ -200,33 +233,13 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     { getState, dispatch },
   ) => {
     const user = getState().user.user as UserSettings;
-    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
-    try {
-      const planLimit = getState().plan.planLimit;
-      const planUsage = getState().plan.planUsage;
-      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
-      const totalItemsSize = uploadItemsSize + planUsage;
-
-      if (planLimit && totalItemsSize >= planLimit) {
-        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-        return;
-      }
-    } catch (err: unknown) {
-      errorService.reportError(err);
-    }
-
-    if (showSizeWarning) {
-      notificationsService.show({
-        text: t('error.maxSizeUploadLimitError'),
-        type: ToastType.Warning,
-      });
-      return;
-    }
+    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    if (!continueWithUpload) return;
 
     let zeroLengthFilesNumber = 0;
     for (const file of files) {
@@ -338,68 +351,17 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
   'storage/uploadItems',
   async ({ files, parentFolderId, options, filesProgress }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
-    const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
-    const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
     const abortController = options?.abortController ?? new AbortController();
 
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
-    try {
-      const planLimit = getState().plan.planLimit;
-      const planUsage = getState().plan.planUsage;
-      const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
-      const totalItemsSize = uploadItemsSize + planUsage;
+    const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
+      files,
+      parentFolderId,
+      disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+    });
 
-      if (planLimit && totalItemsSize >= planLimit) {
-        dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
-        return;
-      }
-    } catch (err: unknown) {
-      errorService.reportError(err);
-    }
-
-    if (showSizeWarning) {
-      notificationsService.show({
-        text: t('error.maxSizeUploadLimitError'),
-        type: ToastType.Warning,
-      });
-      return;
-    }
-
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    let parentFolderContent;
-    if (!options.disableDuplicatedNamesCheck) {
-      const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
-      parentFolderContent = await parentFolderContentPromise;
-    }
-
-    let zeroLengthFilesNumber = 0;
-    for (const file of files) {
-      if (file.size === 0) {
-        zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
-        continue;
-      }
-      const { filename, extension } = itemUtils.getFilenameAndExt(file.name);
-      let fileContent;
-      let finalFilename = filename;
-
-      if (options.disableDuplicatedNamesCheck) {
-        fileContent = renameFile(file, filename);
-      } else {
-        const [, , renamedFilename] = itemUtils.renameIfNeeded(parentFolderContent.files, filename, extension);
-        finalFilename = renamedFilename;
-        fileContent = renameFile(file, renamedFilename);
-      }
-
-      filesToUpload.push({
-        name: finalFilename,
-        size: file.size,
-        type: extension,
-        content: fileContent,
-        parentFolderId,
-      });
-    }
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({
