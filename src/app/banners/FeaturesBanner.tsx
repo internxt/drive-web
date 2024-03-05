@@ -2,9 +2,9 @@ import { CheckCircle, Flower, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
-  const { translate } = useTranslationContext();
+  const { translate, translateList } = useTranslationContext();
 
-  const features = translate('featuresBanner.features', { returnObjects: true }) as string[];
+  const features = translateList('featuresBanner.features');
 
   const handleOnClick = () => {
     window.open('https://internxt.com/pricing', '_blank', 'noopener noreferrer');
