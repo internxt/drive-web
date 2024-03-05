@@ -37,10 +37,10 @@ const storageSelectors = {
     return this.levelItems(state)(currentFolderId);
   },
   hasMoreFiles(state: RootState): boolean {
-    return state.storage.hasMoreDriveFiles;
+    return state.storage.hasMoreDriveFiles[state.storage.currentPath.id];
   },
   hasMoreFolders(state: RootState): boolean {
-    return state.storage.hasMoreDriveFolders;
+    return state.storage.hasMoreDriveFolders[state.storage.currentPath.id];
   },
   levelItems(state: RootState): (folderId: number) => DriveItemData[] {
     return (folderId) => state.storage.levels[folderId] || [];

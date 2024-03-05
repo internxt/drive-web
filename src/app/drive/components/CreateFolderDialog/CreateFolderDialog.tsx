@@ -45,17 +45,18 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
   const createFolder = async () => {
     if (folderName && folderName.trim().length > 0) {
       setIsLoading(true);
+      const parentFolderId = currentFolderId ?? neededFolderId;
       await dispatch(
         storageThunks.createFolderThunk({
           folderName,
-          parentFolderId: currentFolderId ? currentFolderId : neededFolderId,
+          parentFolderId,
         }),
       )
         .unwrap()
         .then(() => {
           onFolderCreated && onFolderCreated();
-          dispatch(storageActions.setHasMoreDriveFolders(true));
-          dispatch(storageActions.setHasMoreDriveFiles(true));
+          dispatch(storageActions.setHasMoreDriveFolders({ folderId: parentFolderId, status: true }));
+          dispatch(storageActions.setHasMoreDriveFiles({ folderId: parentFolderId, status: true }));
           setTimeout(() => {
             dispatch(fetchSortedFolderContentThunk(currentFolderId));
             setIsLoading(false);
@@ -72,7 +73,7 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
           return e;
         });
     } else {
-      setError(translate('error.folderCannotBeEmpty') as string);
+      setError(translate('error.folderCannotBeEmpty'));
     }
   };
 
@@ -92,9 +93,9 @@ const CreateFolderDialog = ({ onFolderCreated, currentFolderId, neededFolderId }
         <Input
           disabled={isLoading}
           className={`${error !== '' ? 'error' : ''}`}
-          label={translate('modals.newFolderModal.label') as string}
-          value={folderName as string}
-          placeholder={translate('modals.newFolderModal.placeholder') as string}
+          label={translate('modals.newFolderModal.label')}
+          value={folderName}
+          placeholder={translate('modals.newFolderModal.placeholder')}
           onChange={(name) => {
             setFolderName(name);
             setError('');

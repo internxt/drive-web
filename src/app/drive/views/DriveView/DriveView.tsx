@@ -139,7 +139,7 @@ export default connect((state: RootState) => {
 
   return {
     namePath: state.storage.namePath,
-    isLoading: state.storage.loadingFolders[currentFolderId],
+    isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
     currentFolderId,
     items: sortedItems,
   };
