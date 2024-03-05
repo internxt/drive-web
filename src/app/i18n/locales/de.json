@@ -4,18 +4,19 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "header": "Spare 70%!",
-    "title": "Bereiten Sie sich auf die Datenschutzwoche vor",
-    "cta": "Plan auswählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
-    "features": {
-      "discount": "Sparen Sie bei monatlichen und jährlichen Plänen",
-      "safeCloud": "Sicherer und geschützter Cloud-Speicher",
-      "openSource": "Open Source und transparent",
-      "endToEnd": "Ende-zu-Ende-verschlüsselte Übertragungen",
-      "unauthorized": "Kein unberechtigter Zugriff",
-      "offerEnds": "Angebot endet am 29. Februar"
-    }
+    "label": "Spare 75%",
+    "title": "Starten Sie Ihre digitale Frühjahrsputz",
+    "cta": "Wähle einen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "features": [
+      "Sparen Sie bei allen unseren Plänen",
+      "Sicherer Cloud-Speicher",
+      "Backup privater Dateien und Fotos",
+      "End-to-end verschlüsselte Übertragungen",
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 18. März"
+    ]
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
