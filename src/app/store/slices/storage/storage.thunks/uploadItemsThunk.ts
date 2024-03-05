@@ -1,23 +1,27 @@
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import { items as itemUtils } from '@internxt/lib';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+
+import { renameFile } from 'app/crypto/services/utils';
+import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
+import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+
+import { t } from 'i18next';
+
 import { storageActions } from '..';
-import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
+import { SdkFactory } from '../../../../core/factory/sdk';
+import errorService from '../../../../core/services/error.service';
+import { uploadFileWithManager } from '../../../../network/UploadManager';
+import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
+import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
-import { renameFile } from 'app/crypto/services/utils';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { MAX_ALLOWED_UPLOAD_SIZE } from 'app/drive/services/network.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { FileToUpload } from 'app/drive/services/file.service/uploadFile';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { t } from 'i18next';
-import { uploadFileWithManager } from '../../../../network/UploadManager';
-import shareService from '../../../../share/services/share.service';
-import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
-import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
-import errorService from '../../../../core/services/error.service';
+import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {
   relatedTaskId: string;
@@ -57,8 +61,9 @@ const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: 
     const planUsage = state.plan.planUsage;
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
     const totalItemsSize = uploadItemsSize + planUsage;
+    const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
 
-    if (planLimit && totalItemsSize >= planLimit) {
+    if (isPlanSizeLimitExceeded) {
       dispatch(uiActions.setIsReachedPlanLimitDialogOpen(true));
       return false;
     }
@@ -66,8 +71,8 @@ const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: 
     errorService.reportError(err);
   }
 
-  const showSizeWarning = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
-  if (showSizeWarning) {
+  const isAnyFileExceededSizeLimit = files.some((file) => file.size > MAX_ALLOWED_UPLOAD_SIZE);
+  if (isAnyFileExceededSizeLimit) {
     notificationsService.show({
       text: t('error.maxSizeUploadLimitError'),
       type: ToastType.Warning,
