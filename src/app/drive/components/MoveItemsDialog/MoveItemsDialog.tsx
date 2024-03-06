@@ -126,7 +126,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
   const setDriveBreadcrumb = async (itemsToMove) => {
     const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
-    const fullPath = breadcrumbsList.reverse();
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore:next-line
+    const fullPath = breadcrumbsList.toReversed();
     const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
     dispatch(storageActions.setNamePath(fullPathParsedNamesList));
   };
