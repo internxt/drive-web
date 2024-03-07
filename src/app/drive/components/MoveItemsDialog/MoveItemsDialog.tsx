@@ -19,6 +19,8 @@ import Button from 'app/shared/components/Button/Button';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
 import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import newStorageService from 'app/drive/services/new-storage.service';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -122,13 +124,13 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = () => {
-    const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
-    dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
-    itemsToMove[0].isFolder &&
-      driveBreadcrumbPath.forEach((item) => {
-        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-      });
+  const setDriveBreadcrumb = async (itemsToMove) => {
+    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore:next-line
+    const fullPath = breadcrumbsList.toReversed();
+    const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
+    dispatch(storageActions.setNamePath(fullPathParsedNamesList));
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
@@ -150,7 +152,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
-      !props.isTrash && setDriveBreadcrumb();
+      !props.isTrash && setDriveBreadcrumb(itemsToMove);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
