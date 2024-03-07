@@ -19,9 +19,11 @@ const SectionItem = ({
 }: SectionItemProps) => {
   const isClickable = !!onClick;
   const isClickableContainerClass = isClickable ? 'hover:bg-gray-1 hover:bg-gray-5' : '';
-  const containerClass = isDisabled ? '' : isActive ? 'bg-primary' : isClickableContainerClass;
+  const isActiveContainerClass = isActive ? 'bg-primary' : isClickableContainerClass;
+  const containerClass = isDisabled ? '' : isActiveContainerClass;
   const isClickableClass = isClickable ? 'hover:cursor-pointer' : '';
-  const textClass = isDisabled ? 'text-gray-40' : isActive ? 'text-white' : 'text-gray-80';
+  const isActiveTextClass = isActive ? 'text-white' : 'text-gray-80';
+  const textClass = isDisabled ? 'text-gray-40' : isActiveTextClass;
   const textClass2 = isSection ? 'font-semibold' : '';
   const textClass3 = isSubsection ? 'px-3' : '';
   const notificationClass = isActive ? 'bg-white' : ' bg-primary';
@@ -32,6 +34,13 @@ const SectionItem = ({
       className={`flex h-10 w-full items-center justify-between rounded-lg px-3 py-2
        ${isClickableClass} ${containerClass}`}
       onClick={onClick}
+      role={isClickable ? 'button' : undefined}
+      tabIndex={isClickable ? 0 : undefined}
+      onKeyDown={(event) => {
+        if (isClickable && (event.key === 'Enter' || event.key === ' ')) {
+          onClick();
+        }
+      }}
     >
       <div className="flex items-center">
         <span className={`text-base font-normal ${textClass} ${textClass2} ${textClass3}`}>{text}</span>
