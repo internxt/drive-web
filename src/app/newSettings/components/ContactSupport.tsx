@@ -6,7 +6,7 @@ import Section from '../../core/views/Preferences/components/Section';
 
 const ContactSupport = () => {
   const { translate } = useTranslationContext();
-  const [state, loadChat] = useChat();
+  const [, loadChat] = useChat();
 
   const onClick = () => {
     loadChat({ open: true });
