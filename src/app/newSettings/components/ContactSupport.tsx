@@ -1,0 +1,25 @@
+import { useChat } from 'react-live-chat-loader';
+
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import Button from 'app/shared/components/Button/Button';
+import Section from '../../core/views/Preferences/components/Section';
+
+const ContactSupport = () => {
+  const { translate } = useTranslationContext();
+  const [state, loadChat] = useChat();
+
+  const onClick = () => {
+    loadChat({ open: true });
+  };
+
+  return (
+    <Section title={translate('views.account.tabs.account.support.title')}>
+      <p className="text-gray-80">{translate('views.account.tabs.account.support.description')}</p>
+      <Button className="mt-5" variant="secondary" onClick={onClick}>
+        {translate('views.account.tabs.account.support.cta')}
+      </Button>
+    </Section>
+  );
+};
+
+export default ContactSupport;
