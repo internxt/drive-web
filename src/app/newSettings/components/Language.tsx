@@ -36,7 +36,7 @@ export default function Language(): JSX.Element {
   }, [lang]);
   return (
     <Section className="" title={translate('lang.title')}>
-      <Card className="w-fit py-3">
+      <Card className="w-fit py-3 dark:bg-gray-5">
         <ItemsDropdown
           title={
             <div className="flex flex-row items-center justify-between space-x-2">
