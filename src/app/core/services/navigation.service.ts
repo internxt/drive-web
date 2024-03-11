@@ -57,6 +57,12 @@ const navigationService = {
     const currentUuid = pathname[2];
     return currentUuid;
   },
+  openPreferencesDialog(section: string, subsection: string) {
+    instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
+  },
+  closePreferencesDialog() {
+    instance.push(navigationService.history.location.pathname);
+  },
 };
 
 export default navigationService;

@@ -1,4 +1,4 @@
-import { createElement, useEffect } from 'react';
+import { createElement, useEffect, useState } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -38,6 +38,7 @@ import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import PreferencesDialog from 'app/preferences';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -45,6 +46,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   namePath: FolderPath[];
@@ -52,10 +54,37 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    isPreferencesDialogOpen,
+    fileViewerItem,
+  } = props;
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const isOpenPreferencesDialog = params.get('preferences') === 'open';
+  const [haveParamsChanged, setHaveParamsChanged] = useState(false);
+
+  useEffect(() => {
+    window.onpopstate = () => {
+      setHaveParamsChanged(true);
+    };
+  });
+
+  useEffect(() => {
+    if (isOpenPreferencesDialog) {
+      dispatch(uiActions.setIsPreferencesDialogOpen(true));
+      setHaveParamsChanged(false);
+    } else {
+      dispatch(uiActions.setIsPreferencesDialogOpen(false));
+      setHaveParamsChanged(false);
+    }
+  }, [haveParamsChanged]);
 
   useBeforeUnload();
 
@@ -129,14 +158,6 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const isDev = !envService.isProduction();
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isSurveyDialogOpen,
-    fileViewerItem,
-  } = props;
   const pathName = window.location.pathname.split('/')[1];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
@@ -205,6 +226,9 @@ const App = (props: AppProps): JSX.Element => {
               filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
             }}
           />
+          {isPreferencesDialogOpen && (
+            <PreferencesDialog haveParamsChanged={haveParamsChanged} setHaveParamsChanged={setHaveParamsChanged} />
+          )}
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
@@ -242,6 +266,7 @@ export default connect((state: RootState) => ({
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
+  isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
   namePath: state.storage.namePath,
