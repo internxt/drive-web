@@ -638,6 +638,16 @@
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Edit",
+          "address": "Address",
+          "phone": "Phone",
+          "owner": "Owner"
+        }
+      }
     }
   },
   "contextMenu": {

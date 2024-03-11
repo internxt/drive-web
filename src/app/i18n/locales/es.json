@@ -621,6 +621,16 @@
     "redirectToApp": {
       "message": "Gracias!",
       "goToApp": "Volver a la aplicación"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Editar",
+          "address": "Dirección",
+          "phone": "Teléfono",
+          "owner": "Propietario"
+        }
+      }
     }
   },
   "contextMenu": {

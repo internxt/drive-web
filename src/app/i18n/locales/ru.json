@@ -613,6 +613,16 @@
     "redirectToApp": {
       "message": "Спасибо",
       "goToApp": "Вернуться в приложение"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Редактировать",
+          "address": "Адрес",
+          "phone": "Телефон",
+          "owner": "Владелец"
+        }
+      }
     }
   },
   "contextMenu": {

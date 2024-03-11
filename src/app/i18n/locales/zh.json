@@ -638,6 +638,16 @@
     "redirectToApp": {
       "message": "谢谢您",
       "goToApp": "回到 app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "编辑",
+          "address": "地址",
+          "phone": "电话",
+          "owner": "所有者"
+        }
+      }
     }
   },
   "contextMenu": {
