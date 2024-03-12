@@ -645,7 +645,13 @@
           "edit": "Edit",
           "address": "Address",
           "phone": "Phone",
-          "owner": "Owner"
+          "owner": "Owner",
+          "workspaceOverview": "Workspace overview",
+          "members": "Members",
+          "teams": "Teams",
+          "billed": "Billed on {{renewDate}}",
+          "spaceUsed": "Space used ({{percentageUsed}}%)",
+          "totalSpace": "Total space"
         }
       }
     }

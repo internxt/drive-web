@@ -638,7 +638,13 @@
           "edit": "Modifica",
           "address": "Indirizzo",
           "phone": "Telefono",
-          "owner": "Proprietario"
+          "owner": "Proprietario",
+          "workspaceOverview": "Panoramica dello spazio di lavoro",
+          "members": "Membri",
+          "teams": "Team",
+          "billed": "Fatturato il {{renewDate}}",
+          "spaceUsed": "Spazio utilizzato ({{percentageUsed}}%)",
+          "totalSpace": "Spazio totale"
         }
       }
     }

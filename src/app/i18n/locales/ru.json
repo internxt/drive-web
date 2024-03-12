@@ -620,7 +620,13 @@
           "edit": "Редактировать",
           "address": "Адрес",
           "phone": "Телефон",
-          "owner": "Владелец"
+          "owner": "Владелец",
+          "workspaceOverview": "Обзор рабочего пространства",
+          "members": "Участники",
+          "teams": "Команды",
+          "billed": "Оплачено по {{renewDate}}",
+          "spaceUsed": "Использованное пространство ({{percentageUsed}}%)",
+          "totalSpace": "Общее пространство"
         }
       }
     }

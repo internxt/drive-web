@@ -553,7 +553,13 @@
           "edit": "Bearbeiten",
           "address": "Adresse",
           "phone": "Telefon",
-          "owner": "Inhaber"
+          "owner": "Inhaber",
+          "workspaceOverview": "Übersicht des Arbeitsbereichs",
+          "members": "Mitglieder",
+          "teams": "Teams",
+          "billed": "Abgerechnet am {{renewDate}}",
+          "spaceUsed": "Verwendeter Speicher ({{percentageUsed}}%)",
+          "totalSpace": "Gesamtspeicher"
         }
       }
     }

@@ -645,7 +645,13 @@
           "edit": "编辑",
           "address": "地址",
           "phone": "电话",
-          "owner": "所有者"
+          "owner": "所有者",
+          "workspaceOverview": "工作区概览",
+          "members": "成员",
+          "teams": "团队",
+          "billed": "{{renewDate}} 结算",
+          "spaceUsed": "已使用空间 ({{percentageUsed}}%)",
+          "totalSpace": "总空间"
         }
       }
     }
