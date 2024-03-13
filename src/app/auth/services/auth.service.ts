@@ -258,7 +258,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
   const privateKey = Buffer.from(user.privateKey, 'base64').toString();
   const privateKeyEncrypted = aes.encrypt(privateKey, newPassword, getAesInitFromEnv());
 
-  const usersClient = SdkFactory.getInstance().createUsersClient();
+  const usersClient = SdkFactory.getNewApiInstance().createNewUsersClient();
 
   return usersClient
     .changePassword(<ChangePasswordPayload>{
@@ -267,6 +267,7 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       newEncryptedSalt: encryptedNewSalt,
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
+      encryptVersion: '', // !TODO: Add the version used
     })
     .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
