@@ -341,7 +341,7 @@ const Navbar = (props: NavbarProps) => {
       <div className="flex shrink-0">
         <button
           onClick={() => {
-            navigationService.openPreferencesDialog('general', 'general');
+            navigationService.openPreferencesDialog({ section: 'general', subsection: 'general' });
             dispatch(uiActions.setIsPreferencesDialogOpen(true));
           }}
           className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"

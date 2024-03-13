@@ -38,7 +38,7 @@ import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
 import useBeforeUnload from './hooks/useBeforeUnload';
-import PreferencesDialog from 'app/preferences';
+import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -203,7 +203,6 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-
           <Switch>
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
@@ -219,7 +218,6 @@ const App = (props: AppProps): JSX.Element => {
               routes()
             )}
           </Switch>
-
           <Toaster
             position="bottom-center"
             containerStyle={{
@@ -227,12 +225,14 @@ const App = (props: AppProps): JSX.Element => {
             }}
           />
           {isPreferencesDialogOpen && (
-            <PreferencesDialog haveParamsChanged={haveParamsChanged} setHaveParamsChanged={setHaveParamsChanged} />
+            <PreferencesDialog
+              haveParamsChanged={haveParamsChanged}
+              setHaveParamsChanged={setHaveParamsChanged}
+              isPreferencesDialogOpen={isPreferencesDialogOpen}
+            />
           )}
-
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}

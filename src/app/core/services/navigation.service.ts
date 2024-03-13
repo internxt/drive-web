@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
+import { SelectSectionProps } from 'app/newSettings/types';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -57,7 +58,7 @@ const navigationService = {
     const currentUuid = pathname[2];
     return currentUuid;
   },
-  openPreferencesDialog(section: string, subsection: string) {
+  openPreferencesDialog({ section, subsection }: SelectSectionProps) {
     instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
   },
   closePreferencesDialog() {

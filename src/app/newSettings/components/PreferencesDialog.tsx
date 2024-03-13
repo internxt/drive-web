@@ -7,22 +7,10 @@ import Modal from 'app/shared/components/Modal';
 import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-
-interface PreferencesDialogProps {
-  haveParamsChanged;
-  setHaveParamsChanged;
-}
-
-interface Section {
-  section: string;
-  subsection: string;
-  title: string;
-}
-
-type Sections = Section[];
+import { SelectSectionProps, PreferencesDialogProps, Sections } from '../types';
 
 const PreferencesDialog = (props: PreferencesDialogProps) => {
-  const { haveParamsChanged, setHaveParamsChanged } = props;
+  const { haveParamsChanged, setHaveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const SECTIONS: Sections = [
@@ -48,7 +36,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       const subsectionParams = sectionParams.filter(
         (subsection) => subsection.subsection === currentSubsectionParams[0],
       );
-      changeSection(sectionParams[0].section, subsectionParams[0].subsection);
+      changeSection({ section: sectionParams[0].section, subsection: subsectionParams[0].subsection });
       setHaveParamsChanged(false);
     } else {
       dispatch(uiActions.setIsPreferencesDialogOpen(false));
@@ -56,15 +44,15 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
     }
   }, [haveParamsChanged]);
 
-  const changeSection = (onSection, OnSubsection) => {
+  const changeSection = ({ section: onSection, subsection: OnSubsection }: SelectSectionProps) => {
     const selectedSection = SECTIONS.filter((section) => section.section === onSection);
     const selectedSubsection = selectedSection.filter((subsection) => subsection.subsection === OnSubsection);
     setActiveSection(selectedSubsection);
   };
 
-  const goSection = (section, subsection) => {
-    navigationService.openPreferencesDialog(section, subsection);
-    changeSection(section, subsection);
+  const goSection = ({ section, subsection }: SelectSectionProps) => {
+    navigationService.openPreferencesDialog({ section: section, subsection: subsection });
+    changeSection({ section, subsection });
   };
 
   const onClose = () => {
@@ -73,7 +61,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   };
 
   return (
-    <Modal maxWidth="w-full max-w-4xl" className="m-0 flex" isOpen={true} onClose={() => onClose()}>
+    <Modal maxWidth="w-full max-w-4xl" className="m-0 flex" isOpen={isPreferencesDialogOpen} onClose={() => onClose()}>
       <Helmet>
         <title>{activeSection[0].title} - Internxt Drive</title>
       </Helmet>
@@ -84,7 +72,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         <button
           className="py-3 pl-4"
           onClick={() => {
-            goSection('account', 'security');
+            goSection({ section: 'account', subsection: 'security' });
           }}
         >
           Go Security
