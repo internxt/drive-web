@@ -1,4 +1,4 @@
-import { createElement, useEffect, useState } from 'react';
+import { createElement, useEffect } from 'react';
 import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Toaster } from 'react-hot-toast';
@@ -39,6 +39,7 @@ import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
+import { useParamsChange } from 'app/newSettings/hooks/useParamsChange';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -67,24 +68,7 @@ const App = (props: AppProps): JSX.Element => {
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
-  const isOpenPreferencesDialog = params.get('preferences') === 'open';
-  const [haveParamsChanged, setHaveParamsChanged] = useState(false);
-
-  useEffect(() => {
-    window.onpopstate = () => {
-      setHaveParamsChanged(true);
-    };
-  });
-
-  useEffect(() => {
-    if (isOpenPreferencesDialog) {
-      dispatch(uiActions.setIsPreferencesDialogOpen(true));
-      setHaveParamsChanged(false);
-    } else {
-      dispatch(uiActions.setIsPreferencesDialogOpen(false));
-      setHaveParamsChanged(false);
-    }
-  }, [haveParamsChanged]);
+  const haveParamsChanged = useParamsChange();
 
   useBeforeUnload();
 
@@ -227,7 +211,6 @@ const App = (props: AppProps): JSX.Element => {
           {isPreferencesDialogOpen && (
             <PreferencesDialog
               haveParamsChanged={haveParamsChanged}
-              setHaveParamsChanged={setHaveParamsChanged}
               isPreferencesDialogOpen={isPreferencesDialogOpen}
             />
           )}

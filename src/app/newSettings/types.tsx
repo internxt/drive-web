@@ -4,8 +4,7 @@ export interface SelectSectionProps {
 }
 
 export interface PreferencesDialogProps {
-  haveParamsChanged;
-  setHaveParamsChanged;
+  haveParamsChanged: boolean;
   isPreferencesDialogOpen: boolean;
 }
 

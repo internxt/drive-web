@@ -10,7 +10,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { SelectSectionProps, PreferencesDialogProps, Sections } from '../types';
 
 const PreferencesDialog = (props: PreferencesDialogProps) => {
-  const { haveParamsChanged, setHaveParamsChanged, isPreferencesDialogOpen } = props;
+  const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const SECTIONS: Sections = [
@@ -37,10 +37,8 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         (subsection) => subsection.subsection === currentSubsectionParams[0],
       );
       changeSection({ section: sectionParams[0].section, subsection: subsectionParams[0].subsection });
-      setHaveParamsChanged(false);
     } else {
       dispatch(uiActions.setIsPreferencesDialogOpen(false));
-      setHaveParamsChanged(false);
     }
   }, [haveParamsChanged]);
 
