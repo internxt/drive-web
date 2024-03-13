@@ -1,21 +1,22 @@
 import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare, Trash, Users } from '@phosphor-icons/react';
 import { connect } from 'react-redux';
 
-import { AppView } from '../../types';
-import navigationService from '../../services/navigation.service';
-import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
-import SidenavItem from './SidenavItem/SidenavItem';
 import desktopService from 'app/core/services/desktop.service';
 import PlanUsage from 'app/drive/components/PlanUsage/PlanUsage';
+import { RootState } from 'app/store';
 import { planSelectors } from 'app/store/slices/plan';
+import { ReactComponent as InternxtLogo } from 'assets/icons/big-logo.svg';
+import navigationService from '../../services/navigation.service';
+import { AppView } from '../../types';
+import SidenavItem from './SidenavItem/SidenavItem';
 
-import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppSelector } from 'app/store/hooks';
+import SectionListContainer from '../../../newSettings/containers/SectionListContainer';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -76,6 +77,7 @@ const Sidenav = (props: SidenavProps) => {
           <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />
           <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
           <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          <SectionListContainer />
         </div>
         {props.subscription && props.subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 

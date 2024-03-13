@@ -617,7 +617,7 @@
     "preferences": {
       "workspace": {
         "overview": {
-          "edit": "Редактировать",
+          "edit": "Редактировать профиль",
           "address": "Адрес",
           "phone": "Телефон",
           "owner": "Владелец",
@@ -626,7 +626,16 @@
           "teams": "Команды",
           "billed": "Оплачено по {{renewDate}}",
           "spaceUsed": "Использованное пространство ({{percentageUsed}}%)",
-          "totalSpace": "Общее пространство"
+          "totalSpace": "Общее пространство",
+          "editOverviewDetails": {
+            "title": "Детали профиля",
+            "cancelButton": "Отмена",
+            "saveButton": "Сохранить изменения"
+          }
+        },
+        "billing": {
+          "editBilling": "Изменить оплату",
+          "billingDetails": "Детали оплаты"
         }
       }
     }

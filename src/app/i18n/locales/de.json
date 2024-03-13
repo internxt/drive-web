@@ -550,7 +550,7 @@
     "preferences": {
       "workspace": {
         "overview": {
-          "edit": "Bearbeiten",
+          "edit": "Profil bearbeiten",
           "address": "Adresse",
           "phone": "Telefon",
           "owner": "Inhaber",
@@ -559,7 +559,16 @@
           "teams": "Teams",
           "billed": "Abgerechnet am {{renewDate}}",
           "spaceUsed": "Verwendeter Speicher ({{percentageUsed}}%)",
-          "totalSpace": "Gesamtspeicher"
+          "totalSpace": "Gesamtspeicher",
+          "editOverviewDetails": {
+            "title": "Profil Details",
+            "cancelButton": "Abbrechen",
+            "saveButton": "Änderungen speichern"
+          }
+        },
+        "billing": {
+          "editBilling": "Zahlung bearbeiten",
+          "billingDetails": "Zahlungsdetails"
         }
       }
     }

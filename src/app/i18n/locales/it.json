@@ -635,7 +635,7 @@
     "preferences": {
       "workspace": {
         "overview": {
-          "edit": "Modifica",
+          "edit": "Modifica profilo",
           "address": "Indirizzo",
           "phone": "Telefono",
           "owner": "Proprietario",
@@ -644,7 +644,16 @@
           "teams": "Team",
           "billed": "Fatturato il {{renewDate}}",
           "spaceUsed": "Spazio utilizzato ({{percentageUsed}}%)",
-          "totalSpace": "Spazio totale"
+          "totalSpace": "Spazio totale",
+          "editOverviewDetails": {
+            "title": "Dettagli del profilo",
+            "cancelButton": "Annulla",
+            "saveButton": "Salva modifiche"
+          }
+        },
+        "billing": {
+          "editBilling": "Modifica fatturazione",
+          "billingDetails": "Dettagli della fatturazione"
         }
       }
     }
