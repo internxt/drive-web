@@ -10,6 +10,7 @@ import { uiActions } from 'app/store/slices/ui';
 import SectionListContainer, { sectionItems } from '../containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from '../types';
 import GeneralSection from '../views/GeneralSection';
+import OverviewSection from '../views/OverviewSection';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -70,6 +71,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
           <X size={22} />
         </button>
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>
