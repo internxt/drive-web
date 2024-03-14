@@ -1445,6 +1445,17 @@
       "security": {
         "title": "安全"
       }
+    },
+    "navBarSections": {
+      "general": "常规",
+      "workspace": "工作区",
+      "overview": "概览",
+      "members": "成员",
+      "teams": "团队",
+      "billing": "账单",
+      "account": "账户",
+      "plans": "计划",
+      "security": "安全"
     }
   }
 }

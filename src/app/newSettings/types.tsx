@@ -1,6 +1,6 @@
 export interface SelectSectionProps {
   section: string;
-  subsection: string;
+  subsection?: string;
 }
 
 export interface PreferencesDialogProps {
@@ -10,8 +10,7 @@ export interface PreferencesDialogProps {
 
 export interface Section {
   section: string;
-  subsection: string;
-  title: string;
+  subsection?: string;
 }
 
 export type Sections = Section[];
