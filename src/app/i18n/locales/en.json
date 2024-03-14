@@ -1414,5 +1414,49 @@
       "title": "File not found",
       "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
     }
+  },
+  "preferences": {
+    "title": "Preferences",
+    "general": {
+      "title": "General"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "overview": {
+        "title": "Overview"
+      },
+      "members": {
+        "title": "Members"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "billing": {
+        "title": "Billing"
+      }
+    },
+    "account": {
+      "title": "Account",
+      "plans": {
+        "title": "Plans"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "security": {
+        "title": "Security"
+      }
+    },
+    "navBarSections": {
+      "general": "General",
+      "workspace": "Workspace",
+      "overview": "Overview",
+      "members": "Members",
+      "teams": "Teams",
+      "billing": "Billing",
+      "account": "Account",
+      "plans": "Plans",
+      "security": "Security"
+    }
   }
 }

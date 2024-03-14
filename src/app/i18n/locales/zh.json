@@ -1413,5 +1413,49 @@
       "title": "未找到文件",
       "description": "确保 URL 正确且文件未被移动或删除"
     }
+  },
+  "preferences": {
+    "title": "首选项",
+    "general": {
+      "title": "常规"
+    },
+    "workspace": {
+      "title": "工作区",
+      "overview": {
+        "title": "概述"
+      },
+      "members": {
+        "title": "成员"
+      },
+      "teams": {
+        "title": "团队"
+      },
+      "billing": {
+        "title": "计费"
+      }
+    },
+    "account": {
+      "title": "账户",
+      "plans": {
+        "title": "计划"
+      },
+      "billing": {
+        "title": "计费"
+      },
+      "security": {
+        "title": "安全"
+      }
+    },
+    "navBarSections": {
+      "general": "常规",
+      "workspace": "工作区",
+      "overview": "概览",
+      "members": "成员",
+      "teams": "团队",
+      "billing": "账单",
+      "account": "账户",
+      "plans": "计划",
+      "security": "安全"
+    }
   }
 }

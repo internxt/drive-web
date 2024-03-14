@@ -18,21 +18,21 @@ const SectionItem = ({
   onClick,
 }: SectionItemProps) => {
   const isClickable = !!onClick;
-  const isClickableContainerClass = isClickable ? 'hover:bg-gray-1 hover:bg-gray-5' : '';
-  const isActiveContainerClass = isActive ? 'bg-primary' : isClickableContainerClass;
-  const containerClass = isDisabled ? '' : isActiveContainerClass;
-  const isClickableClass = isClickable ? 'hover:cursor-pointer' : '';
-  const isActiveTextClass = isActive ? 'text-white' : 'text-gray-80';
-  const textClass = isDisabled ? 'text-gray-40' : isActiveTextClass;
-  const textClass2 = isSection ? 'font-semibold' : '';
-  const textClass3 = isSubsection ? 'px-3' : '';
+  const clickableContainerClass = isClickable ? 'hover:bg-gray-1 hover:bg-gray-5' : '';
+  const activeContainerClass = isActive ? 'bg-primary' : clickableContainerClass;
+  const containerClass = isDisabled ? '' : activeContainerClass;
+  const clickableClass = isClickable ? 'hover:cursor-pointer' : '';
+  const activeTextClass = isActive ? 'text-white' : 'text-gray-80';
+  const disabledTextClass = isDisabled ? 'text-gray-40' : activeTextClass;
+  const sectionTextClass = isSection ? 'font-semibold' : '';
+  const subsectionTextClass = isSubsection ? 'px-3' : '';
   const notificationClass = isActive ? 'bg-white' : ' bg-primary';
   const notificationTextClass = isActive ? 'text-primary' : 'text-white';
 
   return (
     <div
       className={`flex h-10 w-full items-center justify-between rounded-lg px-3 py-2
-       ${isClickableClass} ${containerClass}`}
+       ${clickableClass} ${containerClass}`}
       onClick={onClick}
       role={isClickable ? 'button' : undefined}
       tabIndex={isClickable ? 0 : undefined}
@@ -43,7 +43,9 @@ const SectionItem = ({
       }}
     >
       <div className="flex items-center">
-        <span className={`text-base font-normal ${textClass} ${textClass2} ${textClass3}`}>{text}</span>
+        <span className={`text-base font-normal ${disabledTextClass} ${sectionTextClass} ${subsectionTextClass}`}>
+          {text}
+        </span>
       </div>
       {notificationsNumber > 0 && (
         <div className={`flex h-5 min-w-[20px] items-center justify-center rounded-full px-1.5 ${notificationClass}`}>

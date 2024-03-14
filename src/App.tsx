@@ -1,43 +1,45 @@
 import { createElement, useEffect } from 'react';
-import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
 import { DndProvider } from 'react-dnd';
+import { Toaster } from 'react-hot-toast';
+import { connect } from 'react-redux';
+import { Redirect, Route, RouteProps, Router, Switch, useHistory, useParams } from 'react-router-dom';
 
-import configService from './app/core/services/config.service';
-import errorService from './app/core/services/error.service';
-import envService from './app/core/services/env.service';
-import { AppViewConfig } from './app/core/types';
-import navigationService from './app/core/services/navigation.service';
-import layouts from './app/core/layouts';
-import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
-import { sessionActions } from './app/store/slices/session';
-import { AppDispatch, RootState } from './app/store';
-import { initializeUserThunk } from './app/store/slices/user';
-import { uiActions } from './app/store/slices/ui';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import views from './app/core/config/views';
-import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
-import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import { AppView } from 'app/core/types';
+import { FolderPath } from 'app/drive/types';
+import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
+import { useParamsChange } from 'app/newSettings/hooks/useParamsChange';
+import { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
+import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import authService from './app/auth/services/auth.service';
+import views from './app/core/config/views';
+import layouts from './app/core/layouts';
+import configService from './app/core/services/config.service';
+import envService from './app/core/services/env.service';
+import errorService from './app/core/services/error.service';
+import localStorageService from './app/core/services/local-storage.service';
+import navigationService from './app/core/services/navigation.service';
+import RealtimeService from './app/core/services/socket.service';
+import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import { t } from 'i18next';
-import authService from './app/auth/services/auth.service';
-import localStorageService from './app/core/services/local-storage.service';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import RealtimeService from './app/core/services/socket.service';
+import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
-import { FolderPath } from 'app/drive/types';
+import { AppDispatch, RootState } from './app/store';
+import { sessionActions } from './app/store/slices/session';
+import { uiActions } from './app/store/slices/ui';
+import { initializeUserThunk } from './app/store/slices/user';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
-import { AppView } from 'app/core/types';
 import useBeforeUnload from './hooks/useBeforeUnload';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -45,6 +47,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   namePath: FolderPath[];
@@ -52,10 +55,20 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    isPreferencesDialogOpen,
+    fileViewerItem,
+  } = props;
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const haveParamsChanged = useParamsChange();
 
   useBeforeUnload();
 
@@ -129,14 +142,6 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const isDev = !envService.isProduction();
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isSurveyDialogOpen,
-    fileViewerItem,
-  } = props;
   const pathName = window.location.pathname.split('/')[1];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
@@ -182,7 +187,6 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-
           <Switch>
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
@@ -198,7 +202,6 @@ const App = (props: AppProps): JSX.Element => {
               routes()
             )}
           </Switch>
-
           <Toaster
             position="bottom-center"
             containerStyle={{
@@ -206,9 +209,10 @@ const App = (props: AppProps): JSX.Element => {
             }}
           />
 
+          <PreferencesDialog haveParamsChanged={haveParamsChanged} isPreferencesDialogOpen={isPreferencesDialogOpen} />
+
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -242,6 +246,7 @@ export default connect((state: RootState) => ({
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
+  isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
   namePath: state.storage.namePath,

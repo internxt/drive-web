@@ -1299,5 +1299,49 @@
       "title": "Bestand niet gevonden",
       "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
     }
+  },
+  "preferences": {
+    "title": "Voreinstellungen",
+    "general": {
+      "title": "Allgemein"
+    },
+    "workspace": {
+      "title": "Arbeitsbereich",
+      "overview": {
+        "title": "Übersicht"
+      },
+      "members": {
+        "title": "Mitglieder"
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "billing": {
+        "title": "Billing"
+      }
+    },
+    "account": {
+      "title": "Konto",
+      "plans": {
+        "title": "Pläne"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "security": {
+        "title": "Sicherheit"
+      }
+    },
+    "navBarSections": {
+      "general": "Allgemein",
+      "workspace": "Arbeitsbereich",
+      "overview": "Übersicht",
+      "members": "Mitglieder",
+      "teams": "Teams",
+      "billing": "Abrechnung",
+      "account": "Konto",
+      "plans": "Pläne",
+      "security": "Sicherheit"
+    }
   }
 }
