@@ -16,7 +16,6 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppSelector } from 'app/store/hooks';
-import SectionListContainer from '../../../newSettings/containers/SectionListContainer';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -77,7 +76,6 @@ const Sidenav = (props: SidenavProps) => {
           <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />
           <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
           <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
-          <SectionListContainer />
         </div>
         {props.subscription && props.subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 
