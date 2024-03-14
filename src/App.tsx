@@ -38,6 +38,8 @@ import { FolderPath } from 'app/drive/types';
 import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
+import { useParamsChange } from 'app/newSettings/hooks/useParamsChange';
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -45,6 +47,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   namePath: FolderPath[];
@@ -52,10 +55,20 @@ interface AppProps {
 }
 
 const App = (props: AppProps): JSX.Element => {
+  const {
+    isInitialized,
+    isAuthenticated,
+    isFileViewerOpen,
+    isNewsletterDialogOpen,
+    isSurveyDialogOpen,
+    isPreferencesDialogOpen,
+    fileViewerItem,
+  } = props;
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const haveParamsChanged = useParamsChange();
 
   useBeforeUnload();
 
@@ -129,14 +142,6 @@ const App = (props: AppProps): JSX.Element => {
   };
 
   const isDev = !envService.isProduction();
-  const {
-    isInitialized,
-    isAuthenticated,
-    isFileViewerOpen,
-    isNewsletterDialogOpen,
-    isSurveyDialogOpen,
-    fileViewerItem,
-  } = props;
   const pathName = window.location.pathname.split('/')[1];
   let template = <PreparingWorkspaceAnimation />;
   let isMobile = false;
@@ -182,7 +187,6 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-
           <Switch>
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
@@ -198,17 +202,20 @@ const App = (props: AppProps): JSX.Element => {
               routes()
             )}
           </Switch>
-
           <Toaster
             position="bottom-center"
             containerStyle={{
               filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
             }}
           />
-
+          {isPreferencesDialogOpen && (
+            <PreferencesDialog
+              haveParamsChanged={haveParamsChanged}
+              isPreferencesDialogOpen={isPreferencesDialogOpen}
+            />
+          )}
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -242,6 +249,7 @@ export default connect((state: RootState) => ({
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
+  isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
   namePath: state.storage.namePath,
