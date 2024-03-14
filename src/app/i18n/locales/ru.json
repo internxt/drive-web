@@ -1381,5 +1381,38 @@
       "title": "Файл не найден",
       "description": "Убедитесь, что URL-адрес указан правильно и файл не был перемещен или удален."
     }
+  },
+  "preferences": {
+    "title": "предпочтения",
+    "general": {
+      "title": "Общие"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "overview": {
+        "title": "Обзор"
+      },
+      "members": {
+        "title": "Members"
+      },
+      "teams": {
+        "title": "Команды"
+      },
+      "billing": {
+        "title": "Биллинг"
+      }
+    },
+    "account": {
+      "title": "аккаунт",
+      "plans": {
+        "title": "Планы"
+      },
+      "billing": {
+        "title": "Биллинг"
+      },
+      "security": {
+        "title": "Безопасность"
+      }
+    }
   }
 }
