@@ -1,4 +1,4 @@
-import { Eye, EyeSlash, MagnifyingGlass, X, WarningOctagon, Warning, CheckCircle } from '@phosphor-icons/react';
+import { CheckCircle, Eye, EyeSlash, MagnifyingGlass, Warning, WarningOctagon, X } from '@phosphor-icons/react';
 import { useEffect, useRef, useState } from 'react';
 
 export default function Input({
@@ -9,6 +9,7 @@ export default function Input({
   disabled,
   placeholder,
   value,
+  maxLength,
   onChange,
   onClear,
   message,
@@ -29,6 +30,7 @@ export default function Input({
   disabled?: boolean;
   placeholder?: string;
   value?: string;
+  maxLength?: number;
   onChange?: (v: string) => void;
   onClear?: () => void;
   onFocus?: () => void;
@@ -107,6 +109,7 @@ export default function Input({
         }}
         autoComplete={autoComplete}
         value={value}
+        maxLength={maxLength}
         data-test={dataTest}
         data-cy={inputDataCy}
         name={name}

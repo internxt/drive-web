@@ -638,6 +638,31 @@
     "redirectToApp": {
       "message": "谢谢您",
       "goToApp": "回到 app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "编辑个人资料",
+          "address": "地址",
+          "phone": "电话",
+          "owner": "所有者",
+          "workspaceOverview": "工作区概览",
+          "members": "成员",
+          "teams": "团队",
+          "billed": "{{renewDate}} 结算",
+          "spaceUsed": "已使用空间 ({{percentageUsed}}%)",
+          "totalSpace": "总空间",
+          "editOverviewDetails": {
+            "title": "个人资料详情",
+            "cancelButton": "取消",
+            "saveButton": "保存更改"
+          }
+        },
+        "billing": {
+          "editBilling": "编辑账单",
+          "billingDetails": "账单详情"
+        }
+      }
     }
   },
   "contextMenu": {

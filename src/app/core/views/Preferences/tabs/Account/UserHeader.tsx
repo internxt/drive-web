@@ -66,7 +66,7 @@ export default function UserHeader({ className = '' }: { className?: string }): 
   );
 }
 
-function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function UploadAvatarModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const inputRef = useRef<HTMLInputElement>(null);

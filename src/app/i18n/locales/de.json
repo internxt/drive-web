@@ -546,6 +546,31 @@
     "redirectToApp": {
       "message": "Danke",
       "goToApp": "Gehe zurück zur App"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Profil bearbeiten",
+          "address": "Adresse",
+          "phone": "Telefon",
+          "owner": "Inhaber",
+          "workspaceOverview": "Übersicht des Arbeitsbereichs",
+          "members": "Mitglieder",
+          "teams": "Teams",
+          "billed": "Abgerechnet am {{renewDate}}",
+          "spaceUsed": "Verwendeter Speicher ({{percentageUsed}}%)",
+          "totalSpace": "Gesamtspeicher",
+          "editOverviewDetails": {
+            "title": "Profil Details",
+            "cancelButton": "Abbrechen",
+            "saveButton": "Änderungen speichern"
+          }
+        },
+        "billing": {
+          "editBilling": "Zahlung bearbeiten",
+          "billingDetails": "Zahlungsdetails"
+        }
+      }
     }
   },
   "contextMenu": {

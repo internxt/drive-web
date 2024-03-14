@@ -638,6 +638,31 @@
     "redirectToApp": {
       "message": "Thank you",
       "goToApp": "Go back to app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Edit profile",
+          "address": "Address",
+          "phone": "Phone",
+          "owner": "Owner",
+          "workspaceOverview": "Workspace overview",
+          "members": "Members",
+          "teams": "Teams",
+          "billed": "Billed on {{renewDate}}",
+          "spaceUsed": "Space used ({{percentageUsed}}%)",
+          "totalSpace": "Total space",
+          "editOverviewDetails": {
+            "title": "Profile Details",
+            "cancelButton": "Cancel",
+            "saveButton": "Save Changes"
+          }
+        },
+        "billing": {
+          "editBilling": "Edit Billing",
+          "billingDetails": "Billing details"
+        }
+      }
     }
   },
   "contextMenu": {

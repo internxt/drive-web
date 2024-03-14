@@ -621,6 +621,31 @@
     "redirectToApp": {
       "message": "Gracias!",
       "goToApp": "Volver a la aplicación"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Editar perfil",
+          "address": "Dirección",
+          "phone": "Teléfono",
+          "owner": "Propietario",
+          "workspaceOverview": "Resumen del espacio de trabajo",
+          "members": "Miembros",
+          "teams": "Equipos",
+          "billed": "Facturado el {{renewDate}}",
+          "spaceUsed": "Espacio utilizado ({{percentageUsed}}%)",
+          "totalSpace": "Espacio total",
+          "editOverviewDetails": {
+            "title": "Detalles del perfil",
+            "cancelButton": "Cancelar",
+            "saveButton": "Guardar cambios"
+          }
+        },
+        "billing": {
+          "editBilling": "Editar facturación",
+          "billingDetails": "Detalles de facturación"
+        }
+      }
     }
   },
   "contextMenu": {
