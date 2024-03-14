@@ -9,6 +9,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import SectionListContainer, { sectionItems } from '../containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from '../types';
+import GeneralSection from '../views/GeneralSection';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -64,11 +65,11 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       {/* SIDEBAR MENU */}
 
       {/* ACTIVE SECTION */}
-      <section className="relative w-full">
-        <button className="absolute right-0 z-50 m-4 flex w-auto" onClick={() => onClose()}>
+      <section className="relative w-full overflow-y-auto">
+        <button className="fixed right-0 z-50 m-4 flex w-auto" onClick={() => onClose()}>
           <X size={22} />
         </button>
-        {title}
+        {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>
