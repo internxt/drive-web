@@ -1417,5 +1417,49 @@
       "title": "Archivo no encontrado",
       "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
     }
+  },
+  "preferences": {
+    "title": "Preferencias",
+    "general": {
+      "title": "General"
+    },
+    "workspace": {
+      "title": "Espacio de trabajo",
+      "overview": {
+        "title": "Global"
+      },
+      "members": {
+        "title": "Miembros"
+      },
+      "teams": {
+        "title": "Equipos"
+      },
+      "billing": {
+        "title": "Facturación"
+      }
+    },
+    "account": {
+      "title": "Cuenta",
+      "plans": {
+        "title": "Planes"
+      },
+      "billing": {
+        "title": "Facturación"
+      },
+      "security": {
+        "title": "Seguridad"
+      }
+    },
+    "navBarSections": {
+      "general": "General",
+      "workspace": "Espacio de trabajo",
+      "overview": "Resumen",
+      "members": "Miembros",
+      "teams": "Equipos",
+      "billing": "Facturación",
+      "account": "Cuenta",
+      "plans": "Planes",
+      "security": "Seguridad"
+    }
   }
 }

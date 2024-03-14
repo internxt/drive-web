@@ -8,7 +8,6 @@ import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
-import { Link } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -340,12 +339,15 @@ const Navbar = (props: NavbarProps) => {
       )}
 
       <div className="flex shrink-0">
-        <Link
-          to="/preferences"
+        <button
+          onClick={() => {
+            navigationService.openPreferencesDialog({ section: 'general', subsection: 'general' });
+            dispatch(uiActions.setIsPreferencesDialogOpen(true));
+          }}
           className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"
         >
           <Gear size={24} />
-        </Link>
+        </button>
         <AccountPopover
           className="z-40 mr-5"
           user={user}

@@ -1426,5 +1426,49 @@
       "title": "File non trovato",
       "description": "Assicuratevi che l'URL sia corretto e che il file non sia stato spostato o cancellato."
     }
+  },
+  "preferences": {
+    "title": "Preferenze",
+    "general": {
+      "title": "Generale"
+    },
+    "workspace": {
+      "title": "Spazio di lavoro",
+      "overview": {
+        "title": "Panoramica"
+      },
+      "members": {
+        "title": "Membri"
+      },
+      "teams": {
+        "title": "Squadre"
+      },
+      "billing": {
+        "title": "Fatturazione"
+      }
+    },
+    "account": {
+      "title": "Conto",
+      "plans": {
+        "title": "Piani"
+      },
+      "billing": {
+        "title": "Fatturazione"
+      },
+      "security": {
+        "title": "Security"
+      }
+    },
+    "navBarSections": {
+      "general": "Generale",
+      "workspace": "Spazio di lavoro",
+      "overview": "Panoramica",
+      "members": "Membri",
+      "teams": "Team",
+      "billing": "Fatturazione",
+      "account": "Account",
+      "plans": "Piani",
+      "security": "Sicurezza"
+    }
   }
 }
