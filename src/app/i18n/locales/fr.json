@@ -1373,6 +1373,17 @@
       "security": {
         "title": "Sécurité"
       }
+    },
+    "navBarSections": {
+      "general": "Général",
+      "workspace": "Espace de travail",
+      "overview": "Aperçu",
+      "members": "Membres",
+      "teams": "Équipes",
+      "billing": "Facturation",
+      "account": "Compte",
+      "plans": "Plans",
+      "security": "Sécurité"
     }
   }
 }

@@ -1424,6 +1424,17 @@
       "security": {
         "title": "Seguridad"
       }
+    },
+    "navBarSections": {
+      "general": "General",
+      "workspace": "Espacio de trabajo",
+      "overview": "Resumen",
+      "members": "Miembros",
+      "teams": "Equipos",
+      "billing": "Facturación",
+      "account": "Cuenta",
+      "plans": "Planes",
+      "security": "Seguridad"
     }
   }
 }

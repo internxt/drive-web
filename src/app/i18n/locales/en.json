@@ -1446,6 +1446,17 @@
       "security": {
         "title": "Security"
       }
+    },
+    "navBarSections": {
+      "general": "General",
+      "workspace": "Workspace",
+      "overview": "Overview",
+      "members": "Members",
+      "teams": "Teams",
+      "billing": "Billing",
+      "account": "Account",
+      "plans": "Plans",
+      "security": "Security"
     }
   }
 }

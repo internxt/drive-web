@@ -1,45 +1,45 @@
 import { createElement, useEffect } from 'react';
-import { Switch, Route, Redirect, Router, RouteProps, useParams, useHistory } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
 import { DndProvider } from 'react-dnd';
+import { Toaster } from 'react-hot-toast';
+import { connect } from 'react-redux';
+import { Redirect, Route, RouteProps, Router, Switch, useHistory, useParams } from 'react-router-dom';
 
-import configService from './app/core/services/config.service';
-import errorService from './app/core/services/error.service';
-import envService from './app/core/services/env.service';
-import { AppViewConfig } from './app/core/types';
-import navigationService from './app/core/services/navigation.service';
-import layouts from './app/core/layouts';
-import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
-import { sessionActions } from './app/store/slices/session';
-import { AppDispatch, RootState } from './app/store';
-import { initializeUserThunk } from './app/store/slices/user';
-import { uiActions } from './app/store/slices/ui';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import views from './app/core/config/views';
-import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
-import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
-import { pdfjs } from 'react-pdf';
-import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
-import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
-import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import { t } from 'i18next';
-import authService from './app/auth/services/auth.service';
-import localStorageService from './app/core/services/local-storage.service';
-import Mobile from './app/drive/views/MobileView/MobileView';
-import RealtimeService from './app/core/services/socket.service';
-import { domainManager } from './app/share/services/DomainManager';
-import { PreviewFileItem } from './app/share/types';
-import { FolderPath } from 'app/drive/types';
-import { manager } from './app/utils/dnd-utils';
 import { AppView } from 'app/core/types';
-import useBeforeUnload from './hooks/useBeforeUnload';
+import { FolderPath } from 'app/drive/types';
 import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
 import { useParamsChange } from 'app/newSettings/hooks/useParamsChange';
+import { t } from 'i18next';
+import { pdfjs } from 'react-pdf';
+import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import authService from './app/auth/services/auth.service';
+import views from './app/core/config/views';
+import layouts from './app/core/layouts';
+import configService from './app/core/services/config.service';
+import envService from './app/core/services/env.service';
+import errorService from './app/core/services/error.service';
+import localStorageService from './app/core/services/local-storage.service';
+import navigationService from './app/core/services/navigation.service';
+import RealtimeService from './app/core/services/socket.service';
+import { AppViewConfig } from './app/core/types';
+import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
+import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
+import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import Mobile from './app/drive/views/MobileView/MobileView';
+import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
+import { domainManager } from './app/share/services/DomainManager';
+import { PreviewFileItem } from './app/share/types';
+import { AppDispatch, RootState } from './app/store';
+import { sessionActions } from './app/store/slices/session';
+import { uiActions } from './app/store/slices/ui';
+import { initializeUserThunk } from './app/store/slices/user';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
+import { manager } from './app/utils/dnd-utils';
+import useBeforeUnload from './hooks/useBeforeUnload';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -208,12 +208,9 @@ const App = (props: AppProps): JSX.Element => {
               filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
             }}
           />
-          {isPreferencesDialogOpen && (
-            <PreferencesDialog
-              haveParamsChanged={haveParamsChanged}
-              isPreferencesDialogOpen={isPreferencesDialogOpen}
-            />
-          )}
+
+          <PreferencesDialog haveParamsChanged={haveParamsChanged} isPreferencesDialogOpen={isPreferencesDialogOpen} />
+
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
           {isFileViewerOpen && fileViewerItem && (

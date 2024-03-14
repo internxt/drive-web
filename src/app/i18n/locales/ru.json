@@ -1413,6 +1413,17 @@
       "security": {
         "title": "Безопасность"
       }
+    },
+    "navBarSections": {
+      "general": "Общее",
+      "workspace": "Рабочее пространство",
+      "overview": "Обзор",
+      "members": "Участники",
+      "teams": "Команды",
+      "billing": "Оплата",
+      "account": "Аккаунт",
+      "plans": "Планы",
+      "security": "Безопасность"
     }
   }
 }
