@@ -17,6 +17,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppSelector } from 'app/store/hooks';
 
+import WorkspaceSelector from './WorkspaceSelector';
+
 interface SidenavProps {
   user: UserSettings | undefined;
   subscription: UserSubscription | null;
@@ -64,6 +66,14 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
+          {/* MOCK COMPONENT */}
+          <WorkspaceSelector
+            workspaces={[
+              { uuid: 'asdf123', name: 'John Appleseed', type: 'Personal', avatar: null },
+              { uuid: 'b3b3123', name: 'Internxt Universal Technologies', type: 'Business', avatar: null },
+            ]}
+            onCreateWorkspaceButtonClicked={() => undefined}
+          />
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           <SidenavItem label={translate('sideNav.photos')} to="/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />

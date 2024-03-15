@@ -1410,5 +1410,14 @@
       "plans": "Plans",
       "security": "Sécurité"
     }
+  },
+  "workspaces": {
+    "workspaces": "Espaces de travail",
+    "workspace": "Espace de travail",
+    "createWorkspace": "Créer un espace de travail",
+    "workspaceTypes": {
+      "personal": "Espace de travail personnel",
+      "business": "Espace de travail professionnel"
+    }
   }
 }

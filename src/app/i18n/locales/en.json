@@ -1483,5 +1483,14 @@
       "plans": "Plans",
       "security": "Security"
     }
+  },
+  "workspaces": {
+    "workspaces": "Workspaces",
+    "workspace": "Workspace",
+    "createWorkspace": "Create workspace",
+    "workspaceTypes": {
+      "personal": "Personal Workspace",
+      "business": "Business Workspace"
+    }
   }
 }
