@@ -4,14 +4,13 @@ import { useEffect, useState } from 'react';
 import Section from '../../core/views/Preferences/components/Section';
 import paymentService from '../../payment/services/payment.service';
 import Card from '../../shared/components/Card';
-import InvoicesHeader from '../components/Invoices/InvoicesHeader';
 import InvoicesList from '../components/Invoices/InvoicesList';
 
 const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
+  const { translate } = useTranslationContext();
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
-  const { translate } = useTranslationContext();
 
   useEffect(() => {
     paymentService
@@ -25,7 +24,6 @@ const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
   return (
     <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
       <Card className="pb-0">
-        <InvoicesHeader />
         <InvoicesList invoices={invoices} state={state.tag} />
       </Card>
     </Section>
