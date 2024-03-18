@@ -39,6 +39,13 @@ interface Window {
     ready: (cb: () => void) => void;
     execute: (siteKey: string, { action: string }) => Promise<string>;
   };
+  performance: {
+    memory?: {
+      jsHeapSizeLimit: number;
+      totalJSHeapSize: number;
+      usedJSHeapSize: number;
+    };
+  }
 }
 
 interface Navigator {
