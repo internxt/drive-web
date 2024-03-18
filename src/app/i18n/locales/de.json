@@ -355,7 +355,9 @@
           },
           "invoices": {
             "head": "Rechnungen",
-            "billingDate": "Rechnungsdatum",
+            "billingDate": "Datum",
+            "storage": "Speicher",
+            "ammount": "Betrag",
             "empty": {
               "title": "Du hast einen kostenlosen Plan",
               "subtitle": "Ausgestellte Rechnungen werden hier automatisch angezeigt, wenn du ein kostenpflichtiges Abonnement hast."

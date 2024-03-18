@@ -409,7 +409,9 @@
           },
           "invoices": {
             "head": "发票",
-            "billingDate": "账单 日期",
+            "billingDate": "日期",
+            "storage": "存储",
+            "ammount": "金额",
             "plan": "计划",
             "empty": {
               "title": "您目前在免费计划中",

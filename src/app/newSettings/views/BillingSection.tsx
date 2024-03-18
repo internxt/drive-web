@@ -6,6 +6,7 @@ import Card from '../../shared/components/Card';
 import Modal from '../../shared/components/Modal';
 import Detail from '../components/Detail';
 import DetailsInput from '../components/DetailsInput';
+import Invoices from '../containers/InvoicesContainer';
 
 // MOCKED DATA
 const address = 'La Marina de Valencia, Muelle de la Aduana s/n, La Marina de Valencia, Muelle de la Aduana s/n, Spain';
@@ -57,6 +58,7 @@ const BillingSection = () => {
         onSave={onSaveBillingDetails}
         isLoading={isSavingBillingDetails}
       />
+      <Invoices />
     </Section>
   );
 };
