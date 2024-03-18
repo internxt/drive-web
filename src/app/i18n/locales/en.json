@@ -409,7 +409,9 @@
           },
           "invoices": {
             "head": "Invoices",
-            "billingDate": "Billing date",
+            "billingDate": "Date",
+            "storage": "Storage",
+            "ammount": "Ammount",
             "plan": "Plan",
             "empty": {
               "title": "You are in free plan",

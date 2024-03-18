@@ -403,7 +403,9 @@
           "invoices": {
             "head": "Fatture",
             "plan": "Piano",
-            "billingDate": "Data Fattura",
+            "billingDate": "Data",
+            "storage": "Archiviazione",
+            "ammount": "Importo",
             "empty": {
               "title": "Hai un piano gratuito",
               "subtitle": "Qui appariranno automaticamente le fatture emesse quando viene effettuato un pagamento."

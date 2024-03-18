@@ -392,7 +392,9 @@
           },
           "invoices": {
             "head": "Facturas",
-            "billingDate": "Fecha de facturación",
+            "billingDate": "Fecha",
+            "storage": "Almacenamiento",
+            "ammount": "Cantidad",
             "plan": "Plan",
             "empty": {
               "title": "Estás en el plan gratuito",
