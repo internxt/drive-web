@@ -13,6 +13,14 @@ export interface Section {
   subsection?: string;
 }
 
+export interface BillingDetailsCardProps {
+  address: string;
+  phone: string;
+  owner: string;
+  isOwner: boolean;
+  onEditButtonClick: () => void;
+}
+
 export type BillingDetails = {
   address: string;
   addressOptional?: string;
