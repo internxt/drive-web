@@ -1386,7 +1386,9 @@
         "title": "Équipes"
       },
       "billing": {
-        "title": "Billing"
+        "title": "Billing",
+        "nextBillingDate": "Prochaine date de facturation",
+        "planLimit": "Facturé pour un forfait de {{planLimit}}"
       }
     },
     "account": {

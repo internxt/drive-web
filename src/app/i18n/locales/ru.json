@@ -1426,7 +1426,9 @@
         "title": "Команды"
       },
       "billing": {
-        "title": "Биллинг"
+        "title": "Биллинг",
+        "nextBillingDate": "Следующая дата выставления счета",
+        "planLimit": "Выставлен счет за план {{planLimit}}"
       }
     },
     "account": {

@@ -1344,7 +1344,9 @@
         "title": "Teams"
       },
       "billing": {
-        "title": "Billing"
+        "title": "Billing",
+        "nextBillingDate": "Nächstes Abrechnungsdatum",
+        "planLimit": "Abgerechnet für {{planLimit}} plan"
       }
     },
     "account": {

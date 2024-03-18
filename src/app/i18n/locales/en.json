@@ -1459,7 +1459,9 @@
         "title": "Teams"
       },
       "billing": {
-        "title": "Billing"
+        "title": "Billing",
+        "nextBillingDate": "Next billing date",
+        "planLimit": "Billed for {{planLimit}} plan"
       }
     },
     "account": {

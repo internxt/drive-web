@@ -5,6 +5,7 @@ import Invoices from '../containers/InvoicesContainer';
 import { BillingDetails } from '../types';
 import EditBillingDetailsModal from '../components/EditBillingDetailsModal';
 import BillingDetailsCard from '../components/BillingDetailsCard';
+import BillingOverview from '../components/BillingOverview';
 
 // MOCKED DATA
 const address = 'La Marina de Valencia, Muelle de la Aduana s/n, La Marina de Valencia, Muelle de la Aduana s/n, Spain';
@@ -45,6 +46,7 @@ const BillingSection = () => {
       title={t('preferences.workspace.billing.title')}
       className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
     >
+      <BillingOverview />
       <BillingDetailsCard
         address={billingDetails.address}
         phone={billingDetails.phone}

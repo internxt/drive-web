@@ -1446,7 +1446,9 @@
         "title": "Squadre"
       },
       "billing": {
-        "title": "Fatturazione"
+        "title": "Fatturazione",
+        "nextBillingDate": "Prossima data di fatturazione",
+        "planLimit": "Fatturato per un piano da {{planLimit}}"
       }
     },
     "account": {
