@@ -103,18 +103,10 @@ class UploadManager {
       if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
 
       if (window.performance && (window.performance as any).memory) {
-        const memory = (window.performance as unknown as { 
-          memory: {
-            totalJSHeapSize: number, 
-            usedJSHeapSize: number, 
-            jsHeapSizeLimit: number 
-          }
-        }).memory;
+        const memory = window.performance.memory;
 
-        if (memory.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
+        if (memory && memory.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
           const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
-          console.log({...memory, memoryUsagePercentage});
-
           const shouldIncreaseConcurrency = memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
 
           if (shouldIncreaseConcurrency) {
