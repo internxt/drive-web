@@ -1470,5 +1470,14 @@
       "plans": "Piani",
       "security": "Sicurezza"
     }
+  },
+  "workspaces": {
+    "workspaces": "Spazi di lavoro",
+    "workspace": "Spazio di lavoro",
+    "createWorkspace": "Crea spazio di lavoro",
+    "workspaceTypes": {
+      "personal": "Spazio di lavoro personale",
+      "business": "Spazio di lavoro aziendale"
+    }
   }
 }

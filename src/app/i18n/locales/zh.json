@@ -1482,5 +1482,14 @@
       "plans": "计划",
       "security": "安全"
     }
+  },
+  "workspaces": {
+    "workspaces": "工作区",
+    "workspace": "工作区",
+    "createWorkspace": "创建工作区",
+    "workspaceTypes": {
+      "personal": "个人工作区",
+      "business": "商务工作区"
+    }
   }
 }
