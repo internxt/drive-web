@@ -15,7 +15,7 @@ const InvoicesItem = ({
 }) => {
   return (
     <div
-      className={`-mx-5 flex flex-row justify-between border-gray-10 bg-surface p-2 text-base font-medium text-gray-100 hover:bg-gray-5 dark:bg-gray-1 ${
+      className={`-mx-5 flex flex-row justify-between border-gray-10 bg-surface p-2 text-base font-medium text-gray-100 hover:bg-gray-5 dark:bg-gray-1 dark:hover:bg-gray-5 ${
         isLastItem ? 'rounded-b-xl' : ' border-b'
       }`}
     >

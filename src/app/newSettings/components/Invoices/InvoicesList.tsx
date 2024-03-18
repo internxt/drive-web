@@ -5,7 +5,13 @@ import { useTranslationContext } from '../../../i18n/provider/TranslationProvide
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import InvoicesItem from './InvoicesItem';
 
-const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
+const InvoicesList = ({
+  invoices,
+  state,
+}: {
+  invoices: Invoice[];
+  state: 'loading' | 'empty' | 'ready';
+}): JSX.Element => {
   const isLastInvoice = (i: number) => {
     return invoices && i === invoices.length - 1;
   };
@@ -21,18 +27,20 @@ const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loadin
   return state === 'empty' ? (
     <Empty />
   ) : (
-    invoices.map((invoice, index) => {
-      return (
-        <InvoicesItem
-          key={`${invoice.created}`}
-          date={displayDate(invoice.created)}
-          storage={bytesToString(invoice.bytesInPlan)}
-          pdf={invoice.pdf}
-          amount="36,49€" // TODO: ADD WHEN THE BACKEND IS READY
-          isLastItem={isLastInvoice(index)}
-        />
-      );
-    })
+    <>
+      {invoices.map((invoice, index) => {
+        return (
+          <InvoicesItem
+            key={`${invoice.created}`}
+            date={displayDate(invoice.created)}
+            storage={bytesToString(invoice.bytesInPlan)}
+            pdf={invoice.pdf}
+            amount="36,49€" // TODO: ADD WHEN THE BACKEND IS READY
+            isLastItem={isLastInvoice(index)}
+          />
+        );
+      })}
+    </>
   );
 };
 
