@@ -70,6 +70,7 @@ export const uploadFileWithManager = (
 };
 
 class UploadManager {
+  private currentGroupBeingUploaded: FileSizeType = FileSizeType.Small;
   private filesGroups: Record<
     FileSizeType,
     {
@@ -100,6 +101,41 @@ class UploadManager {
   private uploadQueue: QueueObject<UploadManagerFileParams> = queue<UploadManagerFileParams & { taskId: string }>(
     (fileData, next: (err: Error | null, res?: DriveFileData) => void) => {
       if (this.abortController?.signal.aborted ?? fileData.abortController?.signal.aborted) return;
+
+      if (window.performance && (window.performance as any).memory) {
+        const memory = (window.performance as unknown as { 
+          memory: {
+            totalJSHeapSize: number, 
+            usedJSHeapSize: number, 
+            jsHeapSizeLimit: number 
+          }
+        }).memory;
+
+        if (memory.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
+          const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
+          console.log({...memory, memoryUsagePercentage});
+
+          const shouldIncreaseConcurrency = memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
+
+          if (shouldIncreaseConcurrency) {
+            const newConcurrency = Math.min(
+              this.uploadQueue.concurrency + 1, 
+              this.filesGroups[FileSizeType.Small].concurrency
+            );
+            console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
+            this.uploadQueue.concurrency = newConcurrency;
+          }
+
+          const shouldReduceConcurrency = memoryUsagePercentage >= 0.8 && this.uploadQueue.concurrency > 1;
+
+          if (shouldReduceConcurrency) {
+            console.warn('Memory usage reached 80%. Reducing upload concurrency.');
+            this.uploadQueue.concurrency = 1;
+          }
+        }
+      } else {
+        console.warn('Memory usage control is not available');
+      }
 
       let uploadAttempts = 0;
       const uploadId = randomBytes(10).toString('hex');
@@ -454,7 +490,11 @@ class UploadManager {
 
       if (smallSizedFiles.length > 0) await uploadFiles(smallSizedFiles, this.filesGroups.small.concurrency);
 
+      this.currentGroupBeingUploaded = FileSizeType.Medium;
+
       if (mediumSizedFiles.length > 0) await uploadFiles(mediumSizedFiles, this.filesGroups.medium.concurrency);
+
+      this.currentGroupBeingUploaded = FileSizeType.Big;
 
       if (bigSizedFiles.length > 0) await uploadFiles(bigSizedFiles, this.filesGroups.big.concurrency);
 
