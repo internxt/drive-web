@@ -69,7 +69,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ workspaces, onCre
 
   return (
     <div className="relative mb-2 inline-block w-full">
-      {/* TOOGLE BUTTON */}
+      {/* TOGGLE BUTTON */}
       <button
         className={`w-full justify-center rounded-lg border border-gray-10 ${
           isOpen ? 'bg-gray-1' : 'bg-surface'
@@ -95,12 +95,16 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ workspaces, onCre
       </button>
       {/* DROPDOWN LIST */}
       <div
-        className={`fixed left-2 z-50 w-72 transform transition-all duration-300 ease-in-out ${
+        className={`fixed left-2 z-50 w-72 overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="h-1"></div>
-        <div className="overflow-hidden rounded-lg border border-gray-10 bg-surface shadow-xl dark:bg-gray-5">
+        <div
+          className={`rounded-lg border border-gray-10 bg-surface shadow-xl dark:bg-gray-5 ${
+            isOpen ? 'block' : 'hidden'
+          }`}
+        >
           <p className="px-2 pt-3 text-sm font-medium text-gray-100">{translate('workspaces.workspaces')}</p>
           {workspaces.map((workspace) => (
             <WorkspaceCard
