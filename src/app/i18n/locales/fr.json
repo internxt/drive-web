@@ -1388,7 +1388,12 @@
       "billing": {
         "title": "Billing",
         "nextBillingDate": "Prochaine date de facturation",
-        "planLimit": "Facturé pour un forfait de {{planLimit}}"
+        "planLimit": "Facturé pour un forfait de {{planLimit}}",
+        "paymentMethod": {
+          "title": "Mode de paiement",
+          "editButton": "Modifier le mode de paiement",
+          "freePlanTitle": "Vous êtes sur un plan gratuit de {{planLimit}}"
+        }
       }
     },
     "account": {

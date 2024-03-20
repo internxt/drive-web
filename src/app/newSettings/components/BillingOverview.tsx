@@ -12,6 +12,7 @@ import Card from 'app/shared/components/Card';
 const BillingOverview = () => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+  const isFreeSuscription = plan.subscription?.type === 'free';
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
     getSubscriptionData({ userSubscription: plan.subscription, plan, local });
@@ -20,24 +21,36 @@ const BillingOverview = () => {
 
   return (
     <section className="flex flex-row">
-      <Card className="mr-3 basis-1/2">
-        <div>
-          <p className="mb-0.5 text-3xl font-medium text-gray-100">{subscriptionData?.renewDate}</p>
-          <p className="font-regular text-base text-gray-60">
-            {t('preferences.workspace.billing.nextBillingDate')} ({nextBillingDate})
-          </p>
-        </div>
-      </Card>
-      <Card className="ml-3 basis-1/2">
-        <div>
-          <p className="text-xl font-medium text-gray-100">
-            <span className="text-3xl">{integerPart}</span>.{decimalPart}
-          </p>
-          <p className="font-regular text-base text-gray-60">
-            {t('preferences.workspace.billing.planLimit', { planLimit: bytesToString(plan.planLimit) })}
-          </p>
-        </div>
-      </Card>
+      {!isFreeSuscription ? (
+        <>
+          <Card className="mr-3 basis-1/2">
+            <div>
+              <p className="mb-0.5 text-3xl font-medium text-gray-100">{subscriptionData?.renewDate}</p>
+              <p className="font-regular text-base text-gray-60">
+                {t('preferences.workspace.billing.nextBillingDate')} ({nextBillingDate})
+              </p>
+            </div>
+          </Card>
+          <Card className="ml-3 basis-1/2">
+            <div>
+              <p className="text-xl font-medium text-gray-100">
+                <span className="text-3xl">{integerPart}</span>.{decimalPart}
+              </p>
+              <p className="font-regular text-base text-gray-60">
+                {t('preferences.workspace.billing.planLimit', { planLimit: bytesToString(plan.planLimit) })}
+              </p>
+            </div>
+          </Card>
+        </>
+      ) : (
+        <Card className="w-full text-center">
+          <h1 className="font-medium text-gray-60">
+            {t('preferences.workspace.billing.paymentMethod.freePlanTitle', {
+              planLimit: bytesToString(plan.planLimit),
+            })}
+          </h1>
+        </Card>
+      )}
     </section>
   );
 };

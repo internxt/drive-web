@@ -6,6 +6,7 @@ import { BillingDetails } from '../types';
 import EditBillingDetailsModal from '../components/EditBillingDetailsModal';
 import BillingDetailsCard from '../components/BillingDetailsCard';
 import BillingOverview from '../components/BillingOverview';
+import BillingPaymentMethodCard from '../components/BillingPaymentMethodCard';
 
 // MOCKED DATA
 const address = 'La Marina de Valencia, Muelle de la Aduana s/n, La Marina de Valencia, Muelle de la Aduana s/n, Spain';
@@ -61,6 +62,7 @@ const BillingSection = () => {
         onSave={onSaveBillingDetails}
         isLoading={isSavingBillingDetails}
       />
+      <BillingPaymentMethodCard />
       <Invoices />
     </Section>
   );

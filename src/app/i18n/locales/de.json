@@ -1346,7 +1346,12 @@
       "billing": {
         "title": "Billing",
         "nextBillingDate": "Nächstes Abrechnungsdatum",
-        "planLimit": "Abgerechnet für {{planLimit}} plan"
+        "planLimit": "Abgerechnet für {{planLimit}} plan",
+        "paymentMethod": {
+          "title": "Zahlungsmethode",
+          "editButton": "Zahlungsmethode bearbeiten",
+          "freePlanTitle": "Sie haben einen kostenlosen {{planLimit}} Plan"
+        }
       }
     },
     "account": {

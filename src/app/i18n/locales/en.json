@@ -1461,7 +1461,12 @@
       "billing": {
         "title": "Billing",
         "nextBillingDate": "Next billing date",
-        "planLimit": "Billed for {{planLimit}} plan"
+        "planLimit": "Billed for {{planLimit}} plan",
+        "paymentMethod": {
+          "title": "Payment Method",
+          "editButton": "Edit payment method",
+          "freePlanTitle": "You are on a free {{planLimit}} plan"
+        }
       }
     },
     "account": {

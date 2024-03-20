@@ -1428,7 +1428,12 @@
       "billing": {
         "title": "Биллинг",
         "nextBillingDate": "Следующая дата выставления счета",
-        "planLimit": "Выставлен счет за план {{planLimit}}"
+        "planLimit": "Выставлен счет за план {{planLimit}}",
+        "paymentMethod": {
+          "title": "Способ оплаты",
+          "editButton": "Редактировать способ оплаты",
+          "freePlanTitle": "Вы находитесь на бесплатном тарифном плане {{planLimit}}"
+        }
       }
     },
     "account": {
