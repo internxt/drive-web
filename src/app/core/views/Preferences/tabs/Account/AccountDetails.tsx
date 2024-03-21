@@ -3,25 +3,17 @@ import { CheckCircle, Warning } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { areCredentialsCorrect } from '../../../../../auth/services/auth.service';
 import userService from '../../../../../auth/services/user.service';
-import AccountDetailsModal from '../../../../../newSettings/Account/Account/components/AccountDetailsModal';
-import ChangeEmailModal from '../../../../../newSettings/Account/Account/components/ChangeEmailModal';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
 import Tooltip from '../../../../../shared/components/Tooltip';
 import { RootState } from '../../../../../store';
-import { useAppDispatch } from '../../../../../store/hooks';
-import { updateUserProfileThunk } from '../../../../../store/slices/user';
-import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
-  const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
-  const dispatch = useAppDispatch();
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
 
@@ -36,32 +28,6 @@ export default function AccountDetails({ className = '' }: { className?: string 
   if (!user) throw new Error('User is not defined');
 
   const isVerified = user.emailVerified;
-
-  const changeUserEmail = async (newEmail) => {
-    await userService.changeEmail(newEmail);
-    notificationsService.show({
-      text: translate('views.account.tabs.account.accountDetails.changeEmail.sucessSendingVerification', {
-        email: newEmail,
-      }),
-      type: ToastType.Success,
-    });
-  };
-
-  const onChangeEmailError = (error: unknown) => {
-    notificationsService.show({
-      text: translate('views.account.tabs.account.accountDetails.changeEmail.errorSendingVerification'),
-      type: ToastType.Error,
-    });
-    errorService.reportError(error);
-  };
-
-  const updateUserProfile = async ({ name, lastname }: { name: string; lastname: string }) => {
-    await dispatch(updateUserProfileThunk({ name, lastname })).unwrap();
-    notificationsService.show({
-      text: translate('views.account.tabs.account.accountDetails.editProfile.updatedProfile'),
-      type: ToastType.Success,
-    });
-  };
 
   return (
     <Section className={className} title={translate('views.account.tabs.account.accountDetails.head')}>
@@ -113,33 +79,6 @@ export default function AccountDetails({ className = '' }: { className?: string 
           </Tooltip>
         </div>
       </Card>
-
-      <AccountDetailsModal
-        isOpen={isDetailsModalOpen}
-        onClose={() => setIsDetailsModalOpen(false)}
-        openEditEmail={() => {
-          setIsDetailsModalOpen(false);
-          setIsEmailModalOpen(true);
-        }}
-        name={user.name}
-        lastname={user.lastname}
-        email={user.email}
-        onUpdateUserProfileData={updateUserProfile}
-        onErrorUpdatingUserProfileData={() =>
-          notificationsService.show({
-            text: translate('views.account.tabs.account.accountDetails.editProfile.errorUpdatingProfile'),
-            type: ToastType.Error,
-          })
-        }
-      />
-      <ChangeEmailModal
-        isOpen={isEmailModalOpen}
-        onClose={() => setIsEmailModalOpen(false)}
-        email={user.email}
-        checkEmailCredentials={areCredentialsCorrect}
-        changeEmail={changeUserEmail}
-        onChangeEmailError={onChangeEmailError}
-      />
     </Section>
   );
 }
