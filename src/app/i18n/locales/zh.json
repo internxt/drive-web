@@ -611,6 +611,10 @@
         "title": "出错了",
         "subtitle": "检查链接是否正确或在设置>账户中再次请求电子邮件验证",
         "cta": "转到账户"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "您的电子邮件尚未验证。请检查您的收件箱或 ",
+        "emailNotVerifiedPartTwo": "重新发送验证"
       }
     },
     "emailChange": {

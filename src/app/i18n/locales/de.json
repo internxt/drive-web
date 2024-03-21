@@ -573,6 +573,22 @@
           "billingDetails": "Zahlungsdetails"
         }
       }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "E-Mail erfolgreich verifiziert",
+        "subtitle": "Du kannst diesen Tab jetzt schließen",
+        "cta": "Öffne Internxt Drive"
+      },
+      "error": {
+        "title": "Etwas ist schief gelaufen",
+        "subtitle": "Überprüfe, ob der Link korrekt ist, oder fordere erneut eine E-Mail-Verifizierung in Einstellungen > Konto an",
+        "cta": "Zum Konto gehen"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Deine E-Mail wurde noch nicht verifiziert. Bitte überprüfe dein Postfach oder ",
+        "emailNotVerifiedPartTwo": "sende die Verifizierung erneut"
+      }
     }
   },
   "contextMenu": {

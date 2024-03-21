@@ -594,6 +594,10 @@
         "title": "Algo salió mal",
         "subtitle": "Comprueba si el enlace es correcto o vuelve a solicitar la verificación del correo electrónico en Configuración > Cuenta",
         "cta": "Ir a Cuenta"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Tu correo electrónico aún no está verificado. Por favor, revisa tu bandeja de entrada o ",
+        "emailNotVerifiedPartTwo": "reenvía la verificación"
       }
     },
     "emailChange": {

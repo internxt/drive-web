@@ -545,6 +545,10 @@
         "title": " Quelque chose s'est mal passé ",
         "subtitle": " Vérifiez si le lien est correct ou redemandez la vérification de l'email dans Paramètres > Compte ",
         "cta": "Aller au Compte"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Votre e-mail n'est pas encore vérifié. Veuillez vérifier votre boîte de réception ou ",
+        "emailNotVerifiedPartTwo": "renvoyer la vérification"
       }
     },
     "emailChange": {

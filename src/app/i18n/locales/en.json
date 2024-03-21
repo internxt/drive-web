@@ -611,6 +611,10 @@
         "title": "Something went wrong",
         "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
         "cta": "Go to Account"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Your email is not verified yet, please check your inbox or ",
+        "emailNotVerifiedPartTwo": "resend verification"
       }
     },
     "emailChange": {
