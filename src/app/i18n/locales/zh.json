@@ -1458,7 +1458,14 @@
         "title": "团队"
       },
       "billing": {
-        "title": "计费"
+        "title": "计费",
+        "nextBillingDate": "下一次账单日期",
+        "planLimit": "以 {{planLimit}} 计划计费",
+        "paymentMethod": {
+          "title": "付款方式",
+          "editButton": "编辑付款方式",
+          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划"
+        }
       }
     },
     "account": {

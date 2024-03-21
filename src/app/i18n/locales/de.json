@@ -1344,7 +1344,14 @@
         "title": "Teams"
       },
       "billing": {
-        "title": "Billing"
+        "title": "Billing",
+        "nextBillingDate": "Nächstes Abrechnungsdatum",
+        "planLimit": "Abgerechnet für {{planLimit}} plan",
+        "paymentMethod": {
+          "title": "Zahlungsmethode",
+          "editButton": "Zahlungsmethode bearbeiten",
+          "freePlanTitle": "Sie haben einen kostenlosen {{planLimit}} Plan"
+        }
       }
     },
     "account": {

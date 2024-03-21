@@ -1446,7 +1446,14 @@
         "title": "Squadre"
       },
       "billing": {
-        "title": "Fatturazione"
+        "title": "Fatturazione",
+        "nextBillingDate": "Prossima data di fatturazione",
+        "planLimit": "Fatturato per un piano da {{planLimit}}",
+        "paymentMethod": {
+          "title": "Metodo di pagamento",
+          "editButton": "Modifica metodo di pagamento",
+          "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}"
+        }
       }
     },
     "account": {

@@ -4,6 +4,7 @@ import { StoragePlan } from '../../drive/types';
 import moneyService from '../../payment/services/money.service';
 import { RenewalPeriod } from '../../payment/types';
 import { PlanState } from '../../store/slices/plan';
+import dateService from 'app/core/services/date.service';
 
 const formatPlanPaymentInterval = (storagePlan: StoragePlan | null) => {
   if (storagePlan) {
@@ -47,4 +48,13 @@ const getSubscriptionData = ({
   return undefined;
 };
 
-export { formatPlanPaymentInterval, getSubscriptionData };
+const getNextBillingDate = (userSubscription: UserSubscription | null) => {
+  let nextBillingDate;
+  if (userSubscription?.type === 'subscription') {
+    const nextPayment = new Date(userSubscription.nextPayment * 1000);
+    nextBillingDate = dateService.format(nextPayment, 'DD/MM/YY');
+  }
+  return nextBillingDate;
+};
+
+export { formatPlanPaymentInterval, getSubscriptionData, getNextBillingDate };

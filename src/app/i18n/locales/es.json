@@ -1437,7 +1437,14 @@
         "title": "Equipos"
       },
       "billing": {
-        "title": "Facturación"
+        "title": "Facturación",
+        "nextBillingDate": "Próxima fecha de facturación",
+        "planLimit": "Facturado por plan de {{planLimit}}",
+        "paymentMethod": {
+          "title": "Método de pago",
+          "editButton": "Editar método de pago",
+          "freePlanTitle": "Estás en un plan gratuito de {{planLimit}}"
+        }
       }
     },
     "account": {
