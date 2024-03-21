@@ -1,16 +1,18 @@
-import { useSelector } from 'react-redux';
 import { t } from 'i18next';
 
-import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
 import { getSubscriptionData, getNextBillingDate } from '../utils/suscriptionUtils';
 import localStorageService from 'app/core/services/local-storage.service';
 import { bytesToString } from '../../drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 
-const BillingOverview = () => {
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
+import { PlanState } from 'app/store/slices/plan';
+
+interface BillingOverviewProps {
+  plan: PlanState;
+}
+
+const BillingOverview = ({ plan }: BillingOverviewProps) => {
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
   const isFreeSuscription = plan.subscription?.type === 'free';
 

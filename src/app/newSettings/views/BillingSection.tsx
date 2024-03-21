@@ -1,5 +1,10 @@
-import { t } from 'i18next';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { t } from 'i18next';
+
+import { RootState } from 'app/store';
+import { PlanState } from 'app/store/slices/plan';
+
 import Section from '../../core/views/Preferences/components/Section';
 import Invoices from '../containers/InvoicesContainer';
 import { BillingDetails } from '../types';
@@ -20,8 +25,9 @@ const owner = 'Fran Villalba Segarra';
 const isOwner = true;
 
 const BillingSection = () => {
-  const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
+  const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
+  const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [billingDetails, setBillingDetails] = useState<BillingDetails>({
     address,
@@ -47,7 +53,7 @@ const BillingSection = () => {
       title={t('preferences.workspace.billing.title')}
       className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
     >
-      <BillingOverview />
+      <BillingOverview plan={plan} />
       <BillingDetailsCard
         address={billingDetails.address}
         phone={billingDetails.phone}
