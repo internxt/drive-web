@@ -122,6 +122,9 @@ const UploadAvatarModal = ({
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'copy';
               }}
+              role="button"
+              tabIndex={0}
+              onKeyDown={() => inputRef.current?.click()}
             >
               <div className="text-gray-20 hover:text-gray-30">
                 <Image className="mx-auto" weight="light" size={80} />
