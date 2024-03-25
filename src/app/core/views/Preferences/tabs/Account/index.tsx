@@ -6,7 +6,8 @@ import DeleteAccount from './DeleteAccount';
 import InviteAFriend from './InviteAFriend';
 import Language from './Language';
 import Usage from './Usage';
-import UserHeader from './UserHeader';
+
+import UserHeaderContainer from '../../../../../newSettings/Account/Account/containers/UserHeaderContainer';
 import Appearance from './Appearance';
 import ContactSupport from './ContactSupport';
 
@@ -18,7 +19,7 @@ export default function AccountTab({ className = '' }: { className?: string }): 
     <>
       {isFreeAccount ? (
         <div className={className}>
-          <UserHeader />
+          <UserHeaderContainer />
           <div className="mt-8 flex flex-col flex-wrap gap-x-10 gap-y-8 xl:flex-row">
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />
@@ -35,7 +36,7 @@ export default function AccountTab({ className = '' }: { className?: string }): 
         </div>
       ) : (
         <div className={className}>
-          <UserHeader />
+          <UserHeaderContainer />
           <div className="mt-8 flex flex-row flex-wrap gap-x-10 gap-y-8">
             <div className="flex flex-1 flex-col space-y-8">
               <Usage />

@@ -604,6 +604,10 @@
         "title": "Qualcosa è andato storto",
         "subtitle": "Controlla se il link è corretto o richiedi nuovamente la verifica dell'email in Impostazioni > Account",
         "cta": "Vai all'account"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "La tua email non è ancora verificata. Controlla la tua casella di posta o ",
+        "emailNotVerifiedPartTwo": "reinvia la verifica"
       }
     },
     "emailChange": {

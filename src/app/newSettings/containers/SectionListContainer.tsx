@@ -47,6 +47,12 @@ export const sectionItems = [
   { section: 'account', isSection: true, notificationsNumber: 0 },
   {
     section: 'account',
+    subsection: 'account',
+    isSubsection: true,
+    notificationsNumber: 0,
+  },
+  {
+    section: 'account',
     subsection: 'plans',
     isSubsection: true,
     notificationsNumber: 0,

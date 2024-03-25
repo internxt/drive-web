@@ -9,6 +9,7 @@ import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import SectionListContainer, { sectionItems } from '../containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from '../types';
+import AccountSection from '../views/AccountSection';
 import BillingSection from '../views/BillingSection';
 import GeneralSection from '../views/GeneralSection';
 import OverviewSection from '../views/OverviewSection';
@@ -74,6 +75,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && <BillingSection />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'account' && <AccountSection />}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>
