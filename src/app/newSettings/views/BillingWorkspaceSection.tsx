@@ -24,7 +24,7 @@ const phone = '+34432445236';
 const owner = 'Fran Villalba Segarra';
 const isOwner = true;
 
-const BillingSection = () => {
+const BillingWorkspaceSection = () => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
@@ -74,4 +74,4 @@ const BillingSection = () => {
   );
 };
 
-export default BillingSection;
+export default BillingWorkspaceSection;
