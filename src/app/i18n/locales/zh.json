@@ -1471,6 +1471,11 @@
           "freePlanTitle": "您使用的是免费 {{planLimit}} 计划",
           "addButton": "添加付款方式",
           "empty": "未关联付款方式"
+        },
+        "cancelSubscription": {
+          "title": "取消订阅",
+          "text": "您的计划将降级为免费级别",
+          "button": "取消订购"
         }
       }
     },

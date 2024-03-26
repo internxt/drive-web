@@ -1399,6 +1399,11 @@
           "freePlanTitle": "Vous êtes sur un plan gratuit de {{planLimit}}",
           "addButton": "Ajouter une méthode de paiement",
           "empty": "Aucun mode de paiement associé"
+        },
+        "cancelSubscription": {
+          "title": "Annuler l'abonnement",
+          "text": "Votre plan sera rétrogradé au niveau gratuit.",
+          "button": "Annuler l'abonnement"
         }
       }
     },

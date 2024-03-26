@@ -1459,6 +1459,11 @@
           "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}",
           "addButton": "Aggiungi metodo di pagamento",
           "empty": "Nessun metodo di pagamento associato"
+        },
+        "cancelSubscription": {
+          "title": "Annullamento dell'abbonamento",
+          "text": "Il vostro piano sarà declassato al livello gratuito.",
+          "button": "Annullamento dell'abbonamento"
         }
       }
     },

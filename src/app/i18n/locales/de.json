@@ -1369,6 +1369,11 @@
           "freePlanTitle": "Sie haben einen kostenlosen {{planLimit}} Plan",
           "addButton": "Zahlungsmethode hinzufügen",
           "empty": "Keine Zahlungsmethode zugeordnet"
+        },
+        "cancelSubscription": {
+          "title": "Abonnement kündigen",
+          "text": "Ihr Plan wird auf die kostenlose Stufe herabgestuft.",
+          "button": "Abonnement kündigen"
         }
       }
     },

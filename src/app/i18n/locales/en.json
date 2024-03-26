@@ -1472,6 +1472,11 @@
           "freePlanTitle": "You are on a free {{planLimit}} plan",
           "addButton": "Add payment method",
           "empty": "No payment method associated"
+        },
+        "cancelSubscription": {
+          "title": "Cancel subscription",
+          "text": "Your Plan will be downgraded to the free tier.",
+          "button": "Cancel subscription"
         }
       }
     },
