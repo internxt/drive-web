@@ -1469,7 +1469,9 @@
         "paymentMethod": {
           "title": "Payment Method",
           "editButton": "Edit payment method",
-          "freePlanTitle": "You are on a free {{planLimit}} plan"
+          "freePlanTitle": "You are on a free {{planLimit}} plan",
+          "addButton": "Add payment method",
+          "empty": "No payment method associated"
         }
       }
     },

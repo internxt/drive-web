@@ -1456,7 +1456,9 @@
         "paymentMethod": {
           "title": "Metodo di pagamento",
           "editButton": "Modifica metodo di pagamento",
-          "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}"
+          "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}",
+          "addButton": "Aggiungi metodo di pagamento",
+          "empty": "Nessun metodo di pagamento associato"
         }
       }
     },

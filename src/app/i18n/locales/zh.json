@@ -1468,7 +1468,9 @@
         "paymentMethod": {
           "title": "付款方式",
           "editButton": "编辑付款方式",
-          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划"
+          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划",
+          "addButton": "添加付款方式",
+          "empty": "未关联付款方式"
         }
       }
     },
