@@ -28,12 +28,12 @@ const InvitedFriendsContainer = () => {
   const numberOfPendingInvites = invites.length - numberOfAcceptedInvites;
   const maxInvitations = inviteAFriendReferral?.steps;
 
-  const onResend = async (email) => {
+  const onResend = async (email: string) => {
     setResendingEmail(email);
     try {
       await userService.inviteAFriend(email);
       notificationsService.show({
-        text: translate('modals.friendsInvitedModal.resentInvitation'),
+        text: translate('success.inviteAFriend', { email }),
         type: ToastType.Success,
       });
     } catch (err) {
@@ -112,7 +112,7 @@ const InvitedFriendsContainer = () => {
                 </Button>
               </>
             ) : (
-              <div className="flex h-9 items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">
+              <div className="flex h-auto w-full items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">
                 <Info size={18} />
                 <p className="ml-1.5 text-sm">{translate('inviteAFriend.errors.dailyEmailLimit')}</p>
               </div>
@@ -122,11 +122,7 @@ const InvitedFriendsContainer = () => {
       </Card>
 
       {/* INVITED USERS LIST  */}
-      {isLoading ? (
-        <div className="flex grow items-center justify-center">
-          <Spinner className="h-8 w-8 text-gray-50" />
-        </div>
-      ) : (
+      {!isLoading && invites.length > 0 ? (
         <div className="flex">
           <div className="flex grow flex-col rounded-l-xl border-y border-l border-gray-10">
             <h1 className={'flex flex-row justify-between rounded-tl-xl border-b border-gray-10 bg-gray-5 px-5 py-2'}>
@@ -173,6 +169,16 @@ const InvitedFriendsContainer = () => {
             ))}
           </div>
         </div>
+      ) : (
+        <Card>
+          <div className="flex h-40 w-full items-center justify-center">
+            {isLoading ? (
+              <Spinner className="h-8 w-8 text-gray-50" />
+            ) : (
+              <p className="text-base font-normal text-gray-50">{translate('preferences.account.noInvitations')}</p>
+            )}
+          </div>
+        </Card>
       )}
     </Section>
   );

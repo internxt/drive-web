@@ -10,6 +10,8 @@ import { useAppSelector } from '../../../../store/hooks';
 import VerticalDivider from '../../../components/VerticalDivider';
 import useFriendInvites from '../../../hooks/useInviteFriends';
 
+const DEFAULT_MAX_INVITATIONS = 5;
+
 export const ExtraStorageDiv = ({ totalGB, numberOfGBObtained }) => {
   const { translate } = useTranslationContext();
   return (
@@ -44,7 +46,7 @@ const InviteFriendSectionContainer = ({ onSeeInvitationsButtonClicked }) => {
           <div className="flex w-60 flex-col justify-between space-y-4">
             <ExtraStorageDiv numberOfGBObtained={isLoading ? '-' : numberOfAcceptedInvites} totalGB={maxInvitations} />
             <div className="flex flex-row space-x-1">
-              {Array.from({ length: maxInvitations ?? 0 }, (_, index) => (
+              {Array.from({ length: maxInvitations ?? DEFAULT_MAX_INVITATIONS }, (_, index) => (
                 <div
                   key={index}
                   className={`h-1 grow rounded-md ${index < numberOfAcceptedInvites ? 'bg-primary' : 'bg-gray-10'}`}
@@ -88,7 +90,7 @@ const InviteFriendSectionContainer = ({ onSeeInvitationsButtonClicked }) => {
               </div>
             ) : (
               <div className="mt-4 flex items-center ">
-                <div className="flex h-9 items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">
+                <div className="flex h-auto w-full items-center rounded-lg bg-gray-5 px-3 py-2.5 text-gray-80">
                   <Info size={18} />
                   <p className="ml-1.5 text-sm">{translate('inviteAFriend.errors.dailyEmailLimit')}</p>
                 </div>

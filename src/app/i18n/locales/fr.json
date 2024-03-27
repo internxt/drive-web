@@ -1144,7 +1144,7 @@
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée",
     "joinedToTheTeam": "Vous avez rejoint l'équipe avec succès",
     "done": "Terminé",
-    "inviteAFriend": "Une invitation a été envoyée à {{email}}",
+    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} s'est abonné avec succès à la newsletter"
   },
   "shareItemDialog": {
@@ -1415,6 +1415,7 @@
       "status": "Statut",
       "accepted": "Accepté",
       "pending": "En attente",
+      "noInvitations": "Aucune invitation envoyée pour le moment",
       "plans": {
         "title": "Plans"
       },

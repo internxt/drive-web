@@ -1185,7 +1185,7 @@
     "twoFactorAuthDisabled": "Двухфакторная аутентификация отключена",
     "joinedToTheTeam": "Вы успешно присоединились к команде",
     "done": "Готово",
-    "inviteAFriend": "Приглашение было отправлено на {{email}}",
+    "inviteAFriend": "Приглашение отправлено на {{email}}",
     "subscribeToNewsletter": "{{email}} успешно подписан на рассылку"
   },
   "shareItemDialog": {
@@ -1455,6 +1455,7 @@
       "status": "Статус",
       "accepted": "Принят",
       "pending": "В ожидании",
+      "noInvitations": "Пока нет отправленных приглашений",
       "plans": {
         "title": "Планы"
       },

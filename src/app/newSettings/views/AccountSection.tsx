@@ -92,7 +92,7 @@ const AccountSection = () => {
           />
           <UserHeaderContainer />
           <div className="flex justify-center">
-            <Button variant="secondary" className="w-32" onClick={() => setIsDetailsModalOpen(true)}>
+            <Button variant="secondary" onClick={() => setIsDetailsModalOpen(true)}>
               <span>{t('views.preferences.workspace.overview.edit')}</span>
             </Button>
           </div>

@@ -1223,7 +1223,7 @@
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada.",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Hecho",
-    "inviteAFriend": "Una invitación ha sido enviada a {{email}}",
+    "inviteAFriend": "Invitación enviada a {{email}}",
     "subscribeToNewsletter": "{{email}} suscrito con éxito a la newsletter"
   },
   "actions": {
@@ -1466,6 +1466,7 @@
       "status": "Estado",
       "accepted": "Aceptado",
       "pending": "Pendiente",
+      "noInvitations": "Todavía no se han enviado invitaciones",
       "plans": {
         "title": "Planes"
       },

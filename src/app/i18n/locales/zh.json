@@ -1211,7 +1211,7 @@
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
     "joinedToTheTeam": "您已成功加入团队",
     "done": "完成",
-    "inviteAFriend": "邀请已发送至 {{email}}",
+    "inviteAFriend": "已发送邀请至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
@@ -1487,6 +1487,7 @@
       "status": "状态",
       "accepted": "已接受",
       "pending": "待定",
+      "noInvitations": "目前还没有发送邀请",
       "plans": {
         "title": "计划"
       },

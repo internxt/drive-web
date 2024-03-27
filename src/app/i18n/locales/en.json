@@ -1212,7 +1212,7 @@
     "twoFactorAuthDisabled": "Your Two-Factor Authentication has been disabled",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Done",
-    "inviteAFriend": "An invitation has been sent to {{email}}",
+    "inviteAFriend": "Invitation sent to {{email}}",
     "subscribeToNewsletter": "{{email}} successfully subscribed to newsletter"
   },
   "shareItemDialog": {
@@ -1488,6 +1488,7 @@
       "status": "Status",
       "accepted": "Accepted",
       "pending": "Pending",
+      "noInvitations": "No invitations sent yet",
       "plans": {
         "title": "Plans"
       },
