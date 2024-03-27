@@ -1453,6 +1453,19 @@
     },
     "account": {
       "title": "Cuenta",
+      "inviteFriend": "Invitar a un amigo",
+      "seeInvitations": "Ver Invitaciones",
+      "sendInvitationDescription": "Corre la voz y obtén 1 GB por cada amigo invitado gratis. Puedes obtener hasta {{N}}GB en total.",
+      "sendInvitation": "Enviar invitación",
+      "enterFriendEmail": "Introduce el correo electrónico del amigo",
+      "extraStorage": "Almacenamiento adicional",
+      "invitedFriends": "Amigos invitados",
+      "friendsInvited": "Amigos invitados",
+      "acceptedRequests": "Solicitudes aceptadas",
+      "user": "Usuario",
+      "status": "Estado",
+      "accepted": "Aceptado",
+      "pending": "Pendiente",
       "plans": {
         "title": "Planes"
       },

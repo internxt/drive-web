@@ -94,7 +94,7 @@ export default function Input({
       <input
         ref={inputRef}
         disabled={disabled}
-        className={`inxt-input h-11 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20 
+        className={`inxt-input h-10 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-opacity-10 focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20 
           ${borderColor} ${focusColor} ${placeholderColor} ${padding}`}
         type={variant === 'password' && !showPassword ? 'password' : variant === 'email' ? 'email' : 'text'}
         placeholder={placeholder}

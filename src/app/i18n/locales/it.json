@@ -1462,6 +1462,19 @@
     },
     "account": {
       "title": "Conto",
+      "inviteFriend": "Invita un amico",
+      "seeInvitations": "Vedi Inviti",
+      "sendInvitationDescription": "Diffondi la voce e ottieni 1 GB per ogni amico invitato gratuitamente. Puoi ottenere fino a {{N}}GB in totale.",
+      "sendInvitation": "Invia invito",
+      "enterFriendEmail": "Inserisci l'email dell'amico",
+      "extraStorage": "Spazio di archiviazione extra",
+      "invitedFriends": "Amici invitati",
+      "friendsInvited": "Amici invitati",
+      "acceptedRequests": "Richieste accettate",
+      "user": "Utente",
+      "status": "Stato",
+      "accepted": "Accettato",
+      "pending": "In attesa",
       "plans": {
         "title": "Piani"
       },

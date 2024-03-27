@@ -1475,6 +1475,19 @@
     },
     "account": {
       "title": "Account",
+      "inviteFriend": "Invite a friend",
+      "seeInvitations": "See Invitations",
+      "sendInvitationDescription": "Spread the word and get 1 GB per friend invited for free. You can get up to {{N}}GB in total.",
+      "sendInvitation": "Send invitation",
+      "enterFriendEmail": "Enter friend email",
+      "extraStorage": "Extra storage",
+      "invitedFriends": "Invited friends",
+      "friendsInvited": "Friends invited",
+      "acceptedRequests": "Accepted requests",
+      "user": "User",
+      "status": "Status",
+      "accepted": "Accepted",
+      "pending": "Pending",
       "plans": {
         "title": "Plans"
       },

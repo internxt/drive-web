@@ -1402,6 +1402,19 @@
     },
     "account": {
       "title": "Account",
+      "inviteFriend": "Inviter un ami",
+      "seeInvitations": "Voir les invitations",
+      "sendInvitationDescription": "Faites passer le mot et obtenez 1 Go par ami invité gratuitement. Vous pouvez obtenir jusqu'à {{N}}GB au total.",
+      "sendInvitation": "Envoyer une invitation",
+      "enterFriendEmail": "Entrer l'e-mail de l'ami",
+      "extraStorage": "Espace de stockage supplémentaire",
+      "invitedFriends": "Amis invités",
+      "friendsInvited": "Amis invités",
+      "acceptedRequests": "Demandes acceptées",
+      "user": "Utilisateur",
+      "status": "Statut",
+      "accepted": "Accepté",
+      "pending": "En attente",
       "plans": {
         "title": "Plans"
       },

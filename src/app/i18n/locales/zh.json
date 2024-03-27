@@ -1474,6 +1474,19 @@
     },
     "account": {
       "title": "账户",
+      "inviteFriend": "邀请朋友",
+      "seeInvitations": "查看邀请",
+      "sendInvitationDescription": "传播消息，每邀请一个朋友获得1 GB免费存储空间。您最多可以获得{{N}}GB。",
+      "sendInvitation": "发送邀请",
+      "enterFriendEmail": "输入朋友的电子邮件",
+      "extraStorage": "额外存储空间",
+      "invitedFriends": "受邀朋友",
+      "friendsInvited": "受邀朋友",
+      "acceptedRequests": "已接受请求",
+      "user": "用户",
+      "status": "状态",
+      "accepted": "已接受",
+      "pending": "待定",
       "plans": {
         "title": "计划"
       },

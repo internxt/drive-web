@@ -1372,6 +1372,19 @@
     },
     "account": {
       "title": "Konto",
+      "inviteFriend": "Freund einladen",
+      "seeInvitations": "Einladungen ansehen",
+      "sendInvitationDescription": "Verbreiten Sie die Nachricht und erhalten Sie 1 GB pro eingeladenem Freund kostenlos. Sie können insgesamt bis zu 4 GB erhalten.",
+      "sendInvitation": "Einladung senden",
+      "enterFriendEmail": "Freundes-E-Mail eingeben",
+      "extraStorage": "Zusätzlicher Speicher",
+      "invitedFriends": "Eingeladene Freunde",
+      "friendsInvited": "Freunde eingeladen",
+      "acceptedRequests": "Akzeptierte Anfragen",
+      "user": "Benutzer",
+      "status": "Status",
+      "accepted": "Akzeptiert",
+      "pending": "Ausstehend",
       "plans": {
         "title": "Pläne"
       },
