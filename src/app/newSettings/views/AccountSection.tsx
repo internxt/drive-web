@@ -81,7 +81,7 @@ const AccountSection = () => {
       }
       className="flex flex-1 flex-col space-y-2 p-6"
     >
-      {isFreeAccount && isInvitationsViewVisible ? (
+      {isInvitationsViewVisible ? (
         <InvitedFriendsContainer />
       ) : (
         <>
@@ -92,11 +92,13 @@ const AccountSection = () => {
           />
           <UserHeaderContainer />
           <div className="flex justify-center">
-            <Button variant="secondary" onClick={() => setIsDetailsModalOpen(true)}>
+            <Button variant="secondary" className="w-32" onClick={() => setIsDetailsModalOpen(true)}>
               <span>{t('views.preferences.workspace.overview.edit')}</span>
             </Button>
           </div>
-          <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
+          {isFreeAccount && (
+            <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
+          )}
         </>
       )}
       <AccountDetailsModal
