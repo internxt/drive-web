@@ -1223,7 +1223,7 @@
     "twoFactorAuthDisabled": "Su autenticación de dos factores ha sido desactivada.",
     "joinedToTheTeam": "You have successfully joined to the team",
     "done": "Hecho",
-    "inviteAFriend": "Una invitación ha sido enviada a {{email}}",
+    "inviteAFriend": "Invitación enviada a {{email}}",
     "subscribeToNewsletter": "{{email}} suscrito con éxito a la newsletter"
   },
   "actions": {
@@ -1453,6 +1453,20 @@
     },
     "account": {
       "title": "Cuenta",
+      "inviteFriend": "Invitar a un amigo",
+      "seeInvitations": "Ver Invitaciones",
+      "sendInvitationDescription": "Corre la voz y obtén 1 GB por cada amigo invitado gratis. Puedes obtener hasta {{N}}GB en total.",
+      "sendInvitation": "Enviar invitación",
+      "enterFriendEmail": "Introduce el correo electrónico del amigo",
+      "extraStorage": "Almacenamiento adicional",
+      "invitedFriends": "Amigos invitados",
+      "friendsInvited": "Amigos invitados",
+      "acceptedRequests": "Solicitudes aceptadas",
+      "user": "Usuario",
+      "status": "Estado",
+      "accepted": "Aceptado",
+      "pending": "Pendiente",
+      "noInvitations": "Todavía no se han enviado invitaciones",
       "plans": {
         "title": "Planes"
       },
