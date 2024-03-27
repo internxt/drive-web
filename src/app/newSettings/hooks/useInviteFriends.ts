@@ -26,7 +26,7 @@ export const useFriendInvites = () => {
     try {
       setInvitationStatus('LOADING');
       await userService.inviteAFriend(email);
-      notificationsService.show({ text: translate('success.inviteAFriend', { email }), type: ToastType.Info });
+      notificationsService.show({ text: translate('success.inviteAFriend', { email }), type: ToastType.Success });
       setInvitationStatus('READY');
     } catch (err) {
       const castedError = errorService.castError(err);

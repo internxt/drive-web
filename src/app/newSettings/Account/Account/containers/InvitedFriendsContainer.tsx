@@ -34,7 +34,7 @@ const InvitedFriendsContainer = () => {
       await userService.inviteAFriend(email);
       notificationsService.show({
         text: translate('modals.friendsInvitedModal.resentInvitation'),
-        type: ToastType.Info,
+        type: ToastType.Success,
       });
     } catch (err) {
       const castedError = errorService.castError(err);
