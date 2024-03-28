@@ -55,20 +55,25 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   };
 
   return (
-    <Modal maxWidth="max-w-4xl" className="m-0 flex h-640" isOpen={isPreferencesDialogOpen} onClose={() => onClose()}>
+    <Modal
+      maxWidth="max-w-4xl"
+      className="dark:dbg-surface m-0 flex h-640 shadow-sm"
+      isOpen={isPreferencesDialogOpen}
+      onClose={() => onClose()}
+    >
       <Helmet>
         <title>{title} - Internxt Drive</title>
       </Helmet>
 
       {/* SIDEBAR MENU */}
-      <section className="w-56 border-r border-gray-10 bg-surface px-2.5">
+      <section className="w-56 border-r border-gray-10 px-2.5">
         <h1 className="py-3 pl-4 text-xl font-semibold">{translate('preferences.title')}</h1>
         <SectionListContainer activeSection={activeSection} changeSection={changeSection} />
       </section>
       {/* SIDEBAR MENU */}
 
       {/* ACTIVE SECTION */}
-      <section className="relative w-full overflow-y-auto bg-surface">
+      <section className="relative w-full overflow-y-auto">
         <button className="fixed right-0 z-50 m-4 flex w-auto" onClick={() => onClose()}>
           <X size={22} />
         </button>
