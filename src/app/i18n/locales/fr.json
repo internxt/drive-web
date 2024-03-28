@@ -1144,7 +1144,7 @@
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée",
     "joinedToTheTeam": "Vous avez rejoint l'équipe avec succès",
     "done": "Terminé",
-    "inviteAFriend": "Une invitation a été envoyée à {{email}}",
+    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} s'est abonné avec succès à la newsletter"
   },
   "shareItemDialog": {
@@ -1402,6 +1402,20 @@
     },
     "account": {
       "title": "Account",
+      "inviteFriend": "Inviter un ami",
+      "seeInvitations": "Voir les invitations",
+      "sendInvitationDescription": "Faites passer le mot et obtenez 1 Go par ami invité gratuitement. Vous pouvez obtenir jusqu'à {{N}}GB au total.",
+      "sendInvitation": "Envoyer une invitation",
+      "enterFriendEmail": "Entrer l'e-mail de l'ami",
+      "extraStorage": "Espace de stockage supplémentaire",
+      "invitedFriends": "Amis invités",
+      "friendsInvited": "Amis invités",
+      "acceptedRequests": "Demandes acceptées",
+      "user": "Utilisateur",
+      "status": "Statut",
+      "accepted": "Accepté",
+      "pending": "En attente",
+      "noInvitations": "Aucune invitation envoyée pour le moment",
       "plans": {
         "title": "Plans"
       },
