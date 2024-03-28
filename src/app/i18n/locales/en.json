@@ -1489,6 +1489,11 @@
       "accepted": "Accepted",
       "pending": "Pending",
       "noInvitations": "No invitations sent yet",
+      "upgrade": "Upgrade",
+      "levelUpStorage": "Level up your storage space and get many other benefits",
+      "upgradeNow": "Upgrade now",
+      "emptyTrash": "Empty trash",
+      "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
       "plans": {
         "title": "Plans"
       },

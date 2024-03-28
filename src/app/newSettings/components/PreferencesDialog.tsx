@@ -61,14 +61,14 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       </Helmet>
 
       {/* SIDEBAR MENU */}
-      <section className="w-56 border-r border-gray-10 px-2.5">
+      <section className="w-56 border-r border-gray-10 bg-surface px-2.5">
         <h1 className="py-3 pl-4 text-xl font-semibold">{translate('preferences.title')}</h1>
         <SectionListContainer activeSection={activeSection} changeSection={changeSection} />
       </section>
       {/* SIDEBAR MENU */}
 
       {/* ACTIVE SECTION */}
-      <section className="relative w-full overflow-y-auto">
+      <section className="relative w-full overflow-y-auto bg-surface">
         <button className="fixed right-0 z-50 m-4 flex w-auto" onClick={() => onClose()}>
           <X size={22} />
         </button>
@@ -76,6 +76,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && <BillingSection />}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && <AccountSection />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && <div />}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>

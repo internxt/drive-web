@@ -149,7 +149,7 @@ const InvitedFriendsContainer = () => {
             {invites.map(({ guestEmail, id, accepted }, i) => (
               <div
                 key={guestEmail + id}
-                className={`flex w-56 flex-row items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 ${
+                className={`flex w-56 flex-row items-center justify-between border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
                   i === invites.length - 1 ? 'rounded-br-xl' : 'border-b'
                 } ${accepted ? 'text-green' : ''} `}
               >

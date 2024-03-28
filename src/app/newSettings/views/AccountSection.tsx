@@ -18,12 +18,14 @@ import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { updateUserProfileThunk } from '../../store/slices/user';
 
+import ClearTrashDialog from '../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import AccountDetailsModal from '../Account/Account/components/AccountDetailsModal';
 import ChangeEmailModal from '../Account/Account/components/ChangeEmailModal';
 import EmailVerificationMessageCard from '../Account/Account/components/EmailMessageCard';
 import InviteFriendSectionContainer from '../Account/Account/containers/InviteFriendSectionContainer';
 import InvitedFriendsContainer from '../Account/Account/containers/InvitedFriendsContainer';
 import UserHeaderContainer from '../Account/Account/containers/UserHeaderContainer';
+import AccountUsageContainer from '../containers/AccountUsageContainer';
 
 const AccountSection = () => {
   const dispatch = useAppDispatch();
@@ -99,6 +101,7 @@ const AccountSection = () => {
           {isFreeAccount && (
             <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
           )}
+          <AccountUsageContainer />
         </>
       )}
       <AccountDetailsModal
@@ -127,6 +130,7 @@ const AccountSection = () => {
         changeEmail={changeUserEmail}
         onChangeEmailError={onChangeEmailError}
       />
+      <ClearTrashDialog />
     </Section>
   );
 };
