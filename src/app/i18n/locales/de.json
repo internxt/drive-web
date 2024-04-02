@@ -1363,6 +1363,16 @@
         "title": "Billing",
         "nextBillingDate": "Nächstes Abrechnungsdatum",
         "planLimit": "Abgerechnet für {{planLimit}} plan",
+        "subscription": "Abonnement",
+        "lifetimeSubscription": {
+          "planType": "Lebenslang",
+          "text": "Keine kommenden Rechnungen"
+        },
+        "freeSubscription": {
+          "planType": "Kostenlos",
+          "action": "Upgrade",
+          "actionDescription": "Erhöhen Sie Ihren Speicherplatz und erhalten Sie mehr Funktionen"
+        },
         "paymentMethod": {
           "title": "Zahlungsmethode",
           "editButton": "Zahlungsmethode bearbeiten",

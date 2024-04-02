@@ -1466,6 +1466,16 @@
         "title": "Billing",
         "nextBillingDate": "Next billing date",
         "planLimit": "Billed for {{planLimit}} plan",
+        "subscription": "Subscription",
+        "lifetimeSubscription": {
+          "planType": "Lifetime",
+          "text": "No upcoming billings"
+        },
+        "freeSubscription": {
+          "planType": "Free",
+          "action": "Upgrade",
+          "actionDescription": "Increase your storage space and get more features"
+        },
         "paymentMethod": {
           "title": "Payment Method",
           "editButton": "Edit payment method",

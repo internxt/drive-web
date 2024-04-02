@@ -1393,6 +1393,16 @@
         "title": "Billing",
         "nextBillingDate": "Prochaine date de facturation",
         "planLimit": "Facturé pour un forfait de {{planLimit}}",
+        "subscription": "Abonnement",
+        "lifetimeSubscription": {
+          "planType": "Durée de vie",
+          "text": "Pas de facturation à venir"
+        },
+        "freeSubscription": {
+          "planType": "Gratuit",
+          "action": "Mise à niveau",
+          "actionDescription": "Augmentez votre espace de stockage et bénéficiez de plus de fonctionnalités"
+        },
         "paymentMethod": {
           "title": "Mode de paiement",
           "editButton": "Modifier le mode de paiement",

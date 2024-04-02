@@ -4,22 +4,25 @@ import { t } from 'i18next';
 
 import { useAppDispatch } from 'app/store/hooks';
 import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
 import paymentService from 'app/payment/services/payment.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
-import { planThunks } from 'app/store/slices/plan';
+import { planThunks, PlanState } from 'app/store/slices/plan';
 import { FreeStoragePlan, StoragePlan } from 'app/drive/types';
 import { RenewalPeriod } from 'app/payment/types';
 import moneyService from 'app/payment/services/money.service';
 
 import Section from '../../core/views/Preferences/components/Section';
 import Invoices from '../containers/InvoicesContainer';
-import BillingOverview from '../components/BillingOverview';
+import BillingAccountOverview from '../components/BillingAccountOverview';
 import BillingPaymentMethodCard from '../components/BillingPaymentMethodCard';
 import CancelSubscription from '../components/CancelSubscription';
 
-const BillingAccountSection = () => {
+interface BillingAccountSectionProps {
+  changeSection: ({ section, subsection }) => void;
+}
+
+const BillingAccountSection = ({ changeSection }: BillingAccountSectionProps) => {
   const dispatch = useAppDispatch();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
@@ -58,7 +61,7 @@ const BillingAccountSection = () => {
   }
 
   const getPlanName = (storagePlan: StoragePlan | null) => {
-    setPlanName(storagePlan?.simpleName || FreeStoragePlan.simpleName);
+    setPlanName(storagePlan?.simpleName ?? FreeStoragePlan.simpleName);
   };
 
   const getPlanInfo = (storagePlan: StoragePlan | null) => {
@@ -92,7 +95,7 @@ const BillingAccountSection = () => {
       title={t('preferences.workspace.billing.title')}
       className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
     >
-      <BillingOverview plan={plan} />
+      <BillingAccountOverview plan={plan} changeSection={changeSection} />
       <BillingPaymentMethodCard />
       <Invoices />
       {isSubscription && (
