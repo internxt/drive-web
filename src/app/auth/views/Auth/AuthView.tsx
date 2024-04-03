@@ -62,7 +62,7 @@ export const SignupComponent = ({
               placeholder={textContent.email}
               label="email"
               type="email"
-              className={'w-full'}
+              className={'w-full rounded-lg bg-white'}
               register={register}
               autoComplete="off"
               minLength={{ value: 1, message: textContent.emailEmpty }}
@@ -74,7 +74,7 @@ export const SignupComponent = ({
             <PasswordInput
               placeholder={textContent.passwordLabel}
               label="password"
-              className={'w-full'}
+              className={'w-full rounded-lg bg-white'}
               register={register}
               autoComplete="new-password"
               required={true}

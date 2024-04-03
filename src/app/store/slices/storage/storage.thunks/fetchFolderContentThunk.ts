@@ -20,8 +20,9 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
     const storageState = getState().storage;
-    const hasMoreDriveFolders = storageState.hasMoreDriveFolders;
-    const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
+    const hasMoreDriveFolders = storageState.hasMoreDriveFolders[folderId] ?? true;
+    const hasMoreDriveFiles = storageState.hasMoreDriveFiles[folderId] ?? true;
+
     const foldersOffset = (storageState.levels[folderId] ?? []).filter(filterFolderItems).length;
     const filesOffset = (storageState.levels[folderId] ?? []).filter(filterFilesItems).length;
     const driveItemsSort = storageState.driveItemsSort;
@@ -34,7 +35,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       let itemsPromise;
 
       if (hasMoreDriveFolders) {
-        [itemsPromise] = await storageClient.getFolderFolders(
+        [itemsPromise] = storageClient.getFolderFolders(
           folderId,
           foldersOffset,
           DEFAULT_LIMIT,
@@ -42,7 +43,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
           driveItemsOrder,
         );
       } else if (hasMoreDriveFiles) {
-        [itemsPromise] = await storageClient.getFolderFiles(
+        [itemsPromise] = storageClient.getFolderFiles(
           folderId,
           filesOffset,
           DEFAULT_LIMIT,
@@ -63,10 +64,10 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       dispatch(storageActions.addItems({ folderId, items: parsedItems }));
 
       if (hasMoreDriveFolders) {
-        dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
+        dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
         dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
       } else {
-        dispatch(storageActions.setHasMoreDriveFiles(!areLastItems));
+        dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
         dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
       }
     } catch (error) {

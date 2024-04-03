@@ -37,11 +37,11 @@ const DriveView = (props: DriveViewProps) => {
     const itemUuid = navigationService.getUuid();
 
     if (isFolderView && itemUuid) {
-      goFolder(itemUuid);
+      navigateToFolder(itemUuid);
     }
 
     if (isFileView && itemUuid) {
-      goFile(itemUuid);
+      showFile(itemUuid);
     }
   }, [pathname]);
 
@@ -49,15 +49,12 @@ const DriveView = (props: DriveViewProps) => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
-    return () => {
-      dispatch(storageActions.resetDrivePagination());
-    };
   }, []);
 
-  const goFolder = async (folderUuid) => {
+  const navigateToFolder = async (folderUuid: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
-      dispatch(storageThunks.fetchFolderContentThunk(folderMeta.id));
+
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
@@ -72,13 +69,9 @@ const DriveView = (props: DriveViewProps) => {
     }
   };
 
-  const goFile = async (folderUuid) => {
+  const showFile = async (folderUuid: string) => {
     try {
       const fileMeta = await fileService.getFile(folderUuid);
-      // Commented to fix getting unwanted content when opening a file preview,
-      // may need to check this if you want to load the folder where a file is
-      // located which has been accessed directly by URL (without navigating to it).
-      // dispatch(storageThunks.fetchFolderContentThunk(fileMeta.folderId));
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
@@ -146,7 +139,7 @@ export default connect((state: RootState) => {
 
   return {
     namePath: state.storage.namePath,
-    isLoading: state.storage.loadingFolders[currentFolderId],
+    isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
     currentFolderId,
     items: sortedItems,
   };

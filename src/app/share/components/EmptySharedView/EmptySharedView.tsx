@@ -16,15 +16,17 @@ const EmptySharedView = ({ onUploadFileButtonClicked, sharedNamePath, isCurrentU
   const emptyState = {
     rootLink: (
       <div className="h-full w-full p-8">
-        <div className="flex h-full flex-col items-center justify-center pb-20">
+        <div className="flex h-full w-full flex-col items-center justify-center pb-20">
           <div className="pointer-events-none mx-auto mb-10 w-max">
             <Users size={80} weight="thin" />
           </div>
-          <div className="pointer-events-none text-center">
-            <p className="mb-1 block text-2xl font-medium text-gray-100">
-              {translate('shared-links.empty-state.title')}
+
+          <div className="pointer-events-none flex w-full flex-col items-center justify-center text-center">
+            <p className="mb-1 text-2xl font-medium text-gray-100">{translate('shared-links.empty-state.title')}</p>
+
+            <p className="w-full max-w-xs items-center text-lg text-gray-60">
+              {translate('shared-links.empty-state.subtitle')}
             </p>
-            <p className="block max-w-xs text-lg text-gray-60">{translate('shared-links.empty-state.subtitle')}</p>
           </div>
         </div>
       </div>

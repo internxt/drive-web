@@ -1,25 +1,30 @@
-import localStorageService, { STORAGE_KEYS } from '../core/services/local-storage.service';
+import localStorageService from '../core/services/local-storage.service';
 import { RootState } from '../store';
 import { useAppSelector } from '../store/hooks';
 import { PlanState } from '../store/slices/plan';
 import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import Banner from './Banner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_soft_banner_sale';
-const OFFER_OFF_DAY = new Date('2024-02-12');
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import FeaturesBanner from './FeaturesBanner';
+
+const SHOW_BANNER_COOKIE_NAME = 'show_spring_banner';
+const OFFER_OFF_DAY = new Date('2024-03-18');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+  const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
   const userPlan = plan.subscription?.type;
+
+  const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
   const isOfferOffDay = new Date() > OFFER_OFF_DAY;
 
-  const shouldShowBanner = userPlan === 'free' && !isLocalStorage && !isOfferOffDay;
+  const shouldShowBanner = isNewUser && !isLocalStorage && !isOfferOffDay;
 
   useEffect(() => {
     handleBannerDisplay();
@@ -36,7 +41,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;

@@ -3,19 +3,20 @@
     "title": "在应用程序上管理您的文件、帐户和订阅",
     "logOut": "登出"
   },
-  "blackFridayBanner": {
-    "header": "省 70%!",
-    "title": "为数据隐私周做好准备",
+  "featuresBanner": {
+    "label": "省75%",
+    "title": "开始您的数字春季大扫除",
     "cta": "选择计划",
     "guarantee": "30天退款保证",
-    "features": {
-      "discount": "在月度和年度计划上节省",
-      "safeCloud": "安全可靠的云存储",
-      "openSource": "开源和透明",
-      "endToEnd": "端到端加密传输",
-      "unauthorized": "无未经授权访问",
-      "offerEnds": "优惠截至日期为1月29日"
-    }
+    "lastCta": "*优惠仅适用于免费帐户或新客户",
+    "features": [
+      "在我们所有的计划上节省",
+      "安全可靠的云存储",
+      "开源和透明",
+      "端到端加密传输",
+      "没有未经授权的访问",
+      "优惠截至日期为3月18日"
+    ]
   },
   "valentinesBanner": {
     "title": "爱无极限！",
@@ -55,7 +56,7 @@
     "es": "Español (西班牙语)",
     "fr": "Français (法语)",
     "it": "Italiano (意大利语)",
-    "cn": "简体中文 (简体中文)",
+    "zh": "简体中文 (简体中文)",
     "ru": "Русский (俄语)",
     "de": "Deutsch (德国)"
   },
@@ -84,8 +85,18 @@
       "haveAccount": "已有账户？",
       "login": "登录",
       "encrypting": "加密中",
-      "info1": "Internxt 不存储密码",
-      "info2": "如果忘记密码，您将无法访问所有文件"
+      "info": {
+        "normalText": "Internxt 不存储密码。",
+        "boldText": "如果您忘记了密码，您可以下载备份密钥以恢复对文件的访问。",
+        "cta": "了解更多"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "备份密钥",
+      "description": "备份密钥可在您忘记密码时恢复帐户。永远不要分享它。",
+      "downloadCta": "下载备份密钥",
+      "settingsTab": "您可以在“设置” > “安全”中访问您的备份密钥",
+      "skip": "跳过"
     },
     "forgotPassword": {
       "title": "账户恢复",
@@ -204,7 +215,8 @@
     },
     "files": "*文件",
     "file": "*文件",
-    "folder": "文件夹"
+    "folder": "文件夹",
+    "reloadPageMessage": "你所做的更改可能尚未保存"
   },
   "shareLayout": {
     "title": "INTERNXT",
@@ -907,6 +919,7 @@
     "linkExpired": "此安全链接已过期",
     "teamInvitation": "邀请邮件无法发送",
     "storageIsFull": "您的存储空间已满",
+    "storageIsFullDescription": "无法上传同步或备份文件",
     "noSpaceAvailable": "您已达到当前计划的限制，同步已停止。立即升级以确保您的文件安全同步。",
     "sharedFolderTooBig": "Internxt Drive 不支持共享超过 1GB 的文件夹。",
     "titleSharedFolderTooBig": "不受支持的操作",
@@ -914,6 +927,7 @@
     "noFilePreview": "没有可用的文件预览",
     "browserNotSupported": "浏览器不支持 ({{userAgent}})",
     "inviteAFriend": "向朋友发送邀请时出错: {{message}}",
+    "inviteAFriendEmpty": "发送邀请时出错 您必须指定电子邮件地址",
     "subscribeToNewsletter": "订阅时事通讯时出错: {{message}}",
     "lastPasswordError": "您上次输入的密码似乎无效。再试一次，如果问题仍然存在，请联系我们的支持人员。",
     "incorrectPassword": "您输入的当前密码不匹配。请确保其正确。",
@@ -921,7 +935,7 @@
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
     "braveNotSupportMultiplePhotosDowload": "Brave 浏览器不支持多张照片下载。",
-    "maxSizeUploadLimitError": "文件太大（大于10GB）",
+    "maxSizeUploadLimitError": "文件太大（大于20GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
   },
@@ -1022,6 +1036,8 @@
       "allProcessesHaveFinished": "所有处理都已完成",
       "processing": "正在处理 {{pending}}/{{finished}}"
     },
+    "waiting": "等待中",
+    "paused": "暂停",
     "create-folder": {
       "status": {
         "pending": "待创建文件夹",
@@ -1140,6 +1156,15 @@
         "cancelled": "已取消重命名"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "上传失败"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "重试上传时出了问题。请再次上传",
+      "retryDownloadFailed": "重试下载时出现问题。请重试下载",
+      "openUploadedFileFailed": "尝试打开文件时出现问题",
+      "openUploadedFolderFailed": "尝试访问文件夹时出现问题"
     }
   },
   "success": {
@@ -1265,7 +1290,7 @@
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",
-      "details ": "详细信息",
+      "details": "详细信息",
       "share": "分享",
       "manageAccess": "管理访问权限",
       "download": "下载",

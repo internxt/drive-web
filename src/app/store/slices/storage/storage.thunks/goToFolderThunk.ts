@@ -1,13 +1,13 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { storageActions } from '..';
 import { RootState } from '../../..';
+import newStorageService from '../../../../drive/services/new-storage.service';
 import { FolderPath } from '../../../../drive/types';
 import { uiActions } from '../../ui';
+import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
-import { storageActions } from '..';
-import newStorageService from '../../../../drive/services/new-storage.service';
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
@@ -35,6 +35,8 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
       return;
     }
 
+    dispatch(storageActions.setHasMoreDriveFolders({ folderId: path.id, status: true }));
+    dispatch(storageActions.setHasMoreDriveFiles({ folderId: path.id, status: true }));
     dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 

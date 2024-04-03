@@ -3,19 +3,20 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "blackFridayBanner": {
-    "header": "¡Ahorra un 70%!",
-    "title": "Prepárate para la Semana de la Privacidad de Datos",
+  "featuresBanner": {
+    "label": "Ahorra un 75%",
+    "title": "Comienza a ahorrar esta primavera",
     "cta": "Elige un plan",
     "guarantee": "Garantía de devolución de 30 días",
-    "features": {
-      "discount": "Ahorra en suscripciones mensuales y anuales",
-      "safeCloud": "Almacenamiento seguro en la nube",
-      "openSource": "Código abierto y transparente",
-      "endToEnd": "Transferencias cifradas de extremo a extremo",
-      "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta finaliza el 29 de enero"
-    }
+    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "features": [
+      "Ahorra en todos nuestros planes",
+      "Almacenamiento seguro en la nube",
+      "Código abierto y auditado",
+      "Transferencias cifradas de extremo a extremo",
+      "Sin accesos no autorizados",
+      "La oferta finaliza el 18 de marzo"
+    ]
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
@@ -34,7 +35,7 @@
     "es": "Español (Español)",
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
-    "cn": "简体中文 (Chino)",
+    "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
     "de": "Deutsch (Alemán)"
   },
@@ -64,8 +65,18 @@
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
       "encrypting": "Cifrando",
-      "info1": "Internxt no almacena contraseñas.",
-      "info2": "En caso de que se olvide de su contraseña, perderá el acceso a todos sus archivos."
+      "info": {
+        "normalText": "Internxt no almacena contraseñas.",
+        "boldText": "Si olvidas tu contraseña, puedes descargar una clave de respaldo para recuperar el acceso a tus archivos.",
+        "cta": "Más información"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Clave de respaldo",
+      "description": "La clave de respaldo permite la recuperación de la cuenta en caso de que olvides tu contraseña. Nunca la compartas.",
+      "downloadCta": "Descargar clave",
+      "settingsTab": "Puedes acceder a tu clave de respaldo en Configuración > Seguridad",
+      "skip": "Omitir"
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
@@ -188,7 +199,8 @@
     },
     "files": "Archivos",
     "file": "Archivo",
-    "folder": "Carpeta"
+    "folder": "Carpeta",
+    "reloadPageMessage": "Los cambios que realizaste pueden no haberse guardado."
   },
   "shareLayout": {
     "title": "",
@@ -894,6 +906,7 @@
     "noFilePreview": "No hay vista previa de archivos disponible",
     "browserNotSupported": "Navegador no compatible ({{userAgent}})",
     "inviteAFriend": "Error al enviar la invitación a un amigo: {{message}}",
+    "inviteAFriendEmpty": "Error al enviar la invitación: Debe especificar un correo electrónico",
     "subscribeToNewsletter": "Error al suscribirse al boletín: {{message}}",
     "lastPasswordError": "La contraseña que has introducido como última parece no ser válida. Inténtalo de nuevo y, si el problema persiste, ponte en contacto con nuestro servicio de asistencia.",
     "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
@@ -901,7 +914,7 @@
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
-    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
@@ -1002,6 +1015,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}"
     },
+    "waiting": "Esperando",
+    "paused": "Pausado",
     "create-folder": {
       "status": {
         "pending": "Esperando para completar tarea",
@@ -1121,6 +1136,15 @@
         "cancelled": "Cancelado"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Error al subir"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
+      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo",
+      "openUploadedFileFailed": "Algo salió mal al intentar abrir el archivo",
+      "openUploadedFolderFailed": "Algo salió mal al intentar navegar hasta la carpeta"
     }
   },
   "shareItemDialog": {
@@ -1242,6 +1266,7 @@
     },
     "dropdown": {
       "openPreview": "Abrir previsualización",
+      "shareLink": "Compartir",
       "getLink": "Copiar enlace",
       "details": "Detalles",
       "rename": "Renombrar",
@@ -1346,7 +1371,7 @@
       },
       "stepTwo": {
         "title": "Empecemos...",
-        "description": "Haga clic en el botón Cargar para cargar su primer archivo."
+        "description": "Haga clic en el botón Subir archivos para cargar su primer archivo."
       }
     }
   },

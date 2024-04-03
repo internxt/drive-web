@@ -4,7 +4,6 @@ import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
 import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
-import itemsListService from '../../../drive/services/items-list.service';
 import { OrderDirection, OrderSettings } from '../../../core/types';
 import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
@@ -18,8 +17,8 @@ const initialState: StorageState = {
   moveDialogLevels: {},
   levelsFoldersLength: {},
   levelsFilesLength: {},
-  hasMoreDriveFolders: true,
-  hasMoreDriveFiles: true,
+  hasMoreDriveFolders: {},
+  hasMoreDriveFiles: {},
   recents: [],
   isLoadingRecents: false,
   isLoadingDeleted: false,
@@ -109,15 +108,15 @@ export const storageSlice = createSlice({
       state.levelsFilesLength[action.payload.folderId] = 0;
       state.levels[action.payload.folderId] = [];
     },
-    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.hasMoreDriveFolders = action.payload;
+    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+      state.hasMoreDriveFolders[action.payload.folderId] = action.payload.status;
     },
-    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.hasMoreDriveFiles = action.payload;
+    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+      state.hasMoreDriveFiles[action.payload.folderId] = action.payload.status;
     },
     resetDrivePagination: (state: StorageState) => {
-      state.hasMoreDriveFiles = true;
-      state.hasMoreDriveFolders = true;
+      state.hasMoreDriveFolders[state.currentPath.id] = true;
+      state.hasMoreDriveFiles[state.currentPath.id] = true;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
@@ -333,12 +332,16 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
-      const folderItems = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => parseInt(folderId));
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
+
+      const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
 
       folderIds.forEach((folderId) => {
         const folderList = state.levels[folderId] ?? [];
-        const items = itemsListService.pushItems(itemsToPush, folderList);
+
+        const filteredItems = folderList.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id));
+        const items = [...filteredItems, ...itemsToPush];
 
         state.levels[folderId] = items;
 
@@ -346,7 +349,10 @@ export const storageSlice = createSlice({
       });
 
       if (action.payload.updateRecents) {
-        state.recents = [...itemsToPush.filter((item) => !item.isFolder), ...state.recents];
+        state.recents = [
+          ...state.recents.filter((existingItem) => !uniqueNewItemsId.has(existingItem.id)),
+          ...itemsToPush.filter((item) => !item.isFolder),
+        ];
       }
     },
     popItems(
