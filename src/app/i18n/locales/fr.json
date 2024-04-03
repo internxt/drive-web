@@ -4,18 +4,18 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 75%",
-    "title": "Profitez de votre offre de printemps",
+    "label": "Offre pour la Journée mondiale de la sécurité cloud",
+    "title": "Une vie privée à 75% de moins",
     "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur tous nos plans",
+      "75% de réduction sur tous les plans à vie",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 18 mars"
+      "L'offre se termine le 8 avril"
     ]
   },
   "valentinesBanner": {

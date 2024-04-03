@@ -19,6 +19,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -67,7 +68,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import BannerWrapper from '../../../banners/BannerWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -169,11 +169,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-  const stepOneTutorialRef = useRef(null);
+  const uploadFileButtonRef = useRef(null);
   const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
@@ -187,7 +188,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }, 0);
         passToNextStep();
       },
-      stepOneTutorialRef,
+      stepOneTutorialRef: uploadFileButtonRef,
+      offset: hasAnyItemSelected ? { x: divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
     },
     {
       onNextStepClicked: () => {
@@ -740,7 +742,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   }}
                 </Menu>
                 <DriveTopBarItems
-                  stepOneTutorialRef={stepOneTutorialRef}
+                  stepOneTutorialRef={uploadFileButtonRef}
                   onCreateFolderButtonClicked={onCreateFolderButtonClicked}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
                   onUploadFolderButtonClicked={onUploadFolderButtonClicked}
@@ -754,6 +756,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               currentFolderId={currentFolderId}
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
+              driveActionsRef={divRef}
             />
           </div>
           {isTrash && (

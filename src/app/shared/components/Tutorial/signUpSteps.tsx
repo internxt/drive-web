@@ -1,5 +1,5 @@
-import { t } from 'i18next';
 import { UploadSimple } from '@phosphor-icons/react';
+import { t } from 'i18next';
 import { MutableRefObject } from 'react';
 import Button from '../Button/Button';
 import { OnboardingModal } from './OnBoardingModal';
@@ -9,6 +9,7 @@ export const getSignUpSteps = (
   stepOneOptions: {
     onNextStepClicked: () => void;
     stepOneTutorialRef: MutableRefObject<Element | null>;
+    offset?: { x: number; y: number };
   },
   stepTwoOptions: {
     onNextStepClicked: () => void;
@@ -37,7 +38,7 @@ export const getSignUpSteps = (
       ),
       placement: 'bottom-end' as const,
       ref: stepOneOptions.stepOneTutorialRef,
-      offset: { x: 0, y: -40 },
+      offset: { x: 0 + (stepOneOptions.offset?.x ?? 0), y: -40 + (stepOneOptions.offset?.x ?? 0) },
       disableClickNextStepOutOfContent: true,
     },
     {
