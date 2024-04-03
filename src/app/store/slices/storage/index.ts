@@ -17,8 +17,8 @@ const initialState: StorageState = {
   moveDialogLevels: {},
   levelsFoldersLength: {},
   levelsFilesLength: {},
-  hasMoreDriveFolders: true,
-  hasMoreDriveFiles: true,
+  hasMoreDriveFolders: {},
+  hasMoreDriveFiles: {},
   recents: [],
   isLoadingRecents: false,
   isLoadingDeleted: false,
@@ -108,15 +108,15 @@ export const storageSlice = createSlice({
       state.levelsFilesLength[action.payload.folderId] = 0;
       state.levels[action.payload.folderId] = [];
     },
-    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.hasMoreDriveFolders = action.payload;
+    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+      state.hasMoreDriveFolders[action.payload.folderId] = action.payload.status;
     },
-    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<boolean>) => {
-      state.hasMoreDriveFiles = action.payload;
+    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+      state.hasMoreDriveFiles[action.payload.folderId] = action.payload.status;
     },
     resetDrivePagination: (state: StorageState) => {
-      state.hasMoreDriveFiles = true;
-      state.hasMoreDriveFolders = true;
+      state.hasMoreDriveFolders[state.currentPath.id] = true;
+      state.hasMoreDriveFiles[state.currentPath.id] = true;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;

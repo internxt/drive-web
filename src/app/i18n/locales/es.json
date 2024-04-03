@@ -4,19 +4,19 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "header": "¡Ahorra un 70%!",
-    "title": "Prepárate para la Semana de la Privacidad de Datos",
-    "cta": "Elige un plan",
+    "label": "Oferta del Día Mundial de la Seguridad en la Nube",
+    "title": "Una vida de privacidad por mucho menos",
+    "cta": "Consíguela",
     "guarantee": "Garantía de devolución de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
-    "features": {
-      "discount": "Ahorra en suscripciones mensuales y anuales",
-      "safeCloud": "Almacenamiento seguro en la nube",
-      "openSource": "Código abierto y transparente",
-      "endToEnd": "Transferencias cifradas de extremo a extremo",
-      "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta finaliza el 29 de febrero"
-    }
+    "features": [
+      "Oferta 75% en planes lifetime",
+      "Almacenamiento seguro en la nube",
+      "Código abierto y auditado",
+      "Transferencias cifradas de extremo a extremo",
+      "Sin accesos no autorizados",
+      "La promoción finaliza el 8 de abril"
+    ]
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",

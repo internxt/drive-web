@@ -77,6 +77,25 @@ const createDriveListItem = (item: DriveItemData, isTrash?: boolean) => (
   <DriveExplorerListItem item={item} isTrash={isTrash} />
 );
 
+const resetDriveOrder = ({
+  dispatch,
+  orderType,
+  direction,
+  currentFolderId,
+}: {
+  dispatch;
+  orderType: string;
+  direction: string;
+  currentFolderId: number;
+}) => {
+  dispatch(storageActions.setDriveItemsSort(orderType));
+  dispatch(storageActions.setDriveItemsOrder(direction));
+
+  dispatch(storageActions.setHasMoreDriveFolders({ folderId: currentFolderId, status: true }));
+  dispatch(storageActions.setHasMoreDriveFiles({ folderId: currentFolderId, status: true }));
+  dispatch(fetchSortedFolderContentThunk(currentFolderId));
+};
+
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
@@ -143,21 +162,11 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.setOrder({ by: value.field, direction }));
 
     if (value.field === 'name') {
-      dispatch(storageActions.setDriveItemsSort('plainName'));
-      dispatch(storageActions.setDriveItemsOrder(direction));
-
-      dispatch(storageActions.setHasMoreDriveFolders(true));
-      dispatch(storageActions.setHasMoreDriveFiles(true));
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      resetDriveOrder({ dispatch, orderType: 'plainName', direction, currentFolderId });
     }
 
     if (value.field === 'updatedAt') {
-      dispatch(storageActions.setDriveItemsSort('updatedAt'));
-      dispatch(storageActions.setDriveItemsOrder(direction));
-
-      dispatch(storageActions.setHasMoreDriveFolders(true));
-      dispatch(storageActions.setHasMoreDriveFiles(true));
-      dispatch(fetchSortedFolderContentThunk(currentFolderId));
+      resetDriveOrder({ dispatch, orderType: 'updatedAt', direction, currentFolderId });
     }
   };
 

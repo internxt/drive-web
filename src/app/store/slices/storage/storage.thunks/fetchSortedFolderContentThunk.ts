@@ -14,8 +14,8 @@ const DEFAULT_LIMIT = 50;
 export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchSortedFolderContentThunk',
   async (folderId, { getState, dispatch }) => {
-    dispatch(storageActions.setHasMoreDriveFolders(true));
-    dispatch(storageActions.setHasMoreDriveFiles(true));
+    dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: true }));
+    dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: true }));
 
     const storageState = getState().storage;
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders;

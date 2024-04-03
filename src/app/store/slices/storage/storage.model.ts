@@ -15,8 +15,8 @@ export interface StorageState {
   moveDialogLevels: Record<number, DriveItemData[]>;
   levelsFoldersLength: Record<number, number>;
   levelsFilesLength: Record<number, number>;
-  hasMoreDriveFolders: boolean;
-  hasMoreDriveFiles: boolean;
+  hasMoreDriveFolders: Record<number, boolean>;
+  hasMoreDriveFiles: Record<number, boolean>;
   recents: DriveItemData[];
   isLoadingRecents: boolean;
   isLoadingDeleted: boolean;

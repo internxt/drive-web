@@ -4,19 +4,19 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "header": "Save 70%!",
-    "title": "Get ready for Data Privacy Week",
+    "label": "World Cloud Security Day Offer",
+    "title": "A lifetime of privacy for 75% less",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
-    "features": {
-      "discount": "Save on monthly & annual plans",
-      "safeCloud": "Safe and secure cloud storage",
-      "openSource": "Open source and transparent",
-      "endToEnd": "End-to-end encrypted transfers",
-      "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends February 29th"
-    }
+    "features": [
+      "75% OFF all lifetime plans",
+      "Safe and secure cloud storage",
+      "Open source and transparent",
+      "End-to-end encrypted transfers",
+      "No unauthorized access",
+      "Offer ends April 8th"
+    ]
   },
   "valentinesBanner": {
     "title": "Love without limits!",

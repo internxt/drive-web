@@ -4,19 +4,19 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "header": "省 70%!",
-    "title": "为数据隐私周做好准备",
+    "label": "世界云安全日优惠",
+    "title": "75%折扣享终身隐私",
     "cta": "选择计划",
-    "guarantee": "30 天内退款保证",
-    "lastCta": "*此优惠仅适用于免费账户或新客户",
-    "features": {
-      "discount": "在月度和年度计划上节省",
-      "safeCloud": "安全可靠的云存储",
-      "openSource": "开源和透明",
-      "endToEnd": "端到端加密传输",
-      "unauthorized": "无未经授权访问",
-      "offerEnds": "优惠截止日期为2月29日"
-    }
+    "guarantee": "30天退款保证",
+    "lastCta": "*优惠仅适用于免费帐户或新客户",
+    "features": [
+      "75％折扣所有终身计划",
+      "安全可靠的云存储",
+      "开源和透明",
+      "端到端加密传输",
+      "没有未经授权的访问",
+      "优惠截止日期为4月8日"
+    ]
   },
   "valentinesBanner": {
     "title": "爱无极限！",

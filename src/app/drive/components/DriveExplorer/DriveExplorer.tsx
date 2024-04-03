@@ -19,6 +19,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -67,7 +68,6 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
-import BannerWrapper from '../../../banners/BannerWrapper';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -155,6 +155,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [hasMoreItems, setHasMoreItems] = useState<boolean>(true);
   const [hasMoreTrashFolders, setHasMoreTrashFolders] = useState<boolean>(true);
   const [isLoadingTrashItems, setIsLoadingTrashItems] = useState(false);
+  const hasMoreItemsToLoad = isTrash ? hasMoreItems : hasMoreFiles || hasMoreFolders;
 
   // RIGHT CLICK MENU STATES
   const [isListElementsHovered, setIsListElementsHovered] = useState<boolean>(false);
@@ -168,11 +169,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-  const stepOneTutorialRef = useRef(null);
+  const uploadFileButtonRef = useRef(null);
   const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
@@ -186,7 +188,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }, 0);
         passToNextStep();
       },
-      stepOneTutorialRef,
+      stepOneTutorialRef: uploadFileButtonRef,
+      offset: hasAnyItemSelected ? { x: divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
     },
     {
       onNextStepClicked: () => {
@@ -739,7 +742,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   }}
                 </Menu>
                 <DriveTopBarItems
-                  stepOneTutorialRef={stepOneTutorialRef}
+                  stepOneTutorialRef={uploadFileButtonRef}
                   onCreateFolderButtonClicked={onCreateFolderButtonClicked}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
                   onUploadFolderButtonClicked={onUploadFolderButtonClicked}
@@ -753,6 +756,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               currentFolderId={currentFolderId}
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
+              driveActionsRef={divRef}
             />
           </div>
           {isTrash && (
@@ -818,7 +822,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   items={items}
                   isLoading={isTrash ? isLoadingTrashItems : isLoading}
                   onEndOfScroll={fetchItems}
-                  hasMoreItems={hasMoreItems}
+                  hasMoreItems={hasMoreItemsToLoad}
                   isTrash={isTrash}
                   onHoverListItems={(areHovered) => {
                     setIsListElementsHovered(areHovered);
@@ -1042,6 +1046,8 @@ const dropTargetCollect: DropTargetCollector<
 
 export default connect((state: RootState) => {
   const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
+  const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
   return {
     isAuthenticated: state.user.isAuthenticated,
@@ -1060,7 +1066,7 @@ export default connect((state: RootState) => {
     planUsage: state.plan.planUsage,
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
-    hasMoreFolders: state.storage.hasMoreDriveFolders,
-    hasMoreFiles: state.storage.hasMoreDriveFiles,
+    hasMoreFolders,
+    hasMoreFiles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

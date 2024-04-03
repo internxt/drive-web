@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
-import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
-import { DriveItemData, FolderPath } from '../../types';
-import { AppDispatch, RootState } from 'app/store';
-import { storageActions, storageSelectors } from 'app/store/slices/storage';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { Helmet } from 'react-helmet-async';
-import { uiActions } from 'app/store/slices/ui';
-import newStorageService from 'app/drive/services/new-storage.service';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import fileService from 'app/drive/services/file.service';
-import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import newStorageService from 'app/drive/services/new-storage.service';
 import BreadcrumbsDriveView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsDriveView';
+import { AppDispatch, RootState } from 'app/store';
+import { storageActions, storageSelectors } from 'app/store/slices/storage';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { uiActions } from 'app/store/slices/ui';
+import { Helmet } from 'react-helmet-async';
+import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
+import { DriveItemData, FolderPath } from '../../types';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -97,7 +97,8 @@ export default connect((state: RootState) => {
 
   return {
     namePath: state.storage.namePath,
-    isLoading: state.storage.loadingFolders[currentFolderId],
+    isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
+    currentFolderId,
     items: sortedItems,
   };
 })(DriveView);

@@ -28,6 +28,9 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
       // no need to go to the same folder
       return;
     }
+
+    dispatch(storageActions.setHasMoreDriveFolders({ folderId: path.id, status: true }));
+    dispatch(storageActions.setHasMoreDriveFiles({ folderId: path.id, status: true }));
     dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
     const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
 
