@@ -275,8 +275,7 @@ async function downloadSharedFolderAsZip(
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
           const cachedFile = await lruFilesCacheManager.get(file.id.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
-          console.log('fileName', file.name);
-          console.log({ isCachedFileOlder });
+
           if (cachedFile?.source && !isCachedFileOlder) {
             updateProgress(1);
             return cachedFile.source.stream();
