@@ -33,6 +33,7 @@ interface ListProps<T, F> {
   orderBy?: { field: F; direction: 'ASC' | 'DESC' };
   hasMoreItems?: boolean;
   menu?: ListItemMenu<T>;
+  displayMenuDiv?: boolean;
   className?: string;
   keyboardShortcuts?: Array<'selectAll' | 'unselectAll' | 'multiselect' | Array<'delete' & (() => void)>>;
   disableKeyboardShortcuts?: boolean;
@@ -54,6 +55,7 @@ const Header = ({
   orderBy,
   onOrderableColumnClicked,
   menu,
+  displayMenuDiv,
   isVerticalScrollbarVisible,
   checkboxDataCy,
 }) => {
@@ -91,7 +93,7 @@ const Header = ({
           </button>
         ))}
         {isVerticalScrollbarVisible && <div className="mr-15px" />}
-        {menu && <div className="flex h-full w-12 shrink-0" />}
+        {(menu || displayMenuDiv) && <div className="flex h-full w-12 shrink-0" />}
       </div>
     </div>
   );
@@ -134,6 +136,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   onNextPage,
   hasMoreItems,
   menu,
+  displayMenuDiv,
   className,
   disableItemCompositionStyles,
   onMouseEnter,
@@ -276,6 +279,7 @@ ListProps<T, F>): JSX.Element {
           orderBy={orderBy}
           onOrderableColumnClicked={onOrderableColumnClicked}
           menu={menu}
+          displayMenuDiv={displayMenuDiv}
           isVerticalScrollbarVisible={isVerticalScrollbarVisible}
           checkboxDataCy={checkboxDataCy}
         />
