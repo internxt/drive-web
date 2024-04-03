@@ -60,8 +60,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onOpenPreviewButtonClicked = () => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+    navigationService.pushFile(item.uuid);
   };
 
   const onGetLinkButtonClicked = () => {

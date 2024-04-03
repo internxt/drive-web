@@ -17,6 +17,7 @@ import { DriveItemData } from 'app/drive/types';
 import shareService from 'app/share/services/share.service';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import navigationService from '../../../core/services/navigation.service';
 
 interface FileDropdownActionsProps {
   title?: string;
@@ -80,8 +81,7 @@ const FileDropdownActions = (props: FileDropdownActionsProps) => {
           text: translate('drive.dropdown.openPreview'),
 
           onClick: () => {
-            dispatch(uiActions.setIsFileViewerOpen(true));
-            dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+            navigationService.pushFile(item?.uuid);
           },
         }
       : null,

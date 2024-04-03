@@ -28,6 +28,7 @@ import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import shareService from '../../../../share/services/share.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
+import navigationService from '../../../../core/services/navigation.service';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -142,8 +143,7 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
+    navigationService.pushFile(selectedItems[0].uuid);
   };
 
   const onRecoverButtonClicked = (): void => {
