@@ -57,7 +57,12 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   };
 
   return (
-    <Modal maxWidth="max-w-4xl" className="m-0 flex h-640" isOpen={isPreferencesDialogOpen} onClose={() => onClose()}>
+    <Modal
+      maxWidth="max-w-4xl"
+      className="dark:dbg-surface m-0 flex h-640 shadow-sm"
+      isOpen={isPreferencesDialogOpen}
+      onClose={() => onClose()}
+    >
       <Helmet>
         <title>{title} - Internxt Drive</title>
       </Helmet>

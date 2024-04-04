@@ -1115,7 +1115,7 @@
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
     "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
     "done": "Erledigt",
-    "inviteAFriend": "Eine Einladung wurde an geschickt {{email}}",
+    "inviteAFriend": "Einladung an {{email}} gesendet",
     "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
   },
   "shareItemDialog": {
@@ -1389,6 +1389,25 @@
     },
     "account": {
       "title": "Konto",
+      "inviteFriend": "Freund einladen",
+      "seeInvitations": "Einladungen ansehen",
+      "sendInvitationDescription": "Verbreiten Sie die Nachricht und erhalten Sie 1 GB pro eingeladenem Freund kostenlos. Sie können insgesamt bis zu 4 GB erhalten.",
+      "sendInvitation": "Einladung senden",
+      "enterFriendEmail": "Freundes-E-Mail eingeben",
+      "extraStorage": "Zusätzlicher Speicher",
+      "invitedFriends": "Eingeladene Freunde",
+      "friendsInvited": "Freunde eingeladen",
+      "acceptedRequests": "Akzeptierte Anfragen",
+      "user": "Benutzer",
+      "status": "Status",
+      "accepted": "Akzeptiert",
+      "pending": "Ausstehend",
+      "noInvitations": "Noch keine Einladungen verschickt",
+      "upgrade": "Upgrade",
+      "levelUpStorage": "Erhöhe deinen Speicherplatz und erhalte viele andere Vorteile",
+      "upgradeNow": "Jetzt upgraden",
+      "emptyTrash": "Papierkorb leeren",
+      "emptryTrashDescription": "Elemente im Papierkorb werden nach 15 Tagen endgültig gelöscht",
       "plans": {
         "title": "Pläne"
       },

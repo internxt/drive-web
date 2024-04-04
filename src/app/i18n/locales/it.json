@@ -1204,7 +1204,7 @@
     "twoFactorAuthDisabled": "L'autenticazione a due fattori è stata disattivata",
     "joinedToTheTeam": "Ti sei unito al team con successo",
     "done": "Fatto",
-    "inviteAFriend": "È stato inviato un invito a {{email}}",
+    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} si è iscritto con successo alla newsletter"
   },
   "shareItemDialog": {
@@ -1479,6 +1479,25 @@
     },
     "account": {
       "title": "Conto",
+      "inviteFriend": "Invita un amico",
+      "seeInvitations": "Vedi Inviti",
+      "sendInvitationDescription": "Diffondi la voce e ottieni 1 GB per ogni amico invitato gratuitamente. Puoi ottenere fino a {{N}}GB in totale.",
+      "sendInvitation": "Invia invito",
+      "enterFriendEmail": "Inserisci l'email dell'amico",
+      "extraStorage": "Spazio di archiviazione extra",
+      "invitedFriends": "Amici invitati",
+      "friendsInvited": "Amici invitati",
+      "acceptedRequests": "Richieste accettate",
+      "user": "Utente",
+      "status": "Stato",
+      "accepted": "Accettato",
+      "pending": "In attesa",
+      "noInvitations": "Nessuna invito inviato ancora",
+      "upgrade": "Aggiornare",
+      "levelUpStorage": "Aumenta il tuo spazio di archiviazione e ottieni molti altri vantaggi",
+      "upgradeNow": "Aggiorna ora",
+      "emptyTrash": "Svuota cestino",
+      "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
       "plans": {
         "title": "Piani"
       },

@@ -18,20 +18,27 @@ import { RootState } from '../../store';
 import { useAppDispatch } from '../../store/hooks';
 import { updateUserProfileThunk } from '../../store/slices/user';
 
+import ClearTrashDialog from '../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import AccountDetailsModal from '../Account/Account/components/AccountDetailsModal';
 import ChangeEmailModal from '../Account/Account/components/ChangeEmailModal';
 import EmailVerificationMessageCard from '../Account/Account/components/EmailMessageCard';
+import InviteFriendSectionContainer from '../Account/Account/containers/InviteFriendSectionContainer';
+import InvitedFriendsContainer from '../Account/Account/containers/InvitedFriendsContainer';
 import UserHeaderContainer from '../Account/Account/containers/UserHeaderContainer';
+import AccountUsageContainer from '../containers/AccountUsageContainer';
 
 const AccountSection = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+
+  const isFreeAccount = user?.hasReferralsProgram;
   if (!user) throw new Error('User is not defined');
 
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
+  const [isInvitationsViewVisible, setIsInvitationsViewVisible] = useState(false);
 
   const onResendEmailVerification = async () => {
     setIsSendingVerificationEmail(true);
@@ -67,13 +74,36 @@ const AccountSection = () => {
   };
 
   return (
-    <Section title={t('preferences.account.title')} className="flex flex-1 flex-col space-y-2 p-6">
-      <EmailVerificationMessageCard
-        isVerified={user.emailVerified}
-        disableButton={isSendingVerificationEmail}
-        onClickResendButton={onResendEmailVerification}
-      />
-      <UserHeaderContainer />
+    <Section
+      onBackButtonClicked={isInvitationsViewVisible ? () => setIsInvitationsViewVisible(false) : undefined}
+      title={
+        isInvitationsViewVisible
+          ? translate('preferences.account.invitedFriends')
+          : translate('preferences.account.title')
+      }
+      className="flex flex-1 flex-col space-y-2 p-6"
+    >
+      {isInvitationsViewVisible ? (
+        <InvitedFriendsContainer />
+      ) : (
+        <>
+          <EmailVerificationMessageCard
+            isVerified={user.emailVerified}
+            disableButton={isSendingVerificationEmail}
+            onClickResendButton={onResendEmailVerification}
+          />
+          <UserHeaderContainer />
+          <div className="flex justify-center">
+            <Button variant="secondary" className="w-32" onClick={() => setIsDetailsModalOpen(true)}>
+              <span>{t('views.preferences.workspace.overview.edit')}</span>
+            </Button>
+          </div>
+          {isFreeAccount && (
+            <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
+          )}
+          <AccountUsageContainer />
+        </>
+      )}
       <AccountDetailsModal
         isOpen={isDetailsModalOpen}
         onClose={() => setIsDetailsModalOpen(false)}
@@ -100,11 +130,7 @@ const AccountSection = () => {
         changeEmail={changeUserEmail}
         onChangeEmailError={onChangeEmailError}
       />
-      <div className="flex justify-center">
-        <Button variant="secondary" className="w-32" onClick={() => setIsDetailsModalOpen(true)}>
-          <span>{t('views.preferences.workspace.overview.edit')}</span>
-        </Button>
-      </div>
+      <ClearTrashDialog />
     </Section>
   );
 };
