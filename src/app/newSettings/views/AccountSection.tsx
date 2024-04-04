@@ -22,6 +22,7 @@ import ClearTrashDialog from '../../drive/components/ClearTrashDialog/ClearTrash
 import AccountDetailsModal from '../Account/Account/components/AccountDetailsModal';
 import ChangeEmailModal from '../Account/Account/components/ChangeEmailModal';
 import EmailVerificationMessageCard from '../Account/Account/components/EmailMessageCard';
+import DeleteAccountContainer from '../Account/Account/containers/DeleteAccountContainer';
 import InviteFriendSectionContainer from '../Account/Account/containers/InviteFriendSectionContainer';
 import InvitedFriendsContainer from '../Account/Account/containers/InvitedFriendsContainer';
 import UserHeaderContainer from '../Account/Account/containers/UserHeaderContainer';
@@ -102,6 +103,10 @@ const AccountSection = () => {
             <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
           )}
           <AccountUsageContainer />
+          <div>
+            <div className="my-8 h-px w-full bg-gray-10" />
+          </div>
+          <DeleteAccountContainer />
         </>
       )}
       <AccountDetailsModal

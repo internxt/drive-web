@@ -358,9 +358,9 @@
           },
           "deleteAccount": {
             "head": "Delete account",
-            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
+            "description": "All your personal data and everything you uploaded to Internxt will be erased forever. Once you delete your account, there is no going back. Please be certain.",
             "isSubscribed": "Please, cancel your subscription first",
-            "confirmationEmail": "Confirmation email has been sent"
+            "confirmationEmail": "Confirmation email sent"
           }
         },
         "billing": {
@@ -886,8 +886,8 @@
       "resendError": "Error while resending email: {{reason}}"
     },
     "deleteAccountModal": {
-      "title": "Are you sure?",
-      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
+      "title": "Delete account",
+      "subtitle": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
       "cancel": "Cancel",
       "confirm": "Confirm"
     },
@@ -1511,6 +1511,7 @@
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
       "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
+
       "plans": {
         "title": "Plans"
       },
