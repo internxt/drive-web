@@ -11,6 +11,7 @@ const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
   });
+  const isEmpty = state.tag === 'empty';
 
   useEffect(() => {
     paymentService
@@ -23,7 +24,7 @@ const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
-      <Card className="pb-0">
+      <Card className={`${!isEmpty && 'pb-0'}`}>
         <InvoicesList invoices={invoices} state={state.tag} />
       </Card>
     </Section>

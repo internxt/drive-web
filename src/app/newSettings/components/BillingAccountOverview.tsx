@@ -37,7 +37,7 @@ const BillingAccountOverview = ({ plan, changeSection }: BillingAccountOverviewP
           </p>
         </div>
       </Card>
-      <Card className="ml-3 basis-full">
+      <Card className={`ml-3 basis-full ${isFreeSubscription && 'border-primary/25 !bg-primary/5 p-6'}`}>
         {isSubscription && (
           <div>
             <p className="mb-0.5 text-3xl font-medium text-gray-100">{subscriptionData?.renewDate}</p>
