@@ -314,10 +314,10 @@
             "cta": "Support-Center öffnen"
           },
           "deleteAccount": {
-            "head": "Lösche Konto",
-            "description": "Durch das Löschen deines Kontos löscht Internxt deine Dateien und Daten für immer. Sobald diese Aktion eingeleitet wurde, kann sie nicht mehr rückgängig gemacht werden.",
-            "isSubscribed": "Bitte kündige zuerst dein Abonnement",
-            "confirmationEmail": "Bestätigungs-E-Mail wurde gesendet"
+            "head": "Konto löschen",
+            "description": "Alle Ihre persönlichen Daten und alles, was Sie bei Internxt hochgeladen haben, werden für immer gelöscht. Sobald Sie Ihr Konto gelöscht haben, gibt es kein Zurück mehr. Bitte seien Sie sicher.",
+            "isSubscribed": "Bitte kündigen Sie zuerst Ihr Abonnement",
+            "confirmationEmail": "Bestätigungs-E-Mail gesendet"
           }
         },
         "billing": {

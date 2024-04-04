@@ -341,9 +341,9 @@
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
-            "description": "Si vous supprimez votre compte, vos données seront supprimées à jamais. Cette action ne peut être annulée.",
+            "description": "Toutes vos données personnelles et tout ce que vous avez téléchargé sur Internxt seront effacés pour toujours. Une fois que vous aurez supprimé votre compte, il n'y aura pas de retour en arrière. Veuillez être certain.",
             "isSubscribed": "Veuillez d'abord annuler votre abonnement",
-            "confirmationEmail": "L'email de confirmation a été envoyé"
+            "confirmationEmail": "E-mail de confirmation envoyé"
           }
         },
         "billing": {

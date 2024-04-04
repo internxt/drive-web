@@ -358,8 +358,8 @@
           },
           "deleteAccount": {
             "head": "删除账户",
-            "description": "如果你删除你的帐户，你的数据将被永远删除。这一操作不能被撤销",
-            "isSubscribed": "请先取消订阅",
+            "description": "您的所有个人数据和您上传到Internxt的所有内容都将永远删除。一旦您删除了您的账户，就无法回头。请务必确认。",
+            "isSubscribed": "请先取消您的订阅",
             "confirmationEmail": "确认邮件已发送"
           }
         },

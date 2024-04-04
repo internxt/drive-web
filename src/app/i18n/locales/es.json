@@ -341,9 +341,9 @@
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
-            "description": "Si eliminas tu cuenta, tus datos se eliminarán para siempre. Esta acción no se puede deshacer.",
-            "isSubscribed": "Por favor, cancela tu suscripción primero",
-            "confirmationEmail": "Correo de confirmación enviado"
+            "description": "Todos tus datos personales y todo lo que hayas subido a Internxt serán borrados para siempre. Una vez que elimines tu cuenta, no hay vuelta atrás. Por favor, asegúrate.",
+            "isSubscribed": "Por favor, cancele su suscripción primero",
+            "confirmationEmail": "Correo electrónico de confirmación enviado"
           }
         },
         "billing": {

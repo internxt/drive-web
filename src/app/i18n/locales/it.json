@@ -357,10 +357,10 @@
             "cta": "Apri il Centro di supporto"
           },
           "deleteAccount": {
-            "head": "Elimina l'account",
-            "description": "Se elimini il tuo account, i tuoi dati verranno cancellati per sempre. Questa azione non può essere annullata.",
-            "isSubscribed": "Annullare prima l'abbonamento",
-            "confirmationEmail": "L'e-mail di conferma è stata inviata"
+            "head": "Elimina account",
+            "description": "Tutti i tuoi dati personali e tutto ciò che hai caricato su Internxt verranno cancellati per sempre. Una volta che elimini il tuo account, non c'è più possibilità di tornare indietro. Per favore, assicurati.",
+            "isSubscribed": "Si prega di cancellare prima la sottoscrizione",
+            "confirmationEmail": "Email di conferma inviata"
           }
         },
         "billing": {
