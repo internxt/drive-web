@@ -1467,6 +1467,11 @@
       "accepted": "Aceptado",
       "pending": "Pendiente",
       "noInvitations": "Todavía no se han enviado invitaciones",
+      "upgrade": "Mejorar",
+      "levelUpStorage": "Aumenta tu espacio de almacenamiento y obtén muchos otros beneficios",
+      "upgradeNow": "Mejorar ahora",
+      "emptyTrash": "Vaciar la papelera",
+      "emptryTrashDescription": "Los elementos en la papelera serán eliminados permanentemente después de 15 días",
       "plans": {
         "title": "Planes"
       },

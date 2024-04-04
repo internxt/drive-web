@@ -1488,6 +1488,11 @@
       "accepted": "已接受",
       "pending": "待定",
       "noInvitations": "目前还没有发送邀请",
+      "upgrade": "升级",
+      "levelUpStorage": "升级您的存储空间，并获得许多其他好处",
+      "upgradeNow": "立即升级",
+      "emptyTrash": "清空回收站",
+      "emptryTrashDescription": "回收站中的项目将在15天后被永久删除",
       "plans": {
         "title": "计划"
       },

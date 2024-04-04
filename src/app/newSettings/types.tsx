@@ -31,4 +31,10 @@ export type BillingDetails = {
   phone: string;
 };
 
+export type DriveProduct = {
+  name: string;
+  usageInBytes: number;
+  color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'primary' | 'gray';
+};
+
 export type Sections = Section[];
