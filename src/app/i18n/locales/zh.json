@@ -1465,10 +1465,27 @@
         "title": "计费",
         "nextBillingDate": "下一次账单日期",
         "planLimit": "以 {{planLimit}} 计划计费",
+        "subscription": "订阅",
+        "lifetimeSubscription": {
+          "planType": "终生",
+          "text": "无预定账单"
+        },
+        "freeSubscription": {
+          "planType": "免费",
+          "action": "升级",
+          "actionDescription": "增加存储空间，获得更多功能"
+        },
         "paymentMethod": {
           "title": "付款方式",
           "editButton": "编辑付款方式",
-          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划"
+          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划",
+          "addButton": "添加付款方式",
+          "empty": "未关联付款方式"
+        },
+        "cancelSubscription": {
+          "title": "取消订阅",
+          "text": "您的计划将降级为免费级别",
+          "button": "取消订购"
         }
       }
     },

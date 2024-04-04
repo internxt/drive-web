@@ -10,9 +10,11 @@ import { uiActions } from 'app/store/slices/ui';
 import SectionListContainer, { sectionItems } from '../containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from '../types';
 import AccountSection from '../views/AccountSection';
-import BillingSection from '../views/BillingSection';
+import BillingWorkspaceSection from '../views/BillingWorkspaceSection';
+import BillingAccountSection from '../views/BillingAccountSection';
 import GeneralSection from '../views/GeneralSection';
 import OverviewSection from '../views/OverviewSection';
+import PlansSection from '../views/PlansSection';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -79,9 +81,14 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         </button>
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
-        {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && <BillingSection />}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
+          <BillingWorkspaceSection />
+        )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && <AccountSection />}
-        {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && <div />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && <PlansSection />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'billing' && (
+          <BillingAccountSection changeSection={changeSection} />
+        )}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>

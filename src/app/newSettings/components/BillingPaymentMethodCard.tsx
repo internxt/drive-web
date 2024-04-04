@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { t } from 'i18next';
 import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
 import Spinner from 'app/shared/components/Spinner/Spinner';
@@ -18,7 +18,15 @@ import { useDefaultPaymentMethod } from '../hooks/useDefaultPaymentMethod';
 
 const BillingPaymentMethodCard = () => {
   const [isEditPaymentMethodModalOpen, setIsEditPaymentMethodModalOpen] = useState<boolean>(false);
+  const [isPaymentMethod, setIsPaimentMethod] = useState<boolean>(false);
   const defaultPaymentMethod = useDefaultPaymentMethod();
+
+  useEffect(() => {
+    (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
+    (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type)
+      ? setIsPaimentMethod(true)
+      : setIsPaimentMethod(false);
+  }, [defaultPaymentMethod]);
 
   const cardBrands: Record<PaymentMethod['card']['brand'], string> = {
     visa: visaIcon,
@@ -44,25 +52,30 @@ const BillingPaymentMethodCard = () => {
     <section className="space-y-3">
       <div className="flex w-full flex-row items-center justify-between ">
         <span className="text-xl font-medium">{t('preferences.workspace.billing.paymentMethod.title')}</span>
+
         <Button variant="secondary" onClick={onEditPaymentMethodButtonClicked}>
-          <span>{t('preferences.workspace.billing.paymentMethod.editButton')}</span>
+          {isPaymentMethod ? (
+            <span>{t('preferences.workspace.billing.paymentMethod.editButton')}</span>
+          ) : (
+            <span>{t('preferences.workspace.billing.paymentMethod.addButton')}</span>
+          )}
         </Button>
       </div>
       <Card>
-        {(defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
-        (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.type) ? (
+        {isPaymentMethod ? (
           <div className="flex">
             {defaultPaymentMethod.card ? (
               <>
-                <img className="h-9 rounded-md" src={cardBrands[defaultPaymentMethod.card.brand]} />
+                <img className="h-11 rounded-md" src={cardBrands[defaultPaymentMethod.card.brand]} />
                 <div className="ml-4 flex-1">
-                  <div className="flex items-center text-gray-80">
-                    <p style={{ lineHeight: 1 }} className="font-serif text-2xl">
-                      {'····'}
-                    </p>
-                    <p className="ml-1.5 text-sm">{defaultPaymentMethod.card.last4}</p>
+                  <div className="flex flex-col">
+                    <p className="text-base font-medium text-gray-100">{defaultPaymentMethod.name}</p>
+                    <div className="font-regular flex flex-row text-base text-gray-60">
+                      <p>&#x25CF;&#x25CF;&#x25CF;&#x25CF;</p>
+                      <p className="ml-1.5 mr-2.5">{defaultPaymentMethod.card.last4}</p>
+                      <p>{`${defaultPaymentMethod.card.exp_month}/${defaultPaymentMethod.card.exp_year}`}</p>
+                    </div>
                   </div>
-                  <p className="text-xs text-gray-50">{`${defaultPaymentMethod.card.exp_month}/${defaultPaymentMethod.card.exp_year}`}</p>
                 </div>
               </>
             ) : (
@@ -86,8 +99,9 @@ const BillingPaymentMethodCard = () => {
           </div>
         ) : (
           <div className="text-center">
-            <h1 className="font-medium text-gray-60">{t('views.account.tabs.billing.paymentMethod.empty.title')}</h1>
-            <p className="text-sm text-gray-50">{t('views.account.tabs.billing.paymentMethod.empty.subtitle')}</p>
+            <p className="font-regular text-base text-gray-60">
+              {t('preferences.workspace.billing.paymentMethod.empty')}
+            </p>
           </div>
         )}
       </Card>

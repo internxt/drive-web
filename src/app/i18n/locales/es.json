@@ -1444,10 +1444,27 @@
         "title": "Facturación",
         "nextBillingDate": "Próxima fecha de facturación",
         "planLimit": "Facturado por plan de {{planLimit}}",
+        "subscription": "Suscripción",
+        "lifetimeSubscription": {
+          "planType": "De por vida",
+          "text": "Sin facturas pendientes"
+        },
+        "freeSubscription": {
+          "planType": "Gratis",
+          "action": "Actualizar",
+          "actionDescription": "Aumente su espacio de almacenamiento y obtenga más funciones"
+        },
         "paymentMethod": {
           "title": "Método de pago",
           "editButton": "Editar método de pago",
-          "freePlanTitle": "Estás en un plan gratuito de {{planLimit}}"
+          "freePlanTitle": "Estás en un plan gratuito de {{planLimit}}",
+          "addButton": "Añadir método de pago",
+          "empty": "Ningún método de pago asociado"
+        },
+        "cancelSubscription": {
+          "title": "Cancelar suscripción",
+          "text": "Tu suscripción pasará al plan gratuito.",
+          "button": "Cancelar suscripción"
         }
       }
     },

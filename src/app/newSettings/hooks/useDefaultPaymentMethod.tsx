@@ -9,7 +9,11 @@ interface DefaultPaymentMethodProps {
   tag: 'ready' | 'loading' | 'empty';
   card?: PaymentMethod['card'];
   type?: Source.Type;
+  name?: string;
 }
+
+// MOCKED DATA
+const cardName = 'Fran Villalba Segarra';
 
 export const useDefaultPaymentMethod = () => {
   const [defaultPaymentMethod, setDefaultPaymentMethod] = useState<DefaultPaymentMethodProps>({
@@ -21,9 +25,9 @@ export const useDefaultPaymentMethod = () => {
       .getDefaultPaymentMethod()
       .then((data: PaymentMethod | Source) => {
         if (data.card) {
-          setDefaultPaymentMethod({ tag: 'ready', card: data.card as PaymentMethod['card'] });
+          setDefaultPaymentMethod({ tag: 'ready', card: data.card as PaymentMethod['card'], name: cardName });
         } else if ('type' in data) {
-          setDefaultPaymentMethod({ tag: 'ready', type: data.type });
+          setDefaultPaymentMethod({ tag: 'ready', type: data.type, name: cardName });
         } else {
           setDefaultPaymentMethod({ tag: 'empty' });
         }

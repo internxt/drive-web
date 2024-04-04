@@ -8,11 +8,11 @@ import Card from 'app/shared/components/Card';
 
 import { PlanState } from 'app/store/slices/plan';
 
-interface BillingOverviewProps {
+interface BillingWorkspaceOverviewProps {
   plan: PlanState;
 }
 
-const BillingOverview = ({ plan }: BillingOverviewProps) => {
+const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
   const isFreeSuscription = plan.subscription?.type === 'free';
 
@@ -57,4 +57,4 @@ const BillingOverview = ({ plan }: BillingOverviewProps) => {
   );
 };
 
-export default BillingOverview;
+export default BillingWorkspaceOverview;

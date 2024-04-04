@@ -1433,10 +1433,27 @@
         "title": "Биллинг",
         "nextBillingDate": "Следующая дата выставления счета",
         "planLimit": "Выставлен счет за план {{planLimit}}",
+        "subscription": "Подписка",
+        "lifetimeSubscription": {
+          "planType": "Пожизненная",
+          "text": "Никаких предстоящих счетов"
+        },
+        "freeSubscription": {
+          "planType": "Бесплатно",
+          "action": "Обновление",
+          "actionDescription": "Увеличьте объем памяти и получите больше возможностей"
+        },
         "paymentMethod": {
           "title": "Способ оплаты",
           "editButton": "Редактировать способ оплаты",
-          "freePlanTitle": "Вы находитесь на бесплатном тарифном плане {{planLimit}}"
+          "freePlanTitle": "Вы находитесь на бесплатном тарифном плане {{planLimit}}",
+          "addButton": "Добавить способ оплаты",
+          "empty": "Ни один способ оплаты не связан"
+        },
+        "cancelSubscription": {
+          "title": "Отменить подписку",
+          "text": "Ваш план будет понижен до бесплатного уровня.",
+          "button": "Отменить подписку"
         }
       }
     },

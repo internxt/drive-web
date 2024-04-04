@@ -1453,10 +1453,27 @@
         "title": "Fatturazione",
         "nextBillingDate": "Prossima data di fatturazione",
         "planLimit": "Fatturato per un piano da {{planLimit}}",
+        "subscription": "Abbonamento",
+        "lifetimeSubscription": {
+          "planType": "Durata della vita",
+          "text": "Nessuna fatturazione imminente"
+        },
+        "freeSubscription": {
+          "planType": "Gratuito",
+          "action": "Aggiornamento",
+          "actionDescription": "Aumenta lo spazio di archiviazione e ottieni più funzioni"
+        },
         "paymentMethod": {
           "title": "Metodo di pagamento",
           "editButton": "Modifica metodo di pagamento",
-          "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}"
+          "freePlanTitle": "Sei su un piano gratuito di {{planLimit}}",
+          "addButton": "Aggiungi metodo di pagamento",
+          "empty": "Nessun metodo di pagamento associato"
+        },
+        "cancelSubscription": {
+          "title": "Annullamento dell'abbonamento",
+          "text": "Il vostro piano sarà declassato al livello gratuito.",
+          "button": "Annullamento dell'abbonamento"
         }
       }
     },

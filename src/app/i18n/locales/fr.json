@@ -1393,10 +1393,27 @@
         "title": "Billing",
         "nextBillingDate": "Prochaine date de facturation",
         "planLimit": "Facturé pour un forfait de {{planLimit}}",
+        "subscription": "Abonnement",
+        "lifetimeSubscription": {
+          "planType": "Durée de vie",
+          "text": "Pas de facturation à venir"
+        },
+        "freeSubscription": {
+          "planType": "Gratuit",
+          "action": "Mise à niveau",
+          "actionDescription": "Augmentez votre espace de stockage et bénéficiez de plus de fonctionnalités"
+        },
         "paymentMethod": {
           "title": "Mode de paiement",
           "editButton": "Modifier le mode de paiement",
-          "freePlanTitle": "Vous êtes sur un plan gratuit de {{planLimit}}"
+          "freePlanTitle": "Vous êtes sur un plan gratuit de {{planLimit}}",
+          "addButton": "Ajouter une méthode de paiement",
+          "empty": "Aucun mode de paiement associé"
+        },
+        "cancelSubscription": {
+          "title": "Annuler l'abonnement",
+          "text": "Votre plan sera rétrogradé au niveau gratuit.",
+          "button": "Annuler l'abonnement"
         }
       }
     },
