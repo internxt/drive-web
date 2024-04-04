@@ -1,4 +1,4 @@
-import { CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
+import { CheckCircle, Keyhole, ShieldCheck, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
@@ -27,8 +27,8 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
         </button>
         <div className="flex w-full flex-col space-x-10 py-14 lg:flex-row">
           <div className="flex  w-max max-w-[310px] flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
-            <div className="flex rounded-lg bg-white">
-              <p className="text-xl font-bold text-primary">{translate('featuresBanner.label')}</p>
+            <div className="flex rounded-lg bg-white px-3 py-1.5 ring-4 ring-primary/7">
+              <p className="text-2xl font-bold text-primary">{translate('featuresBanner.label')}</p>
             </div>
             <p className="w-full text-4xl font-bold leading-tight text-black">{translate('featuresBanner.title')}</p>
 
@@ -52,7 +52,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row" key={card}>
-                    <ShieldCheck size={30} weight="fill" className="mr-4 text-primary" />
+                    <Keyhole size={30} weight="fill" className="mr-4 text-primary" />
                     <p className="whitespace-nowrap text-xl font-semibold text-gray-80 dark:text-gray-20">{card}</p>
                   </div>
                 ))}

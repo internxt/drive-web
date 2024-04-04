@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import FeaturesBanner from './FeaturesBanner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_world_security_banner';
+const SHOW_BANNER_COOKIE_NAME = 'show_identity_management_banner';
 const OFFER_OFF_DAY = new Date('2024-04-18');
 
 const BannerWrapper = (): JSX.Element => {
