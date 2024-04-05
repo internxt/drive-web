@@ -1,4 +1,4 @@
-import { CheckCircle, Keyhole, ShieldCheck, X } from '@phosphor-icons/react';
+import { CheckCircle, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const KeyHoleIcon = () => {
