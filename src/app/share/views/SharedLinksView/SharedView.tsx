@@ -13,6 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions } from '../../../store/slices/storage';
 import { uiActions } from '../../../store/slices/ui';
 
+import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
 import { DropTargetMonitor, useDrop } from 'react-dnd';
 import { NativeTypes } from 'react-dnd-html5-backend';
 import { Helmet } from 'react-helmet-async';
@@ -22,13 +23,12 @@ import EditItemNameDialog from '../../../drive/components/EditItemNameDialog/Edi
 import FileViewerWrapper from '../../../drive/components/FileViewer/FileViewerWrapper';
 import ItemDetailsDialog from '../../../drive/components/ItemDetailsDialog/ItemDetailsDialog';
 import MoveItemsDialog from '../../../drive/components/MoveItemsDialog/MoveItemsDialog';
+import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
 import ShareDialog from '../../../drive/components/ShareDialog/ShareDialog';
+import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../../../drive/components/StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
 import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../share/types';
-import BreadcrumbsSharedView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsSharedView';
-import NameCollisionContainer from '../../../drive/components/NameCollisionDialog/NameCollisionContainer';
-import ShowInvitationsDialog from '../../../drive/components/ShowInvitationsDialog/ShowInvitationsDialog';
 import { RootState } from '../../../store';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
@@ -495,7 +495,7 @@ function SharedView({
       <Helmet>
         <title>{translate('sideNav.shared')} - Internxt Drive</title>
       </Helmet>
-      <div className="z-50 flex h-14 w-full shrink-0 flex-row items-center px-5">
+      <div className="z-30 flex h-14 w-full shrink-0 flex-row items-center px-5">
         <div className="flex w-full flex-row items-center">
           <BreadcrumbsSharedView resetSharedItems={resetSharedItems} sharedNamePath={sharedNamePath} />
         </div>
