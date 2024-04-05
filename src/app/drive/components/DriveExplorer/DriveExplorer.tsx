@@ -1,73 +1,72 @@
-import { createRef, useState, RefObject, useEffect, useRef, LegacyRef, useCallback } from 'react';
+import { ArrowFatUp, CaretDown, FileArrowUp, FolderSimplePlus, Plus, Trash, UploadSimple } from '@phosphor-icons/react';
+import { LegacyRef, RefObject, createRef, useCallback, useEffect, useRef, useState } from 'react';
 import { connect } from 'react-redux';
-import { Trash, UploadSimple, FolderSimplePlus, FileArrowUp, Plus, CaretDown, ArrowFatUp } from '@phosphor-icons/react';
 
-import { NativeTypes } from 'react-dnd-html5-backend';
 import { ConnectDropTarget, DropTarget, DropTargetCollector, DropTargetSpec } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
 
-import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
-import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
 import folderEmptyImage from 'assets/icons/light/folder-open.svg';
-import Empty from '../../../shared/components/Empty/Empty';
 import { transformDraggedItems } from '../../../core/services/drag-and-drop.service';
-import { StorageFilters } from '../../../store/slices/storage/storage.model';
-import { AppDispatch, RootState } from '../../../store';
 import { Workspace } from '../../../core/types';
+import Empty from '../../../shared/components/Empty/Empty';
+import { AppDispatch, RootState } from '../../../store';
+import { StorageFilters } from '../../../store/slices/storage/storage.model';
+import DriveExplorerGrid from './DriveExplorerGrid/DriveExplorerGrid';
+import DriveExplorerList from './DriveExplorerList/DriveExplorerList';
 
-import './DriveExplorer.scss';
-import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { Menu, Transition } from '@headlessui/react';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { useHotkeys } from 'react-hotkeys-hook';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
-import { storageActions } from '../../../store/slices/storage';
-import { uiActions } from '../../../store/slices/ui';
+import errorService from '../../../core/services/error.service';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
+import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
 import DeleteItemsDialog from '../../../drive/components/DeleteItemsDialog/DeleteItemsDialog';
-import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
-import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
-import Button from '../../../shared/components/Button/Button';
-import storageSelectors from '../../../store/slices/storage/storage.selectors';
-import { planSelectors } from '../../../store/slices/plan';
-import { DriveItemData, FileViewMode, FolderPath } from '../../types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import iconService from '../../services/icon.service';
-import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
-import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import {
   transformInputFilesToJSON,
   transformJsonFilesToItems,
 } from '../../../drive/services/folder.service/uploadFolderInput.service';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { AdvancedSharedItem } from '../../../share/types';
+import Button from '../../../shared/components/Button/Button';
+import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
+import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
+import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { planSelectors } from '../../../store/slices/plan';
+import { storageActions } from '../../../store/slices/storage';
+import storageSelectors from '../../../store/slices/storage/storage.selectors';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { Menu, Transition } from '@headlessui/react';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
-import { Tutorial } from '../../../shared/components/Tutorial/Tutorial';
+import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
+import { uiActions } from '../../../store/slices/ui';
 import { userSelectors } from '../../../store/slices/user';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
-import { getSignUpSteps } from '../../../shared/components/Tutorial/signUpSteps';
 import { useTaskManagerGetNotifications } from '../../../tasks/hooks';
 import { TaskStatus } from '../../../tasks/types';
-import SkinSkeletonItem from '../../../shared/components/List/SkinSketelonItem';
-import errorService from '../../../core/services/error.service';
-import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
-import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
-import ShareDialog from '../ShareDialog/ShareDialog';
-import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
-import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
+import iconService from '../../services/icon.service';
+import { DriveItemData, FileViewMode, FolderPath } from '../../types';
 import EditItemNameDialog from '../EditItemNameDialog/EditItemNameDialog';
-import { DriveTopBarItems } from './DriveTopBarItems';
 import ItemDetailsDialog from '../ItemDetailsDialog/ItemDetailsDialog';
-import DriveTopBarActions from './components/DriveTopBarActions';
-import { AdvancedSharedItem } from '../../../share/types';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import MoveItemsDialog from '../MoveItemsDialog/MoveItemsDialog';
+import NameCollisionContainer from '../NameCollisionDialog/NameCollisionContainer';
+import ShareDialog from '../ShareDialog/ShareDialog';
 import StopSharingAndMoveToTrashDialogWrapper from '../StopSharingAndMoveToTrashDialogWrapper/StopSharingAndMoveToTrashDialogWrapper';
-import BannerWrapper from '../../../banners/BannerWrapper';
-import navigationService from 'app/core/services/navigation.service';
+import UploadItemsFailsDialog from '../UploadItemsFailsDialog/UploadItemsFailsDialog';
+import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
+import './DriveExplorer.scss';
+import { DriveTopBarItems } from './DriveTopBarItems';
+import DriveTopBarActions from './components/DriveTopBarActions';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -171,11 +170,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   // ONBOARDING TUTORIAL STATES
   const [currentTutorialStep, setCurrentTutorialStep] = useState(0);
   const [showSecondTutorialStep, setShowSecondTutorialStep] = useState(false);
-  const stepOneTutorialRef = useRef(null);
+  const uploadFileButtonRef = useRef(null);
   const isSignUpTutorialCompleted = localStorageService.hasCompletedTutorial(user?.userId);
   const successNotifications = useTaskManagerGetNotifications({
     status: [TaskStatus.Success],
   });
+  const divRef = useRef<HTMLDivElement | null>(null);
 
   const showTutorial =
     useAppSelector(userSelectors.hasSignedToday) &&
@@ -189,7 +189,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
         }, 0);
         passToNextStep();
       },
-      stepOneTutorialRef,
+      stepOneTutorialRef: uploadFileButtonRef,
+      offset: hasAnyItemSelected ? { x: divRef?.current?.offsetWidth ?? 0, y: 0 } : { x: 0, y: 0 },
     },
     {
       onNextStepClicked: () => {
@@ -745,7 +746,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
                   }}
                 </Menu>
                 <DriveTopBarItems
-                  stepOneTutorialRef={stepOneTutorialRef}
+                  stepOneTutorialRef={uploadFileButtonRef}
                   onCreateFolderButtonClicked={onCreateFolderButtonClicked}
                   onUploadFileButtonClicked={onUploadFileButtonClicked}
                   onUploadFolderButtonClicked={onUploadFolderButtonClicked}
@@ -759,6 +760,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               currentFolderId={currentFolderId}
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
+              driveActionsRef={divRef}
             />
           </div>
           {isTrash && (
