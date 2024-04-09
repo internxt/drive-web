@@ -1384,7 +1384,20 @@
         "title": "D'ensemble"
       },
       "members": {
-        "title": "Membres"
+        "title": "Membres",
+        "members": "Membres",
+        "guests": "Invités",
+        "search": "Rechercher des membres",
+        "invite": "Inviter",
+        "list": {
+          "user": "Utilisateur",
+          "usage": "Utilisation",
+          "storage": "Stockage"
+        },
+        "role": {
+          "owner": "Propriétaire",
+          "manager": "Manager"
+        }
       },
       "teams": {
         "title": "Équipes"

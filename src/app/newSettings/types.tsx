@@ -38,3 +38,16 @@ export type DriveProduct = {
 };
 
 export type Sections = Section[];
+
+export type MemberRole = 'owner' | 'manager';
+
+export type Member = {
+  id: string;
+  name: string;
+  lastname: string;
+  email: string;
+  role: MemberRole;
+  primaryUsage: number;
+  secondaryUsage: number;
+  storage: number;
+};

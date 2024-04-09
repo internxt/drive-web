@@ -1435,7 +1435,20 @@
         "title": "Global"
       },
       "members": {
-        "title": "Miembros"
+        "title": "Miembros",
+        "members": "Miembros",
+        "guests": "Invitados",
+        "search": "Buscar miembros",
+        "invite": "Invitar",
+        "list": {
+          "user": "Usuario",
+          "usage": "Uso",
+          "storage": "Almacenamiento"
+        },
+        "role": {
+          "owner": "Propietario",
+          "manager": "Manager"
+        }
       },
       "teams": {
         "title": "Equipos"
