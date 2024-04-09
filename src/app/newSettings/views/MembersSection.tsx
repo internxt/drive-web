@@ -9,7 +9,8 @@ import Button from '../../shared/components/Button/Button';
 import Card from '../../shared/components/Card';
 import Input from '../../shared/components/Input';
 
-import { Member, MemberRole } from '../types';
+import Tooltip from '../../shared/components/Tooltip';
+import { DriveProduct, Member, MemberRole } from '../types';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -37,8 +38,10 @@ const MembersSection = () => {
       lastname: 'Doe',
       email: 'jonh@internxt.com',
       role: 'owner' as MemberRole,
-      primaryUsage: 1720000000000,
-      secondaryUsage: 123000,
+      products: [
+        { name: 'Drive', usageInBytes: 1720000000000, color: 'primary' },
+        { name: 'Backups', usageInBytes: 123000, color: 'indigo' },
+      ],
       storage: 2200000000000,
     },
     {
@@ -47,8 +50,10 @@ const MembersSection = () => {
       lastname: 'Dalesom',
       email: 'michael@internxt.com',
       role: 'manager' as MemberRole,
-      primaryUsage: 524000000000,
-      secondaryUsage: 12300000,
+      products: [
+        { name: 'Drive', usageInBytes: 524000000000, color: 'primary' },
+        { name: 'Backups', usageInBytes: 12300000, color: 'indigo' },
+      ],
       storage: 1100000000000,
     },
     {
@@ -57,7 +62,7 @@ const MembersSection = () => {
       lastname: 'Donell',
       email: 'bea@internxt.com',
       role: '' as MemberRole,
-      primaryUsage: 824000000000,
+      products: [{ name: 'Drive', usageInBytes: 824000000000, color: 'primary' }],
       storage: 1100000000000,
     },
   ] as Member[];
@@ -138,7 +143,7 @@ const MembersSection = () => {
                 {translate('preferences.workspace.members.list.usage')}
               </span>
             </div>
-            {displayedMembers.map(({ primaryUsage, storage, secondaryUsage, id }, i) => (
+            {displayedMembers.map(({ storage, products, id }, i) => (
               <div
                 key={id}
                 className={`justify-betweendw flex h-14 items-center border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
@@ -148,13 +153,8 @@ const MembersSection = () => {
                 onMouseLeave={() => setHoverItemIndex(null)}
               >
                 <div className="flex w-full items-center justify-between">
-                  <UsageBar
-                    isHovered={hoverItemIndex === id}
-                    storage={storage}
-                    primaryUsage={primaryUsage}
-                    secondaryUsage={secondaryUsage}
-                  />
-                  {bytesToString((primaryUsage ?? 0) + (secondaryUsage ?? 0))}
+                  <UsageBar isHovered={hoverItemIndex === id} storage={storage} products={products} />
+                  {bytesToString(products.reduce((total, product) => total + product.usageInBytes, 0))}
                 </div>
               </div>
             ))}
@@ -187,7 +187,24 @@ const MembersSection = () => {
   );
 };
 
-const UsageBar = ({ isHovered, primaryUsage, storage, secondaryUsage }) => {
+interface UsageBarProps {
+  isHovered: boolean;
+  storage: number;
+  products: DriveProduct[];
+}
+
+const UsageBar = ({ isHovered, storage, products }: UsageBarProps) => {
+  const colorMapping: { [key in (typeof products)[number]['color']]: string } = {
+    red: 'bg-red',
+    orange: 'bg-orange',
+    yellow: 'bg-yellow',
+    green: 'bg-green',
+    pink: 'bg-pink',
+    indigo: 'bg-indigo',
+    primary: 'bg-primary',
+    gray: 'bg-gray-40',
+  };
+
   return (
     <div>
       <div
@@ -195,18 +212,22 @@ const UsageBar = ({ isHovered, primaryUsage, storage, secondaryUsage }) => {
           isHovered ? 'bg-surface' : 'bg-gray-5 dark:bg-gray-5'
         } box-content border border-gray-10`}
       >
-        <div
-          style={{ width: `${Math.max((primaryUsage / storage) * 144, 12)}px` }}
-          className={`h-4 rounded-l-md border-r border-surface bg-primary
-                        dark:border-gray-1 ${secondaryUsage ? '' : 'rounded-r-md'}`}
-        />
-        {!!secondaryUsage && (
-          <div
-            style={{ width: `${Math.max((secondaryUsage / storage) * 144, 12)}px` }}
-            className={`h-4 rounded-r-md border-surface bg-indigo
-                        dark:border-gray-1 `}
-          />
-        )}
+        {products.map((product, i) => (
+          <Tooltip
+            key={product.name}
+            title={product.name}
+            subtitle={bytesToString(product.usageInBytes)}
+            popsFrom="top"
+          >
+            <div
+              style={{ width: `${Math.max((product.usageInBytes / storage) * 144, 12)}px` }}
+              className={`h-4 border-r border-surface ${colorMapping[product.color]}
+                        dark:border-gray-1 ${i === 0 ? 'rounded-l-md' : ''} ${
+                i === products.length - 1 ? 'rounded-r-md' : ''
+              }`}
+            />
+          </Tooltip>
+        ))}
       </div>
     </div>
   );

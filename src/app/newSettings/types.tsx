@@ -47,7 +47,6 @@ export type Member = {
   lastname: string;
   email: string;
   role: MemberRole;
-  primaryUsage: number;
-  secondaryUsage: number;
   storage: number;
+  products: DriveProduct[];
 };
