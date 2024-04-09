@@ -11,7 +11,7 @@ async function addAllFoldersToZip(
   const path = currentAbsolutePath;
   const allFolders: DriveFolderData[] = [];
 
-  const addFolderToZip = async (folder: DriveFolderData) => {
+  const addFolderToZip = (folder: DriveFolderData) => {
     zip.addFolder(path + '/' + folder.name);
   };
 
@@ -25,7 +25,7 @@ async function addAllFoldersToZip(
     allFolders.push(...folders);
 
     for (const folder of folders) {
-      await addFolderToZip(folder);
+      addFolderToZip(folder);
     }
   }
 
@@ -39,7 +39,7 @@ async function addAllSharedFoldersToZip(
 ): Promise<{ folders: SharedFolders[]; token: string }> {
   const path = currentAbsolutePath;
   const allFolders: SharedFolders[] = [];
-  const addFolderToZip = async (folder: DriveFolderData) => {
+  const addFolderToZip = (folder: DriveFolderData) => {
     zip.addFolder(path + '/' + folder.name);
   };
   let pack;
@@ -52,7 +52,7 @@ async function addAllSharedFoldersToZip(
     allFolders.push(...folders);
 
     for (const folder of folders) {
-      await addFolderToZip(folder);
+      addFolderToZip(folder);
     }
   }
 
