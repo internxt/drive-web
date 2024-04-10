@@ -472,7 +472,7 @@
           },
           "changePassword": {
             "title": "Passwort ändern",
-            "description": "Merke dir unbedingt dein neues Passwort. Wenn du es verlierst, kannst du nicht mehr auf alle Dateien zugreifen. Wir empfehlen dringend, einen Passwort-Manager zu verwenden.",
+            "description": "Wir speichern keine Passwörter. Wenn Sie Ihr Passwort verlieren, haben Sie keinen Zugang mehr zu Ihrem Internxt-Konto.",
             "button": "Passwort ändern"
           },
           "2FA": {

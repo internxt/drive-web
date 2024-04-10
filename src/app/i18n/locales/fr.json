@@ -461,7 +461,7 @@
           },
           "changePassword": {
             "title": "Modifier le mot de passe",
-            "description": "N'oubliez pas que si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers. Nous vous recommandons d'utiliser un gestionnaire de mots de passe.",
+            "description": "Nous ne conservons pas les mots de passe. Si vous perdez votre mot de passe, vous n'aurez plus accès à votre compte Internxt.",
             "button": "Modifier le mot de passe"
           },
           "2FA": {

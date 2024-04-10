@@ -520,7 +520,7 @@
           },
           "changePassword": {
             "title": "Modifica la password",
-            "description": "Ricorda che se dimentichi la password, perderai l'accesso a tutti i tuoi file. Ti consigliamo di utilizzare un gestore di password.",
+            "description": "Non memorizziamo le password; se perdete la password, perderete l'accesso al vostro account Internxt.",
             "button": "Modifica la password"
           },
           "2FA": {

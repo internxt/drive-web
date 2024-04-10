@@ -510,7 +510,7 @@
           },
           "changePassword": {
             "title": "Cambiar contraseña",
-            "description": "Recuerda no olvidar la contraseña, si no perderás acceso a todos tus archivos. Recomendamos utilizar un administrador de contraseñas.",
+            "description": "No almacenamos contraseñas, si pierdes tu contraseña, perderás el acceso a tu Cuenta Internxt.",
             "button": "Cambiar contraseña"
           },
           "2FA": {

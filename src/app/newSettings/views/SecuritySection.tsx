@@ -8,10 +8,10 @@ import { t } from 'i18next';
 import Section from 'app/core/views/Preferences/components/Section';
 
 import BackupKey from 'app/core/views/Preferences/tabs/Security/BackupKey';
-import ChangePassword from 'app/core/views/Preferences/tabs/Security/ChangePassword';
 import Faq from 'app/core/views/Preferences/tabs/Security/Faq';
 import TwoFA from 'app/core/views/Preferences/tabs/Security/TwoFA';
 import EnterPassword from '../components/Security/EnterPassword';
+import ChangePassword from '../components/Security/ChangePassword';
 
 const SecuritySection = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -25,12 +25,15 @@ const SecuritySection = () => {
     >
       {state.tag === 'unlocked' ? (
         <>
-          <div className="flex flex-1 flex-col space-y-8">
+          <div className="flex justify-between">
             <ChangePassword
               onPasswordChanged={(newPassword) => setState({ tag: 'unlocked', password: newPassword })}
               currentPassword={state.password}
+              user={user}
             />
             <TwoFA password={state.password} />
+          </div>
+          <div className="flex justify-between">
             <BackupKey />
           </div>
 

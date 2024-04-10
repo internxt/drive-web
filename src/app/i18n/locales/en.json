@@ -527,7 +527,7 @@
           },
           "changePassword": {
             "title": "Change password",
-            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
+            "description": "We don’t store passwords, if you lose your password, you’ll lose access to your Internxt Account.",
             "button": "Change password"
           },
           "2FA": {
