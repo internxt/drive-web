@@ -1456,7 +1456,20 @@
         "title": "概述"
       },
       "members": {
-        "title": "成员"
+        "title": "成员",
+        "members": "成员",
+        "guests": "访客",
+        "search": "搜索成员",
+        "invite": "邀请",
+        "list": {
+          "user": "用户",
+          "usage": "使用情况",
+          "storage": "存储"
+        },
+        "role": {
+          "owner": "所有者",
+          "manager": "管理员"
+        }
       },
       "teams": {
         "title": "团队"

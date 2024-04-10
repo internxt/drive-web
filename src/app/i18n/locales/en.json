@@ -1457,7 +1457,20 @@
         "title": "Overview"
       },
       "members": {
-        "title": "Members"
+        "title": "Members",
+        "members": "Members",
+        "guests": "Guests",
+        "search": "Search members",
+        "invite": "Invite",
+        "list": {
+          "user": "User",
+          "usage": "Usage",
+          "storage": "Storage"
+        },
+        "role": {
+          "owner": "Owner",
+          "manager": "Manager"
+        }
       },
       "teams": {
         "title": "Teams"

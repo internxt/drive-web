@@ -1444,7 +1444,20 @@
         "title": "Panoramica"
       },
       "members": {
-        "title": "Membri"
+        "title": "Membri",
+        "members": "Membri",
+        "guests": "Ospiti",
+        "search": "Cerca membri",
+        "invite": "Invita",
+        "list": {
+          "user": "Utente",
+          "usage": "Utilizzo",
+          "storage": "Archiviazione"
+        },
+        "role": {
+          "owner": "Proprietario",
+          "manager": "Manager"
+        }
       },
       "teams": {
         "title": "Squadre"

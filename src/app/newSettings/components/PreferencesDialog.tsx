@@ -10,9 +10,10 @@ import { uiActions } from 'app/store/slices/ui';
 import SectionListContainer, { sectionItems } from '../containers/SectionListContainer';
 import { PreferencesDialogProps, Section, SelectSectionProps } from '../types';
 import AccountSection from '../views/AccountSection';
-import BillingWorkspaceSection from '../views/BillingWorkspaceSection';
 import BillingAccountSection from '../views/BillingAccountSection';
+import BillingWorkspaceSection from '../views/BillingWorkspaceSection';
 import GeneralSection from '../views/GeneralSection';
+import MembersSection from '../views/MembersSection';
 import OverviewSection from '../views/OverviewSection';
 import PlansSection from '../views/PlansSection';
 
@@ -81,6 +82,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         </button>
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && <MembersSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
           <BillingWorkspaceSection />
         )}
