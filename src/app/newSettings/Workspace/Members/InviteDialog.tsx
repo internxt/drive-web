@@ -33,22 +33,7 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
   const [emailAccent, setEmailAccent] = useState<string>('');
   const [isAddMessageSelected, setIsAddMessageSelected] = useState<boolean>(false);
   const [messageText, setMessageText] = useState('');
-  const [usersToInvite, setUsersToInvite] = useState<UsersToInvite[]>([
-    {
-      id: '123123',
-      name: 'Jonh',
-      lastname: 'Doe',
-      email: 'jonh@internxt.com',
-      avatar: null,
-    },
-    {
-      id: '123124',
-      name: 'Michael',
-      lastname: 'Dalesom',
-      email: 'michael@internxt.com',
-      avatar: '',
-    },
-  ]);
+  const [usersToInvite, setUsersToInvite] = useState<UsersToInvite[]>([]);
   const existsUsersToInvite = usersToInvite.length > 0;
 
   // MOCKED

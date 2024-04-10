@@ -29,7 +29,7 @@ const MembersSection = () => {
   const { translate } = useTranslationContext();
   const [searchedMemberName, setSearchedMemberName] = useState('');
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
-  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(true);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
   // MOCKED
   const guestsNumber = 0;
@@ -105,7 +105,9 @@ const MembersSection = () => {
           value={searchedMemberName}
           name="memberName"
         />
-        <Button variant="primary">{translate('preferences.workspace.members.invite')}</Button>
+        <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+          {translate('preferences.workspace.members.invite')}
+        </Button>
       </div>
       <div>
         <div className="flex">
