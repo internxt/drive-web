@@ -145,15 +145,15 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
           </div>
         )}
         <div className={`${isAddMessageSelected ? 'mt-2' : 'mt-8'} flex w-full flex-row items-center justify-between`}>
-          <div
-            className={`flex cursor-pointer items-center ${isLoading ? '' : ''} `}
+          <button
+            className={'flex cursor-pointer items-center'}
             onClick={() => setIsAddMessageSelected(!isAddMessageSelected)}
           >
             <BaseCheckbox checked={isAddMessageSelected} />
             <p className="ml-2 text-base font-medium">
               {translate('preferences.workspace.members.inviteDialog.addMessage')}
             </p>
-          </div>
+          </button>
           <Button variant="primary" disabled={!existsUsersToInvite} onClick={onInviteUser} loading={isLoading}>
             {translate('preferences.workspace.members.inviteDialog.invite')}
           </Button>
