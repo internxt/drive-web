@@ -1449,6 +1449,15 @@
         "guests": "Ospiti",
         "search": "Cerca membri",
         "invite": "Invita",
+        "inviteDialog": {
+          "title": "Invita allo spazio di lavoro",
+          "inputDescription": "Premi Invio, Spazio o Virgola per separare gli indirizzi email",
+          "remove": "Rimuovi",
+          "inviteUsersDescription": "Gli utenti senza un account Internxt riceveranno un'email per registrarsi prima di unirsi allo spazio di lavoro.",
+          "enterUserEmail": "Inserisci l'email dell'utente da invitare",
+          "addMessage": "Aggiungi messaggio",
+          "invite": "Invita"
+        },
         "list": {
           "user": "Utente",
           "usage": "Utilizzo",

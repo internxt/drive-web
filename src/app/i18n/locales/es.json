@@ -1440,6 +1440,15 @@
         "guests": "Invitados",
         "search": "Buscar miembros",
         "invite": "Invitar",
+        "inviteDialog": {
+          "title": "Invitar al espacio de trabajo",
+          "inputDescription": "Presiona enter, espacio o coma para separar correos electrónicos",
+          "remove": "Eliminar",
+          "inviteUsersDescription": "Los usuarios sin una cuenta de Internxt recibirán un correo electrónico para registrarse antes de unirse al espacio de trabajo.",
+          "enterUserEmail": "Ingrese el correo electrónico del usuario para invitar",
+          "addMessage": "Agregar mensaje",
+          "invite": "Invitar"
+        },
         "list": {
           "user": "Usuario",
           "usage": "Uso",
