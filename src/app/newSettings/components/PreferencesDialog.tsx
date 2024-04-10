@@ -15,6 +15,7 @@ import BillingAccountSection from '../views/BillingAccountSection';
 import GeneralSection from '../views/GeneralSection';
 import OverviewSection from '../views/OverviewSection';
 import PlansSection from '../views/PlansSection';
+import SecuritySection from '../views/SecuritySection';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
@@ -89,6 +90,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         {activeSection?.section === 'account' && activeSection?.subsection === 'billing' && (
           <BillingAccountSection changeSection={changeSection} />
         )}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'security' && <SecuritySection />}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>
