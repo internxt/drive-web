@@ -107,12 +107,13 @@ class UploadManager {
 
         if (memory && memory.jsHeapSizeLimit !== null && memory.usedJSHeapSize !== null) {
           const memoryUsagePercentage = memory.usedJSHeapSize / memory.jsHeapSizeLimit;
-          const shouldIncreaseConcurrency = memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
+          const shouldIncreaseConcurrency =
+            memoryUsagePercentage < 0.7 && this.currentGroupBeingUploaded !== FileSizeType.Big;
 
           if (shouldIncreaseConcurrency) {
             const newConcurrency = Math.min(
-              this.uploadQueue.concurrency + 1, 
-              this.filesGroups[FileSizeType.Small].concurrency
+              this.uploadQueue.concurrency + 1,
+              this.filesGroups[FileSizeType.Small].concurrency,
             );
             console.warn(`Memory usage under 70%. Increasing upload concurrency to ${newConcurrency}`);
             this.uploadQueue.concurrency = newConcurrency;
