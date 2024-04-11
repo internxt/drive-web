@@ -7,11 +7,11 @@ import { t } from 'i18next';
 
 import Section from 'app/core/views/Preferences/components/Section';
 
-import BackupKey from 'app/core/views/Preferences/tabs/Security/BackupKey';
 import Faq from 'app/core/views/Preferences/tabs/Security/Faq';
 import EnterPassword from '../components/Security/EnterPassword';
 import ChangePassword from '../components/Security/ChangePassword';
 import TwoFactorAuthentication from '../components/Security/TwoFactorAuthentication';
+import ExportBackupKey from '../components/Security/ExportBackupKey';
 
 const SecuritySection = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -34,7 +34,7 @@ const SecuritySection = () => {
             <TwoFactorAuthentication password={state.password} />
           </div>
           <div className="flex justify-between">
-            <BackupKey />
+            <ExportBackupKey />
           </div>
 
           <div className="flex w-full flex-col space-y-8 xl:w-96">

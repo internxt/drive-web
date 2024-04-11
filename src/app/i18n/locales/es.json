@@ -557,7 +557,7 @@
           },
           "backupKey": {
             "title": "Clave de recuperación",
-            "description": "En caso de que olvides tu contraseña, puedes usar tu clave de recuperación para recuperar tu cuenta. Nunca compartas esta clave con nadie.",
+            "description": "La clave de seguridad permite recuperar la cuenta en caso de que olvides la contraseña. No la compartas nunca.",
             "button": "Exportar clave",
             "success": "Clave de copia de seguridad descargada",
             "error": "No hemos podido generar tu clave de seguridad"

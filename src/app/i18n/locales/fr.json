@@ -508,7 +508,7 @@
           },
           "backupKey": {
             "title": "Clé de récupération",
-            "description": "En cas d'oubli de votre mot de passe, vous pouvez utiliser votre clé de récupération pour récupérer votre compte. Ne jamais partager ce code avec qui que ce soit.",
+            "description": "La clé de sauvegarde permet de récupérer le compte en cas d'oubli du mot de passe. Ne le partagez jamais.",
             "button": "Exporter le mot de passe",
             "success": "Clé de sauvegarde téléchargée avec succès",
             "error": "Nous n'avons pas pu générer votre clé de sauvegarde"

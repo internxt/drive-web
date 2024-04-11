@@ -518,7 +518,7 @@
           },
           "backupKey": {
             "title": "Backup Schlüssel",
-            "description": "Wenn du dein Passwort vergessen hast, kannst du einen eindeutigen Sicherungsschlüssel verwenden, um dein Konto wiederherzustellen. Gib diesen Code niemals an Dritte weiter.",
+            "description": "Mit dem Backup-Schlüssel können Sie Ihr Konto wiederherstellen, falls Sie Ihr Passwort vergessen haben. Geben Sie ihn niemals weiter.",
             "button": "Exportiere Backup Schlüssel",
             "success": "Sicherungsschlüssel erfolgreich heruntergeladen",
             "error": "Wir konnten deinen Backup-Schlüssel nicht generieren"

@@ -574,7 +574,7 @@
           },
           "backupKey": {
             "title": "Backup key",
-            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
+            "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
             "button": "Export backup key",
             "success": "Backup key downloaded successfully",
             "error": "We could not generate your backup key"

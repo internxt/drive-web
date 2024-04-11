@@ -567,7 +567,7 @@
           },
           "backupKey": {
             "title": "Recovery Key",
-            "description": "Se si dimentica la password, è possibile utilizzare una chiave di backup unica per recuperare il proprio account. Non condividete mai questo codice con nessuno.",
+            "description": "La chiave di backup consente di recuperare l'account nel caso in cui si dimentichi la password. Non condividetela mai.",
             "button": "Esporta la password",
             "success": "Recovery key scaricata correttamente",
             "error": "Non è stato possibile generare la chiave di backup"
