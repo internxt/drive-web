@@ -514,17 +514,17 @@
             "button": "Cambiar contraseña"
           },
           "2FA": {
-            "title": "Autenticación en dos pasos (2FA)",
+            "title": "Autenticación en dos pasos",
             "titleDisable": "Desactivar autenticación en dos pasos",
-            "description": "La autenticación en dos pasos proporciona una capa de seguridad adicional, ya que requiere verificación al iniciar sesión. Además de tu contraseña, necesitarás un código generado.",
+            "description": "Añade una capa extra de seguridad requiriendo un código de verificación adicional al iniciar sesión.",
             "button": "Activar",
-            "disable": "Deshabilitar 2FA",
+            "disable": "Deshabilitar",
             "enabled": "Activado",
             "disabled": "Desactivado",
             "modal": {
               "title": "Autenticación en dos pasos",
               "stepsLabel": "{{current}} de {{total}}",
-              "button": "Activar 2FA",
+              "button": "Activar",
               "2FALabelCode": "Código de autenticación",
               "or": "O",
               "steps": {

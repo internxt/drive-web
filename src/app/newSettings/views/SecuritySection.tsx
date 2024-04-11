@@ -9,9 +9,9 @@ import Section from 'app/core/views/Preferences/components/Section';
 
 import BackupKey from 'app/core/views/Preferences/tabs/Security/BackupKey';
 import Faq from 'app/core/views/Preferences/tabs/Security/Faq';
-import TwoFA from 'app/core/views/Preferences/tabs/Security/TwoFA';
 import EnterPassword from '../components/Security/EnterPassword';
 import ChangePassword from '../components/Security/ChangePassword';
+import TwoFactorAuthentication from '../components/Security/TwoFactorAuthentication';
 
 const SecuritySection = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -31,7 +31,7 @@ const SecuritySection = () => {
               currentPassword={state.password}
               user={user}
             />
-            <TwoFA password={state.password} />
+            <TwoFactorAuthentication password={state.password} />
           </div>
           <div className="flex justify-between">
             <BackupKey />

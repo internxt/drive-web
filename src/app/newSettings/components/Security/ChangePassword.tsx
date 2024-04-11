@@ -21,7 +21,7 @@ const ChangePassword = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <Section title={translate('views.account.tabs.security.changePassword.title')} className="mr-8">
+    <Section title={translate('views.account.tabs.security.changePassword.title')} className="mr-8 basis-1/2">
       <Card>
         <p className="text-gray-60">{translate('views.account.tabs.security.changePassword.description')}</p>
         <Button

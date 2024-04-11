@@ -476,16 +476,16 @@
             "button": "Passwort ändern"
           },
           "2FA": {
-            "title": "Zwei-Faktor-Authentifizierung (2FA)",
+            "title": "Zwei-Faktor-Authentifizierung",
             "titleDisable": "Zwei-Faktor-Authentifizierung deaktivieren",
-            "description": "Zwei-Faktor-Authentifizierung bietet eine zusätzliche Sicherheitsebene, indem beim Anmelden eine zusätzliche Verifizierung erforderlich ist. Zusätzlich zu deinem Internxt-Passwort benötigst du auch einen eindeutig generierten Code, der an die E-Mail-Adresse gesendet wird, mit der du dein Konto registriert haben.",
-            "button": "Aktiviere 2FA",
+            "description": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie bei der Anmeldung einen zusätzlichen Verifizierungscode verlangen.",
+            "button": "Aktivieren",
             "enabled": "Aktiviert",
-            "disabled": "Deaktiviert",
+            "disabled": "Deaktivieren",
             "modal": {
               "title": "Zwei-Faktor-Authentifizierung",
               "stepsLabel": "{{current}} von {{total}}",
-              "button": "Aktiviere 2FA",
+              "button": "Aktivieren",
               "2FALabelCode": "Zwei-Faktor-Authentifizierung Code",
               "or": "Oder",
               "steps": {

@@ -531,17 +531,17 @@
             "button": "Change password"
           },
           "2FA": {
-            "title": "Two-factor authentication (2FA)",
+            "title": "Two-factor authentication",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
-            "button": "Enable 2FA",
-            "disable": "Disable 2FA",
+            "description": "Add an extra layer of security by requiring an extra verification code when you log in.",
+            "button": "Enable",
+            "disable": "Disable",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
               "title": "Two Factor Authentication",
               "stepsLabel": "{{current}} of {{total}}",
-              "button": "Enable 2FA",
+              "button": "Enable",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OR",
               "steps": {

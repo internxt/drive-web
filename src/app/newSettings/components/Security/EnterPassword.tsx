@@ -59,7 +59,13 @@ const EnterPassword = ({
             accent={formState.tag === 'error' ? 'error' : undefined}
             disabled={formState.tag === 'loading'}
           />
-          <Button loading={formState.tag === 'loading'} disabled={!password} type="submit" dataTest="access-button">
+          <Button
+            variant="secondary"
+            loading={formState.tag === 'loading'}
+            disabled={!password}
+            type="submit"
+            dataTest="access-button"
+          >
             {translate('actions.access')}
           </Button>
         </form>

@@ -524,17 +524,17 @@
             "button": "Modifica la password"
           },
           "2FA": {
-            "title": "Autenticazione a due fattori (2FA)",
+            "title": "Autenticazione a due fattori",
             "titleDisable": "Disattivare l'autenticazione a due fattori",
-            "description": "L'autenticazione a due fattori fornisce un maggiore livello di sicurezza, richiedendo un’ulteriore verifica al momento dell'accesso. Oltre alla tua password, avrai bisogno di inserire un codice usa-e-getta generato al momento.",
-            "button": "Attiva la 2FA",
-            "disable": "Disabilitare 2FA",
+            "description": "Aggiungi un ulteriore livello di sicurezza richiedendo un ulteriore codice di verifica al momento dell'accesso.",
+            "button": "Abilita",
+            "disable": "Disabilitare",
             "enabled": "Abilitato",
             "disabled": "Disabilitato",
             "modal": {
               "title": "Autenticazione a due fattori",
               "stepsLabel": "{{current}} di {{total}}",
-              "button": "Attiva la 2FA",
+              "button": "Abilita",
               "2FALabelCode": "Codice di Autenticazione in due passaggi",
               "or": "O",
               "steps": {
