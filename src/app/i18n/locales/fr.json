@@ -1389,6 +1389,15 @@
         "guests": "Invités",
         "search": "Rechercher des membres",
         "invite": "Inviter",
+        "inviteDialog": {
+          "title": "Inviter au lieu de travail",
+          "inputDescription": "Appuyez sur Entrée, Espace ou Virgule pour séparer les emails",
+          "remove": "Supprimer",
+          "inviteUsersDescription": "Les utilisateurs sans compte Internxt recevront un email pour s'inscrire avant de rejoindre le lieu de travail.",
+          "enterUserEmail": "Entrer l'email de l'utilisateur à inviter",
+          "addMessage": "Ajouter un message",
+          "invite": "Inviter"
+        },
         "list": {
           "user": "Utilisateur",
           "usage": "Utilisation",

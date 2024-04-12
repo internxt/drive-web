@@ -1,5 +1,5 @@
 import { CheckCircle, Eye, EyeSlash, MagnifyingGlass, Warning, WarningOctagon, X } from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
+import { KeyboardEvent, useEffect, useRef, useState } from 'react';
 
 export default function Input({
   className = '',
@@ -22,6 +22,7 @@ export default function Input({
   required = false,
   labelDataCy,
   inputDataCy,
+  onKeyDown,
 }: {
   className?: string;
   label?: string;
@@ -43,6 +44,7 @@ export default function Input({
   required?: boolean;
   labelDataCy?: string;
   inputDataCy?: string;
+  onKeyDown?: (e: KeyboardEvent<HTMLInputElement>) => void;
 }): JSX.Element {
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -114,6 +116,7 @@ export default function Input({
         data-cy={inputDataCy}
         name={name}
         required={required}
+        onKeyDown={onKeyDown ?? undefined}
       />
       {variant === 'password' && isFocused && (
         <div

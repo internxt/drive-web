@@ -1359,6 +1359,15 @@
         "guests": "Gäste",
         "search": "Mitglieder suchen",
         "invite": "Einladen",
+        "inviteDialog": {
+          "title": "Zum Arbeitsbereich einladen",
+          "inputDescription": "Drücken Sie Enter, Leerzeichen oder Komma, um E-Mails zu trennen",
+          "remove": "Entfernen",
+          "inviteUsersDescription": "Benutzer ohne ein Internxt-Konto erhalten eine E-Mail, um sich anzumelden, bevor sie dem Arbeitsbereich beitreten können.",
+          "enterUserEmail": "Geben Sie die E-Mail-Adresse des Benutzers ein, den Sie einladen möchten",
+          "addMessage": "Nachricht hinzufügen",
+          "invite": "Einladen"
+        },
         "list": {
           "user": "Benutzer",
           "usage": "Nutzung",

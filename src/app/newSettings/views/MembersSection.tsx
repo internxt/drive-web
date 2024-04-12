@@ -11,6 +11,7 @@ import Input from '../../shared/components/Input';
 
 import Tooltip from '../../shared/components/Tooltip';
 import { DriveProduct, Member, MemberRole } from '../types';
+import UserInviteDialog from '../Workspace/Members/InviteDialog';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -28,6 +29,7 @@ const MembersSection = () => {
   const { translate } = useTranslationContext();
   const [searchedMemberName, setSearchedMemberName] = useState('');
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
+  const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
 
   // MOCKED
   const guestsNumber = 0;
@@ -103,7 +105,9 @@ const MembersSection = () => {
           value={searchedMemberName}
           name="memberName"
         />
-        <Button variant="primary">{translate('preferences.workspace.members.invite')}</Button>
+        <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+          {translate('preferences.workspace.members.invite')}
+        </Button>
       </div>
       <div>
         <div className="flex">
@@ -183,6 +187,7 @@ const MembersSection = () => {
           </div>
         </div>
       </div>
+      <UserInviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
     </Section>
   );
 };
@@ -236,12 +241,12 @@ const UsageBar = ({ isHovered, storage, products }: UsageBarProps) => {
 interface UserProps {
   name: string;
   lastname: string;
-  role: MemberRole;
+  role?: MemberRole;
   email: string;
   avatarsrc: string | null;
 }
 
-const User = ({ name, lastname, role, email, avatarsrc }: UserProps) => {
+export const User = ({ name, lastname, role, email, avatarsrc }: UserProps) => {
   const { translate } = useTranslationContext();
 
   const roleColorMapping = {
@@ -257,11 +262,13 @@ const User = ({ name, lastname, role, email, avatarsrc }: UserProps) => {
           <span className="text-base font-medium leading-5 text-gray-100">
             {name} {lastname}
           </span>
-          <div className={`flex items-center justify-center rounded-md ${roleColorMapping[role]} px-1`}>
-            <span className="text-center text-xs font-medium text-white">
-              {!!role && translate(`preferences.workspace.members.role.${role}`)}
-            </span>
-          </div>
+          {!!role && (
+            <div className={`flex items-center justify-center rounded-md ${roleColorMapping[role]} px-1`}>
+              <span className="text-center text-xs font-medium text-white">
+                {!!role && translate(`preferences.workspace.members.role.${role}`)}
+              </span>
+            </div>
+          )}
         </div>
         <span className="text-sm font-normal leading-4 text-gray-50">{email}</span>
       </div>

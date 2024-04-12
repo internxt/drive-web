@@ -1462,6 +1462,15 @@
         "guests": "Guests",
         "search": "Search members",
         "invite": "Invite",
+        "inviteDialog": {
+          "title": "Invite to workspace",
+          "inputDescription": "Press enter, space or comma to separate emails",
+          "remove": "Remove",
+          "inviteUsersDescription": "Users without an Internxt account will receive an email to sign up before joining the workspace.",
+          "enterUserEmail": "Enter user email to invite",
+          "addMessage": "Add message",
+          "invite": "Invite"
+        },
         "list": {
           "user": "User",
           "usage": "Usage",

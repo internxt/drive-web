@@ -1461,6 +1461,15 @@
         "guests": "访客",
         "search": "搜索成员",
         "invite": "邀请",
+        "inviteDialog": {
+          "title": "邀请加入工作区",
+          "inputDescription": "按Enter、空格或逗号分隔电子邮件地址",
+          "remove": "删除",
+          "inviteUsersDescription": "没有Internxt账户的用户将收到一封电子邮件，要求他们在加入工作区之前注册。",
+          "enterUserEmail": "输入要邀请的用户电子邮件",
+          "addMessage": "添加消息",
+          "invite": "邀请"
+        },
         "list": {
           "user": "用户",
           "usage": "使用情况",
