@@ -10,7 +10,7 @@ import Input from '../../../shared/components/Input';
 import Modal from '../../../shared/components/Modal';
 import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
 import TextArea from '../../Account/Account/components/TextArea';
-import { User } from '../../views/MembersSection';
+import UserCard from './Components/UserCard';
 
 interface UserInviteDialogProps {
   isOpen: boolean;
@@ -108,7 +108,7 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
         </form>
         {usersToInvite.map(({ id, name, lastname, email: userEmail }) => (
           <div key={id} className="flex flex-row justify-between py-2">
-            <User name={name} lastname={lastname} email={userEmail} avatarsrc={''} />
+            <UserCard name={name} lastname={lastname} email={userEmail} avatarsrc={''} />
             <Button variant="secondary" className="h-8" disabled={isLoading} onClick={() => onRemoveUser(userEmail)}>
               {translate('preferences.workspace.members.inviteDialog.remove')}
             </Button>
