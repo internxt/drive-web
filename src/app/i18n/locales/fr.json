@@ -461,21 +461,21 @@
           },
           "changePassword": {
             "title": "Modifier le mot de passe",
-            "description": "N'oubliez pas que si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers. Nous vous recommandons d'utiliser un gestionnaire de mots de passe.",
+            "description": "Nous ne conservons pas les mots de passe. Si vous perdez votre mot de passe, vous n'aurez plus accès à votre compte Internxt.",
             "button": "Modifier le mot de passe"
           },
           "2FA": {
-            "title": "Authentification à deux facteurs (2FA)",
+            "title": "Authentification à deux facteurs",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "L'authentification à deux facteurs offre une sécurité supplémentaire en exigeant une vérification pour la connexion. En plus de votre mot de passe, vous aurez besoin d'un code généré.",
-            "button": "Activer 2FA",
-            "disable": "Désactiver 2FA",
+            "description": "Ajouter une couche supplémentaire de sécurité en demandant un code de vérification supplémentaire lorsque vous vous connectez.",
+            "button": "Activer",
+            "disable": "Désactiver",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
               "title": "Authentification en deux étapes",
               "stepsLabel": "{{current}} de {{total}}",
-              "button": "Activer 2FA",
+              "button": "Activer",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OU",
               "steps": {
@@ -508,7 +508,7 @@
           },
           "backupKey": {
             "title": "Clé de récupération",
-            "description": "En cas d'oubli de votre mot de passe, vous pouvez utiliser votre clé de récupération pour récupérer votre compte. Ne jamais partager ce code avec qui que ce soit.",
+            "description": "La clé de sauvegarde permet de récupérer le compte en cas d'oubli du mot de passe. Ne le partagez jamais.",
             "button": "Exporter le mot de passe",
             "success": "Clé de sauvegarde téléchargée avec succès",
             "error": "Nous n'avons pas pu générer votre clé de sauvegarde"

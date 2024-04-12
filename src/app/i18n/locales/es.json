@@ -510,21 +510,21 @@
           },
           "changePassword": {
             "title": "Cambiar contraseña",
-            "description": "Recuerda no olvidar la contraseña, si no perderás acceso a todos tus archivos. Recomendamos utilizar un administrador de contraseñas.",
+            "description": "No almacenamos contraseñas, si pierdes tu contraseña, perderás el acceso a tu Cuenta Internxt.",
             "button": "Cambiar contraseña"
           },
           "2FA": {
-            "title": "Autenticación en dos pasos (2FA)",
+            "title": "Autenticación en dos pasos",
             "titleDisable": "Desactivar autenticación en dos pasos",
-            "description": "La autenticación en dos pasos proporciona una capa de seguridad adicional, ya que requiere verificación al iniciar sesión. Además de tu contraseña, necesitarás un código generado.",
+            "description": "Añade una capa extra de seguridad requiriendo un código de verificación adicional al iniciar sesión.",
             "button": "Activar",
-            "disable": "Deshabilitar 2FA",
+            "disable": "Deshabilitar",
             "enabled": "Activado",
             "disabled": "Desactivado",
             "modal": {
               "title": "Autenticación en dos pasos",
               "stepsLabel": "{{current}} de {{total}}",
-              "button": "Activar 2FA",
+              "button": "Activar",
               "2FALabelCode": "Código de autenticación",
               "or": "O",
               "steps": {
@@ -557,7 +557,7 @@
           },
           "backupKey": {
             "title": "Clave de recuperación",
-            "description": "En caso de que olvides tu contraseña, puedes usar tu clave de recuperación para recuperar tu cuenta. Nunca compartas esta clave con nadie.",
+            "description": "La clave de seguridad permite recuperar la cuenta en caso de que olvides la contraseña. No la compartas nunca.",
             "button": "Exportar clave",
             "success": "Clave de copia de seguridad descargada",
             "error": "No hemos podido generar tu clave de seguridad"

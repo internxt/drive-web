@@ -520,21 +520,21 @@
           },
           "changePassword": {
             "title": "Modifica la password",
-            "description": "Ricorda che se dimentichi la password, perderai l'accesso a tutti i tuoi file. Ti consigliamo di utilizzare un gestore di password.",
+            "description": "Non memorizziamo le password; se perdete la password, perderete l'accesso al vostro account Internxt.",
             "button": "Modifica la password"
           },
           "2FA": {
-            "title": "Autenticazione a due fattori (2FA)",
+            "title": "Autenticazione a due fattori",
             "titleDisable": "Disattivare l'autenticazione a due fattori",
-            "description": "L'autenticazione a due fattori fornisce un maggiore livello di sicurezza, richiedendo un’ulteriore verifica al momento dell'accesso. Oltre alla tua password, avrai bisogno di inserire un codice usa-e-getta generato al momento.",
-            "button": "Attiva la 2FA",
-            "disable": "Disabilitare 2FA",
+            "description": "Aggiungi un ulteriore livello di sicurezza richiedendo un ulteriore codice di verifica al momento dell'accesso.",
+            "button": "Abilita",
+            "disable": "Disabilitare",
             "enabled": "Abilitato",
             "disabled": "Disabilitato",
             "modal": {
               "title": "Autenticazione a due fattori",
               "stepsLabel": "{{current}} di {{total}}",
-              "button": "Attiva la 2FA",
+              "button": "Abilita",
               "2FALabelCode": "Codice di Autenticazione in due passaggi",
               "or": "O",
               "steps": {
@@ -567,7 +567,7 @@
           },
           "backupKey": {
             "title": "Recovery Key",
-            "description": "Se si dimentica la password, è possibile utilizzare una chiave di backup unica per recuperare il proprio account. Non condividete mai questo codice con nessuno.",
+            "description": "La chiave di backup consente di recuperare l'account nel caso in cui si dimentichi la password. Non condividetela mai.",
             "button": "Esporta la password",
             "success": "Recovery key scaricata correttamente",
             "error": "Non è stato possibile generare la chiave di backup"

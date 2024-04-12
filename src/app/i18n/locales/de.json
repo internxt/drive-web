@@ -472,20 +472,20 @@
           },
           "changePassword": {
             "title": "Passwort ändern",
-            "description": "Merke dir unbedingt dein neues Passwort. Wenn du es verlierst, kannst du nicht mehr auf alle Dateien zugreifen. Wir empfehlen dringend, einen Passwort-Manager zu verwenden.",
+            "description": "Wir speichern keine Passwörter. Wenn Sie Ihr Passwort verlieren, haben Sie keinen Zugang mehr zu Ihrem Internxt-Konto.",
             "button": "Passwort ändern"
           },
           "2FA": {
-            "title": "Zwei-Faktor-Authentifizierung (2FA)",
+            "title": "Zwei-Faktor-Authentifizierung",
             "titleDisable": "Zwei-Faktor-Authentifizierung deaktivieren",
-            "description": "Zwei-Faktor-Authentifizierung bietet eine zusätzliche Sicherheitsebene, indem beim Anmelden eine zusätzliche Verifizierung erforderlich ist. Zusätzlich zu deinem Internxt-Passwort benötigst du auch einen eindeutig generierten Code, der an die E-Mail-Adresse gesendet wird, mit der du dein Konto registriert haben.",
-            "button": "Aktiviere 2FA",
+            "description": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie bei der Anmeldung einen zusätzlichen Verifizierungscode verlangen.",
+            "button": "Aktivieren",
             "enabled": "Aktiviert",
-            "disabled": "Deaktiviert",
+            "disabled": "Deaktivieren",
             "modal": {
               "title": "Zwei-Faktor-Authentifizierung",
               "stepsLabel": "{{current}} von {{total}}",
-              "button": "Aktiviere 2FA",
+              "button": "Aktivieren",
               "2FALabelCode": "Zwei-Faktor-Authentifizierung Code",
               "or": "Oder",
               "steps": {
@@ -518,7 +518,7 @@
           },
           "backupKey": {
             "title": "Backup Schlüssel",
-            "description": "Wenn du dein Passwort vergessen hast, kannst du einen eindeutigen Sicherungsschlüssel verwenden, um dein Konto wiederherzustellen. Gib diesen Code niemals an Dritte weiter.",
+            "description": "Mit dem Backup-Schlüssel können Sie Ihr Konto wiederherstellen, falls Sie Ihr Passwort vergessen haben. Geben Sie ihn niemals weiter.",
             "button": "Exportiere Backup Schlüssel",
             "success": "Sicherungsschlüssel erfolgreich heruntergeladen",
             "error": "Wir konnten deinen Backup-Schlüssel nicht generieren"

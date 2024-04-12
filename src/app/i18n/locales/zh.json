@@ -527,21 +527,21 @@
           },
           "changePassword": {
             "title": "修改密码",
-            "description": "记住，如果你忘记了你的密码，你将失去对所有文件的访问权限。我们建议使用一个密码管理器。",
+            "description": "我们不存储密码，如果您丢失了密码，您将无法访问您的 Internxt 账户。",
             "button": "修改密码"
           },
           "2FA": {
-            "title": "双因素认证(2FA)",
+            "title": "双因素认证",
             "titleDisable": "禁用双因素身份验证",
-            "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
-            "button": "激活 2FA",
-            "disable": "禁用双因素认证",
-            "enabled": "已启用",
+            "description": "在登录时要求输入额外的验证码，从而增加一层额外的安全性。",
+            "button": "激活",
+            "disable": "禁用",
+            "enabled": "启用",
             "disabled": "已禁用",
             "modal": {
               "title": "两步验证",
               "stepsLabel": "第 {{current}}/{{total}}步",
-              "button": "激活 2FA",
+              "button": "启用",
               "2FALabelCode": "双因素身份验证代码",
               "or": "或",
               "steps": {
@@ -574,7 +574,7 @@
           },
           "backupKey": {
             "title": "恢复密钥",
-            "description": "如果您忘记了密码，您可以使用唯一的备份密钥来恢复您的账户。 请永远不要与任何人分享此代码。",
+            "description": "备份密钥可在您忘记密码时恢复账户。切勿共享。",
             "button": "导出密码",
             "success": "备份密钥下载成功",
             "error": "我们无法生成您的备份密钥"
