@@ -6,7 +6,7 @@ type RoleProps = {
 };
 
 const RoleBadge = ({ role, roleText }: RoleProps) => {
-  if (!role) return;
+  if (!role) return <></>;
 
   const roleColorMapping = {
     owner: 'bg-indigo',
