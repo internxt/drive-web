@@ -1456,7 +1456,9 @@
         },
         "role": {
           "owner": "Propietario",
-          "manager": "Manager"
+          "manager": "Manager",
+          "member": "Miembro",
+          "deactivated": "Desactivado"
         }
       },
       "teams": {

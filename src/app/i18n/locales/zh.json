@@ -1477,7 +1477,9 @@
         },
         "role": {
           "owner": "所有者",
-          "manager": "管理员"
+          "manager": "管理员",
+          "member": "成员",
+          "deactivated": "已停用"
         }
       },
       "teams": {

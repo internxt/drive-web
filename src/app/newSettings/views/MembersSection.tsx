@@ -4,14 +4,15 @@ import { useEffect, useState } from 'react';
 import { bytesToString } from '../../drive/services/size.service';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 
-import Avatar from '../../shared/components/Avatar';
 import Button from '../../shared/components/Button/Button';
 import Card from '../../shared/components/Card';
 import Input from '../../shared/components/Input';
 
 import Tooltip from '../../shared/components/Tooltip';
-import { DriveProduct, Member, MemberRole } from '../types';
+import UserCard from '../Workspace/Members/Components/UserCard';
 import UserInviteDialog from '../Workspace/Members/InviteDialog';
+import MemberDetailsContainer from '../Workspace/Members/containers/MemberDetailsContainer';
+import { DriveProduct, Member, MemberRole } from '../types';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -30,6 +31,7 @@ const MembersSection = () => {
   const [searchedMemberName, setSearchedMemberName] = useState('');
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
+  const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   // MOCKED
   const guestsNumber = 0;
@@ -76,118 +78,143 @@ const MembersSection = () => {
   }, [searchedMemberName]);
 
   return (
-    <Section title="Members" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
-      {/* MEMBERS AND GUESTS CARDS */}
-      <div className="fles-row flex w-full justify-between space-x-6">
-        <Card className="w-full">
-          <div className="flex grow flex-col">
-            <span className="text-xl font-medium text-gray-100">{members.length}</span>
-            {translate('preferences.workspace.members.members')}
-            <span className="text-base font-normal text-gray-60"></span>
-          </div>
-        </Card>
-        <Card className="w-full">
-          <div className="flex grow flex-col">
-            <span className="text-xl font-medium text-gray-100">{guestsNumber}</span>
-            <span className="text-base font-normal text-gray-60">
-              {translate('preferences.workspace.members.guests')}
-            </span>
-          </div>
-        </Card>
-      </div>
-      {/* MEMBERS LIST */}
-      <div className="flex flex-row justify-between">
-        <Input
-          placeholder={translate('preferences.workspace.members.search')}
-          variant="email"
-          autoComplete="off"
-          onChange={setSearchedMemberName}
-          value={searchedMemberName}
-          name="memberName"
-        />
-        <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
-          {translate('preferences.workspace.members.invite')}
-        </Button>
-      </div>
-      <div>
-        <div className="flex">
-          {/* LEFT COLUMN */}
-          <div className="flex grow flex-col">
-            <div className="flex grow flex-col">
-              <span
-                className={
-                  'flex h-12 flex-row items-center justify-between rounded-tl-xl border-b border-l border-t border-gray-10 bg-gray-5 px-5 py-2 '
-                }
-              >
-                {translate('preferences.workspace.members.list.user')}
-              </span>
-            </div>
-            {displayedMembers.map(({ name, lastname, role, email, id }, i) => (
-              <div
-                key={id}
-                className={`flex h-14 flex-row justify-between border-l border-gray-10 px-5 py-2 text-base  font-medium text-gray-100 dark:bg-gray-1 ${
-                  i === members.length - 1 ? 'rounded-bl-xl border-b' : ' border-b'
-                }
-            ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
-                onMouseEnter={() => setHoverItemIndex(id)}
-                onMouseLeave={() => setHoverItemIndex(null)}
-              >
-                <User name={name} lastname={lastname} role={role} email={email} avatarsrc={''} />
+    <Section
+      title={
+        selectedMember
+          ? selectedMember.name + ' ' + selectedMember.lastname
+          : translate('preferences.workspace.members.members')
+      }
+      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
+      onBackButtonClicked={selectedMember ? () => setSelectedMember(null) : undefined}
+    >
+      {selectedMember ? (
+        <MemberDetailsContainer member={selectedMember} />
+      ) : (
+        <>
+          {/* MEMBERS AND GUESTS CARDS */}
+          <div className="fles-row flex w-full justify-between space-x-6">
+            <Card className="w-full">
+              <div className="flex grow flex-col">
+                <span className="text-xl font-medium text-gray-100">{members.length}</span>
+                {translate('preferences.workspace.members.members')}
+                <span className="text-base font-normal text-gray-60"></span>
               </div>
-            ))}
-          </div>
-          {/* CENTER COLUMN */}
-          <div className="flex grow flex-col">
-            <div className="flex h-12 items-center border-b border-t border-gray-10 bg-gray-5 py-2">
-              <span
-                className={
-                  'flex w-full items-center justify-between border-l border-r border-gray-10 bg-gray-5 pl-5 pr-1 '
-                }
-              >
-                {translate('preferences.workspace.members.list.usage')}
-              </span>
-            </div>
-            {displayedMembers.map(({ storage, products, id }, i) => (
-              <div
-                key={id}
-                className={`justify-betweendw flex h-14 items-center border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
-                  i === members.length - 1 ? 'border-b' : ' border-b'
-                } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
-                onMouseEnter={() => setHoverItemIndex(id)}
-                onMouseLeave={() => setHoverItemIndex(null)}
-              >
-                <div className="flex w-full items-center justify-between">
-                  <UsageBar isHovered={hoverItemIndex === id} storage={storage} products={products} />
-                  {bytesToString(products.reduce((total, product) => total + product.usageInBytes, 0))}
-                </div>
-              </div>
-            ))}
-          </div>
-          {/* RIGHT COLUMN */}
-          <div className="flex w-28 flex-col rounded-tr-xl">
-            <div>
-              <div className="flex h-12 items-center truncate rounded-tr-xl border-b border-t border-gray-10 bg-gray-5 p-5">
-                <span className={'truncate rounded-tr-xl'}>
-                  {translate('preferences.workspace.members.list.storage')}
+            </Card>
+            <Card className="w-full">
+              <div className="flex grow flex-col">
+                <span className="text-xl font-medium text-gray-100">{guestsNumber}</span>
+                <span className="text-base font-normal text-gray-60">
+                  {translate('preferences.workspace.members.guests')}
                 </span>
               </div>
-            </div>
-            {displayedMembers.map(({ storage, id }, i) => (
-              <div
-                key={id}
-                className={`flex h-14 flex-row items-center justify-between border-r border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 ${
-                  i === members.length - 1 ? 'rounded-br-xl border-b' : 'border-b'
-                } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : ''}`}
-                onMouseEnter={() => setHoverItemIndex(id)}
-                onMouseLeave={() => setHoverItemIndex(null)}
-              >
-                <span className=" text-base font-medium leading-5">{bytesToString(storage)}</span>
-              </div>
-            ))}
+            </Card>
           </div>
-        </div>
-      </div>
-      <UserInviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
+          {/* MEMBERS LIST */}
+          <div className="flex flex-row justify-between">
+            <Input
+              placeholder={translate('preferences.workspace.members.search')}
+              variant="email"
+              autoComplete="off"
+              onChange={setSearchedMemberName}
+              value={searchedMemberName}
+              name="memberName"
+            />
+            <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+              {translate('preferences.workspace.members.invite')}
+            </Button>
+          </div>
+          <div>
+            <div className="flex">
+              {/* LEFT COLUMN */}
+              <div className="flex grow flex-col">
+                <div className="flex grow flex-col">
+                  <span
+                    className={
+                      'flex h-12 flex-row items-center justify-between rounded-tl-xl border-b border-l border-t border-gray-10 bg-gray-5 px-5 py-2 '
+                    }
+                  >
+                    {translate('preferences.workspace.members.list.user')}
+                  </span>
+                </div>
+                {displayedMembers.map((member, i) => {
+                  const { id, name, lastname, role, email } = member;
+                  return (
+                    <button
+                      key={id}
+                      className={`flex h-14 flex-row justify-between border-l border-gray-10 px-5 py-2 text-base  font-medium text-gray-100 dark:bg-gray-1 ${
+                        i === members.length - 1 ? 'rounded-bl-xl border-b' : ' border-b'
+                      }
+              ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
+                      onMouseEnter={() => setHoverItemIndex(id)}
+                      onMouseLeave={() => setHoverItemIndex(null)}
+                      onClick={() => setSelectedMember(member)}
+                    >
+                      <UserCard name={name} lastname={lastname} role={role} email={email} avatarsrc={''} />
+                    </button>
+                  );
+                })}
+              </div>
+              {/* CENTER COLUMN */}
+              <div className="flex grow flex-col">
+                <div className="flex h-12 items-center border-b border-t border-gray-10 bg-gray-5 py-2">
+                  <span
+                    className={
+                      'flex w-full items-center justify-between border-l border-r border-gray-10 bg-gray-5 pl-5 pr-1 '
+                    }
+                  >
+                    {translate('preferences.workspace.members.list.usage')}
+                  </span>
+                </div>
+                {displayedMembers.map((member, i) => {
+                  const { storage, products, id } = member;
+                  return (
+                    <button
+                      key={id}
+                      className={`justify-betweendw flex h-14 items-center border-gray-10 px-5 py-2 text-base font-normal text-gray-60 dark:bg-gray-1 ${
+                        i === members.length - 1 ? 'border-b' : ' border-b'
+                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : 'bg-surface'}`}
+                      onMouseEnter={() => setHoverItemIndex(id)}
+                      onMouseLeave={() => setHoverItemIndex(null)}
+                      onClick={() => setSelectedMember(member)}
+                    >
+                      <div className="flex w-full items-center justify-between">
+                        <UsageBar isHovered={hoverItemIndex === id} storage={storage} products={products} />
+                        {bytesToString(products.reduce((total, product) => total + product.usageInBytes, 0))}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+              {/* RIGHT COLUMN */}
+              <div className="flex w-28 flex-col rounded-tr-xl">
+                <div>
+                  <div className="flex h-12 items-center truncate rounded-tr-xl border-b border-t border-gray-10 bg-gray-5 p-5">
+                    <span className={'truncate rounded-tr-xl'}>
+                      {translate('preferences.workspace.members.list.storage')}
+                    </span>
+                  </div>
+                </div>
+                {displayedMembers.map((member, i) => {
+                  const { storage, id } = member;
+                  return (
+                    <button
+                      key={id}
+                      className={`flex h-14 flex-row items-center justify-between border-r border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 ${
+                        i === members.length - 1 ? 'rounded-br-xl border-b' : 'border-b'
+                      } ${hoverItemIndex === id ? 'bg-gray-5 dark:bg-gray-5' : ''}`}
+                      onMouseEnter={() => setHoverItemIndex(id)}
+                      onMouseLeave={() => setHoverItemIndex(null)}
+                    >
+                      <span className=" text-base font-medium leading-5">{bytesToString(storage)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+          <UserInviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
+        </>
+      )}
     </Section>
   );
 };
@@ -233,44 +260,6 @@ const UsageBar = ({ isHovered, storage, products }: UsageBarProps) => {
             />
           </Tooltip>
         ))}
-      </div>
-    </div>
-  );
-};
-
-interface UserProps {
-  name: string;
-  lastname: string;
-  role?: MemberRole;
-  email: string;
-  avatarsrc: string | null;
-}
-
-export const User = ({ name, lastname, role, email, avatarsrc }: UserProps) => {
-  const { translate } = useTranslationContext();
-
-  const roleColorMapping = {
-    owner: 'bg-indigo',
-    manager: 'bg-primary/50',
-  };
-
-  return (
-    <div className="flex flex-row space-x-2">
-      <Avatar src={avatarsrc} fullName={`${name} ${lastname}`} diameter={36} />
-      <div className="flex flex-col">
-        <div className="flex flex-row justify-between space-x-2">
-          <span className="text-base font-medium leading-5 text-gray-100">
-            {name} {lastname}
-          </span>
-          {!!role && (
-            <div className={`flex items-center justify-center rounded-md ${roleColorMapping[role]} px-1`}>
-              <span className="text-center text-xs font-medium text-white">
-                {!!role && translate(`preferences.workspace.members.role.${role}`)}
-              </span>
-            </div>
-          )}
-        </div>
-        <span className="text-sm font-normal leading-4 text-gray-50">{email}</span>
       </div>
     </div>
   );
