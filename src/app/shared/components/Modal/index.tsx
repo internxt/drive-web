@@ -1,4 +1,4 @@
-import { Transition, Dialog } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, ReactNode } from 'react';
 
 export default function Modal({
@@ -7,12 +7,14 @@ export default function Modal({
   children,
   maxWidth,
   className,
+  width,
   preventClosing = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   maxWidth?: string;
+  width?: string;
   className?: string;
   preventClosing?: boolean;
 }): JSX.Element {
@@ -42,7 +44,7 @@ export default function Modal({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`w-full text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
+                className={` ${width ?? 'w-full'} text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
                   className ?? 'p-5'
                 } rounded-2xl bg-surface shadow-subtle-hard transition-all duration-100 ease-out dark:bg-gray-1`}
               >

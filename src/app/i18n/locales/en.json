@@ -1481,6 +1481,10 @@
           "manager": "Manager",
           "member": "Member",
           "deactivated": "Deactivated"
+        },
+        "deactivationModal": {
+          "title": "Deactivate member",
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same."
         }
       },
       "teams": {

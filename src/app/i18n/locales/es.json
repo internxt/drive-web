@@ -1459,6 +1459,10 @@
           "manager": "Manager",
           "member": "Miembro",
           "deactivated": "Desactivado"
+        },
+        "deactivationModal": {
+          "title": "Desactivar miembro",
+          "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales."
         }
       },
       "teams": {

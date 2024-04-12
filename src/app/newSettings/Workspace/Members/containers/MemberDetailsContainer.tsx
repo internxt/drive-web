@@ -12,6 +12,7 @@ import { useAppSelector } from '../../../../store/hooks';
 import { PlanState } from '../../../../store/slices/plan';
 import UsageBar from '../../../components/Usage/UsageBar';
 import { Member } from '../../../types';
+import DeactivateMemberModal from '../Components/DeactivateModal';
 import UserCard from '../Components/UserCard';
 
 interface MemberDetailsContainer {
@@ -20,6 +21,9 @@ interface MemberDetailsContainer {
 const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
   const { translate } = useTranslationContext();
   const [usageDetails, setUsageDetails] = useState<UsageDetailsProps | null>(null);
+  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
+  const [isDeactivatingMember, setIsDeactivatingMember] = useState(false);
 
   // TODO: USED PERSONAL USER DATA UNTIL WE HAVE NEW ENDPOINTS FOR WORKSPACE MEMBERS
   useEffect(() => {
@@ -74,10 +78,28 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
             rolePosition: 'column',
           }}
         />
-        <div className="flex items-center justify-end">
-          <button className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm">
+        <div className="relative flex items-center justify-end">
+          <button
+            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
+            onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+          >
             <DotsThreeVertical size={24} />
           </button>
+          {isOptionsOpen && (
+            <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
+              <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
+                <button className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20">
+                  <span className="truncate">Request password change</span>
+                </button>
+                <button
+                  onClick={() => setIsDeactivateModalOpen(true)}
+                  className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                >
+                  <span className="truncate">Deactivate user</span>
+                </button>
+              </div>
+            </button>
+          )}
         </div>
       </div>
       <Card className={' w-full space-y-6 '}>
@@ -94,6 +116,19 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
           </div>
         )}
       </Card>
+      <DeactivateMemberModal
+        name={member.name + ' ' + member.lastname}
+        isOpen={isDeactivateModalOpen}
+        onClose={() => setIsDeactivateModalOpen(false)}
+        onDeactivate={() => {
+          setIsDeactivatingMember(true);
+          setTimeout(() => {
+            setIsDeactivatingMember(false);
+            setIsDeactivateModalOpen(false);
+          }, 2000);
+        }}
+        isLoading={isDeactivatingMember}
+      />
     </div>
   );
 };

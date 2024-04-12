@@ -1480,6 +1480,10 @@
           "manager": "管理员",
           "member": "成员",
           "deactivated": "已停用"
+        },
+        "deactivationModal": {
+          "title": "停用成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。"
         }
       },
       "teams": {
