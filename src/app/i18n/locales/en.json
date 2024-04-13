@@ -51,20 +51,20 @@
     "description": "The link or invitation you visited has expired or has been removed"
   },
   "lang": {
-    "title": "Language",
-    "en": "English (English)",
-    "es": "Español (Spanish)",
-    "fr": "Français (French)",
-    "it": "Italiano (Italian)",
-    "zh": "简体中文 (Chinese)",
-    "ru": "Русский (Russian)",
-    "de": "Deutsch (German)"
+    "title": "Dil",
+    "en": "English (İngilizce)",
+    "es": "Español (İspanyolca)",
+    "fr": "Français (Fransızca)",
+    "it": "Italiano (İtalyanca)",
+    "zh": "简体中文 (Çince)",
+    "ru": "Русский (Rusça)",
+    "de": "Deutsch (Almanca)"
   },
   "theme": {
-    "title": "Appearance",
-    "light": "Light",
-    "dark": "Dark",
-    "system": "System"
+    "title": "Görünüm",
+    "light": "Açık",
+    "dark": "Koyu",
+    "system": "Sistem"
   },
   "auth": {
     "email": "Email",
@@ -247,49 +247,49 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
-    "backups": "Backups",
-    "shared": "Shared",
-    "recents": "Recents",
-    "trash": "Trash",
-    "desktop": "Desktop"
+    "photos": "Fotoğraflar",
+    "backups": "Yedeklemeler",
+    "shared": "Paylaşılan",
+    "recents": "Son yüklenenler",
+    "trash": "Çöp kutusu",
+    "desktop": "Masaüstü uygulaması"
   },
   "views": {
     "recents": {
-      "head": "Recents",
+      "head": "Son yüklenenler",
       "empty": {
-        "title": "No recent files available",
-        "description": "New uploads and recently opened files will appear here automatically",
-        "folderEmpty": "This folder is empty",
-        "folderEmptySubtitle": "Drag and drop files or select individual files to upload",
-        "uploadFiles": "Upload files",
-        "noResults": "There are no results for this search",
-        "dragNDrop": "Drag and drop here or click on upload button"
+        "title": "Yeni dosya mevcut değil",
+        "description": "Yeni yüklenenler ve son açılan dosyalar burada otomatik olarak görünür",
+        "folderEmpty": "Bu klasör boş",
+        "folderEmptySubtitle": "Dosyaları sürükleyip bırakın veya yüklenecek dosyaları tek tek seçin",
+        "uploadFiles": "Dosya yükle",
+        "noResults": "Bu arama için sonuç yok",
+        "dragNDrop": "Buraya sürükleyip bırakın veya yükle düğmesine tıklayın"
       }
     },
     "photos": {
       "empty": {
-        "title": "Your photo gallery is empty",
-        "description": "Use the Internxt mobile app to sync all your photos from your device"
+        "title": "Fotoğraf galeriniz boş",
+        "description": "Cihazınızdaki tüm fotoğraflarınızı eşitlemek için Internxt mobil uygulamasını kullanın"
       }
     },
     "account": {
-      "title": "Account",
+      "title": "Hesap",
       "avatar": {
-        "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
-        "dragNDrop": "Select or drop a picture",
-        "success": "Avatar has been successfully updated",
-        "error": "Something happened while uploading your avatar",
-        "removed": "Avatar successfully deleted",
-        "underLimitSize": "Please choose an image under 10MB of size"
+        "title": "Profil fotoğrafı yükle",
+        "removePhoto": "Fotoğrafı sil",
+        "updatePhoto": "Yeni fotoğraf yükle",
+        "dragNDrop": "Bir fotoğraf seçin veya bırakın",
+        "success": "Profil fotoğrafı başarıyla güncellendi",
+        "error": "Profil fotoğrafı yüklenirken bir sorun oluştu",
+        "removed": "Profil fotoğrafı başarıyla silindi",
+        "underLimitSize": "Lütfen 10 MB'ın altında bir görsel seçin"
       },
       "popover": {
-        "downloadApp": "Download app",
-        "settings": "Settings",
-        "logout": "Log out",
-        "spaceUsed": "{{space}}% space used"
+        "downloadApp": "Masasütü uygulamasını indir",
+        "settings": "Ayarlar",
+        "logout": "Çıkış yap",
+        "spaceUsed": "{{space}}% kullanılan alan"
       },
       "tabs": {
         "account": {
@@ -315,64 +315,64 @@
             }
           },
           "accountDetails": {
-            "head": "Account details",
-            "name": "Name",
-            "lastname": "Lastname",
+            "head": "Hesap detayları",
+            "name": "Ad",
+            "lastname": "Soyad",
             "card": {
-              "name": "Name",
-              "lastname": "Lastname",
-              "edit": "Edit",
-              "email": "Email",
-              "resendEmail": "Resend verification email"
+              "name": "Ad",
+              "lastname": "Soyad",
+              "edit": "Düzenle",
+              "email": "E-posta",
+              "resendEmail": "Doğrulama e-postasını tekrar gönder"
             },
             "verify": {
-              "verify": "Verify your email",
-              "verified": "Verified email",
-              "description": "Check your inbox"
+              "verify": "E-postanızı doğrulayın",
+              "verified": "Doğrulanmış e-posta",
+              "description": "Gelen kutunuzu kontrol edin"
             },
             "editProfile": {
-              "title": "Edit account details",
-              "name": "Name",
-              "lastname": "Lastname",
-              "updatedProfile": "Profile updated successfully",
-              "errorUpdatingProfile": "We could not update your profile"
+              "title": "Hesap detaylarını düzenle",
+              "name": "Ad",
+              "lastname": "Soyad",
+              "updatedProfile": "Profil başarıyla güncellendi",
+              "errorUpdatingProfile": "Profilinizi güncelleyemedik"
             },
             "changeEmail": {
-              "title": "Change email",
-              "email": "Email",
-              "newEmail": "New email",
-              "password": "Password",
-              "errorSameEmail": "New email should be different from the current one",
-              "errorPassword": "Wrong password, try again",
-              "sendVerification": "Send verification",
-              "sendingVerification": "Sending verification",
-              "sucessSendingVerification": "Email verification sent to {{email}}",
-              "errorSendingVerification": "Error sending verification",
-              "confirm": "Confirm"
+              "title": "E-postayı değiştir",
+              "email": "E-posta",
+              "newEmail": "Yeni e-posta",
+              "password": "Parola",
+              "errorSameEmail": "Yeni e-posta mevcut olandan farklı olmalıdır",
+              "errorPassword": "Yanlış parola, tekrar deneyin",
+              "sendVerification": "Doğrulama bağlantısı gönder",
+              "sendingVerification": "Doğrulama gönderiliyor",
+              "sucessSendingVerification": "E-posta doğrulaması {{email}} adresine gönderildi",
+              "errorSendingVerification": "Doğrulama gönderilirken hata oluştu",
+              "confirm": "Onayla"
             }
           },
           "support": {
-            "title": "Support",
-            "description": "Navigate helpful articles or get assistance from our team.",
-            "cta": "Open Support Centre"
+            "title": "Destek",
+            "description": "Yardımcı makalelere göz atın veya ekibimizden yardım alın.",
+            "cta": "Destek merkezini aç"
           },
           "deleteAccount": {
-            "head": "Delete account",
-            "description": "By deleting your account, Internxt will permanently delete your files and data forever. Once initiated, this action cannot be undone.",
-            "isSubscribed": "Please, cancel your subscription first",
-            "confirmationEmail": "Confirmation email has been sent"
+            "head": "Hesabı sil",
+            "description": "Hesabınızı sildiğinizde, Internxt dosyalarınızı ve verilerinizi sonsuza kadar kalıcı olarak silecektir. Bu işlem başlatıldıktan sonra geri alınamaz.",
+            "isSubscribed": "Lütfen önce aboneliğinizi iptal edin",
+            "confirmationEmail": "Doğrulama e-postası gönderildi"
           }
         },
         "billing": {
-          "label": "Billing",
-          "currentPlan": "Current plan",
-          "subsRenew": "Subscription renews in {{daysUntilRenewal}} days",
+          "label": "Faturalandırma",
+          "currentPlan": "Mevcut plan",
+          "subsRenew": "Abonelik {{daysUntilRenewal}} gün içinde yenilenir",
           "cancelSubscriptionModal": {
-            "title": "Cancel subscription",
-            "description": "You are about to cancel your {{currentPlanName}} Internxt plan. By cancelling your plan, you will be downgraded to free Internxt {{freePlanName}} plan. Confirm your choice to proceed, please.",
-            "keepSubscription": "Keep subscription",
-            "continue": "Continue",
-            "cancelSubscription": "Cancel subscription",
+            "title": "Aboneliği iptal et",
+            "description": "{{currentPlanName}} Internxt planınızı iptal etmek üzeresiniz. Planınızı iptal ettiğinizde {{freePlanName}} ücretsiz Internxt planına düşürüleceksiniz. Devam etmek için seçiminizi onaylayın lütfen.",
+            "keepSubscription": "Aboneliği devam ettir",
+            "continue": "Devam et",
+            "cancelSubscription": "Aboneliği iptal et",
             "infoBox": {
               "titleCurrent": "Current",
               "titleNew": "New",
@@ -382,9 +382,9 @@
               "reachedFreeLimit": "You are over {{freePlanName}}",
               "reachedFreeLimitDescription": "As you are currently using {{currentUsage}}, your Internxt Drive will stop syncing your files and you won't be able to add new files"
             },
-            "giveUsFeedback": "Tell us why you want to cancel your {{currentPlanName}} Internxt plan and downgrade to free plan?",
+            "giveUsFeedback": "Bize neden {{currentPlanName}} Internxt planınızı iptal etmek ve ücretsiz plana geçmek istediğinizi söyleyin",
             "feedback": {
-              "placeholder": "Give us some feedback"
+              "placeholder": "Bize biraz geri bildirim verin"
             },
             "coupon": {
               "title": "3 MONTHS",
@@ -446,25 +446,25 @@
             "oneTimePayment": "One-time payment"
           },
           "features": {
-            "title": "Features included in all plans",
+            "title": "Tüm planlara yer alan özellikler",
             "sections": {
               "section1": {
-                "title": "Satisfaction guaranteed",
-                "point1": "All subscriptions have 30-day money-back guarantees.",
-                "point2": "Cancel any time, no tricks.",
-                "point3": "Premium support."
+                "title": "Memnuniyet garantisi",
+                "point1": "Tüm abonelikler 30 günlük para iade garantisine sahiptir.",
+                "point2": "İstediğiniz zaman iptal edin.",
+                "point3": "Özel destek."
               },
               "section2": {
-                "title": "Secure by default",
-                "point1": "Military-grade encryption to ensure your privacy.",
-                "point2": "Encrypted file storage and sharing.",
-                "point3": "Zero-knowledge cloud storage."
+                "title": "Varsayılan olarak güvenlidir",
+                "point1": "Gizliliğinizi sağlamak için askeri düzeyde şifreleme.",
+                "point2": "Şifrelenmiş dosya depolama ve paylaşımı.",
+                "point3": "Sıfır bilgi bulut depolaması."
               },
               "section3": {
-                "title": "Unlimited access and sync",
-                "point1": "Access your files, photos, and backups from all your devices.",
-                "point2": "Sync with unlimited bandwidth.",
-                "point3": "Backup any folder on your computer."
+                "title": "Sınırsız erişim ve senkronizasyon",
+                "point1": "Dosyalarınıza, fotoğraflarınıza ve yedeklerinize tüm cihazlarınızdan erişin.",
+                "point2": "Sınırsız bant genişliği ile eşitleyin.",
+                "point3": "Bilgisayarınızdaki herhangi bir klasörü yedekleyin."
               }
             }
           },
@@ -493,19 +493,19 @@
           }
         },
         "password": {
-          "title": "Password",
-          "description": "Change your password",
+          "title": "Parola",
+          "description": "Parolanızı değiştirin",
           "advice1": {
-            "title": "Change password",
-            "description": "Changing your password will sign you out from all your devices. The password introduced will be needed for logging in again."
+            "title": "Parolayı değiştir",
+            "description": "Parolanızı değiştirdiğinizde tüm cihazlarınızdan çıkış yaparsınız. Girilen parola tekrar giriş yapmak için gerekli olacaktır."
           },
           "advice2": {
-            "title": "What should you keep in mind so that your password is secure?",
+            "title": "Parolanızın güvenli olması için nelere dikkat etmelisiniz?",
             "description": ""
           },
           "advice3": {
-            "title": "New encryption key",
-            "description": "By changing your password, all your files will be un-encrypted with your old password, and then re-encrypted using your new password, and thus you won't lose access to them! This action cannot be undone."
+            "title": "Yeni şifreleme anahtarı",
+            "description": "Parolanızı değiştirdiğinizde, tüm dosyalarınız eski parolanızla şifrelenmemiş olacak ve daha sonra yeni parolanız kullanılarak yeniden şifrelenecek ve böylece dosyalara erişiminizi kaybetmeyeceksiniz! Bu eylem geri alınamaz."
           },
           "advice4": {
             "title": "What data can be edited?",
@@ -513,87 +513,87 @@
           }
         },
         "security": {
-          "label": "Security",
+          "label": "Güvenlik",
           "lock": {
-            "title": "Enter your password to continue",
-            "description": "For security reasons, you must enter your password before being able to make any changes on this page.",
-            "inputLabel": "Password",
+            "title": "Devam etmek için parolanızı girin",
+            "description": "Güvenlik nedeniyle, bu sayfada herhangi bir değişiklik yapabilmeniz için önce parolanızı girmeniz gerekmektedir.",
+            "inputLabel": "Parola",
             "errors": {
-              "incorrect": "Incorrect password, please try again",
-              "notVerified": "We could not verify your password"
+              "incorrect": "Yanlış parola, lütfen tekrar deneyin",
+              "notVerified": "Parolanızı doğrulayamadık"
             }
           },
           "changePassword": {
-            "title": "Change password",
-            "description": "Be sure to remember your new password. If you lose it, you will be unable to access all of your files. We highly recommend using a password manager.",
-            "button": "Change password"
+            "title": "Parolayı değiştir",
+            "description": "Yeni parolanızı hatırladığınızdan emin olun. Kaybederseniz tüm dosyalarınıza erişemezsiniz. Bir parola yöneticisi kullanmanızı şiddetle tavsiye ederiz.",
+            "button": "Parolayı değiştir"
           },
           "2FA": {
-            "title": "Two-factor authentication (2FA)",
-            "titleDisable": "Disable Two-Factor Authentication",
-            "description": "Two-factor authentication provides an extra layer of security by requiring an additional verification when logging in. In addition to your Internxt password, you will also need a unique generated code sent to the email you used to register your account.",
-            "button": "Enable 2FA",
-            "disable": "Disable 2FA",
-            "enabled": "Enabled",
-            "disabled": "Disabled",
+            "title": "İki faktörlü kimlik doğrulama (2FA)",
+            "titleDisable": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
+            "description": "İki faktörlü kimlik doğrulama, oturum açarken ek bir doğrulama gerektirerek ekstra bir güvenlik sağlar. Internxt parolanızı ek olarak, kimlik doğrulayıcı uygulamanızın ürettiği tek kullanımlık parolaya da ihtiyacınız olacaktır.",
+            "button": "İki faktörlü kimlik doğrulamayı etkinleştir",
+            "disable": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
+            "enabled": "Etkinleştirildi",
+            "disabled": "Devre dışı bırakıldı",
             "modal": {
-              "title": "Two Factor Authentication",
-              "stepsLabel": "{{current}} of {{total}}",
-              "button": "Enable 2FA",
-              "2FALabelCode": "Two-Factor Authentication code",
-              "or": "OR",
+              "title": "İki faktörlü kimlik doğrulama",
+              "stepsLabel": "{{current}} / {{total}}",
+              "button": "İki faktörlü kimlik doğrulamayı etkinleştir",
+              "2FALabelCode": "İki faktörlü kimlik doğrulama kodu",
+              "or": "Veya",
               "steps": {
                 "download": {
-                  "title": "Download Authy",
-                  "description": "We recommend using Authy, but you can setup the 2FA process with any other 2FA of your choice."
+                  "title": "Authy'yi indirin",
+                  "description": "Authy kullanmanızı öneririz, ancak kimlik doğrulama işlemini istediğiniz başka bir doğrulayıcı uygulama ile kurabilirsiniz."
                 },
                 "qr": {
-                  "title": "Scan QR with the 2FA app",
-                  "description": "If you are unable to scan he QR, insert this code into the app."
+                  "title": "Kimlik doğrulayıcı uygulaması ile karekodu tarayın",
+                  "description": "Karekodunu tarayamıyorsanız bu kodu elle uygulamaya ekleyin."
                 },
                 "backup-key": {
-                  "title": "Save backup key",
-                  "description": "Copy this code and keep it secure, you will need it in case you lose your device."
+                  "title": "Anahtarını kaydet",
+                  "description": "Bu kodu kopyalayın ve saklayın, cihazınızı kaybetmeniz durumunda ihtiyacınız olacak."
                 },
                 "enable": {
-                  "title": "Confirm 2FA activation",
-                  "description": "Two-factor authentication code"
+                  "title": "Kimlik doğrulamayı etkinleştirin",
+                  "description": "İki faktörlü kimlik doğrulama kodu"
                 },
                 "disable": {
-                  "title": "Disable Two-Factor Authentication",
-                  "description": "To disable Two-Factor Authentication, type the code generated by the app into the input below."
+                  "title": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
+                  "description": "İki faktörlü kimlik doğrulamayı devre dışı bırakmak için, uygulama tarafından oluşturulan tek kullanımlık kodu aşağıdaki girişe yazın."
                 }
               },
               "errors": {
-                "incorrect": "The code is not correct, try again",
-                "notVerified": "We could not verify your code"
+                "incorrect": "Kod doğru değil, tekrar deneyin",
+                "notVerified": "Kodunuzu doğrulayamadık"
               }
             }
           },
           "backupKey": {
-            "title": "Backup key",
-            "description": "If you forget your password, you may use a unique backup key to recover your account. Never share this code with anyone.",
-            "button": "Export backup key",
-            "success": "Backup key downloaded successfully",
-            "error": "We could not generate your backup key"
+            "title": "Anahtarı yedekle",
+            "description": "Parolanızı unutursanız hesabınızı kurtarmak için benzersiz bir anahtar kullanabilirsiniz. Bu kodu asla kimseyle paylaşmayın.",
+            "button": "Anahtarı dışa aktar",
+            "success": "Anahtar başarıyla indirildi",
+            "error": "Anahtarınızı oluşturamadık"
           },
           "faq": {
-            "title": "Did you miss anything?",
+            "title": "Kaçırdığın bir şey var mı?",
             "faq1": {
-              "title": "Why do I lose all my files if I forget my password?",
-              "description": "Your password is the only way to access your account. The Internxt team has absolutely no access to your account and is therefore unable to change your password. This is done to prevent any unauthorized access to your account and personal information. <br/><br/>You may restore your account without your password if you have created a backup key. You can export a copy of your unique backup key by visiting the “Security” tab in “Settings.” Your backup key may be used to recover your account by selecting “Forget password” at login and following the instructions in the subsequent email."
+              "title": "Parolamı unutursam neden tüm dosyalarımı kaybederim?",
+              "description": "Hesabınıza erişmenin tek yolu parolanızdır. Internxt ekibinin hesabınıza kesinlikle erişimi yoktur ve bu nedenle parolanızı değiştiremez. Bu, hesabınıza ve kişisel bilgilerinize yetkisiz erişimi önlemek için yapılır. <br/><br/>Anahtarınızın yedeğini oluşturduysanız hesabınızı parolanız olmadan geri alabilirsiniz. Benzersiz anahtarınızın bir kopyasını ayarlardaki güvenlik sekmesini ziyaret ederek dışa aktarabilirsiniz. Yedek anahtarınız, oturum açma sırasında "Parolamı unuttum" seçeneğini seçerek ve ardından gelen e-postadaki talimatları izleyerek hesabınızı kurtarmak için kullanılır."
             },
             "faq2": {
-              "title": "How can I keep my credentials safe?",
-              "description": "We recommend you use a reputable password manager to store your password. Not just to store your credential for Internxt, but to also keep your other online accounts safe as well."
+              "title": "Kimlik bilgilerimi nasıl güvende tutabilirim?",
+              "description": "Internxt bilgilerinizi saklamak aynı zamanda diğer çevrimiçi hesaplarınızı da güvende tutmak için güvenli bir parola yöneticisi kullanmanızı öneririz."
             },
             "faq3": {
-              "title": "Can I recover my account with a backup key?",
-              "description": "If you still have access to your unique encryption key, you can recover your data without your password. To do so, please follow the steps outlined in the email you will receive by clicking “Forgot password.”"
+              "title": "Hesabımı yedek anahtarla kurtarabilir miyim?",
+              "description": "Benzersiz şifreleme anahtarınıza hala erişiminiz varsa, verilerinizi parolanız olmadan kurtarabilirsiniz. Bunu yapmak için lütfen "Parolamı unuttum" seçeneğine tıklayarak gönderdiğimiz e-postada belirtilen adımları izleyin."
             },
             "faq4": {
-              "title": "Do I lose all my files if I change my password?",
-              "description": "No. Since you are already logged into your account, you can change your password without losing anything. Be sure to choose a strong password that has not been found in any data breach."
+              "title": "Parolamı değiştirirsem tüm dosyalarımı kaybeder miyim?",
+              "description": "Hayır. Hesabınıza zaten giriş yapmış olduğunuz için hiçbir şey kaybetmeden parolanızı değiştirebilirsiniz. Herhangi bir veri ihlalinde açığa çıkmamış güçlü bir parola seçtiğinizden emin olun."
             }
           }
         }
@@ -601,38 +601,38 @@
     },
     "emailVerification": {
       "success": {
-        "title": "Email verified successfully",
-        "subtitle": "You can close this tab now",
-        "cta": "Open Internxt Drive"
+        "title": "E-posta başarıyla doğrulandı",
+        "subtitle": "Bu sekmeyi şimdi kapatabilirsiniz",
+        "cta": "Internxt Drive'ı açın"
       },
       "error": {
-        "title": "Something went wrong",
-        "subtitle": "Check if the link is correct or request email verification again in Settings > Account",
-        "cta": "Go to Account"
+        "title": "Bir şeyler ters gitti",
+        "subtitle": "Bağlantının doğru olup olmadığını kontrol edin veya Ayarlar > Hesap bölümünden tekrar e-posta doğrulaması isteyin",
+        "cta": "Hesabınıza gidin"
       }
     },
     "emailChange": {
-      "password": "Password",
+      "password": "Parola",
       "auth": {
-        "title": "Verify email change",
-        "subtitle": "Your account email will be changed to {{email}}",
-        "wrongPassword": "Wrong password, please try again",
-        "cta": "Continue"
+        "title": "E-posta değişikliğini doğrula",
+        "subtitle": "E-postanız {{email}} olarak değiştirilecek.",
+        "wrongPassword": "Yanlış parola, lütfen tekrar deneyin",
+        "cta": "Devam et"
       },
       "success": {
-        "title": "Email changed successfully",
-        "subtitle": "You can close this tab now",
-        "cta": "Open Internxt Drive"
+        "title": "E-posta başarıyla doğrulandı",
+        "subtitle": "Bu sekmeyi şimdi kapatabilirsiniz",
+        "cta": "Internxt Drive'ı açın"
       },
       "error": {
-        "title": "Something went wrong",
-        "subtitle": "Check if the link is correct or request email change again in Settings > Account",
-        "cta": "Go to Account"
+        "title": "Bir şeyler ters gitti",
+        "subtitle": "Bağlantının doğru olup olmadığını kontrol edin veya Ayarlar > Hesap bölümünden tekrar e-posta doğrulaması isteyin",
+        "cta": "Hesabınıza gidin"
       },
       "expired": {
-        "title": "Verification link expired",
-        "subtitle": "You can request email change again in Settings > Account",
-        "cta": "Go to Account"
+        "title": "Doğrulama bağlantısının süresi doldu",
+        "subtitle": "Ayarlar > Hesap bölümünden e-posta değişikliğini tekrar talep edebilirsiniz",
+        "cta": "Hesabınıza gidin"
       }
     },
     "redirectToApp": {
@@ -667,67 +667,67 @@
       "deleteLink": "Delete link"
     },
     "newFolderModal": {
-      "title": "New folder",
-      "label": "Name",
-      "placeholder": "Untitled folder",
-      "untitled": "Untitled folder"
+      "title": "Yeni klasör",
+      "label": "Klasör adı",
+      "placeholder": "İsimsiz klasör",
+      "untitled": "İsimsiz klasör"
     },
     "itemDetailsModal": {
-      "title": "Details",
-      "fileCta": "Open preview",
-      "folderCta": "Open folder",
+      "title": "Detaylar",
+      "fileCta": "Önizle",
+      "folderCta": "Klasörü aç",
       "itemDetails": {
-        "name": "Name",
-        "type": "Type",
-        "uploaded": "Uploaded",
-        "uploadedBy": "Uploaded by",
-        "shared": "Shared",
-        "size": "Size",
-        "modified": "Modified",
-        "location": "Location"
+        "name": "Ad",
+        "type": "Tür",
+        "uploaded": "Yüklenme tarihi",
+        "uploadedBy": "Yükleyen kişi",
+        "shared": "Paylaşılmış",
+        "size": "Boyut",
+        "modified": "Değiştirilme tarihi",
+        "location": "Konum"
       }
     },
     "shareModal": {
-      "title": "Share \"{{name}}\"",
+      "title": "\"{{name}}\" öğesini paylaşın",
       "list": {
-        "peopleWithAccess": "People with access",
-        "invite": "Invite",
+        "peopleWithAccess": "Erişimi olan kişiler",
+        "invite": "Davet et",
         "userItem": {
           "roles": {
-            "owner": "Owner",
-            "editor": "Editor",
-            "reader": "Viewer"
+            "owner": "Öğe sahibi",
+            "editor": "Düzenleyebilir",
+            "reader": "Görüntüleyebilir"
           },
-          "remove": "Remove"
+          "remove": "Kaldır"
         }
       },
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
-        "copy-to-clipboard": "Error sharing item, try again later.",
+        "copy-to-clipboard": "Öğeyi paylaşırken hata oluştu, daha sonra tekrar deneyin.",
         "update-sharing-access": "The acces mode could not be updated, please try again later"
       },
       "general": {
-        "generalAccess": "General access",
+        "generalAccess": "Erişim ayarları",
         "accessOptions": {
           "public": {
-            "title": "Public",
-            "subtitle": "Anyone with the link can access"
+            "title": "Herkes",
+            "subtitle": "Bağlantıya sahip herkes erişebilir"
           },
           "restricted": {
-            "title": "Restricted",
-            "subtitle": "Only people added can access"
+            "title": "Kısıtlı",
+            "subtitle": "Yalnızca eklenen kişiler erişebilir"
           },
-          "stopSharing": "Stop sharing"
+          "stopSharing": "Paylaşmayı durdur"
         },
-        "copyLink": "Copy link"
+        "copyLink": "Bağlantıyı kopyala"
       },
       "requests": {
         "title": "Access requests",
         "button": "Requests",
         "empty": "No requests left",
         "actions": {
-          "accept": "Accept",
-          "deny": "Deny",
+          "accept": "Kabul et",
+          "deny": "Reddet",
           "roles": {
             "editor": "Editor",
             "reader": "Viewer"
@@ -735,54 +735,54 @@
         }
       },
       "stopSharing": {
-        "title": "Stop sharing?",
-        "subtitle": "No one will be able to access \"{{name}}\"",
-        "cancel": "Cancel",
-        "confirm": "Stop sharing",
+        "title": "Paylaşım durdurulsun mu?",
+        "subtitle": "Hiç kimse \"{{name}}\" öğesine erişemeyecek",
+        "cancel": "İptal et",
+        "confirm": "Paylaşmayı durdur",
         "notification": {
-          "success": "No longer sharing \"{{name}}\"",
-          "error": "Couldn't stop sharing, please try again"
+          "success": "\"{{name}}\" artık paylaşılmıyor",
+          "error": "Paylaşım durdurulamadı, lütfen tekrar deneyin"
         }
       },
       "stopSharingAndMoveToTrash": {
-        "title": "Move to trash?",
-        "subtitle": "Users with the link or invited will no longer have access to \"{{name}}\"",
+        "title": "Çöp kutusuna mı taşımak istiyorsunuz?",
+        "subtitle": "Bağlantıya sahip olan veya davet edilen kullanıcılar artık \"{{name}}\" öğesine erişemeyecek",
         "multipleItemsSubtitle": "Users with the link or invited will no longer have access to these shared items",
-        "cancel": "Cancel",
-        "confirm": "Move to trash",
+        "cancel": "İptal et",
+        "confirm": "Çöp kutusuna taşı",
         "notification": {
-          "success": "No longer sharing \"{{name}}\"",
-          "successForMultipleItems": "No longer sharing these items",
-          "error": "Couldn't move to trash, please try again"
+          "success": "\"{{name}}\" artık paylaşımıyor",
+          "successForMultipleItems": "Bu öğeler artık paylaşılmıyor",
+          "error": "Çöp kutusuna taşınamadı, lütfen tekrar deneyin"
         }
       },
       "removeUser": {
         "notification": {
-          "success": "User \"{{name}}\" removed",
-          "error": "Couldn't remove user \"{{name}}\", please try again"
+          "success": "\"{{name}}\" kullanıcısı kaldırıldı",
+          "error": "\"{{name}}\" kullanıcısı kaldırılamadı, lütfen tekrar deneyin"
         }
       },
       "invite": {
-        "title": "Invite people",
-        "textarea": "Enter your message text (optional)",
-        "notifyUsers": "Notify users",
-        "instructions": "Press enter or space to separate emails",
-        "email": "Type email",
-        "invite": "Invite",
-        "editor": "Editor",
-        "reader": "Viewer",
-        "listUsers": "Users to invite",
-        "successSentInvitation": "Successful sharing with {{email}}",
-        "acceptedSuccessfully": "Shared folder invitation successfully accepted",
-        "declinedSuccessfully": "Shared folder invitation successfully declined",
-        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
-        "inviteNewUsersTitle": "Invite new users?",
-        "accept": "Accept",
-        "cancel": "Cancel",
+        "title": "Kişileri davet edin",
+        "textarea": "Mesajınızı yazın (isteğe bağlı)",
+        "notifyUsers": "Kullanıcıları bilgilendirin",
+        "instructions": "E-postaları ayırmak için enter veya boşluk tuşuna basın",
+        "email": "E-postayı yazın",
+        "invite": "Davet et",
+        "editor": "Düzenleyebilir",
+        "reader": "Görüntüleyebilir",
+        "listUsers": "Davet edilecek kullanıcılar",
+        "successSentInvitation": "{{email}} ile paylaşım başarılı",
+        "acceptedSuccessfully": "Paylaşılan klasör daveti başarıyla kabul edildi",
+        "declinedSuccessfully": "Paylaşılan klasör daveti başarıyla reddedildi",
+        "inviteNewUsersBody": "Internxt hesabı olmayan kişilere kaydolmaları için davetiye e-postası gönderilecektir.",
+        "inviteNewUsersTitle": "Yeni kullanıcılar davet edilsin mi?",
+        "accept": "Kabul et",
+        "cancel": "İpral et",
         "error": {
-          "errorInviting": "Error sending invitation to {{email}}",
-          "acceptedError": "Error accepting invitation to shared folder",
-          "declinedError": "Error declining invitation to shared folder"
+          "errorInviting": "{{email}} adresine davet gönderilirken hata oluştu",
+          "acceptedError": "Paylaşılan klasöre davet kabul edilirken hata oluştu",
+          "declinedError": "Paylaşılan klasöre davet reddedilirken hata oluştu"
         }
       },
       "requestAccess": {
