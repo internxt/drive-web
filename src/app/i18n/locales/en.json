@@ -23,10 +23,14 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
-  "lifetimeBanner": {
-    "label": "Need secure storage for life?",
-    "title": "Protect your files forever with our lifetime plans!",
-    "cta": "Choose your plan",
+  "banner": {
+    "label": "New free tool",
+    "title": {
+      "normal1": "Internxt",
+      "free": " Free ",
+      "normal2": "File Converter"
+    },
+    "cta": "Try for free",
     "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
