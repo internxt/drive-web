@@ -35,7 +35,9 @@ const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: User
             <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} />
           )}
         </div>
-        <span className={styleOptions?.emailStyle ?? 'text-sm font-normal leading-4 text-gray-50'}>{email}</span>
+        <span className={styleOptions?.emailStyle ?? 'text-left text-sm font-normal leading-4 text-gray-50'}>
+          {email}
+        </span>
       </div>
     </div>
   );
