@@ -1474,6 +1474,12 @@
           "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
           "deactivate": "Disattiva",
           "deactivating": "Disattivazione in corso"
+        },
+        "changePasswordModal": {
+          "title": "Richiedi cambio password",
+          "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
+          "inputPlaceholder": "Inserisci il testo del messaggio (opzionale)",
+          "actionButton": "Invia richiesta"
         }
       },
       "teams": {
