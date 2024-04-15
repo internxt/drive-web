@@ -1,21 +1,21 @@
 {
   "mobileView": {
     "title": "Manage your files, account and subscription on the app",
-    "logOut": "Log Out"
+    "logOut": "Çıkış yap"
   },
   "featuresBanner": {
-    "label": "Save up to 75%",
-    "title": "Secure your online ID for life",
-    "cta": "Choose plan",
-    "guarantee": "30-day money-back guarantee",
-    "lastCta": "*Offer is for free accounts or new customers",
+    "label": "%75'e kadar tasarruf edin",
+    "title": "Verilerinizi ömür boyu güvence altına alın",
+    "cta": "Plan seçin",
+    "guarantee": "30 günlük para iade garantisi",
+    "lastCta": "*Teklif ücretsiz hesaplar veya yeni müşteriler içindir",
     "features": [
-      "Up to 75% OFF all lifetime plans",
-      "Safe and secure cloud storage",
-      "Open source and transparent",
-      "End-to-end encrypted transfers",
-      "No unauthorized access",
-      "Offer ends April 18th"
+      "Tüm ömür boyu planlarda %75'e varan indirim",
+      "Güvenli ve sağlam bulut depolama",
+      "Açık kaynaklı ve şeffaf",
+      "Uçtan uca şifrelenmiş aktarımlar",
+      "Yetkisiz erişim imkansız",
+      "Teklif 18 Nisan'da sona eriyor"
     ]
   },
   "valentinesBanner": {
@@ -47,7 +47,7 @@
     }
   },
   "linkExpired": {
-    "title": "Link expired or deleted",
+    "title": "Bağlantının süresi dolmuş veya silinmiş",
     "description": "The link or invitation you visited has expired or has been removed"
   },
   "lang": {
@@ -67,27 +67,27 @@
     "system": "Sistem"
   },
   "auth": {
-    "email": "Email",
-    "password": "Password",
-    "terms1": "By creating an account, ",
-    "terms2": "you accept the terms & conditions",
-    "decrypting": "Decrypting...",
+    "email": "E-posta",
+    "password": "Parola",
+    "terms1": "Hesap oluşturarak, ",
+    "terms2": "şartları ve koşulları kabul edersiniz",
+    "decrypting": "Şifre çözülüyor...",
     "login": {
-      "title": "Log in",
-      "forgotPwd": "Forgot your password?",
-      "dontHaveAccount": "Don't have an account?",
-      "createAccount": "Create account",
+      "title": "Giriş yap",
+      "forgotPwd": "Parolanızı mı unuttunuz?",
+      "dontHaveAccount": "Hesabınız yok mu?",
+      "createAccount": "Hesap oluşturun",
       "2FA": "Two factor code",
       "twoFactorAuthenticationCode": "Two factor authentication code"
     },
     "signup": {
-      "title": "Create account",
-      "haveAccount": "Already have an account?",
-      "login": "Log in",
-      "encrypting": "Encrypting",
+      "title": "Hesap oluşturun",
+      "haveAccount": "Zaten hesabınız mı var?",
+      "login": "Giriş yap",
+      "encrypting": "Şifreleniyor",
       "info": {
-        "normalText": "Internxt doesn’t store passwords.",
-        "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
+        "normalText": "Internxt parolaları saklamaz.",
+        "boldText": "Parolanızı unutursanız benzersiz anahtarı indirerek dosyalarınıza yeniden erişim sağlayabilirsiniz.",
         "cta": "Learn more"
       }
     },
@@ -99,28 +99,28 @@
       "skip": "Skip"
     },
     "forgotPassword": {
-      "title": "Account recovery",
-      "continue": "Continue",
-      "sending": "Sending...",
-      "notFound": "Email address not found, please try again",
-      "password": "Remember your password?",
-      "login": "Login",
-      "successTitle": "Check your inbox",
-      "successDescription": "We’ve sent you a one-time link to recover you account password",
-      "invalidEmail": "Invalid email address"
+      "title": "Hesap kurtarma",
+      "continue": "Devam et",
+      "sending": "Gönderiliyor...",
+      "notFound": "E-posta adresi bulunamadı, lütfen tekrar deneyin",
+      "password": "Parolanızı hatırlıyor musunuz?",
+      "login": "Giriş yap",
+      "successTitle": "Gelen kutunuzu kontrol edin",
+      "successDescription": "Hesap parolanızı kurtarmanız için size tek seferlik bir bağlantı gönderdik",
+      "invalidEmail": "Geçersiz e-posta adresi"
     },
     "recoverAccount": {
-      "title": "Account recovery",
-      "subtitle": "Do you have a backup key?",
-      "info": "What does the backup key look like?",
-      "info1": "The backup key file name is 'INTERNXT-BACKUP-KEY.txt'",
-      "info2": "The backup key is 24 words long",
-      "haveKeyButton": "Yes, I have a backup key",
-      "notKeyButton": "No, I don't have one",
+      "title": "Hesap kurtarma",
+      "subtitle": "Anahtarınızın yedeği var mı?",
+      "info": "Anahtar neye benziyor?",
+      "info1": "Anahtar dosyası 'INTERNXT-BACKUP-KEY.txt' adındadır",
+      "info2": "Anahtar 24 kelime uzunluğundadır",
+      "haveKeyButton": "Evet, anahtarım var",
+      "notKeyButton": "Hayır, yok.",
       "backupKey": {
-        "title": "Verify backup key",
-        "alert": "If you upload a wrong backup key your data will get corrupted, please make sure your backup key is correct.",
-        "button": "Upload backup key"
+        "title": "Anahtarı doğrulayın",
+        "alert": "Yanlış bir anahtarı yüklerseniz verileriniz bozulacaktır, lütfen yedeklediğiniz anahtarın doğru olduğundan emin olun.",
+        "button": "Anahtarı yükle"
       },
       "changePassword": {
         "title": "Change password",
@@ -144,12 +144,12 @@
       }
     },
     "restartAccount": {
-      "title": "Restart account",
-      "description": "Due to our end-to-end encryption and zero-knowledge policy, you are not able to access your data without either your password or a backup key.",
-      "alert1": "By restarting your account you understand that all your files, photos, and backups will be permanently deleted.",
-      "button": "Send account restart verification",
-      "successDescription": "Your account and password have been reset",
-      "error": "Something went wrong while restarting the account"
+      "title": "Hesabı yeniden başlat",
+      "description": "Uçtan uca şifreleme ve sıfır bilgi politikamız nedeniyle, parolanız veya anahtarınızın yedeği olmadan verilerinize erişemezsiniz.",
+      "alert1": "Hesabınızı yeniden başlattığınızda tüm dosyalarınızın, fotoğraflarınızın ve yedeklerinizin kalıcı olarak silineceğini anlamış olursunuz.",
+      "button": "Hesabı yeniden başlatmak için doğrulama gönder",
+      "successDescription": "Hesabınız ve parolanız sıfırlandı",
+      "error": "Hesap yeniden başlatılırken bir sorun oluştu"
     },
     "universalLinkSuccess": {
       "loginAs": "Log in as",
@@ -161,27 +161,27 @@
   "general": {
     "new": "new",
     "of": "of",
-    "terms": "Terms and conditions",
+    "terms": "Şartlar ve koşullar",
     "contactSupport": "Contact Support",
-    "help": "Need help?",
+    "help": "Yardıma mı ihtiyacınız var?",
     "searchBar": {
-      "oldSearchBarPlaceholder": "Search this folder",
-      "placeholder": "Search in Drive",
+      "oldSearchBarPlaceholder": "Bu klasörde arama yap",
+      "placeholder": "Drive içinde ara",
       "filters": {
-        "folder": "Folder",
+        "folder": "Dosya",
         "pdf": "PDF",
-        "image": "Image",
+        "image": "Görüntü",
         "video": "Video",
-        "audio": "Audio",
-        "clear": "Clear"
+        "audio": "Ses",
+        "clear": "Temizle"
       },
       "emptyState": {
-        "title": "Find files and folders",
-        "subtitle": "Search by name and type"
+        "title": "Dosya ve klasörleri bulun",
+        "subtitle": "Ada ve türe göre arayın"
       },
       "notFoundState": {
-        "title": "No results found",
-        "subtitle": "No files or folders match the search"
+        "title": "Sonuç bulunamadı",
+        "subtitle": "Aramayla eşleşen dosya veya klasör yok"
       }
     },
     "stage": {
@@ -193,25 +193,25 @@
       "redirecting": "Redirecting..."
     },
     "renewalPeriod": {
-      "monthly": "monthly",
-      "annually": "annually",
-      "lifetime": "Lifetime"
+      "monthly": "aylık",
+      "annually": "yıllık",
+      "lifetime": "Ömür boyu"
     },
     "renewal": {
-      "monthly": "Monthly",
-      "annually": "Annually",
-      "lifetime": "Lifetime"
+      "monthly": "Aylık",
+      "annually": "Yıllık",
+      "lifetime": "Ömür boyu"
     },
     "workspaces": {
-      "personal": "Individuals",
-      "business": "Business"
+      "personal": "Bireysel",
+      "business": "Kurumsal"
     },
     "time": {
       "month": "month"
     },
     "billing": {
       "billedEachPeriod": "{{price}} billed {{period}}",
-      "oneTimePayment": "One-time payment"
+      "oneTimePayment": "Tek seferlik ödeme"
     },
     "files": "Files",
     "file": "File",
@@ -220,30 +220,30 @@
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
-    "subtitle": "Secure cloud storage with unmatched privacy",
+    "subtitle": "Eşsiz gizlilikle güvenli bulut depolama",
     "labels": {
-      "privacy": "Privacy by design",
-      "open-source": "Open source and transparent",
-      "military-grade": "Military-grade encryption",
-      "zero-knowledge": "Zero-knowledge technology"
+      "privacy": "Gizlilik odaklı tasarım",
+      "open-source": "Açık kaynak ve şeffaf",
+      "military-grade": "Askeri düzeyde şifreleme",
+      "zero-knowledge": "Sıfır bilgi teknolojisi"
     },
     "tryInternxt": "Try out Internxt",
     "topBar": {
-      "drive": "Go to Internxt Drive",
-      "downloadApp": "Download Desktop App",
-      "logout": "Log out",
-      "login": "Login",
-      "createAccount": "Create Account",
+      "drive": "Internxt Drive'a git",
+      "downloadApp": "Masaüstü uygulamasını indir",
+      "logout": "Çıkış yap",
+      "login": "Giriş yap",
+      "createAccount": "Hesap oluştur",
       "getStarted": "Get started"
     }
   },
   "shareItemPwdView": {
-    "title": "This link is password protected",
-    "putPwd": "Please enter the password provided",
-    "putPwd1": "by the sender for access.",
-    "password": "Password",
-    "pwdLayout": "Password",
-    "access": "Access"
+    "title": "Bu parola ile korunan bir bağlantıdır",
+    "putPwd": "Erişim için gönderen tarafından",
+    "putPwd1": "oluşturulan parolayı girin",
+    "password": "Parola",
+    "pwdLayout": "Parola",
+    "access": "İçeriğe eriş"
   },
   "sideNav": {
     "drive": "Drive",
@@ -810,12 +810,12 @@
       }
     },
     "sharedInvitationsModal": {
-      "empty": "No invitations left",
-      "title": "Pending invitations",
-      "accept": "Accept",
-      "deny": "Decline",
-      "sharedWith": "Shared with you ",
-      "todayAt": "today at "
+      "empty": "Hiç davet yok",
+      "title": "Bekleyen davetler",
+      "accept": "Kabul et",
+      "deny": "Reddet",
+      "sharedWith": "Bugün sizinle",
+      "todayAt": "paylaşıldı"
     },
     "deletePhotosModal": {
       "multiToolBar": "items selected",
@@ -844,54 +844,54 @@
       }
     },
     "friendsInvitedModal": {
-      "title": "Friends invited",
-      "email": "Email",
-      "total": "Total",
-      "pending": "Pending",
-      "accepted": "Accepted",
-      "empty": "You have not invited anyone yet",
-      "resend": "Resend invitation",
-      "resentInvitation": "Invitation resent successfully",
+      "title": "Davet gönderilen arkadaşlar",
+      "email": "E-posta",
+      "total": "Toplam",
+      "pending": "Bekleyen",
+      "accepted": "Onaylanan",
+      "empty": "Henüz kimseyi davet etmediniz",
+      "resend": "Yeniden davet gönder",
+      "resentInvitation": "Davet başarıyla yeniden gönderildi",
       "resendError": "Error while resending email: {{reason}}"
     },
     "deleteAccountModal": {
-      "title": "Are you sure?",
-      "subtitle": "All your files will be gone forever and you will lose access to your Internxt account.",
-      "cancel": "Cancel",
-      "confirm": "Confirm"
+      "title": "Emin misin?",
+      "subtitle": "Tüm dosyalarınız sonsuza dek yok olacak ve Internxt hesabınıza erişiminizi kaybedeceksiniz.",
+      "cancel": "İptal et",
+      "confirm": "Onayla"
     },
     "changePasswordModal": {
-      "title": "Change password",
-      "newPassword": "New password",
-      "confirmPassword": "Confirm new password",
-      "strongPassword": "Password is strong",
+      "title": "Parolayı değiştir",
+      "newPassword": "Yeni parola",
+      "confirmPassword": "Yeni parolayı onayla",
+      "strongPassword": "Parolanız güçlü",
       "errors": {
-        "longPassword": "The password can have a maximum of 50 characters",
-        "shortPassword": "Password has to be at least 8 characters long",
-        "notComplex": "Password is not complex enough",
-        "weakPassword": "Password is weak",
-        "doesntMatch": "Password confirmation does not match the password"
+        "longPassword": "Parola en fazla 50 karakterden oluşabilir",
+        "shortPassword": "Parola en az 8 karakter uzunluğunda olmalı",
+        "notComplex": "Parola yeterince karmaşık değil",
+        "weakPassword": "Parolanız zayıf",
+        "doesntMatch": "Yukarıdaki parola ile eşleşmiyor"
       }
     },
     "deleteBackupModal": {
-      "title": "Are you sure?",
-      "subtitle": "Your backup will be deleted.",
-      "primaryAction": "Confirm",
-      "secondaryAction": "Cancel"
+      "title": "Emin misiniz?",
+      "subtitle": "Yedeklemeniz silinecek.",
+      "primaryAction": "Onayla",
+      "secondaryAction": "İptal et"
     },
     "2FAAuthenticationModal": {}
   },
   "form": {
     "fields": {
       "email": {
-        "placeholder": "Email address"
+        "placeholder": "E-posta adresi"
       }
     }
   },
   "error": {
-    "wrongPassword": "Wrong password, try again or contact link owner",
+    "wrongPassword": "Yanlış parola, tekrar deneyin veya bağlantı sahibiyle iletişime geçin",
     "genericError": "There was an error: {{reason}}",
-    "serverError": "Internal server error. Try again later",
+    "serverError": "Dahili sunucu hatası. Daha sonra tekrar deneyin",
     "deleteTeamMember": "Error deleting team member",
     "changingName": "Error during name change",
     "fileAlreadyExists": "File with the same name already exists",
@@ -947,7 +947,7 @@
     "empty": {
       "title": "No backups available",
       "subtitle": "Set up and manage your backups on the Internxt desktop app",
-      "downloadApp": "Download desktop app"
+      "downloadApp": "Masaüstü uygulamasını indir"
     },
     "devices-list": {
       "columns": {
@@ -965,8 +965,8 @@
       }
     },
     "dropdown": {
-      "download": "Download",
-      "delete": "Delete permanently"
+      "download": "İndir",
+      "delete": "Kalıcı olarak sil"
     }
   },
   "shared": {
@@ -988,8 +988,8 @@
       "owner": "Owner"
     },
     "empty-state": {
-      "title": "Nothing shared with you yet",
-      "subtitle": "Folders that other people share with you will appear here"
+      "title": "Henüz sizinle bir şey paylaşılmadı",
+      "subtitle": "Diğer kişilerin sizinle paylaştığı öğeler burada görünür"
     },
     "item-menu": {
       "copy-link": "Copy link",
@@ -1008,7 +1008,7 @@
       "close": "Close"
     },
     "toast": {
-      "copy-to-clipboard": "Link copied to clipboard",
+      "copy-to-clipboard": "Bağlantı panoya kopyalandı,
       "link-updated": "Link settings updated",
       "link-deleted": "Link deleted",
       "links-deleted": "Link(s) deleted",
@@ -1016,29 +1016,29 @@
     }
   },
   "trash": {
-    "trash": "Trash",
-    "clearTrash": "Trash has been cleared",
+    "trash": "Çöp kutusu",
+    "clearTrash": "Çöp kutusu temizlendi",
     "list": {
-      "name": "Name",
-      "size": "Size",
-      "moved-to-trash": "Moved to trash"
+      "name": "Ad",
+      "size": "Boyut",
+      "moved-to-trash": "Çöp kutusuna taşındı"
     },
     "empty-state": {
-      "title": "Drive trash is empty",
-      "subtitle": "Deleted files and folders will appear here"
+      "title": "Çöp kutusu boş",
+      "subtitle": "Silinen dosya ve klasörler burada görünür"
     },
     "item-menu": {
-      "restore": "Restore",
-      "delete-permanently": "Delete permanently"
+      "restore": "Geri yükle",
+      "delete-permanently": "Kalıcı olarak sil"
     }
   },
   "tasks": {
     "messages": {
-      "allProcessesHaveFinished": "All processes have finished",
-      "processing": "Processing {{pending}} of {{finished}}"
+      "allProcessesHaveFinished": "Tüm yüklemeler tamamlandı",
+      "processing": "{{pending}} yükleniyor toplamda {{finished}}"
     },
-    "waiting": "Waiting",
-    "paused": "Paused",
+    "waiting": "Bekleniyor",
+    "paused": "Duraklatıldı",
     "create-folder": {
       "status": {
         "pending": "Pending to create folder",
@@ -1169,9 +1169,9 @@
     }
   },
   "success": {
-    "passwordChanged": "Password changed successfully",
-    "teamInvitationSent": "Invitation email sent to {{email}}",
-    "referralInvitationSent": "Invitation email sent to {{email}}",
+    "passwordChanged": "Parola başarıyla değiştirildi",
+    "teamInvitationSent": "Davet e-postası {{email}} adresine gönderildi",
+    "referralInvitationSent": "Davet e-postası {{email}} adresine gönderildi",
     "deletedTeamMember": "The {{resource}} has been successfully deleted",
     "accountDeactivationEmailSent": "Deactivation email sent!",
     "claimEmailSent": "Claim email sent!",
@@ -1231,15 +1231,15 @@
     "downloaded": "Downloaded",
     "view": "Preview",
     "accessFile": "Access File",
-    "upgradeNow": "Upgrade now",
-    "purchasePlan": "Upgrade now",
-    "upgrade": "Upgrade",
-    "buyStorage": "Upgrade now",
-    "deleteAccount": "Permanently delete account",
-    "changePassword": "Change password",
-    "buy": "Buy",
-    "cancel": "Cancel",
-    "create": "Create",
+    "upgradeNow": "Şimdi yükselt",
+    "purchasePlan": "Şimdi yükselt",
+    "upgrade": "Yükselt",
+    "buyStorage": "Şimdi yükselt",
+    "deleteAccount": "Hesabı kalıcı olarak sil",
+    "changePassword": "Parolayı değiştir",
+    "buy": "Satın al",
+    "cancel": "İptal et",
+    "create": "İptal et",
     "sendInvitation": "Send invitation",
     "subscribe": "Subscribe",
     "moreInfo": "More info",
@@ -1261,14 +1261,14 @@
     "rename": "Rename",
     "restore": "Restore",
     "copyLink": "Copy link",
-    "report": "Report abuse",
+    "report": "Kötüye kullanım bildir",
     "yes": "Yes",
     "no": "No",
     "more": "More"
   },
   "drive": {
-    "usage": "Usage",
-    "currentPlan": "Current plan",
+    "usage": "Kullanım",
+    "currentPlan": "Mevcut plan",
     "loadingFile": "Loading preview",
     "previewNoAvailable": "No preview available",
     "pdfPage": "Page {{page}} of {{pages}}",
@@ -1282,47 +1282,47 @@
       }
     },
     "viewMode": {
-      "gridMode": "Grid view",
-      "listMode": "List view"
+      "gridMode": "Izgara görünümü",
+      "listMode": "Liste görünümü"
     },
     "dropdown": {
-      "openPreview": "Open preview",
-      "details": "Details",
-      "shareLink": "Share",
-      "manageLinkAccess": "Manage access",
+      "openPreview": "Önizlemeyi göster",
+      "details": "Detaylar",
+      "shareLink": "Paylaş",
+      "manageLinkAccess": "Erişimi yönet",
       "getLink": "Get link",
-      "rename": "Rename",
-      "share": "Share",
-      "manageAccess": "Manage access",
-      "download": "Download",
-      "moveToTrash": "Move to trash",
-      "copyLink": "Copy link",
+      "rename": "Yeniden adlandır",
+      "share": "Paylaş",
+      "manageAccess": "Erişimi yönet",
+      "download": "İndir",
+      "moveToTrash": "Çöp kutusuna taşı",
+      "copyLink": "Bağlantıyı kopyala",
       "linkSettings": "Link settings",
       "deleteLink": "Delete link",
-      "restore": "Restore",
-      "deletePermanently": "Delete permanently",
-      "move": "Move",
-      "delete": "Delete"
+      "restore": "Geri yükle",
+      "deletePermanently": "Kalıcı olarak sil",
+      "move": "Taşı",
+      "delete": "Sil"
     },
     "deleteItems": {
-      "title": "Delete permanently?",
-      "advice": "This action cannot be undone.",
-      "accept": "Delete",
-      "progress": "Deleting..."
+      "title": "Kalıcı olarak mı silmek istiyorsunuz?",
+      "advice": "Bu işlem geri alınamaz.",
+      "accept": "Sil",
+      "progress": "Siliniyor..."
     },
     "clearTrash": {
-      "title": "Empty Drive Trash?",
-      "advice": "All items in the Drive Trash will be permanently deleted. This action cannot be undone.",
-      "accept": "Empty Trash",
-      "progress": "Emptying Trash..."
+      "title": "Çöp kutusu temizlensin mi?",
+      "advice": "Çöp kutusundaki tüm öğeler kalıcı olarak silinecektir. Bu eylem geri alınamaz.",
+      "accept": "Çöp kutusunu temizle",
+      "progress": "Çöp kutusu temizleniyor..."
     },
     "uploadItems": {
       "title": "Maximum file upload",
-      "advice": "The maximum is 1000 files per upload.",
-      "close": "Close"
+      "advice": "Yükleme başına en fazla 1000 dosya.",
+      "close": "Kapat"
     },
-    "movingToTrash": "Moving items to trash",
-    "deletingItems": "Deleting items from trash"
+    "movingToTrash": "Öğeler çöp kutusuna taşınıyor",
+    "deletingItems": "Öğeler çöp kutusundan siliniyor"
   },
   "appSumo": {
     "tiers": {
@@ -1346,17 +1346,17 @@
     }
   },
   "inviteAFriend": {
-    "title": "Invite a friend",
-    "descriptionWidget": "Get up to {{N}}GB extra free storage by inviting your friends (1GB per user registered via your invitation)",
-    "description": "Get 1GB per friend invited for free. You can get up to {{N}}GB in total.",
-    "label": "Friend email address",
-    "placeholder": "Enter friend email",
+    "title": "Arkadaşınızı davet edin",
+    "descriptionWidget": "Arkadaşlarınızı davet ederek {{N}}GB'a kadar ekstra ücretsiz depolama alanı kazanın (davetinizle kaydolan kullanıcı başına 1GB)",
+    "description": "Davet edilen her arkadaş için 1GB ücretsiz alan kazanın. Toplamda {{N}}GB'a kadar alabilirsiniz.",
+    "label": "Arkadaşınızın e-posta adresi",
+    "placeholder": "Arkadaşınızın e-postasını yazın",
     "actions": {
-      "sendInvitation": "Send invitation",
-      "seeInvitations": "See all invitations"
+      "sendInvitation": "Davet gönder",
+      "seeInvitations": "Tüm davetleri görün"
     },
     "errors": {
-      "dailyEmailLimit": "You reached the limit of 10 invitations/day"
+      "dailyEmailLimit": "Günlük 10 davet sınırına ulaştınız"
     }
   },
   "newsletter": {
@@ -1367,33 +1367,33 @@
   },
   "referrals": {
     "items": {
-      "create-account": "Create an account",
-      "install-mobile-app": "Install mobile app and upload a file",
-      "share-file": "Share a file via link",
+      "create-account": "Hesap oluşturun",
+      "install-mobile-app": "Mobil uygulamayı indirin ve bir dosya yükleyin",
+      "share-file": "Bağlantı yoluyla dosya paylaşın",
       "subscribe-to-newsletter": "Subscribe to newsletter",
-      "install-desktop-app": "Install desktop app and upload a file",
-      "invite-friends": "Invite {{completedSteps}}/{{steps}} friends",
-      "invite-2-friends": "Invite {{completedSteps}}/{{steps}} friends",
+      "install-desktop-app": "Masaüstü uygulamasını indirin ve bir dosya yükleyin",
+      "invite-friends": "{{completedSteps}}/{{steps}} arkadaşınızı davet edin",
+      "invite-2-friends": "{{completedSteps}}/{{steps}} arkadaşınızı davet edin",
       "complete-survey": "Complete survey"
     },
     "rewards": {
-      "title": "Get {{creditSum}} for free",
-      "progress": "Unlocked {{currentCredit}}",
-      "limit": "out of {{creditSum}}"
+      "title": "Ücretsiz {{creditSum}} kazanın",
+      "progress": "{{currentCredit}} kazanılan",
+      "limit": "toplam {{creditSum}}"
     }
   },
   "errors": {
-    "downloadingDesktopApp": "Something went wrong while downloading the desktop app"
+    "downloadingDesktopApp": "Masaüstü uygulamasını indirirken bir sorun oluştu"
   },
   "tutorial": {
     "signUpTutorial": {
       "stepOne": {
-        "title": "Get the most out of Internxt Drive",
-        "description": "Download desktop app to sync and backup all your folders and files."
+        "title": "Internxt Drive'dan en iyi şekilde yararlanın",
+        "description": "Tüm klasörlerinizi ve dosyalarınızı eşitlemek ve yedeklemek için masaüstü uygulamasını indirin."
       },
       "stepTwo": {
-        "title": "Let's get started...",
-        "description": "Click Upload button to upload your first file."
+        "title": "Haydi başlayalım...",
+        "description": "İlk dosyanızı yüklemek için Yükle düğmesine tıklayın."
       }
     }
   },
