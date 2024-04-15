@@ -1484,7 +1484,9 @@
         },
         "deactivationModal": {
           "title": "Deactivate member",
-          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same."
+          "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
+          "deactivate": "Deactivate",
+          "deactivating": "Deactivating"
         }
       },
       "teams": {

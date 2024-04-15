@@ -1462,7 +1462,9 @@
         },
         "deactivationModal": {
           "title": "Desactivar miembro",
-          "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales."
+          "description": "{{name}} perderá acceso al espacio de trabajo. Todos sus archivos y carpetas permanecerán iguales.",
+          "deactivate": "Desactivar",
+          "deactivating": "Desactivando"
         }
       },
       "teams": {

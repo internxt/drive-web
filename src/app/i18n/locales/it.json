@@ -1471,7 +1471,9 @@
         },
         "deactivationModal": {
           "title": "Disattiva membro",
-          "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi."
+          "description": "{{name}} perderà l'accesso allo spazio di lavoro. Tutti i loro file e cartelle rimarranno gli stessi.",
+          "deactivate": "Disattiva",
+          "deactivating": "Disattivazione in corso"
         }
       },
       "teams": {
