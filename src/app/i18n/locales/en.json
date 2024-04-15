@@ -1487,6 +1487,12 @@
           "description": "{{name}} will lose access to the Workspace. All their files and folders will stay the same.",
           "deactivate": "Deactivate",
           "deactivating": "Deactivating"
+        },
+        "changePasswordModal": {
+          "title": "Request password change",
+          "description": "User will receive a recommendation to update their personal account password. Use this function in case you believe their password may have been breached.",
+          "inputPlaceholder": "Enter your message text (optional)",
+          "actionButton": "Send request"
         }
       },
       "teams": {

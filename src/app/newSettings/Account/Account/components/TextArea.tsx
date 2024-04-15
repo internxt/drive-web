@@ -1,6 +1,17 @@
-const TextArea = ({ placeholder, value, onChangeValue, disabled, rows, maxCharacters }) => {
+interface TextAreaProps {
+  placeholder: string;
+  value: string;
+  onChangeValue: (value: string) => void;
+  disabled: boolean;
+  rows: number;
+  maxCharacters: number;
+  titleText?: string;
+}
+
+const TextArea = ({ placeholder, value, onChangeValue, disabled, rows, maxCharacters, titleText }: TextAreaProps) => {
   return (
     <div>
+      <span className="text-sm font-normal text-gray-80">{titleText}</span>
       <textarea
         placeholder={placeholder}
         value={value}

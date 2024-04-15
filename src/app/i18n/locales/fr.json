@@ -1414,6 +1414,12 @@
           "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
           "deactivate": "Désactiver",
           "deactivating": "Désactivation en cours"
+        },
+        "changePasswordModal": {
+          "title": "Demander un changement de mot de passe",
+          "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
+          "inputPlaceholder": "Saisissez le texte de votre message (optionnel)",
+          "actionButton": "Envoyer la demande"
         }
       },
       "teams": {

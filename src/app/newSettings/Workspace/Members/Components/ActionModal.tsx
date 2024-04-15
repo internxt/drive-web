@@ -8,11 +8,15 @@ const ActionModal = ({
   onActionButtonClicked,
   isLoading,
   modalTexts,
+  actionButtonVariant = 'accent',
+  children,
+  modalWitdhClassname,
 }: {
   isOpen: boolean;
   onActionButtonClicked: () => void;
   onClose: () => void;
   isLoading: boolean;
+  actionButtonVariant?: 'primary' | 'accent' | 'secondary' | 'tertiary';
   modalTexts: {
     title: string;
     description: string;
@@ -20,18 +24,20 @@ const ActionModal = ({
     actionButtonText: string;
     actionLoadingButtonText: string;
   };
+  children?: JSX.Element;
+  modalWitdhClassname?: string;
 }) => {
   return (
-    <Modal isOpen={isOpen} className="p-5" width={'w-96'} onClose={onClose}>
+    <Modal isOpen={isOpen} className="p-5" width={modalWitdhClassname ?? 'w-96'} onClose={onClose}>
       <div className="flexflex-col space-y-5">
         <h1 className="text-2xl font-medium text-gray-80">{modalTexts.title}</h1>
         <p className=" text-base font-normal text-gray-80">{modalTexts.description}</p>
-
+        {children}
         <div className="flex justify-end">
           <Button disabled={isLoading} variant="secondary" onClick={onClose}>
             {modalTexts.cancelButtonText}
           </Button>
-          <Button loading={isLoading} variant="accent" className="ml-2" onClick={onActionButtonClicked}>
+          <Button loading={isLoading} variant={actionButtonVariant} className="ml-2" onClick={onActionButtonClicked}>
             {isLoading ? modalTexts.actionLoadingButtonText : modalTexts.actionButtonText}
           </Button>
         </div>

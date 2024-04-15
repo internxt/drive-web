@@ -13,6 +13,7 @@ import { PlanState } from '../../../../store/slices/plan';
 import UsageBar from '../../../components/Usage/UsageBar';
 import { Member } from '../../../types';
 import DeactivateMemberModal from '../Components/DeactivateModal';
+import RequestPasswordChangeModal from '../Components/RequestPasswordModal';
 import UserCard from '../Components/UserCard';
 
 interface MemberDetailsContainer {
@@ -24,6 +25,8 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
   const [isOptionsOpen, setIsOptionsOpen] = useState(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState(false);
+  const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState(false);
+  const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState(false);
 
   // TODO: USED PERSONAL USER DATA UNTIL WE HAVE NEW ENDPOINTS FOR WORKSPACE MEMBERS
   useEffect(() => {
@@ -88,7 +91,10 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
           {isOptionsOpen && (
             <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
               <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
-                <button className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20">
+                <button
+                  onClick={() => setIsRequestChangePasswordModalOpen(true)}
+                  className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20"
+                >
                   <span className="truncate">Request password change</span>
                 </button>
                 <button
@@ -128,6 +134,19 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
           }, 2000);
         }}
         isLoading={isDeactivatingMember}
+      />
+      <RequestPasswordChangeModal
+        isOpen={isRequestChangePasswordModalOpen}
+        onClose={() => setIsRequestChangePasswordModalOpen(false)}
+        onSendRequest={() => {
+          setIsSendingPasswordRequest(true);
+          setTimeout(() => {
+            setIsRequestChangePasswordModalOpen(false);
+            setIsSendingPasswordRequest(false);
+          }, 2000);
+        }}
+        isLoading={isSendingPasswordRequest}
+        modalWitdhClassname="w-120"
       />
     </div>
   );
