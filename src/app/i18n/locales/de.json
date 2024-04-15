@@ -1378,6 +1378,12 @@
           "manager": "Manager",
           "member": "Mitglied",
           "deactivated": "Deaktiviert"
+        },
+        "deactivationModal": {
+          "title": "Mitglied deaktivieren",
+          "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "deactivate": "Deaktivieren",
+          "deactivating": "Deaktivierung läuft"
         }
       },
       "teams": {
