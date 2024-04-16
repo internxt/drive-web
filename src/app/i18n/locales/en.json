@@ -525,7 +525,7 @@
           },
           "changePassword": {
             "title": "Parolayı değiştir",
-            "description": "Yeni parolanızı hatırladığınızdan emin olun. Kaybederseniz tüm dosyalarınıza erişemezsiniz. Bir parola yöneticisi kullanmanızı şiddetle tavsiye ederiz.",
+            "description": "Yeni parolanızı hatırladığınızdan emin olun. Kaybederseniz tüm dosyalarınıza erişimi kaybedersiniz. Bir parola yöneticisi kullanmanızı şiddetle tavsiye ederiz.",
             "button": "Parolayı değiştir"
           },
           "2FA": {
