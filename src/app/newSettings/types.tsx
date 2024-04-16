@@ -1,3 +1,4 @@
+import { ReactNode } from 'react';
 export interface SelectSectionProps {
   section: string;
   subsection?: string;
@@ -19,6 +20,21 @@ export interface BillingDetailsCardProps {
   owner: string;
   isOwner: boolean;
   onEditButtonClick: () => void;
+}
+
+export interface TabsProps {
+  tabs: TypeTabs;
+  activeTab: ActiveTab;
+  setActiveTab: (activeTab) => void;
+}
+
+export interface ActivityTabProps {
+  user: User;
+  activity: Activity;
+}
+
+export interface TeamsTabProps {
+  user: User;
 }
 
 export type BillingDetails = {
@@ -50,3 +66,21 @@ export type Member = {
   storage: number;
   products: DriveProduct[];
 };
+
+export type ActiveTab = { title: string; view: ReactNode };
+
+export type TypeTabs = ActiveTab[];
+
+export type User = {
+  role: string;
+  teams: string[];
+};
+
+export type Activity = {
+  date: string;
+  records: {
+    title: string;
+    description: string;
+    time: string;
+  }[];
+}[];
