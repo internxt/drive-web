@@ -1547,7 +1547,21 @@
       "emptyTrash": "清空回收站",
       "emptryTrashDescription": "回收站中的项目将在15天后被永久删除",
       "plans": {
-        "title": "计划"
+        "title": "计划",
+        "current": "当前",
+        "upgrade": "升级",
+        "downgrade": "降级",
+        "free": "免费获得高达10 GB的空间",
+        "manageBilling": "管理账单",
+        "planFeaturesList": {
+          "title": "计划详情",
+          "storage": " 存储",
+          "featureOne": "跨设备同步。",
+          "featureTwo": "无限带宽。",
+          "featureThree": "零知识文件存储和共享。",
+          "featureFour": "军用级加密。",
+          "featureFive": "备份计算机上的任何文件夹。"
+        }
       },
       "billing": {
         "title": "计费"

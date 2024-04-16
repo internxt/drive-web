@@ -1535,7 +1535,21 @@
       "emptyTrash": "Svuota cestino",
       "emptryTrashDescription": "Gli elementi nel cestino verranno eliminati definitivamente dopo 15 giorni",
       "plans": {
-        "title": "Piani"
+        "title": "Piani",
+        "current": "Corrente",
+        "upgrade": "Aggiornamento",
+        "downgrade": "Retrocessione",
+        "free": "Ottieni fino a 10 GB gratis",
+        "manageBilling": "Gestisci la fatturazione",
+        "planFeaturesList": {
+          "title": "Dettagli del piano",
+          "storage": " di archiviazione",
+          "featureOne": "Sincronizzazione su tutti i dispositivi.",
+          "featureTwo": "Banda larga illimitata.",
+          "featureThree": "Archiviazione e condivisione file a conoscenza zero del fornitore.",
+          "featureFour": "Crittografia di livello militare.",
+          "featureFive": "Backup di qualsiasi cartella sul tuo computer."
+        }
       },
       "billing": {
         "title": "Fatturazione"

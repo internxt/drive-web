@@ -1526,7 +1526,21 @@
       "emptyTrash": "Vaciar la papelera",
       "emptryTrashDescription": "Los elementos en la papelera serán eliminados permanentemente después de 15 días",
       "plans": {
-        "title": "Planes"
+        "title": "Planes",
+        "current": "Actual",
+        "upgrade": "Incrementar",
+        "downgrade": "Degradar",
+        "free": "Obtenga hasta 10 GB gratis",
+        "manageBilling": "Gestionar facturación",
+        "planFeaturesList": {
+          "title": "Detalles del plan",
+          "storage": " de almacenamiento",
+          "featureOne": "Sincronización en todos los dispositivos.",
+          "featureTwo": "Ancho de banda ilimitado.",
+          "featureThree": "Almacenamiento y compartición de archivos sin conocimiento del proveedor.",
+          "featureFour": "Cifrado de grado militar.",
+          "featureFive": "Copia de seguridad de cualquier carpeta en su computadora."
+        }
       },
       "billing": {
         "title": "Facturación"
