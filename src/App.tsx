@@ -7,7 +7,7 @@ import { Redirect, Route, RouteProps, Router, Switch, useHistory, useParams } fr
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import PreferencesDialog from 'app/newSettings/components/PreferencesDialog';
+import PreferencesDialog from 'app/newSettings/PreferencesDialog';
 import { useParamsChange } from 'app/newSettings/hooks/useParamsChange';
 import { t } from 'i18next';
 import { pdfjs } from 'react-pdf';

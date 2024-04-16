@@ -1,11 +1,10 @@
-import { useEffect, useState } from 'react';
-import { t } from 'i18next';
 import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
-import Spinner from 'app/shared/components/Spinner/Spinner';
 import Button from 'app/shared/components/Button/Button';
 import Card from 'app/shared/components/Card';
+import Spinner from 'app/shared/components/Spinner/Spinner';
+import { t } from 'i18next';
+import { useEffect, useState } from 'react';
 
-import visaIcon from '../../../assets/icons/card-brands/visa.png';
 import amexIcon from '../../../assets/icons/card-brands/amex.png';
 import dinersIcon from '../../../assets/icons/card-brands/diners_club.png';
 import discoverIcon from '../../../assets/icons/card-brands/discover.png';
@@ -13,7 +12,8 @@ import jcbIcon from '../../../assets/icons/card-brands/jcb.png';
 import mastercardIcon from '../../../assets/icons/card-brands/mastercard.png';
 import unionpayIcon from '../../../assets/icons/card-brands/unionpay.png';
 import unknownIcon from '../../../assets/icons/card-brands/unknown.png';
-import EditPaymentMethodModal from './EditPaymentMethodModal';
+import visaIcon from '../../../assets/icons/card-brands/visa.png';
+import EditPaymentMethodModal from '../Sections/Workspace/Billing/components/EditPaymentMethodModal';
 import { useDefaultPaymentMethod } from '../hooks/useDefaultPaymentMethod';
 
 const BillingPaymentMethodCard = () => {
