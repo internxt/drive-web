@@ -1,43 +1,43 @@
 import { useEffect } from 'react';
-import { Switch, Route, Redirect, Router } from 'react-router-dom';
-import { connect } from 'react-redux';
-import { Toaster } from 'react-hot-toast';
 import { DndProvider } from 'react-dnd';
+import { Toaster } from 'react-hot-toast';
+import { connect } from 'react-redux';
+import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
-import configService from './app/core/services/config.service';
-import errorService from './app/core/services/error.service';
-import envService from './app/core/services/env.service';
-import { AppViewConfig } from './app/core/types';
-import navigationService from './app/core/services/navigation.service';
-import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
-import { sessionActions } from './app/store/slices/session';
-import { AppDispatch, RootState } from './app/store';
-import { initializeUserThunk } from './app/store/slices/user';
-import { uiActions } from './app/store/slices/ui';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
-import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
-import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
-import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import { AppView } from 'app/core/types';
+import { FolderPath } from 'app/drive/types';
+import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
+import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
+import PreparingWorkspaceAnimation from './app/auth/components/PreparingWorkspaceAnimation/PreparingWorkspaceAnimation';
+import authService from './app/auth/services/auth.service';
+import configService from './app/core/services/config.service';
+import envService from './app/core/services/env.service';
+import errorService from './app/core/services/error.service';
+import localStorageService from './app/core/services/local-storage.service';
+import navigationService from './app/core/services/navigation.service';
+import RealtimeService from './app/core/services/socket.service';
+import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-import i18next, { t } from 'i18next';
-import authService from './app/auth/services/auth.service';
-import localStorageService from './app/core/services/local-storage.service';
+import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
+import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
-import RealtimeService from './app/core/services/socket.service';
-import { domainManager } from './app/share/services/DomainManager';
-import { PreviewFileItem } from './app/share/types';
-import { FolderPath } from 'app/drive/types';
-import { manager } from './app/utils/dnd-utils';
-import { AppView } from 'app/core/types';
+import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import { getRoutes } from './app/routes/routes';
+import { domainManager } from './app/share/services/DomainManager';
+import { PreviewFileItem } from './app/share/types';
+import { AppDispatch, RootState } from './app/store';
+import { sessionActions } from './app/store/slices/session';
+import { uiActions } from './app/store/slices/ui';
+import { initializeUserThunk } from './app/store/slices/user';
+import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
+import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
   isAuthenticated: boolean;
@@ -138,9 +138,11 @@ const App = (props: AppProps): JSX.Element => {
 
   const onCloseFileViewer = () => {
     const isRecentsView = navigationService.isCurrentPath('recents');
+    const isSharedView = navigationService.isCurrentPath('shared');
+    const isBackups = navigationService.isCurrentPath('backups');
     const isRootDrive = props.namePath.length === 1;
 
-    if (isRecentsView) {
+    if (isRecentsView || isSharedView || isBackups) {
       dispatch(uiActions.setIsFileViewerOpen(false));
     } else if (isRootDrive) {
       dispatch(uiActions.setIsFileViewerOpen(false));
