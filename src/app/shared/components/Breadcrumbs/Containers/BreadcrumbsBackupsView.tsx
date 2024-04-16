@@ -6,6 +6,7 @@ import { Device } from 'app/backups/types';
 import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { backupsActions } from 'app/store/slices/backups';
+import BreadcrumbsMenuBackups from '../BreadcrumbsMenu/BreadcrumbsMenuBackups';
 
 interface BreadcrumbsBackupsViewProps {
   setSelectedDevices: Dispatch<SetStateAction<(Device | DriveFolderData)[]>>;
@@ -64,7 +65,7 @@ const BreadcrumbsBackupsView = ({
 
     return items;
   };
-  return <Breadcrumbs items={breadcrumbBackupsViewItems()} />;
+  return <Breadcrumbs items={breadcrumbBackupsViewItems()} menu={BreadcrumbsMenuBackups} />;
 };
 
 export default BreadcrumbsBackupsView;
