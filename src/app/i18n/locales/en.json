@@ -102,7 +102,7 @@
       "title": "Hesap kurtarma",
       "continue": "Devam et",
       "sending": "Gönderiliyor...",
-      "notFound": "E-posta adresi bulunamadı, lütfen tekrar deneyin",
+      "notFound": "E-posta adresi bulunamadı. Lütfen tekrar deneyin",
       "password": "Parolanızı hatırlıyor musunuz?",
       "login": "Giriş yap",
       "successTitle": "Gelen kutunuzu kontrol edin",
@@ -119,33 +119,33 @@
       "notKeyButton": "Hayır, yok.",
       "backupKey": {
         "title": "Anahtarı doğrulayın",
-        "alert": "Yanlış bir anahtarı yüklerseniz verileriniz bozulacaktır, lütfen yedeklediğiniz anahtarın doğru olduğundan emin olun.",
+        "alert": "Yanlış bir anahtarı yüklerseniz verileriniz bozulacaktır. Lütfen yedeklediğiniz anahtarın doğru olduğundan emin olun.",
         "button": "Anahtarı yükle"
       },
       "changePassword": {
-        "title": "Change password",
-        "newPassword": "New Password",
-        "repeatNewPassword": "Repeat new password",
-        "notMatch": "Passwords don't match",
-        "submitButton": "Change password",
-        "notPasswordStrength": "Password must have a number",
-        "shortPasswordStrength": "Password must be at least 8 characters",
-        "warningPasswordStrength": "Password is weak",
-        "successPasswordStrength": "Password is strong",
+        "title": "Parolayı değiştir",
+        "newPassword": "Yeni parola",
+        "repeatNewPassword": "Yeni parolayı tekrarlayın",
+        "notMatch": "Parolalar eşleşmiyor",
+        "submitButton": "Parolayı değiştir",
+        "notPasswordStrength": "Parola bir rakam içermelidir",
+        "shortPasswordStrength": "Parola en az 8 karakter olmalıdır",
+        "warningPasswordStrength": "Parolanız zayıf",
+        "successPasswordStrength": "Parolanız güçlü",
         "serverError": "Something went wrong while changing the password",
         "tokenError": "An error occurred while validating the backup key",
-        "backupKeyError": "Uploaded backup key is invalid",
+        "backupKeyError": "Yüklediğiniz anahtar geçersiz",
         "emailSent": {
-          "title": "Password changed",
-          "description": "All your data has been re-encrypted and all your active sessions were logged out.",
-          "redirect": "Redirecting to Internxt Drive",
-          "button": "Go to Internxt Drive"
+          "title": "Parola değiştirildi",
+          "description": "Tüm verileriniz yeniden şifrelendi ve tüm aktif oturumlarınızdan çıkış yapıldı.",
+          "redirect": "Internxt Drive'a yönlendiriliyor",
+          "button": "Internxt Drive'a git"
         }
       }
     },
     "restartAccount": {
       "title": "Hesabı yeniden başlat",
-      "description": "Uçtan uca şifreleme ve sıfır bilgi politikamız nedeniyle, parolanız veya anahtarınızın yedeği olmadan verilerinize erişemezsiniz.",
+      "description": "Uçtan uca şifreleme ve sıfır bilgi politikamız nedeniyle parolanız veya anahtarınızın yedeği olmadan verilerinize erişemezsiniz.",
       "alert1": "Hesabınızı yeniden başlattığınızda tüm dosyalarınızın, fotoğraflarınızın ve yedeklerinizin kalıcı olarak silineceğini anlamış olursunuz.",
       "button": "Hesabı yeniden başlatmak için doğrulama gönder",
       "successDescription": "Hesabınız ve parolanız sıfırlandı",
@@ -289,7 +289,7 @@
         "downloadApp": "Masasütü uygulamasını indir",
         "settings": "Ayarlar",
         "logout": "Çıkış yap",
-        "spaceUsed": "{{space}}% kullanılan alan"
+        "spaceUsed": "Kullanılan alan {{space}}%"
       },
       "tabs": {
         "account": {
@@ -353,12 +353,12 @@
           },
           "support": {
             "title": "Destek",
-            "description": "Yardımcı makalelere göz atın veya ekibimizden yardım alın.",
+            "description": "Yardım makalelerine göz atın veya ekibimizden yardım alın.",
             "cta": "Destek merkezini aç"
           },
           "deleteAccount": {
             "head": "Hesabı sil",
-            "description": "Hesabınızı sildiğinizde, Internxt dosyalarınızı ve verilerinizi sonsuza kadar kalıcı olarak silecektir. Bu işlem başlatıldıktan sonra geri alınamaz.",
+            "description": "Hesabınızı sildiğinizde Internxt dosyalarınızı ve verilerinizi sonsuza kadar kalıcı olarak silecektir. Bu işlem başlatıldıktan sonra geri alınamaz.",
             "isSubscribed": "Lütfen önce aboneliğinizi iptal edin",
             "confirmationEmail": "Doğrulama e-postası gönderildi"
           }
@@ -440,13 +440,13 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "{{amount}} billed annually",
+            "annually": "{{amount}} yıllık faturalandırılır",
             "monthly": "{{amount}} per month",
             "lifetime": "{{amount}}",
-            "oneTimePayment": "One-time payment"
+            "oneTimePayment": "Tek seferlik ödeme"
           },
           "features": {
-            "title": "Tüm planlara yer alan özellikler",
+            "title": "Tüm planlara dahil özellikler",
             "sections": {
               "section1": {
                 "title": "Memnuniyet garantisi",
@@ -505,7 +505,7 @@
           },
           "advice3": {
             "title": "Yeni şifreleme anahtarı",
-            "description": "Parolanızı değiştirdiğinizde, tüm dosyalarınız eski parolanızla şifrelenmemiş olacak ve daha sonra yeni parolanız kullanılarak yeniden şifrelenecek ve böylece dosyalara erişiminizi kaybetmeyeceksiniz! Bu eylem geri alınamaz."
+            "description": "Parolanızı değiştirdiğinizde tüm dosyalarınızın şifrelemesi kaldırılacak ve ardından yeni parolanız kullanılarak yeniden şifrelenecek ve böylece dosyalarınıza erişimi kaybetmeyeceksiniz. Bu işlem geri alınamaz."
           },
           "advice4": {
             "title": "What data can be edited?",
@@ -516,10 +516,10 @@
           "label": "Güvenlik",
           "lock": {
             "title": "Devam etmek için parolanızı girin",
-            "description": "Güvenlik nedeniyle, bu sayfada herhangi bir değişiklik yapabilmeniz için önce parolanızı girmeniz gerekmektedir.",
+            "description": "Güvenlik nedeniyle bu sayfada herhangi bir değişiklik yapabilmeniz için önce parolanızı girmeniz gerekmektedir.",
             "inputLabel": "Parola",
             "errors": {
-              "incorrect": "Yanlış parola, lütfen tekrar deneyin",
+              "incorrect": "Yanlış parola. Lütfen tekrar deneyin",
               "notVerified": "Parolanızı doğrulayamadık"
             }
           },
@@ -531,7 +531,7 @@
           "2FA": {
             "title": "İki faktörlü kimlik doğrulama (2FA)",
             "titleDisable": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
-            "description": "İki faktörlü kimlik doğrulama, oturum açarken ek bir doğrulama gerektirerek ekstra bir güvenlik sağlar. Internxt parolanızı ek olarak, kimlik doğrulayıcı uygulamanızın ürettiği tek kullanımlık parolaya da ihtiyacınız olacaktır.",
+            "description": "İki faktörlü kimlik doğrulama oturum açarken ek bir doğrulama gerektirerek ekstra bir güvenlik sağlar. Internxt parolanızı ek olarak kimlik doğrulayıcı uygulamanızın ürettiği tek kullanımlık parolaya da ihtiyacınız olacaktır.",
             "button": "İki faktörlü kimlik doğrulamayı etkinleştir",
             "disable": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
             "enabled": "Etkinleştirildi",
@@ -545,7 +545,7 @@
               "steps": {
                 "download": {
                   "title": "Authy'yi indirin",
-                  "description": "Authy kullanmanızı öneririz, ancak kimlik doğrulama işlemini istediğiniz başka bir doğrulayıcı uygulama ile kurabilirsiniz."
+                  "description": "Authy kullanmanızı öneririz ancak kimlik doğrulama işlemini istediğiniz başka bir doğrulayıcı uygulama ile kurabilirsiniz."
                 },
                 "qr": {
                   "title": "Kimlik doğrulayıcı uygulaması ile karekodu tarayın",
@@ -553,7 +553,7 @@
                 },
                 "backup-key": {
                   "title": "Anahtarını kaydet",
-                  "description": "Bu kodu kopyalayın ve saklayın, cihazınızı kaybetmeniz durumunda ihtiyacınız olacak."
+                  "description": "Bu kodu kopyalayın ve saklayın. Cihazınızı kaybetmeniz durumunda ihtiyacınız olacak."
                 },
                 "enable": {
                   "title": "Kimlik doğrulamayı etkinleştirin",
@@ -561,18 +561,18 @@
                 },
                 "disable": {
                   "title": "İki faktörlü kimlik doğrulamayı devre dışı bırak",
-                  "description": "İki faktörlü kimlik doğrulamayı devre dışı bırakmak için, uygulama tarafından oluşturulan tek kullanımlık kodu aşağıdaki girişe yazın."
+                  "description": "İki faktörlü kimlik doğrulamayı devre dışı bırakmak için uygulama tarafından oluşturulan tek kullanımlık kodu aşağıdaki girişe yazın."
                 }
               },
               "errors": {
-                "incorrect": "Kod doğru değil, tekrar deneyin",
+                "incorrect": "Kod doğru değil. Tekrar deneyin",
                 "notVerified": "Kodunuzu doğrulayamadık"
               }
             }
           },
           "backupKey": {
             "title": "Anahtarı yedekle",
-            "description": "Parolanızı unutursanız hesabınızı kurtarmak için benzersiz bir anahtar kullanabilirsiniz. Bu kodu asla kimseyle paylaşmayın.",
+            "description": "Parolanızı unutursanız hesabınızı kurtarmak için bu benzersiz anahtarı kullanabilirsiniz. Bu kodu asla kimseyle paylaşmayın.",
             "button": "Anahtarı dışa aktar",
             "success": "Anahtar başarıyla indirildi",
             "error": "Anahtarınızı oluşturamadık"
@@ -581,7 +581,7 @@
             "title": "Kaçırdığın bir şey var mı?",
             "faq1": {
               "title": "Parolamı unutursam neden tüm dosyalarımı kaybederim?",
-              "description": "Hesabınıza erişmenin tek yolu parolanızdır. Internxt ekibinin hesabınıza kesinlikle erişimi yoktur ve bu nedenle parolanızı değiştiremez. Bu, hesabınıza ve kişisel bilgilerinize yetkisiz erişimi önlemek için yapılır. <br/><br/>Anahtarınızın yedeğini oluşturduysanız hesabınızı parolanız olmadan geri alabilirsiniz. Benzersiz anahtarınızın bir kopyasını ayarlardaki güvenlik sekmesini ziyaret ederek dışa aktarabilirsiniz. Yedek anahtarınız, oturum açma sırasında "Parolamı unuttum" seçeneğini seçerek ve ardından gelen e-postadaki talimatları izleyerek hesabınızı kurtarmak için kullanılır."
+              "description": "Hesabınıza erişmenin tek yolu parolanızdır. Internxt ekibinin hesabınıza kesinlikle erişimi yoktur ve bu nedenle parolanızı değiştiremez. Bu hesabınıza ve kişisel bilgilerinize yetkisiz erişimi önlemek için yapılır. <br/><br/>Anahtarınızın yedeğini oluşturduysanız hesabınızı parolanız olmadan geri alabilirsiniz. Benzersiz anahtarınızın bir kopyasını ayarlardaki güvenlik sekmesini ziyaret ederek dışa aktarabilirsiniz. Yedek anahtarınız oturum açma sırasında "Parolamı unuttum" seçeneğini seçerek ve ardından gelen e-postadaki talimatları izleyerek hesabınızı kurtarmak için kullanılır."
             },
             "faq2": {
               "title": "Kimlik bilgilerimi nasıl güvende tutabilirim?",
@@ -589,7 +589,7 @@
             },
             "faq3": {
               "title": "Hesabımı yedek anahtarla kurtarabilir miyim?",
-              "description": "Benzersiz şifreleme anahtarınıza hala erişiminiz varsa, verilerinizi parolanız olmadan kurtarabilirsiniz. Bunu yapmak için lütfen "Parolamı unuttum" seçeneğine tıklayarak gönderdiğimiz e-postada belirtilen adımları izleyin."
+              "description": "Benzersiz şifreleme anahtarınıza hala erişiminiz varsa verilerinizi parolanız olmadan kurtarabilirsiniz. Bunu yapmak için lütfen "Parolamı unuttum" seçeneğine tıklayarak gönderdiğimiz e-postada belirtilen adımları izleyin."
             },
             "faq4": {
               "title": "Parolamı değiştirirsem tüm dosyalarımı kaybeder miyim?",
@@ -616,7 +616,7 @@
       "auth": {
         "title": "E-posta değişikliğini doğrula",
         "subtitle": "E-postanız {{email}} olarak değiştirilecek.",
-        "wrongPassword": "Yanlış parola, lütfen tekrar deneyin",
+        "wrongPassword": "Yanlış parola. Lütfen tekrar deneyin",
         "cta": "Devam et"
       },
       "success": {
@@ -669,8 +669,8 @@
     "newFolderModal": {
       "title": "Yeni klasör",
       "label": "Klasör adı",
-      "placeholder": "İsimsiz klasör",
-      "untitled": "İsimsiz klasör"
+      "placeholder": "Yeni klasör",
+      "untitled": "Yeni klasör"
     },
     "itemDetailsModal": {
       "title": "Detaylar",
@@ -703,7 +703,7 @@
       },
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
-        "copy-to-clipboard": "Öğeyi paylaşırken hata oluştu, daha sonra tekrar deneyin.",
+        "copy-to-clipboard": "Öğeyi paylaşırken hata oluştu. Daha sonra tekrar deneyin.",
         "update-sharing-access": "The acces mode could not be updated, please try again later"
       },
       "general": {
@@ -741,7 +741,7 @@
         "confirm": "Paylaşmayı durdur",
         "notification": {
           "success": "\"{{name}}\" artık paylaşılmıyor",
-          "error": "Paylaşım durdurulamadı, lütfen tekrar deneyin"
+          "error": "Paylaşım durdurulamadı. Lütfen tekrar deneyin"
         }
       },
       "stopSharingAndMoveToTrash": {
@@ -753,13 +753,13 @@
         "notification": {
           "success": "\"{{name}}\" artık paylaşımıyor",
           "successForMultipleItems": "Bu öğeler artık paylaşılmıyor",
-          "error": "Çöp kutusuna taşınamadı, lütfen tekrar deneyin"
+          "error": "Çöp kutusuna taşınamadı. Lütfen tekrar deneyin"
         }
       },
       "removeUser": {
         "notification": {
           "success": "\"{{name}}\" kullanıcısı kaldırıldı",
-          "error": "\"{{name}}\" kullanıcısı kaldırılamadı, lütfen tekrar deneyin"
+          "error": "\"{{name}}\" kullanıcısı kaldırılamadı. Lütfen tekrar deneyin"
         }
       },
       "invite": {
@@ -889,7 +889,7 @@
     }
   },
   "error": {
-    "wrongPassword": "Yanlış parola, tekrar deneyin veya bağlantı sahibiyle iletişime geçin",
+    "wrongPassword": "Yanlış parola. Tekrar deneyin veya bağlantı sahibiyle iletişime geçin",
     "genericError": "There was an error: {{reason}}",
     "serverError": "Dahili sunucu hatası. Daha sonra tekrar deneyin",
     "deleteTeamMember": "Error deleting team member",
