@@ -7,7 +7,7 @@ import InviteAFriend from './InviteAFriend';
 import Language from './Language';
 import Usage from './Usage';
 
-import UserHeaderContainer from '../../../../../newSettings/Account/Account/containers/UserHeaderContainer';
+import UserHeaderContainer from '../../../../../newSettings/Sections/Account/Account/containers/UserHeaderContainer';
 import Appearance from './Appearance';
 import ContactSupport from './ContactSupport';
 
