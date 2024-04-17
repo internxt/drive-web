@@ -1479,7 +1479,21 @@
       "emptyTrash": "Vider la corbeille",
       "emptryTrashDescription": "Les éléments dans la corbeille seront supprimés définitivement après 15 jours",
       "plans": {
-        "title": "Plans"
+        "title": "Plans",
+        "current": "Actuel",
+        "upgrade": "Mettre à niveau",
+        "downgrade": "Rétrograder",
+        "free": "Obtenez jusqu'à 10 Go gratuitement",
+        "manageBilling": "Gérer la facturation",
+        "planFeaturesList": {
+          "title": "Détails du plan",
+          "storage": " de stockage",
+          "featureOne": "Synchronisation sur tous les appareils.",
+          "featureTwo": "Bande passante illimitée.",
+          "featureThree": "Stockage et partage de fichiers sans connaissance du fournisseur.",
+          "featureFour": "Chiffrement de qualité militaire.",
+          "featureFive": "Sauvegarde de n'importe quel dossier sur votre ordinateur."
+        }
       },
       "billing": {
         "title": "Billing"

@@ -1551,9 +1551,22 @@
       "upgradeNow": "Upgrade now",
       "emptyTrash": "Empty trash",
       "emptryTrashDescription": "Items in trash will be deleted permanently after 15 days",
-
       "plans": {
-        "title": "Plans"
+        "title": "Plans",
+        "current": "Current",
+        "upgrade": "Upgrade",
+        "downgrade": "Downgrade",
+        "free": "Get up to 10 GB for free",
+        "manageBilling": "Manage billing",
+        "planFeaturesList": {
+          "title": "Plan details",
+          "storage": " of storage",
+          "featureOne": "Sync across devices.",
+          "featureTwo": "Unlimited bandwidth.",
+          "featureThree": "Zero-knowledge file storage and sharing.",
+          "featureFour": "Military-grade encryption.",
+          "featureFive": "Backup any folder in your computer."
+        }
       },
       "billing": {
         "title": "Billing"

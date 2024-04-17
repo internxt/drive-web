@@ -1,10 +1,20 @@
 import Section from 'app/core/views/Preferences/components/Section';
+import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 
 const PlansSection = () => {
   // MOCKED TO CHECK COMPONENT
   return (
     <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+      <PlanCard
+        onClick={() => false}
+        isSelected={false}
+        capacity={'2 GB'}
+        currency={'Free forever'}
+        price={''}
+        billing={''}
+        changePlanType="upgrade"
+      />
       <PlanSelectionCard
         onClick={() => false}
         isSelected={true}
