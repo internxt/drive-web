@@ -1492,6 +1492,10 @@
           "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
           "inputPlaceholder": "输入您的消息文本（可选）",
           "actionButton": "发送请求"
+        },
+        "tabs": {
+          "activity": "活动",
+          "teams": "团队"
         }
       },
       "teams": {

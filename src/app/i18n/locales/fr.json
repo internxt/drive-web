@@ -1420,6 +1420,10 @@
           "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
           "inputPlaceholder": "Saisissez le texte de votre message (optionnel)",
           "actionButton": "Envoyer la demande"
+        },
+        "tabs": {
+          "activity": "Activité",
+          "teams": "Équipes"
         }
       },
       "teams": {

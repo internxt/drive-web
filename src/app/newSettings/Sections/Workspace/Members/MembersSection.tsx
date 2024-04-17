@@ -62,8 +62,12 @@ const MembersSection = () => {
   ];
   const user = { role: 'owner', teams: ['Development', 'Marketing'] };
   const tabs: TypeTabs = [
-    { title: 'activity', view: <ActivityTab user={user} activity={activity} /> },
-    { title: 'teams', view: <TeamsTab user={user} /> },
+    {
+      name: translate('preferences.workspace.members.tabs.activity'),
+      tab: 'activity',
+      view: <ActivityTab user={user} activity={activity} />,
+    },
+    { name: translate('preferences.workspace.members.tabs.teams'), tab: 'teams', view: <TeamsTab user={user} /> },
   ];
   const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
 

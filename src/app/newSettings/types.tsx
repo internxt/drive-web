@@ -67,7 +67,11 @@ export type Member = {
   products: DriveProduct[];
 };
 
-export type ActiveTab = { title: string; view: ReactNode };
+export type ActiveTab = {
+  name: string;
+  tab: string;
+  view: ReactNode;
+};
 
 export type TypeTabs = ActiveTab[];
 

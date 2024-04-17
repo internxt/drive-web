@@ -7,13 +7,13 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: TabsProps) => {
         {tabs.map((tab) => {
           return (
             <button
-              className={`h-8 rounded-lg bg-gray-5 px-6 text-base font-medium capitalize text-gray-50 ${
-                activeTab.title === tab.title && 'bg-surface !text-gray-100 dark:bg-gray-30'
+              className={`h-8 rounded-lg bg-gray-5 px-6 text-base font-medium text-gray-50 ${
+                activeTab.tab === tab.tab && 'bg-surface !text-gray-100 dark:bg-gray-30'
               }`}
               onClick={() => setActiveTab(tab)}
-              key={tab.title}
+              key={tab.tab}
             >
-              {tab.title}
+              {tab.name}
             </button>
           );
         })}

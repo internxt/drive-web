@@ -1390,6 +1390,10 @@
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
           "inputPlaceholder": "Geben Sie Ihren Nachrichtentext ein (optional)",
           "actionButton": "Anfrage senden"
+        },
+        "tabs": {
+          "activity": "Aktivität",
+          "teams": "Equipos"
         }
       },
       "teams": {
