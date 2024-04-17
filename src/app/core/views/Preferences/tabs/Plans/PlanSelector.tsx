@@ -1,9 +1,14 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { ArrowRight } from '@phosphor-icons/react';
+import { Stripe, loadStripe } from '@stripe/stripe-js';
+import envService from 'app/core/services/env.service';
+import errorService from 'app/core/services/error.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import moneyService from 'app/payment/services/money.service';
+import Modal from 'app/shared/components/Modal';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from '../../../../../drive/services/size.service';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -11,11 +16,6 @@ import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../../store/slices/plan';
-import Modal from 'app/shared/components/Modal';
-import moneyService from 'app/payment/services/money.service';
-import { loadStripe, Stripe } from '@stripe/stripe-js';
-import envService from 'app/core/services/env.service';
-import errorService from 'app/core/services/error.service';
 
 const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
 
@@ -79,7 +79,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const pricesFilteredAndSorted = prices
     ?.filter((price) => price.interval === interval)
     .sort((a, b) => a.amount - b.amount);
-
+  console.log({ pricesFilteredAndSorted });
   const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
 
   async function onPlanClick(priceId: string, currency: string) {

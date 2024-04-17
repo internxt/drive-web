@@ -1553,6 +1553,7 @@
         "downgrade": "降级",
         "free": "免费获得高达10 GB的空间",
         "manageBilling": "管理账单",
+        "freeForever": "永久免费",
         "planFeaturesList": {
           "title": "计划详情",
           "storage": " 存储",

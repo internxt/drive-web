@@ -1532,6 +1532,7 @@
         "downgrade": "Degradar",
         "free": "Obtenga hasta 10 GB gratis",
         "manageBilling": "Gestionar facturación",
+        "freeForever": "Gratis para siempre",
         "planFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",

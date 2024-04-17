@@ -1554,6 +1554,7 @@
         "downgrade": "Downgrade",
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
+        "freeForever": "Free forever",
         "planFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
