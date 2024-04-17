@@ -1480,6 +1480,10 @@
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
           "inputPlaceholder": "Inserisci il testo del messaggio (opzionale)",
           "actionButton": "Invia richiesta"
+        },
+        "tabs": {
+          "activity": "Attività",
+          "teams": "Squadre"
         }
       },
       "teams": {

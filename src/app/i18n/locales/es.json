@@ -1471,6 +1471,10 @@
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
           "inputPlaceholder": "Ingrese el texto de su mensaje (opcional)",
           "actionButton": "Enviar solicitud"
+        },
+        "tabs": {
+          "activity": "Actividad",
+          "teams": "Equipos"
         }
       },
       "teams": {
