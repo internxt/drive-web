@@ -1,7 +1,7 @@
+import { DownloadSimple, Share, X } from '@phosphor-icons/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTMLAttributes } from 'react';
 import { PlacesType } from 'react-tooltip';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { DownloadSimple, Share, Trash, X } from '@phosphor-icons/react';
 import TooltipElement from '../../shared/components/Tooltip/Tooltip';
 
 const createToolTipsProps = (id: string, content: string, place: PlacesType): HTMLAttributes<HTMLElement> => ({
@@ -55,13 +55,6 @@ export default function Toolbar({
           toolTipProps={createToolTipsProps('photos-share-tooltip', translate('actions.share'), 'bottom')}
         />
         <TooltipElement id={'photos-share-tooltip'} className="z-40" />
-        <Icon
-          Target={Trash}
-          onClick={onDeleteClick}
-          dataTest="photos-delete-selected"
-          toolTipProps={createToolTipsProps('photos-delete-tooltip', translate('actions.delete'), 'bottom')}
-        />
-        <TooltipElement id={'photos-delete-tooltip'} className="z-40" />
       </div>
     </div>
   );
