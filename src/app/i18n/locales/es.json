@@ -473,7 +473,7 @@
             },
             "button": {
               "back": "Mantener plan actual",
-              "continue": "Cambiar de plan"
+              "continue": "Continuar"
             }
           }
         },

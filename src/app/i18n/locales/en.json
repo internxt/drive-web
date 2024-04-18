@@ -490,7 +490,7 @@
             },
             "button": {
               "back": "Keep current plan",
-              "continue": "Change plan"
+              "continue": "Continue"
             }
           }
         },

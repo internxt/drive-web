@@ -127,7 +127,7 @@ const ChangePlanDialog = ({
           </p>
         </div>
       )}
-      <div className="font-regular mb-5 rounded-xl bg-gray-1 p-4 text-center text-base">
+      <div className="font-regular mb-5  rounded-xl bg-gray-5 p-4 text-center text-base">
         <p>{translate('views.account.tabs.plans.dialog.message.text')}</p>
       </div>
       <div className="flex w-full justify-end">

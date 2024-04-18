@@ -490,7 +490,7 @@
             },
             "button": {
               "back": "保留当前计划",
-              "continue": "更改计划"
+              "continue": "继续"
             }
           }
         },
