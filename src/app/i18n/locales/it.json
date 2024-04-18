@@ -23,10 +23,14 @@
       "L'offerta termina l'18 aprile"
     ]
   },
-  "lifetimeBanner": {
-    "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
-    "title": "Proteggete i vostri file con i piani a vita di Internxt!",
-    "cta": "Scegli il piano",
+  "banner": {
+    "label": "Nuovo strumento gratuito",
+    "title": {
+      "normal1": "Convertitore di file",
+      "free": " Gratuito ",
+      "normal2": "di Internxt"
+    },
+    "cta": "Prova gratuitamente",
     "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
   "notFound": {

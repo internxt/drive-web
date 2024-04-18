@@ -23,11 +23,15 @@
     "subtitle": "使用代码 VDAY 即可享受2TB的九折套餐",
     "cta": "达成交易"
   },
-  "lifetimeBanner": {
-    "label": "寻找终身安全的数据存储？",
-    "title": "通过Internxt的终身计划保护您的文件！",
-    "cta": "选择计划",
-    "guarantee": "30天内退款保证"
+  "banner": {
+    "label": "新免费工具",
+    "title": {
+      "normal1": "Internxt",
+      "free": " 免费 ",
+      "normal2": "文件转换器"
+    },
+    "cta": "免费试用",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
