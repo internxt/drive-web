@@ -13,9 +13,19 @@ interface PlanCardProps {
   onClick: () => void;
   changePlanType: ChangePlanType;
   isCurrentPlan?: boolean;
+  isLoading: boolean;
 }
 
-const PlanCard = ({ capacity, currency, price, billing, onClick, changePlanType, isCurrentPlan }: PlanCardProps) => {
+const PlanCard = ({
+  capacity,
+  currency,
+  price,
+  billing,
+  onClick,
+  changePlanType,
+  isCurrentPlan,
+  isLoading,
+}: PlanCardProps) => {
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
@@ -29,7 +39,7 @@ const PlanCard = ({ capacity, currency, price, billing, onClick, changePlanType,
             {billing && '/' + billing}
           </span>
         </div>
-        <ChangePlanButton type={changePlanType} onClick={onClick} />
+        <ChangePlanButton type={changePlanType} onClick={onClick} isLoading={isLoading} />
       </div>
       <Divider />
       <PlanDetailsList planSpace={capacity} />
@@ -106,15 +116,15 @@ const PlanDetailsList = ({ planSpace }) => {
   );
 };
 
-const ChangePlanButton = ({ type, onClick }) => {
+const ChangePlanButton = ({ type, onClick, isLoading }) => {
   const changeButtonTypes = {
     upgrade: (
-      <Button onClick={onClick} variant="primary">
+      <Button onClick={onClick} variant="primary" loading={isLoading}>
         {t('preferences.account.plans.upgrade')}
       </Button>
     ),
     downgrade: (
-      <Button onClick={onClick} variant="secondary">
+      <Button onClick={onClick} variant="secondary" loading={isLoading}>
         {t('preferences.account.plans.downgrade')}
       </Button>
     ),

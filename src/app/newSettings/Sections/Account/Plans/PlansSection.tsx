@@ -1,7 +1,7 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Section from 'app/core/views/Preferences/components/Section';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
@@ -13,18 +13,14 @@ import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
+import { createCheckoutSession, fetchPlanPrices, getStripe } from './api';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
-import { displayAmount, getStripe } from './planUtils';
+import { displayAmount, getCurrentChangePlanType } from './planUtils';
 
-const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
-const productValue = {
-  US: 'usd',
-};
-
-const freePlanData = {
+const FREE_PLAN_DATA = {
   amount: 0,
   bytes: 2147483648,
   id: 'free',
@@ -41,210 +37,197 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   const dispatch = useAppDispatch();
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const { subscription } = plan;
+  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const { subscription: currentUserSubscription } = plan;
   const currentPlan = plan.individualPlan;
   const currentPlanPayPeriod = currentPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
-  const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
-  if (user === undefined) throw new Error('User is not defined');
-
-  const [prices, setPrices] = useState<DisplayPrice[]>([]);
-  const [interval, setInterval] = useState<DisplayPrice['interval']>(
-    subscription?.type === 'free' ? 'year' : currentPlanPayPeriod,
-  );
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [priceSelected, setPriceSelected] = useState<DisplayPrice>(freePlanData);
-
-  const getCurrentPlanType = () => {
-    const isSubscription = priceSelected?.interval === 'month' || priceSelected?.interval === 'year';
-
-    if (subscription?.type === 'free' && priceSelected?.id === 'free') {
-      return 'free';
-    }
-
-    if (isSubscription) {
-      const currentStorage = parseInt(currentPlan?.storageLimit.toString() ?? '0');
-      if (currentStorage < priceSelected?.bytes) {
-        return 'upgrade';
-      }
-      if (currentStorage > priceSelected?.bytes) {
-        return 'downgrade';
-      }
-      if (currentStorage === priceSelected?.bytes) {
-        return 'manageBilling';
-      }
-
-      return 'free';
-    }
-
-    if (priceSelected?.interval === 'lifetime') {
-      return 'manageBilling';
-    }
-
-    return 'free';
-  };
-
-  useEffect(() => {
-    const app = fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
-      method: 'GET',
-    });
-
-    app
-      .then((res) => res.json())
-      .then(({ country }) => {
-        const currencyValue = productValue[country] ?? 'eur';
-        paymentService.getPrices(currencyValue).then(setPrices);
-      })
-      .catch((error) => {
-        console.error(error);
-        paymentService
-          .getPrices('eur')
-          .then(setPrices)
-          .catch((err) => {
-            const error = errorService.castError(err);
-            errorService.reportError(error);
-          });
-      });
-  }, []);
-
   let stripe;
 
+  if (user === undefined) throw new Error('User is not defined');
+
+  const [isLoadingCheckout, setIsLoadingCheckout] = useState(false);
+  const [prices, setPrices] = useState<DisplayPrice[]>([]);
+  const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(
+    currentUserSubscription?.type === 'free' ? 'year' : currentPlanPayPeriod,
+  );
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
+  const currentChangePlanType = getCurrentChangePlanType({
+    priceSelected,
+    currentUserSubscription,
+    currentPlan,
+    isFreePriceSelected: priceSelected?.id === 'free',
+  });
+  const pricesFilteredAndSorted = prices
+    ?.filter((price) => price.interval === selectedInterval)
+    .sort((a, b) => a.amount - b.amount);
+
   useEffect(() => {
+    fetchDataAndSetPrices();
+
     stripe = getStripe(stripe);
   }, []);
 
-  const pricesFilteredAndSorted = prices
-    ?.filter((price) => price.interval === interval)
-    .sort((a, b) => a.amount - b.amount);
+  const handleOnPlanSelected = (price: DisplayPrice) => {
+    if (currentUserSubscription?.type === 'free' && currentChangePlanType === 'upgrade') {
+      onChangePlanClicked(price.id, price.currency);
+      return;
+    }
 
-  const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
-
-  const createCheckoutSession = async ({
-    priceId,
-    mode,
-    currency,
-  }: {
-    priceId: string;
-    mode: string;
-    currency: string;
-  }) => {
-    return paymentService.createCheckoutSession({
-      price_id: priceId,
-      success_url: `${window.location.origin}/checkout/success`,
-      cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-      customer_email: user.email,
-      mode: mode,
-      currency: currency,
-    });
+    if (currentChangePlanType === 'manageBilling') {
+      navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
+      changeSection({ section: 'account', subsection: 'billing' });
+    } else if (currentChangePlanType === 'free') {
+      navigationService.openPreferencesDialog({ section: 'account', subsection: 'account' });
+      changeSection({ section: 'account', subsection: 'account' });
+    } else {
+      setPriceSelected(price);
+      setIsDialogOpen(true);
+    }
   };
 
-  // TODO: REFACTOR
-  const onPlanClick = async (priceId: string, currency: string) => {
-    setLoadingPlanAction(priceId);
+  const fetchDataAndSetPrices = useCallback(async () => {
+    try {
+      const fetchedPrices = await fetchPlanPrices();
+      setPrices(fetchedPrices);
+    } catch (error) {
+      const errorCasted = errorService.castError(error);
+      errorService.reportError(errorCasted);
+    }
+  }, []);
 
-    if (subscription?.type !== 'subscription') {
-      try {
-        const response = await createCheckoutSession({
-          priceId,
-          currency,
-          mode: interval === 'lifetime' ? 'payment' : 'subscription',
-        });
-        localStorage.setItem('sessionId', response.sessionId);
-        await paymentService.redirectToCheckout(response);
-      } catch (err) {
-        const error = errorService.castError(err);
-        notificationsService.show({
-          text: translate('notificationMessages.errorCancelSubscription'),
-          type: ToastType.Error,
-        });
-        errorService.reportError(error);
-      } finally {
-        setLoadingPlanAction(null);
-        setIsDialogOpen(false);
-      }
-    } else {
-      if (interval === 'lifetime') {
-        try {
-          const response = await createCheckoutSession({
-            priceId,
-            currency,
-            mode: 'payment',
-          });
-          localStorage.setItem('sessionId', response.sessionId);
-          await paymentService.redirectToCheckout(response).then(async (result) => {
-            await paymentService.cancelSubscription();
+  const showCancelSubscriptionErrorNotificacion = useCallback(
+    () =>
+      notificationsService.show({
+        text: translate('notificationMessages.errorCancelSubscription'),
+        type: ToastType.Error,
+      }),
+    [translate],
+  );
+
+  const showSuccessSubscriptionNotification = useCallback(
+    () => notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success }),
+    [translate],
+  );
+
+  const handlePaymentSuccess = () => {
+    showSuccessSubscriptionNotification();
+    dispatch(planThunks.initializeThunk()).unwrap();
+  };
+
+  const handleSubscriptionPayment = async (priceId: string) => {
+    try {
+      stripe = await getStripe(stripe);
+      const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+      if (updatedSubscription.request3DSecure) {
+        stripe
+          .confirmCardPayment(updatedSubscription.clientSecret)
+          .then(async (result) => {
             if (result.error) {
               notificationsService.show({
                 type: ToastType.Error,
                 text: result.error.message as string,
               });
             } else {
-              notificationsService.show({
-                type: ToastType.Success,
-                text: 'Payment successful',
-              });
+              showSuccessSubscriptionNotification();
+              dispatch(planThunks.initializeThunk()).unwrap();
             }
+          })
+          .catch((err) => {
+            const error = errorService.castError(err);
+            errorService.reportError(error);
+            showCancelSubscriptionErrorNotificacion();
           });
-        } catch (err) {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        }
       } else {
-        try {
-          // recheck stripe2 name
-          const stripe2 = await getStripe(stripe);
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-          if (updatedSubscription.request3DSecure) {
-            stripe2
-              .confirmCardPayment(updatedSubscription.clientSecret)
-              .then(async (result) => {
-                if (result.error) {
-                  notificationsService.show({
-                    type: ToastType.Error,
-                    text: result.error.message as string,
-                  });
-                } else {
-                  notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-                  dispatch(planThunks.initializeThunk()).unwrap();
-                }
-              })
-              .catch((err) => {
-                const error = errorService.castError(err);
-                errorService.reportError(error);
-                notificationsService.show({
-                  text: translate('notificationMessages.errorCancelSubscription'),
-                  type: ToastType.Error,
-                });
-              });
-          } else {
-            notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-            dispatch(planThunks.initializeThunk()).unwrap();
-          }
-        } catch (err) {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        } finally {
-          dispatch(planThunks.initializeThunk()).unwrap();
-          setLoadingPlanAction(null);
-          setIsDialogOpen(false);
-        }
+        handlePaymentSuccess();
       }
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+      showCancelSubscriptionErrorNotificacion();
     }
   };
 
-  const onPlanSelected = (price: DisplayPrice) => {
-    setPriceSelected(price);
-    setIsDialogOpen(true);
+  const handleCheckoutSession = async ({
+    priceId,
+    currency,
+    userEmail,
+    mode,
+  }: {
+    userEmail: string;
+    priceId: string;
+    mode: string;
+    currency: string;
+  }) => {
+    try {
+      const response = await createCheckoutSession({ userEmail, priceId, currency, mode });
+      localStorage.setItem('sessionId', response.sessionId);
+      await paymentService.redirectToCheckout(response);
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+      showCancelSubscriptionErrorNotificacion();
+    }
   };
-  const currentPlanType = getCurrentPlanType();
+
+  const handleLifetimeCheckout = async ({
+    priceId,
+    currency,
+    userEmail,
+  }: {
+    userEmail: string;
+    priceId: string;
+    currency: string;
+  }) => {
+    try {
+      const response = await createCheckoutSession({
+        userEmail,
+        priceId,
+        currency,
+        mode: 'payment',
+      });
+      localStorage.setItem('sessionId', response.sessionId);
+      await paymentService.redirectToCheckout(response).then(async (result) => {
+        await paymentService.cancelSubscription();
+        if (result.error) {
+          notificationsService.show({
+            type: ToastType.Error,
+            text: result.error.message as string,
+          });
+          return;
+        }
+
+        notificationsService.show({
+          type: ToastType.Success,
+          text: 'Payment successful',
+        });
+      });
+    } catch (err) {
+      const error = errorService.castError(err);
+      errorService.reportError(error);
+      showCancelSubscriptionErrorNotificacion();
+    }
+  };
+
+  const onChangePlanClicked = async (priceId: string, currency: string) => {
+    setIsLoadingCheckout(true);
+    const isCurrentPlanTypeSubscription = currentUserSubscription?.type === 'subscription';
+    if (!isCurrentPlanTypeSubscription) {
+      const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
+      await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      setIsDialogOpen(false);
+    } else {
+      const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
+      if (isLifetimeIntervalSelected) {
+        await handleLifetimeCheckout({ priceId, currency, userEmail: user.email });
+      } else {
+        await handleSubscriptionPayment(priceId);
+        dispatch(planThunks.initializeThunk()).unwrap();
+        setIsDialogOpen(false);
+      }
+    }
+    setIsLoadingCheckout(false);
+  };
 
   return (
     <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
@@ -253,41 +236,40 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
           prices={prices}
           isDialgOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
-          onPlanClick={onPlanClick}
+          onPlanClick={onChangePlanClicked}
           priceIdSelected={priceSelected.id}
         />
       )}
-
       <div className="flex justify-center">
         <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
           <IntervalSwitch
-            active={interval === 'month'}
+            active={selectedInterval === 'month'}
             text={translate('general.renewal.monthly')}
-            onClick={() => setInterval('month')}
+            onClick={() => setSelectedInterval('month')}
           />
           <IntervalSwitch
-            active={interval === 'year'}
+            active={selectedInterval === 'year'}
             text={translate('general.renewal.annually')}
-            onClick={() => setInterval('year')}
+            onClick={() => setSelectedInterval('year')}
           />
           <IntervalSwitch
-            active={interval === 'lifetime'}
+            active={selectedInterval === 'lifetime'}
             text={translate('general.renewal.lifetime')}
-            onClick={() => setInterval('lifetime')}
+            onClick={() => setSelectedInterval('lifetime')}
           />
         </div>
       </div>
       <div className="flex flex-row justify-between ">
         <div className="-mb-1 flex flex-col space-y-2">
           <PlanSelectionCard
-            key={freePlanData.id}
-            onClick={() => setPriceSelected(freePlanData)}
-            isSelected={priceSelected?.id === freePlanData.id}
-            capacity={bytesToString(freePlanData.bytes)}
-            currency={freePlanData.currency}
+            key={FREE_PLAN_DATA.id}
+            onClick={() => setPriceSelected(FREE_PLAN_DATA)}
+            isSelected={priceSelected?.id === FREE_PLAN_DATA.id}
+            capacity={bytesToString(FREE_PLAN_DATA.bytes)}
+            currency={FREE_PLAN_DATA.currency}
             amount={''}
             billing={''}
-            isCurrentPlan={freePlanData.id === subscription?.type}
+            isCurrentPlan={FREE_PLAN_DATA.id === currentUserSubscription?.type}
           />
           {pricesFilteredAndSorted.map((plan) => (
             <PlanSelectionCard
@@ -298,38 +280,37 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
               amount={displayAmount(plan.amount)}
               billing={plan.interval}
-              isCurrentPlan={subscription?.priceId === plan.id}
+              isCurrentPlan={
+                currentUserSubscription?.type === 'subscription' && currentUserSubscription?.priceId === plan.id
+              }
             />
           ))}
         </div>
-        {priceSelected?.id === freePlanData.id ? (
+        {priceSelected?.id === FREE_PLAN_DATA.id ? (
           <PlanCard
-            onClick={() => {
-              if (currentPlanType === 'free') {
-                navigationService.openPreferencesDialog({ section: 'account', subsection: 'account' });
-                changeSection({ section: 'account', subsection: 'account' });
-              } else {
-                onPlanSelected(priceSelected);
-              }
-            }}
-            isCurrentPlan={freePlanData.id === subscription?.type}
+            onClick={() => handleOnPlanSelected(priceSelected)}
+            isCurrentPlan={FREE_PLAN_DATA.id === currentUserSubscription?.type}
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
             currency={'Free forever'}
             price={''}
             billing={''}
-            changePlanType={currentPlanType}
+            changePlanType={currentChangePlanType}
+            isLoading={isLoadingCheckout}
           />
         ) : (
           <PlanCard
-            onClick={() => onPlanSelected(priceSelected)}
-            isCurrentPlan={subscription?.priceId === priceSelected.id}
+            onClick={() => handleOnPlanSelected(priceSelected)}
+            isCurrentPlan={
+              currentUserSubscription?.type === 'subscription' && currentUserSubscription?.priceId === priceSelected.id
+            }
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
             currency={
               priceSelected?.currency ? moneyService.getCurrencySymbol(priceSelected?.currency) : 'Free forever'
             }
             price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
             billing={priceSelected ? priceSelected.interval : ''}
-            changePlanType={currentPlanType}
+            changePlanType={currentChangePlanType}
+            isLoading={isLoadingCheckout}
           />
         )}
       </div>
