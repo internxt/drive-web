@@ -1,15 +1,15 @@
-import { useCallback } from 'react';
-import List from '../../../../shared/components/List';
-import { AdvancedSharedItem } from '../../../types';
-import { DriveFileData } from '../../../../drive/types';
-import iconService from '../../../../drive/services/icon.service';
 import usersIcon from 'assets/icons/users.svg';
-import Avatar from '../../../../shared/components/Avatar';
-import sizeService from '../../../../drive/services/size.service';
-import dateService from '../../../../core/services/date.service';
 import { t } from 'i18next';
-import { ListItemMenu } from '../../../../shared/components/List/ListItem';
+import { useCallback } from 'react';
+import dateService from '../../../../core/services/date.service';
 import { OrderDirection } from '../../../../core/types';
+import iconService from '../../../../drive/services/icon.service';
+import sizeService from '../../../../drive/services/size.service';
+import { DriveFileData } from '../../../../drive/types';
+import Avatar from '../../../../shared/components/Avatar';
+import List from '../../../../shared/components/List';
+import { ListItemMenu } from '../../../../shared/components/List/ListItem';
+import { AdvancedSharedItem } from '../../../types';
 
 const skinSkeleton = [
   <div key="1" className="flex flex-row items-center space-x-4">
@@ -175,25 +175,22 @@ const ShareItemNameField = ({ shareItem, onItemDoubleClicked, onNameClicked }) =
           <img src={usersIcon} width={13} alt="shared users" />
         </div>
       </div>
-      <div
-        className="w-full max-w-full truncate pr-16"
+      <button
+        className="w-full max-w-full truncate pr-16 text-left"
         onDoubleClick={() => onItemDoubleClicked(shareItem)}
-        role="button"
-        onKeyDown={() => ({})}
       >
-        <span
+        <button
           onClick={(e) => {
             e.stopPropagation();
             onNameClicked(shareItem);
           }}
-          role="button"
-          className="w-full max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap"
+          className="w-fit max-w-full flex-1 cursor-pointer flex-row truncate whitespace-nowrap text-left"
           title={shareItem.plainName}
         >
           {shareItem.plainName}
           {!shareItem.isFolder && shareItem.type && '.' + shareItem.type}
-        </span>
-      </div>
+        </button>
+      </button>
     </div>
   );
 };
