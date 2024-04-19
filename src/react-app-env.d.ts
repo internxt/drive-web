@@ -45,7 +45,7 @@ interface Window {
       totalJSHeapSize: number;
       usedJSHeapSize: number;
     };
-  }
+  };
 }
 
 interface Navigator {

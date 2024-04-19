@@ -1,13 +1,13 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { storageActions } from '..';
 import { RootState } from '../../..';
+import newStorageService from '../../../../drive/services/new-storage.service';
 import { FolderPath } from '../../../../drive/types';
 import { uiActions } from '../../ui';
+import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
-import { storageActions } from '..';
-import newStorageService from '../../../../drive/services/new-storage.service';
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
 
 const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
   // ADDED UNTIL WE UPDATE TYPESCRIPT VERSION
@@ -17,6 +17,12 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
   const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
 
   return fullPathParsedNamesList;
+};
+
+export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
+  const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(uuid);
+  const fullPathParsedNames = parsePathNames(breadcrumbsList);
+  dispatch(storageActions.setNamePath(fullPathParsedNames));
 };
 
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
@@ -46,9 +52,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
     dispatch(storageActions.setCurrentPath(path));
 
     if (path.uuid && !isInNamePath) {
-      const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(path.uuid);
-      const fullPathParsedNames = parsePathNames(breadcrumbsList);
-      dispatch(storageActions.setNamePath(fullPathParsedNames));
+      getAncestorsAndSetNamePath(path.uuid, dispatch);
     }
   },
 );

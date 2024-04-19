@@ -1,26 +1,28 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { FolderSimplePlus, CaretRight } from '@phosphor-icons/react';
-import Modal from 'app/shared/components/Modal';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
-import { uiActions } from 'app/store/slices/ui';
-import { setItemsToMove, storageActions } from 'app/store/slices/storage';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { DriveItemData, FolderPathDialog } from '../../types';
-import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
-import folderImage from 'assets/icons/light/folder.svg';
+import navigationService from 'app/core/services/navigation.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
+import Button from 'app/shared/components/Button/Button';
+import Modal from 'app/shared/components/Modal';
+import Spinner from 'app/shared/components/Spinner/Spinner';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
-import Spinner from 'app/shared/components/Spinner/Spinner';
-import Button from 'app/shared/components/Button/Button';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { uiActions } from 'app/store/slices/ui';
+import folderImage from 'assets/icons/light/folder.svg';
 import { TFunction } from 'i18next';
-import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
-import newStorageService from 'app/drive/services/new-storage.service';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import moveItems from '../../../../../src/use_cases/trash/recover-items-from-trash';
+import { DriveItemData, FolderPathDialog } from '../../types';
+import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -43,8 +45,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
-  const itemParentId: number = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
-  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === currentFolderId;
+  const itemParentId = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
+  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
@@ -131,6 +133,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     const fullPath = breadcrumbsList.toReversed();
     const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
     dispatch(storageActions.setNamePath(fullPathParsedNamesList));
+
+    const currentItemUuid = navigationService.getUuid();
+    const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
+
+    if (itemsToMove.length > 1) {
+      return;
+    }
+
+    if (shouldUpdateBreadcrumb) {
+      await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
+    }
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
@@ -144,8 +157,8 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        // TODO:  change function name or separate logic to prevent confusions between moving and restoring
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
+
+        await moveItems(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
       props.onItemsMoved?.();
