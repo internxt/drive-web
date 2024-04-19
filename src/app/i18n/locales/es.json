@@ -24,14 +24,10 @@
     "cta": "Obtén la oferta"
   },
   "banner": {
-    "label": "Nueva herramienta gratuita",
-    "title": {
-      "normal1": "Convertidor de archivos",
-      "free": " gratuito ",
-      "normal2": "de Internxt"
-    },
-    "cta": "Pruébalo gratis",
-    "guarantee": "Garantía de devolución de dinero de 30 días"
+    "label": "Protege tus archivos de por vida",
+    "title": "Obtén acceso de por vida a tu almacenamiento en la nube en Internxt",
+    "cta": "Elige tu plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",

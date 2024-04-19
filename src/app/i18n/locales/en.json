@@ -24,13 +24,9 @@
     "cta": "Get the deal"
   },
   "banner": {
-    "label": "New free tool",
-    "title": {
-      "normal1": "Internxt",
-      "free": " Free ",
-      "normal2": "File Converter"
-    },
-    "cta": "Try for free",
+    "label": "Secure your files forever",
+    "title": "Get lifetime access to secure, private cloud storage with Internxt!",
+    "cta": "Choose your plan",
     "guarantee": "30-day money-back guarantee"
   },
   "notFound": {

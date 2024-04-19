@@ -24,13 +24,9 @@
     "cta": "Obtenir l'offre"
   },
   "banner": {
-    "label": "Nouvel outil gratuit",
-    "title": {
-      "normal1": "Internxt",
-      "free": " Gratuit ",
-      "normal2": "Convertisseur de fichiers"
-    },
-    "cta": "Essayer gratuitement",
+    "label": "Sécurisez vos fichiers pour toujours",
+    "title": "Obtenez un accès à vie au stockage sécurisé et privé dans le cloud avec Internxt !",
+    "cta": "Choisissez votre plan",
     "guarantee": "Garantie de remboursement de 30 jours"
   },
   "lang": {
