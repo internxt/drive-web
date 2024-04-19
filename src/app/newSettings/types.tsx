@@ -30,11 +30,16 @@ export interface TabsProps {
 
 export interface ActivityTabProps {
   user: User;
+  isActivityEnabled: boolean;
   activity: Activity;
 }
 
 export interface TeamsTabProps {
   user: User;
+}
+export interface ActivityFiltersProps {
+  selectedRoles: string[];
+  setIsSelectedRoles: (selectedRoles) => void;
 }
 
 export type BillingDetails = {

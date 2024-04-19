@@ -1494,7 +1494,36 @@
           "actionButton": "发送请求"
         },
         "tabs": {
-          "activity": "活动",
+          "activity": {
+            "name": "活动",
+            "empty": "无活动",
+            "disabilitedOwner": {
+              "title": "开始使用活动",
+              "subtitle": "通过活动日志记录，清晰了解文件和账户管理的使用情况",
+              "action": "启用活动"
+            },
+            "disabilitedMember": {
+              "title": "活动已禁用",
+              "subtitle": "联系工作区所有者以启用活动日志，进行文件和账户管理"
+            },
+            "roles": {
+              "title": "角色",
+              "member": "成员",
+              "manager": "经理",
+              "owner": "所有者"
+            },
+            "filter": {
+              "button": "过滤器",
+              "title": "过滤器",
+              "clear": "清除",
+              "dateRange": {
+                "title": "日期范围",
+                "7days": "最近 7 天",
+                "30days": "最近 30 天",
+                "90days": "最近 90 天"
+              }
+            }
+          },
           "teams": "团队"
         }
       },

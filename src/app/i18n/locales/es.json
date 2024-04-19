@@ -1473,7 +1473,36 @@
           "actionButton": "Enviar solicitud"
         },
         "tabs": {
-          "activity": "Actividad",
+          "activity": {
+            "name": "Actividad",
+            "empty": "Sin actividad",
+            "disabilitedOwner": {
+              "title": "Comenzar con la actividad",
+              "subtitle": "Registros de la activdad claros, para la gestión de archivos y cuentas",
+              "action": "Activar Actividad"
+            },
+            "disabilitedMember": {
+              "title": "La actividad está deshabilitada",
+              "subtitle": "Póngase en contacto con el propietario del espacio de trabajo para habilitar los registros de actividad"
+            },
+            "roles": {
+              "title": "Roles",
+              "member": "Miembro",
+              "manager": "Gestor",
+              "owner": "Propiestario"
+            },
+            "filter": {
+              "button": "Filtrar",
+              "title": "Filtros",
+              "clear": "Limpiar",
+              "dateRange": {
+                "title": "Intervalo de fechas",
+                "7days": "Últimos 7 días",
+                "30days": "Últimos 30 días",
+                "90days": "Últimos 90 días"
+              }
+            }
+          },
           "teams": "Equipos"
         }
       },

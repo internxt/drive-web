@@ -1422,7 +1422,36 @@
           "actionButton": "Envoyer la demande"
         },
         "tabs": {
-          "activity": "Activité",
+          "activity": {
+            "name": "Activité",
+            "empty": "Pas d'activité",
+            "disabilitedOwner": {
+              "title": "Démarrer avec Activity",
+              "subtitle": "Des perspectives d'utilisation claires pour la gestion des fichiers et des comptes avec l'enregistrement des journaux d'activité",
+              "action": "Activer l'activité"
+            },
+            "disabilitedMember": {
+              "title": "L'activité est désactivée",
+              "subtitle": "Contactez le propriétaire de l'espace de travail pour activer les journaux d'activité pour la gestion des fichiers et des comptes"
+            },
+            "roles": {
+              "title": "Rôles",
+              "member": "Membre",
+              "manager": "Manager",
+              "owner": "Propriétaire"
+            },
+            "filter": {
+              "button": "Filtre",
+              "title": "Filtres",
+              "clear": "Clear",
+              "dateRange": {
+                "title": "Date range",
+                "7days": "7 derniers jours",
+                "30days": "30 derniers jours",
+                "90days": "90 derniers jours"
+              }
+            }
+          },
           "teams": "Équipes"
         }
       },

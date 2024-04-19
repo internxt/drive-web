@@ -37,12 +37,21 @@ const MembersSection = () => {
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
   // MOCKED TABS
+  const isActivityEnabled = true;
   const activity = [
     {
       date: 'Feb 13, 2024',
+      records: [],
+    },
+    {
+      date: 'Feb 12, 2024',
       records: [
         { title: 'Logged out', description: 'IP: 111.222.333', time: '12:35' },
-        { title: 'Uploaded a file', description: 'Drive/Marketing Team/January Campaign/Budget.pdf', time: '12:35' },
+        {
+          title: 'Uploaded a file',
+          description: 'Drive/Marketing Team/January Campaign/Budget.pdf',
+          time: '12:35',
+        },
         {
           title: 'Created new folder',
           description: 'Drive/Marketing Team/January Campaign',
@@ -55,17 +64,13 @@ const MembersSection = () => {
         },
       ],
     },
-    {
-      date: 'Feb 12, 2024',
-      records: [],
-    },
   ];
   const user = { role: 'owner', teams: ['Development', 'Marketing'] };
   const tabs: TypeTabs = [
     {
-      name: translate('preferences.workspace.members.tabs.activity'),
+      name: translate('preferences.workspace.members.tabs.activity.name'),
       tab: 'activity',
-      view: <ActivityTab user={user} activity={activity} />,
+      view: <ActivityTab user={user} isActivityEnabled={isActivityEnabled} activity={activity} />,
     },
     { name: translate('preferences.workspace.members.tabs.teams'), tab: 'teams', view: <TeamsTab user={user} /> },
   ];
