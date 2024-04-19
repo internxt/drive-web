@@ -435,7 +435,7 @@
             },
             "button": {
               "back": "Behalte den aktuellen Plan",
-              "continue": "Plan ändern"
+              "continue": "Weiter"
             }
           }
         },
@@ -1455,6 +1455,7 @@
         "downgrade": "Downgrade",
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
+        "freeForever": "Für immer kostenlos",
         "planFeaturesList": {
           "title": "Tarifdetails",
           "storage": " Speicherplatz",

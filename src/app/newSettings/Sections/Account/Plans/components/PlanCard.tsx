@@ -3,36 +3,46 @@ import { t } from 'i18next';
 import Button from '../../../../../shared/components/Button/Button';
 import RoleBadge from '../../../Workspace/Members/components/RoleBadge';
 
-type ChangePlanType = 'upgrade' | 'downgrade' | 'free';
+export type ChangePlanType = 'upgrade' | 'downgrade' | 'free' | 'manageBilling';
 
 interface PlanCardProps {
   capacity: string;
   currency: string;
   price: string;
   billing: string;
-  isSelected: boolean;
   onClick: () => void;
   changePlanType: ChangePlanType;
+  isCurrentPlan?: boolean;
+  isLoading: boolean;
 }
 
-const PlanCard = ({ capacity, currency, price, billing, isSelected, onClick, changePlanType }: PlanCardProps) => {
+const PlanCard = ({
+  capacity,
+  currency,
+  price,
+  billing,
+  onClick,
+  changePlanType,
+  isCurrentPlan,
+  isLoading,
+}: PlanCardProps) => {
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
         <div>
           <div className="flex w-full flex-row justify-between">
             <span className="text-2xl font-medium leading-7 text-gray-100">{capacity}</span>
-            {isSelected && <RoleBadge roleText="Current" role={'current'} />}
+            {isCurrentPlan && <RoleBadge roleText="Current" role={'current'} />}
           </div>
           <span className=" text-base font-normal leading-5 text-gray-60">
             {currency + price}
             {billing && '/' + billing}
           </span>
         </div>
-        <ChangePlanButton type={changePlanType} onClick={onClick} />
+        <ChangePlanButton type={changePlanType} onClick={onClick} isLoading={isLoading} />
       </div>
       <Divider />
-      <PlanDetailsList planSpace={'2 TB'} />
+      <PlanDetailsList planSpace={capacity} />
     </div>
   );
 };
@@ -106,15 +116,15 @@ const PlanDetailsList = ({ planSpace }) => {
   );
 };
 
-const ChangePlanButton = ({ type, onClick }) => {
+const ChangePlanButton = ({ type, onClick, isLoading }) => {
   const changeButtonTypes = {
     upgrade: (
-      <Button onClick={onClick} variant="primary">
+      <Button onClick={onClick} variant="primary" loading={isLoading}>
         {t('preferences.account.plans.upgrade')}
       </Button>
     ),
     downgrade: (
-      <Button onClick={onClick} variant="secondary">
+      <Button onClick={onClick} variant="secondary" loading={isLoading}>
         {t('preferences.account.plans.downgrade')}
       </Button>
     ),
