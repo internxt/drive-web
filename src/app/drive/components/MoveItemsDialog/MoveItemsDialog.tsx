@@ -44,6 +44,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
+  const currentPath = useAppSelector((state: RootState) => state.storage.namePath);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const itemParentId = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
@@ -131,7 +132,12 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore:next-line
     const fullPath = breadcrumbsList.toReversed();
+    const isRootPathNameList = fullPath.length === 0;
+    if (isRootPathNameList && !!currentPath?.[0]) {
+      fullPath.push(currentPath[0] as FolderAncestor);
+    }
     const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
+
     dispatch(storageActions.setNamePath(fullPathParsedNamesList));
 
     const currentItemUuid = navigationService.getUuid();

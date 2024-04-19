@@ -1,13 +1,14 @@
-import { FolderPath } from 'app/drive/types';
-import { BreadcrumbItemData } from '../types';
-import { t } from 'i18next';
-import { useAppDispatch } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
+import { FolderPath } from 'app/drive/types';
 import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import { useAppDispatch } from 'app/store/hooks';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { uiActions } from 'app/store/slices/ui';
+import { t } from 'i18next';
 import BreadcrumbsMenuDrive from '../BreadcrumbsMenu/BreadcrumbsMenuDrive';
+import { BreadcrumbItemData } from '../types';
+
 interface BreadcrumbsDriveViewProps {
   namePath: FolderPath[];
 }
