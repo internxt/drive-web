@@ -13,12 +13,12 @@ import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
-import { createCheckoutSession, fetchPlanPrices, getStripe } from './api';
+import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
-import { displayAmount, getCurrentChangePlanType } from './planUtils';
+import { displayAmount, getCurrentChangePlanType } from './utils/planUtils';
 
 const FREE_PLAN_DATA = {
   amount: 0,

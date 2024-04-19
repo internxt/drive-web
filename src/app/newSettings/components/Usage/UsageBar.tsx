@@ -2,7 +2,7 @@ import { t } from 'i18next';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../../../shared/components/Tooltip';
-import { DriveProduct } from '../../types';
+import { DriveProduct } from '../../types/types';
 
 interface UsageBarProps {
   products: DriveProduct[];

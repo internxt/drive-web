@@ -2,11 +2,11 @@ import { t } from 'i18next';
 
 import localStorageService from 'app/core/services/local-storage.service';
 import { bytesToString } from '../../../../../drive/services/size.service';
-import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
 
 import Card from 'app/shared/components/Card';
 
 import { PlanState } from 'app/store/slices/plan';
+import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
 
 interface BillingWorkspaceOverviewProps {
   plan: PlanState;

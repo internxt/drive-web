@@ -1,4 +1,4 @@
-import { MemberRole } from '../../../../types';
+import { MemberRole } from '../../../../types/types';
 
 type RoleProps = {
   role?: MemberRole;

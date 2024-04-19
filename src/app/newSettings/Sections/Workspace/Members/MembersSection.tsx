@@ -9,13 +9,13 @@ import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 
 import Tooltip from 'app/shared/components/Tooltip';
-import UserCard from './components/UserCard';
-import UserInviteDialog from './InviteDialog';
-import MemberDetailsContainer from './containers/MemberDetailsContainer';
-import { DriveProduct, Member, MemberRole, TypeTabs, ActiveTab } from '../../../types';
 import Tabs from '../../../components/Tabs';
+import { ActiveTab, DriveProduct, Member, MemberRole, TypeTabs } from '../../../types/types';
+import UserInviteDialog from './InviteDialog';
 import ActivityTab from './components/ActivityTab';
 import TeamsTab from './components/TeamsTab';
+import UserCard from './components/UserCard';
+import MemberDetailsContainer from './containers/MemberDetailsContainer';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

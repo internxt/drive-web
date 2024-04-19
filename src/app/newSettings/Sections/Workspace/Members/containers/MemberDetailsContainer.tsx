@@ -11,7 +11,7 @@ import { RootState } from '../../../../../store';
 import { useAppSelector } from '../../../../../store/hooks';
 import { PlanState } from '../../../../../store/slices/plan';
 import UsageBar from '../../../../components/Usage/UsageBar';
-import { Member } from '../../../../types';
+import { Member } from '../../../../types/types';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import UserCard from '../components/UserCard';

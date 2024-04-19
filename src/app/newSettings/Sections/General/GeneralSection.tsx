@@ -1,5 +1,5 @@
-import ContactSupport from '../../components/ContactSupport';
 import Appearance from './components/Appearance';
+import ContactSupport from './components/ContactSupport';
 import Language from './components/Language';
 
 const GeneralSection = () => {

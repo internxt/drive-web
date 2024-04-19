@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import DetailsInput from '../../../../components/DetailsInput';
-import { BillingDetails } from '../../../../types';
+import { BillingDetails } from '../../../../types/types';
 
 const EditBillingDetailsModal = ({
   isOpen,

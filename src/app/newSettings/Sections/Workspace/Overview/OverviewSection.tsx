@@ -15,7 +15,7 @@ import Spinner from '../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../store';
 import { PlanState } from '../../../../store/slices/plan';
 import DetailsInput from '../../../components/DetailsInput';
-import WorkspaceUsageContainer from '../../../containers/WorkspaceUsageContainer';
+import UsageContainer from '../../../containers/UsageContainer';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
 
 // MOCKED DATA
@@ -62,7 +62,7 @@ const OverviewSection = () => {
       });
   }, []);
 
-  const products: Parameters<typeof WorkspaceUsageContainer>[0]['products'] | null = planUsage
+  const products: Parameters<typeof UsageContainer>[0]['products'] | null = planUsage
     ? [
         {
           name: t('sideNav.drive'),
@@ -187,7 +187,7 @@ interface WorkspaceOverviewDetailsProps {
   members: number;
   teams: number;
   planLimit: number;
-  products: Parameters<typeof WorkspaceUsageContainer>[0]['products'] | null;
+  products: Parameters<typeof UsageContainer>[0]['products'] | null;
   isOwner: boolean;
   subscriptionData: { amountInterval?: string; interval?: 'monthly' | 'yearly'; renewDate?: string } | undefined;
   onMembersCardClick: () => void;
@@ -246,7 +246,7 @@ const WorkspaceOverviewDetails = ({
       <div className="flex flex-row">
         <Card className="flex grow">
           {products && planLimit ? (
-            <WorkspaceUsageContainer planLimitInBytes={planLimit} products={products} />
+            <UsageContainer planLimitInBytes={planLimit} products={products} />
           ) : (
             <div className="flex h-36 w-full items-center justify-center">
               <Spinner className="h-7 w-7 text-primary" />

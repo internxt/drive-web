@@ -2,7 +2,7 @@ import { useChat } from 'react-live-chat-loader';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
-import Section from '../../core/views/Preferences/components/Section';
+import Section from '../../../../core/views/Preferences/components/Section';
 
 const ContactSupport = () => {
   const { translate } = useTranslationContext();

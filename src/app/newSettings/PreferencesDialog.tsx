@@ -10,13 +10,13 @@ import { uiActions } from 'app/store/slices/ui';
 import AccountSection from './Sections/Account/Account/AccountSection';
 import BillingAccountSection from './Sections/Account/Billing/BillingAccountSection';
 import PlansSection from './Sections/Account/Plans/PlansSection';
+import SecuritySection from './Sections/Account/Security/SecuritySection';
 import GeneralSection from './Sections/General/GeneralSection';
 import BillingWorkspaceSection from './Sections/Workspace/Billing/BillingWorkspaceSection';
 import MembersSection from './Sections/Workspace/Members/MembersSection';
 import OverviewSection from './Sections/Workspace/Overview/OverviewSection';
 import SectionListContainer, { sectionItems } from './containers/SectionListContainer';
-import { PreferencesDialogProps, Section, SelectSectionProps } from './types';
-import SecuritySection from './views/SecuritySection';
+import { PreferencesDialogProps, Section, SelectSectionProps } from './types/types';
 
 const findSectionItemsBySectionAndSubsection = ({ section, subsection }: SelectSectionProps) => {
   return sectionItems.find((item) => item.section === section && item.subsection === subsection);
