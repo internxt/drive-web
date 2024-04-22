@@ -7,11 +7,11 @@ import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox'
 import RadioButton from 'app/shared/components/forms/RadioButton/RadioButton';
 
 interface ActivityFiltersProps {
-  selectedRoles: string[];
+  isSelectedRoles: string[];
   setIsSelectedRoles: (selectedRoles) => void;
 }
 
-const ActivityFilters = ({ selectedRoles, setIsSelectedRoles }: ActivityFiltersProps) => {
+const ActivityFilters = ({ isSelectedRoles, setIsSelectedRoles }: ActivityFiltersProps) => {
   const roles = [
     { type: 'member', name: t('preferences.workspace.members.tabs.activity.roles.member') },
     { type: 'manager', name: t('preferences.workspace.members.tabs.activity.roles.manager') },
@@ -43,7 +43,7 @@ const ActivityFilters = ({ selectedRoles, setIsSelectedRoles }: ActivityFiltersP
   };
 
   const onFilteredRoles = (role) => {
-    const NewSelectedRoles = [...selectedRoles];
+    const NewSelectedRoles = [...isSelectedRoles];
     const roleIndex = NewSelectedRoles.indexOf(role);
     const isSelected = NewSelectedRoles.includes(role);
 
@@ -88,10 +88,10 @@ const ActivityFilters = ({ selectedRoles, setIsSelectedRoles }: ActivityFiltersP
           </div>
           <div className="flex flex-col">
             {roles.map((role) => {
-              const isSelected = selectedRoles.includes(role.type);
+              const isSelected = isSelectedRoles.includes(role.type);
 
               return (
-                <div className="flex items-center py-1.5">
+                <div key={role.name} className="flex items-center py-1.5">
                   <BaseCheckbox checked={isSelected} onClick={() => onFilteredRoles(role.type)} />
                   <p className="font-regular ml-2 text-base">{role.name}</p>
                 </div>

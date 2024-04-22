@@ -44,6 +44,7 @@ const TeamsTab = ({ role, teams, isTeams }: TeamsTabProps): JSX.Element => {
 
             return (
               <div
+                key={team.team}
                 className={`flex h-12 w-full items-center border-b border-l border-r border-gray-5 text-base font-medium text-gray-100 ${
                   isLastTeam && 'rounded-b-xl'
                 }`}

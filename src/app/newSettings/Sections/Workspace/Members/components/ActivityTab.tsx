@@ -9,7 +9,7 @@ import ActivityFilters from './ActivityFilters';
 
 const ActivityTab = ({ role, isActivityEnabled, activity }: ActivityTabProps): JSX.Element => {
   const isOwner = role === 'owner';
-  const [selectedRoles, setIsSelectedRoles] = useState<string[]>(['member', 'manager', 'owner']);
+  const [isSelectedRoles, setIsSelectedRoles] = useState<string[]>(['member', 'manager', 'owner']);
 
   const enableActivity = () => {};
 
@@ -41,7 +41,7 @@ const ActivityTab = ({ role, isActivityEnabled, activity }: ActivityTabProps): J
             <h3 className="text-xl font-medium text-gray-100">
               {t('preferences.workspace.members.tabs.activity.name')}
             </h3>
-            <ActivityFilters selectedRoles={selectedRoles} setIsSelectedRoles={setIsSelectedRoles} />
+            <ActivityFilters isSelectedRoles={isSelectedRoles} setIsSelectedRoles={setIsSelectedRoles} />
           </div>
           <div className="flex h-full w-full flex-col rounded-xl border border-gray-10 p-6 shadow-sm">
             {activity.map((day) => {
@@ -49,7 +49,7 @@ const ActivityTab = ({ role, isActivityEnabled, activity }: ActivityTabProps): J
               const lastRecord = records.slice(-1);
 
               return (
-                <div>
+                <div key={day.date}>
                   <p className="mb-px w-fit rounded-md bg-gray-5 px-3 py-1.5 text-sm font-medium text-gray-100">
                     {day.date}
                   </p>
@@ -57,6 +57,7 @@ const ActivityTab = ({ role, isActivityEnabled, activity }: ActivityTabProps): J
                     records.map((record) => {
                       return (
                         <div
+                          key={record.description}
                           className={`flex justify-between py-3 ${
                             lastRecord[0]?.title !== record.title && 'border-b border-gray-10'
                           }`}
