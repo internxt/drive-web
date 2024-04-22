@@ -2,7 +2,6 @@ import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
 import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
-import { AdvancedSharedItem } from '../../share/types';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -69,7 +68,7 @@ function renameFile(file: File, newName: string): File {
   return new File([file], newName);
 }
 
-const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
+const getItemPlainName = (item: DriveItemData) => {
   if (item.plainName && item.plainName.length > 0) {
     return item.plainName;
   }

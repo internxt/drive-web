@@ -23,7 +23,6 @@ import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
-import navigationService from '../../../core/services/navigation.service';
 import RealtimeService, { SOCKET_EVENTS } from '../../../core/services/socket.service';
 import ClearTrashDialog from '../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import CreateFolderDialog from '../../../drive/components/CreateFolderDialog/CreateFolderDialog';
@@ -68,6 +67,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import navigationService from 'app/core/services/navigation.service';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -144,6 +144,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
 
   const [showStopSharingConfirmation, setShowStopSharingConfirmation] = useState(false);
+  const itemsWithSharing = props.selectedItems.filter((item) => item.sharings && item.sharings.length > 0);
+  const totalItemsWithSharing = itemsWithSharing.length;
 
   // UPLOAD ITEMS STATES
   const [fileInputRef] = useState<RefObject<HTMLInputElement>>(createRef());
@@ -300,6 +302,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
+        dispatch(storageThunks.goToFolderThunk({ name: item.name, id: item.id }));
         navigationService.pushFolder(item.uuid);
       } else {
         navigationService.pushFile(item.uuid);
@@ -619,6 +622,8 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
           showStopSharingConfirmation={showStopSharingConfirmation}
           onClose={onCloseStopSharingAndMoveToTrashDialog}
           moveItemsToTrash={moveItemsToTrashOnStopSharing}
+          isMultipleItems={totalItemsWithSharing > 1}
+          itemToShareName={itemsWithSharing[0].plainName ?? itemsWithSharing[0]?.name}
         />
       )}
       <BannerWrapper />
@@ -967,12 +972,11 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
       const unrepeatedUploadedFiles = handleRepeatedUploadingFiles(files, items, dispatch) as File[];
       // files where dragged directly
       await dispatch(
-        storageThunks.uploadItemsThunk({
+        storageThunks.uploadItemsThunkNoCheck({
           files: unrepeatedUploadedFiles,
           parentFolderId: currentFolderId,
           options: {
             onSuccess: onDragAndDropEnd,
-            disableDuplicatedNamesCheck: true,
           },
         }),
       ).then(() => {

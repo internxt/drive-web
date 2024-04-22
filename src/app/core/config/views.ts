@@ -1,7 +1,5 @@
 import { ComponentClass, FunctionComponent } from 'react';
 
-import { AppView } from '../types';
-
 import SignUpView from 'app/auth/views/SignUpView/SignUpView';
 import SignInView from 'app/auth/views/SignInView/SignInView';
 import AuthView from 'app/auth/views/Auth/AuthView';
@@ -20,6 +18,8 @@ import CheckoutPlanView from 'app/payment/views/CheckoutView/CheckoutPlanView';
 import CheckoutView from 'app/payment/views/CheckoutView/CheckoutView';
 import BackupsView from 'app/backups/views/BackupsView/BackupsView';
 import RequestAccess from 'app/drive/views/RequestAccess/RequestAccess';
+
+import { AppView } from '../types';
 import CheckoutSuccessView from 'app/payment/views/CheckoutSuccessView/CheckoutSuccessView';
 import RecoverAccountView from 'app/auth/views/RecoverAccountView/RecoverAccountView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
@@ -32,7 +32,7 @@ import TrashView from 'app/drive/views/TrashView/TrashView';
 import ButtonAuth from 'app/auth/views/Auth/ButtonAuth';
 import SignupBlog from 'app/auth/views/Auth/SignupBlog';
 import CheckoutCancelView from 'app/payment/views/CheckoutCancelView/CheckoutCancelView';
-import SharedViewWrapper from '../../share/views/SharedLinksView/SharedViewWrapper';
+import SharedView from '../../share/views/SharedLinksView/SharedView';
 import UniversalLinkSuccessView from 'app/auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
 import BlockedAccountView from 'app/auth/views/BlockedAccountView/BlockedAccountView';
@@ -56,7 +56,7 @@ const views: Array<{
   { id: AppView.Recents, component: RecentsView },
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
-  { id: AppView.Shared, component: SharedViewWrapper },
+  { id: AppView.Shared, component: SharedView },
   { id: AppView.Photos, component: PhotosView },
   { id: AppView.Preferences, component: Preferences },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },

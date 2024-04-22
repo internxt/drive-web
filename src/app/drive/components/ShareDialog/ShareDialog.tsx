@@ -43,7 +43,6 @@ import { Tooltip } from 'react-tooltip';
 import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
 import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
-import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -94,7 +93,6 @@ type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
-  onCloseDialog?: () => void;
 };
 
 const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
@@ -131,7 +129,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
   const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
-  const { onCloseDialog } = props;
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
@@ -154,11 +151,9 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
 
-  const isUserOwner = isUserItemOwner({
-    isDriveItem: !!props?.isDriveItem,
-    item: itemToShare?.item as AdvancedSharedItem,
-    userEmail: props?.user?.email,
-  });
+  const itemOwnerEmail = props?.isDriveItem ? '' : (itemToShare?.item as AdvancedSharedItem).user?.email;
+  const isUserOwner = (!!itemOwnerEmail && itemOwnerEmail === props?.user?.email) || !!props?.isDriveItem;
+
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
   const resetDialogData = () => {
@@ -173,7 +168,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setView('general');
     setIsPasswordProtected(false);
     setSharingMeta(null);
-    onCloseDialog?.();
   };
 
   useEffect(() => {

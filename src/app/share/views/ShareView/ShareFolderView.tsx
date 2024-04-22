@@ -1,25 +1,25 @@
-import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import UilCheck from '@iconscout/react-unicons/icons/uil-check';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
-import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import errorService from 'app/core/services/error.service';
+import { useEffect, useState } from 'react';
+import { WritableStream } from 'streamsaver';
+import { match } from 'react-router';
+import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { loadWritableStreamPonyfill } from 'app/network/download';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import shareService, { downloadPublicSharedFolder, getPublicSharingMeta } from 'app/share/services/share.service';
 import { TaskProgress } from 'app/tasks/types';
-import { useEffect, useState } from 'react';
-import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { WritableStream } from 'streamsaver';
-import Spinner from '../../../shared/components/Spinner/Spinner';
 import { useAppSelector } from '../../../store/hooks';
-import SendBanner from './SendBanner';
-import ShareItemPwdView from './ShareItemPwdView';
+import UilCheck from '@iconscout/react-unicons/icons/uil-check';
+import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
+import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import './ShareView.scss';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
+import Spinner from '../../../shared/components/Spinner/Spinner';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { loadWritableStreamPonyfill } from 'app/network/download';
+import ShareItemPwdView from './ShareItemPwdView';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import errorService from 'app/core/services/error.service';
+import SendBanner from './SendBanner';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -150,6 +150,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         })
           .then(() => {
             updateProgress(1);
+            //shareService.incrementShareView(folderInfo.token);
             setTimeout(() => {
               setIsSendBannerVisible(true);
             }, 3000);

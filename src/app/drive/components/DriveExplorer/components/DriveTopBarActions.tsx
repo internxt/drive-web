@@ -11,7 +11,6 @@ import {
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';
-import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import shareService from '../../../../share/services/share.service';
@@ -145,7 +144,8 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    navigationService.pushFile(selectedItems[0].uuid);
+    dispatch(uiActions.setIsFileViewerOpen(true));
+    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
   };
 
   const onRecoverButtonClicked = (): void => {
