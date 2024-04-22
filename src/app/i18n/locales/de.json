@@ -435,7 +435,7 @@
             },
             "button": {
               "back": "Behalte den aktuellen Plan",
-              "continue": "Plan ändern"
+              "continue": "Weiter"
             }
           }
         },
@@ -1493,7 +1493,22 @@
       "emptyTrash": "Papierkorb leeren",
       "emptryTrashDescription": "Elemente im Papierkorb werden nach 15 Tagen endgültig gelöscht",
       "plans": {
-        "title": "Pläne"
+        "title": "Tarife",
+        "current": "Aktuell",
+        "upgrade": "Upgrade",
+        "downgrade": "Downgrade",
+        "free": "Erhalten Sie bis zu 10 GB kostenlos",
+        "manageBilling": "Abrechnung verwalten",
+        "freeForever": "Für immer kostenlos",
+        "planFeaturesList": {
+          "title": "Tarifdetails",
+          "storage": " Speicherplatz",
+          "featureOne": "Synchronisierung über Geräte hinweg.",
+          "featureTwo": "Unbegrenzter Datenverkehr.",
+          "featureThree": "Datenspeicherung und -freigabe ohne Wissen des Anbieters.",
+          "featureFour": "Verschlüsselung auf Militärniveau.",
+          "featureFive": "Backup beliebiger Ordner auf Ihrem Computer."
+        }
       },
       "billing": {
         "title": "Billing"

@@ -1,14 +1,14 @@
 import { t } from 'i18next';
 
-import { getSubscriptionData, getNextBillingDate } from '../utils/suscriptionUtils';
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
-import { bytesToString } from '../../drive/services/size.service';
+import { bytesToString } from '../../../../../drive/services/size.service';
 
 import Card from 'app/shared/components/Card';
 
-import { PlanState } from 'app/store/slices/plan';
 import Button from 'app/shared/components/Button/Button';
+import { PlanState } from 'app/store/slices/plan';
+import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
 
 interface BillingAccountOverviewProps {
   plan: PlanState;

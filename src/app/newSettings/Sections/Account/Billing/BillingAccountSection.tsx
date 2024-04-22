@@ -13,10 +13,10 @@ import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 
 import Section from '../../../../core/views/Preferences/components/Section';
-import BillingAccountOverview from '../../../components/BillingAccountOverview';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
-import CancelSubscription from '../../../components/CancelSubscription';
 import Invoices from '../../../containers/InvoicesContainer';
+import CancelSubscription from './components/CancelSubscription';
+import BillingAccountOverview from './containers/BillingAccountOverview';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { t } from 'i18next';
 
-import { ActivityTabProps } from '../../../../types';
+import { ActivityTabProps } from '../../../../types/types';
 
 import EmptyTab from 'app/newSettings/components/EmptyTab';
 

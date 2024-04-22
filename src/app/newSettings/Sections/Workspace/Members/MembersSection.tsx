@@ -9,10 +9,10 @@ import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 
 import Tooltip from 'app/shared/components/Tooltip';
-import UserCard from './components/UserCard';
+import { DriveProduct, Member, MemberRole } from '../../../types/types';
 import UserInviteDialog from './InviteDialog';
+import UserCard from './components/UserCard';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
-import { DriveProduct, Member, MemberRole } from '../../../types';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useEffect, useState } from 'react';
 
 import { changePassword } from 'app/auth/services/auth.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
+import Button from 'app/shared/components/Button/Button';
+import Input from 'app/shared/components/Input';
 import Modal from 'app/shared/components/Modal';
 import ValidPassword from 'app/shared/components/ValidPassword';
-import Input from 'app/shared/components/Input';
-import Button from 'app/shared/components/Button/Button';
 
 const ChangePasswordModal = ({
   isOpen,
@@ -37,7 +37,7 @@ const ChangePasswordModal = ({
   async function handleSubmit() {
     setIsLoading(true);
     await changePassword(passwordPayload.password, currentPassword, email);
-    notificationsService.show({ text: translate('success.passwordChanged') as string, type: ToastType.Success });
+    notificationsService.show({ text: translate('success.passwordChanged'), type: ToastType.Success });
     onPasswordChanged(passwordPayload.password);
     onClose();
     setIsLoading(false);
@@ -57,7 +57,7 @@ const ChangePasswordModal = ({
       <ValidPassword
         username={email}
         className="mt-4"
-        label={translate('modals.changePasswordModal.newPassword') as string}
+        label={translate('modals.changePasswordModal.newPassword')}
         value={passwordPayload.password}
         onChange={setPasswordPayload}
         disabled={isLoading}
@@ -68,11 +68,9 @@ const ChangePasswordModal = ({
         onChange={setPasswordConfirmation}
         variant="password"
         className="mt-3"
-        label={translate('modals.changePasswordModal.confirmPassword') as string}
+        label={translate('modals.changePasswordModal.confirmPassword')}
         accent={isConfirmationWrong ? 'error' : undefined}
-        message={
-          isConfirmationWrong ? (translate('modals.changePasswordModal.errors.doesntMatch') as string) : undefined
-        }
+        message={isConfirmationWrong ? translate('modals.changePasswordModal.errors.doesntMatch') : undefined}
         disabled={isLoading}
         dataTest="new-password-confirmation"
       />

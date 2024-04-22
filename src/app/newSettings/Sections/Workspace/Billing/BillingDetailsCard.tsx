@@ -1,8 +1,8 @@
 import { t } from 'i18next';
 
-import { BillingDetailsCardProps } from '../types';
 import Button from 'app/shared/components/Button/Button';
 import Card from 'app/shared/components/Card';
+import { BillingDetailsCardProps } from '../../../types/types';
 import Detail from './Detail';
 
 const BillingDetailsCard = ({ address, phone, owner, isOwner, onEditButtonClick }: BillingDetailsCardProps) => {

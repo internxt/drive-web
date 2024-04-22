@@ -11,7 +11,7 @@ import { RootState } from '../../../../../store';
 import { useAppSelector } from '../../../../../store/hooks';
 import { PlanState } from '../../../../../store/slices/plan';
 import UsageBar from '../../../../components/Usage/UsageBar';
-import { Member, TypeTabs, ActiveTab } from '../../../../types';
+import { Member, TypeTabs, ActiveTab } from '../../../../types/types';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import UserCard from '../components/UserCard';
@@ -75,7 +75,7 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
       view: <ActivityTab role={member.role} isActivityEnabled={member.isActivityEnabled} activity={member.activity} />,
     },
     {
-      name: translate('preferences.workspace.members.tabs.teams'),
+      name: translate('preferences.workspace.members.tabs.teams.title'),
       tab: 'teams',
       view: <TeamsTab role={member.role} teams={member.teams} isTeams={member.isTeams} />,
     },

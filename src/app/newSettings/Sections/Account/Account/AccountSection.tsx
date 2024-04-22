@@ -19,10 +19,10 @@ import { useAppDispatch } from '../../../../store/hooks';
 import { updateUserProfileThunk } from '../../../../store/slices/user';
 
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
-import AccountUsageContainer from '../../../containers/AccountUsageContainer';
 import AccountDetailsModal from './components/AccountDetailsModal';
 import ChangeEmailModal from './components/ChangeEmailModal';
 import EmailVerificationMessageCard from './components/EmailMessageCard';
+import AccountUsageContainer from './containers/AccountUsageContainer';
 import DeleteAccountContainer from './containers/DeleteAccountContainer';
 import InviteFriendSectionContainer from './containers/InviteFriendSectionContainer';
 import InvitedFriendsContainer from './containers/InvitedFriendsContainer';

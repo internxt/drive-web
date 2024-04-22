@@ -1,6 +1,5 @@
 import { t } from 'i18next';
-
-import { TeamsTabProps } from '../../../../types';
+import { TeamsTabProps } from '../../../../types/types';
 import EmptyTab from 'app/newSettings/components/EmptyTab';
 import RoleBadge from './RoleBadge';
 
