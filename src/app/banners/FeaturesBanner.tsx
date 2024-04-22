@@ -33,7 +33,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
         </button>
         <div className="flex w-full flex-col space-x-10 py-14 lg:flex-row">
           <div className="flex  w-max max-w-[310px] flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
-            <div className="flex rounded-lg bg-white px-3 py-1.5 ring-4 ring-primary/7">
+            <div className="flex rounded-lg bg-primary/5 bg-white px-3 py-1.5 ring-4 ring-primary/7">
               <p className="text-2xl font-bold text-primary">{translate('featuresBanner.label')}</p>
             </div>
             <p className="w-full text-4xl font-bold leading-tight text-black">{translate('featuresBanner.title')}</p>
