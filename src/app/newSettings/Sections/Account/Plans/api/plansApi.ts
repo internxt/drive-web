@@ -1,7 +1,7 @@
 import { Stripe, loadStripe } from '@stripe/stripe-js';
-import envService from '../../../../core/services/env.service';
-import errorService from '../../../../core/services/error.service';
-import paymentService from '../../../../payment/services/payment.service';
+import envService from '../../../../../core/services/env.service';
+import errorService from '../../../../../core/services/error.service';
+import paymentService from '../../../../../payment/services/payment.service';
 
 const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
 const productValue = {

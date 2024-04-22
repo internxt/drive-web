@@ -1,10 +1,10 @@
 import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
+import { SelectSectionProps } from 'app/newSettings/types/types';
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
-import { SelectSectionProps } from 'app/newSettings/types';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,

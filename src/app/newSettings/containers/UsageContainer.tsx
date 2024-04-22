@@ -1,9 +1,9 @@
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import UsageBar from '../components/Usage/UsageBar';
-import { DriveProduct } from '../types';
+import { DriveProduct } from '../types/types';
 
-const WorkspaceUsageContainer = ({
+const UsageContainer = ({
   className = '',
   planLimitInBytes,
   products,
@@ -30,4 +30,4 @@ const WorkspaceUsageContainer = ({
   );
 };
 
-export default WorkspaceUsageContainer;
+export default UsageContainer;

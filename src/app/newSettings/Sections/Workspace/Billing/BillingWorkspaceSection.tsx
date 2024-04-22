@@ -6,10 +6,10 @@ import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';
 
 import Section from '../../../../core/views/Preferences/components/Section';
-import BillingDetailsCard from '../../../components/BillingDetailsCard';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
-import { BillingDetails } from '../../../types';
+import { BillingDetails } from '../../../types/types';
+import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
 

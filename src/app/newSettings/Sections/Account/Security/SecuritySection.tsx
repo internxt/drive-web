@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { RootState } from 'app/store';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { t } from 'i18next';
 
 import Section from 'app/core/views/Preferences/components/Section';
 
-import EnterPassword from '../components/Security/EnterPassword';
-import ChangePassword from '../components/Security/ChangePassword';
-import TwoFactorAuthentication from '../components/Security/TwoFactorAuthentication';
-import ExportBackupKey from '../components/Security/ExportBackupKey';
-import FrecuentlyAskedQuestions from '../components/Security/FrecuentlyAskedQuestions';
+import ChangePassword from './components/ChangePassword';
+import EnterPassword from './components/EnterPassword';
+import ExportBackupKey from './components/ExportBackupKey';
+import FrecuentlyAskedQuestions from './components/FrecuentlyAskedQuestions';
+import TwoFactorAuthentication from './components/TwoFactorAuthentication';
 
 const SecuritySection = () => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);

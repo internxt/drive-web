@@ -1,4 +1,4 @@
-import { TabsProps } from '../types';
+import { TabsProps } from '../types/types';
 
 const Tabs = ({ tabs, activeTab, setActiveTab }: TabsProps) => {
   return (

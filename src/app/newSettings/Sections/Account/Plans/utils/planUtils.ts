@@ -1,6 +1,6 @@
 import { DisplayPrice, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { StoragePlan } from '../../../../drive/types';
-import { ChangePlanType } from './components/PlanCard';
+import { StoragePlan } from '../../../../../drive/types';
+import { ChangePlanType } from '../components/PlanCard';
 
 const displayAmount = (amount: number) => {
   return (amount / 100).toFixed(2);

@@ -1,10 +1,10 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import dateService from 'app/core/services/date.service';
 import { t } from 'i18next';
 import { StoragePlan } from '../../drive/types';
 import moneyService from '../../payment/services/money.service';
 import { RenewalPeriod } from '../../payment/types';
 import { PlanState } from '../../store/slices/plan';
-import dateService from 'app/core/services/date.service';
 
 const formatPlanPaymentInterval = (storagePlan: StoragePlan | null) => {
   if (storagePlan) {
@@ -57,4 +57,4 @@ const getNextBillingDate = (userSubscription: UserSubscription | null) => {
   return nextBillingDate;
 };
 
-export { formatPlanPaymentInterval, getSubscriptionData, getNextBillingDate };
+export { formatPlanPaymentInterval, getNextBillingDate, getSubscriptionData };

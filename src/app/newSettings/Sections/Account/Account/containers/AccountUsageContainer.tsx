@@ -4,18 +4,18 @@ import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
 import { t } from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
-import errorService from '../../core/services/error.service';
-import navigationService from '../../core/services/navigation.service';
-import usageService, { UsageDetailsProps } from '../../drive/services/usage.service';
-import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
-import Button from '../../shared/components/Button/Button';
-import Card from '../../shared/components/Card';
-import Spinner from '../../shared/components/Spinner/Spinner';
-import { PlanState } from '../../store/slices/plan';
-import { uiActions } from '../../store/slices/ui';
-import UsageBar from '../components/Usage/UsageBar';
-import VerticalDivider from '../components/VerticalDivider';
-import UsageDetails from './WorkspaceUsageContainer';
+import errorService from '../../../../../core/services/error.service';
+import navigationService from '../../../../../core/services/navigation.service';
+import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import Button from '../../../../../shared/components/Button/Button';
+import Card from '../../../../../shared/components/Card';
+import Spinner from '../../../../../shared/components/Spinner/Spinner';
+import { PlanState } from '../../../../../store/slices/plan';
+import { uiActions } from '../../../../../store/slices/ui';
+import UsageBar from '../../../../components/Usage/UsageBar';
+import VerticalDivider from '../../../../components/VerticalDivider';
+import UsageDetails from '../../../../containers/UsageContainer';
 
 const AccountUsageContainer = ({
   className = '',
