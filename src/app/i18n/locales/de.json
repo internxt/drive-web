@@ -1422,7 +1422,22 @@
               }
             }
           },
-          "teams": "Teams"
+          "teams": {
+            "title": "Teams",
+            "role": "Rolle",
+            "emptyTeamsOwner": {
+              "title": "Erste Schritte mit Teams",
+              "subtitle": "Verwalten Sie Arbeitsbereich-Mitglieder schneller, indem Sie sie in Teams gruppieren",
+              "action": "Ein Team erstellen"
+            },
+            "emptyTeamsMember": {
+              "title": "Noch keine Teams erstellt",
+              "subtitle": "Arbeitsbereichseigentümer können Mitglieder schneller verwalten, indem sie sie in Teams gruppieren"
+            },
+            "emptyTeams": {
+              "title": "Kein Mitglied in einem Team"
+            }
+          }
         }
       },
       "teams": {

@@ -1452,7 +1452,22 @@
               }
             }
           },
-          "teams": "Équipes"
+          "teams": {
+            "title": "Équipes",
+            "role": "Rôle",
+            "emptyTeamsOwner": {
+              "title": "Commencer avec les équipes",
+              "subtitle": "Gérer plus rapidement les membres de l'espace de travail en les regroupant en équipes",
+              "action": "Créer une équipe"
+            },
+            "emptyTeamsMember": {
+              "title": "Aucune équipe n'a encore été créée",
+              "subtitle": "Le propriétaire de l'espace de travail peut gérer les membres plus rapidement en les regroupant en équipes"
+            },
+            "emptyTeams": {
+              "title": "N'est membre d'aucune équipe"
+            }
+          }
         }
       },
       "teams": {

@@ -12,10 +12,7 @@ import Tooltip from 'app/shared/components/Tooltip';
 import UserCard from './components/UserCard';
 import UserInviteDialog from './InviteDialog';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
-import { DriveProduct, Member, MemberRole, TypeTabs, ActiveTab } from '../../../types';
-import Tabs from '../../../components/Tabs';
-import ActivityTab from './components/ActivityTab';
-import TeamsTab from './components/TeamsTab';
+import { DriveProduct, Member, MemberRole } from '../../../types';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -36,46 +33,6 @@ const MembersSection = () => {
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
 
-  // MOCKED TABS
-  const isActivityEnabled = true;
-  const activity = [
-    {
-      date: 'Feb 13, 2024',
-      records: [],
-    },
-    {
-      date: 'Feb 12, 2024',
-      records: [
-        { title: 'Logged out', description: 'IP: 111.222.333', time: '12:35' },
-        {
-          title: 'Uploaded a file',
-          description: 'Drive/Marketing Team/January Campaign/Budget.pdf',
-          time: '12:35',
-        },
-        {
-          title: 'Created new folder',
-          description: 'Drive/Marketing Team/January Campaign',
-          time: '12:35',
-        },
-        {
-          title: 'Logged in',
-          description: 'IP: 111.222.333',
-          time: '12:35',
-        },
-      ],
-    },
-  ];
-  const user = { role: 'owner', teams: ['Development', 'Marketing'] };
-  const tabs: TypeTabs = [
-    {
-      name: translate('preferences.workspace.members.tabs.activity.name'),
-      tab: 'activity',
-      view: <ActivityTab user={user} isActivityEnabled={isActivityEnabled} activity={activity} />,
-    },
-    { name: translate('preferences.workspace.members.tabs.teams'), tab: 'teams', view: <TeamsTab user={user} /> },
-  ];
-  const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
-
   // MOCKED MEMBERS
   const guestsNumber = 0;
   const members = [
@@ -90,6 +47,39 @@ const MembersSection = () => {
         { name: 'Backups', usageInBytes: 123000, color: 'indigo' },
       ],
       storage: 2200000000000,
+      isActivityEnabled: true,
+      activity: [
+        {
+          date: 'Feb 13, 2024',
+          records: [],
+        },
+        {
+          date: 'Feb 12, 2024',
+          records: [
+            { title: 'Logged out', description: 'IP: 111.222.333', time: '12:35' },
+            {
+              title: 'Uploaded a file',
+              description: 'Drive/Marketing Team/January Campaign/Budget.pdf',
+              time: '12:35',
+            },
+            {
+              title: 'Created new folder',
+              description: 'Drive/Marketing Team/January Campaign',
+              time: '12:35',
+            },
+            {
+              title: 'Logged in',
+              description: 'IP: 111.222.333',
+              time: '12:35',
+            },
+          ],
+        },
+      ],
+      isTeams: true,
+      teams: [
+        { team: 'Deveolpment', role: 'owner' },
+        { team: 'Marketing', role: 'member' },
+      ],
     },
     {
       id: '123124',
@@ -102,6 +92,15 @@ const MembersSection = () => {
         { name: 'Backups', usageInBytes: 12300000, color: 'indigo' },
       ],
       storage: 1100000000000,
+      isActivityEnabled: false,
+      activity: [
+        {
+          date: 'Feb 13, 2024',
+          records: [],
+        },
+      ],
+      isTeams: false,
+      teams: [],
     },
     {
       id: '123123214',
@@ -111,6 +110,15 @@ const MembersSection = () => {
       role: '' as MemberRole,
       products: [{ name: 'Drive', usageInBytes: 824000000000, color: 'primary' }],
       storage: 1100000000000,
+      isActivityEnabled: true,
+      activity: [
+        {
+          date: 'Feb 13, 2024',
+          records: [],
+        },
+      ],
+      isTeams: true,
+      teams: [],
     },
   ] as Member[];
   const [displayedMembers, setDisplayedMembers] = useState(members);
@@ -255,8 +263,6 @@ const MembersSection = () => {
               </div>
             </div>
           </div>
-          {/* TABS */}
-          <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
           <UserInviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
         </>
       )}

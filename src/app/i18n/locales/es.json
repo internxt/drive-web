@@ -1503,7 +1503,22 @@
               }
             }
           },
-          "teams": "Equipos"
+          "teams": {
+            "title": "Equipos",
+            "role": "Rol",
+            "emptyTeamsOwner": {
+              "title": "Empezar a trabajar con equipos",
+              "subtitle": "Gestiona más rápido a los miembros del espacio de trabajo agrupándolos en equipos",
+              "action": "Crear un equipo"
+            },
+            "emptyTeamsMember": {
+              "title": "No hay equipos creados aún",
+              "subtitle": "El propietario del espacio de trabajo puede gestionar a los miembros más rápidamente agrupándolos en equipos"
+            },
+            "emptyTeams": {
+              "title": "No es miembro de ningún equipo"
+            }
+          }
         }
       },
       "teams": {

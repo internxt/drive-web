@@ -3,9 +3,10 @@ import { MemberRole } from '../../../../types';
 type RoleProps = {
   role?: MemberRole;
   roleText: string;
+  size: string;
 };
 
-const RoleBadge = ({ role, roleText }: RoleProps) => {
+const RoleBadge = ({ role, roleText, size }: RoleProps) => {
   if (!role) return <></>;
 
   const roleColorMapping = {
@@ -24,9 +25,14 @@ const RoleBadge = ({ role, roleText }: RoleProps) => {
     current: 'text-primary dark:text-white',
   };
 
+  const sizeMapping = {
+    small: 'text-xs h-5 px-1.5',
+    medium: 'text-sm h-7 px-2',
+  };
+
   return (
-    <div className={`flex h-5 w-fit items-center justify-center rounded-md px-1.5 ${roleColorMapping[role]}`}>
-      <span className={`${roleTextColorMapping[role]} text-center text-xs font-medium`}>{roleText}</span>
+    <div className={`flex w-fit items-center justify-center rounded-md ${roleColorMapping[role]} ${sizeMapping[size]}`}>
+      <span className={`${roleTextColorMapping[role]} text-center font-medium`}>{roleText}</span>
     </div>
   );
 };

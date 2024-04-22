@@ -1512,7 +1512,22 @@
               }
             }
           },
-          "teams": "Squadre"
+          "teams": {
+            "title": "Squadre",
+            "role": "Role",
+            "emptyTeamsOwner": {
+              "title": "Iniziare con i team",
+              "subtitle": "Gestisci più velocemente i membri dello spazio di lavoro raggruppandoli in team",
+              "action": "Crea un team"
+            },
+            "emptyTeamsMember": {
+              "title": "Nessuna squadra ancora creata",
+              "subtitle": "Il proprietario dello spazio di lavoro può gestire i membri più velocemente raggruppandoli in team"
+            },
+            "emptyTeams": {
+              "title": "Non è membro di alcun team"
+            }
+          }
         }
       },
       "teams": {

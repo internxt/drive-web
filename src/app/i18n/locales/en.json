@@ -1525,7 +1525,22 @@
               }
             }
           },
-          "teams": "Teams"
+          "teams": {
+            "title": "Teams",
+            "role": "Role",
+            "emptyTeamsOwner": {
+              "title": "Get started with teams",
+              "subtitle": "Manage workspace members faster by grouping them into teams",
+              "action": "Create a team"
+            },
+            "emptyTeamsMember": {
+              "title": "No teams created yet",
+              "subtitle": "Workspace owner can manage members faster by grouping them into teams"
+            },
+            "emptyTeams": {
+              "title": "Not a member of any team"
+            }
+          }
         }
       },
       "teams": {

@@ -11,10 +11,13 @@ import { RootState } from '../../../../../store';
 import { useAppSelector } from '../../../../../store/hooks';
 import { PlanState } from '../../../../../store/slices/plan';
 import UsageBar from '../../../../components/Usage/UsageBar';
-import { Member } from '../../../../types';
+import { Member, TypeTabs, ActiveTab } from '../../../../types';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import UserCard from '../components/UserCard';
+import Tabs from '../../../../components/Tabs';
+import ActivityTab from '../components/ActivityTab';
+import TeamsTab from '../components/TeamsTab';
 
 interface MemberDetailsContainer {
   member: Member;
@@ -64,6 +67,20 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
     : null;
   products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
   const usedProducts = products?.filter((product) => product.usageInBytes > 0);
+
+  const tabs: TypeTabs = [
+    {
+      name: translate('preferences.workspace.members.tabs.activity.name'),
+      tab: 'activity',
+      view: <ActivityTab role={member.role} isActivityEnabled={member.isActivityEnabled} activity={member.activity} />,
+    },
+    {
+      name: translate('preferences.workspace.members.tabs.teams'),
+      tab: 'teams',
+      view: <TeamsTab role={member.role} teams={member.teams} isTeams={member.isTeams} />,
+    },
+  ];
+  const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
 
   return (
     <div className="flex flex-col space-y-8">
@@ -122,6 +139,7 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
           </div>
         )}
       </Card>
+      <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
       <DeactivateMemberModal
         name={member.name + ' ' + member.lastname}
         isOpen={isDeactivateModalOpen}

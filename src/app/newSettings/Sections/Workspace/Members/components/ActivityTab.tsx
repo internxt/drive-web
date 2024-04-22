@@ -8,8 +8,8 @@ import EmptyTab from 'app/newSettings/components/EmptyTab';
 import membersActivity from 'assets/icons/empty/members-activity.svg';
 import ActivityFilters from './ActivityFilters';
 
-const ActivityTab = ({ user, isActivityEnabled, activity }: ActivityTabProps): JSX.Element => {
-  const isOwner = user.role === 'owner';
+const ActivityTab = ({ role, isActivityEnabled, activity }: ActivityTabProps): JSX.Element => {
+  const isOwner = role === 'owner';
   const [selectedRoles, setIsSelectedRoles] = useState<string[]>(['member', 'manager', 'owner']);
 
   const enableActivity = () => {};

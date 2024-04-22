@@ -1524,7 +1524,22 @@
               }
             }
           },
-          "teams": "团队"
+          "teams": {
+            "title": "团队",
+            "role": "角色",
+            "emptyTeamsOwner": {
+              "title": "开始使用团队",
+              "subtitle": "通过将工作区成员分组为团队，更快地管理工作区成员",
+              "action": "创建团队"
+            },
+            "emptyTeamsMember": {
+              "title": "尚未创建团队",
+              "subtitle": "工作区所有者可通过将成员分组为团队来更快地管理成员"
+            },
+            "emptyTeams": {
+              "title": "不属于任何团队"
+            }
+          }
         }
       },
       "teams": {
