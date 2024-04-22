@@ -1,13 +1,11 @@
-import { CheckCircle, X } from '@phosphor-icons/react';
+import { Asterisk, CheckCircle, X } from '@phosphor-icons/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-const KeyHoleIcon = () => {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="rgb(0,102,255)" viewBox="0 0 256 256">
-      <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm29.52,146.39a4,4,0,0,1-3.66,5.61H102.14a4,4,0,0,1-3.66-5.61L112,139.72a32,32,0,1,1,32,0Z"></path>
-    </svg>
-  );
-};
+const KeyHoleIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="30" height="30" fill="rgb(0,102,255)" viewBox="0 0 256 256">
+    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm29.52,146.39a4,4,0,0,1-3.66,5.61H102.14a4,4,0,0,1-3.66-5.61L112,139.72a32,32,0,1,1,32,0Z"></path>
+  </svg>
+);
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate, translateList } = useTranslationContext();
@@ -60,7 +58,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row space-x-4" key={card}>
-                    <KeyHoleIcon />
+                    <Asterisk weight="fill" size={32} className="text-primary" />
                     <p className="whitespace-nowrap text-xl font-semibold text-gray-80 dark:text-gray-20">{card}</p>
                   </div>
                 ))}
