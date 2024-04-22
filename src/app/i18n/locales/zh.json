@@ -24,13 +24,9 @@
     "cta": "达成交易"
   },
   "banner": {
-    "label": "新免费工具",
-    "title": {
-      "normal1": "Internxt",
-      "free": " 免费 ",
-      "normal2": "文件转换器"
-    },
-    "cta": "免费试用",
+    "label": "永久保护您的文件",
+    "title": "通过Internxt获得终身访问安全的私人云存储！",
+    "cta": "选择您的计划",
     "guarantee": "30天退款保证"
   },
   "notFound": {

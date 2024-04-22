@@ -9,8 +9,8 @@ import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Banner from './Banner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_file_converter_banner';
-const OFFER_OFF_DAY = new Date('2024-04-23');
+const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_soft_sale_banner';
+const OFFER_OFF_DAY = new Date('2024-04-30');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
