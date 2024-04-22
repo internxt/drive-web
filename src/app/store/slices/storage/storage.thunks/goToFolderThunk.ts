@@ -25,6 +25,17 @@ export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
   dispatch(storageActions.setNamePath(fullPathParsedNames));
 };
 
+export const resetLoaderNavigationStatus = createAsyncThunk<void, { folderId: number }, { state: RootState }>(
+  'storage/goToFolder',
+  async ({ folderId }, { dispatch }) => {
+    dispatch(storageActions.setIsLoadingFolder({ folderId: folderId, value: true }));
+    dispatch(storageActions.setHasMoreDriveFolders({ folderId: folderId, status: true }));
+    dispatch(storageActions.setHasMoreDriveFiles({ folderId: folderId, status: true }));
+    dispatch(storageActions.resetLevelsFoldersLength({ folderId: folderId }));
+    dispatch(storageActions.resetDrivePagination());
+  },
+);
+
 export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootState }>(
   'storage/goToFolder',
   async (path: FolderPath, { getState, dispatch }) => {

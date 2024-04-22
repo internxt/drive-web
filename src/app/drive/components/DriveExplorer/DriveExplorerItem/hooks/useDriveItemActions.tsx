@@ -1,19 +1,21 @@
 import { createRef, useMemo } from 'react';
 
-import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
-import shareService from '../../../../../share/services/share.service';
-import { storageActions } from '../../../../../store/slices/storage';
-import storageThunks from '../../../../../store/slices/storage/storage.thunks';
-import { uiActions } from '../../../../../store/slices/ui';
+import navigationService from 'app/core/services/navigation.service';
+import { useSelector } from 'react-redux';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import {
   getDatabaseFilePreviewData,
   updateDatabaseFilePreviewData,
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
+import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
+import shareService from '../../../../../share/services/share.service';
+import { RootState } from '../../../../../store';
+import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
-import navigationService from 'app/core/services/navigation.service';
+import { storageActions } from '../../../../../store/slices/storage';
+import storageThunks from '../../../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../../../store/slices/ui';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -38,6 +40,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
   const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const currentFolderId = useSelector((state: RootState) => state.storage.currentPath.id);
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -110,6 +113,9 @@ const useDriveItemActions = (item): DriveItemActions => {
     const isRecentsView = navigationService.isCurrentPath('recents');
 
     if (item.isFolder) {
+      dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: currentFolderId }));
+      dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: item.id }));
+
       navigationService.pushFolder(item.uuid);
     } else {
       if (isRecentsView) {
