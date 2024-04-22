@@ -1,7 +1,6 @@
-import { X } from '@phosphor-icons/react';
+import { CheckCircle, X } from '@phosphor-icons/react';
 import LifetimeBig from 'assets/images/banner/lifetime_big.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CheckCircle } from '@phosphor-icons/react/dist/ssr';
 
 const WEBSITE_URL = process.env.REACT_APP_WEBSITE_URL;
 
