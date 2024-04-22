@@ -2,7 +2,7 @@ import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { StorageState } from '../storage.model';
 import { RootState } from '../../..';
-import { uploadItemsParallelThunk } from './uploadItemsThunk';
+import { uploadItemsParallelThunk, uploadItemsParallelThunkNoCheck } from './uploadItemsThunk';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import storageThunks from '.';
 import tasksService from '../../../../tasks/services/tasks.service';
@@ -302,7 +302,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         if (level.childrenFiles) {
           if (uploadFolderAbortController.signal.aborted) return;
           await dispatch(
-            uploadItemsParallelThunk({
+            uploadItemsParallelThunkNoCheck({
               files: level.childrenFiles,
               parentFolderId: createdFolder.id,
               options: {
@@ -310,7 +310,6 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
                 showNotifications: false,
                 showErrors: false,
                 abortController: uploadFolderAbortController,
-                disableDuplicatedNamesCheck: true,
               },
               filesProgress: { filesUploaded: alreadyUploaded, totalFilesToUpload: itemsUnderRoot },
             }),

@@ -1,13 +1,13 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
-import { OrderDirection, OrderSettings } from '../../../core/types';
-import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
-import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
+import selectors from './storage.selectors';
 import { storageExtraReducers } from '../storage/storage.thunks';
 import { filtersFactory, orderFactory, StorageSetFiltersPayload, StorageState } from './storage.model';
-import selectors from './storage.selectors';
+import databaseService, { DatabaseCollection } from '../../../database/services/database.service';
+import { OrderDirection, OrderSettings } from '../../../core/types';
+import { DriveItemData, DriveItemPatch, FileViewMode, FolderPath } from '../../../drive/types';
+import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AdvancedSharedItem, SharedNamePath } from 'app/share/types';
 import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {

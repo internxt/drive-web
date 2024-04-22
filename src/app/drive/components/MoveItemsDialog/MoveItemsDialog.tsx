@@ -1,28 +1,26 @@
-import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
-import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
-import errorService from 'app/core/services/error.service';
-import navigationService from 'app/core/services/navigation.service';
-import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import newStorageService from 'app/drive/services/new-storage.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
-import Button from 'app/shared/components/Button/Button';
+import { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
+import { FolderSimplePlus, CaretRight } from '@phosphor-icons/react';
 import Modal from 'app/shared/components/Modal';
-import Spinner from 'app/shared/components/Spinner/Spinner';
-import { RootState } from 'app/store';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import errorService from 'app/core/services/error.service';
+import { uiActions } from 'app/store/slices/ui';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { RootState } from 'app/store';
+import { DriveItemData, FolderPathDialog } from '../../types';
+import moveItems from '../../../../../src/use_cases/trash/recover-items-from-trash';
+import folderImage from 'assets/icons/light/folder.svg';
+import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
+import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
-import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
-import { uiActions } from 'app/store/slices/ui';
-import folderImage from 'assets/icons/light/folder.svg';
+import Spinner from 'app/shared/components/Spinner/Spinner';
+import Button from 'app/shared/components/Button/Button';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { TFunction } from 'i18next';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import moveItems from '../../../../../src/use_cases/trash/recover-items-from-trash';
-import { DriveItemData, FolderPathDialog } from '../../types';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import navigationService from 'app/core/services/navigation.service';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -44,13 +42,30 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
-  const currentPath = useAppSelector((state: RootState) => state.storage.namePath);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
   const itemParentId = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
   const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
+  };
+
+  const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
+    const items: BreadcrumbItemData[] = [];
+
+    if (currentFolderPaths.length > 0) {
+      currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
+        items.push({
+          id: path.id,
+          label: path.name,
+          icon: null,
+          active: i < namePath.length - 1,
+          dialog: isOpen,
+          onClick: () => onShowFolderContentClicked(path.id, path.name),
+        });
+      });
+    }
+    return items;
   };
 
   useEffect(() => {
@@ -127,19 +142,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = async (itemsToMove) => {
-    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore:next-line
-    const fullPath = breadcrumbsList.toReversed();
-    const isRootPathNameList = fullPath.length === 0;
-    if (isRootPathNameList && !!currentPath?.[0]) {
-      fullPath.push(currentPath[0] as FolderAncestor);
-    }
-    const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
-
-    dispatch(storageActions.setNamePath(fullPathParsedNamesList));
-
+  const setDriveBreadcrumb = async () => {
     const currentItemUuid = navigationService.getUuid();
     const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
 
@@ -171,7 +174,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
       setIsLoading(false);
       onClose();
-      !props.isTrash && setDriveBreadcrumb(itemsToMove);
+      !props.isTrash && setDriveBreadcrumb();
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
@@ -200,14 +203,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         {/* Folder list */}
         <div className="flex flex-col">
           <div className="flex h-10 items-center">
-            {isLoading ? (
-              <Spinner className="h-5 w-5" />
-            ) : (
-              <BreadcrumbsMoveItemsDialogView
-                onShowFolderContentClicked={onShowFolderContentClicked}
-                currentNamePaths={currentNamePaths}
-              />
-            )}
+            {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
           </div>
 
           <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">
