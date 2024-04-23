@@ -154,10 +154,7 @@ ListProps<T, F>): JSX.Element {
   const container = document.getElementById('scrollableList');
   const isVerticalScrollbarVisible = container && container.scrollHeight > container.clientHeight;
   const isEmptyState = !hasMoreItems && items.length === 0 && !isLoading;
-  const hasMoreItemsAndItsLoading = hasMoreItems && items.length === 0 && isLoading;
-  // console.log({ hasMoreItems });
-  // console.log({ items: items.length });
-  // console.log({ isLoading });
+
   const loader = new Array(25)
     .fill(0)
     .map((col, i) => (
@@ -292,7 +289,6 @@ ListProps<T, F>): JSX.Element {
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
-        {/* {hasMoreItemsAndItsLoading ? loader : null} */}
         {isEmptyState ? (
           emptyState
         ) : items.length > 0 && !forceLoading ? (

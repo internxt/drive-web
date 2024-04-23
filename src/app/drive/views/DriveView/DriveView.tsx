@@ -52,8 +52,6 @@ const DriveView = (props: DriveViewProps) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
 
-      // if (currentFolderId === folderMeta.id) {
-      //   console.log('go to folder htunk in view called');
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
@@ -61,7 +59,7 @@ const DriveView = (props: DriveViewProps) => {
           uuid: folderMeta.uuid,
         }),
       );
-      // }
+
       dispatch(storageActions.setForceLoading(false));
       folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
     } catch (error) {

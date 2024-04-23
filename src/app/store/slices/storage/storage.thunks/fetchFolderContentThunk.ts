@@ -19,8 +19,6 @@ const filterFilesItems = (item: DriveItemData) => !item.isFolder;
 export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
-    console.log('fetchPaginatedFolderContentThunk');
-    console.log('folderId', folderId);
     const storageState = getState().storage;
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders[folderId] ?? true;
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles[folderId] ?? true;
