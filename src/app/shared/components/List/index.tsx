@@ -1,11 +1,11 @@
+import { ArrowDown, ArrowUp } from '@phosphor-icons/react';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import _ from 'lodash';
+import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import ListItem, { ListItemMenu } from './ListItem';
 import SkinSkeletonItem from './SkinSketelonItem';
-import React, { ReactNode, useEffect, useCallback, useLayoutEffect, useState } from 'react';
-import { ArrowUp, ArrowDown } from '@phosphor-icons/react';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import InfiniteScroll from 'react-infinite-scroll-component';
-import _ from 'lodash';
-import { useHotkeys } from 'react-hotkeys-hook';
 
 type HeaderProps<T, F> = {
   label: string;
@@ -26,6 +26,7 @@ interface ListProps<T, F> {
   onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
+  forceLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: ReactNode;
   onNextPage?: () => void;
@@ -129,6 +130,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   onEnterPressed,
   onSelectedItemsChanged,
   isLoading,
+  forceLoading,
   skinSkeleton,
   emptyState,
   orderBy,
@@ -289,7 +291,7 @@ ListProps<T, F>): JSX.Element {
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
         {isEmptyState ? (
           emptyState
-        ) : items.length > 0 ? (
+        ) : items.length > 0 && !forceLoading ? (
           <InfiniteScroll
             dataLength={items.length}
             next={handleNextPage}

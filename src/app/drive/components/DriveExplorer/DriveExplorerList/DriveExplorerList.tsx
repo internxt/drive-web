@@ -33,6 +33,7 @@ import {
 interface DriveExplorerListProps {
   folderId: number;
   isLoading: boolean;
+  forceLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   order: OrderSettings;
@@ -146,7 +147,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
 
-  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = props;
+  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading } = props;
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
@@ -332,6 +333,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
+          forceLoading={forceLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -461,6 +463,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  forceLoading: state.storage.forceLoading,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||
