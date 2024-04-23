@@ -269,7 +269,6 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
-    console.log({ currentFolderId });
   }, [currentFolderId]);
 
   useEffect(() => {

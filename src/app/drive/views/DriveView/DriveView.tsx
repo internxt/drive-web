@@ -47,7 +47,6 @@ const DriveView = (props: DriveViewProps) => {
     }
   }, [isFileView, isFolderView, itemUuid]);
 
-  console.log({ currentFolderIdView: currentFolderId });
   const goFolder = async (folderUuid: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
