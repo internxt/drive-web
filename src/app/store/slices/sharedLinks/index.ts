@@ -6,178 +6,32 @@ import shareService, {
 } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
-import {
-  ListShareLinksItem,
-  ListShareLinksResponse,
-  SharedFoldersInvitationsAsInvitedUserResponse,
-  ShareLink,
-} from '@internxt/sdk/dist/drive/share/types';
+import { SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
+import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
-import { trackShareLinkBucketIdUndefined } from 'app/analytics/services/analytics.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { userThunks } from '../user';
-import { aes } from '@internxt/lib';
-import crypto from 'crypto';
-import { Environment } from '@internxt/inxt-js';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
-import errorService from 'app/core/services/error.service';
-import { DriveItemData } from 'app/drive/types';
-import { storageActions } from '../storage';
+import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { Role } from './types';
-import { UserRoles } from 'app/share/types';
 
 export interface ShareLinksState {
-  isLoadingGeneratingLink: boolean;
-  isLoadingShareds: boolean;
-  isSharingKey: boolean;
-  sharedLinks: ListShareLinksItem[] | []; //ShareLink[];
   isLoadingRoles: boolean;
   roles: Role[];
   pendingInvitations: SharedFoldersInvitationsAsInvitedUserResponse[];
-  pagination: {
-    page: number;
-    perPage: number;
-    //totalItems: number;
-  };
   currentShareId: string | null;
   currentSharingRole: UserRoles | null;
 }
 
 const initialState: ShareLinksState = {
-  isLoadingGeneratingLink: false,
-  isLoadingShareds: false,
-  isSharingKey: false,
-  sharedLinks: [],
   isLoadingRoles: false,
   roles: [],
   pendingInvitations: [],
-  pagination: {
-    page: 1,
-    perPage: 50,
-    //totalItems: 0,
-  },
   currentShareId: null,
   currentSharingRole: null,
 };
-
-export const fetchSharedLinksThunk = createAsyncThunk<ListShareLinksResponse, void, { state: RootState }>(
-  'shareds/fetchSharedLinks',
-  async (_, { getState }) => {
-    const state = getState();
-    const page = state.shared.pagination.page;
-    const perPage = state.shared.pagination.perPage;
-    const response = await shareService.getAllShareLinks(page, perPage, undefined);
-    return response;
-  },
-);
-
-interface GetLinkPayload {
-  item: DriveItemData;
-}
-
-const getSharedLinkThunk = createAsyncThunk<string | void, GetLinkPayload, { state: RootState }>(
-  'shareds/getLink',
-  async (payload: GetLinkPayload, { dispatch, getState }): Promise<string | void> => {
-    const rootState = getState();
-    const user = rootState.user.user;
-    try {
-      if (!user) {
-        navigationService.push(AppView.Login);
-        return;
-      }
-
-      const { bucket, bridgeUser, userId, mnemonic } = user;
-
-      if (!bucket) {
-        trackShareLinkBucketIdUndefined({ email: bridgeUser });
-        // close();
-        notificationsService.show({ text: t('error.shareLinkMissingBucket'), type: ToastType.Error });
-        dispatch(userThunks.logoutThunk());
-
-        return;
-      }
-
-      const code = crypto.randomBytes(32).toString('hex');
-
-      const encryptedMnemonic = aes.encrypt(mnemonic, code);
-      const encryptedCode = aes.encrypt(code, mnemonic);
-
-      const item = payload.item;
-      const requestPayload: ShareTypes.GenerateShareLinkPayload = {
-        itemId: item.id.toString(),
-        type: item.isFolder ? 'folder' : 'file',
-        bucket: bucket,
-        itemToken: await new Environment({
-          bridgePass: userId,
-          bridgeUser,
-          bridgeUrl: process.env.REACT_APP_STORJ_BRIDGE,
-        }).createFileToken(bucket, item.fileId, 'PULL'),
-        encryptedMnemonic,
-        encryptedCode,
-        timesValid: -1,
-      };
-
-      const share = await shareService.createShare(requestPayload);
-      const link = shareService.getLinkFromShare(share, code, mnemonic, requestPayload.type);
-      navigator.clipboard.writeText(link);
-      notificationsService.show({ text: t('notificationMessages.copyLink'), type: ToastType.Success });
-
-      const coercedShareLink: unknown = { ...share, isFolder: item.isFolder };
-      dispatch(
-        storageActions.patchItem({
-          id: item.id,
-          folderId: item.isFolder ? item.parentId : item.folderId,
-          isFolder: item.isFolder,
-          patch: {
-            // The objective of the following array is for it to be non-empty, as it signals that the item has been shared, and so we can display the icon of a shared file/folder:
-            shares: [coercedShareLink as ShareLink],
-          },
-        }),
-      );
-
-      return link;
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-
-      if (castedError.message === 'unauthenticated') {
-        return navigationService.push(AppView.Login);
-      }
-      notificationsService.show({ text: castedError.message, type: ToastType.Error });
-    }
-  },
-);
-
-interface DeleteLinkPayload {
-  linkId: string;
-  item: DriveItemData;
-}
-
-export const deleteLinkThunk = createAsyncThunk<void, DeleteLinkPayload, { state: RootState }>(
-  'shareds/deleteLink',
-  async (payload: DeleteLinkPayload, { dispatch, getState }) => {
-    const { linkId, item } = payload;
-    await shareService.deleteShareLink(linkId);
-
-    dispatch(
-      storageActions.patchItem({
-        id: item.id,
-        folderId: item.isFolder ? item.parentId : item.folderId,
-        isFolder: item.isFolder,
-        patch: {
-          // The objective of the following array is for it to be empty, as it signals that the item share has been removed, and so we can hide the icon of a shared file/folder:
-          shares: [],
-        },
-      }),
-    );
-
-    const stringLinksDeleted = t('shared-links.toast.link-deleted');
-    notificationsService.show({ text: stringLinksDeleted, type: ToastType.Success });
-  },
-);
 
 export interface ShareFileWithUserPayload {
   itemId: string;
@@ -361,35 +215,6 @@ export const sharedSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchSharedLinksThunk.pending, (state) => {
-        state.isLoadingShareds = true;
-      })
-      .addCase(fetchSharedLinksThunk.fulfilled, (state, action) => {
-        state.isLoadingShareds = false;
-        state.sharedLinks = action.payload.items;
-        state.pagination = action.payload.pagination;
-      })
-      .addCase(fetchSharedLinksThunk.rejected, (state) => {
-        state.isLoadingShareds = false;
-      })
-      .addCase(getSharedLinkThunk.pending, (state) => {
-        state.isLoadingGeneratingLink = true;
-      })
-      .addCase(getSharedLinkThunk.fulfilled, (state) => {
-        state.isLoadingGeneratingLink = false;
-      })
-      .addCase(getSharedLinkThunk.rejected, (state) => {
-        state.isLoadingGeneratingLink = false;
-      })
-      .addCase(shareItemWithUser.pending, (state) => {
-        state.isSharingKey = true;
-      })
-      .addCase(shareItemWithUser.fulfilled, (state) => {
-        state.isSharingKey = false;
-      })
-      .addCase(shareItemWithUser.rejected, (state) => {
-        state.isSharingKey = false;
-      })
       .addCase(getSharedFolderRoles.pending, (state) => {
         state.isLoadingRoles = true;
       })
@@ -421,9 +246,6 @@ export const sharedSelectors = {
 export const sharedActions = sharedSlice.actions;
 
 export const sharedThunks = {
-  fetchSharedLinksThunk,
-  getSharedLinkThunk,
-  deleteLinkThunk,
   shareItemWithUser,
   stopSharingItem,
   removeUserFromSharedFolder,
