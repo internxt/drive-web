@@ -62,6 +62,7 @@ const DriveView = (props: DriveViewProps) => {
         }),
       );
       // }
+      dispatch(storageActions.setForceLoading(false));
       folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
     } catch (error) {
       navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });

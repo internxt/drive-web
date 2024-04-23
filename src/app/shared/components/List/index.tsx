@@ -26,6 +26,7 @@ interface ListProps<T, F> {
   onEnterPressed?: (props: T) => void;
   onSelectedItemsChanged: (changes: { props: T; value: boolean }[]) => void;
   isLoading?: boolean;
+  forceLoading?: boolean;
   skinSkeleton?: Array<JSX.Element>;
   emptyState?: ReactNode;
   onNextPage?: () => void;
@@ -129,6 +130,7 @@ export default function List<T extends { id: any }, F extends keyof T>({
   onEnterPressed,
   onSelectedItemsChanged,
   isLoading,
+  forceLoading,
   skinSkeleton,
   emptyState,
   orderBy,
@@ -290,10 +292,10 @@ ListProps<T, F>): JSX.Element {
 
       {/* BODY */}
       <div id="scrollableList" className="flex h-full flex-col overflow-x-auto overflow-y-auto" ref={ref}>
-        {hasMoreItemsAndItsLoading ? loader : null}
+        {/* {hasMoreItemsAndItsLoading ? loader : null} */}
         {isEmptyState ? (
           emptyState
-        ) : items.length > 0 ? (
+        ) : items.length > 0 && !forceLoading ? (
           <InfiniteScroll
             dataLength={items.length}
             next={handleNextPage}

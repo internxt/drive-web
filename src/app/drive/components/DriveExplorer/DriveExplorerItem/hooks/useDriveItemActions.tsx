@@ -115,7 +115,7 @@ const useDriveItemActions = (item): DriveItemActions => {
     if (item.isFolder) {
       // dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: currentFolderId }));
       // dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: item.id }));
-
+      dispatch(storageActions.setForceLoading(true));
       // dispatch(goToFolderThunk({ id: item.id, name: item.plainName, uuid: item.uuid }));
       navigationService.pushFolder(item.uuid);
     } else {

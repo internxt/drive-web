@@ -12,6 +12,7 @@ import { IRoot } from './storage.thunks/uploadFolderThunk';
 
 const initialState: StorageState = {
   loadingFolders: {},
+  forceLoading: false,
   isDeletingItems: false,
   levels: {},
   moveDialogLevels: {},
@@ -65,6 +66,9 @@ export const storageSlice = createSlice({
   reducers: {
     setIsLoadingFolder: (state: StorageState, action: PayloadAction<{ folderId: number; value: boolean }>) => {
       state.loadingFolders[action.payload.folderId] = action.payload.value;
+    },
+    setForceLoading: (state: StorageState, action: PayloadAction<boolean>) => {
+      state.forceLoading = action.payload;
     },
     setIsLoadingRecents: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingRecents = action.payload;
