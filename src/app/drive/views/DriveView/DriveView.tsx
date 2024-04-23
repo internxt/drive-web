@@ -21,11 +21,10 @@ export interface DriveViewProps {
   isLoading: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
-  currentFolderId: number;
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, items, isLoading, currentFolderId } = props;
+  const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
 
