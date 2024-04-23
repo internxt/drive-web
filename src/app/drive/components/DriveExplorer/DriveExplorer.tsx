@@ -268,6 +268,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   useEffect(() => {
     resetPaginationState();
     fetchItems();
+    console.log({ currentFolderId });
   }, [currentFolderId]);
 
   useEffect(() => {
@@ -815,29 +816,30 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
 
           <div className="z-0 flex h-full grow flex-col justify-between overflow-y-hidden">
             <WarningMessageWrapper />
-            {hasItems && (
-              <div className="flex grow flex-col justify-between overflow-hidden">
-                <ViewModeComponent
-                  folderId={currentFolderId}
-                  items={items}
-                  isLoading={isTrash ? isLoadingTrashItems : isLoading}
-                  onEndOfScroll={fetchItems}
-                  hasMoreItems={hasMoreItemsToLoad}
-                  isTrash={isTrash}
-                  onHoverListItems={(areHovered) => {
-                    setIsListElementsHovered(areHovered);
-                  }}
-                  title={title}
-                  onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
-                  showStopSharingConfirmation={showStopSharingConfirmation}
-                />
-              </div>
-            )}
-            {!hasItems && isLoading && loader}
+            {/* {hasItems && ( */}
+            <div className="flex grow flex-col justify-between overflow-hidden">
+              <ViewModeComponent
+                folderId={currentFolderId}
+                items={items}
+                isLoading={isTrash ? isLoadingTrashItems : isLoading}
+                onEndOfScroll={fetchItems}
+                hasMoreItems={hasMoreItemsToLoad}
+                isTrash={isTrash}
+                onHoverListItems={(areHovered) => {
+                  setIsListElementsHovered(areHovered);
+                }}
+                title={title}
+                onOpenStopSharingAndMoveToTrashDialog={onOpenStopSharingAndMoveToTrashDialog}
+                showStopSharingConfirmation={showStopSharingConfirmation}
+              />
+            </div>
+            {/* )} */}
+            {/* {!hasItems && isLoading && loader} */}
             {
               /* EMPTY FOLDER */
               !hasItems &&
                 !isLoading &&
+                !hasMoreItemsToLoad &&
                 !isLoadingTrashItems &&
                 (hasFilters ? (
                   <Empty

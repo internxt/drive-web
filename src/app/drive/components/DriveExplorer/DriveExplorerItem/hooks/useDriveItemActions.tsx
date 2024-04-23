@@ -113,9 +113,10 @@ const useDriveItemActions = (item): DriveItemActions => {
     const isRecentsView = navigationService.isCurrentPath('recents');
 
     if (item.isFolder) {
-      dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: currentFolderId }));
-      dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: item.id }));
+      // dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: currentFolderId }));
+      // dispatch(storageThunks.resetLoaderNavigationStatus({ folderId: item.id }));
 
+      // dispatch(goToFolderThunk({ id: item.id, name: item.plainName, uuid: item.uuid }));
       navigationService.pushFolder(item.uuid);
     } else {
       if (isRecentsView) {

@@ -21,10 +21,11 @@ export interface DriveViewProps {
   isLoading: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
+  currentFolderId: number;
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, items, isLoading } = props;
+  const { dispatch, namePath, items, isLoading, currentFolderId } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
 
@@ -46,10 +47,13 @@ const DriveView = (props: DriveViewProps) => {
     }
   }, [isFileView, isFolderView, itemUuid]);
 
+  console.log({ currentFolderIdView: currentFolderId });
   const goFolder = async (folderUuid: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
 
+      // if (currentFolderId === folderMeta.id) {
+      //   console.log('go to folder htunk in view called');
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
@@ -57,6 +61,7 @@ const DriveView = (props: DriveViewProps) => {
           uuid: folderMeta.uuid,
         }),
       );
+      // }
       folderMeta.plainName && setTitle(`${folderMeta.plainName} - Internxt Drive`);
     } catch (error) {
       navigationService.push(AppView.FolderFileNotFound, { itemType: 'folder' });

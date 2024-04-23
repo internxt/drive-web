@@ -29,10 +29,10 @@ export const resetLoaderNavigationStatus = createAsyncThunk<void, { folderId: nu
   'storage/goToFolder',
   async ({ folderId }, { dispatch }) => {
     dispatch(storageActions.setIsLoadingFolder({ folderId: folderId, value: true }));
-    dispatch(storageActions.setHasMoreDriveFolders({ folderId: folderId, status: true }));
-    dispatch(storageActions.setHasMoreDriveFiles({ folderId: folderId, status: true }));
-    dispatch(storageActions.resetLevelsFoldersLength({ folderId: folderId }));
-    dispatch(storageActions.resetDrivePagination());
+    // dispatch(storageActions.setHasMoreDriveFolders({ folderId: folderId, status: true }));
+    // dispatch(storageActions.setHasMoreDriveFiles({ folderId: folderId, status: true }));
+    // dispatch(storageActions.resetLevelsFoldersLength({ folderId: folderId }));
+    // dispatch(storageActions.resetDrivePagination());
   },
 );
 
