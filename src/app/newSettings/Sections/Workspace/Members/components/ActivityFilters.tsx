@@ -42,14 +42,14 @@ const ActivityFilters = ({ isSelectedRoles, setIsSelectedRoles }: ActivityFilter
     }
   };
 
-  const onFilteredRoles = (role) => {
-    const NewSelectedRoles = [...isSelectedRoles];
-    const roleIndex = NewSelectedRoles.indexOf(role);
-    const isSelected = NewSelectedRoles.includes(role);
+  const onFilteredRoles = (roleType) => {
+    const newSelectedRoles = [...isSelectedRoles];
+    const roleIndex = newSelectedRoles.indexOf(roleType);
+    const isSelected = newSelectedRoles.includes(roleType);
 
-    isSelected ? NewSelectedRoles.splice(roleIndex, 1) : NewSelectedRoles.push(role);
-    NewSelectedRoles.length === 3 ? setIsFiltersModified(false) : setIsFiltersModified(true);
-    setIsSelectedRoles(NewSelectedRoles);
+    isSelected ? newSelectedRoles.splice(roleIndex, 1) : newSelectedRoles.push(roleType);
+    newSelectedRoles.length === 3 ? setIsFiltersModified(false) : setIsFiltersModified(true);
+    setIsSelectedRoles(newSelectedRoles);
   };
 
   return (
