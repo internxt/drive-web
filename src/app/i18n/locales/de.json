@@ -23,11 +23,11 @@
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
-  "lifetimeBanner": {
-    "label": "Suchen Sie einen sicheren Datenspeicher fürs Leben?",
-    "title": "Schützen Sie Ihre Dateien mit lebenslangen Internxt-Plänen!",
-    "cta": "Plan auswählen",
-    "guarantee": "Geld-zurück-Garantie innerhalb von 30 Tagen"
+  "banner": {
+    "label": "Sichern Sie Ihre Dateien für immer",
+    "title": "Erhalten Sie lebenslangen Zugang zu sicherem, privatem Cloud-Speicher mit Internxt!",
+    "cta": "Wählen Sie Ihren Plan",
+    "guarantee": "30-Tage-Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",

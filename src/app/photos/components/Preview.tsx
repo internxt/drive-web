@@ -1,14 +1,14 @@
-import { CaretLeft, DownloadSimple, Share, Trash, X } from '@phosphor-icons/react';
-import { useState, useEffect, Fragment } from 'react';
 import { Transition } from '@headlessui/react';
-import { useDispatch, useSelector } from 'react-redux';
-import { getPhotoBlob, getPhotoPreview } from 'app/network/download';
-import { RootState } from '../../store';
-import { photosSlice, PhotosState } from '../../store/slices/photos';
-import useIdle from '../../core/hooks/useIdle';
 import { PhotosItemType } from '@internxt/sdk/dist/photos';
+import { CaretLeft, DownloadSimple, Share, X } from '@phosphor-icons/react';
 import * as Sentry from '@sentry/react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { getPhotoBlob, getPhotoPreview } from 'app/network/download';
+import { Fragment, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import useIdle from '../../core/hooks/useIdle';
+import { RootState } from '../../store';
+import { PhotosState, photosSlice } from '../../store/slices/photos';
 
 export default function Preview({
   onDownloadClick,
@@ -210,7 +210,6 @@ function Toolbar({
         <div className="flex">
           <TopIcon Target={DownloadSimple} onClick={onDownloadClick} />
           <TopIcon Target={Share} onClick={onShareClick} />
-          <TopIcon Target={Trash} onClick={onDeleteClick} />
         </div>
       </div>
     </Transition>

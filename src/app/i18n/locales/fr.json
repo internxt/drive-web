@@ -23,11 +23,11 @@
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
     "cta": "Obtenir l'offre"
   },
-  "lifetimeBanner": {
-    "label": "Cherchez-vous un espace de stockage sécurisé à vie?",
-    "title": "Protégez vos fichiers avec les plans à vie d'Internxt!",
-    "cta": "Choisir un plan",
-    "guarantee": "Garantie de remboursement sous 30 jours"
+  "banner": {
+    "label": "Sécurisez vos fichiers pour toujours",
+    "title": "Obtenez un accès à vie au stockage sécurisé et privé dans le cloud avec Internxt !",
+    "cta": "Choisissez votre plan",
+    "guarantee": "Garantie de remboursement de 30 jours"
   },
   "lang": {
     "title": "Langue",

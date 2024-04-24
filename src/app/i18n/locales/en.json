@@ -23,9 +23,9 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
-  "lifetimeBanner": {
-    "label": "Need secure storage for life?",
-    "title": "Protect your files forever with our lifetime plans!",
+  "banner": {
+    "label": "Secure your files forever",
+    "title": "Get lifetime access to secure, private cloud storage with Internxt!",
     "cta": "Choose your plan",
     "guarantee": "30-day money-back guarantee"
   },

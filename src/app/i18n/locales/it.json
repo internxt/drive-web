@@ -23,10 +23,10 @@
       "L'offerta termina l'18 aprile"
     ]
   },
-  "lifetimeBanner": {
-    "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
-    "title": "Proteggete i vostri file con i piani a vita di Internxt!",
-    "cta": "Scegli il piano",
+  "banner": {
+    "label": "Proteggi i tuoi file per sempre",
+    "title": "Ottieni l'accesso a vita allo storage cloud sicuro e privato con Internxt!",
+    "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
   "notFound": {
