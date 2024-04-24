@@ -46,7 +46,7 @@ const updateDatabaseFilePreviewData = async ({
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
   const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
-
+  console.log('updateDatabaseFilePreviewData');
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
     {
@@ -184,18 +184,18 @@ const canFileBeCached = (file: DriveFileData): boolean => {
 };
 
 export {
-  getDatabaseProfileAvatar,
-  updateDatabaseProfileAvatar,
+  canFileBeCached,
+  deleteDatabaseItems,
+  deleteDatabasePhotos,
   deleteDatabaseProfileAvatar,
   getDatabaseFilePreviewData,
-  updateDatabaseFilePreviewData,
   getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
   getDatabasePhotosPreviewData,
-  updateDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
+  getDatabaseProfileAvatar,
+  updateDatabaseFilePreviewData,
+  updateDatabaseFileSourceData,
+  updateDatabasePhotosPreviewData,
   updateDatabasePhotosSourceData,
-  deleteDatabasePhotos,
-  deleteDatabaseItems,
-  canFileBeCached,
+  updateDatabaseProfileAvatar,
 };
