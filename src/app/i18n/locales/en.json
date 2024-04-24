@@ -1495,8 +1495,52 @@
           "actionButton": "Send request"
         },
         "tabs": {
-          "activity": "Activity",
-          "teams": "Teams"
+          "activity": {
+            "name": "Activity",
+            "empty": "No activity",
+            "disabilitedOwner": {
+              "title": "Get started with Activity",
+              "subtitle": "Clear use insights for file and account management with activity log recording",
+              "action": "Enable Activity"
+            },
+            "disabilitedMember": {
+              "title": "Activity is disabled",
+              "subtitle": "Contact the workspace owner to enable Activity Logs for file and account management"
+            },
+            "roles": {
+              "title": "Roles",
+              "member": "Member",
+              "manager": "Manager",
+              "owner": "Owner"
+            },
+            "filter": {
+              "button": "Filter",
+              "title": "Filters",
+              "clear": "Clear",
+              "dateRange": {
+                "title": "Date range",
+                "7days": "Last 7 days",
+                "30days": "Last 30 days",
+                "90days": "Last 90 days"
+              }
+            }
+          },
+          "teams": {
+            "title": "Teams",
+            "role": "Role",
+            "emptyTeamsOwner": {
+              "title": "Get started with teams",
+              "subtitle": "Manage workspace members faster by grouping them into teams",
+              "action": "Create a team"
+            },
+            "emptyTeamsMember": {
+              "title": "No teams created yet",
+              "subtitle": "Workspace owner can manage members faster by grouping them into teams"
+            },
+            "emptyTeams": {
+              "title": "Not a member of any team"
+            }
+          }
         }
       },
       "teams": {

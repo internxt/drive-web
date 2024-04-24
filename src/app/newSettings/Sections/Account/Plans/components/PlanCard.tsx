@@ -32,7 +32,7 @@ const PlanCard = ({
         <div>
           <div className="flex w-full flex-row justify-between">
             <span className="text-2xl font-medium leading-7 text-gray-100">{capacity}</span>
-            {isCurrentPlan && <RoleBadge roleText="Current" role={'current'} />}
+            {isCurrentPlan && <RoleBadge roleText="Current" role={'current'} size={'small'} />}
           </div>
           <span className=" text-base font-normal leading-5 text-gray-60">
             {currency + price}

@@ -29,12 +29,19 @@ export interface TabsProps {
 }
 
 export interface ActivityTabProps {
-  user: User;
+  role: MemberRole;
+  isActivityEnabled: boolean;
   activity: Activity;
 }
 
 export interface TeamsTabProps {
-  user: User;
+  role: string;
+  teams: Teams;
+  isTeams: boolean;
+}
+export interface ActivityFiltersProps {
+  selectedRoles: string[];
+  setIsSelectedRoles: (selectedRoles) => void;
 }
 
 export type BillingDetails = {
@@ -65,7 +72,16 @@ export type Member = {
   role: MemberRole;
   storage: number;
   products: DriveProduct[];
+  isActivityEnabled: boolean;
+  activity: Activity;
+  isTeams: boolean;
+  teams: Teams;
 };
+
+export type Teams = {
+  team: string;
+  role: MemberRole;
+}[];
 
 export type ActiveTab = {
   name: string;
@@ -74,11 +90,6 @@ export type ActiveTab = {
 };
 
 export type TypeTabs = ActiveTab[];
-
-export type User = {
-  role: string;
-  teams: string[];
-};
 
 export type Activity = {
   date: string;

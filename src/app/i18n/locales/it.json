@@ -1482,8 +1482,52 @@
           "actionButton": "Invia richiesta"
         },
         "tabs": {
-          "activity": "Attività",
-          "teams": "Squadre"
+          "activity": {
+            "name": "Attività",
+            "empty": "Nessuna attività",
+            "disabilitedOwner": {
+              "title": "Iniziare con l'attività",
+              "subtitle": "Chiari approfondimenti sull'uso per la gestione di file e account con la registrazione dei registri di attività",
+              "action": "Abilita attività"
+            },
+            "disabilitedMember": {
+              "title": "L'attività è disabilitata",
+              "subtitle": "Contattare il proprietario dell'area di lavoro per abilitare i registri delle attività per la gestione dei file e degli account"
+            },
+            "roles": {
+              "title": "Ruoli",
+              "member": "Membro",
+              "manager": "Manager",
+              "owner": "Proprietario"
+            },
+            "filter": {
+              "button": "Filtro",
+              "title": "Filtri",
+              "clear": "Clear",
+              "dateRange": {
+                "title": "Intervallo di date",
+                "7days": "Ultimi 7 giorni",
+                "30days": "Ultimi 30 giorni",
+                "90days": "Ultimi 90 giorni"
+              }
+            }
+          },
+          "teams": {
+            "title": "Squadre",
+            "role": "Role",
+            "emptyTeamsOwner": {
+              "title": "Iniziare con i team",
+              "subtitle": "Gestisci più velocemente i membri dello spazio di lavoro raggruppandoli in team",
+              "action": "Crea un team"
+            },
+            "emptyTeamsMember": {
+              "title": "Nessuna squadra ancora creata",
+              "subtitle": "Il proprietario dello spazio di lavoro può gestire i membri più velocemente raggruppandoli in team"
+            },
+            "emptyTeams": {
+              "title": "Non è membro di alcun team"
+            }
+          }
         }
       },
       "teams": {

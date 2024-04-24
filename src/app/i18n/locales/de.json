@@ -1392,8 +1392,52 @@
           "actionButton": "Anfrage senden"
         },
         "tabs": {
-          "activity": "Aktivität",
-          "teams": "Equipos"
+          "activity": {
+            "name": "Aktivität",
+            "empty": "Keine Aktivität",
+            "disabilitedOwner": {
+              "title": "Erste Schritte mit Activity",
+              "subtitle": "Klare Nutzungseinblicke für Datei- und Kontoverwaltung mit Aktivitätsprotokollierung",
+              "action": "Aktivitätsaufzeichnung aktivieren"
+            },
+            "disabilitedMember": {
+              "title": "Aktivität ist deaktiviert",
+              "subtitle": "Kontaktieren Sie den Besitzer des Arbeitsbereichs, um Aktivitätsprotokolle für die Datei- und Kontoverwaltung zu aktivieren"
+            },
+            "roles": {
+              "title": "Rollen",
+              "member": "Mitglied",
+              "manager": "Manager",
+              "owner": "Owner"
+            },
+            "filter": {
+              "button": "Filter",
+              "title": "Filter",
+              "clear": "Löschen",
+              "dateRange": {
+                "title": "Datumsbereich",
+                "7days": "Letzte 7 Tage",
+                "30days": "Letzte 30 Tage",
+                "90days": "Letzte 90 Tage"
+              }
+            }
+          },
+          "teams": {
+            "title": "Teams",
+            "role": "Rolle",
+            "emptyTeamsOwner": {
+              "title": "Erste Schritte mit Teams",
+              "subtitle": "Verwalten Sie Arbeitsbereich-Mitglieder schneller, indem Sie sie in Teams gruppieren",
+              "action": "Ein Team erstellen"
+            },
+            "emptyTeamsMember": {
+              "title": "Noch keine Teams erstellt",
+              "subtitle": "Arbeitsbereichseigentümer können Mitglieder schneller verwalten, indem sie sie in Teams gruppieren"
+            },
+            "emptyTeams": {
+              "title": "Kein Mitglied in einem Team"
+            }
+          }
         }
       },
       "teams": {
