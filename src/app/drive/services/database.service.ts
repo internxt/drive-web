@@ -46,7 +46,7 @@ const updateDatabaseFilePreviewData = async ({
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
   const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
-  console.log('updateDatabaseFilePreviewData');
+
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
     {
