@@ -60,6 +60,7 @@ const FileViewerWrapper = ({
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
+  const [isDownloadStarted, setIsDownloadStarted] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -68,7 +69,6 @@ const FileViewerWrapper = ({
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
   const isSharedView = pathId === 'shared';
-  let isDownloadStarted = false;
 
   const driveItemActions = useDriveItemActions(currentFile);
 
@@ -78,13 +78,13 @@ const FileViewerWrapper = ({
     setBlob(null);
 
     if (currentFile && !updateProgress && !isDownloadStarted) {
-      isDownloadStarted = true;
+      setIsDownloadStarted(true);
       fileContentManager
         .download()
         .then((blob) => {
           setBlob(blob);
-
-          isDownloadStarted = false;
+          setUpdateProgress(0);
+          setIsDownloadStarted(false);
         })
         .catch((error) => {
           if (error.name === 'AbortError') {
@@ -93,13 +93,14 @@ const FileViewerWrapper = ({
           console.error(error);
           setBlob(null);
           errorService.reportError(error);
-          isDownloadStarted = false;
+          setIsDownloadStarted(false);
         });
     }
-  }, []);
+  }, [showPreview, currentFile]);
 
   useEffect(() => {
     setBlob(null);
+
     if (dirtyName) {
       setCurrentFile?.({
         ...currentFile,
@@ -150,6 +151,8 @@ const FileViewerWrapper = ({
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
     setBlob(null);
+    setIsDownloadStarted(false);
+    setUpdateProgress(0);
     if (direction === 'next') {
       setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
     } else {
