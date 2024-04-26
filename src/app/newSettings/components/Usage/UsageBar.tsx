@@ -16,6 +16,9 @@ const UsageBar = ({ products, planUsage, planLimitInBytes, usedProducts }: Usage
   const barRef = useRef<HTMLDivElement>(null);
   const percentageUsed = Math.round((planUsage / planLimitInBytes) * 100);
   const maxBytesLimit = Math.max(planUsage, planLimitInBytes);
+  const bytesInText = bytesToString(planUsage);
+  const bytesString = bytesInText.length ? bytesInText : '0 Bytes';
+  const planBytesLimitString = bytesToString(planLimitInBytes);
 
   useEffect(() => {
     const bar = barRef.current;
@@ -47,14 +50,14 @@ const UsageBar = ({ products, planUsage, planLimitInBytes, usedProducts }: Usage
     <div className="flex flex-col space-y-6">
       <div className="flex flex-row">
         <div className="flex w-full grow flex-col">
-          <p className="text-3xl font-medium leading-9 text-gray-100">{bytesToString(planUsage)}</p>
+          <p className="text-3xl font-medium leading-9 text-gray-100">{bytesString}</p>
           <h1 className="text-base font-normal leading-5 text-gray-60">
             {t('views.preferences.workspace.overview.spaceUsed', { percentageUsed })}
           </h1>
         </div>
         <div className="mx-8 border border-gray-10" />
         <div className="flex w-full grow flex-col justify-start">
-          <p className="text-3xl font-medium leading-9 text-gray-100">{bytesToString(planLimitInBytes)}</p>
+          <p className="text-3xl font-medium leading-9 text-gray-100">{planBytesLimitString}</p>
           <h1 className="text-base font-normal leading-5 text-gray-60">
             {t('views.preferences.workspace.overview.totalSpace')}
           </h1>

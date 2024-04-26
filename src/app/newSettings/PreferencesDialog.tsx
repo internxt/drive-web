@@ -87,7 +87,9 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
           <BillingWorkspaceSection />
         )}
-        {activeSection?.section === 'account' && activeSection?.subsection === 'account' && <AccountSection />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
+          <AccountSection changeSection={changeSection} />
+        )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && (
           <PlansSection changeSection={changeSection} />
         )}

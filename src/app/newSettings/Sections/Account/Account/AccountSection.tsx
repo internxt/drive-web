@@ -28,7 +28,11 @@ import InviteFriendSectionContainer from './containers/InviteFriendSectionContai
 import InvitedFriendsContainer from './containers/InvitedFriendsContainer';
 import UserHeaderContainer from './containers/UserHeaderContainer';
 
-const AccountSection = () => {
+interface AccountSectionProps {
+  changeSection: ({ section, subsection }) => void;
+}
+
+const AccountSection = ({ changeSection }: AccountSectionProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -102,7 +106,7 @@ const AccountSection = () => {
           {isFreeAccount && (
             <InviteFriendSectionContainer onSeeInvitationsButtonClicked={() => setIsInvitationsViewVisible(true)} />
           )}
-          <AccountUsageContainer />
+          <AccountUsageContainer changeSection={changeSection} />
           <div>
             <div className="my-8 h-px w-full bg-gray-10" />
           </div>

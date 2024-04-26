@@ -19,8 +19,10 @@ import UsageDetails from '../../../../containers/UsageContainer';
 
 const AccountUsageContainer = ({
   className = '',
+  changeSection,
 }: Readonly<{
   className?: string;
+  changeSection: ({ section, subsection }) => void;
 }>): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useDispatch();
@@ -28,26 +30,28 @@ const AccountUsageContainer = ({
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
+
   const planLimitInBytes = plan.planLimit;
-  const products: Parameters<typeof UsageDetails>[0]['products'] | null = planUsage
-    ? [
-        {
-          name: t('sideNav.drive'),
-          usageInBytes: usageDetails?.drive ?? 0,
-          color: 'primary',
-        },
-        {
-          name: t('sideNav.photos'),
-          usageInBytes: usageDetails?.photos ?? 0,
-          color: 'orange',
-        },
-        {
-          name: t('views.account.tabs.account.view.backups'),
-          usageInBytes: usageDetails?.backups ?? 0,
-          color: 'indigo',
-        },
-      ]
-    : null;
+  const products: Parameters<typeof UsageDetails>[0]['products'] | null =
+    planUsage >= 0
+      ? [
+          {
+            name: t('sideNav.drive'),
+            usageInBytes: usageDetails?.drive ?? 0,
+            color: 'primary',
+          },
+          {
+            name: t('sideNav.photos'),
+            usageInBytes: usageDetails?.photos ?? 0,
+            color: 'orange',
+          },
+          {
+            name: t('views.account.tabs.account.view.backups'),
+            usageInBytes: usageDetails?.backups ?? 0,
+            color: 'indigo',
+          },
+        ]
+      : null;
   products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
   const usedProducts = products?.filter((product) => product.usageInBytes > 0);
 
@@ -64,8 +68,10 @@ const AccountUsageContainer = ({
   }, []);
 
   const openTrashDialog = () => dispatch(uiActions.setIsClearTrashDialogOpen(true));
-  const navigateToPlansSubSection = () =>
+  const navigateToPlansSubSection = () => {
     navigationService.openPreferencesDialog({ section: 'account', subsection: 'plans' });
+    changeSection({ section: 'account', subsection: 'plans' });
+  };
 
   return (
     <Card className="space-y-6">
