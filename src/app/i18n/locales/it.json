@@ -64,7 +64,8 @@
     "title": "Aspetto",
     "light": "Chiaro",
     "dark": "Scuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",

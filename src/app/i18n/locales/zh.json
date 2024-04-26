@@ -64,7 +64,8 @@
     "title": "外观",
     "light": "明亮",
     "dark": "暗",
-    "system": "系统"
+    "system": "系统",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "电子邮件",

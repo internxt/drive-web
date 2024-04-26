@@ -64,7 +64,8 @@
     "title": "Appearance",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",

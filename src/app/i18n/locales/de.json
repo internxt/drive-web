@@ -43,7 +43,8 @@
     "title": "Erscheinung",
     "light": "Hell",
     "dark": "Dunkel",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-Mail",

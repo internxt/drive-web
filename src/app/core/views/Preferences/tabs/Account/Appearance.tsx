@@ -6,7 +6,7 @@ import ItemsDropdown from './components/ItemsDropdown';
 import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
 import MenuItem from './components/MenuItem';
 
-const appearances: Theme[] = ['system', 'light', 'dark'];
+const appearances: Theme[] = ['system', 'light', 'dark', 'starwars'];
 
 const Appearance = () => {
   const { translate } = useTranslationContext();

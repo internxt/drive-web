@@ -43,7 +43,8 @@
     "title": "Apparence",
     "light": "Clair",
     "dark": "Sombre",
-    "system": "Système"
+    "system": "Système",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",

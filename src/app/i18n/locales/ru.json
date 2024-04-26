@@ -43,7 +43,8 @@
     "title": "Внешний вид",
     "light": "Светлый",
     "dark": "Темный",
-    "system": "Система"
+    "system": "Система",
+    "starwars": "Star Wars"
   },
 
   "auth": {
