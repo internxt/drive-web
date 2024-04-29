@@ -5,12 +5,29 @@ import { CaretDown } from '@phosphor-icons/react';
 import ItemsDropdown from './components/ItemsDropdown';
 import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
 import MenuItem from './components/MenuItem';
+import { useEffect } from 'react';
+import paymentService from '../../../../../payment/services/payment.service';
 
-const appearances: Theme[] = ['system', 'light', 'dark', 'starwars'];
+const STAR_WARS_COUPON_NAME = 'Star Wars';
+
+const appearances: Theme[] = ['system', 'light', 'dark'];
 
 const Appearance = () => {
   const { translate } = useTranslationContext();
   const { currentTheme, toggleTheme } = useThemeContext();
+
+  useEffect(() => {
+    paymentService
+      .isCouponUsedByUser(STAR_WARS_COUPON_NAME)
+      .then((isCouponUsed) => {
+        if (isCouponUsed && !appearances.some((theme) => theme === 'starwars')) {
+          appearances.push('starwars');
+        }
+      })
+      .catch((err) => {
+        // NO OP
+      });
+  }, []);
 
   return (
     <Section className="" title={translate('theme.title')}>
