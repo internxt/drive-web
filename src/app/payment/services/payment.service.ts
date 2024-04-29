@@ -84,12 +84,12 @@ const paymentService = {
     return paymentsClient.getPrices(currency);
   },
 
-  async isCouponUsedByUser(couponName: string): Promise<{
+  async isCouponUsedByUser(couponCode: string): Promise<{
     isCouponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.isCouponUsedByUser({ couponName });
+    return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {

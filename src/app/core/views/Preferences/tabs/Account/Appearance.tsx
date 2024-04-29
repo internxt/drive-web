@@ -8,7 +8,7 @@ import MenuItem from './components/MenuItem';
 import { useEffect } from 'react';
 import paymentService from '../../../../../payment/services/payment.service';
 
-const STAR_WARS_COUPON_NAME = 'Star Wars';
+const STAR_WARS_COUPON_NAME = 'STARWARS75';
 
 const appearances: Theme[] = ['system', 'light', 'dark'];
 
@@ -20,8 +20,8 @@ const Appearance = () => {
     paymentService
       .isCouponUsedByUser(STAR_WARS_COUPON_NAME)
       .then((isCouponUsed) => {
-        if (isCouponUsed && !appearances.some((theme) => theme === 'Star Wars')) {
-          appearances.push('Star Wars');
+        if (isCouponUsed && !appearances.some((theme) => theme === 'starwars')) {
+          appearances.push('starwars');
         }
       })
       .catch((err) => {
