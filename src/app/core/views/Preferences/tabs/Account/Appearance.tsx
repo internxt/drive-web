@@ -20,8 +20,8 @@ const Appearance = () => {
     paymentService
       .isCouponUsedByUser(STAR_WARS_COUPON_NAME)
       .then((isCouponUsed) => {
-        if (isCouponUsed && !appearances.some((theme) => theme === 'starwars')) {
-          appearances.push('starwars');
+        if (isCouponUsed && !appearances.some((theme) => theme === 'Star Wars')) {
+          appearances.push('Star Wars');
         }
       })
       .catch((err) => {
