@@ -4,18 +4,18 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 75%",
-    "title": "Profitez de votre offre de printemps",
+    "label": "Économisez jusqu'à 75%",
+    "title": "Sécurisez votre identité en ligne pour la vie.",
     "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur tous nos plans",
+      "Jusqu'à 75% de réduction sur tous les plans à vie",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 18 mars"
+      "L'offre se termine le 18 avril"
     ]
   },
   "valentinesBanner": {
@@ -23,11 +23,11 @@
     "subtitle": "Bénéficiez de 90% de réduction sur notre plan 2TB avec le code VDAY",
     "cta": "Obtenir l'offre"
   },
-  "lifetimeBanner": {
-    "label": "Cherchez-vous un espace de stockage sécurisé à vie?",
-    "title": "Protégez vos fichiers avec les plans à vie d'Internxt!",
-    "cta": "Choisir un plan",
-    "guarantee": "Garantie de remboursement sous 30 jours"
+  "banner": {
+    "label": "Sécurisez vos fichiers pour toujours",
+    "title": "Obtenez un accès à vie au stockage sécurisé et privé dans le cloud avec Internxt !",
+    "cta": "Choisissez votre plan",
+    "guarantee": "Garantie de remboursement de 30 jours"
   },
   "lang": {
     "title": "Langue",

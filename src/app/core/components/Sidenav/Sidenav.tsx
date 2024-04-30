@@ -1,4 +1,4 @@
-import { Clock, ClockCounterClockwise, Desktop, FolderSimple, ImageSquare, Trash, Users } from '@phosphor-icons/react';
+import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
 import { connect } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -75,7 +75,6 @@ const Sidenav = (props: SidenavProps) => {
             onCreateWorkspaceButtonClicked={() => undefined}
           />
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
-          <SidenavItem label={translate('sideNav.photos')} to="/photos" Icon={ImageSquare} />
           <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
           <SidenavItem
             label={translate('sideNav.shared')}

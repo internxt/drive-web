@@ -1,13 +1,11 @@
-import { X } from '@phosphor-icons/react';
+import { CheckCircle, X } from '@phosphor-icons/react';
 import LifetimeBig from 'assets/images/banner/lifetime_big.png';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { CheckCircle } from '@phosphor-icons/react/dist/ssr';
 
 const WEBSITE_URL = process.env.REACT_APP_WEBSITE_URL;
 
 const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate } = useTranslationContext();
-
   return (
     <div
       className={`${showBanner ? 'flex' : 'hidden'} 
@@ -26,8 +24,8 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
           </div>
           <div className="z-50 flex w-full  flex-col space-y-8">
             <div className="flex flex-col space-y-4">
-              <p className="pr-20 text-3xl font-semibold text-white">{translate('lifetimeBanner.label')}</p>
-              <p className="max-w-[500px] text-5xl font-bold text-white">{translate('lifetimeBanner.title')}</p>
+              <p className="pr-20 text-3xl font-semibold text-white">{translate('banner.label')}</p>
+              <p className="max-w-[500px] text-5xl font-bold text-white">{translate('banner.title')}</p>
             </div>
             <div className="flex flex-col space-y-6">
               <button
@@ -37,11 +35,11 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
                   window.open(`${WEBSITE_URL}/lifetime`, '_blank', 'noopener noreferrer');
                 }}
               >
-                {translate('lifetimeBanner.cta')}
+                {translate('banner.cta')}
               </button>
               <div className="flex flex-row items-center space-x-2">
                 <CheckCircle size={24} className="text-white" />
-                <p className="text-lg font-medium text-white">{translate('lifetimeBanner.guarantee')}</p>
+                <p className="text-lg font-medium text-white">{translate('banner.guarantee')}</p>
               </div>
             </div>
           </div>
@@ -50,5 +48,4 @@ const Banner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => v
     </div>
   );
 };
-
 export default Banner;

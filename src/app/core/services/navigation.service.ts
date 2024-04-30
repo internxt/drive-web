@@ -40,7 +40,7 @@ const navigationService = {
       console.warn(`(NavigationService) View with ID ${viewId} not found`);
     }
 
-    instance.push({ pathname: viewConfig?.path || 'view-not-found', search: viewSearch });
+    instance.push({ pathname: viewConfig?.path ?? 'view-not-found', search: viewSearch });
   },
   pushFolder(uuid: string | undefined): void {
     instance.push(`/folder/${uuid}`);
@@ -55,8 +55,8 @@ const navigationService = {
   },
   getUuid(): string | undefined {
     const pathname = navigationService.history.location.pathname.split('/');
-    const currentUuid = pathname[2];
-    return currentUuid;
+    const lastSegment = pathname[pathname.length - 1];
+    return lastSegment;
   },
   openPreferencesDialog({ section, subsection }: SelectSectionProps) {
     instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);

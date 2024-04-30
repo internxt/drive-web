@@ -1,38 +1,39 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
 import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { connect } from 'react-redux';
 
-import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
-import { AppDispatch, RootState } from '../../../../store';
-import { storageActions } from '../../../../store/slices/storage';
-import { DriveItemData, DriveItemDetails } from '../../../types';
-import { OrderDirection, OrderSettings } from '../../../../core/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import List from '../../../../shared/components/List';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
-import { sharedThunks } from '../../../../store/slices/sharedLinks';
-import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import { uiActions } from '../../../../store/slices/ui';
-import {
-  contextMenuDriveNotSharedLink,
-  contextMenuDriveItemShared,
-  contextMenuSelectedItems,
-  contextMenuTrashItems,
-  contextMenuMultipleSelectedTrashItems,
-  contextMenuTrashFolder,
-  contextMenuDriveFolderShared,
-  contextMenuDriveFolderNotSharedLink,
-} from './DriveItemContextMenu';
-import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import shareService from '../../../../share/services/share.service';
 import navigationService from 'app/core/services/navigation.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
+import { OrderDirection, OrderSettings } from '../../../../core/types';
+import shareService from '../../../../share/services/share.service';
+import List from '../../../../shared/components/List';
+import { AppDispatch, RootState } from '../../../../store';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import { storageActions } from '../../../../store/slices/storage';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../../store/slices/ui';
+import { DriveItemData, DriveItemDetails } from '../../../types';
+import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
+import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
+import {
+  contextMenuDriveFolderNotSharedLink,
+  contextMenuDriveFolderShared,
+  contextMenuDriveItemShared,
+  contextMenuDriveNotSharedLink,
+  contextMenuMultipleSelectedTrashItems,
+  contextMenuSelectedItems,
+  contextMenuTrashFolder,
+  contextMenuTrashItems,
+} from './DriveItemContextMenu';
 
 interface DriveExplorerListProps {
   folderId: number;
   isLoading: boolean;
+  forceLoading: boolean;
   items: DriveItemData[];
   selectedItems: DriveItemData[];
   order: OrderSettings;
@@ -146,7 +147,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
 
-  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll } = props;
+  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading } = props;
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
@@ -332,6 +333,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           disableKeyboardShortcuts={props.disableKeyboardShortcuts || props.showStopSharingConfirmation}
           items={props.items}
           isLoading={isLoading}
+          forceLoading={forceLoading}
           itemComposition={[(item) => createDriveListItem(item, props.isTrash)]}
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
@@ -340,16 +342,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
             if (driveItem.isFolder) {
-              dispatch(
-                storageThunks.goToFolderThunk({
-                  name: driveItem.name,
-                  id: driveItem.id,
-                  uuid: driveItem.uuid,
-                }),
-              );
+              navigationService.pushFolder(driveItem.uuid);
             } else {
-              dispatch(uiActions.setIsFileViewerOpen(true));
-              dispatch(uiActions.setFileViewerItem(driveItem));
+              navigationService.pushFile(driveItem.uuid);
             }
           }}
           hasMoreItems={hasMoreItems}
@@ -468,6 +463,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
 export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
+  forceLoading: state.storage.forceLoading,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||

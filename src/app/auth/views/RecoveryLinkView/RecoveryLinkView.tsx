@@ -14,7 +14,7 @@ function RecoveryLinkView(): JSX.Element {
         <RecoveryLink />
       </div>
 
-      <div className="flex shrink-0 flex-col justify-center space-y-3 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
+      <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-3 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
         <a href="https://internxt.com/legal" target="_blank" className="text-gray-80 no-underline hover:text-gray-100">
           {translate('general.terms')}
         </a>
