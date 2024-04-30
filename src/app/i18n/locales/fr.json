@@ -4,18 +4,18 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez jusqu'à 75%",
-    "title": "Sécurisez votre identité en ligne pour la vie.",
-    "cta": "Choisissez un plan",
+    "label": "Économisez 75%",
+    "title": "Économies pour la Journée mondiale du mot de passe",
+    "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Jusqu'à 75% de réduction sur tous les plans à vie",
+      "Économisez 75% sur tous les plans à vie",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 18 avril"
+      "L'offre se termine le 3 mai"
     ]
   },
   "valentinesBanner": {

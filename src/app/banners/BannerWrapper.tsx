@@ -7,10 +7,10 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import Banner from './Banner';
+import FeaturesBanner from './FeaturesBanner';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_lifetime_soft_sale_banner';
-const OFFER_OFF_DAY = new Date('2024-04-30');
+const SHOW_BANNER_COOKIE_NAME = 'world_password_day_banner';
+const OFFER_OFF_DAY = new Date('2024-05-03');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -41,7 +41,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
