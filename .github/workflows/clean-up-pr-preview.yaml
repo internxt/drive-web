@@ -1,0 +1,27 @@
+name: Clean Up PR Preview
+on:
+  pull_request:
+    types: [closed]
+jobs:
+  dispatch_cleanup_deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Cleanup Preview Repository Command
+        uses: myrotvorets/trigger-repository-dispatch-action@1.0.0
+        with:
+          token: ${{ secrets.PAT }}
+          repo: internxt/environments
+          type: cleanup-preview-command
+          payload: |
+            { 
+              "github": { 
+                "payload": { 
+                  "repository": {
+                    "name": "${{ github.event.repository.name }}"
+                  },
+                  "issue": {
+                    "number": ${{ github.event.number }}
+                  }
+                } 
+              } 
+            }

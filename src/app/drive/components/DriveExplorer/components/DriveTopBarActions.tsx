@@ -9,25 +9,26 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
+import errorService from '../../../../core/services/error.service';
+import navigationService from '../../../../core/services/navigation.service';
+import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import shareService from '../../../../share/services/share.service';
 import Button from '../../../../shared/components/Button/Button';
 import Dropdown from '../../../../shared/components/Dropdown';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
-import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
+import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
+import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
 } from '../DriveExplorerList/DriveItemContextMenu';
-import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import errorService from '../../../../core/services/error.service';
-import storageThunks from '../../../../store/slices/storage/storage.thunks';
-import shareService from '../../../../share/services/share.service';
-import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
-import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -36,6 +37,7 @@ const DriveTopBarActions = ({
   hasAnyItemSelected,
   isTrash,
   hasItems,
+  driveActionsRef,
 }: {
   selectedItems: DriveItemData[];
   currentFolderId: number;
@@ -43,6 +45,7 @@ const DriveTopBarActions = ({
   hasAnyItemSelected: boolean;
   isTrash: boolean;
   hasItems: boolean;
+  driveActionsRef?: React.MutableRefObject<HTMLDivElement | null>;
 }) => {
   const dispatch = useAppDispatch();
 
@@ -142,8 +145,7 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(selectedItems[0]));
+    navigationService.pushFile(selectedItems[0].uuid);
   };
 
   const onRecoverButtonClicked = (): void => {
@@ -211,7 +213,7 @@ const DriveTopBarActions = ({
       {hasItemsAndIsNotTrash && (
         <>
           {separatorV}
-          <div className="flex items-center justify-center">
+          <div ref={driveActionsRef} className="flex items-center justify-center">
             {selectedItems.length === 1 && (
               <>
                 <div

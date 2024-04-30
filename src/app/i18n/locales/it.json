@@ -9,24 +9,24 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia il 75%",
-    "title": "Inizia la tua pulizia digitale di primavera",
+    "label": "Risparmia fino al 75%",
+    "title": "Proteggi la tua identità online per tutta la vita.",
     "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni",
     "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
     "features": [
-      "Risparmia su tutti i nostri piani",
+      "Fino al 75% di sconto su tutti i piani a vita",
       "Archiviazione cloud sicura e protetta",
       "Open source e trasparente",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 18 marzo"
+      "L'offerta termina l'18 aprile"
     ]
   },
-  "lifetimeBanner": {
-    "label": "Cercate uno spazio sicuro per i vostri dati per tutta la vita?",
-    "title": "Proteggete i vostri file con i piani a vita di Internxt!",
-    "cta": "Scegli il piano",
+  "banner": {
+    "label": "Proteggi i tuoi file per sempre",
+    "title": "Ottieni l'accesso a vita allo storage cloud sicuro e privato con Internxt!",
+    "cta": "Scegli il tuo piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni"
   },
   "notFound": {

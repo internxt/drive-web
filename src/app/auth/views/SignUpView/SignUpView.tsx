@@ -34,7 +34,7 @@ export default function SignUpView(props: SignUpViewProps): JSX.Element {
       </div>
 
       {isRegularSignup && (
-        <div className="flex shrink-0 flex-col justify-center space-y-3 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
+        <div className="flex shrink-0 flex-col items-center justify-center space-x-0 space-y-3 py-8 sm:flex-row sm:space-x-8 sm:space-y-0">
           <a
             href="https://internxt.com/legal"
             target="_blank"

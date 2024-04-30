@@ -1,24 +1,26 @@
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
-import errorService from '../../core/services/error.service';
 import { aes } from '@internxt/lib';
-import httpService from '../../core/services/http.service';
-import { DevicePlatform } from '../../core/types';
-import analyticsService from '../../analytics/services/analytics.service';
-import localStorageService from '../../core/services/local-storage.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
-import { SdkFactory } from '../../core/factory/sdk';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Iterator } from 'app/core/collections';
-import { FlatFolderZip } from 'app/core/services/zip.service';
-import { downloadFile } from 'app/network/download';
-import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { updateDatabaseFileSourceData } from './database.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { downloadFile } from 'app/network/download';
 import { checkIfCachedSourceIsOlder } from 'app/store/slices/storage/storage.thunks/downloadFileThunk';
 import { t } from 'i18next';
 import { TrackingPlan } from '../../analytics/TrackingPlan';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import analyticsService from '../../analytics/services/analytics.service';
+import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
+import httpService from '../../core/services/http.service';
+import localStorageService from '../../core/services/local-storage.service';
+import { DevicePlatform } from '../../core/types';
+import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
+import { updateDatabaseFileSourceData } from './database.service';
+import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
+import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
 
 export interface IFolders {
   bucket: string;
@@ -158,8 +160,8 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private readonly queryValues: { directoryId: number };
 
   constructor(queryValues: { directoryId: number }, limit?: number, offset?: number) {
-    this.limit = limit || 5;
-    this.offset = offset || 0;
+    this.limit = limit ?? 5;
+    this.offset = offset ?? 0;
     this.queryValues = queryValues;
   }
 
@@ -186,8 +188,8 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
   private readonly queryValues: { directoryId: number };
 
   constructor(queryValues: { directoryId: number }, limit?: number, offset?: number) {
-    this.limit = limit || 5;
-    this.offset = offset || 0;
+    this.limit = limit ?? 5;
+    this.offset = offset ?? 0;
     this.queryValues = queryValues;
   }
 
@@ -216,126 +218,6 @@ interface FolderRef {
   folderId: number;
   folderUuid?: string;
   folderToken?: string;
-}
-
-async function addAllFilesToZip(
-  currentAbsolutePath: string,
-  downloadFile: (file: DriveFileData) => Promise<ReadableStream>,
-  iterator: Iterator<DriveFileData>,
-  zip: FlatFolderZip,
-): Promise<DriveFileData[]> {
-  let pack = await iterator.next();
-  let files = pack.value;
-  let moreFiles = !pack.done;
-
-  const path = currentAbsolutePath;
-  const allFiles: DriveFileData[] = [];
-
-  do {
-    const nextChunkRequest = iterator.next();
-
-    allFiles.push(...files);
-
-    for (const file of files) {
-      const fileStream = await downloadFile(file);
-      await zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
-    }
-
-    pack = await nextChunkRequest;
-    files = pack.value;
-    moreFiles = !pack.done;
-  } while (moreFiles);
-
-  return allFiles;
-}
-
-async function addAllSharedFilesToZip(
-  currentAbsolutePath: string,
-  downloadFile: (file: SharedFiles) => Promise<ReadableStream>,
-  iterator: Iterator<SharedFiles>,
-  zip: FlatFolderZip,
-): Promise<{ files: SharedFiles[]; token: string }> {
-  let pack = await iterator.next();
-  let files = pack.value;
-  let moreFiles = !pack.done;
-
-  const path = currentAbsolutePath;
-  const allFiles: SharedFiles[] = [];
-
-  do {
-    const nextChunkRequest = iterator.next();
-
-    allFiles.push(...files);
-
-    for (const file of files) {
-      const fileStream = await downloadFile(file);
-      await zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
-    }
-
-    pack = await nextChunkRequest;
-    files = pack.value;
-    moreFiles = !pack.done;
-  } while (moreFiles);
-
-  return { files: allFiles, token: (pack as any)?.token };
-}
-
-export async function addAllSharedFoldersToZip(
-  currentAbsolutePath: string,
-  iterator: Iterator<SharedFolders>,
-  zip: FlatFolderZip,
-): Promise<{ folders: SharedFolders[]; token: string }> {
-  let pack = await iterator.next();
-  let folders = pack.value;
-  let moreFolders = !pack.done;
-
-  const path = currentAbsolutePath;
-  const allFolders: SharedFolders[] = [];
-
-  do {
-    const nextChunkRequest = iterator.next();
-
-    allFolders.push(...folders);
-
-    for (const folder of folders) {
-      await zip.addFolder(path + '/' + folder.name);
-    }
-
-    pack = await nextChunkRequest;
-    folders = pack.value;
-    moreFolders = !pack.done;
-  } while (moreFolders);
-
-  return { folders: allFolders, token: (pack as any)?.token };
-}
-
-export async function addAllFoldersToZip(
-  currentAbsolutePath: string,
-  iterator: Iterator<DriveFolderData>,
-  zip: FlatFolderZip,
-): Promise<DriveFolderData[]> {
-  let pack = await iterator.next();
-  let folders = pack.value;
-  let moreFolders = !pack.done;
-
-  const path = currentAbsolutePath;
-  const allFolders: DriveFolderData[] = [];
-
-  do {
-    const nextChunkRequest = iterator.next();
-
-    allFolders.push(...folders);
-
-    for (const folder of folders) {
-      await zip.addFolder(path + '/' + folder.name);
-    }
-
-    pack = await nextChunkRequest;
-    folders = pack.value;
-    moreFolders = !pack.done;
-  } while (moreFolders);
-
-  return allFolders;
 }
 
 async function downloadSharedFolderAsZip(
@@ -680,6 +562,7 @@ const folderService = {
   fetchFolderTree,
   downloadFolderAsZip,
   addAllFoldersToZip,
+  addAllFilesToZip,
   downloadSharedFolderAsZip,
 };
 
