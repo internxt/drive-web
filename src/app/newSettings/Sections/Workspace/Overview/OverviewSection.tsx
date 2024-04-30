@@ -16,6 +16,7 @@ import { RootState } from '../../../../store';
 import { PlanState } from '../../../../store/slices/plan';
 import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
+import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
 
 // MOCKED DATA
@@ -62,25 +63,7 @@ const OverviewSection = () => {
       });
   }, []);
 
-  const products: Parameters<typeof UsageContainer>[0]['products'] | null = planUsage
-    ? [
-        {
-          name: t('sideNav.drive'),
-          usageInBytes: planUsage.drive,
-          color: 'primary',
-        },
-        {
-          name: t('sideNav.photos'),
-          usageInBytes: planUsage.photos,
-          color: 'orange',
-        },
-        {
-          name: t('views.account.tabs.account.view.backups'),
-          usageInBytes: planUsage.backups,
-          color: 'indigo',
-        },
-      ]
-    : null;
+  const products = planUsage ? getProductCaptions(planUsage) : null;
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
     getSubscriptionData({ userSubscription: plan.subscription, plan, local });

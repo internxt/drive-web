@@ -6,18 +6,18 @@ import usageService, { UsageDetailsProps } from '../../../../../drive/services/u
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import UsageDetails from '../../../../../shared/components/UsageDetails';
 import { RootState } from '../../../../../store';
 import { useAppSelector } from '../../../../../store/hooks';
 import { PlanState } from '../../../../../store/slices/plan';
+import Tabs from '../../../../components/Tabs';
 import UsageBar from '../../../../components/Usage/UsageBar';
-import { Member, TypeTabs, ActiveTab } from '../../../../types/types';
+import { ActiveTab, Member, TypeTabs } from '../../../../types/types';
+import { getProductCaptions } from '../../../../utils/productUtils';
+import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
-import UserCard from '../components/UserCard';
-import Tabs from '../../../../components/Tabs';
-import ActivityTab from '../components/ActivityTab';
 import TeamsTab from '../components/TeamsTab';
+import UserCard from '../components/UserCard';
 
 interface MemberDetailsContainer {
   member: Member;
@@ -46,25 +46,7 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
   const planLimitInBytes = plan.planLimit;
-  const products: Parameters<typeof UsageDetails>[0]['products'] | null = planUsage
-    ? [
-        {
-          name: translate('sideNav.drive'),
-          usageInBytes: usageDetails?.drive ?? 0,
-          color: 'primary',
-        },
-        {
-          name: translate('sideNav.photos'),
-          usageInBytes: usageDetails?.photos ?? 0,
-          color: 'orange',
-        },
-        {
-          name: translate('views.account.tabs.account.view.backups'),
-          usageInBytes: usageDetails?.backups ?? 0,
-          color: 'indigo',
-        },
-      ]
-    : null;
+  const products = planUsage ? getProductCaptions(usageDetails) : null;
   products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
   const usedProducts = products?.filter((product) => product.usageInBytes > 0);
 
