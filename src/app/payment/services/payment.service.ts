@@ -85,7 +85,7 @@ const paymentService = {
   },
 
   async isCouponUsedByUser(couponCode: string): Promise<{
-    isCouponUsed: boolean;
+    couponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
