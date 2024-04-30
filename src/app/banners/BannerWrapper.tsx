@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import FeaturesBanner from './FeaturesBanner';
+import FeaturesBanner from './FeaturesBanner';
 
 const SHOW_BANNER_COOKIE_NAME = 'star_wars_banner';
 const OFFER_OFF_DAY = new Date('2024-05-20');

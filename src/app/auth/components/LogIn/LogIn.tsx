@@ -28,24 +28,65 @@ import shareService from '../../../share/services/share.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import Button from 'app/shared/components/Button/Button';
 import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
+import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
+
+const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
+  notificationsService.show({
+    text,
+    type: isError ? ToastType.Error : ToastType.Success,
+  });
+};
 
 export default function LogIn(): JSX.Element {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const urlParams = new URLSearchParams(window.location.search);
 
-  const sharingId = urlParams.get('sharingId');
-  const folderuuidToRedirect = urlParams.get('folderuuid');
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [showTwoFactor, setShowTwoFactor] = useState(false);
+  const [loginError, setLoginError] = useState<string[]>([]);
+  const [showErrors, setShowErrors] = useState(false);
 
-  const sharingToken = urlParams.get('token');
-  const sharingAction = urlParams.get('action');
-  const isSharingInvitation = !!sharingId;
-  const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const mnemonic = localStorageService.get('xMnemonic');
+
+  const { isUniversalLinkMode, isSharingInvitation, redirectWithCredentials, handleShareInvitation } =
+    useLoginRedirections({
+      navigateTo(viewId, queryMap) {
+        navigationService.push(viewId, queryMap);
+      },
+      processInvitation: shareService.processInvitation,
+      showNotification,
+    });
+
+  useEffect(() => {
+    handleShareInvitation();
+  }, []);
+
+  useEffect(() => {
+    if (autoSubmit.enabled && autoSubmit.credentials) {
+      onSubmit(getValues());
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && mnemonic) {
+      dispatch(userActions.setUser(user));
+      redirectWithCredentials(
+        user,
+        mnemonic,
+        isUniversalLinkMode || isSharingInvitation
+          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
+          : undefined,
+      );
+    }
+  }, []);
 
   const autoSubmit = useMemo(
     () => authService.extractOneUseCredentialsForAutoSubmit(new URLSearchParams(window.location.search)),
     [],
   );
+
   const {
     register,
     formState: { errors, isValid },
@@ -61,76 +102,12 @@ export default function LogIn(): JSX.Element {
         }
       : undefined,
   });
-  const email = useWatch({ control, name: 'email', defaultValue: '' });
+
   const twoFactorCode = useWatch({
     control,
     name: 'twoFactorCode',
     defaultValue: '',
   });
-  const mnemonic = localStorageService.get('xMnemonic');
-
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [showTwoFactor, setShowTwoFactor] = useState(false);
-  const [loginError, setLoginError] = useState<string[]>([]);
-  const [showErrors, setShowErrors] = useState(false);
-  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
-
-  useEffect(() => {
-    if (autoSubmit.enabled && autoSubmit.credentials) {
-      onSubmit(getValues());
-    }
-
-    if (isSharingInvitation && sharingId && sharingToken) {
-      const isDeclineAction = sharingAction === 'decline';
-
-      shareService
-        .processInvitation(isDeclineAction, sharingId, sharingToken)
-        .then(() => {
-          navigationService.push(AppView.Login);
-          notificationsService.show({
-            text: isDeclineAction
-              ? translate('modals.shareModal.invite.declinedSuccessfully')
-              : translate('modals.shareModal.invite.acceptedSuccessfully'),
-            type: ToastType.Success,
-          });
-        })
-        .catch(() =>
-          notificationsService.show({
-            text: isDeclineAction
-              ? translate('modals.shareModal.invite.error.declinedError')
-              : translate('modals.shareModal.invite.error.acceptedError'),
-            type: ToastType.Error,
-          }),
-        );
-    }
-  }, []);
-
-  const redirectWithCredentials = (
-    user: UserSettings,
-    mnemonic: string,
-    options?: { universalLinkMode: boolean; isSharingInvitation: boolean },
-  ) => {
-    if (folderuuidToRedirect) {
-      return navigationService.push(AppView.Shared, { folderuuid: folderuuidToRedirect });
-    }
-
-    if (user.registerCompleted === false) {
-      return navigationService.history.push('/appsumo/' + user.email);
-    }
-
-    if (user?.registerCompleted && mnemonic && options?.isSharingInvitation) {
-      return navigationService.push(AppView.Shared);
-    }
-
-    if (user?.registerCompleted && mnemonic && !options?.universalLinkMode) {
-      return navigationService.push(AppView.Drive);
-    }
-
-    // This is a redirect for universal link for Desktop MacOS
-    if (user?.registerCompleted && mnemonic && options?.universalLinkMode) {
-      return navigationService.push(AppView.UniversalLinkSuccess);
-    }
-  };
 
   const sendUnblockAccountEmail = async (email: string) => {
     try {
@@ -198,19 +175,6 @@ export default function LogIn(): JSX.Element {
       setIsLoggingIn(false);
     }
   };
-
-  useEffect(() => {
-    if (user && mnemonic) {
-      dispatch(userActions.setUser(user));
-      redirectWithCredentials(
-        user,
-        mnemonic,
-        isUniversalLinkMode || isSharingInvitation
-          ? { universalLinkMode: isUniversalLinkMode, isSharingInvitation }
-          : undefined,
-      );
-    }
-  }, []);
 
   const getSignupLink = () => {
     const currentParams = new URLSearchParams(window.location.search);
