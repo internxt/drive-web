@@ -5,7 +5,7 @@ export type Theme = 'system' | 'light' | 'dark' | 'starwars';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
-  toggleTheme: (string) => void;
+  toggleTheme: (string: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({

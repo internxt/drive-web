@@ -22,6 +22,8 @@ const Appearance = () => {
       .then(({ couponUsed }) => {
         if (couponUsed && !appearances.some((theme) => theme === 'starwars')) {
           appearances.push('starwars');
+        } else if (!couponUsed) {
+          toggleTheme('system');
         }
       })
       .catch((err) => {
