@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -37,6 +37,7 @@ import { initializeUserThunk } from './app/store/slices/user';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import { isStarWarsThemeAvailable } from 'app/payment/utils/checkStarWarsCode';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -62,6 +63,7 @@ const App = (props: AppProps): JSX.Element => {
     dispatch,
   } = props;
 
+  const plan = useSelector((state: RootState) => state.plan);
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -77,6 +79,14 @@ const App = (props: AppProps): JSX.Element => {
   useEffect(() => {
     initializeInitialAppState();
     i18next.changeLanguage();
+
+    isStarWarsThemeAvailable(plan)
+      .then((isUsed) => {
+        //
+      })
+      .catch((err) => {
+        //
+      });
   }, []);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {

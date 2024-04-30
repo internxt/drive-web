@@ -5,29 +5,30 @@ import { CaretDown } from '@phosphor-icons/react';
 import ItemsDropdown from './components/ItemsDropdown';
 import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
 import MenuItem from './components/MenuItem';
-import { useEffect } from 'react';
-import paymentService from '../../../../../payment/services/payment.service';
+import { useEffect, useState } from 'react';
+import { isStarWarsThemeAvailable } from 'app/payment/utils/checkStarWarsCode';
+import { useSelector } from 'react-redux';
+import { RootState } from 'app/store';
 
-const STAR_WARS_COUPON = 'VIMYzuI4';
-
-const appearances: Theme[] = ['system', 'light', 'dark'];
+const initialAppearances: Theme[] = ['system', 'light', 'dark'];
 
 const Appearance = () => {
+  const plan = useSelector((state: RootState) => state.plan);
+
   const { translate } = useTranslationContext();
   const { currentTheme, toggleTheme } = useThemeContext();
+  const [appearances, setAppearances] = useState<Theme[]>(initialAppearances);
 
   useEffect(() => {
-    paymentService
-      .isCouponUsedByUser(STAR_WARS_COUPON)
-      .then(({ couponUsed }) => {
-        if (couponUsed && !appearances.some((theme) => theme === 'starwars')) {
-          appearances.push('starwars');
-        } else if (!couponUsed) {
-          toggleTheme('system');
+    isStarWarsThemeAvailable(plan)
+      .then((isStarWarsThemeAvailable) => {
+        if (!appearances.includes('starwars') && isStarWarsThemeAvailable) {
+          setAppearances([...appearances, 'starwars']);
         }
       })
       .catch((err) => {
-        // NO OP
+        const error = err as Error;
+        console.error(error.message);
       });
   }, []);
 
