@@ -20,7 +20,7 @@ const Appearance = () => {
   const [appearances, setAppearances] = useState<Theme[]>(initialAppearances);
 
   useEffect(() => {
-    isStarWarsThemeAvailable(plan, () => toggleTheme('starwars'))
+    isStarWarsThemeAvailable(plan)
       .then((isStarWarsThemeAvailable) => {
         if (!appearances.includes('starwars') && isStarWarsThemeAvailable) {
           setAppearances([...appearances, 'starwars']);

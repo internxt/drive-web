@@ -21,7 +21,7 @@ const fetchCouponCode = async (couponName: string) => {
   return couponJson;
 };
 
-export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess: () => void): Promise<boolean> => {
+export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () => void): Promise<boolean> => {
   let isCouponUsed;
   const starWarsInLocalStorage = localStorageService.get(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
 
@@ -37,7 +37,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess: () =>
     const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
 
     if (couponUsedResult.couponUsed) {
-      onSuccess();
+      onSuccess?.();
       localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
     }
 
@@ -47,7 +47,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess: () =>
     const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
 
     if (couponUsedResult.couponUsed) {
-      onSuccess();
+      onSuccess?.();
       localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
     }
     isCouponUsed = couponUsedResult.couponUsed;

@@ -1,13 +1,12 @@
 import { useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { Toaster } from 'react-hot-toast';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
-import { isStarWarsThemeAvailable } from 'app/payment/utils/checkStarWarsCode';
 import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
 import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
@@ -36,7 +35,6 @@ import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
-import { useThemeContext } from './app/theme/ThemeProvider';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -64,9 +62,6 @@ const App = (props: AppProps): JSX.Element => {
     dispatch,
   } = props;
 
-  const { toggleTheme } = useThemeContext();
-
-  const plan = useSelector((state: RootState) => state.plan);
   const token = localStorageService.get('xToken');
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
@@ -83,10 +78,6 @@ const App = (props: AppProps): JSX.Element => {
     initializeInitialAppState();
     i18next.changeLanguage();
   }, []);
-
-  useEffect(() => {
-    isStarWarsThemeAvailable(plan, () => toggleTheme('starwars'));
-  }, [plan.subscription?.type]);
 
   if ((token && skipSignupIfLoggedIn) || (token && navigationService.history.location.pathname !== '/new')) {
     /**
