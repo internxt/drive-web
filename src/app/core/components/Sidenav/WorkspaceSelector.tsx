@@ -1,18 +1,21 @@
 import { CaretUpDown, Check, Icon } from '@phosphor-icons/react';
 import { useState } from 'react';
+
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Avatar from '../../../shared/components/Avatar';
 
-interface Workspace {
+export interface Workspace {
   uuid: string;
   name: string;
   type: 'Business' | 'Personal';
-  avatar: Blob | null;
+  avatar: MediaSource | null;
 }
 
 interface WorkspaceSelectorProps {
+  userWorkspace: Workspace;
   workspaces: Workspace[];
   onCreateWorkspaceButtonClicked: () => void;
+  onChangeWorkspace: (workspaceId: string | null) => void;
 }
 
 const WorkspaceCard = ({
@@ -52,9 +55,14 @@ const WorkspaceCard = ({
   );
 };
 
-const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ workspaces, onCreateWorkspaceButtonClicked }) => {
+const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
+  userWorkspace,
+  workspaces,
+  onCreateWorkspaceButtonClicked,
+  onChangeWorkspace,
+}) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(workspaces[0]);
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
 
   const { translate } = useTranslationContext();
 
@@ -62,8 +70,14 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ workspaces, onCre
     setIsOpen(!isOpen);
   };
 
-  const handleWorkspaceClick = (workspace: Workspace) => {
-    setSelectedWorkspace(workspace);
+  const handleWorkspaceClick = (workspace: Workspace | null) => {
+    if (workspace?.type === 'Personal') {
+      onChangeWorkspace(null);
+      setSelectedWorkspace(workspace);
+    } else {
+      onChangeWorkspace(workspace?.uuid ?? null);
+      setSelectedWorkspace(workspace);
+    }
     setIsOpen(false);
   };
 
@@ -106,10 +120,28 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({ workspaces, onCre
           }`}
         >
           <p className="px-2 pt-3 text-sm font-medium text-gray-100">{translate('workspaces.workspaces')}</p>
+          <WorkspaceCard
+            key={`${userWorkspace.name}-${userWorkspace.type}`}
+            workspace={{
+              name: userWorkspace.name,
+              uuid: userWorkspace.uuid,
+              type: 'Personal',
+              avatar: null,
+            }}
+            isSelected={selectedWorkspace?.uuid === userWorkspace.uuid}
+            Icon={Check}
+            onClick={handleWorkspaceClick}
+            translate={translate}
+          />
           {workspaces.map((workspace) => (
             <WorkspaceCard
               key={`${workspace.name}-${workspace.type}`}
-              workspace={workspace}
+              workspace={{
+                name: workspace.name,
+                uuid: workspace.uuid,
+                type: workspace.type,
+                avatar: null,
+              }}
               isSelected={selectedWorkspace?.uuid === workspace.uuid}
               Icon={Check}
               onClick={handleWorkspaceClick}
