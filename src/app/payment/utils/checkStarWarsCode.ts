@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
-import paymentService from '../services/payment.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import { PlanState } from 'app/store/slices/plan';
+import paymentService from '../services/payment.service';
 
 export const STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'star_wars_theme_enabled';
 
@@ -21,11 +21,11 @@ const fetchCouponCode = async (couponName: string) => {
   return couponJson;
 };
 
-export const isStarWarsThemeAvailable = async (plan: PlanState): Promise<boolean> => {
+export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess: () => void): Promise<boolean> => {
   let isCouponUsed;
   const starWarsInLocalStorage = localStorageService.get(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY);
 
-  if (starWarsInLocalStorage) return true;
+  if (starWarsInLocalStorage === 'true') return true;
 
   const { individualPlan, subscription } = plan;
 
@@ -35,7 +35,9 @@ export const isStarWarsThemeAvailable = async (plan: PlanState): Promise<boolean
   if (subscription?.type === 'subscription') {
     const coupon = await fetchCouponCode('STAR_WARS_SUBSCRIPTION');
     const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
+
     if (couponUsedResult.couponUsed) {
+      onSuccess();
       localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
     }
 
@@ -43,7 +45,9 @@ export const isStarWarsThemeAvailable = async (plan: PlanState): Promise<boolean
   } else if (individualPlan?.isLifetime) {
     const coupon = await fetchCouponCode(LifetimeCoupons[bytesToString(storageLimit as number)]);
     const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
+
     if (couponUsedResult.couponUsed) {
+      onSuccess();
       localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
     }
     isCouponUsed = couponUsedResult.couponUsed;

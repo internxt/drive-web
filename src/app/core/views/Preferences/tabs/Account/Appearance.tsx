@@ -1,14 +1,14 @@
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Card from '../../../../../shared/components/Card';
-import Section from '../../components/Section';
 import { CaretDown } from '@phosphor-icons/react';
-import ItemsDropdown from './components/ItemsDropdown';
-import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
-import MenuItem from './components/MenuItem';
-import { useEffect, useState } from 'react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { isStarWarsThemeAvailable } from 'app/payment/utils/checkStarWarsCode';
-import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import Card from '../../../../../shared/components/Card';
+import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
+import Section from '../../components/Section';
+import ItemsDropdown from './components/ItemsDropdown';
+import MenuItem from './components/MenuItem';
 
 const initialAppearances: Theme[] = ['system', 'light', 'dark'];
 
@@ -20,7 +20,7 @@ const Appearance = () => {
   const [appearances, setAppearances] = useState<Theme[]>(initialAppearances);
 
   useEffect(() => {
-    isStarWarsThemeAvailable(plan)
+    isStarWarsThemeAvailable(plan, () => toggleTheme('starwars'))
       .then((isStarWarsThemeAvailable) => {
         if (!appearances.includes('starwars') && isStarWarsThemeAvailable) {
           setAppearances([...appearances, 'starwars']);

@@ -58,6 +58,7 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('star_wars_theme_enabled');
 }
 
 const localStorageService = {
