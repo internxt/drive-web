@@ -370,7 +370,7 @@ function SharedView({
 
     let ownerUserAuthenticationData;
 
-    const isSecondLevelOfFoldersOrMore = sharedNamePath.length > 2;
+    const isSecondLevelOfFoldersOrMore = sharedNamePath.length >= 2;
     const isOwnerOfFolder = filesOwnerCredentials?.networkUser === currentUser?.email;
     const token = isSecondLevelOfFoldersOrMore ? currentFolderLevelResourcesToken : nextFolderLevelResourcesToken;
     if (filesOwnerCredentials && currentUser && isOwnerOfFolder) {

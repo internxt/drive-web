@@ -4,18 +4,18 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save up to 75%",
-    "title": "Secure your online ID for life",
+    "label": "Save 75%",
+    "title": "Protect your data from the dark side",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Up to 75% OFF all lifetime plans",
+      "Save on Internxt plans",
       "Safe and secure cloud storage",
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends April 18th"
+      "Offer ends May 20"
     ]
   },
   "valentinesBanner": {
@@ -64,7 +64,8 @@
     "title": "Appearance",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",
