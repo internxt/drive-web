@@ -1,5 +1,5 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { createContext, useEffect, useState } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
@@ -33,6 +33,14 @@ export default function Preferences(): JSX.Element {
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');
   const [currentTabTitle, setCurrentTabTitle] = useState<string>('account');
 
+  const tabContextValues = useMemo(
+    () => ({
+      activeTab,
+      setActiveTab,
+    }),
+    [activeTab, setActiveTab],
+  );
+
   useEffect(() => {
     if (urlTab) {
       const currentTab = TABS.filter((tab) => tab.id === urlTab);
@@ -53,7 +61,7 @@ export default function Preferences(): JSX.Element {
         <title>{currentTabTitle} - Internxt Drive</title>
       </Helmet>
       <TabSelector tabs={TABS} activeTab={activeTab} onChange={navigateTab} />
-      <TabContext.Provider value={{ activeTab, setActiveTab }}>
+      <TabContext.Provider value={tabContextValues}>
         <div className="flex grow flex-row justify-center overflow-y-auto p-8">
           <div className="w-screen max-w-screen-xl overflow-x-visible">
             {TABS.map(

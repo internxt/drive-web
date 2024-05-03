@@ -5,17 +5,17 @@
   },
   "featuresBanner": {
     "label": "Économisez 75%",
-    "title": "Économies pour la Journée mondiale du mot de passe",
+    "title": "Protégez vos données du côté obscur",
     "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez 75% sur tous les plans à vie",
+      "Économisez sur les plans Internxt",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 3 mai"
+      "L'offre se termine le 20 mai"
     ]
   },
   "valentinesBanner": {
@@ -43,7 +43,8 @@
     "title": "Apparence",
     "light": "Clair",
     "dark": "Sombre",
-    "system": "Système"
+    "system": "Système",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",

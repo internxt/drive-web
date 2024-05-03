@@ -10,17 +10,17 @@
   },
   "featuresBanner": {
     "label": "Risparmia il 75%",
-    "title": "Risparmi per il giorno mondiale della password",
+    "title": "Proteggi i tuoi dati dal lato oscuro",
     "cta": "Scegli un piano",
     "guarantee": "Garanzia di rimborso entro 30 giorni",
     "lastCta": "*L'offerta è valida solo per gli account gratuiti o i nuovi clienti",
     "features": [
-      "Risparmia il 75% su tutti i piani a vita",
+      "Risparmia sui piani di Internxt",
       "Archiviazione cloud sicura e protetta",
       "Open source e trasparente",
-      "Trasferimenti crittografati end-to-end",
+      "Trasferimenti crittografati di estremità in estremità",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 3 maggio"
+      "L'offerta termina il 20 maggio"
     ]
   },
   "banner": {
@@ -64,7 +64,8 @@
     "title": "Aspetto",
     "light": "Chiaro",
     "dark": "Scuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",

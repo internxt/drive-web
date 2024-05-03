@@ -4,18 +4,18 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "¡Ahorra un 75%!",
-    "title": "Ahorra por el Día Mundial de la Contraseña",
-    "cta": "Elige un plan",
+    "label": "Ahorra un 75%",
+    "title": "Protege tus datos del lado oscuro",
+    "cta": "Elegir plan",
     "guarantee": "Garantía de devolución del dinero de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Ahorra un 75% en todos los planes de por vida",
-      "Almacenamiento en la nube seguro",
+      "Ahorra en los planes de Internxt",
+      "Almacenamiento en la nube seguro y protegido",
       "Código abierto y transparente",
       "Transferencias cifradas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 3 de mayo"
+      "La oferta termina el 20 de mayo"
     ]
   },
   "valentinesBanner": {
@@ -43,7 +43,8 @@
     "title": "Apariencia",
     "light": "Claro",
     "dark": "Oscuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
 
   "auth": {

@@ -5,17 +5,17 @@
   },
   "featuresBanner": {
     "label": "75%节省",
-    "title": "世界密码日节省",
+    "title": "保护您的数据免受黑暗面的侵害",
     "cta": "选择方案",
     "guarantee": "30天退款保证",
     "lastCta": "*此优惠仅适用于免费帐户或新客户",
     "features": [
-      "所有终身计划可节省75%",
+      "在Internxt计划上节省",
       "安全可靠的云存储",
       "开源和透明",
       "端到端加密传输",
       "无未经授权的访问",
-      "优惠截止日期为5月3日"
+      "优惠截止日期为5月20日"
     ]
   },
   "valentinesBanner": {
@@ -64,7 +64,8 @@
     "title": "外观",
     "light": "明亮",
     "dark": "暗",
-    "system": "系统"
+    "system": "系统",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "电子邮件",
