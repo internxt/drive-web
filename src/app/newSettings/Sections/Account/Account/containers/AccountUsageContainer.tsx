@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
-import { t } from 'i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import errorService from '../../../../../core/services/error.service';
 import navigationService from '../../../../../core/services/navigation.service';
@@ -15,7 +14,7 @@ import { PlanState } from '../../../../../store/slices/plan';
 import { uiActions } from '../../../../../store/slices/ui';
 import UsageBar from '../../../../components/Usage/UsageBar';
 import VerticalDivider from '../../../../components/VerticalDivider';
-import UsageDetails from '../../../../containers/UsageContainer';
+import { getProductCaptions } from '../../../../utils/productUtils';
 
 const AccountUsageContainer = ({
   className = '',
@@ -32,26 +31,8 @@ const AccountUsageContainer = ({
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
 
   const planLimitInBytes = plan.planLimit;
-  const products: Parameters<typeof UsageDetails>[0]['products'] | null =
-    planUsage >= 0
-      ? [
-          {
-            name: t('sideNav.drive'),
-            usageInBytes: usageDetails?.drive ?? 0,
-            color: 'primary',
-          },
-          {
-            name: t('sideNav.photos'),
-            usageInBytes: usageDetails?.photos ?? 0,
-            color: 'orange',
-          },
-          {
-            name: t('views.account.tabs.account.view.backups'),
-            usageInBytes: usageDetails?.backups ?? 0,
-            color: 'indigo',
-          },
-        ]
-      : null;
+  const products = planUsage >= 0 ? getProductCaptions(usageDetails) : null;
+
   products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
   const usedProducts = products?.filter((product) => product.usageInBytes > 0);
 

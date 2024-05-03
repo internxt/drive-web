@@ -1,15 +1,15 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
+import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageState } from '../storage.model';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { SdkFactory } from '../../../../core/factory/sdk';
+import errorService from '../../../../core/services/error.service';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { t } from 'i18next';
-import errorService from '../../../../core/services/error.service';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { StorageState } from '../storage.model';
 
 const DEFAULT_LIMIT = 50;
 

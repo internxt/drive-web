@@ -1,0 +1,48 @@
+name: Build & Publish Stable Preview
+on:
+  push:
+    branches: ["master"]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: echo "registry=https://registry.yarnpkg.com/" > .npmrc
+      - run: echo "@internxt:registry=https://npm.pkg.github.com" >> .npmrc
+      # You cannot read packages from other private repos with GITHUB_TOKEN
+      # You have to use a PAT instead https://github.com/actions/setup-node/issues/49
+      - run: echo //npm.pkg.github.com/:_authToken=${{ secrets.PERSONAL_ACCESS_TOKEN }} >> .npmrc
+      - run: echo "always-auth=true" >> .npmrc
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Build and push to ${{ github.event.repository.name }}-dev
+        uses: docker/build-push-action@v2
+        with:
+          context: ./
+          file: ./infrastructure/preview.Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-dev:${{ github.sha }}
+  dispatch_update_preview_image:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch Update Preview Image Command
+        uses: myrotvorets/trigger-repository-dispatch-action@1.0.0
+        with:
+          token: ${{ secrets.PAT }}
+          repo: internxt/environments
+          type: update-preview-image-command
+          payload: |
+            { 
+              "image": { 
+                "name": "${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}",
+                "newName": "${{ secrets.DOCKERHUB_USERNAME }}/${{ github.event.repository.name }}-dev",
+                "newTag": "${{ github.sha }}"
+              }
+            }
