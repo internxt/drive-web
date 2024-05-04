@@ -4,18 +4,18 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra hasta un 75%",
-    "title": "Asegura tu identidad en línea de por vida.",
-    "cta": "Consíguela",
-    "guarantee": "Garantía de devolución de 30 días",
+    "label": "Ahorra un 75%",
+    "title": "Protege tus datos del lado oscuro",
+    "cta": "Elegir plan",
+    "guarantee": "Garantía de devolución del dinero de 30 días",
     "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
-      "Hasta el 75% en planes lifetime",
-      "Almacenamiento seguro en la nube",
-      "Código abierto y auditado",
+      "Ahorra en los planes de Internxt",
+      "Almacenamiento en la nube seguro y protegido",
+      "Código abierto y transparente",
       "Transferencias cifradas de extremo a extremo",
-      "Sin accesos no autorizados",
-      "La promoción finaliza el 18 de abril"
+      "Sin acceso no autorizado",
+      "La oferta termina el 20 de mayo"
     ]
   },
   "valentinesBanner": {
@@ -23,9 +23,9 @@
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
-  "lifetimeBanner": {
-    "label": "¿Necesitas almacenamiento seguro de por vida?",
-    "title": "¡Asegura tus archivos de por vida con nuestros planes!",
+  "banner": {
+    "label": "Protege tus archivos de por vida",
+    "title": "Obtén acceso de por vida a tu almacenamiento en la nube en Internxt",
     "cta": "Elige tu plan",
     "guarantee": "Garantía de devolución de 30 días"
   },
@@ -43,7 +43,8 @@
     "title": "Apariencia",
     "light": "Claro",
     "dark": "Oscuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
 
   "auth": {
@@ -944,7 +945,7 @@
     },
     "dropdown": {
       "download": "Descargar",
-      "delete": "Eliminar permanentemente"
+      "delete": "Eliminar"
     }
   },
   "shared": {

@@ -4,18 +4,18 @@
     "logOut": "Çıkış yap"
   },
   "featuresBanner": {
-    "label": "%75'e kadar tasarruf edin",
-    "title": "Verilerinizi ömür boyu güvence altına alın",
-    "cta": "Plan seçin",
-    "guarantee": "30 günlük para iade garantisi",
-    "lastCta": "*Teklif ücretsiz hesaplar veya yeni müşteriler içindir",
+    "label": "Save 75%",
+    "title": "Protect your data from the dark side",
+    "cta": "Choose plan",
+    "guarantee": "30-day money-back guarantee",
+    "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Tüm ömür boyu planlarda %75'e varan indirim",
-      "Güvenli ve sağlam bulut depolama",
-      "Açık kaynaklı ve şeffaf",
-      "Uçtan uca şifrelenmiş aktarımlar",
-      "Yetkisiz erişim imkansız",
-      "Teklif 18 Nisan'da sona eriyor"
+      "Save on Internxt plans",
+      "Safe and secure cloud storage",
+      "Open source and transparent",
+      "End-to-end encrypted transfers",
+      "No unauthorized access",
+      "Offer ends May 20"
     ]
   },
   "valentinesBanner": {
@@ -23,9 +23,9 @@
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
-  "lifetimeBanner": {
-    "label": "Need secure storage for life?",
-    "title": "Protect your files forever with our lifetime plans!",
+  "banner": {
+    "label": "Secure your files forever",
+    "title": "Get lifetime access to secure, private cloud storage with Internxt!",
     "cta": "Choose your plan",
     "guarantee": "30-day money-back guarantee"
   },
@@ -66,6 +66,7 @@
     "light": "Açık",
     "dark": "Koyu",
     "system": "Sistem"
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-posta",

@@ -1,5 +1,5 @@
 import { SignupComponent } from './AuthView';
-import InternxtDevices from '../../../../assets/images/banner/Internxt-secure-cloud-storage.webp';
+import InternxtDevices from '../../../../assets/images/banner/internxt_secure_cloud_storage.webp';
 import { Helmet } from 'react-helmet-async';
 import { useEffect, useState } from 'react';
 

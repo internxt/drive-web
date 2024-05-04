@@ -4,18 +4,18 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Bis zu 75% sparen",
-    "title": "Sichern Sie Ihre Online-Identität fürs Leben.",
-    "cta": "Wähle einen Plan",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "label": "Sparen Sie 75%",
+    "title": "Schützen Sie Ihre Daten vor der dunklen Seite",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Bis zu 75% Rabatt auf alle lebenslangen Pläne",
-      "Sicherer Cloud-Speicher",
-      "Backup privater Dateien und Fotos",
-      "End-to-end verschlüsselte Übertragungen",
+      "Sparen Sie bei Internxt-Plänen",
+      "Sicherer und geschützter Cloud-Speicher",
+      "Open Source und transparent",
+      "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 18. April"
+      "Angebot endet am 20. Mai"
     ]
   },
   "valentinesBanner": {
@@ -23,11 +23,11 @@
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
-  "lifetimeBanner": {
-    "label": "Suchen Sie einen sicheren Datenspeicher fürs Leben?",
-    "title": "Schützen Sie Ihre Dateien mit lebenslangen Internxt-Plänen!",
-    "cta": "Plan auswählen",
-    "guarantee": "Geld-zurück-Garantie innerhalb von 30 Tagen"
+  "banner": {
+    "label": "Sichern Sie Ihre Dateien für immer",
+    "title": "Erhalten Sie lebenslangen Zugang zu sicherem, privatem Cloud-Speicher mit Internxt!",
+    "cta": "Wählen Sie Ihren Plan",
+    "guarantee": "30-Tage-Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",
@@ -43,7 +43,8 @@
     "title": "Erscheinung",
     "light": "Hell",
     "dark": "Dunkel",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-Mail",

@@ -4,18 +4,18 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "最多节省 75%",
-    "title": "保护您的在线身份一生。",
-    "cta": "选择计划",
+    "label": "75%节省",
+    "title": "保护您的数据免受黑暗面的侵害",
+    "cta": "选择方案",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠仅适用于免费帐户或新客户",
+    "lastCta": "*此优惠仅适用于免费帐户或新客户",
     "features": [
-      "所有终身计划最高可享 75% 折扣",
+      "在Internxt计划上节省",
       "安全可靠的云存储",
       "开源和透明",
       "端到端加密传输",
-      "没有未经授权的访问",
-      "优惠截止日期为4月18日"
+      "无未经授权的访问",
+      "优惠截止日期为5月20日"
     ]
   },
   "valentinesBanner": {
@@ -23,11 +23,11 @@
     "subtitle": "使用代码 VDAY 即可享受2TB的九折套餐",
     "cta": "达成交易"
   },
-  "lifetimeBanner": {
-    "label": "寻找终身安全的数据存储？",
-    "title": "通过Internxt的终身计划保护您的文件！",
-    "cta": "选择计划",
-    "guarantee": "30天内退款保证"
+  "banner": {
+    "label": "永久保护您的文件",
+    "title": "通过Internxt获得终身访问安全的私人云存储！",
+    "cta": "选择您的计划",
+    "guarantee": "30天退款保证"
   },
   "notFound": {
     "header": "Error 404",
@@ -64,7 +64,8 @@
     "title": "外观",
     "light": "明亮",
     "dark": "暗",
-    "system": "系统"
+    "system": "系统",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "电子邮件",

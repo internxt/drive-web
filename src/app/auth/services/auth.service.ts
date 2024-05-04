@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { aes } from '@internxt/lib';
 import {
   CryptoProvider,
@@ -7,8 +6,23 @@ import {
   Password,
   SecurityDetails,
   TwoFactorAuthQR,
-  UserAccessError,
 } from '@internxt/sdk/dist/auth';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as Sentry from '@sentry/react';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { getCookie, setCookie } from 'app/analytics/utils';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import RealtimeService from 'app/core/services/socket.service';
+import { AppView } from 'app/core/types';
+import {
+  assertPrivateKeyIsValid,
+  assertValidateKeys,
+  decryptPrivateKey,
+  getAesInitFromEnv,
+} from 'app/crypto/services/keys.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -17,24 +31,9 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import navigationService from 'app/core/services/navigation.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
-import {
-  getAesInitFromEnv,
-  assertPrivateKeyIsValid,
-  decryptPrivateKey,
-  assertValidateKeys,
-} from 'app/crypto/services/keys.service';
-import { AppView } from 'app/core/types';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { getCookie, setCookie } from 'app/analytics/utils';
-import { validateMnemonic, generateMnemonic } from 'bip39';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();

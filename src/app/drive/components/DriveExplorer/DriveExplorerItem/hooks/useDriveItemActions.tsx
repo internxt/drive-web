@@ -1,19 +1,19 @@
 import { createRef, useMemo } from 'react';
 
-import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
-import shareService from '../../../../../share/services/share.service';
-import { storageActions } from '../../../../../store/slices/storage';
-import storageThunks from '../../../../../store/slices/storage/storage.thunks';
-import { uiActions } from '../../../../../store/slices/ui';
+import navigationService from 'app/core/services/navigation.service';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import {
   getDatabaseFilePreviewData,
   updateDatabaseFilePreviewData,
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
+import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
+import shareService from '../../../../../share/services/share.service';
+import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
-import navigationService from 'app/core/services/navigation.service';
+import { storageActions } from '../../../../../store/slices/storage';
+import storageThunks from '../../../../../store/slices/storage/storage.thunks';
+import { uiActions } from '../../../../../store/slices/ui';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -60,8 +60,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onOpenPreviewButtonClicked = () => {
-    dispatch(uiActions.setIsFileViewerOpen(true));
-    dispatch(uiActions.setFileViewerItem(item as DriveItemData));
+    navigationService.pushFile(item.uuid);
   };
 
   const onGetLinkButtonClicked = () => {
@@ -111,6 +110,7 @@ const useDriveItemActions = (item): DriveItemActions => {
     const isRecentsView = navigationService.isCurrentPath('recents');
 
     if (item.isFolder) {
+      dispatch(storageActions.setForceLoading(true));
       navigationService.pushFolder(item.uuid);
     } else {
       if (isRecentsView) {
