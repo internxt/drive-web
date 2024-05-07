@@ -1,21 +1,21 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { getAppConfig } from 'app/core/services/config.service';
+import dateService from 'app/core/services/date.service';
+import {
+  canFileBeCached,
+  getDatabaseFileSourceData,
+  updateDatabaseFileSourceData,
+} from 'app/drive/services/database.service';
+import { DriveItemData } from 'app/drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { DriveItemData } from 'app/drive/types';
-import { getAppConfig } from 'app/core/services/config.service';
-import {
-  canFileBeCached,
-  getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
-} from 'app/drive/services/database.service';
-import dateService from 'app/core/services/date.service';
-import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
@@ -164,6 +164,7 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
               dateOne: fileSource?.updatedAt,
               dateTwo: currentFile?.updatedAt,
             });
+
         if (isCacheExpired) {
           fileContent = await downloadFile(currentFile, abortController);
           await updateDatabaseFileSourceData({
@@ -172,9 +173,9 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
             fileId: currentFile.id,
             updatedAt: currentFile.updatedAt,
           });
+          await handleFileThumbnail(currentFile, fileSource.source);
         } else {
           fileContent = fileSource.source as Blob;
-          await handleFileThumbnail(currentFile, fileSource.source as File);
         }
       } else {
         fileContent = await downloadFile(currentFile, abortController);
@@ -186,6 +187,7 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
             updatedAt: currentFile.updatedAt,
           });
         }
+        await handleFileThumbnail(currentFile, fileContent);
       }
 
       return fileContent;
@@ -224,4 +226,4 @@ const useFileViewerKeyboardShortcuts = ({
   };
 };
 
-export { topDropdownBarActionsMenu, getFileContentManager, useFileViewerKeyboardShortcuts };
+export { getFileContentManager, topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts };

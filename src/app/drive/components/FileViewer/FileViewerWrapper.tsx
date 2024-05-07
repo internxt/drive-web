@@ -1,33 +1,34 @@
-import storageThunks from '../../../store/slices/storage/storage.thunks';
-import { DriveItemData } from '../../types';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { DriveFileData, DriveItemData } from '../../types';
 
-import FileViewer from './FileViewer';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import { getAppConfig } from 'app/core/services/config.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import downloadService from '../../services/download.service';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
+import errorService from '../../../core/services/error.service';
+import { OrderDirection } from '../../../core/types';
+import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import {
+  ThumbnailToUpload,
   compareThumbnail,
   getThumbnailFrom,
   setCurrentThumbnail,
   setThumbnails,
-  ThumbnailToUpload,
+  uploadThumbnail,
 } from '../../../drive/services/thumbnail.service';
-import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
-import errorService from '../../../core/services/error.service';
-import { OrderDirection } from '../../../core/types';
-import { uiActions } from '../../../store/slices/ui';
 import { RootState } from '../../../store';
-import localStorageService from 'app/core/services/local-storage.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { getAppConfig } from 'app/core/services/config.service';
+import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { uiActions } from '../../../store/slices/ui';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
+import downloadService from '../../services/download.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import FileViewer from './FileViewer';
 import {
-  topDropdownBarActionsMenu,
   getFileContentManager,
+  topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
 
@@ -53,15 +54,15 @@ const FileViewerWrapper = ({
   onShowStopSharingDialog,
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const dispatch = useAppDispatch();
-  const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
 
+  const [isDownloadStarted, setIsDownloadStarted] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
-  const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const [blob, setBlob] = useState<Blob | null>(null);
   const user = localStorageService.getUser();
 
@@ -70,6 +71,44 @@ const FileViewerWrapper = ({
   const isSharedView = pathId === 'shared';
 
   const driveItemActions = useDriveItemActions(currentFile);
+
+  const onDownload = () => currentFile && dispatch(storageThunks.downloadItemsThunk([currentFile as DriveItemData]));
+
+  useEffect(() => {
+    setBlob(null);
+
+    if (currentFile && !updateProgress && !isDownloadStarted) {
+      setIsDownloadStarted(true);
+      fileContentManager
+        .download()
+        .then((blob) => {
+          setBlob(blob);
+          setUpdateProgress(0);
+          setIsDownloadStarted(false);
+        })
+        .catch((error) => {
+          if (error.name === 'AbortError') {
+            return;
+          }
+          console.error(error);
+          setBlob(null);
+          errorService.reportError(error);
+          setIsDownloadStarted(false);
+        });
+    }
+  }, [showPreview, currentFile]);
+
+  useEffect(() => {
+    setBlob(null);
+
+    if (dirtyName) {
+      setCurrentFile?.({
+        ...currentFile,
+        plainName: dirtyName,
+      });
+    }
+    dispatch(uiActions.setCurrentEditingNameDirty(''));
+  }, [dirtyName, currentFile]);
 
   const isCurrentUserViewer = useCallback(() => {
     return currentUserRole === UserRoles.Reader;
@@ -89,17 +128,6 @@ const FileViewerWrapper = ({
     driveItemActions,
     onClose,
   });
-
-  useEffect(() => {
-    setBlob(null);
-    if (dirtyName) {
-      setCurrentFile?.({
-        ...currentFile,
-        plainName: dirtyName,
-      });
-    }
-    dispatch(uiActions.setCurrentEditingNameDirty(''));
-  }, [dirtyName, currentFile]);
 
   const driveItemsOrder = useAppSelector((state) => state.storage.driveItemsOrder);
   const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
@@ -123,6 +151,8 @@ const FileViewerWrapper = ({
   //Switch to the next or previous file in the folder
   function changeFile(direction: 'next' | 'prev') {
     setBlob(null);
+    setIsDownloadStarted(false);
+    setUpdateProgress(0);
     if (direction === 'next') {
       setCurrentFile?.(sortFolderFiles[fileIndex + 1]);
     } else {
@@ -144,9 +174,43 @@ const FileViewerWrapper = ({
     );
   }
 
+  const handleUpdateLocalImageThumbnail = async (
+    thumbnailFile: File,
+    driveFile: DriveFileData,
+    currentThumbnail: Thumbnail | null,
+    thumbnailUploaded?: Thumbnail,
+  ) => {
+    const isThumbnailGeneratedAndUploaded = thumbnailUploaded && thumbnailFile;
+
+    if (isThumbnailGeneratedAndUploaded) {
+      setCurrentThumbnail(thumbnailFile, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+
+      let newThumbnails: Thumbnail[];
+
+      const existLocalThumbnail = !!currentThumbnail;
+      if (existLocalThumbnail) {
+        //Replace existing thumbnail with the new uploadedThumbnail
+        newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
+        newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
+      } else {
+        newThumbnails =
+          driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
+      }
+
+      setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
+      await updateDatabaseFilePreviewData({
+        fileId: driveFile.id,
+        folderId: driveFile.folderId,
+        previewBlob: thumbnailFile,
+        updatedAt: driveFile.updatedAt,
+      });
+    }
+  };
+
   const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
     const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
+    const existsThumbnailInDatabase = !!databaseThumbnail;
 
     const fileObject = new File([file], driveFile.name);
     const fileUpload: FileToUpload = {
@@ -162,7 +226,7 @@ const FileViewerWrapper = ({
     const isDifferentThumbnailOrNotExists =
       !currentThumbnail || !compareThumbnail(currentThumbnail, thumbnailGenerated);
 
-    if (thumbnailGenerated.file && isDifferentThumbnailOrNotExists) {
+    if (isDifferentThumbnailOrNotExists && thumbnailGenerated.file) {
       const thumbnailToUpload: ThumbnailToUpload = {
         fileId: driveFile.id,
         size: thumbnailGenerated.file.size,
@@ -171,29 +235,12 @@ const FileViewerWrapper = ({
         type: thumbnailGenerated.type,
         content: thumbnailGenerated.file,
       };
-      let thumbnailUploaded;
+      const thumbnailUploaded = await uploadThumbnail(user?.email as string, thumbnailToUpload, false, () => {});
 
-      if (thumbnailUploaded && thumbnailGenerated.file) {
-        setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
+      setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
-        let newThumbnails: Thumbnail[];
-        if (currentThumbnail) {
-          //Replace existing thumbnail with the new uploadedThumbnail
-          newThumbnails = driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails] : [thumbnailUploaded];
-          newThumbnails.splice(newThumbnails.indexOf(currentThumbnail), 1, thumbnailUploaded);
-        } else {
-          newThumbnails =
-            driveFile.thumbnails?.length > 0 ? [...driveFile.thumbnails, ...[thumbnailUploaded]] : [thumbnailUploaded];
-        }
-        setThumbnails(newThumbnails, driveFile as DriveItemData, dispatch);
-        await updateDatabaseFilePreviewData({
-          fileId: driveFile.id,
-          folderId: driveFile.folderId,
-          previewBlob: thumbnailToUpload.content,
-          updatedAt: driveFile.updatedAt,
-        });
-      }
-    } else if (!databaseThumbnail && thumbnailGenerated?.file) {
+      await handleUpdateLocalImageThumbnail(thumbnailGenerated.file, driveFile, currentThumbnail, thumbnailUploaded);
+    } else if (!existsThumbnailInDatabase && thumbnailGenerated?.file) {
       await updateDatabaseFilePreviewData({
         fileId: driveFile.id,
         folderId: driveFile.folderId,
@@ -204,25 +251,6 @@ const FileViewerWrapper = ({
   };
 
   const fileContentManager = getFileContentManager(currentFile, downloadFile, handleFileThumbnail);
-
-  useEffect(() => {
-    setBlob(null);
-    if (currentFile) {
-      fileContentManager
-        .download()
-        .then((blob) => {
-          setBlob(blob);
-        })
-        .catch((error) => {
-          if (error.name === 'AbortError') {
-            return;
-          }
-          console.error(error);
-          setBlob(null);
-          errorService.reportError(error);
-        });
-    }
-  }, [showPreview, currentFile]);
 
   return showPreview ? (
     <FileViewer

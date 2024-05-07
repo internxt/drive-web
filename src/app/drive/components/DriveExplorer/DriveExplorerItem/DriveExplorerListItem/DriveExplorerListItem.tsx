@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
 import { items } from '@internxt/lib';
-import sizeService from '../../../../../drive/services/size.service';
-import dateService from '../../../../../core/services/date.service';
-import iconService from '../../../../services/icon.service';
-import transformItemService from '../../../../../drive/services/item-transform.service';
+import usersIcon from 'assets/icons/users.svg';
+import { useEffect } from 'react';
 import { DriveExplorerItemProps } from '..';
+import dateService from '../../../../../core/services/date.service';
+import transformItemService from '../../../../../drive/services/item-transform.service';
+import sizeService from '../../../../../drive/services/size.service';
+import iconService from '../../../../services/icon.service';
 import useDriveItemActions from '../hooks/useDriveItemActions';
 import { useDriveItemDrag, useDriveItemDrop } from '../hooks/useDriveItemDragAndDrop';
 import useDriveItemStoreProps from '../hooks/useDriveStoreProps';
 import './DriveExplorerListItem.scss';
-import usersIcon from 'assets/icons/users.svg';
 
 const DriveExplorerListItem = ({ item }: DriveExplorerItemProps): JSX.Element => {
   const { isItemSelected, isEditingName } = useDriveItemStoreProps();
