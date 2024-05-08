@@ -13,18 +13,20 @@ export interface PersonalWorkspace {
 
 export interface WorkspacesState {
   workspaces: WorkspaceData[];
-  selectedWorkspace: WorkspaceData | PersonalWorkspace | null;
+  selectedWorkspace: WorkspaceData | null;
+  isOwner: boolean;
   isLoadingWorkspaces: boolean;
 }
 
 const initialState: WorkspacesState = {
   workspaces: [],
   selectedWorkspace: null,
+  isOwner: false,
   isLoadingWorkspaces: false,
 };
 
 const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
-  'user/updateWorkspaces',
+  'workspaces/updateWorkspaces',
   async (_, { dispatch }) => {
     const workspaces = await workspacesService.getWorkspaces();
 

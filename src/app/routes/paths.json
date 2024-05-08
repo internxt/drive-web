@@ -204,6 +204,12 @@
       "exact": false
     },
     {
+      "id": "workspace-guest-invite",
+      "layout": "empty",
+      "path": "/workspace-guest",
+      "exact": false
+    },
+    {
       "id": "share-photos-token",
       "layout": "share",
       "path": "/sh/photos/:token([a-z0-9]{24})/:code",

@@ -9,6 +9,7 @@ import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const parsedWorkspaces = parseWorkspaces(workspaces);
 
   useEffect(() => {

@@ -36,6 +36,43 @@ export function inviteUserToTeam(inviteUserBody: InviteMemberBody): Promise<void
   });
 }
 
+export const processInvitation = async (
+  isDeclineAction: boolean,
+  invitationId: string,
+  token: string,
+): Promise<void> => {
+  const invitationData = {
+    invitationId,
+    token,
+  };
+
+  const response = isDeclineAction
+    ? await declineWorkspaceInvite(invitationData)
+    : await acceptWorkspaceInvite(invitationData);
+
+  return response;
+};
+
+export function acceptWorkspaceInvite({ invitationId, token }: { invitationId: string; token: string }): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return shareClient.acceptInvitation(invitationId, token).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function declineWorkspaceInvite({
+  invitationId,
+  token,
+}: {
+  invitationId: string;
+  token: string;
+}): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return shareClient.declineInvitation(invitationId, token).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function setupWorkspace(workspaceSetupInfo: WorkspaceSetupInfo): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.setupWorkspace(workspaceSetupInfo).catch((error) => {
@@ -113,6 +150,7 @@ const workspacesService = {
   removeTeamUser,
   changeTeamManager,
   changeUserRole,
+  processInvitation,
 };
 
 export default workspacesService;

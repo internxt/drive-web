@@ -1471,6 +1471,16 @@
           "addMessage": "Add message",
           "invite": "Invite"
         },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Workspace invitation successfully accepted",
+          "declinedSuccessfully": "Workspace invitation successfully declined",
+          "invitationSent": "Invitation sent successfully",
+          "error": {
+            "errorInviting": "Error sending invitation to {{email}}",
+            "acceptedError": "Error accepting invitation to workspace",
+            "declinedError": "Error declining invitation to workspace"
+          }
+        },
         "list": {
           "user": "User",
           "usage": "Usage",
