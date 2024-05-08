@@ -16,6 +16,7 @@ import { match } from 'react-router';
 import { Link } from 'react-router-dom';
 import { WritableStream } from 'streamsaver';
 import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError from '../../../core/types';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { useAppSelector } from '../../../store/hooks';
 import SendBanner from './SendBanner';
@@ -120,7 +121,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw err;
+        throw new AppError(err.message, err.status);
       });
   }
 

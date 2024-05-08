@@ -25,6 +25,7 @@ import errorService from 'app/core/services/error.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError from '../../../core/types';
 import Button from '../../../shared/components/Button/Button';
 import SendBanner from './SendBanner';
 import ShareItemPwdView from './ShareItemPwdView';
@@ -139,7 +140,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw err;
+        throw new AppError(err.message, err.status);
       });
   }
 
