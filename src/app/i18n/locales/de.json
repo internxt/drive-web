@@ -1368,6 +1368,16 @@
           "addMessage": "Nachricht hinzufügen",
           "invite": "Einladen"
         },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Einladung zum Arbeitsbereich erfolgreich angenommen",
+          "declinedSuccessfully": "Einladung zum Arbeitsbereich erfolgreich abgelehnt",
+          "invitationSent": "Einladung erfolgreich gesendet",
+          "error": {
+            "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
+            "acceptedError": "Fehler beim Akzeptieren der Einladung zum Arbeitsbereich",
+            "declinedError": "Fehler beim Ablehnen der Einladung zum Arbeitsbereich"
+          }
+        },
         "list": {
           "user": "Benutzer",
           "usage": "Nutzung",

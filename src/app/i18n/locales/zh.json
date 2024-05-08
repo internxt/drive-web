@@ -1470,6 +1470,16 @@
           "addMessage": "添加消息",
           "invite": "邀请"
         },
+        "invitationFlow": {
+          "acceptedSuccessfully": "成功接受工作区邀请",
+          "declinedSuccessfully": "成功拒绝工作区邀请",
+          "invitationSent": "邀请成功发送",
+          "error": {
+            "errorInviting": "发送邀请至 {{email}} 时出错",
+            "acceptedError": "接受工作区邀请时出错",
+            "declinedError": "拒绝工作区邀请时出错"
+          }
+        },
         "list": {
           "user": "用户",
           "usage": "使用情况",
