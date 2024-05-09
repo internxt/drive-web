@@ -1,5 +1,8 @@
-import { DisplayPrice, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
-import { StoragePlan } from '../../../../../drive/types';
+import { DisplayPrice, RenewalPeriod, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { t } from 'i18next';
+import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
+import moneyService from '../../../../../payment/services/money.service';
+import { PlanState } from '../../../../../store/slices/plan';
 import { ChangePlanType } from '../components/PlanCard';
 
 const displayAmount = (amount: number) => {
@@ -46,4 +49,33 @@ const getCurrentChangePlanType = ({
   return 'free';
 };
 
-export { displayAmount, getCurrentChangePlanType };
+const getPlanName = (storagePlan: StoragePlan | null) => {
+  return storagePlan?.simpleName ?? FreeStoragePlan.simpleName;
+};
+const getCurrentUsage = (plan: PlanState) => {
+  return plan.usageDetails?.total ?? -1;
+};
+
+const getPlanInfo = (storagePlan: StoragePlan | null) => {
+  if (storagePlan) {
+    if (storagePlan.paymentInterval === RenewalPeriod.Annually) {
+      return (
+        moneyService.getCurrencySymbol(storagePlan.currency) +
+        storagePlan.price +
+        '/' +
+        t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.year')
+      );
+    } else {
+      return (
+        moneyService.getCurrencySymbol(storagePlan.currency) +
+        storagePlan.monthlyPrice +
+        '/' +
+        t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.month')
+      );
+    }
+  } else {
+    return t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.free');
+  }
+};
+
+export { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName };

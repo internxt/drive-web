@@ -1,12 +1,13 @@
+import Button from 'app/shared/components/Button/Button';
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import analyticsService, { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
 import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import moneyService from '../../../../../payment/services/money.service';
-import { RenewalPeriod } from '../../../../../payment/types';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
+import moneyService from '../../../../../payment/services/money.service';
 import paymentService from '../../../../../payment/services/payment.service';
+import { RenewalPeriod } from '../../../../../payment/types';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../../store';
@@ -15,7 +16,6 @@ import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
 import CancelSubscriptionModal from './CancelSubscriptionModal';
-import Button from 'app/shared/components/Button/Button';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -90,7 +90,7 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
   };
 
   const getCurrentUsage = () => {
-    return plan.usageDetails?.total || -1;
+    return plan.usageDetails?.total ?? -1;
   };
 
   return (

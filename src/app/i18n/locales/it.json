@@ -1590,6 +1590,9 @@
         "free": "Ottieni fino a 10 GB gratis",
         "manageBilling": "Gestisci la fatturazione",
         "freeForever": "Gratuito per sempre",
+        "year": "Anno",
+        "month": "Mese",
+        "lifetime": "Vita",
         "planFeaturesList": {
           "title": "Dettagli del piano",
           "storage": " di archiviazione",

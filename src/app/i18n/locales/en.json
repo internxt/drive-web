@@ -1603,6 +1603,9 @@
         "free": "Get up to 10 GB for free",
         "manageBilling": "Manage billing",
         "freeForever": "Free forever",
+        "year": "Year",
+        "month": "Month",
+        "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",

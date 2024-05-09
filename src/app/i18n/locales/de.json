@@ -1500,6 +1500,9 @@
         "free": "Erhalten Sie bis zu 10 GB kostenlos",
         "manageBilling": "Abrechnung verwalten",
         "freeForever": "Für immer kostenlos",
+        "year": "Jahr",
+        "month": "Monat",
+        "lifetime": "Lebenszeit",
         "planFeaturesList": {
           "title": "Tarifdetails",
           "storage": " Speicherplatz",

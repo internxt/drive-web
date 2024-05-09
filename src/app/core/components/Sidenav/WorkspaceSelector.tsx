@@ -8,7 +8,7 @@ export interface Workspace {
   uuid: string;
   name: string;
   type: 'Business' | 'Personal';
-  avatar: MediaSource | null;
+  avatar: string | null;
 }
 
 interface WorkspaceSelectorProps {
@@ -38,11 +38,7 @@ const WorkspaceCard = ({
   return (
     <button className="w-full px-2 py-3 text-left hover:bg-gray-5 dark:hover:bg-gray-10" onClick={handleOnClick}>
       <div className="flex w-full flex-row items-center justify-between space-x-2">
-        <Avatar
-          diameter={28}
-          fullName={workspace.name}
-          src={workspace.avatar ? URL.createObjectURL(workspace.avatar) : null}
-        />
+        <Avatar diameter={28} fullName={workspace.name} src={workspace.avatar ? workspace.avatar : null} />
         <div className="flex grow flex-col truncate">
           <text className="truncate text-sm font-medium leading-4 text-gray-100">{workspace.name}</text>
           <text className="truncate text-xs font-medium leading-3 text-gray-60">
@@ -94,7 +90,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
           <Avatar
             diameter={28}
             fullName={selectedWorkspace?.name ?? ''}
-            src={selectedWorkspace?.avatar ? URL.createObjectURL(selectedWorkspace?.avatar) : null}
+            src={selectedWorkspace?.avatar ? selectedWorkspace.avatar : null}
           />
           <div className="flex grow flex-col truncate">
             <text className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</text>
@@ -126,7 +122,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
               name: userWorkspace.name,
               uuid: userWorkspace.uuid,
               type: 'Personal',
-              avatar: null,
+              avatar: userWorkspace.avatar,
             }}
             isSelected={selectedWorkspace?.uuid === userWorkspace.uuid}
             Icon={Check}
@@ -140,7 +136,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
                 name: workspace.name,
                 uuid: workspace.uuid,
                 type: workspace.type,
-                avatar: null,
+                avatar: workspace.avatar,
               }}
               isSelected={selectedWorkspace?.uuid === workspace.uuid}
               Icon={Check}
