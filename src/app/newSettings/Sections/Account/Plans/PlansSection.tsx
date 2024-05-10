@@ -3,8 +3,10 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Section from 'app/core/views/Preferences/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
+import CancelSubscriptionModal from '../../../../core/views/Preferences/tabs/Billing/CancelSubscriptionModal';
 import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -18,7 +20,7 @@ import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
-import { displayAmount, getCurrentChangePlanType } from './utils/planUtils';
+import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
 
 const FREE_PLAN_DATA = {
   amount: 0,
@@ -50,6 +52,9 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(
     currentUserSubscription?.type === 'free' ? 'year' : currentPlanPayPeriod,
   );
+  const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState(false);
+  const [cancellingSubscription, setCancellingSubscription] = useState(false);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
   const currentChangePlanType = getCurrentChangePlanType({
@@ -229,6 +234,27 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
     setIsLoadingCheckout(false);
   };
 
+  async function cancelSubscription(feedback: string) {
+    setCancellingSubscription(true);
+    try {
+      await paymentService.cancelSubscription();
+      notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
+      setIsCancelSubscriptionModalOpen(false);
+      trackCanceledSubscription({ feedback });
+    } catch (err) {
+      console.error(err);
+      notificationsService.show({
+        text: translate('notificationMessages.errorCancelSubscription'),
+        type: ToastType.Error,
+      });
+    } finally {
+      setCancellingSubscription(false);
+      setTimeout(() => {
+        dispatch(planThunks.initializeThunk()).unwrap();
+      }, 1000);
+    }
+  }
+
   return (
     <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
       {prices && priceSelected && (
@@ -279,7 +305,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               capacity={bytesToString(plan.bytes)}
               currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
               amount={displayAmount(plan.amount)}
-              billing={plan.interval}
+              billing={translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()}
               isCurrentPlan={
                 currentUserSubscription?.type === 'subscription' && currentUserSubscription?.priceId === plan.id
               }
@@ -288,10 +314,10 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
         </div>
         {priceSelected?.id === FREE_PLAN_DATA.id ? (
           <PlanCard
-            onClick={() => handleOnPlanSelected(priceSelected)}
+            onClick={() => setIsCancelSubscriptionModalOpen(true)}
             isCurrentPlan={FREE_PLAN_DATA.id === currentUserSubscription?.type}
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
-            currency={'Free forever'}
+            currency={translate('preferences.account.plans.freeForever')}
             price={''}
             billing={''}
             changePlanType={currentChangePlanType}
@@ -305,15 +331,30 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
             }
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
             currency={
-              priceSelected?.currency ? moneyService.getCurrencySymbol(priceSelected?.currency) : 'Free forever'
+              priceSelected?.currency
+                ? moneyService.getCurrencySymbol(priceSelected?.currency)
+                : translate('preferences.account.plans.freeForever')
             }
             price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
-            billing={priceSelected ? priceSelected.interval : ''}
+            billing={
+              priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''
+            }
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
           />
         )}
       </div>
+      <CancelSubscriptionModal
+        isOpen={isCancelSubscriptionModalOpen}
+        onClose={() => {
+          setIsCancelSubscriptionModalOpen(false);
+        }}
+        cancellingSubscription={cancellingSubscription}
+        cancelSubscription={cancelSubscription}
+        currentPlanName={getPlanName(plan.individualPlan || plan.teamPlan)}
+        currentPlanInfo={getPlanInfo(plan.individualPlan || plan.teamPlan)}
+        currentUsage={getCurrentUsage(plan)}
+      />
     </Section>
   );
 };

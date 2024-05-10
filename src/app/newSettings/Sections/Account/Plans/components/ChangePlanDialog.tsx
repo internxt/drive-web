@@ -134,7 +134,7 @@ const ChangePlanDialog = ({
         <Button className="mr-2" variant="secondary" onClick={onClose}>
           {translate('views.account.tabs.plans.dialog.button.back')}
         </Button>
-        <Button variant="primary" onClick={() => onPlanClick(priceIdSelected, selectedPlan.currency)}>
+        <Button variant="primary" onClick={() => onPlanClick(priceIdSelected, selectedPlan?.currency)}>
           {translate('views.account.tabs.plans.dialog.button.continue')}
         </Button>
       </div>

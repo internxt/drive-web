@@ -21,7 +21,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
         name: user.name,
         type: 'Personal',
         uuid: user.uuid,
-        avatar: user?.avatar as MediaSource | null,
+        avatar: user?.avatar,
       }}
       workspaces={parsedWorkspaces}
       onChangeWorkspace={(workspaceId: string | null) => dispatch(workspacesActions.setSelectedWorkspace(workspaceId))}

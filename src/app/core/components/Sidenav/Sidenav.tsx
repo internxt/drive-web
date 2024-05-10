@@ -67,7 +67,6 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          {/* MOCK COMPONENT */}
           {user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />

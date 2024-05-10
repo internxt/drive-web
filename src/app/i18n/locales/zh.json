@@ -1602,6 +1602,9 @@
         "free": "免费获得高达10 GB的空间",
         "manageBilling": "管理账单",
         "freeForever": "永久免费",
+        "year": "年",
+        "month": "月",
+        "lifetime": "终身",
         "planFeaturesList": {
           "title": "计划详情",
           "storage": " 存储",
