@@ -9,7 +9,6 @@ import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
-  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const parsedWorkspaces = parseWorkspaces(workspaces);
 
   useEffect(() => {
@@ -32,7 +31,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
 };
 
 const parseWorkspaces = (workspaces: WorkspaceData[]): Workspace[] =>
-  workspaces.map((workspace) => {
+  workspaces?.map((workspace) => {
     return {
       name: workspace.workspace.name,
       uuid: workspace.workspace.id,

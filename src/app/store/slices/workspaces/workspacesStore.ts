@@ -30,7 +30,8 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
   async (_, { dispatch }) => {
     const workspaces = await workspacesService.getWorkspaces();
 
-    dispatch(workspacesActions.setWorkspaces(workspaces));
+    // TODO: ADD PENDING WORKSPACES TO COMPLETE WORKSPACE BUY FLOW
+    dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
   },
 );
 

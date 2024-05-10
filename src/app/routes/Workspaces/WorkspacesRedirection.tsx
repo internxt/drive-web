@@ -9,7 +9,7 @@ const WorkspacesRedirect = () => {
     const token = new URLSearchParams(window.location.search).get('token');
     const invitationId = params?.invitationId;
     const action = params?.action;
-    const email = params?.email;
+
     let redirectURL;
 
     if (action) {

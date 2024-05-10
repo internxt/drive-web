@@ -1,6 +1,7 @@
 import {
   CreateTeamData,
   InviteMemberBody,
+  WorkspaceMembers,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
@@ -11,6 +12,13 @@ import errorService from '../../core/services/error.service';
 export function getWorkspaces(): Promise<WorkspacesResponse> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspaces().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getWorkspacesMembers(workspaceId: string): Promise<WorkspaceMembers> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspacesMembers(workspaceId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -139,6 +147,7 @@ export function changeUserRole({
 
 const workspacesService = {
   getWorkspaces,
+  getWorkspacesMembers,
   getWorkspaceTeams,
   getTeamMembers,
   inviteUserToTeam,

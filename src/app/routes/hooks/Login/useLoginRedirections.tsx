@@ -6,6 +6,7 @@ import { AppView } from '../../../core/types';
 const useLoginRedirections = ({
   navigateTo,
   processInvitation,
+  processWorkspaceInvitation,
   showNotification,
 }: {
   navigateTo: (viewId: AppView, queryMap?: Record<string, unknown>) => void;
@@ -49,7 +50,7 @@ const useLoginRedirections = ({
     if (workspaceInvitationId && token) {
       const isDeclineAction = sharingAction === 'decline';
 
-      processInvitation(isDeclineAction, workspaceInvitationId, token)
+      processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token)
         .then(() => {
           navigateTo(AppView.Login);
           const notificationText = isDeclineAction

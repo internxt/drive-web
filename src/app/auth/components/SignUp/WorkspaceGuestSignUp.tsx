@@ -8,7 +8,6 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView, IFormValues } from 'app/core/types';
 import { decryptPrivateKey } from 'app/crypto/services/keys.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import shareService from 'app/share/services/share.service';
 import ExpiredLink from 'app/shared/views/ExpiredLink/ExpiredLinkView';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
@@ -82,7 +81,8 @@ function WorkspaceGuestSingUpView(): JSX.Element {
     setInvitationValidation((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      await shareService.validateSharingInvitation(id);
+      // need to validate WORKSPACE INVITATION
+      // await shareService.validateSharingInvitation(id);
       setInvitationId(id);
       setInvitationValidation((prev) => ({ ...prev, isLoading: false, isValid: true }));
     } catch (error) {
