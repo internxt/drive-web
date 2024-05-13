@@ -1613,9 +1613,9 @@
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
 "@internxt/sdk@^1.4.80":
-  version "1.4.79"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.79/cad7b4389822a33ce0b370f973ab763f257fe073#cad7b4389822a33ce0b370f973ab763f257fe073"
-  integrity sha512-od1kZFO5d2XX3x+KGX+n23/8x2NgdgMBYg5nUrR3kjwrd3z0niAHEHiSczZR5ZGZkKdQDHLu3TymdDNlgVZ5Gw==
+  version "1.4.80"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.80/1bce0f2b9aa71a984d8884445ea816822d78205e#1bce0f2b9aa71a984d8884445ea816822d78205e"
+  integrity sha512-Qc5SiGMiNZ7jB8jFHjxpJufaMDFJuvKuf8B+OBJ8pxpxQsuyFPRyOWALXYbPBPND6XnCi4aRbAztE+APjvdPEw==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
