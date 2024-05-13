@@ -1,34 +1,35 @@
-import { useEffect, useMemo, useState } from 'react';
-import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { auth } from '@internxt/lib';
+import QueryString from 'qs';
+import { useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
+import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
-import QueryString from 'qs';
 
-import { initializeUserThunk, userActions } from 'app/store/slices/user';
+import localStorageService from 'app/core/services/local-storage.service';
+import { twoFactorRegexPattern } from 'app/core/services/validation.service';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
-import { twoFactorRegexPattern } from 'app/core/services/validation.service';
-import authService, { is2FANeeded, doLogin } from '../../services/auth.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import { initializeUserThunk, userActions } from 'app/store/slices/user';
+import authService, { doLogin, is2FANeeded } from '../../services/auth.service';
 
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { WarningCircle } from '@phosphor-icons/react';
+import errorService from 'app/core/services/error.service';
+import navigationService from 'app/core/services/navigation.service';
+import AppError, { AppView, IFormValues } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import Button from 'app/shared/components/Button/Button';
 import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
-import errorService from 'app/core/services/error.service';
-import AppError, { AppView, IFormValues } from 'app/core/types';
-import navigationService from 'app/core/services/navigation.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import TextInput from '../TextInput/TextInput';
-import PasswordInput from '../PasswordInput/PasswordInput';
 import { referralsThunks } from 'app/store/slices/referrals';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import shareService from '../../../share/services/share.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import Button from 'app/shared/components/Button/Button';
 import { trackAccountUnblockEmailSent } from '../../../analytics/services/analytics.service';
+import workspacesService from '../../../core/services/workspace.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirections';
+import shareService from '../../../share/services/share.service';
+import PasswordInput from '../PasswordInput/PasswordInput';
+import TextInput from '../TextInput/TextInput';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -50,17 +51,24 @@ export default function LogIn(): JSX.Element {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const mnemonic = localStorageService.get('xMnemonic');
 
-  const { isUniversalLinkMode, isSharingInvitation, redirectWithCredentials, handleShareInvitation } =
-    useLoginRedirections({
-      navigateTo(viewId, queryMap) {
-        navigationService.push(viewId, queryMap);
-      },
-      processInvitation: shareService.processInvitation,
-      showNotification,
-    });
+  const {
+    isUniversalLinkMode,
+    isSharingInvitation,
+    redirectWithCredentials,
+    handleShareInvitation,
+    handleWorkspaceInvitation,
+  } = useLoginRedirections({
+    navigateTo(viewId, queryMap) {
+      navigationService.push(viewId, queryMap);
+    },
+    processInvitation: shareService.processInvitation,
+    processWorkspaceInvitation: workspacesService.processInvitation,
+    showNotification,
+  });
 
   useEffect(() => {
     handleShareInvitation();
+    handleWorkspaceInvitation();
   }, []);
 
   useEffect(() => {

@@ -3,7 +3,6 @@ import { KeyboardEvent, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from '../../../../core/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Button from '../../../../shared/components/Button/Button';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
@@ -15,6 +14,7 @@ import UserCard from './components/UserCard';
 interface UserInviteDialogProps {
   isOpen: boolean;
   onClose: () => void;
+  processInvitation: (emailList: string[]) => Promise<void>;
 }
 
 type UsersToInvite = {
@@ -25,7 +25,7 @@ type UsersToInvite = {
   avatar: null | string;
 };
 
-const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Element => {
+const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDialogProps): JSX.Element => {
   const { handleSubmit } = useForm<IFormValues>({ mode: 'onChange' });
   const { translate } = useTranslationContext();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,13 +36,11 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
   const [usersToInvite, setUsersToInvite] = useState<UsersToInvite[]>([]);
   const existsUsersToInvite = usersToInvite.length > 0;
 
-  // MOCKED
   const onRemoveUser = (email: string) => {
     const newUsersToInvite = usersToInvite.filter((user) => user.email !== email);
     setUsersToInvite(newUsersToInvite);
   };
 
-  // MOCKED
   const onAddUsers = async () => {
     const isDuplicated = usersToInvite.find((user) => user.email === email);
 
@@ -51,16 +49,18 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
       return;
     }
 
-    setUsersToInvite([...usersToInvite, { name: 'pepe', email, lastname: 'doe', avatar: null, id: '1231238' }]);
+    // MOCKED
+    setUsersToInvite([...usersToInvite, { name: email, email, lastname: '', avatar: null, id: email }]);
   };
 
   const onInviteUser = async () => {
     setIsLoading(true);
 
-    setTimeout(() => {
-      setIsLoading(false);
-      notificationsService.show({ text: 'Invitation sent', type: ToastType.Success, closable: true });
-    }, 3000);
+    const emailList = usersToInvite.map((user) => user.email);
+    await processInvitation(emailList);
+
+    setUsersToInvite([]);
+    setIsLoading(false);
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -146,8 +146,8 @@ const UserInviteDialog = ({ isOpen, onClose }: UserInviteDialogProps): JSX.Eleme
         )}
         <div className={`${isAddMessageSelected ? 'mt-2' : 'mt-8'} flex w-full flex-row items-center justify-between`}>
           <button
-            className={'flex cursor-pointer items-center'}
-            onClick={() => setIsAddMessageSelected(!isAddMessageSelected)}
+            className={`flex items-center ${!isLoading ? 'cursor-pointer' : ''}`}
+            onClick={() => !isLoading && setIsAddMessageSelected(!isAddMessageSelected)}
           >
             <BaseCheckbox checked={isAddMessageSelected} />
             <p className="ml-2 text-base font-medium">

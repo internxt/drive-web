@@ -28,6 +28,7 @@ import ShareFileView from 'app/share/views/ShareView/ShareFileView';
 import DeactivationTeamsView from 'app/teams/views/DeactivationTeamsView/DeactivationTeamsView';
 import JoinTeamView from 'app/teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from 'app/teams/views/TeamSuccessView/TeamSuccessView';
+import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
@@ -49,6 +50,7 @@ const views: Array<{
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
+  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSingUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },

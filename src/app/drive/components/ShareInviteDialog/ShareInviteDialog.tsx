@@ -1,25 +1,24 @@
-import { useEffect, useState } from 'react';
-import { IFormValues } from '../../../core/types';
 import { Listbox } from '@headlessui/react';
-import { CaretDown, Check } from '@phosphor-icons/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
-import { useForm } from 'react-hook-form';
-import Button from '../../../shared/components/Button/Button';
-import Avatar from '../../../shared/components/Avatar';
-import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
-import Input from '../../../shared/components/Input';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import './ShareInviteDialog.scss';
-import { useDispatch } from 'react-redux';
-import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
+import { CaretDown, Check } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
-import { RootState } from '../../../store';
-import { Role } from '../../../store/slices/sharedLinks/types';
-import userService from '../../../auth/services/user.service';
-import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useDispatch } from 'react-redux';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
-import errorService from 'app/core/services/error.service';
+import userService from '../../../auth/services/user.service';
+import { IFormValues } from '../../../core/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Avatar from '../../../shared/components/Avatar';
+import Button from '../../../shared/components/Button/Button';
+import Input from '../../../shared/components/Input';
+import BaseCheckbox from '../../../shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { RootState } from '../../../store';
+import { ShareFileWithUserPayload, sharedThunks } from '../../../store/slices/sharedLinks';
+import { Role } from '../../../store/slices/sharedLinks/types';
+import ShareUserNotRegistered from '../ShareUserNotRegistered/ShareUserNotRegistered';
+import './ShareInviteDialog.scss';
 
 interface ShareInviteDialogProps {
   onInviteUser: () => void;
@@ -108,10 +107,10 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       publicKey = publicKeyResponse.publicKey;
     } catch (error) {
       if (error instanceof Error) {
-        const errorBody = JSON.parse(error.message);
-        if (errorBody.statusCode !== 404) {
-          errorService.reportError(error);
-        }
+        // const errorBody = JSON.parse(error.message);
+        // if (errorBody.statusCode !== 404) {
+        //   errorService.reportError(error);
+        // }
       }
     }
     return publicKey;

@@ -1449,6 +1449,16 @@
           "addMessage": "Agregar mensaje",
           "invite": "Invitar"
         },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Invitación al espacio de trabajo aceptada exitosamente",
+          "declinedSuccessfully": "Invitación al espacio de trabajo rechazada exitosamente",
+          "invitationSent": "Invitación enviada exitosamente",
+          "error": {
+            "errorInviting": "Error al enviar la invitación a {{email}}",
+            "acceptedError": "Error al aceptar la invitación al espacio de trabajo",
+            "declinedError": "Error al rechazar la invitación al espacio de trabajo"
+          }
+        },
         "list": {
           "user": "Usuario",
           "usage": "Uso",

@@ -1,32 +1,35 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { AppView } from '../../../core/types';
 import { t } from 'i18next';
 import { useHistory } from 'react-router-dom';
+import { AppView } from '../../../core/types';
 
 const useLoginRedirections = ({
   navigateTo,
   processInvitation,
+  processWorkspaceInvitation,
   showNotification,
 }: {
   navigateTo: (viewId: AppView, queryMap?: Record<string, unknown>) => void;
   processInvitation: (isDeclineAction: boolean, sharingId: string, sharingToken: string) => Promise<void>;
+  processWorkspaceInvitation: (isDeclineAction: boolean, invitationId: string, token: string) => Promise<void>;
   showNotification: ({ text, isError }: { text: string; isError: boolean }) => void;
 }) => {
   const urlParams = new URLSearchParams(window.location.search);
   const history = useHistory();
   const sharingId = urlParams.get('sharingId');
   const folderuuidToRedirect = urlParams.get('folderuuid');
+  const workspaceInvitationId = urlParams.get('invitationId');
 
-  const sharingToken = urlParams.get('token');
+  const token = urlParams.get('token');
   const sharingAction = urlParams.get('action');
   const isSharingInvitation = !!sharingId;
   const isUniversalLinkMode = urlParams.get('universalLink') === 'true';
 
   const handleShareInvitation = () => {
-    if (isSharingInvitation && sharingId && sharingToken) {
+    if (isSharingInvitation && sharingId && token) {
       const isDeclineAction = sharingAction === 'decline';
 
-      processInvitation(isDeclineAction, sharingId, sharingToken)
+      processInvitation(isDeclineAction, sharingId, token)
         .then(() => {
           navigateTo(AppView.Login);
           const notificationText = isDeclineAction
@@ -38,6 +41,27 @@ const useLoginRedirections = ({
           const notificationText = isDeclineAction
             ? t('modals.shareModal.invite.error.declinedError')
             : t('modals.shareModal.invite.error.acceptedError');
+          showNotification({ text: notificationText, isError: true });
+        });
+    }
+  };
+
+  const handleWorkspaceInvitation = () => {
+    if (workspaceInvitationId && token) {
+      const isDeclineAction = sharingAction === 'decline';
+
+      processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token)
+        .then(() => {
+          navigateTo(AppView.Login);
+          const notificationText = isDeclineAction
+            ? t('preferences.workspace.members.invitationFlow.declinedSuccessfully')
+            : t('preferences.workspace.members.invitationFlow.acceptedSuccessfully');
+          showNotification({ text: notificationText, isError: false });
+        })
+        .catch(() => {
+          const notificationText = isDeclineAction
+            ? t('preferences.workspace.members.invitationFlow.error.declinedError')
+            : t('preferences.workspace.members.invitationFlow.error.acceptedError');
           showNotification({ text: notificationText, isError: true });
         });
     }
@@ -70,7 +94,13 @@ const useLoginRedirections = ({
     }
   };
 
-  return { redirectWithCredentials, handleShareInvitation, isUniversalLinkMode, isSharingInvitation };
+  return {
+    redirectWithCredentials,
+    handleShareInvitation,
+    isUniversalLinkMode,
+    isSharingInvitation,
+    handleWorkspaceInvitation,
+  };
 };
 
 export default useLoginRedirections;

@@ -1,5 +1,7 @@
+import { useSelector } from 'react-redux';
 import navigationService from '../../core/services/navigation.service';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
+import { RootState } from '../../store';
 import SectionList from '../components/SectionList';
 
 export interface NavSection {
@@ -26,7 +28,6 @@ export const sectionItems = [
   {
     section: 'workspace',
     subsection: 'members',
-
     isDisabled: false,
     isSubsection: true,
     notificationsNumber: 0,
@@ -73,6 +74,7 @@ export const sectionItems = [
 
 const SectionListContainer = ({ activeSection, changeSection }) => {
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
   const goSection = ({ section, subsection }: { section?: string; subsection?: string }) => {
     if (section && subsection) {
@@ -81,7 +83,14 @@ const SectionListContainer = ({ activeSection, changeSection }) => {
     }
   };
 
-  const sectionsItemsWithText = sectionItems.map((sectionItem) => ({
+  const filteredSectionItems = sectionItems.filter((sectionItem) => {
+    if (sectionItem.section === 'workspace' && !selectedWorkspace) {
+      return false;
+    }
+    return true;
+  });
+
+  const sectionsItemsWithText = filteredSectionItems.map((sectionItem) => ({
     ...sectionItem,
     text: translate(`preferences.navBarSections.${sectionItem.subsection ?? sectionItem?.section}`),
   }));

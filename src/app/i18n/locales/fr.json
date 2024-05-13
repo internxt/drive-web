@@ -1398,6 +1398,16 @@
           "addMessage": "Ajouter un message",
           "invite": "Inviter"
         },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Invitation à l'espace de travail acceptée avec succès",
+          "declinedSuccessfully": "Invitation à l'espace de travail refusée avec succès",
+          "invitationSent": "Invitation envoyée avec succès",
+          "error": {
+            "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+            "acceptedError": "Erreur lors de l'acceptation de l'invitation à l'espace de travail",
+            "declinedError": "Erreur lors du refus de l'invitation à l'espace de travail"
+          }
+        },
         "list": {
           "user": "Utilisateur",
           "usage": "Utilisation",

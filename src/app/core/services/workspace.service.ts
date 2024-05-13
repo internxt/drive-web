@@ -1,6 +1,7 @@
 import {
   CreateTeamData,
   InviteMemberBody,
+  WorkspaceMembers,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
@@ -11,6 +12,13 @@ import errorService from '../../core/services/error.service';
 export function getWorkspaces(): Promise<WorkspacesResponse> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspaces().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getWorkspacesMembers(workspaceId: string): Promise<WorkspaceMembers> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspacesMembers(workspaceId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -32,6 +40,43 @@ export function getTeamMembers(workspaceId: string, teamId: string): Promise<voi
 export function inviteUserToTeam(inviteUserBody: InviteMemberBody): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.inviteMemberToWorkspace(inviteUserBody).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export const processInvitation = async (
+  isDeclineAction: boolean,
+  invitationId: string,
+  token: string,
+): Promise<void> => {
+  const invitationData = {
+    invitationId,
+    token,
+  };
+
+  const response = isDeclineAction
+    ? await declineWorkspaceInvite(invitationData)
+    : await acceptWorkspaceInvite(invitationData);
+
+  return response;
+};
+
+export function acceptWorkspaceInvite({ invitationId, token }: { invitationId: string; token: string }): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return shareClient.acceptInvitation(invitationId, token).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function declineWorkspaceInvite({
+  invitationId,
+  token,
+}: {
+  invitationId: string;
+  token: string;
+}): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return shareClient.declineInvitation(invitationId, token).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -102,6 +147,7 @@ export function changeUserRole({
 
 const workspacesService = {
   getWorkspaces,
+  getWorkspacesMembers,
   getWorkspaceTeams,
   getTeamMembers,
   inviteUserToTeam,
@@ -113,6 +159,7 @@ const workspacesService = {
   removeTeamUser,
   changeTeamManager,
   changeUserRole,
+  processInvitation,
 };
 
 export default workspacesService;

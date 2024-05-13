@@ -10,8 +10,8 @@ import Input from '../../../../shared/components/Input';
 
 import Tooltip from 'app/shared/components/Tooltip';
 import { DriveProduct, Member, MemberRole } from '../../../types/types';
-import UserInviteDialog from './InviteDialog';
 import UserCard from './components/UserCard';
+import InviteDialogContainer from './containers/InviteDialogContainer';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
@@ -263,7 +263,7 @@ const MembersSection = () => {
               </div>
             </div>
           </div>
-          <UserInviteDialog isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
+          <InviteDialogContainer isOpen={isInviteDialogOpen} onClose={() => setIsInviteDialogOpen(false)} />
         </>
       )}
     </Section>

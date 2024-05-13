@@ -31,7 +31,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
 };
 
 const parseWorkspaces = (workspaces: WorkspaceData[]): Workspace[] =>
-  workspaces.map((workspace) => {
+  workspaces?.map((workspace) => {
     return {
       name: workspace.workspace.name,
       uuid: workspace.workspace.id,

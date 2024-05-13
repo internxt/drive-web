@@ -29,6 +29,7 @@ import PreferencesDialog from './app/newSettings/PreferencesDialog';
 import { useParamsChange } from './app/newSettings/hooks/useParamsChange';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
+import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
@@ -171,6 +172,7 @@ const App = (props: AppProps): JSX.Element => {
             </span>
           )}
           <Switch>
+            <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
