@@ -63,7 +63,7 @@ export interface CreateFolderTask extends BaseTask {
 
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
-  cancellable: true;
+  cancellable: boolean;
   file: { name: string; type: string; items?: DriveItemData[] };
 }
 
@@ -76,13 +76,14 @@ export interface DownloadFolderTask extends BaseTask {
 
 export interface DownloadBackupTask extends BaseTask {
   action: TaskType.DownloadBackup;
-  cancellable: true;
+  cancellable: boolean;
   backup: { name: string; type: string };
 }
 
 export interface UploadFileTask extends BaseTask {
   action: TaskType.UploadFile;
-  cancellable: true;
+  cancellable: boolean;
+  displayRetry?: boolean;
   fileName: string;
   fileType: string;
   isFileNameValidated: boolean;
@@ -92,7 +93,7 @@ export interface UploadFileTask extends BaseTask {
 
 export interface UploadFolderTask extends BaseTask {
   action: TaskType.UploadFolder;
-  cancellable: true;
+  cancellable: boolean;
   folderName: string;
   item: IRoot;
   parentFolderId: number;
@@ -114,20 +115,20 @@ export interface MoveFolderTask extends BaseTask {
 
 export interface DownloadPhotosTask extends BaseTask {
   action: TaskType.DownloadPhotos;
-  cancellable: true;
+  cancellable: boolean;
   numberOfPhotos: number;
 }
 
 export interface RenameFileTask extends BaseTask {
   action: TaskType.RenameFile;
-  cancellable: true;
+  cancellable: boolean;
   file: DriveFileData;
   destinationFolderId?: number;
 }
 
 export interface RenameFolderTask extends BaseTask {
   action: TaskType.RenameFolder;
-  cancellable: true;
+  cancellable: boolean;
   folder: DriveFolderData;
   destinationFolderId?: number;
 }
@@ -183,6 +184,7 @@ export interface TaskNotification {
   icon: FunctionComponent<SVGProps<SVGSVGElement>>;
   progress: number;
   isTaskCancellable: boolean;
+  displayRetry?: boolean;
 }
 
 export interface TaskFilter {

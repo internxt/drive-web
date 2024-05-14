@@ -645,6 +645,13 @@
     "itemsSelected": "items selected"
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "Upgrade to upload bigger files",
+      "description": "Your current plan allows up to 1GB files, to upload bigger files upgrade your plan.",
+      "cancelButtonText": "Cancel",
+      "actionButtonText": "See plans",
+      "actionLoadingButtonText": "See plans"
+    },
     "renameItemDialog": {
       "title": "Rename",
       "label": "Name"
@@ -1059,7 +1066,9 @@
         "error": "Error during upload",
         "cancelled": "Upload cancelled"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "File size limit exceeded"
+      }
     },
     "upload-folder": {
       "status": {

@@ -620,6 +620,13 @@
     "itemsSelected": "выбранные файлы"
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "Обновите план, чтобы загружать большие файлы",
+      "description": "Ваш текущий план позволяет загружать файлы до 1 ГБ. Чтобы загружать большие файлы, обновите свой план.",
+      "cancelButtonText": "Отмена",
+      "actionButtonText": "Просмотреть планы",
+      "actionLoadingButtonText": "Просмотреть планы"
+    },
     "renameItemDialog": {
       "title": "Переименовать",
       "label": "Имя."
@@ -1032,7 +1039,9 @@
         "error": "Ошибка во время загрузки",
         "cancelled": "Загрузка отменена"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "Превышен лимит размера файла"
+      }
     },
     "upload-folder": {
       "status": {

@@ -645,6 +645,13 @@
     "itemsSelected": "个文件 已选择 "
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "升级以上传更大的文件",
+      "description": "您当前的计划允许上传最大1GB的文件，若需上传更大的文件，请升级您的计划。",
+      "cancelButtonText": "取消",
+      "actionButtonText": "查看计划",
+      "actionLoadingButtonText": "查看计划"
+    },
     "renameItemDialog": {
       "title": "重命名",
       "label": "名称"
@@ -1058,7 +1065,9 @@
         "error": "上传时出错",
         "cancelled": "上传已取消"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "文件大小超出限制"
+      }
     },
     "upload-folder": {
       "status": {

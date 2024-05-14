@@ -22,6 +22,7 @@ type TaskLoggerActionsProps = {
   isUploadTask: boolean;
   openItemAction: () => void;
   showPauseButton: boolean;
+  displayRetry: boolean;
 };
 
 const pauseUpload = async (id: string) => {
@@ -59,6 +60,7 @@ export const TaskLoggerActions = ({
   isUploadTask,
   openItemAction,
   showPauseButton,
+  displayRetry,
 }: TaskLoggerActionsProps) => {
   const Action = ITEM_DEPEND_STATUS[status] ?? (() => <></>);
 
@@ -75,6 +77,7 @@ export const TaskLoggerActions = ({
       resumeAction={() => {
         resumeUpload(taskId);
       }}
+      displayRetry={displayRetry}
       magnifyingAction={openItemAction}
       isUploadTask={isUploadTask}
       showPauseButton={showPauseButton}

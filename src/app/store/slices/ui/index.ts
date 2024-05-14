@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { PreviewFileItem } from '../../../share/types';
 import { DriveItemData, DriveItemDetails, FileInfoMenuItem } from '../../../drive/types';
+import { PreviewFileItem } from '../../../share/types';
 
 interface UISliceState {
   isSidenavCollapsed: boolean;
@@ -18,6 +18,7 @@ interface UISliceState {
   isEditFolderNameDialog: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isFileSizeLimitDialogOpen: boolean;
   isReachedPlanLimitDialogOpen: boolean;
   isSharedFolderTooBigDialogOpen: boolean;
   isShareItemDialogOpen: boolean;
@@ -54,6 +55,7 @@ const initialState: UISliceState = {
   isEditFolderNameDialog: false,
   isNewsletterDialogOpen: false,
   isSurveyDialogOpen: false,
+  isFileSizeLimitDialogOpen: false,
   isReachedPlanLimitDialogOpen: false,
   isSharedFolderTooBigDialogOpen: false,
   isShareItemDialogOpen: false,
@@ -125,6 +127,9 @@ export const uiSlice = createSlice({
     },
     setIsReachedPlanLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isReachedPlanLimitDialogOpen = action.payload;
+    },
+    setIsFileSizeLimitDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
+      state.isFileSizeLimitDialogOpen = action.payload;
     },
     setIsSharedFolderTooBigDialogOpen: (state: UISliceState, action: PayloadAction<boolean>) => {
       state.isSharedFolderTooBigDialogOpen = action.payload;
@@ -201,6 +206,7 @@ export const {
   setIsSurveyDialogOpen,
   setIsFileLoggerOpen,
   setIsFileInfoMenuOpen,
+  setIsFileSizeLimitDialogOpen,
   setIsReachedPlanLimitDialogOpen,
   setIsSharedFolderTooBigDialogOpen,
   setIsShareItemDialogOpen,

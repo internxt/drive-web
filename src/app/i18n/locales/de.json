@@ -553,6 +553,13 @@
     "itemsSelected": "Elemente ausgewählt"
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "Upgrade, um größere Dateien hochzuladen",
+      "description": "Ihr aktueller Plan erlaubt Dateien bis zu 1 GB. Um größere Dateien hochzuladen, aktualisieren Sie Ihren Plan.",
+      "cancelButtonText": "Abbrechen",
+      "actionButtonText": "Pläne anzeigen",
+      "actionLoadingButtonText": "Pläne anzeigen"
+    },
     "renameItemDialog": {
       "title": "Umbenennen",
       "label": "Name"
@@ -951,7 +958,9 @@
         "error": "Fehler während des Uploads",
         "cancelled": "Upload abgebrochen"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "Dateigrößenlimit überschritten"
+      }
     },
     "upload-folder": {
       "status": {

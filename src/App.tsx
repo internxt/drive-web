@@ -24,6 +24,7 @@ import { LRUFilesPreviewCacheManager } from './app/database/services/database.se
 import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
 import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
+import FileSizeLimitDialogContainer from './app/drive/components/SizeLimitDialog/FileSizeLimitDialogContainer';
 import Mobile from './app/drive/views/MobileView/MobileView';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
@@ -191,7 +192,7 @@ const App = (props: AppProps): JSX.Element => {
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
+          <FileSizeLimitDialogContainer />
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}

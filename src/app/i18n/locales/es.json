@@ -628,6 +628,13 @@
     "itemsSelected": "archivos seleccionados"
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "Actualizar para subir archivos más grandes",
+      "description": "Su plan actual permite archivos de hasta 1 GB. Para subir archivos más grandes, actualice su plan.",
+      "cancelButtonText": "Cancelar",
+      "actionButtonText": "Ver planes",
+      "actionLoadingButtonText": "Ver planes"
+    },
     "renameItemDialog": {
       "title": "Renombrar",
       "label": "Nombre"
@@ -1038,7 +1045,9 @@
         "error": "Error durante la subida",
         "cancelled": "Subida cancelada"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "Límite de tamaño de archivo excedido"
+      }
     },
     "upload-folder": {
       "status": {

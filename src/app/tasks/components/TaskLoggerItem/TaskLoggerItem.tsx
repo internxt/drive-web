@@ -171,6 +171,7 @@ const TaskLoggerItem = ({ notification }: TaskLoggerItemProps): JSX.Element => {
           isUploadTask={isUploadTask}
           openItemAction={openItem}
           showPauseButton={shouldDisplayPauseButton(notification)}
+          displayRetry={notification?.displayRetry ?? true}
         />
       </div>
       {showProgressBar && <ProgressBar progress={progress} isPaused={notification.status === TaskStatus.Paused} />}

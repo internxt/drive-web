@@ -1,14 +1,14 @@
-import { ReactComponent as UploadIcon } from '../../../../assets/icons/tasklogger/upload-icon.svg';
-import { ReactComponent as DownloadIcon } from '../../../../assets/icons/tasklogger/download-icon.svg';
+import { t } from 'i18next';
+import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
 import { ReactComponent as Cross } from '../../../../assets/icons/tasklogger/cross.svg';
+import { ReactComponent as DownloadIcon } from '../../../../assets/icons/tasklogger/download-icon.svg';
+import { ReactComponent as ErrorIcon } from '../../../../assets/icons/tasklogger/error.svg';
+import { ReactComponent as MagnifyingGlass } from '../../../../assets/icons/tasklogger/magnifying-glass.svg';
 import { ReactComponent as Pause } from '../../../../assets/icons/tasklogger/pause.svg';
 import { ReactComponent as Play } from '../../../../assets/icons/tasklogger/play.svg';
 import { ReactComponent as Success } from '../../../../assets/icons/tasklogger/success-check.svg';
-import { ReactComponent as ErrorIcon } from '../../../../assets/icons/tasklogger/error.svg';
-import { ReactComponent as MagnifyingGlass } from '../../../../assets/icons/tasklogger/magnifying-glass.svg';
-import { ReactComponent as RestartIcon } from '../../../../assets/icons/tasklogger/circle-arrow.svg';
+import { ReactComponent as UploadIcon } from '../../../../assets/icons/tasklogger/upload-icon.svg';
 import { TaskLoggerButton } from '../TaskLoggerButton/TaskLoggerButton';
-import { t } from 'i18next';
 
 interface UploadingBlockProps {
   progressPercentage: string;
@@ -78,11 +78,11 @@ const SuccessBlock = ({ isHovered, magnifyingAction, isUploadTask }): JSX.Elemen
   );
 };
 
-const ErrorBlock = ({ isHovered, cancelAction, retryAction }): JSX.Element => {
+const ErrorBlock = ({ isHovered, cancelAction, retryAction, displayRetry = true }): JSX.Element => {
   return isHovered ? (
     <div className="flex flex-row justify-between space-x-1.5">
       <TaskLoggerButton onClick={cancelAction} Icon={Cross} />
-      <TaskLoggerButton onClick={retryAction} Icon={RestartIcon} />
+      {displayRetry && <TaskLoggerButton onClick={retryAction} Icon={RestartIcon} />}
     </div>
   ) : (
     <div className="flex h-8 w-8 items-center justify-center">
@@ -91,4 +91,4 @@ const ErrorBlock = ({ isHovered, cancelAction, retryAction }): JSX.Element => {
   );
 };
 
-export { PauseBlock, PausedBlock, PendingBlock, SuccessBlock, ErrorBlock };
+export { ErrorBlock, PauseBlock, PausedBlock, PendingBlock, SuccessBlock };

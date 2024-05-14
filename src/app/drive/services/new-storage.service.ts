@@ -17,11 +17,16 @@ export async function getFolderMeta(uuid: string): Promise<FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   return storageClient.getFolderMeta(uuid);
 }
+export async function checkSizeLimit(fileSize: number): Promise<void> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  return storageClient.checkSizeLimit(fileSize);
+}
 
 const newStorageService = {
   searchItemsByName,
   getFolderAncestors,
   getFolderMeta,
+  checkSizeLimit,
 };
 
 export default newStorageService;

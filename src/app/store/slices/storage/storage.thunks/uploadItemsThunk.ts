@@ -16,9 +16,14 @@ import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
+import { HTTP_CODES } from '../../../../core/services/http.service';
+import AppError from '../../../../core/types';
+import newStorageService from '../../../../drive/services/new-storage.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 import shareService from '../../../../share/services/share.service';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { TaskStatus, TaskType, UploadFileTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import { StorageState } from '../storage.model';
@@ -55,6 +60,14 @@ const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   }
 };
 
+/**
+ * Checks if the upload is allowed based on plan limits and file sizes.
+ *
+ * @param {RootState} state - The current state of the application
+ * @param {File[]} files - The files to be uploaded
+ * @param {function} dispatch - The dispatch function for Redux actions
+ * @return {boolean} Indicates whether the upload is allowed
+ */
 const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: File[]; dispatch }): boolean => {
   try {
     const planLimit = state.plan.planLimit;
@@ -83,6 +96,16 @@ const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: 
   return true;
 };
 
+/**
+ * Prepares files to be uploaded to a specified parent folder.
+ *
+ * @param {Object} options - The options for preparing files to upload.
+ * @param {File[]} options.files - The files to be uploaded.
+ * @param {number} options.parentFolderId - The ID of the parent folder.
+ * @param {boolean} [options.disableDuplicatedNamesCheck] - Whether to disable checking for duplicated file names.
+ * @param {string} [options.fileType] - The type of the file.
+ * @returns {Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }>} - A promise that resolves to an object containing the files to upload and the number of zero-length files.
+ */
 const prepareFilesToUpload = async ({
   files,
   parentFolderId,
@@ -135,6 +158,80 @@ const prepareFilesToUpload = async ({
 };
 
 /**
+ * Checks if the given file size exceeds the size limit by calling the `checkSizeLimit` function from the `newStorageService` API.
+ *
+ * @param {number} fileSize - The size of the file in bytes.
+ * @return {Promise<boolean>} A promise that resolves to `true` if the file size is within the limit, or `false` if it exceeds the limit and a payment is required.
+ */
+const checkSizeLimit = async (fileSize: number): Promise<boolean> => {
+  try {
+    await newStorageService.checkSizeLimit(fileSize);
+    return true;
+  } catch (error) {
+    if ((error as AppError)?.status === HTTP_CODES.PAYMENT_REQUIRED) {
+      return false;
+    }
+
+    return true;
+  }
+};
+
+/**
+ * Processes the files to check if their sizes exceed the limit and separates them into allowed and exceeding files.
+ *
+ * @param {File[]} files - The array of files to be checked.
+ * @param {function} dispatch - The dispatch function for Redux actions.
+ * @return {Object} An object containing files allowed and files exceeding the size limit.
+ */
+const processFileCheckSizeLimit = async (files: File[], dispatch) => {
+  const filesAllowed = [] as File[];
+  const filesSizeExceed = [] as File[];
+
+  await Promise.all(
+    files.map(async (file) => {
+      const isFileSizeAllowed = await checkSizeLimit(file.size);
+
+      if (isFileSizeAllowed) {
+        filesAllowed.push(file);
+      } else {
+        filesSizeExceed.push(file);
+        dispatch(uiActions.setIsFileSizeLimitDialogOpen(true));
+      }
+    }),
+  );
+
+  return { filesAllowed, filesSizeExceed };
+};
+
+/**
+ * Displays files that exceed the size limit in the task logger.
+ *
+ * @param {File[]} files - The array of files to display in the task logger.
+ * @param {number} parentFolderId - The ID of the parent folder.
+ */
+const displayInTaskLoggerExceededSizeLimitFiles = (files: File[], parentFolderId: number) => {
+  files.map((file) => {
+    const taskId = tasksService.create<UploadFileTask>({
+      action: TaskType.UploadFile,
+      subtitle: t('tasks.upload-file.errors.fileSizeLimitExceeded') ?? undefined,
+      item: { uploadFile: file, parentFolderId },
+      fileName: file.name,
+      fileType: file.type,
+      isFileNameValidated: true,
+      showNotification: true,
+      cancellable: false,
+      displayRetry: false,
+    });
+    tasksService.updateTask({
+      taskId: taskId,
+      merge: {
+        status: TaskStatus.Error,
+      },
+    });
+  });
+};
+
+/**
  * @description
  *  1. Prepare files to upload
  *  2. Schedule tasks
@@ -150,8 +247,11 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
 
+    const { filesAllowed, filesSizeExceed } = await processFileCheckSizeLimit(files, dispatch);
+    displayInTaskLoggerExceededSizeLimitFiles(filesSizeExceed, parentFolderId);
+
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
-      files,
+      files: filesAllowed,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
@@ -243,11 +343,14 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     options = Object.assign(DEFAULT_OPTIONS, options || {});
 
-    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    const continueWithUpload = await isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
 
+    const { filesAllowed, filesSizeExceed } = await processFileCheckSizeLimit(files, dispatch);
+    displayInTaskLoggerExceededSizeLimitFiles(filesSizeExceed, parentFolderId);
+
     let zeroLengthFilesNumber = 0;
-    for (const file of files) {
+    for (const file of filesAllowed) {
       if (file.size === 0) {
         zeroLengthFilesNumber = zeroLengthFilesNumber + 1;
         continue;
@@ -361,8 +464,11 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
+    const { filesAllowed, filesSizeExceed } = await processFileCheckSizeLimit(files, dispatch);
+    displayInTaskLoggerExceededSizeLimitFiles(filesSizeExceed, parentFolderId);
+
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
-      files,
+      files: filesAllowed,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
     });

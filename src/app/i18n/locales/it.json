@@ -638,6 +638,13 @@
     "itemsSelected": "elementi selezionati"
   },
   "modals": {
+    "fileSizeLimitDialog": {
+      "title": "Aggiorna per caricare file più grandi",
+      "description": "Il tuo piano attuale consente file fino a 1 GB. Per caricare file più grandi, aggiorna il tuo piano.",
+      "cancelButtonText": "Annulla",
+      "actionButtonText": "Vedi piani",
+      "actionLoadingButtonText": "Vedi piani"
+    },
     "renameItemDialog": {
       "title": "Rinominare",
       "label": "Nome"
@@ -1051,7 +1058,9 @@
         "error": "Error during upload",
         "cancelled": "Upload annullato"
       },
-      "errors": {}
+      "errors": {
+        "fileSizeLimitExceeded": "Limite di dimensione del file superato"
+      }
     },
     "upload-folder": {
       "status": {
