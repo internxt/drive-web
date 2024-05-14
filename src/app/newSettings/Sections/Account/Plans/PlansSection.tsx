@@ -22,14 +22,6 @@ import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
 import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
 
-const FREE_PLAN_DATA = {
-  amount: 0,
-  bytes: 2147483648,
-  id: 'free',
-  currency: 'Free forever',
-  interval: 'month',
-} as DisplayPrice;
-
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
 }
@@ -37,6 +29,13 @@ interface PlansSectionProps {
 const PlansSection = ({ changeSection }: PlansSectionProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const FREE_PLAN_DATA = {
+    amount: 0,
+    bytes: 2147483648,
+    id: 'free',
+    currency: translate('preferences.account.plans.freeForever'),
+    interval: 'month',
+  } as DisplayPrice;
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);

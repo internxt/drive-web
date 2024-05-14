@@ -20,15 +20,16 @@ const getCurrentChangePlanType = ({
   currentPlan: StoragePlan | null;
   isFreePriceSelected: boolean;
 }): ChangePlanType => {
-  const isSubscription = priceSelected?.interval === 'month' || priceSelected?.interval === 'year';
+  const isIntervalSelected =
+    priceSelected?.interval === 'month' || priceSelected?.interval === 'year' || priceSelected?.interval === 'lifetime';
+  const currentStorage = parseInt(currentPlan?.storageLimit.toString() ?? '0');
+  const selectedPlanStorage = priceSelected?.bytes;
 
   if (currentUserSubscription?.type === 'free' && isFreePriceSelected) {
     return 'free';
   }
 
-  if (isSubscription) {
-    const currentStorage = parseInt(currentPlan?.storageLimit.toString() ?? '0');
-    const selectedPlanStorage = priceSelected?.bytes;
+  if (isIntervalSelected) {
     if (currentStorage < selectedPlanStorage) {
       return 'upgrade';
     }
@@ -40,10 +41,6 @@ const getCurrentChangePlanType = ({
     }
 
     return 'free';
-  }
-
-  if (priceSelected?.interval === 'lifetime') {
-    return 'manageBilling';
   }
 
   return 'free';
