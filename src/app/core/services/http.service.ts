@@ -5,6 +5,7 @@ import localStorageService from './local-storage.service';
 
 export const HTTP_CODES = {
   MAX_SPACE_USED: 420,
+  FORBIDDEN: 403,
 };
 
 const httpService = {
