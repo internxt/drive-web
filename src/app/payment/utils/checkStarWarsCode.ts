@@ -80,6 +80,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
       })
       .catch((err) => {
         errorService.reportError(err);
+        sessionStorage.setItem('star_wars_lifetime_theme', 'false');
       });
   }
 
