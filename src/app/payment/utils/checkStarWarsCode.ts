@@ -1,7 +1,7 @@
 import localStorageService from 'app/core/services/local-storage.service';
-import { bytesToString } from 'app/drive/services/size.service';
 import { PlanState } from 'app/store/slices/plan';
 import paymentService from '../services/payment.service';
+import errorService from 'app/core/services/error.service';
 
 export const STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY = 'star_wars_theme_enabled';
 
@@ -27,9 +27,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
 
   if (starWarsInLocalStorage === 'true') return true;
 
-  const { individualPlan, subscription } = plan;
-
-  const storageLimit = individualPlan?.storageLimit;
+  const { subscription } = plan;
 
   // Check if user used the coupon code
   if (subscription?.type === 'subscription') {
@@ -42,15 +40,48 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
     }
 
     isCouponUsed = couponUsedResult.couponUsed;
-  } else if (individualPlan?.isLifetime) {
-    const coupon = await fetchCouponCode(LifetimeCoupons[bytesToString(storageLimit as number)]);
-    const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
+  } else if (subscription?.type === 'lifetime') {
+    let couponUserResult;
+    let TwoTBCoupon;
+    let FiveTBCoupon;
+    let TenTBCoupon;
 
-    if (couponUsedResult.couponUsed) {
-      onSuccess?.();
-      localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUsedResult.couponUsed}`);
+    const shouldCheckCouponCode = sessionStorage.getItem('star_wars_lifetime_theme');
+
+    if (shouldCheckCouponCode === 'false') {
+      return false;
     }
-    isCouponUsed = couponUsedResult.couponUsed;
+
+    Promise.all([
+      fetchCouponCode(LifetimeCoupons['2TB']),
+      fetchCouponCode(LifetimeCoupons['5TB']),
+      fetchCouponCode(LifetimeCoupons['10TB']),
+    ])
+      .then(([twoTB, fiveTB, tenTB]) => {
+        TwoTBCoupon = twoTB;
+        FiveTBCoupon = fiveTB;
+        TenTBCoupon = tenTB;
+
+        Array.from([TwoTBCoupon, FiveTBCoupon, TenTBCoupon]).map(async (coupon) => {
+          const couponUser = await paymentService.isCouponUsedByUser(coupon);
+          if (couponUser.couponUsed) {
+            couponUserResult = couponUser;
+            return;
+          }
+        });
+
+        if (couponUserResult.couponUsed) {
+          onSuccess?.();
+          localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUserResult.couponUsed}`);
+        } else {
+          sessionStorage.setItem('star_wars_lifetime_theme', 'false');
+        }
+        isCouponUsed = couponUserResult.couponUsed;
+      })
+      .catch((err) => {
+        errorService.reportError(err);
+        sessionStorage.setItem('star_wars_lifetime_theme', 'false');
+      });
   }
 
   return isCouponUsed;
