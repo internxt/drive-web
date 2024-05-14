@@ -743,7 +743,7 @@ export function validateSharingInvitation(sharingId: string): Promise<{ uuid: st
 export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
-    throw errorService.castError(error);
+    throw error;
   });
 }
 
