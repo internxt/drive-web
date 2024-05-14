@@ -195,12 +195,12 @@
     "renewalPeriod": {
       "monthly": "月度",
       "annually": "年度",
-      "lifetime": "终身"
+      "lifetime": "Lifetime"
     },
     "renewal": {
       "monthly": "月度",
       "annually": "年度",
-      "lifetime": "终身"
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "个人",
@@ -1614,7 +1614,7 @@
         "freeForever": "永久免费",
         "year": "年",
         "month": "月",
-        "lifetime": "终身",
+        "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "计划详情",
           "storage": " 存储",

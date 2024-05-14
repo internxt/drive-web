@@ -304,10 +304,15 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               capacity={bytesToString(plan.bytes)}
               currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
               amount={displayAmount(plan.amount)}
-              billing={translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()}
+              billing={
+                plan.interval === 'lifetime'
+                  ? translate('views.account.tabs.plans.card.oneTimePayment')
+                  : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
+              }
               isCurrentPlan={
                 currentUserSubscription?.type === 'subscription' && currentUserSubscription?.priceId === plan.id
               }
+              displayBillingSlash={plan.interval !== 'lifetime'}
             />
           ))}
         </div>
