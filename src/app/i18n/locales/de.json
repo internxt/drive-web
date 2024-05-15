@@ -555,7 +555,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "Upgrade, um größere Dateien hochzuladen",
-      "description": "Ihr aktueller Plan erlaubt Dateien bis zu 1 GB. Um größere Dateien hochzuladen, aktualisieren Sie Ihren Plan.",
+      "description": "Ihr aktueller Plan erlaubt Dateien bis zu {{limit}}. Um größere Dateien hochzuladen, aktualisieren Sie Ihren Plan.",
+      "cancelButtonText": "Abbrechen",
+      "actionButtonText": "Pläne anzeigen",
+      "actionLoadingButtonText": "Pläne anzeigen"
+    },
+    "shareItemsLimitDialog": {
+      "title": "Upgrade, um mehr Elemente zu teilen",
+      "description": "Ihr aktueller Plan erlaubt das Teilen von bis zu {{limit}} Elementen. Um mehr Elemente zu teilen, aktualisieren Sie Ihren Plan.",
       "cancelButtonText": "Abbrechen",
       "actionButtonText": "Pläne anzeigen",
       "actionLoadingButtonText": "Pläne anzeigen"

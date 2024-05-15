@@ -14,11 +14,11 @@ import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import shareService from '../../../../share/services/share.service';
 import Button from '../../../../shared/components/Button/Button';
 import Dropdown from '../../../../shared/components/Dropdown';
 import TooltipElement, { DELAY_SHOW_MS } from '../../../../shared/components/Tooltip/Tooltip';
 import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
@@ -111,7 +111,12 @@ const DriveTopBarActions = ({
         }),
       );
       if (selectedItem?.uuid)
-        shareService.getPublicShareLink(selectedItem.uuid, selectedItem.isFolder ? 'folder' : 'file');
+        dispatch(
+          sharedThunks.getPublicShareLink({
+            itemUUid: selectedItem.uuid,
+            itemType: selectedItem.isFolder ? 'folder' : 'file',
+          }),
+        );
     }
   };
 

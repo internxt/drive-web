@@ -1,26 +1,26 @@
 import { Menu, Transition } from '@headlessui/react';
 import {
   CaretDown,
-  FolderSimplePlus,
-  Trash,
-  PencilSimple,
-  Link,
   DownloadSimple,
-  Users,
+  FolderSimplePlus,
   Info,
+  Link,
+  PencilSimple,
+  Trash,
+  Users,
 } from '@phosphor-icons/react';
-import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
-import { DriveItemData, DriveItemDetails } from 'app/drive/types';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { uiActions } from '../../../../store/slices/ui';
-import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
 import { getAppConfig } from 'app/core/services/config.service';
-import { BreadcrumbsMenuProps } from '../types';
+import useDriveItemStoreProps from 'app/drive/components/DriveExplorer/DriveExplorerItem/hooks/useDriveStoreProps';
+import { DriveItemData, DriveItemDetails } from 'app/drive/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
-import shareService from 'app/share/services/share.service';
+import { uiActions } from '../../../../store/slices/ui';
+import { BreadcrumbsMenuProps } from '../types';
 
 const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
   const { onItemClicked } = props;
@@ -72,7 +72,10 @@ const BreadcrumbsMenuDrive = (props: BreadcrumbsMenuProps): JSX.Element => {
 
   const onCopyLinkButtonClicked = () => {
     const item = currentFolder[0];
-    shareService.getPublicShareLink(item.uuid as string, item.isFolder ? 'folder' : 'file');
+
+    dispatch(
+      sharedThunks.getPublicShareLink({ itemUUid: item.uuid as string, itemType: item.isFolder ? 'folder' : 'file' }),
+    );
   };
 
   const onMoveButtonClicked = () => {

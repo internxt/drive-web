@@ -8,9 +8,9 @@ import {
 } from '../../../../../drive/services/database.service';
 import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/services/thumbnail.service';
 import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
-import shareService from '../../../../../share/services/share.service';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
+import { sharedThunks } from '../../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../../store/slices/storage';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
@@ -65,12 +65,22 @@ const useDriveItemActions = (item): DriveItemActions => {
 
   const onGetLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+    dispatch(
+      sharedThunks.getPublicShareLink({
+        itemUUid: driveItem.uuid as string,
+        itemType: driveItem.isFolder ? 'folder' : 'file',
+      }),
+    );
   };
 
   const onCopyLinkButtonClicked = () => {
     const driveItem = item as DriveItemData;
-    shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+    dispatch(
+      sharedThunks.getPublicShareLink({
+        itemUUid: driveItem.uuid as string,
+        itemType: driveItem.isFolder ? 'folder' : 'file',
+      }),
+    );
   };
 
   const onShowDetailsButtonClicked = () => {

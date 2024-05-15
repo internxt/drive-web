@@ -1,21 +1,21 @@
 import { useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
+import { storageActions } from '../../../../store/slices/storage';
+import { uiActions } from '../../../../store/slices/ui';
 import EmptySharedView from '../../../components/EmptySharedView/EmptySharedView';
 import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../types';
 import { OrderField, SharedItemList } from '../components/SharedItemList';
-import { useDispatch } from 'react-redux';
-import { storageActions } from '../../../../store/slices/storage';
-import { uiActions } from '../../../../store/slices/ui';
 
-import shareService, { decryptMnemonic } from '../../../services/share.service';
 import errorService from '../../../../core/services/error.service';
-import useSharedContextMenu from '../hooks/useSharedContextMenu';
-import { sharedThunks } from '../../../../store/slices/sharedLinks';
-import { useShareViewContext } from '../context/SharedViewContextProvider';
-import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
-import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 import localStorageService from '../../../../core/services/local-storage.service';
 import { OrderDirection } from '../../../../core/types';
+import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import shareService, { decryptMnemonic } from '../../../services/share.service';
+import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
+import { useShareViewContext } from '../context/SharedViewContextProvider';
+import useSharedContextMenu from '../hooks/useSharedContextMenu';
+import { isItemsOwnedByCurrentUser, sortSharedItems } from '../sharedViewUtils';
 
 type ShareItemListContainerProps = {
   disableKeyboardShortcuts: boolean;
@@ -155,7 +155,7 @@ const SharedItemListContainer = ({
 
   const copyLink = useCallback(
     (item: AdvancedSharedItem) => {
-      shareService.getPublicShareLink(item.uuid, item.isFolder ? 'folder' : 'file');
+      dispatch(sharedThunks.getPublicShareLink({ itemUUid: item.uuid, itemType: item.isFolder ? 'folder' : 'file' }));
     },
     [dispatch, sharedThunks],
   );

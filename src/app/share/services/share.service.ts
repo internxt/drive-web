@@ -21,7 +21,6 @@ import {
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import folderService from 'app/drive/services/folder.service';
 import { Role } from 'app/store/slices/sharedLinks/types';
-import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { t } from 'i18next';
 import { Iterator } from '../../core/collections';
@@ -203,7 +202,7 @@ export function getSharingRoles(): Promise<Role[]> {
 export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.inviteUserToSharedFolder({ ...props, encryptionAlgorithm: 'ed25519' }).catch((error) => {
-    throw errorService.castError(error);
+    throw error;
   });
 }
 
@@ -341,42 +340,9 @@ export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
   return aes.decrypt(encryptedCode, mnemonic);
 };
 
-export const getPublicShareLink = async (
-  uuid: string,
-  itemType: 'folder' | 'file',
-  encriptedMnemonic?: string,
-): Promise<SharingMeta | void> => {
-  const user = localStorageService.getUser() as UserSettings;
-  let { mnemonic } = user;
-  const code = crypto.randomBytes(32).toString('hex');
-
-  try {
-    const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
-    const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
-    const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
-
-    if (isUserInvited && encriptedMnemonic) {
-      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
-      if (ownerMnemonic) mnemonic = ownerMnemonic;
-    }
-    const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
-
-    window.focus();
-    const publicShareLink = `${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`;
-    // workaround to enable copy after login, because first copy always fails
-    copy(publicShareLink);
-    const isCopied = copy(publicShareLink);
-    if (!isCopied) throw Error('Error copying shared public link');
-
-    notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
-    return publicSharingItemData;
-  } catch (error) {
-    notificationsService.show({
-      text: t('modals.shareModal.errors.copy-to-clipboard'),
-      type: ToastType.Error,
-    });
-    errorService.reportError(error);
-  }
+export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<SharingMeta> => {
+  const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
+  return publicSharingItemData;
 };
 
 interface SharedDirectoryFoldersPayload {

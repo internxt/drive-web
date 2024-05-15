@@ -1,20 +1,28 @@
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import shareService, {
+  decryptMnemonic,
   getSharedFolderInvitationsAsInvitedUser,
   getSharingRoles,
   inviteUserToSharedFolder,
 } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
-import { SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
+import { aes } from '@internxt/lib';
+import { SharedFoldersInvitationsAsInvitedUserResponse, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { UserRoles } from 'app/share/types';
+import copy from 'copy-to-clipboard';
+import crypto from 'crypto';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import localStorageService from '../../../core/services/local-storage.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
+import { uiActions } from '../ui';
 import { Role } from './types';
 
 export interface ShareLinksState {
@@ -47,7 +55,7 @@ export interface ShareFileWithUserPayload {
 
 const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPayload, { state: RootState }>(
   'shareds/shareFileWithUser',
-  async (payload: ShareFileWithUserPayload, { getState }): Promise<string | void> => {
+  async (payload: ShareFileWithUserPayload, { getState, dispatch }): Promise<string | void> => {
     const rootState = getState();
     const user = rootState.user.user;
     try {
@@ -92,16 +100,66 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
         text: t('modals.shareModal.invite.successSentInvitation', { email: payload.sharedWith }),
         type: ToastType.Success,
       });
-    } catch (err: unknown) {
-      const castedError = errorService.castError(err);
-      errorService.reportError(err, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
+    } catch (error: unknown) {
+      const castedError = errorService.castError(error);
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
+      } else if (castedError.status === HTTP_CODES.PAYMENT_REQUIRED) {
+        dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
+      } else {
+        errorService.reportError(error, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
+        notificationsService.show({
+          text: t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
+          type: ToastType.Error,
+        });
       }
-      notificationsService.show({
-        text: t('modals.shareModal.invite.error.errorInviting', { email: payload.sharedWith }),
-        type: ToastType.Error,
-      });
+    }
+  },
+);
+type PublicShareLinkPayload = { itemUUid: string; itemType: 'folder' | 'file'; encriptedMnemonic?: string };
+
+export const getPublicShareLink = createAsyncThunk<
+  Promise<void | SharingMeta>,
+  PublicShareLinkPayload,
+  { state: RootState }
+>(
+  'shareds/getPublicShareLink',
+  async ({ itemType, itemUUid, encriptedMnemonic }: PublicShareLinkPayload, { dispatch }) => {
+    try {
+      const user = localStorageService.getUser() as UserSettings;
+      let { mnemonic } = user;
+      const code = crypto.randomBytes(32).toString('hex');
+
+      const publicSharingItemData = await shareService.getPublicShareLink(itemUUid, itemType);
+      const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+      const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
+
+      if (isUserInvited && encriptedMnemonic) {
+        const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
+        if (ownerMnemonic) mnemonic = ownerMnemonic;
+      }
+      const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
+
+      window.focus();
+      const publicShareLink = `${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`;
+      // workaround to enable copy after login, because first copy always fails
+      copy(publicShareLink);
+      const isCopied = copy(publicShareLink);
+      if (!isCopied) throw Error('Error copying shared public link');
+
+      notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+      return publicSharingItemData;
+    } catch (error) {
+      const castedError = errorService.castError(error);
+      if (castedError.message === 'unauthenticated') {
+        return navigationService.push(AppView.Login);
+      } else if (castedError.status === HTTP_CODES.PAYMENT_REQUIRED) {
+        dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
+      } else
+        notificationsService.show({
+          text: t('modals.shareModal.errors.copy-to-clipboard'),
+          type: ToastType.Error,
+        });
     }
   },
 );
@@ -251,6 +309,7 @@ export const sharedThunks = {
   removeUserFromSharedFolder,
   getSharedFolderRoles,
   getPendingInvitations,
+  getPublicShareLink,
 };
 
 export default sharedSlice.reducer;

@@ -640,7 +640,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "Aggiorna per caricare file più grandi",
-      "description": "Il tuo piano attuale consente file fino a 1 GB. Per caricare file più grandi, aggiorna il tuo piano.",
+      "description": "Il tuo piano attuale consente file fino a {{limit}}. Per caricare file più grandi, aggiorna il tuo piano.",
+      "cancelButtonText": "Annulla",
+      "actionButtonText": "Vedi piani",
+      "actionLoadingButtonText": "Vedi piani"
+    },
+    "shareItemsLimitDialog": {
+      "title": "Aggiorna per condividere più elementi",
+      "description": "Il tuo piano attuale consente di condividere fino a {{limit}} elementi. Per condividere più elementi, aggiorna il tuo piano.",
       "cancelButtonText": "Annulla",
       "actionButtonText": "Vedi piani",
       "actionLoadingButtonText": "Vedi piani"

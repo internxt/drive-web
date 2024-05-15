@@ -647,7 +647,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "升级以上传更大的文件",
-      "description": "您当前的计划允许上传最大1GB的文件，若需上传更大的文件，请升级您的计划。",
+      "description": "您当前的计划允许上传最大{{limit}}的文件，若需上传更大的文件，请升级您的计划。",
+      "cancelButtonText": "取消",
+      "actionButtonText": "查看计划",
+      "actionLoadingButtonText": "查看计划"
+    },
+    "shareItemsLimitDialog": {
+      "title": "升级以分享更多项目",
+      "description": "您当前的计划允许分享最多{{limit}}个项目。要分享更多项目，请升级您的计划。",
       "cancelButtonText": "取消",
       "actionButtonText": "查看计划",
       "actionLoadingButtonText": "查看计划"

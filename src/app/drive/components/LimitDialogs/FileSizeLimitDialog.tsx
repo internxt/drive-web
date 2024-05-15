@@ -6,8 +6,15 @@ interface FileSizeLimitDialogProps {
   onSeePlansButtonClicked: () => void;
   onClose: () => void;
   isLoading: boolean;
+  sizeLimit: string;
 }
-const FileSizeLimitDialog = ({ isOpen, onClose, isLoading, onSeePlansButtonClicked }: FileSizeLimitDialogProps) => {
+const FileSizeLimitDialog = ({
+  isOpen,
+  onClose,
+  isLoading,
+  onSeePlansButtonClicked,
+  sizeLimit,
+}: FileSizeLimitDialogProps) => {
   return (
     <ActionModal
       isOpen={isOpen}
@@ -17,7 +24,7 @@ const FileSizeLimitDialog = ({ isOpen, onClose, isLoading, onSeePlansButtonClick
       isLoading={isLoading}
       modalTexts={{
         title: t('modals.fileSizeLimitDialog.title'),
-        description: t('modals.fileSizeLimitDialog.description'),
+        description: t('modals.fileSizeLimitDialog.description', { limit: sizeLimit }),
         cancelButtonText: t('modals.fileSizeLimitDialog.cancelButtonText'),
         actionButtonText: t('modals.fileSizeLimitDialog.actionButtonText'),
         actionLoadingButtonText: t('modals.fileSizeLimitDialog.actionLoadingButtonText'),

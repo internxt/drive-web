@@ -1,6 +1,6 @@
-import { AxiosError } from 'axios';
 import * as Sentry from '@sentry/react';
 import { CaptureContext } from '@sentry/types';
+import { AxiosError } from 'axios';
 import AppError from '../types';
 
 const errorService = {
@@ -32,7 +32,7 @@ const errorService = {
     } else if (typeof err === 'string') {
       castedError = new AppError(err);
     } else if (err instanceof Error) {
-      castedError.message = err.message;
+      castedError = new AppError(err.message, (err as AppError)?.status);
     } else {
       const map = err as Record<string, unknown>;
       castedError = map.message ? new AppError(map.message as string, map.status as number) : castedError;

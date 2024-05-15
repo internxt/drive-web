@@ -647,7 +647,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "Upgrade to upload bigger files",
-      "description": "Your current plan allows up to 1GB files, to upload bigger files upgrade your plan.",
+      "description": "Your current plan allows up to {{limit}} files, to upload bigger files upgrade your plan.",
+      "cancelButtonText": "Cancel",
+      "actionButtonText": "See plans",
+      "actionLoadingButtonText": "See plans"
+    },
+    "shareItemsLimitDialog": {
+      "title": "Upgrade to share more items",
+      "description": "Your current plan allows sharing up to {{limit}} items. To share more items upgrade your plan.",
       "cancelButtonText": "Cancel",
       "actionButtonText": "See plans",
       "actionLoadingButtonText": "See plans"

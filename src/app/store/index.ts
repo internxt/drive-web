@@ -1,20 +1,20 @@
 import { configureStore } from '@reduxjs/toolkit';
 
-import userReducer from './slices/user';
-import teamReducer from './slices/team';
-import storageReducer from './slices/storage';
-import sessionReducer from './slices/session';
-import uiReducer from './slices/ui';
-import planReducer from './slices/plan';
-import productsReducer from './slices/products';
-import paymentReducer from './slices/payment';
 import backupsReducer from './slices/backups';
 import fileViewerReducer from './slices/fileViewer';
-import taskManagerReducer from './slices/taskManager';
-import referralsReducer from './slices/referrals';
 import newsletterReducer from './slices/newsletter';
+import paymentReducer from './slices/payment';
 import photosReducer from './slices/photos';
+import planReducer from './slices/plan';
+import productsReducer from './slices/products';
+import referralsReducer from './slices/referrals';
+import sessionReducer from './slices/session';
 import sharedReducer from './slices/sharedLinks';
+import storageReducer from './slices/storage';
+import taskManagerReducer from './slices/taskManager';
+import teamReducer from './slices/team';
+import uiReducer from './slices/ui';
+import userReducer from './slices/user';
 
 export const store = configureStore({
   reducer: {

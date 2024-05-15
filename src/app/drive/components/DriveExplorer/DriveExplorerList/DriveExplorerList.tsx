@@ -9,7 +9,6 @@ import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
-import shareService from '../../../../share/services/share.service';
 import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
@@ -234,7 +233,12 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const getLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+      dispatch(
+        sharedThunks.getPublicShareLink({
+          itemUUid: driveItem.uuid as string,
+          itemType: driveItem.isFolder ? 'folder' : 'file',
+        }),
+      );
     },
     [dispatch, sharedThunks],
   );
@@ -242,7 +246,12 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const copyLink = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      shareService.getPublicShareLink(driveItem.uuid as string, driveItem.isFolder ? 'folder' : 'file');
+      dispatch(
+        sharedThunks.getPublicShareLink({
+          itemUUid: driveItem.uuid as string,
+          itemType: driveItem.isFolder ? 'folder' : 'file',
+        }),
+      );
     },
     [dispatch, sharedThunks],
   );

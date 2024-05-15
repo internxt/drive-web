@@ -3,25 +3,29 @@ import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import { useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
-import FileSizeLimitDialog from './FileSizeLimitDialog';
+import ShareItemsLimitDialog from './ShareItemsLimitDialog';
 
-const FileSizeLimitDialogContainer = () => {
+// HARDCODED UNTIL API IS IMPLEMENTED
+const SHARES_LIMIT = 10;
+
+const ShareItemsLimitDialogContainer = () => {
   const dispatch = useDispatch();
-  const isFileSizeLimitDialogOpen = useAppSelector((state) => state.ui.isFileSizeLimitDialogOpen);
-  const onClose = () => dispatch(uiActions.setIsFileSizeLimitDialogOpen(false));
+  const isShareItemsLimitDialogOpen = useAppSelector((state) => state.ui.isShareItemsLimitDialogOpen);
+  const onClose = () => dispatch(uiActions.setIsShareItemsLimitDialogOpen(false));
 
   const onSeePlansButtonClicked = () => {
     navigationService.push(AppView.Preferences, { tab: 'plans' });
     onClose();
   };
   return (
-    <FileSizeLimitDialog
-      isOpen={isFileSizeLimitDialogOpen}
+    <ShareItemsLimitDialog
+      isOpen={isShareItemsLimitDialogOpen}
       onSeePlansButtonClicked={onSeePlansButtonClicked}
       onClose={onClose}
       isLoading={false}
+      shareItemsLimit={SHARES_LIMIT}
     />
   );
 };
 
-export default FileSizeLimitDialogContainer;
+export default ShareItemsLimitDialogContainer;

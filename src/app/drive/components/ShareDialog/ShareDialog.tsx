@@ -1,13 +1,6 @@
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
-import { connect } from 'react-redux';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
-import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   ArrowLeft,
   CaretDown,
@@ -20,30 +13,37 @@ import {
   Users,
   X,
 } from '@phosphor-icons/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
+import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 import Avatar from 'app/shared/components/Avatar';
+import Button from 'app/shared/components/Button/Button';
+import Modal from 'app/shared/components/Modal';
 import Spinner from 'app/shared/components/Spinner/Spinner';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
-import './ShareDialog.scss';
-import shareService, { getSharingRoles } from '../../../share/services/share.service';
-import errorService from '../../../core/services/error.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
+import { uiActions } from 'app/store/slices/ui';
 import copy from 'copy-to-clipboard';
-import { AdvancedSharedItem } from '../../../share/types';
-import { DriveItemData } from '../../types';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { connect } from 'react-redux';
+import { Tooltip } from 'react-tooltip';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
-import { Tooltip } from 'react-tooltip';
-import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
-import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
-import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import shareService, { getSharingRoles } from '../../../share/services/share.service';
+import { AdvancedSharedItem } from '../../../share/types';
 import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
+import { DriveItemData } from '../../types';
+import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import './ShareDialog.scss';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -343,11 +343,13 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       trackPublicShared(trackingPublicSharedProperties);
       const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
-      const sharingInfo = await shareService.getPublicShareLink(
-        itemToShare?.item.uuid,
-        itemToShare.item.isFolder ? 'folder' : 'file',
-        encryptionKey,
-      );
+      const sharingInfo = await dispatch(
+        sharedThunks.getPublicShareLink({
+          itemUUid: itemToShare?.item.uuid,
+          itemType: itemToShare.item.isFolder ? 'folder' : 'file',
+          encriptedMnemonic: encryptionKey,
+        }),
+      ).unwrap();
       if (sharingInfo) {
         setSharingMeta(sharingInfo);
       }

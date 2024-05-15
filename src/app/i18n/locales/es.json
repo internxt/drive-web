@@ -630,7 +630,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "Actualizar para subir archivos más grandes",
-      "description": "Su plan actual permite archivos de hasta 1 GB. Para subir archivos más grandes, actualice su plan.",
+      "description": "Su plan actual permite archivos de hasta {{limit}}. Para subir archivos más grandes, actualice su plan.",
+      "cancelButtonText": "Cancelar",
+      "actionButtonText": "Ver planes",
+      "actionLoadingButtonText": "Ver planes"
+    },
+    "shareItemsLimitDialog": {
+      "title": "Actualizar para compartir más elementos",
+      "description": "Su plan actual permite compartir hasta {{limit}} elementos. Para compartir más elementos, actualice su plan.",
       "cancelButtonText": "Cancelar",
       "actionButtonText": "Ver planes",
       "actionLoadingButtonText": "Ver planes"

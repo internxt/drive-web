@@ -581,7 +581,14 @@
   "modals": {
     "fileSizeLimitDialog": {
       "title": "Mettez à niveau pour télécharger des fichiers plus volumineux",
-      "description": "Votre plan actuel permet des fichiers jusqu'à 1 Go. Pour télécharger des fichiers plus volumineux, mettez à niveau votre plan.",
+      "description": "Votre plan actuel permet des fichiers jusqu'à {{limit}}. Pour télécharger des fichiers plus volumineux, mettez à niveau votre plan.",
+      "cancelButtonText": "Annuler",
+      "actionButtonText": "Voir les plans",
+      "actionLoadingButtonText": "Voir les plans"
+    },
+    "shareItemsLimitDialog": {
+      "title": "Mettez à niveau pour partager plus d'éléments",
+      "description": "Votre plan actuel permet de partager jusqu'à {{limit}} éléments. Pour partager plus d'éléments, mettez à niveau votre plan.",
       "cancelButtonText": "Annuler",
       "actionButtonText": "Voir les plans",
       "actionLoadingButtonText": "Voir les plans"
