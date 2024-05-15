@@ -195,12 +195,12 @@
     "renewalPeriod": {
       "monthly": "mensile",
       "annually": "annuale",
-      "lifetime": "a vita"
+      "lifetime": "lifetime"
     },
     "renewal": {
       "monthly": "Mensile",
       "annually": "Annuale",
-      "lifetime": "A vita"
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "Individuals",
@@ -1602,7 +1602,7 @@
         "freeForever": "Gratuito per sempre",
         "year": "Anno",
         "month": "Mese",
-        "lifetime": "Vita",
+        "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "Dettagli del piano",
           "storage": " di archiviazione",

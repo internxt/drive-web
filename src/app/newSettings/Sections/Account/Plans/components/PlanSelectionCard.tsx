@@ -9,6 +9,7 @@ interface PlanSelectionCardProps {
   isSelected: boolean;
   onClick: () => void;
   isCurrentPlan?: boolean;
+  displayBillingSlash?: boolean;
 }
 
 const PlanSelectionCard = ({
@@ -19,10 +20,11 @@ const PlanSelectionCard = ({
   isSelected,
   onClick,
   isCurrentPlan,
+  displayBillingSlash,
 }: PlanSelectionCardProps) => {
   const isSelectedOutsideBorderStyle = isSelected ? 'border-primary/3 bg-primary/3 dark:bg-primary/10' : '';
   const isSelectedInsideBorderStyle = isSelected ? 'border-primary' : '';
-
+  const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
   return (
     <div
       className={`-m-1 w-fit rounded-2xl border-4 border-transparent hover:border-primary/3 hover:bg-primary/3 hover:dark:bg-primary/10 ${isSelectedOutsideBorderStyle}`}
@@ -39,7 +41,7 @@ const PlanSelectionCard = ({
         </div>
         <span className=" text-base font-normal leading-5 text-gray-60">
           {currency + amount}
-          {billing && '/' + billing}
+          {billing && billingText}
         </span>
       </button>
     </div>

@@ -179,12 +179,12 @@
     "renewalPeriod": {
       "monthly": "ежемесячно",
       "annually": "ежегодно",
-      "lifetime": "Пожизненно"
+      "lifetime": "Lifetime"
     },
     "renewal": {
       "monthly": "Ежемесячно",
       "annually": "Ежегодно",
-      "lifetime": "Пожизненно"
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "Индивидуальные",
@@ -1582,7 +1582,7 @@
         "freeForever": "Бесплатно навсегда",
         "year": "Год",
         "month": "Месяц",
-        "lifetime": "Пожизненно",
+        "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "Подробности тарифа",
           "storage": " хранилище",
