@@ -653,8 +653,10 @@
       "actionLoadingButtonText": "查看计划"
     },
     "shareItemsLimitDialog": {
-      "title": "升级以分享更多项目",
-      "description": "您当前的计划允许分享最多{{limit}}个项目。要分享更多项目，请升级您的计划。",
+      "maxSharesTitle": "升级以分享更多项目",
+      "maxInvitesTitle": "升级以邀请更多用户",
+      "maxSharesDescription": "您当前的计划允许分享最多{{limit}}个项目。要分享更多项目，请升级您的计划。",
+      "maxInvitesDescription": "您已达到当前计划每个项目的邀请限制。升级您的计划以增加限制。",
       "cancelButtonText": "取消",
       "actionButtonText": "查看计划",
       "actionLoadingButtonText": "查看计划"

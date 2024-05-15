@@ -587,8 +587,10 @@
       "actionLoadingButtonText": "Voir les plans"
     },
     "shareItemsLimitDialog": {
-      "title": "Mettez à niveau pour partager plus d'éléments",
-      "description": "Votre plan actuel permet de partager jusqu'à {{limit}} éléments. Pour partager plus d'éléments, mettez à niveau votre plan.",
+      "maxSharesTitle": "Mettez à niveau pour partager plus d'éléments",
+      "maxInvitesTitle": "Mettez à niveau pour inviter plus d'utilisateurs",
+      "maxSharesDescription": "Votre plan actuel permet de partager jusqu'à {{limit}} éléments. Pour partager plus d'éléments, mettez à niveau votre plan.",
+      "maxInvitesDescription": "Vous avez atteint la limite d'invitations par élément pour votre plan actuel. Mettez à niveau votre plan pour augmenter les limites.",
       "cancelButtonText": "Annuler",
       "actionButtonText": "Voir les plans",
       "actionLoadingButtonText": "Voir les plans"

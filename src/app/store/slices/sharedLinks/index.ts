@@ -105,7 +105,13 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       } else if (castedError.status === HTTP_CODES.PAYMENT_REQUIRED) {
-        dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
+        const errorMessage = castedError.message;
+        // TODO: TEMPORARY UNTIL SERVER RETURN CODES TO RECOGNISE THE TYPE OF LIMITATION
+        if (errorMessage.includes('max-shared-items')) {
+          dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
+        } else if (errorMessage.includes('max-shared-invites')) {
+          dispatch(uiActions.setIsShareItemInvitationsLimitDialogOpen(true));
+        }
       } else {
         errorService.reportError(error, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });
         notificationsService.show({

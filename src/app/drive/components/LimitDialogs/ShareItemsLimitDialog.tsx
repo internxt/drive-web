@@ -7,6 +7,7 @@ interface ShareItemsLimitDialogProps {
   onClose: () => void;
   isLoading: boolean;
   shareItemsLimit: number;
+  typeOfLimitation: 'max_invites' | 'max_shares';
 }
 const ShareItemsLimitDialog = ({
   isOpen,
@@ -14,7 +15,11 @@ const ShareItemsLimitDialog = ({
   isLoading,
   onSeePlansButtonClicked,
   shareItemsLimit,
+  typeOfLimitation,
 }: ShareItemsLimitDialogProps) => {
+  const titleKey = typeOfLimitation === 'max_invites' ? 'maxInvitesTitle' : 'maxSharesTitle';
+  const descriptionKey = typeOfLimitation === 'max_invites' ? 'maxInvitesDescription' : 'maxSharesDescription';
+
   return (
     <ActionModal
       isOpen={isOpen}
@@ -23,8 +28,8 @@ const ShareItemsLimitDialog = ({
       onActionButtonClicked={onSeePlansButtonClicked}
       isLoading={isLoading}
       modalTexts={{
-        title: t('modals.shareItemsLimitDialog.title'),
-        description: t('modals.shareItemsLimitDialog.description', { limit: shareItemsLimit }),
+        title: t(`modals.shareItemsLimitDialog.${titleKey}`),
+        description: t(`modals.shareItemsLimitDialog.${descriptionKey}`, { limit: shareItemsLimit }),
         cancelButtonText: t('modals.shareItemsLimitDialog.cancelButtonText'),
         actionButtonText: t('modals.shareItemsLimitDialog.actionButtonText'),
         actionLoadingButtonText: t('modals.shareItemsLimitDialog.actionLoadingButtonText'),

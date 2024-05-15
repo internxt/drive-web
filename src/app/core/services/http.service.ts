@@ -7,6 +7,7 @@ export const HTTP_CODES = {
   MAX_SPACE_USED: 420,
   PAYMENT_REQUIRED: 402,
   FORBIDDEN: 403,
+  NOT_FOUND: 404,
 };
 
 const httpService = {

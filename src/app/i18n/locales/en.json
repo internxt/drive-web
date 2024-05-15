@@ -653,8 +653,10 @@
       "actionLoadingButtonText": "See plans"
     },
     "shareItemsLimitDialog": {
-      "title": "Upgrade to share more items",
-      "description": "Your current plan allows sharing up to {{limit}} items. To share more items upgrade your plan.",
+      "maxSharesTitle": "Upgrade to share more items",
+      "maxInvitesTitle": "Upgrade to invite more users",
+      "maxSharesDescription": "Your current plan allows sharing up to {{limit}} items. To share more items upgrade your plan.",
+      "maxInvitesDescription": "You have reached the limit of invitations per item for your current plan. Upgrade your plan for increased limits.",
       "cancelButtonText": "Cancel",
       "actionButtonText": "See plans",
       "actionLoadingButtonText": "See plans"

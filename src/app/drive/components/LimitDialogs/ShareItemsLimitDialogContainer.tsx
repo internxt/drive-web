@@ -11,7 +11,14 @@ const SHARES_LIMIT = 10;
 const ShareItemsLimitDialogContainer = () => {
   const dispatch = useDispatch();
   const isShareItemsLimitDialogOpen = useAppSelector((state) => state.ui.isShareItemsLimitDialogOpen);
-  const onClose = () => dispatch(uiActions.setIsShareItemsLimitDialogOpen(false));
+  const isShareItemInvitationsLimitDialogOpen = useAppSelector(
+    (state) => state.ui.isShareItemInvitationsLimitDialogOpen,
+  );
+  const typeOfLimitation = isShareItemsLimitDialogOpen ? 'max_shares' : 'max_invites';
+  const onClose = () => {
+    dispatch(uiActions.setIsShareItemsLimitDialogOpen(false));
+    dispatch(uiActions.setIsShareItemInvitationsLimitDialogOpen(false));
+  };
 
   const onSeePlansButtonClicked = () => {
     navigationService.push(AppView.Preferences, { tab: 'plans' });
@@ -19,7 +26,8 @@ const ShareItemsLimitDialogContainer = () => {
   };
   return (
     <ShareItemsLimitDialog
-      isOpen={isShareItemsLimitDialogOpen}
+      isOpen={isShareItemsLimitDialogOpen || isShareItemInvitationsLimitDialogOpen}
+      typeOfLimitation={typeOfLimitation}
       onSeePlansButtonClicked={onSeePlansButtonClicked}
       onClose={onClose}
       isLoading={false}

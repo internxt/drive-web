@@ -636,8 +636,10 @@
       "actionLoadingButtonText": "Ver planes"
     },
     "shareItemsLimitDialog": {
-      "title": "Actualizar para compartir más elementos",
-      "description": "Su plan actual permite compartir hasta {{limit}} elementos. Para compartir más elementos, actualice su plan.",
+      "maxSharesTitle": "Actualizar para compartir más elementos",
+      "maxInvitesTitle": "Actualizar para invitar a más usuarios",
+      "maxSharesDescription": "Su plan actual permite compartir hasta {{limit}} elementos. Para compartir más elementos, actualice su plan.",
+      "maxInvitesDescription": "Ha alcanzado el límite de invitaciones por elemento para su plan actual. Actualice su plan para aumentar los límites.",
       "cancelButtonText": "Cancelar",
       "actionButtonText": "Ver planes",
       "actionLoadingButtonText": "Ver planes"
