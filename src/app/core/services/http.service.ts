@@ -10,6 +10,13 @@ export const HTTP_CODES = {
   NOT_FOUND: 404,
 };
 
+export const PAYMENT_REQUIRED_ERROR_CODES = {
+  MAX_SHARED_ITEMS: 'MAX_SHARED_ITEMS',
+  MAX_SHARED_INVITES: 'MAX_SHARED_INVITES',
+  MAX_FILE_UPLOAD_SIZE: 'MAX_FILE_UPLOAD_SIZE',
+  DEFAULT: 'TIER_LIMIT_REACHED',
+};
+
 const httpService = {
   get: <ResponseType>(url: string, config?: AxiosRequestConfig): Promise<ResponseType> => {
     return axios.get<ResponseType>(url, config).then((response) => response.data);

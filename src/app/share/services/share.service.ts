@@ -201,9 +201,7 @@ export function getSharingRoles(): Promise<Role[]> {
 
 export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.inviteUserToSharedFolder({ ...props, encryptionAlgorithm: 'ed25519' }).catch((error) => {
-    throw error;
-  });
+  return shareClient.inviteUserToSharedFolder({ ...props, encryptionAlgorithm: 'ed25519' });
 }
 
 export function getUsersOfSharedFolder({

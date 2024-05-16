@@ -19,7 +19,7 @@ import copy from 'copy-to-clipboard';
 import crypto from 'crypto';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
-import { HTTP_CODES } from '../../../core/services/http.service';
+import { HTTP_CODES, PAYMENT_REQUIRED_ERROR_CODES } from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import { uiActions } from '../ui';
@@ -102,15 +102,17 @@ const shareItemWithUser = createAsyncThunk<string | void, ShareFileWithUserPaylo
       });
     } catch (error: unknown) {
       const castedError = errorService.castError(error);
+
       if (castedError.message === 'unauthenticated') {
         return navigationService.push(AppView.Login);
       } else if (castedError.status === HTTP_CODES.PAYMENT_REQUIRED) {
-        const errorMessage = castedError.message;
-        // TODO: TEMPORARY UNTIL SERVER RETURN CODES TO RECOGNISE THE TYPE OF LIMITATION
-        if (errorMessage.includes('max-shared-items')) {
-          dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
-        } else if (errorMessage.includes('max-shared-invites')) {
-          dispatch(uiActions.setIsShareItemInvitationsLimitDialogOpen(true));
+        switch (castedError.code) {
+          case PAYMENT_REQUIRED_ERROR_CODES.MAX_SHARED_ITEMS:
+            dispatch(uiActions.setIsShareItemsLimitDialogOpen(true));
+            break;
+          case PAYMENT_REQUIRED_ERROR_CODES.MAX_SHARED_INVITES:
+            dispatch(uiActions.setIsShareItemInvitationsLimitDialogOpen(true));
+            break;
         }
       } else {
         errorService.reportError(error, { extra: { thunk: 'shareFileWithUser', email: payload.sharedWith } });

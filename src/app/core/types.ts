@@ -67,11 +67,13 @@ export interface AppViewConfig {
 
 export default class AppError extends Error {
   readonly status?: number;
+  readonly code?: string;
 
-  constructor(message: string, status?: number) {
+  constructor(message: string, status?: number, code?: string) {
     super(message);
 
     this.status = status;
+    this.code = code;
   }
 }
 
