@@ -12,9 +12,9 @@ import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import { PlanState } from '../../../../../store/slices/plan';
 import { uiActions } from '../../../../../store/slices/ui';
-import UsageBar from '../../../../components/Usage/UsageBar';
 import VerticalDivider from '../../../../components/VerticalDivider';
 import { getProductCaptions } from '../../../../utils/productUtils';
+import Usage from '../../../../components/Usage/Usage';
 
 const AccountUsageContainer = ({
   className = '',
@@ -31,10 +31,11 @@ const AccountUsageContainer = ({
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
 
   const planLimitInBytes = plan.planLimit;
-  const products = planUsage >= 0 ? getProductCaptions(usageDetails) : null;
-
-  products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
-  const usedProducts = products?.filter((product) => product.usageInBytes > 0);
+  const products = getProductCaptions(usageDetails);
+  const driveProduct = products.find((product) => product.name === 'Drive');
+  const backupsProduct = products.find((product) => product.name === 'Backups');
+  const driveUsage = driveProduct ? driveProduct?.usageInBytes : 0;
+  const backupsUsage = backupsProduct ? backupsProduct?.usageInBytes : 0;
 
   useEffect(() => {
     usageService
@@ -57,13 +58,15 @@ const AccountUsageContainer = ({
   return (
     <Card className="space-y-6">
       <div className={`${className} w-full space-y-6 `}>
-        {products && usedProducts && planLimitInBytes ? (
-          <UsageBar
-            products={products}
-            planUsage={planUsage}
-            usedProducts={usedProducts}
-            planLimitInBytes={planLimitInBytes}
-          />
+        {products && planUsage && planLimitInBytes ? (
+          <>
+            <Usage
+              usedSpace={planUsage}
+              spaceLimit={planLimitInBytes}
+              driveUsage={driveUsage}
+              backupsUsage={backupsUsage}
+            />
+          </>
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
             <Spinner className="h-7 w-7 text-primary" />

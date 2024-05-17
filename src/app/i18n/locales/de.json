@@ -1448,6 +1448,10 @@
               "title": "Kein Mitglied in einem Team"
             }
           }
+        },
+        "actions": {
+          "deactivate": "Mitglied deaktivieren",
+          "passwordChange": "Passwortänderung anfordern"
         }
       },
       "teams": {

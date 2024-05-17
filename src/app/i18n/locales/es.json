@@ -1529,6 +1529,10 @@
               "title": "No es miembro de ningún equipo"
             }
           }
+        },
+        "actions": {
+          "deactivate": "Desactivar miembro",
+          "passwordChange": "Solicitar cambio de contraseña"
         }
       },
       "teams": {

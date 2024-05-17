@@ -1550,6 +1550,10 @@
               "title": "不属于任何团队"
             }
           }
+        },
+        "actions": {
+          "deactivate": "停用会员",
+          "passwordChange": "请求更改密码"
         }
       },
       "teams": {

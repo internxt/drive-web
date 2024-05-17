@@ -1,65 +1,80 @@
+import { useState } from 'react';
 import { DotsThreeVertical } from '@phosphor-icons/react';
-import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
-import errorService from '../../../../../core/services/error.service';
-import usageService, { UsageDetailsProps } from '../../../../../drive/services/usage.service';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import { RootState } from '../../../../../store';
-import { useAppSelector } from '../../../../../store/hooks';
-import { PlanState } from '../../../../../store/slices/plan';
 import Tabs from '../../../../components/Tabs';
-import UsageBar from '../../../../components/Usage/UsageBar';
-import { ActiveTab, Member, TypeTabs } from '../../../../types/types';
-import { getProductCaptions } from '../../../../utils/productUtils';
+import { ActiveTab, TypeTabs } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
+import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { Teams } from '../../../../types/types';
+import { getMemberRole } from 'app/newSettings/utils/membersUtils';
+import Usage from 'app/newSettings/components/Usage/Usage';
 
 interface MemberDetailsContainer {
-  member: Member;
+  member: WorkspaceUser;
 }
+
 const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
   const { translate } = useTranslationContext();
-  const [usageDetails, setUsageDetails] = useState<UsageDetailsProps | null>(null);
-  const [isOptionsOpen, setIsOptionsOpen] = useState(false);
-  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
-  const [isDeactivatingMember, setIsDeactivatingMember] = useState(false);
-  const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState(false);
-  const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState(false);
+  const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
+  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
+  const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
+  const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
+  const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
+  const memberRole = getMemberRole(member);
 
-  // TODO: USED PERSONAL USER DATA UNTIL WE HAVE NEW ENDPOINTS FOR WORKSPACE MEMBERS
-  useEffect(() => {
-    usageService
-      .getUsageDetails()
-      .then((usageDetails) => {
-        setUsageDetails(usageDetails);
-      })
-      .catch((err) => {
-        const error = errorService.castError(err);
-        errorService.reportError(error);
-      });
-  }, []);
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
-  const planLimitInBytes = plan.planLimit;
-  const products = planUsage ? getProductCaptions(usageDetails) : null;
-  products?.sort((a, b) => b.usageInBytes - a.usageInBytes);
-  const usedProducts = products?.filter((product) => product.usageInBytes > 0);
+  //  MOCK DATA TO BE IMPLENTED
+  const isActivityEnabled = Math.random() < 0.5;
+  const activity = [
+    {
+      date: 'Feb 13, 2024',
+      records: [],
+    },
+    {
+      date: 'Feb 12, 2024',
+      records: [
+        { title: 'Logged out', description: 'IP: 111.222.333', time: '12:35' },
+        {
+          title: 'Uploaded a file',
+          description: 'Drive/Marketing Team/January Campaign/Budget.pdf',
+          time: '12:35',
+        },
+        {
+          title: 'Created new folder',
+          description: 'Drive/Marketing Team/January Campaign',
+          time: '12:35',
+        },
+        {
+          title: 'Logged in',
+          description: 'IP: 111.222.333',
+          time: '12:35',
+        },
+      ],
+    },
+  ];
+  const teams: { isTeams: boolean; teams: Teams } = {
+    isTeams: true,
+    teams: [
+      { team: 'Deveolpment', role: 'owner' },
+      { team: 'Marketing', role: 'member' },
+    ],
+  };
 
   const tabs: TypeTabs = [
     {
       name: translate('preferences.workspace.members.tabs.activity.name'),
       tab: 'activity',
-      view: <ActivityTab role={member.role} isActivityEnabled={member.isActivityEnabled} activity={member.activity} />,
+      view: <ActivityTab role={memberRole} isActivityEnabled={isActivityEnabled} activity={activity} />,
     },
     {
       name: translate('preferences.workspace.members.tabs.teams.title'),
       tab: 'teams',
-      view: <TeamsTab role={member.role} teams={member.teams} isTeams={member.isTeams} />,
+      view: <TeamsTab role={memberRole} teams={teams.teams} isTeams={teams.isTeams} />,
     },
   ];
   const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
@@ -68,10 +83,10 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
     <div className="flex flex-col space-y-8">
       <div className="flex flex-row  justify-between">
         <UserCard
-          name={member.name}
-          lastname={member.lastname}
-          role={member.role}
-          email={member.email}
+          name={member.member.name}
+          lastname={member.member.lastname}
+          role={memberRole}
+          email={member.member.email}
           avatarsrc={null}
           styleOptions={{
             avatarDiameter: 80,
@@ -94,13 +109,13 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
                   onClick={() => setIsRequestChangePasswordModalOpen(true)}
                   className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20"
                 >
-                  <span className="truncate">Request password change</span>
+                  <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button>
                 <button
                   onClick={() => setIsDeactivateModalOpen(true)}
                   className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
                 >
-                  <span className="truncate">Deactivate user</span>
+                  <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
                 </button>
               </div>
             </button>
@@ -108,12 +123,12 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
         </div>
       </div>
       <Card className={' w-full space-y-6 '}>
-        {products && usedProducts && planLimitInBytes ? (
-          <UsageBar
-            products={products}
-            planUsage={planUsage}
-            usedProducts={usedProducts}
-            planLimitInBytes={planLimitInBytes}
+        {member ? (
+          <Usage
+            usedSpace={member.usedSpace}
+            spaceLimit={member.spaceLimit}
+            driveUsage={member.driveUsage}
+            backupsUsage={member.backupsUsage}
           />
         ) : (
           <div className="flex h-36 w-full items-center justify-center">
@@ -123,7 +138,7 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
       </Card>
       <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
       <DeactivateMemberModal
-        name={member.name + ' ' + member.lastname}
+        name={member.member.name + ' ' + member.member.lastname}
         isOpen={isDeactivateModalOpen}
         onClose={() => setIsDeactivateModalOpen(false)}
         onDeactivate={() => {
