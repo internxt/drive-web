@@ -51,22 +51,26 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
       fetchCouponCode(LifetimeCoupons['5TB']),
       fetchCouponCode(LifetimeCoupons['10TB']),
     ])
-      .then(([twoTB, fiveTB, tenTB]) => {
+      .then(async ([twoTB, fiveTB, tenTB]) => {
         TwoTBCoupon = twoTB;
         FiveTBCoupon = fiveTB;
         TenTBCoupon = tenTB;
 
-        Array.from([TwoTBCoupon, FiveTBCoupon, TenTBCoupon]).map(async (coupon) => {
+        const coupons = [TwoTBCoupon, FiveTBCoupon, TenTBCoupon];
+
+        for (const coupon of coupons) {
           const couponUser = await paymentService.isCouponUsedByUser(coupon);
           if (couponUser.couponUsed) {
             couponUserResult = couponUser;
+            break;
           }
-        });
+        }
 
         if (couponUserResult.couponUsed) {
           onSuccess?.();
           localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUserResult.couponUsed}`);
         }
+
         isCouponUsed = couponUserResult.couponUsed;
       })
       .catch((err) => {
