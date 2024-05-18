@@ -21,11 +21,7 @@ const Appearance = () => {
   const [appearances, setAppearances] = useState<Theme[]>(initialAppearances);
 
   useEffect(() => {
-    isStarWarsThemeAvailable(plan, () => {
-      if (!appearances.includes('starwars')) {
-        setAppearances([...appearances, 'starwars']);
-      }
-    })
+    isStarWarsThemeAvailable(plan)
       .then((isStarWarsThemeAvailable) => {
         if (!appearances.includes('starwars') && isStarWarsThemeAvailable) {
           setAppearances([...appearances, 'starwars']);
