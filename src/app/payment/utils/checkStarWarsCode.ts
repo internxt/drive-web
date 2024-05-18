@@ -46,12 +46,6 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
     let FiveTBCoupon;
     let TenTBCoupon;
 
-    const shouldCheckCouponCode = sessionStorage.getItem('star_wars_lifetime_theme');
-
-    if (shouldCheckCouponCode === 'false') {
-      return false;
-    }
-
     Promise.all([
       fetchCouponCode(LifetimeCoupons['2TB']),
       fetchCouponCode(LifetimeCoupons['5TB']),
@@ -66,21 +60,17 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
           const couponUser = await paymentService.isCouponUsedByUser(coupon);
           if (couponUser.couponUsed) {
             couponUserResult = couponUser;
-            return;
           }
         });
 
         if (couponUserResult.couponUsed) {
           onSuccess?.();
           localStorageService.set(STAR_WARS_THEME_AVAILABLE_LOCAL_STORAGE_KEY, `${couponUserResult.couponUsed}`);
-        } else {
-          sessionStorage.setItem('star_wars_lifetime_theme', 'false');
         }
         isCouponUsed = couponUserResult.couponUsed;
       })
       .catch((err) => {
         errorService.reportError(err);
-        sessionStorage.setItem('star_wars_lifetime_theme', 'false');
       });
   }
 
