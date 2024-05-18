@@ -9,6 +9,7 @@ import { Theme, useThemeContext } from '../../../../../theme/ThemeProvider';
 import Section from '../../components/Section';
 import ItemsDropdown from './components/ItemsDropdown';
 import MenuItem from './components/MenuItem';
+import errorService from 'app/core/services/error.service';
 
 const initialAppearances: Theme[] = ['system', 'light', 'dark'];
 
@@ -28,7 +29,7 @@ const Appearance = () => {
       })
       .catch((err) => {
         const error = err as Error;
-        console.error(error.message);
+        errorService.reportError(error);
       });
   }, []);
 
