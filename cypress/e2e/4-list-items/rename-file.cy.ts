@@ -1,5 +1,5 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Rename item', () => {
   const newFolderName = 'new-folder';

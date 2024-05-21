@@ -14,6 +14,6 @@ const convertDotenvFileToCypressEnvFormat = () => {
       }),
       {},
     );
-  fs.writeFileSync('./test/e2e/cypress.env.json', JSON.stringify(transformedEnvFile));
+  fs.writeFileSync('./cypress/cypress.env.json', JSON.stringify(transformedEnvFile));
 };
 convertDotenvFileToCypressEnvFormat();

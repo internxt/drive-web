@@ -1,20 +1,20 @@
-import desktopService from '../../../core/services/desktop.service';
-import { Device } from '../../types';
-import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
-import { DownloadSimple } from '@phosphor-icons/react';
-import Empty from '../../../shared/components/Empty/Empty';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import List from '../../../shared/components/List';
-import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 import UilApple from '@iconscout/react-unicons/icons/uil-apple';
+import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import UilLinux from '@iconscout/react-unicons/icons/uil-linux';
 import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
-import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { DownloadSimple } from '@phosphor-icons/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import dateService from '../../../core/services/date.service';
+import desktopService from '../../../core/services/desktop.service';
+import { contextMenuBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
 import sizeService from '../../../drive/services/size.service';
+import Empty from '../../../shared/components/Empty/Empty';
+import List from '../../../shared/components/List';
+import { Device } from '../../types';
 
 interface Props {
   items: (Device | DriveFolderData)[];
@@ -89,7 +89,10 @@ const DeviceList = (props: Props): JSX.Element => {
                 }
               } else Icon = UilDesktop;
               return (
-                <div className="flex min-w-activity cursor-default flex-row items-center justify-center">
+                <div
+                  className="flex min-w-activity cursor-default flex-row items-center justify-center"
+                  data-test="device-list-item"
+                >
                   <div className="mr-3 h-8 w-8">
                     <Icon className="h-8 w-8" />
                   </div>

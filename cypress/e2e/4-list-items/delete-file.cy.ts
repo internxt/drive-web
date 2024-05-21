@@ -1,4 +1,4 @@
-import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 describe('Delete file', () => {
   const DATA_TEST_FILE_LIST_FILE = '[data-test=file-list-file]';
 

@@ -1,6 +1,6 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
 import { join } from 'path';
-import { MENU_ITEM_SELECTOR } from '../constans';
+import { MENU_ITEM_SELECTOR } from '../../constans';
 
 describe('Download Folder', () => {
   const downloadsFolder = Cypress.config('downloadsFolder');

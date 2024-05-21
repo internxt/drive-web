@@ -1,6 +1,6 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
 import { join } from 'path';
-import { MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Download file', () => {
   const filename = 'example.txt';

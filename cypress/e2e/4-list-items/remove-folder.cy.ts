@@ -1,5 +1,5 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
-import { MENU_ITEM_SELECTOR } from '../constans';
+import { MENU_ITEM_SELECTOR } from '../../constans';
 
 describe('Remove Folder', () => {
   const DATA_TEST_FILE_LIST_FOLDER = '[data-test=file-list-folder]';

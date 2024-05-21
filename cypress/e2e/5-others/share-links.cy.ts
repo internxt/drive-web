@@ -1,4 +1,4 @@
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Share link options', () => {
   const DATA_TEST_SHARE_ITEM_DIALOG = '[data-test=share-item-dialog]';
@@ -20,10 +20,8 @@ describe('Share link options', () => {
     cy.get(MENU_ITEM_SELECTOR)
       .should('be.visible')
       .then((container) => {
-        if (container.text().includes('Get link')) {
-          cy.contains(MENU_ITEM_SELECTOR, 'Get link').click({ force: true });
-          // eslint-disable-next-line cypress/no-unnecessary-waiting
-          cy.wait(5000);
+        if (container.text().includes('Copy link')) {
+          cy.contains(MENU_ITEM_SELECTOR, 'Copy link').click({ force: true });
         } else {
           cy.get(MENU_ITEM_SELECTOR).eq(0).trigger('keydown', { keyCode: 27 });
         }
@@ -33,9 +31,6 @@ describe('Share link options', () => {
   it('Should copy the share link of a shared file', () => {
     cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
     cy.contains(MENU_ITEM_SELECTOR, 'Copy link').click({ force: true });
-
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(FIVE_SECONDS);
     cy.window()
       .its('navigator.clipboard')
       .invoke('readText')
@@ -47,19 +42,9 @@ describe('Share link options', () => {
   it('Should open the share settings modal of a shared file', () => {
     cy.get(DATA_TEST_SHARE_ITEM_DIALOG).should('not.exist');
     cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
-    cy.contains(MENU_ITEM_SELECTOR, 'Link settings').click();
+    cy.contains(MENU_ITEM_SELECTOR, 'Manage access').click();
 
     cy.get(DATA_TEST_SHARE_ITEM_DIALOG).should('exist');
-  });
-
-  it('Should delete de link of a shared file', () => {
-    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
-    cy.contains(MENU_ITEM_SELECTOR, 'Delete link').click({ force: true });
-
-    cy.get(FILE_ITEM_SELECTOR).contains('example.txt').rightclick({ force: true });
-    cy.contains(MENU_ITEM_SELECTOR, 'Get link').should('exist');
-    cy.contains(MENU_ITEM_SELECTOR, 'Delete link').should('not.exist');
-    cy.get(MENU_ITEM_SELECTOR).eq(0).trigger('keydown', { keyCode: 27 });
   });
 
   after(() => {

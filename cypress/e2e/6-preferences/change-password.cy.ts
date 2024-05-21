@@ -1,8 +1,8 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
-import * as path from 'path';
 import { randomBytes } from 'crypto';
+import * as path from 'path';
 import { join } from 'path';
-import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { FILE_ITEM_SELECTOR, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Security account tab', () => {
   const filename = 'example.txt';
@@ -44,6 +44,16 @@ describe('Security account tab', () => {
       cy.get('[data-test=new-password]').type(second_password);
       cy.get('[data-test=new-password-confirmation]').type(second_password);
       cy.get('[data-test="next-button"]').click();
+      cy.writeFile(
+        './cypress/fixtures/test-user.json',
+        JSON.stringify({
+          username: user.username,
+          password: second_password,
+        }),
+        {
+          flag: 'w',
+        },
+      );
 
       // Logout
       cy.get('#headlessui-popover-button-1').click();

@@ -1,4 +1,4 @@
-import { mockGetPaginatedFiles, mockGetPaginatedFolders } from '../utils/drive.mock';
+import { mockGetPaginatedFiles, mockGetPaginatedFolders } from '../../utils/drive.mock';
 
 describe('Drive list icons', () => {
   beforeEach(() => {
@@ -9,7 +9,7 @@ describe('Drive list icons', () => {
   });
 
   it('Should check if folder icons are displayed correctly', () => {
-    cy.wait('@getPaginatedFolders', { timeout: 60000 }).then((foldersInterception) => {
+    cy.wait('@getPaginatedFolders', { timeout: 15000 }).then((foldersInterception) => {
       expect(foldersInterception.response.statusCode).to.equal(200);
       cy.get('[data-testid="light-folder"]').should('be.visible');
       cy.get('[data-test=file-list-folder-NewFolder-shared-icon]').should('be.visible');
@@ -17,7 +17,7 @@ describe('Drive list icons', () => {
   });
 
   it('Should check if file icon types are displayed correctly', () => {
-    cy.wait('@getPaginatedFiles', { timeout: 60000 }).then((filesInterception) => {
+    cy.wait('@getPaginatedFiles', { timeout: 15000 }).then((filesInterception) => {
       expect(filesInterception.response.statusCode).to.equal(200);
 
       cy.get('[data-testid="image-svg"]').should('be.visible');

@@ -22,7 +22,7 @@ const ZIP_FILE = {
   removed: false,
   removedAt: null,
   status: 'EXISTS',
-  shares: [],
+  sharings: [],
   thumbnails: [],
 };
 
@@ -48,7 +48,7 @@ const PDF_SHARED_FILE = {
   removed: false,
   removedAt: null,
   status: 'EXISTS',
-  shares: [
+  sharings: [
     {
       id: 236506,
       active: true,
@@ -82,7 +82,7 @@ const IMG_FILE = {
   removed: false,
   removedAt: null,
   status: 'EXISTS',
-  shares: [],
+  sharings: [],
   thumbnails: [
     {
       id: 4234,
@@ -123,7 +123,7 @@ const VIDEO_FILE = {
   removed: false,
   removedAt: null,
   status: 'EXISTS',
-  shares: [],
+  sharings: [],
   thumbnails: [],
 };
 
@@ -149,7 +149,7 @@ const AUDIO_FILE = {
   removed: false,
   removedAt: null,
   status: 'EXISTS',
-  shares: [],
+  sharings: [],
   thumbnails: [],
 };
 
@@ -169,7 +169,7 @@ const FOLDER = {
   updatedAt: '2023-07-12T08:23:35.000Z',
   uuid: '5ff1edec-4444-234-9bc6-erwqrhh',
   plainName: 'NewFolder',
-  shares: [
+  sharings: [
     {
       id: 97857521,
       active: true,

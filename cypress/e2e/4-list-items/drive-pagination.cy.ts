@@ -1,5 +1,5 @@
 import { DriveItemData } from '../../../../src/app/drive/types/index';
-import { EXAMPLE_FILENAME, PAGINATION_ENDPOINT_REGEX } from '../constans';
+import { EXAMPLE_FILENAME, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Drive pagination', () => {
   beforeEach(() => {

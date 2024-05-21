@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { DeviceBackup } from '../../types';
-import BackupListItem from './BackupListItem';
+import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import List from '../../../shared/components/List';
 import { useAppDispatch } from '../../../store/hooks';
 import { backupsThunks } from '../../../store/slices/backups';
-import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import List from '../../../shared/components/List';
-import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { DeviceBackup } from '../../types';
+import BackupListItem from './BackupListItem';
 
 interface Props {
   items: DeviceBackup[];

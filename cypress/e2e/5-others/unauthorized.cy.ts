@@ -14,8 +14,6 @@ describe('Unauthorized user', () => {
   });
 
   it('Should be sent to login', () => {
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(WAIT_MILLISECONDS);
     cy.clearLocalStorage();
     // To not show the after signup onboarding
     cy.window().then((win) => {
