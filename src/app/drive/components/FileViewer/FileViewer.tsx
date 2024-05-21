@@ -47,19 +47,27 @@ interface FileViewerProps {
 
 export interface FormatFileViewerProps {
   blob: Blob;
-  changeFile: (direction: string) => void;
   file: { type: string };
+  changeFile?: (direction: 'next' | 'prev') => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
+  handleLoadingState: (loadingState: boolean) => void;
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
 
-function shouldNotBeRendered(fileExtensionGroup) {
+function extensionIsNotAllowed(fileExtensionGroup) {
   const allowedGroups = [FileExtensionGroup.Audio, FileExtensionGroup.Video, FileExtensionGroup.Xls];
 
   return allowedGroups.includes(fileExtensionGroup);
 }
 
-const DownloadFile = ({ onDownload, translate }) => (
+const DownloadFile = ({
+  onDownload,
+  translate,
+}: {
+  onDownload: () => void;
+  translate: (key: string, props?: Record<string, unknown> | undefined) => string;
+}) => (
   <div className={'z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}>
     <button
       title={translate('actions.download')}
@@ -93,9 +101,14 @@ const FileViewer = ({
 }: FileViewerProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>();
 
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
-  const filename = file ? `${file?.plainName ?? file.name}${file.type ? `.${file.type}` : ''}` : '';
+  let isTypeAllowed = false;
+  let fileExtensionGroup: FileExtensionGroup | null = null;
+
+  const largeFile = isLargeFile(file?.size);
+  const fileType = file.type ? `.${file.type}` : '';
+  const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
 
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
@@ -104,6 +117,9 @@ const FileViewer = ({
 
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
+  const shouldRenderThePreview = extensionIsNotAllowed(fileExtensionGroup) && largeFile;
+
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
 
   const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
     file_size: file?.size,
@@ -146,9 +162,6 @@ const FileViewer = ({
     };
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
-  let isTypeAllowed = false;
-  let fileExtensionGroup: number | null = null;
-
   for (const [groupKey, extensions] of Object.entries(extensionsList)) {
     isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
 
@@ -158,7 +171,9 @@ const FileViewer = ({
     }
   }
 
-  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
+  const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
+    ? viewers[fileExtensionGroup as FileExtensionGroup]
+    : undefined;
 
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
@@ -195,10 +210,10 @@ const FileViewer = ({
 
   useEffect(() => {
     setIsPreviewAvailable(true);
-    const largeFile = isLargeFile(file?.size);
+
     trackFilePreviewClicked(trackFilePreviewProperties);
     if (show && isTypeAllowed) {
-      if (shouldNotBeRendered(fileExtensionGroup) && largeFile) {
+      if (shouldRenderThePreview) {
         setIsPreviewAvailable(false);
         return;
       }
@@ -251,7 +266,7 @@ const FileViewer = ({
               tabIndex={0}
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
-              <div onClick={(e) => e.stopPropagation()} className="">
+              <div onClick={(e) => e.stopPropagation()}>
                 {blob && file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
@@ -259,6 +274,7 @@ const FileViewer = ({
                       changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
+                      handleLoadingState={setIsLoading}
                     />
                   </Suspense>
                 ) : (
