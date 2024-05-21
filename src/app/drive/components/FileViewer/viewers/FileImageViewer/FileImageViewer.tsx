@@ -6,15 +6,12 @@ import { FormatFileViewerProps } from '../../FileViewer';
 import './FileImageViewer.scss';
 
 const FileImageViewer = (props: FormatFileViewerProps): JSX.Element => {
-  console.log(props.blob);
-  const [imageBlob, setImageBlob] = useState<Blob | null>(props.blob);
+  const [imageBlob, setImageBlob] = useState<Blob | null>();
 
   useEffect(() => {
     const convertHeicToAny = async () => {
       try {
-        // show a spinner. Yhe file viewer already handles that, it would be a
-        // good idea to just inject the loading handler via props and determine
-        // when the loading finishes in each specific viewer
+        // show a spinner.
         if (props.file.type === 'heic') {
           console.log('is a heic');
           const convertedBlob = await heic2any({ blob: props.blob });
