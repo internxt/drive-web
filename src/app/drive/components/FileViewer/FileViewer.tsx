@@ -48,6 +48,7 @@ interface FileViewerProps {
 export interface FormatFileViewerProps {
   blob: Blob;
   changeFile: (direction: string) => void;
+  file: { type: string };
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
