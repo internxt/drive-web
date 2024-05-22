@@ -175,7 +175,7 @@ const MembersSection = () => {
             </Button>
           </div>
           <div>
-            <div className="flex">
+            <div className="flex dark:bg-gray-1">
               {/* LEFT COLUMN */}
               <div className="flex grow flex-col">
                 <div className="flex grow flex-col">

@@ -27,7 +27,7 @@ const PlanSelectionCard = ({
   const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
   return (
     <div
-      className={`-m-1 w-fit rounded-2xl border-4 border-transparent hover:border-primary/3 hover:bg-primary/3 hover:dark:bg-primary/10 ${isSelectedOutsideBorderStyle}`}
+      className={`-m-1 w-fit rounded-2xl border-4 border-transparent hover:border-primary/3 hover:bg-primary/3 dark:bg-gray-1 hover:dark:bg-primary/10 ${isSelectedOutsideBorderStyle}`}
     >
       <button
         className={`flex w-80 flex-col rounded-xl border border-gray-10 p-4 hover:border-primary ${isSelectedInsideBorderStyle}`}
