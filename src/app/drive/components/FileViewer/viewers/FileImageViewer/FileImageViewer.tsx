@@ -11,17 +11,17 @@ const FileImageViewer = (props: FormatFileViewerProps): JSX.Element => {
   useEffect(() => {
     const convertHeicToAny = async () => {
       try {
-        // show a spinner.
-        if (props.file.type === 'heic') {
-          console.log('is a heic');
+        if (props.file.type.toLowerCase() === 'heic') {
+          props.handleUpdateProgress?.(0.95);
           const convertedBlob = await heic2any({ blob: props.blob });
           setImageBlob(convertedBlob as Blob);
         } else {
           setImageBlob(props.blob);
         }
-        // hide the spinner
       } catch (error) {
         console.error('Error converting HEIC to another format:', error);
+      } finally {
+        props.handleUpdateProgress?.(1);
       }
     };
 
