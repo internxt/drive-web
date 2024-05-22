@@ -36,6 +36,8 @@ export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<Advan
 
 type pathProps = 'drive' | 'trash' | 'shared' | 'recents';
 
+const SPECIAL_MIME_TYPES = ['heic'];
+
 interface FileViewerWrapperProps {
   file: PreviewFileItem;
   onClose: () => void;
@@ -160,12 +162,20 @@ const FileViewerWrapper = ({
     }
   }
 
+  function handleProgress(progress: number, fileType?: string) {
+    if (fileType && SPECIAL_MIME_TYPES.includes(fileType)) {
+      setUpdateProgress(progress * 0.95);
+    } else {
+      setUpdateProgress(progress);
+    }
+  }
+
   function downloadFile(currentFile: PreviewFileItem, abortController: AbortController) {
     setBlob(null);
     return downloadService.fetchFileBlob(
       { ...currentFile, bucketId: currentFile.bucket },
       {
-        updateProgressCallback: (progress) => setUpdateProgress(progress),
+        updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
         isTeam,
         abortController,
       },
@@ -273,6 +283,7 @@ const FileViewerWrapper = ({
         removeItemFromKeyboard,
         renameItemFromKeyboard,
       }}
+      handleUpdateProgress={handleProgress}
     />
   ) : (
     <div className="hidden" />
