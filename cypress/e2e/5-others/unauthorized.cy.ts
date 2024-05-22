@@ -1,7 +1,5 @@
 /* eslint-disable cypress/unsafe-to-chain-command */
 describe('Unauthorized user', () => {
-  const WAIT_MILLISECONDS = 10000;
-
   beforeEach(() => {
     Cypress.on('uncaught:exception', () => {
       // returning false here prevents Cypress from

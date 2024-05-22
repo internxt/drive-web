@@ -4,7 +4,6 @@ describe('Share link options', () => {
   const DATA_TEST_SHARE_ITEM_DIALOG = '[data-test=share-item-dialog]';
 
   const SHARED_FILE_URL_FRAGMENT = 'sh/file/';
-  const FIVE_SECONDS = 5000;
 
   beforeEach(() => {
     cy.clearLocalStorage();
