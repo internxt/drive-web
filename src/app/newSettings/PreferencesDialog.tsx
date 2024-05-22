@@ -2,11 +2,12 @@ import { X } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Modal from 'app/shared/components/Modal';
-import { useAppDispatch } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
 import AccountSection from './Sections/Account/Account/AccountSection';
 import BillingAccountSection from './Sections/Account/Billing/BillingAccountSection';
 import PlansSection from './Sections/Account/Plans/PlansSection';
@@ -26,6 +27,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
 
   const params = new URLSearchParams(window.location.search);
   const currentSectionParams = params.getAll('section');
@@ -64,6 +66,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       className="dark:dbg-surface m-0 flex h-640 shadow-sm"
       isOpen={isPreferencesDialogOpen}
       onClose={() => onClose()}
+      preventClosing={isToastNotificationOpen}
     >
       <Helmet>
         <title>{title} - Internxt Drive</title>
