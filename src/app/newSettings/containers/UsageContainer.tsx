@@ -1,7 +1,8 @@
 import { RootState } from 'app/store';
 import { useAppSelector } from 'app/store/hooks';
-import UsageBar from '../components/Usage/UsageBar';
 import { DriveProduct } from '../types/types';
+import Usage from '../components/Usage/Usage';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
 const UsageContainer = ({
   className = '',
@@ -14,18 +15,25 @@ const UsageContainer = ({
 }>): JSX.Element => {
   const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
 
-  products.sort((a, b) => b.usageInBytes - a.usageInBytes);
-
-  const usedProducts = products.filter((product) => product.usageInBytes > 0);
+  const driveProduct = products.find((product) => product.name === 'Drive');
+  const backupsProduct = products.find((product) => product.name === 'Backups');
+  const driveUsage = driveProduct ? driveProduct?.usageInBytes : 0;
+  const backupsUsage = backupsProduct ? backupsProduct?.usageInBytes : 0;
 
   return (
     <div className={`${className} w-full space-y-6 `}>
-      <UsageBar
-        products={products}
-        planUsage={planUsage}
-        usedProducts={usedProducts}
-        planLimitInBytes={planLimitInBytes}
-      />
+      {products && planUsage && planLimitInBytes ? (
+        <Usage
+          usedSpace={planUsage}
+          spaceLimit={planLimitInBytes}
+          driveUsage={driveUsage}
+          backupsUsage={backupsUsage}
+        />
+      ) : (
+        <div className="flex h-36 w-full items-center justify-center">
+          <Spinner className="h-7 w-7 text-primary" />
+        </div>
+      )}
     </div>
   );
 };
