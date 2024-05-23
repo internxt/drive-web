@@ -217,7 +217,7 @@ const FileViewerWrapper = ({
     }
   };
 
-  const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File) => {
+  const handleFileThumbnail = async (driveFile: PreviewFileItem, file: File | Blob) => {
     const currentThumbnail = driveFile.thumbnails && driveFile.thumbnails.length > 0 ? driveFile.thumbnails[0] : null;
     const databaseThumbnail = await getDatabaseFilePreviewData({ fileId: driveFile.id });
     const existsThumbnailInDatabase = !!databaseThumbnail;

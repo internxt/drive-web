@@ -47,7 +47,7 @@ interface FileViewerProps {
   };
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: any) => Promise<void>;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
   };
 }
 
@@ -58,7 +58,7 @@ export interface FormatFileViewerProps {
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
   handlersForSpecialItems?: {
     handleUpdateProgress: (progress: number) => void;
-    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: any) => Promise<void>;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
   };
 }
 
