@@ -5,7 +5,12 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 import './FileImageViewer.scss';
 
-const FileImageViewer = ({ file, blob, handlersForSpecialItems }: FormatFileViewerProps): JSX.Element => {
+const FileImageViewer = ({
+  file,
+  blob,
+  handlersForSpecialItems,
+  setIsPreviewAvailable,
+}: FormatFileViewerProps): JSX.Element => {
   const [imageBlob, setImageBlob] = useState<Blob | null>();
 
   useEffect(() => {
@@ -26,6 +31,7 @@ const FileImageViewer = ({ file, blob, handlersForSpecialItems }: FormatFileView
         }
       } catch (error) {
         console.error('Error converting HEIC to another format:', error);
+        setIsPreviewAvailable(false);
       } finally {
         handlersForSpecialItems?.handleUpdateProgress(1);
       }
