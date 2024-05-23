@@ -5,28 +5,34 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 import './FileImageViewer.scss';
 
-const FileImageViewer = (props: FormatFileViewerProps): JSX.Element => {
+const FileImageViewer = ({ file, blob, handlersForSpecialItems }: FormatFileViewerProps): JSX.Element => {
   const [imageBlob, setImageBlob] = useState<Blob | null>();
 
   useEffect(() => {
     const convertHeicToAny = async () => {
       try {
-        if (props.file.type.toLowerCase() === 'heic') {
-          props.handleUpdateProgress?.(0.95);
-          const convertedBlob = await heic2any({ blob: props.blob });
+        if (file.type.toLowerCase() === 'heic') {
+          const updatedFile = { ...file };
+          handlersForSpecialItems?.handleUpdateProgress(0.95);
+
+          const convertedBlob = await heic2any({ blob: blob });
+          updatedFile.type = 'png';
+
+          await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
+
           setImageBlob(convertedBlob as Blob);
         } else {
-          setImageBlob(props.blob);
+          setImageBlob(blob);
         }
       } catch (error) {
         console.error('Error converting HEIC to another format:', error);
       } finally {
-        props.handleUpdateProgress?.(1);
+        handlersForSpecialItems?.handleUpdateProgress(1);
       }
     };
 
     convertHeicToAny();
-  }, [props.blob]);
+  }, [blob]);
 
   useEffect(() => {
     return () => {
