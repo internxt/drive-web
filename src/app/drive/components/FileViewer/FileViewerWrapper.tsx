@@ -223,6 +223,7 @@ const FileViewerWrapper = ({
     const existsThumbnailInDatabase = !!databaseThumbnail;
 
     const fileObject = new File([file], driveFile.name);
+
     const fileUpload: FileToUpload = {
       name: driveFile.name,
       size: driveFile.size,
@@ -245,6 +246,7 @@ const FileViewerWrapper = ({
         type: thumbnailGenerated.type,
         content: thumbnailGenerated.file,
       };
+
       const thumbnailUploaded = await uploadThumbnail(user?.email as string, thumbnailToUpload, false, () => {});
 
       setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
@@ -261,6 +263,11 @@ const FileViewerWrapper = ({
   };
 
   const fileContentManager = getFileContentManager(currentFile, downloadFile, handleFileThumbnail);
+
+  const handlersForSpecialItems = {
+    handleUpdateProgress: handleProgress,
+    handleUpdateThumbnail: handleFileThumbnail,
+  };
 
   return showPreview ? (
     <FileViewer
@@ -283,7 +290,7 @@ const FileViewerWrapper = ({
         removeItemFromKeyboard,
         renameItemFromKeyboard,
       }}
-      handleUpdateProgress={handleProgress}
+      handlersForSpecialItems={handlersForSpecialItems}
     />
   ) : (
     <div className="hidden" />

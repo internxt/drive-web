@@ -26,6 +26,7 @@ import {
 import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { TopBarActionsMenu } from './FileViewerWrapper';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
+import { PreviewFileItem } from 'app/share/types';
 
 interface FileViewerProps {
   file: DriveFileData;
@@ -44,15 +45,21 @@ interface FileViewerProps {
     renameItemFromKeyboard: ((item) => void) | undefined;
     removeItemFromKeyboard: ((item) => void) | undefined;
   };
-  handleUpdateProgress?: (progress: number) => void;
+  handlersForSpecialItems?: {
+    handleUpdateProgress: (progress: number) => void;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: any) => Promise<void>;
+  };
 }
 
 export interface FormatFileViewerProps {
   blob: Blob;
-  file: { type: string };
+  file: PreviewFileItem;
   changeFile?: (direction: 'next' | 'prev') => void;
   setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
-  handleUpdateProgress?: (progress: number) => void;
+  handlersForSpecialItems?: {
+    handleUpdateProgress: (progress: number) => void;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, file: any) => Promise<void>;
+  };
 }
 
 const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
@@ -79,7 +86,7 @@ const FileViewer = ({
   fileIndex,
   dropdownItems,
   keyboardShortcuts,
-  handleUpdateProgress,
+  handlersForSpecialItems,
 }: FileViewerProps): JSX.Element => {
   const dispatch = useAppDispatch();
 
@@ -266,7 +273,7 @@ const FileViewer = ({
                       changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
-                      handleUpdateProgress={handleUpdateProgress}
+                      handlersForSpecialItems={handlersForSpecialItems}
                     />
                   </Suspense>
                 ) : null}
