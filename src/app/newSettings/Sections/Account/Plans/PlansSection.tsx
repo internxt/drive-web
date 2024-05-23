@@ -1,6 +1,6 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import Section from 'app/core/views/Preferences/components/Section';
+import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
@@ -24,9 +24,10 @@ import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, 
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
 }
 
-const PlansSection = ({ changeSection }: PlansSectionProps) => {
+const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const FREE_PLAN_DATA = {
@@ -255,7 +256,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   }
 
   return (
-    <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+    <Section title="Plans" onClosePreferences={onClosePreferences}>
       {prices && priceSelected && (
         <ChangePlanDialog
           prices={prices}

@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 
 import { t } from 'i18next';
 
-import Section from 'app/core/views/Preferences/components/Section';
+import Section from 'app/newSettings/components/Section';
 
 import ChangePassword from './components/ChangePassword';
 import EnterPassword from './components/EnterPassword';
@@ -13,16 +13,13 @@ import ExportBackupKey from './components/ExportBackupKey';
 import FrecuentlyAskedQuestions from './components/FrecuentlyAskedQuestions';
 import TwoFactorAuthentication from './components/TwoFactorAuthentication';
 
-const SecuritySection = () => {
+const SecuritySection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
 
   const [state, setState] = useState<{ tag: 'locked' } | { tag: 'unlocked'; password: string }>({ tag: 'locked' });
 
   return (
-    <Section
-      title={t('preferences.account.security.title')}
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
-    >
+    <Section title={t('preferences.account.security.title')} onClosePreferences={onClosePreferences}>
       {state.tag === 'unlocked' ? (
         <>
           <div className="flex justify-between">

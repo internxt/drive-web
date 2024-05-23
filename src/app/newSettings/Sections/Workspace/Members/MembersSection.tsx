@@ -1,4 +1,3 @@
-import Section from 'app/core/views/Preferences/components/Section';
 import { useEffect, useState } from 'react';
 
 import { bytesToString } from '../../../../drive/services/size.service';
@@ -13,6 +12,7 @@ import { DriveProduct, Member, MemberRole } from '../../../types/types';
 import UserCard from './components/UserCard';
 import InviteDialogContainer from './containers/InviteDialogContainer';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
+import Section from 'app/newSettings/components/Section';
 
 const searchMembers = (membersList: Member[], searchString: string) => {
   const escapedSearchString = searchString.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -26,7 +26,7 @@ const searchMembers = (membersList: Member[], searchString: string) => {
   return resultados || [];
 };
 
-const MembersSection = () => {
+const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();
   const [searchedMemberName, setSearchedMemberName] = useState('');
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
@@ -135,8 +135,8 @@ const MembersSection = () => {
           ? selectedMember.name + ' ' + selectedMember.lastname
           : translate('preferences.workspace.members.members')
       }
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
       onBackButtonClicked={selectedMember ? () => setSelectedMember(null) : undefined}
+      onClosePreferences={onClosePreferences}
     >
       {selectedMember ? (
         <MemberDetailsContainer member={selectedMember} />

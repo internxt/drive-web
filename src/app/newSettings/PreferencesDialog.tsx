@@ -1,4 +1,3 @@
-import { X } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
@@ -55,7 +54,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
     setActiveSection(selectedNavSection);
   };
 
-  const onClose = () => {
+  const onClosePreferences = () => {
     dispatch(uiActions.setIsPreferencesDialogOpen(false));
     navigationService.closePreferencesDialog();
   };
@@ -65,44 +64,43 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       maxWidth="max-w-4xl"
       className="m-0 flex h-640 shadow-sm"
       isOpen={isPreferencesDialogOpen}
-      onClose={() => onClose()}
+      onClose={() => onClosePreferences()}
       preventClosing={isToastNotificationOpen}
     >
       <Helmet>
         <title>{title} - Internxt Drive</title>
       </Helmet>
-
       {/* SIDEBAR MENU */}
       <section className="w-56 border-r border-gray-10 px-2.5">
         <h1 className="py-3 pl-4 text-xl font-semibold">{translate('preferences.title')}</h1>
         <SectionListContainer activeSection={activeSection} changeSection={changeSection} />
       </section>
       {/* SIDEBAR MENU */}
-
-      {/* ACTIVE SECTION */}
-      <section className="relative w-full overflow-y-auto">
-        <button
-          className="fixed right-0 z-50 m-4 flex w-auto rounded-md p-2 hover:bg-highlight/4 focus:bg-highlight/8"
-          onClick={() => onClose()}
-        >
-          <X size={22} />
-        </button>
-        {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
-        {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
-        {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && <MembersSection />}
+      <section className="w-full">
+        {activeSection?.section === 'general' && activeSection?.subsection === 'general' && (
+          <GeneralSection onClosePreferences={() => onClosePreferences()} />
+        )}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && (
+          <OverviewSection onClosePreferences={() => onClosePreferences()} />
+        )}
+        {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && (
+          <MembersSection onClosePreferences={() => onClosePreferences()} />
+        )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection />
+          <BillingWorkspaceSection onClosePreferences={() => onClosePreferences()} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
-          <AccountSection changeSection={changeSection} />
+          <AccountSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && (
-          <PlansSection changeSection={changeSection} />
+          <PlansSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'billing' && (
-          <BillingAccountSection changeSection={changeSection} />
+          <BillingAccountSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
         )}
-        {activeSection?.section === 'account' && activeSection?.subsection === 'security' && <SecuritySection />}
+        {activeSection?.section === 'account' && activeSection?.subsection === 'security' && (
+          <SecuritySection onClosePreferences={() => onClosePreferences()} />
+        )}
       </section>
       {/* ACTIVE SECTION */}
     </Modal>

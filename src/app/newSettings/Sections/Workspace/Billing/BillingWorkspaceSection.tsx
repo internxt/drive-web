@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';
 
-import Section from '../../../../core/views/Preferences/components/Section';
+import Section from 'app/newSettings/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import { BillingDetails } from '../../../types/types';
@@ -24,7 +24,7 @@ const phone = '+34432445236';
 const owner = 'Fran Villalba Segarra';
 const isOwner = true;
 
-const BillingWorkspaceSection = () => {
+const BillingWorkspaceSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
@@ -49,10 +49,7 @@ const BillingWorkspaceSection = () => {
   };
 
   return (
-    <Section
-      title={t('preferences.workspace.billing.title')}
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
-    >
+    <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingWorkspaceOverview plan={plan} />
       <BillingDetailsCard
         address={billingDetails.address}

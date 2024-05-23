@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
-import Section from '../../../../core/views/Preferences/components/Section';
 import usageService, { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Avatar from '../../../../shared/components/Avatar';
 import Button from '../../../../shared/components/Button/Button';
@@ -18,6 +17,7 @@ import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
+import Section from 'app/newSettings/components/Section';
 
 // MOCKED DATA
 const avatarBlob = null;
@@ -28,7 +28,7 @@ const isOwner = true;
 const members = 32;
 const teams = 4;
 
-const OverviewSection = () => {
+const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(description);
@@ -69,7 +69,7 @@ const OverviewSection = () => {
     getSubscriptionData({ userSubscription: plan.subscription, plan, local });
 
   return (
-    <Section title="Overview" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+    <Section title="Overview" onClosePreferences={onClosePreferences}>
       <UserProfileCard
         companyName={editedCompanyName}
         description={aboutCompany}
