@@ -1,8 +1,8 @@
 import { Abortable } from '@internxt/inxt-js/build/api';
 import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
+import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
 import { IUploadParams } from '../network.service';
-import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 
 /**
  * Checks the upload progress for the specified task.
@@ -67,6 +67,7 @@ const handleError = ({ msgData, reject, worker }) => {
 
 const handleAbort = ({ msgData, reject, worker }) => {
   console.warn('[MAIN_THREAD]: ABORT SIGNAL', msgData.fileId);
+  console.log('abort');
   reject(msgData.result);
   worker.terminate();
 };
@@ -106,6 +107,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
   }
 
   const messageHandler = messageResultHandlers[msgData.result];
+  console.log('[MAIN_THREAD]: Received message from worker', msgData);
   if (messageHandler) {
     messageHandler({ msgData, resolve, reject, worker, continueUploadOptions });
     return;
@@ -136,7 +138,7 @@ const createWorkerMessageHandlerPromise = (
     new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
       worker.addEventListener('message', (msg) => {
-        console.log('[MAIN_THREAD]: Message received from worker', msg);
+        // console.log('[MAIN_THREAD]: Message received from worker', msg);
         handleMessage(msg.data, params, resolve, reject, worker, continueUploadOptions);
       });
     }),
@@ -148,4 +150,4 @@ const createWorkerMessageHandlerPromise = (
   ];
 };
 
-export { waitForContinueUploadSignal, createWorkerMessageHandlerPromise };
+export { createWorkerMessageHandlerPromise, waitForContinueUploadSignal };

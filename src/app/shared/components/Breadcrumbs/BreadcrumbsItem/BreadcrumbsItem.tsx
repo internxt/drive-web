@@ -1,20 +1,20 @@
-import { DropTargetMonitor, useDrop } from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
+import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { DragAndDropType } from 'app/core/types';
+import iconService from 'app/drive/services/icon.service';
+import { DriveItemData } from 'app/drive/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { DragAndDropType } from 'app/core/types';
-import { DriveItemData } from 'app/drive/types';
-import iconService from 'app/drive/services/icon.service';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { SdkFactory } from '../../../../core/factory/sdk';
 import { storageActions } from '../../../../store/slices/storage';
-import { uiActions } from '../../../../store/slices/ui';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { SdkFactory } from '../../../../core/factory/sdk';
+import { uiActions } from '../../../../store/slices/ui';
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
