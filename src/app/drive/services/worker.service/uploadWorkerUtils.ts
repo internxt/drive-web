@@ -67,7 +67,6 @@ const handleError = ({ msgData, reject, worker }) => {
 
 const handleAbort = ({ msgData, reject, worker }) => {
   console.warn('[MAIN_THREAD]: ABORT SIGNAL', msgData.fileId);
-  console.log('abort');
   reject(msgData.result);
   worker.terminate();
 };
@@ -138,7 +137,7 @@ const createWorkerMessageHandlerPromise = (
     new Promise((resolve, reject) => {
       worker.addEventListener('error', reject);
       worker.addEventListener('message', (msg) => {
-        // console.log('[MAIN_THREAD]: Message received from worker', msg);
+        console.log('[MAIN_THREAD]: Message received from worker', msg);
         handleMessage(msg.data, params, resolve, reject, worker, continueUploadOptions);
       });
     }),
