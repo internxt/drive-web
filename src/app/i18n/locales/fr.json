@@ -1478,6 +1478,10 @@
               "title": "N'est membre d'aucune équipe"
             }
           }
+        },
+        "actions": {
+          "deactivate": "Désactiver le membre",
+          "passwordChange": "Demande de changement de mot de passe"
         }
       },
       "teams": {
