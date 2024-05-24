@@ -5,6 +5,11 @@ import { FormatFileViewerProps } from '../../FileViewer';
 
 import './FileImageViewer.scss';
 
+const PROGRESS_BAR_STATUS = {
+  PENDING: 0.95,
+  COMPLETED: 1,
+};
+
 const FileImageViewer = ({
   file,
   blob,
@@ -18,7 +23,7 @@ const FileImageViewer = ({
       try {
         if (file.type.toLowerCase() === 'heic') {
           const updatedFile = { ...file };
-          handlersForSpecialItems?.handleUpdateProgress(0.95);
+          handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.PENDING);
 
           const convertedBlob = await heic2any({ blob: blob });
           updatedFile.type = 'png';
@@ -33,7 +38,7 @@ const FileImageViewer = ({
         console.error('Error converting HEIC to another format:', error);
         setIsPreviewAvailable(false);
       } finally {
-        handlersForSpecialItems?.handleUpdateProgress(1);
+        handlersForSpecialItems?.handleUpdateProgress(PROGRESS_BAR_STATUS.COMPLETED);
       }
     };
 
