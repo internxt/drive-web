@@ -22,15 +22,18 @@ const PlanSelectionCard = ({
   isCurrentPlan,
   displayBillingSlash,
 }: PlanSelectionCardProps) => {
-  const isSelectedOutsideBorderStyle = isSelected ? 'border-primary/3 bg-primary/3 dark:bg-primary/10' : '';
-  const isSelectedInsideBorderStyle = isSelected ? 'border-primary' : '';
+  const isSelectedOutsideBorderStyle = isSelected || isCurrentPlan ? 'border-transparent' : '';
+  const isSelectedInsideBorderStyle =
+    isSelected || isCurrentPlan
+      ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
+      : '';
   const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
   return (
     <div
-      className={`-m-1 w-fit rounded-2xl border-4 border-transparent hover:border-primary/3 hover:bg-primary/3 dark:bg-gray-1 hover:dark:bg-primary/10 ${isSelectedOutsideBorderStyle}`}
+      className={`w-fit rounded-2xl border border-gray-10 bg-surface hover:bg-highlight/5 dark:border-highlight/10 dark:bg-highlight/5 dark:hover:bg-highlight/10 ${isSelectedOutsideBorderStyle}`}
     >
       <button
-        className={`flex w-80 flex-col rounded-xl border border-gray-10 p-4 hover:border-primary ${isSelectedInsideBorderStyle}`}
+        className={`flex w-80 flex-col rounded-xl border-2 border-transparent p-4 ring-offset-2 ring-offset-transparent ${isSelectedInsideBorderStyle}`}
         onClick={onClick}
       >
         <div className="flex w-full flex-row justify-between">
