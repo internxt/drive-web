@@ -1,6 +1,6 @@
 {
   "name": "drive-web",
-  "version": "v1.0.273",
+  "version": "v1.0.274",
   "private": true,
   "dependencies": {
     "@headlessui/react": "1.7.5",
@@ -30,6 +30,7 @@
     "detect-browser": "^5.3.0",
     "docx-preview": "^0.1.18",
     "file-saver": "^2.0.5",
+    "heic2any": "^0.0.4",
     "history": "^4.10.1",
     "https-browserify": "^1.0.0",
     "i18next": "^22.4.9",
