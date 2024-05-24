@@ -24,7 +24,7 @@ const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
 
   return (
     <Section className={className} title={translate('views.account.tabs.billing.invoices.head')}>
-      <Card className={`${!isEmpty && 'pb-0'}`}>
+      <Card className={`${isEmpty ? 'h-40' : 'pb-0'}`}>
         <InvoicesList invoices={invoices} state={state.tag} />
       </Card>
     </Section>

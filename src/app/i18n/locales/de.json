@@ -1482,6 +1482,9 @@
           "title": "Abonnement kündigen",
           "text": "Ihr Plan wird auf die kostenlose Stufe herabgestuft.",
           "button": "Abonnement kündigen"
+        },
+        "empty": {
+          "text": "Keine früheren Rechnungen"
         }
       }
     },

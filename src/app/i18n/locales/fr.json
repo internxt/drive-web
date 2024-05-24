@@ -1512,6 +1512,9 @@
           "title": "Annuler l'abonnement",
           "text": "Votre plan sera rétrogradé au niveau gratuit.",
           "button": "Annuler l'abonnement"
+        },
+        "empty": {
+          "text": "Pas de factures antérieures"
         }
       }
     },

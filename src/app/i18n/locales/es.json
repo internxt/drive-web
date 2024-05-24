@@ -1563,6 +1563,9 @@
           "title": "Cancelar suscripción",
           "text": "Tu suscripción pasará al plan gratuito.",
           "button": "Cancelar suscripción"
+        },
+        "empty": {
+          "text": "Sin facturas anteriores"
         }
       }
     },

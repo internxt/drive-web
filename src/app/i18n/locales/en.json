@@ -1585,6 +1585,9 @@
           "title": "Cancel subscription",
           "text": "Your Plan will be downgraded to the free tier.",
           "button": "Cancel subscription"
+        },
+        "empty": {
+          "text": "No previous invoices"
         }
       }
     },
