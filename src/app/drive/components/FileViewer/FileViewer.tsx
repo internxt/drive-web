@@ -1,31 +1,34 @@
 import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
+
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
-import iconService from 'app/drive/services/icon.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { DriveFileData, DriveItemData } from '../../../drive/types';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
+import { FileExtensionGroup } from '../../../drive/types/file-types';
+import iconService from '../../../drive/services/icon.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
 import TopBarActions from './components/TopBarActions';
 import { useHotkeys } from 'react-hotkeys-hook';
-import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
+import ShareItemDialog from '../../../share/components/ShareItemDialog/ShareItemDialog';
+import { RootState } from '../../../store';
+import { uiActions } from '../../../store/slices/ui';
 import { setItemsToMove, storageActions } from '../../../store/slices/storage';
-import { isLargeFile } from 'app/core/services/media.service';
+import { isLargeFile } from '../../../core/services/media.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import {
   trackFilePreviewed,
   trackFilePreviewOpened,
   trackFilePreviewClicked,
 } from '../../../analytics/services/analytics.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { TopBarActionsMenu } from './FileViewerWrapper';
+import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
+import { PreviewFileItem } from 'app/share/types';
+import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 
+const ESC_KEY_KEYBOARD_CODE = 27;
 interface FileViewerProps {
   file: DriveFileData;
   onClose: () => void;
@@ -43,37 +46,22 @@ interface FileViewerProps {
     renameItemFromKeyboard: ((item) => void) | undefined;
     removeItemFromKeyboard: ((item) => void) | undefined;
   };
+  handlersForSpecialItems?: {
+    handleUpdateProgress: (progress: number) => void;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
+  };
 }
 
 export interface FormatFileViewerProps {
   blob: Blob;
-  changeFile: (direction: string) => void;
+  file: PreviewFileItem;
+  changeFile?: (direction: 'next' | 'prev') => void;
+  setIsPreviewAvailable: (isPreviewAvailable: boolean) => void;
+  handlersForSpecialItems?: {
+    handleUpdateProgress: (progress: number) => void;
+    handleUpdateThumbnail: (driveFile: PreviewFileItem, blob: Blob) => Promise<void>;
+  };
 }
-
-const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
-
-function shouldNotBeRendered(fileExtensionGroup) {
-  const allowedGroups = [FileExtensionGroup.Audio, FileExtensionGroup.Video, FileExtensionGroup.Xls];
-
-  return allowedGroups.includes(fileExtensionGroup);
-}
-
-const DownloadFile = ({ onDownload, translate }) => (
-  <div className={'z-10 mt-3 flex h-11 shrink-0 flex-row items-center justify-end space-x-2 rounded-lg bg-primary'}>
-    <button
-      title={translate('actions.download')}
-      onClick={onDownload}
-      className="flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg bg-white/0
-                           px-6 font-medium transition duration-50
-                          ease-in-out hover:bg-white/10 focus:bg-white/5"
-    >
-      <UilImport size={20} />
-      <span className="font-medium">{translate('actions.download')}</span>
-    </button>
-  </div>
-);
-
-const ESC_KEY_KEYBOARD_CODE = 27;
 
 const FileViewer = ({
   file,
@@ -89,26 +77,67 @@ const FileViewer = ({
   fileIndex,
   dropdownItems,
   keyboardShortcuts,
+  handlersForSpecialItems,
 }: FileViewerProps): JSX.Element => {
+  const dispatch = useAppDispatch();
+
   const { translate } = useTranslationContext();
+
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
 
-  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
-  const filename = file ? `${file?.plainName ?? file.name}${file.type ? `.${file.type}` : ''}` : '';
+  const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
+
+  const isTypeAllowed = extensionGroup?.isTypeAllowed;
+  const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
+
+  const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
+    ? viewers[fileExtensionGroup as FileExtensionGroup]
+    : undefined;
 
   const isMoveItemsDialogOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
   const isCreateFolderDialogOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
+  const fileType = file.type ? `.${file.type}` : '';
+  const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
+  const shouldRenderThePreview = checkIfExtensionIsAllowed(fileExtensionGroup) && isLargeFile(file?.size);
+  const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
+
+  const ItemIconComponent = iconService.getItemIcon(false, file?.type);
 
   const trackFilePreviewProperties: TrackingPlan.FilePreviewProperties = {
     file_size: file?.size,
     file_extension: file?.type,
     preview_id: file?.uuid,
   };
+
+  useEffect(() => {
+    const handleContextmenu = (e) => {
+      e.preventDefault();
+    };
+    document.addEventListener('contextmenu', handleContextmenu);
+    return function cleanup() {
+      document.removeEventListener('contextmenu', handleContextmenu);
+    };
+  }, []);
+
+  useEffect(() => {
+    setIsPreviewAvailable(true);
+
+    trackFilePreviewClicked(trackFilePreviewProperties);
+    if (show && isTypeAllowed) {
+      if (shouldRenderThePreview) {
+        setIsPreviewAvailable(false);
+        return;
+      }
+      trackFilePreviewOpened(trackFilePreviewProperties);
+    } else {
+      setIsPreviewAvailable(false);
+    }
+  }, [show, file]);
 
   // To prevent close FileViewer if any of those modal are open
   useEffect(() => {
@@ -145,20 +174,6 @@ const FileViewer = ({
     };
   }, [isMoveItemsDialogOpen, isCreateFolderDialogOpen, isEditNameDialogOpen, isShareItemSettingsDialogOpen]);
 
-  let isTypeAllowed = false;
-  let fileExtensionGroup: number | null = null;
-
-  for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
-
-    if (isTypeAllowed) {
-      fileExtensionGroup = FileExtensionGroup[groupKey];
-      break;
-    }
-  }
-
-  const Viewer = isTypeAllowed ? viewers[fileExtensionGroup as FileExtensionGroup] : undefined;
-
   //UseHotKeys for switch between files with the keyboard (left and right arrows)
   useHotkeys(
     'right',
@@ -189,23 +204,6 @@ const FileViewer = ({
       keyboardShortcuts?.removeItemFromKeyboard(file);
     }
   });
-
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    setIsPreviewAvailable(true);
-    const largeFile = isLargeFile(file?.size);
-    trackFilePreviewClicked(trackFilePreviewProperties);
-    if (show && isTypeAllowed) {
-      if (shouldNotBeRendered(fileExtensionGroup) && largeFile) {
-        setIsPreviewAvailable(false);
-        return;
-      }
-      trackFilePreviewOpened(trackFilePreviewProperties);
-    } else {
-      setIsPreviewAvailable(false);
-    }
-  }, [show, file]);
 
   const onClosePreview = () => {
     onClose();
@@ -245,12 +243,12 @@ const FileViewer = ({
             </button>
           )}
 
-          {isTypeAllowed && isPreviewAvailable ? (
+          {isItemValidToPreview ? (
             <div
               tabIndex={0}
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
-              <div onClick={(e) => e.stopPropagation()} className="">
+              <div>
                 {blob && file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
@@ -258,51 +256,40 @@ const FileViewer = ({
                       changeFile={changeFile}
                       file={file}
                       setIsPreviewAvailable={setIsPreviewAvailable}
+                      handlersForSpecialItems={handlersForSpecialItems}
                     />
                   </Suspense>
-                ) : (
-                  <div
-                    tabIndex={0}
-                    className={`${
-                      progress === 1 ? 'hidden' : 'flex'
-                    } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
+                ) : null}
+
+                <div
+                  className={`${
+                    progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
+                  } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
                       font-medium outline-none`}
-                  >
-                    <div className="flex h-20 w-20 items-center">
-                      <ItemIconComponent width={80} height={80} />
-                    </div>
-                    <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                      {filename}
-                    </span>
-                    <span className="text-white/50">{translate('drive.loadingFile')}</span>
-                    <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
-                      <div
-                        className="h-1.5 rounded-full bg-white"
-                        style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
-                      />
-                    </div>
+                >
+                  <div className="flex h-20 w-20 items-center">
+                    <ItemIconComponent width={80} height={80} />
                   </div>
-                )}
+                  <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
+                    {filename}
+                  </span>
+                  <span className="text-white/50">{translate('drive.loadingFile')}</span>
+                  <div className="mt-8 h-1.5 w-56 rounded-full bg-white/25">
+                    <div
+                      className="h-1.5 rounded-full bg-white"
+                      style={{ width: `${progress !== undefined && Number(progress) ? progress * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
           ) : (
-            <div
-              tabIndex={0}
-              className="z-10 flex select-none flex-col items-center justify-center space-y-6
-                      rounded-xl font-medium outline-none"
-            >
-              <div className="flex flex-col items-center justify-center">
-                <div className="flex h-20 w-20 items-center">
-                  <ItemIconComponent width={80} height={80} />
-                </div>
-                <span className="w-96 truncate pt-4 text-center text-lg" title={filename}>
-                  {filename}
-                </span>
-                <span className="text-white/50">{translate('error.noFilePreview')}</span>
-              </div>
-
-              <DownloadFile onDownload={onDownload} translate={translate} />
-            </div>
+            <NoPreviewIsAvailableComponent
+              ItemIconComponent={ItemIconComponent}
+              fileName={filename}
+              onDownload={onDownload}
+              translate={translate}
+            />
           )}
           {isLastItemOrShareView ? null : (
             <button
