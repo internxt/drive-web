@@ -15,7 +15,11 @@ import { moveItemsThunk, moveItemsThunkExtraReducers } from './moveItemsThunk';
 import { renameItemsThunk, renameItemsThunkExtraReducers } from './renameItemsThunk';
 import { resetNamePathThunk, resetNamePathThunkExtraReducers } from './resetNamePathThunk';
 import { updateItemMetadataThunk, updateItemMetadataThunkExtraReducers } from './updateItemMetadataThunk';
-import { uploadFolderThunk, uploadFolderThunkExtraReducers, uploadFolderThunkNoCheck } from './uploadFolderThunk';
+import {
+  uploadFolderThunk,
+  uploadFolderThunkExtraReducers,
+  uploadMultipleFolderThunkNoCheck,
+} from './uploadFolderThunk';
 import { uploadItemsThunk, uploadItemsThunkExtraReducers, uploadSharedItemsThunk } from './uploadItemsThunk';
 
 const storageThunks = {
@@ -29,7 +33,7 @@ const storageThunks = {
   deleteItemsThunk,
   goToFolderThunk,
   uploadFolderThunk,
-  uploadFolderThunkNoCheck,
+  uploadMultipleFolderThunkNoCheck,
   updateItemMetadataThunk,
   fetchRecentsThunk,
   createFolderThunk,

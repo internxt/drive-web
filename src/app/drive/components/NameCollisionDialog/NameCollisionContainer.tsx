@@ -1,16 +1,16 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
-import NameCollisionDialog, { OnSubmitPressed, OPERATION_TYPE } from '.';
+import NameCollisionDialog, { OPERATION_TYPE, OnSubmitPressed } from '.';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import errorService from '../../../core/services/error.service';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
-import errorService from '../../../core/services/error.service';
-import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 type NameCollisionContainerProps = {
   currentFolderId: number;
@@ -125,10 +125,12 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
         dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: { ...(itemToUpload as IRoot) },
-            currentFolderId: folderId,
-          }),
+          storageThunks.uploadMultipleFolderThunkNoCheck([
+            {
+              root: { ...(itemToUpload as IRoot) },
+              currentFolderId: folderId,
+            },
+          ]),
         ).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
