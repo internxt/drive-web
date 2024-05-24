@@ -36,7 +36,6 @@ export const NoPreviewIsAvailableComponent = ({
 }: NoPreviewIsAvailableProps) => {
   return (
     <div
-      tabIndex={0}
       className="z-10 flex select-none flex-col items-center justify-center space-y-6
                       rounded-xl font-medium outline-none"
     >
