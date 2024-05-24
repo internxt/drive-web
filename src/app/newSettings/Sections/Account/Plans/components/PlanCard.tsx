@@ -131,7 +131,7 @@ const ChangePlanButton = ({ type, onClick, isLoading }) => {
       </Button>
     ),
     free: (
-      <button onClick={onClick} className="text-left text-lg font-medium leading-5 text-primary hover:underline">
+      <button onClick={onClick} className="text-left text-lg font-medium leading-5 text-primary">
         {t('preferences.account.plans.free')}
       </button>
     ),
