@@ -1,12 +1,11 @@
 import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import fileExtensionService from '../../services/file-extension.service';
 import viewers from './viewers';
 
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
 import { DriveFileData, DriveItemData } from '../../../drive/types';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
+import { FileExtensionGroup } from '../../../drive/types/file-types';
 import iconService from '../../../drive/services/icon.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
@@ -27,7 +26,9 @@ import { ListItemMenu } from '../../../shared/components/List/ListItem';
 import { TopBarActionsMenu } from './FileViewerWrapper';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
 import { PreviewFileItem } from 'app/share/types';
+import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
 
+const ESC_KEY_KEYBOARD_CODE = 27;
 interface FileViewerProps {
   file: DriveFileData;
   onClose: () => void;
@@ -62,16 +63,6 @@ export interface FormatFileViewerProps {
   };
 }
 
-const extensionsList = fileExtensionService.computeExtensionsLists(fileExtensionPreviewableGroups);
-
-function extensionIsNotAllowed(fileExtensionGroup) {
-  const allowedGroups = [FileExtensionGroup.Audio, FileExtensionGroup.Video, FileExtensionGroup.Xls];
-
-  return allowedGroups.includes(fileExtensionGroup);
-}
-
-const ESC_KEY_KEYBOARD_CODE = 27;
-
 const FileViewer = ({
   file,
   onClose,
@@ -94,17 +85,10 @@ const FileViewer = ({
 
   const [isPreviewAvailable, setIsPreviewAvailable] = useState<boolean>(true);
 
-  let isTypeAllowed = false;
-  let fileExtensionGroup: FileExtensionGroup | null = null;
+  const extensionGroup = getIsTypeAllowedAndFileExtensionGroupValues(file);
 
-  for (const [groupKey, extensions] of Object.entries(extensionsList)) {
-    isTypeAllowed = extensions.includes(file?.type ? String(file.type).toLowerCase() : '');
-
-    if (isTypeAllowed) {
-      fileExtensionGroup = FileExtensionGroup[groupKey];
-      break;
-    }
-  }
+  const isTypeAllowed = extensionGroup?.isTypeAllowed;
+  const fileExtensionGroup = extensionGroup?.fileExtensionGroup;
 
   const Viewer: React.FC<FormatFileViewerProps> = isTypeAllowed
     ? viewers[fileExtensionGroup as FileExtensionGroup]
@@ -115,12 +99,11 @@ const FileViewer = ({
   const isEditNameDialogOpen = useAppSelector((state: RootState) => state.ui.isEditFolderNameDialog);
   const isShareItemSettingsDialogOpen = useAppSelector((state) => state.ui.isShareItemDialogOpenInPreviewView);
 
-  const largeFile = isLargeFile(file?.size);
   const fileType = file.type ? `.${file.type}` : '';
   const filename = file ? `${file?.plainName ?? file.name}${fileType}` : '';
   const isFirstItemOrShareView = fileIndex === 0 || isShareView;
   const isLastItemOrShareView = (totalFolderIndex && fileIndex === totalFolderIndex - 1) || isShareView;
-  const shouldRenderThePreview = extensionIsNotAllowed(fileExtensionGroup) && largeFile;
+  const shouldRenderThePreview = checkIfExtensionIsAllowed(fileExtensionGroup) && isLargeFile(file?.size);
   const isItemValidToPreview = isTypeAllowed && isPreviewAvailable;
 
   const ItemIconComponent = iconService.getItemIcon(false, file?.type);
@@ -265,7 +248,7 @@ const FileViewer = ({
               tabIndex={0}
               className="z-10 flex max-h-full max-w-full flex-col items-start justify-start overflow-auto outline-none"
             >
-              <div onClick={(e) => e.stopPropagation()}>
+              <div>
                 {blob && file ? (
                   <Suspense fallback={<div></div>}>
                     <Viewer
@@ -279,9 +262,8 @@ const FileViewer = ({
                 ) : null}
 
                 <div
-                  tabIndex={0}
                   className={`${
-                    progress === 1 || (progress == 0 && blob) ? 'hidden' : 'flex'
+                    progress === 1 || (progress === 0 && blob) ? 'hidden' : 'flex'
                   } pointer-events-none z-10 select-none flex-col items-center justify-center rounded-xl
                       font-medium outline-none`}
                 >
