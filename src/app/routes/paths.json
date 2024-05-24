@@ -168,9 +168,9 @@
     {
       "id": "checkout",
       "layout": "empty",
-      "path": "/checkout/:sessionId",
+      "path": "/checkout",
       "exact": false,
-      "auth": true
+      "auth": false
     },
     {
       "id": "checkout-plan",

@@ -1,14 +1,15 @@
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useSelector } from 'react-redux';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { planActions, PlanState } from 'app/store/slices/plan';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useSelector } from 'react-redux';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+import { AppView } from '../../../core/types';
+import { RootState } from '../../../store';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { useAppDispatch } from '../../../store/hooks';
+import navigationService from '../../../core/services/navigation.service';
+import paymentService from '../../services/payment.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { PlanState, planActions } from '../../../store/slices/plan';
 
 interface CheckoutOptions {
   price_id: string;

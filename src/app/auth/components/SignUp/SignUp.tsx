@@ -5,7 +5,7 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
 
 import { useAppDispatch } from '../../../store/hooks';
 import { userActions, userThunks } from '../../../store/slices/user';

@@ -173,7 +173,7 @@ const App = (props: AppProps): JSX.Element => {
             <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/account" to="/preferences" />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
-            {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
+            {pathName !== 'checkout-plan' && pathName !== 'checkout' && isMobile && isAuthenticated ? (
               <Route path="*">
                 <Mobile user={props.user} />
               </Route>

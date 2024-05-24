@@ -1,56 +1,35 @@
-import paymentService from 'app/payment/services/payment.service';
-import React, { ReactNode } from 'react';
-import { match } from 'react-router-dom';
+import { CreateAccountComponent } from './components/CreateAccountComponent';
+import { PaymentComponent } from './components/PaymentComponent';
+import { ProductFeaturesComponent } from './components/ProductFeaturesComponent';
+import { useState } from 'react';
+import { HeaderComponent } from './components/Header';
 
-export interface CheckoutViewProps {
-  match?: match<{ sessionId: string }>;
-}
-interface CheckoutViewState {
-  sessionId: string;
-}
+const CheckoutView = () => {
+  const [selectedPlan, setSelectedPlan] = useState<string>('200GB');
 
-class CheckoutView extends React.Component<CheckoutViewProps, CheckoutViewState> {
-  constructor(props: CheckoutViewProps) {
-    super(props);
+  return (
+    <div className="flex h-full overflow-y-scroll bg-gray-1 px-16 py-10 lg:w-screen">
+      <div className="mx-auto flex w-full max-w-screen-xl">
+        <div className="flex w-full flex-col space-y-16">
+          {/* Header */}
+          <div className="flex flex-col space-y-16">
+            <HeaderComponent />
+            <p className="text-3xl font-bold text-gray-100">You're almost there! Checkout securely:</p>
+          </div>
+          <div className="relative flex flex-row justify-between">
+            <div className="flex w-full max-w-xl flex-col space-y-14">
+              <CreateAccountComponent />
+              <PaymentComponent />
+            </div>
 
-    this.state = {
-      sessionId: this.props.match?.params.sessionId || '',
-    };
-  }
-
-  checkSessionId(sessionId: string): RegExpExecArray | null {
-    const pattern = /^cs_(test|live)_[a-zA-Z0-9]+$/;
-
-    return pattern.exec(sessionId);
-  }
-
-  componentWillMount(): void {
-    const match = this.checkSessionId(this.state.sessionId);
-
-    if (match) {
-      if (this.state.sessionId) {
-        paymentService
-          .redirectToCheckout({ sessionId: this.state.sessionId })
-          .then((result) => {
-            console.log(result);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
-    }
-  }
-
-  render(): ReactNode {
-    if (!this.checkSessionId(this.state.sessionId)) {
-      if (this.state.sessionId === 'ok' || this.state.sessionId === 'cancel') {
-        return <div>{this.state.sessionId}</div>;
-      } else {
-        return <div>Invalid session</div>;
-      }
-    }
-    return <div></div>;
-  }
-}
+            <div className="flex w-full max-w-lg flex-col">
+              <ProductFeaturesComponent selectedPlan={selectedPlan} />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default CheckoutView;
