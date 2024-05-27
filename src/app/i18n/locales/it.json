@@ -277,8 +277,8 @@
       "title": "Account",
       "avatar": {
         "title": "Carica avatar",
-        "removePhoto": "Elimina foto",
-        "updatePhoto": "Carica nuova immagine",
+        "removePhoto": "Elimina",
+        "updatePhoto": "Carica immagine",
         "dragNDrop": "Seleziona o trascina un'immagine",
         "success": "L'avatar è stato aggiornato correttamente",
         "error": "È successo qualcosa durante il caricamento del tuo avatar",

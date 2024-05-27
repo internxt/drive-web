@@ -274,8 +274,8 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
             <div className="relative">
               <Avatar diameter={128} fullName={companyName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
               {
-                <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
-                  <PencilSimple size={16} />
+                <div className="font-regular absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full bg-gray-5 text-gray-100 text-gray-60 outline outline-4 outline-surface dark:bg-gray-10">
+                  <PencilSimple size={20} className="font-regular text-gray-100" />
                 </div>
               }
             </div>

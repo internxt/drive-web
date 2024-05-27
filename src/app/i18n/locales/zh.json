@@ -277,8 +277,8 @@
       "title": "资料",
       "avatar": {
         "title": "上传新图片",
-        "removePhoto": "删除照片",
-        "updatePhoto": "上传图片",
+        "removePhoto": "删除",
+        "updatePhoto": "上传照片",
         "dragNDrop": "选择或拖动一个图片",
         "success": "头像已成功更新",
         "error": "上传您的头像时出现问题",
