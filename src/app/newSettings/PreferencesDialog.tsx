@@ -62,7 +62,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   return (
     <Modal
       maxWidth="max-w-4xl"
-      className="m-0 flex h-640 shadow-sm"
+      className="m-0 flex h-640 overflow-hidden shadow-sm"
       isOpen={isPreferencesDialogOpen}
       onClose={() => onClosePreferences()}
       preventClosing={isToastNotificationOpen}
