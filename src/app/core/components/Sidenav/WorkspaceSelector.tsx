@@ -9,6 +9,7 @@ export interface Workspace {
   name: string;
   type: 'Business' | 'Personal';
   avatar: string | null;
+  isPending?: boolean;
 }
 
 interface WorkspaceSelectorProps {
