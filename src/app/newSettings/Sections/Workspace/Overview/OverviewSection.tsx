@@ -215,7 +215,7 @@ const WorkspaceOverviewDetails = ({
             <Card className="grow">
               <p className="text-3xl font-medium leading-9 text-gray-100">
                 {integerPart}
-                <span className="text-xl font-medium">.{decimalPart}</span>
+                <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
               </p>
               <h1 className="text-base font-normal leading-5">
                 {t('views.preferences.workspace.overview.billed', {
