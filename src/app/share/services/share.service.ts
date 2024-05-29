@@ -374,9 +374,8 @@ export const getPublicShareLink = async (
 
     window.focus();
     const domains = domainManager.getDomainsList();
-    console.log({ domains });
     const selectedDomain = getRandomElement(domains);
-    console.log({ selectedDomain });
+
     const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
     // workaround to enable copy after login, because first copy always fails
     copy(publicShareLink);
