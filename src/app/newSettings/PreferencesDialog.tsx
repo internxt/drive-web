@@ -26,7 +26,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
+  // const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
 
   const params = new URLSearchParams(window.location.search);
   const currentSectionParams = params.getAll('section');
@@ -65,7 +65,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       className="m-0 flex h-640 overflow-hidden shadow-sm"
       isOpen={isPreferencesDialogOpen}
       onClose={() => onClosePreferences()}
-      preventClosing={isToastNotificationOpen}
+      // preventClosing={isToastNotificationOpen}
     >
       <Helmet>
         <title>{title} - Internxt Drive</title>

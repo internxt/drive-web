@@ -40,6 +40,7 @@ import { initializeUserThunk } from './app/store/slices/user';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import { Portal } from '@headlessui/react';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -187,12 +188,15 @@ const App = (props: AppProps): JSX.Element => {
               routes
             )}
           </Switch>
-          <Toaster
-            position="bottom-center"
-            containerStyle={{
-              filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
-            }}
-          />
+
+          <Portal>
+            <Toaster
+              position="bottom-center"
+              containerStyle={{
+                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
+              }}
+            />
+          </Portal>
 
           <PreferencesDialog haveParamsChanged={haveParamsChanged} isPreferencesDialogOpen={isPreferencesDialogOpen} />
 
