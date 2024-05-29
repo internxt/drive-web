@@ -260,8 +260,8 @@
       "title": "Compte",
       "avatar": {
         "title": "Télécharger une photo",
-        "removePhoto": "Supprimer une photo",
-        "updatePhoto": "Charger une nouvelle photo",
+        "removePhoto": "Supprimer",
+        "updatePhoto": "Charger photo",
         "dragNDrop": "Sélectionner ou faire glisser une photo",
         "success": "Avatar a été mis à jour avec succès",
         "error": "Quelque chose s'est produit lors du téléchargement de votre avatar",

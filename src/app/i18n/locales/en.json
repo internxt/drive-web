@@ -277,8 +277,8 @@
       "title": "Account",
       "avatar": {
         "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
+        "removePhoto": "Remove",
+        "updatePhoto": "Upload photo",
         "dragNDrop": "Select or drop a picture",
         "success": "Avatar has been successfully updated",
         "error": "Something happened while uploading your avatar",

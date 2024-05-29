@@ -261,8 +261,8 @@
       "title": "Cuenta",
       "avatar": {
         "title": "Subir imagen",
-        "removePhoto": "Eliminar imagen",
-        "updatePhoto": "Subir nueva foto",
+        "removePhoto": "Eliminar",
+        "updatePhoto": "Subir foto",
         "dragNDrop": "Selecciona o arrastra una imagen",
         "success": "Imagen actualizada correctamente",
         "error": "Algo salió mal actualizando la imagen",

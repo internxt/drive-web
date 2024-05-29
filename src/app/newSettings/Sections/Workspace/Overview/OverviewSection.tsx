@@ -27,6 +27,7 @@ const description =
 const isOwner = true;
 const members = 32;
 const teams = 4;
+const subscription = 'Free';
 
 const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const [isEditingDetails, setIsEditingDetails] = useState(false);
@@ -213,15 +214,21 @@ const WorkspaceOverviewDetails = ({
         {isOwner && (
           <button className="grow text-left" onClick={onBillingCardClick}>
             <Card className="grow">
-              <p className="text-3xl font-medium leading-9 text-gray-100">
-                {integerPart}
-                <span className="text-xl font-medium">.{decimalPart}</span>
-              </p>
-              <h1 className="text-base font-normal leading-5">
-                {t('views.preferences.workspace.overview.billed', {
-                  renewDate: subscriptionData?.renewDate,
-                })}
-              </h1>
+              {subscription === 'Free' ? (
+                <p className="h-14 text-3xl font-medium leading-9 text-gray-100">{subscription}</p>
+              ) : (
+                <>
+                  <p className="text-3xl font-medium leading-9 text-gray-100">
+                    {integerPart}
+                    <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
+                  </p>
+                  <h1 className="text-base font-normal leading-5">
+                    {t('views.preferences.workspace.overview.billed', {
+                      renewDate: subscriptionData?.renewDate,
+                    })}
+                  </h1>
+                </>
+              )}
             </Card>
           </button>
         )}

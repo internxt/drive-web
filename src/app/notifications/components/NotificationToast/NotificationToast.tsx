@@ -20,7 +20,7 @@ const NotificationToast = ({
   let IconColor: string | undefined;
 
   useEffect(() => {
-    dispatch(uiActions.setIsToastNotificacionOpen(visible));
+    visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
   }, [visible]);
 
   switch (type) {
@@ -84,7 +84,6 @@ const NotificationToast = ({
           <button
             onClick={() => {
               onClose();
-              dispatch(uiActions.setIsToastNotificacionOpen(false));
             }}
             className="ml-3 text-gray-40"
           >

@@ -22,9 +22,9 @@ const PlanSelectionCard = ({
   isCurrentPlan,
   displayBillingSlash,
 }: PlanSelectionCardProps) => {
-  const isSelectedOutsideBorderStyle = isSelected || isCurrentPlan ? 'border-transparent' : '';
+  const isSelectedOutsideBorderStyle = (isSelected && isCurrentPlan) || isSelected ? 'border-transparent' : '';
   const isSelectedInsideBorderStyle =
-    isSelected || isCurrentPlan
+    (isSelected && isCurrentPlan) || isSelected
       ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
       : '';
   const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;

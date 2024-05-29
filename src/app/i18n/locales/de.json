@@ -235,8 +235,8 @@
       "title": "Konto",
       "avatar": {
         "title": "Avatar hochladen",
-        "removePhoto": "Foto löschen",
-        "updatePhoto": "Neues Foto hochladen",
+        "removePhoto": "Löschen",
+        "updatePhoto": "Foto hochladen",
         "dragNDrop": "Wähle ein Bild aus oder lege es ab",
         "success": "Avatar wurde erfolgreich aktualisiert",
         "error": "Beim Hochladen deines Avatars ist etwas passiert",
