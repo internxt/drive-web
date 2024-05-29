@@ -194,55 +194,58 @@ const WorkspaceOverviewDetails = ({
   const [integerPart, decimalPart] = subscriptionData?.amountInterval?.split('.') ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {isOwner && (
         <span className="text-xl font-medium">{t('views.preferences.workspace.overview.workspaceOverview')}</span>
       )}
-      <div className="flex flex-row space-x-6">
-        <button className={`${twoCardsClass} text-left`} onClick={onMembersCardClick}>
-          <Card className={twoCardsClass}>
-            <p className="text-3xl font-medium leading-9 text-gray-100">{members}</p>
-            <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.members')}</h1>
-          </Card>
-        </button>
-        <button className={`${twoCardsClass} text-left`} onClick={onTeamsCardClick}>
-          <Card className={twoCardsClass}>
-            <p className="text-3xl font-medium leading-9 text-gray-100">{teams}</p>
-            <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
-          </Card>
-        </button>
-        {isOwner && (
-          <button className="grow text-left" onClick={onBillingCardClick}>
-            <Card className="grow">
-              {subscription === 'Free' ? (
-                <p className="h-14 text-3xl font-medium leading-9 text-gray-100">{subscription}</p>
-              ) : (
-                <>
-                  <p className="text-3xl font-medium leading-9 text-gray-100">
-                    {integerPart}
-                    <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
-                  </p>
-                  <h1 className="text-base font-normal leading-5">
-                    {t('views.preferences.workspace.overview.billed', {
-                      renewDate: subscriptionData?.renewDate,
-                    })}
-                  </h1>
-                </>
-              )}
+
+      <div className="space-y-6">
+        <div className="flex flex-row space-x-6">
+          <button className={`${twoCardsClass} text-left`} onClick={onMembersCardClick}>
+            <Card className={twoCardsClass}>
+              <p className="text-3xl font-medium leading-9 text-gray-100">{members}</p>
+              <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.members')}</h1>
             </Card>
           </button>
-        )}
-      </div>
-      <div className="flex flex-row">
-        <Card className="flex grow">
-          {products && planLimit ? (
-            <UsageContainer planLimitInBytes={planLimit} products={products} />
-          ) : (
-            <div className="flex h-36 w-full items-center justify-center">
-              <Spinner className="h-7 w-7 text-primary" />
-            </div>
+          <button className={`${twoCardsClass} text-left`} onClick={onTeamsCardClick}>
+            <Card className={twoCardsClass}>
+              <p className="text-3xl font-medium leading-9 text-gray-100">{teams}</p>
+              <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
+            </Card>
+          </button>
+          {isOwner && (
+            <button className="grow text-left" onClick={onBillingCardClick}>
+              <Card className="grow">
+                {subscription === 'Free' ? (
+                  <p className="h-14 text-3xl font-medium leading-9 text-gray-100">{subscription}</p>
+                ) : (
+                  <>
+                    <p className="text-3xl font-medium leading-9 text-gray-100">
+                      {integerPart}
+                      <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
+                    </p>
+                    <h1 className="text-base font-normal leading-5">
+                      {t('views.preferences.workspace.overview.billed', {
+                        renewDate: subscriptionData?.renewDate,
+                      })}
+                    </h1>
+                  </>
+                )}
+              </Card>
+            </button>
           )}
-        </Card>
+        </div>
+        <div className="flex flex-row">
+          <Card className="flex grow">
+            {products && planLimit ? (
+              <UsageContainer planLimitInBytes={planLimit} products={products} />
+            ) : (
+              <div className="flex h-36 w-full items-center justify-center">
+                <Spinner className="h-7 w-7 text-primary" />
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );

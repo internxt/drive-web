@@ -170,20 +170,20 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
             </Card>
           </div>
           {/* MEMBERS LIST */}
-          <div className="flex flex-row justify-between">
-            <Input
-              placeholder={translate('preferences.workspace.members.search')}
-              variant="email"
-              autoComplete="off"
-              onChange={setSearchedMemberName}
-              value={searchedMemberName}
-              name="memberName"
-            />
-            <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
-              {translate('preferences.workspace.members.invite')}
-            </Button>
-          </div>
-          <div>
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-row justify-between">
+              <Input
+                placeholder={translate('preferences.workspace.members.search')}
+                variant="email"
+                autoComplete="off"
+                onChange={setSearchedMemberName}
+                value={searchedMemberName}
+                name="memberName"
+              />
+              <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+                {translate('preferences.workspace.members.invite')}
+              </Button>
+            </div>
             <div className="flex">
               {/* LEFT COLUMN */}
               <div className="flex grow flex-col">
