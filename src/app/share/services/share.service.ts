@@ -35,6 +35,7 @@ import {
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
+import { domainManager } from './DomainManager';
 
 interface CreateShareResponse {
   created: boolean;
@@ -341,6 +342,16 @@ export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
   return aes.decrypt(encryptedCode, mnemonic);
 };
 
+const getRandomElement = (list: string[]) => {
+  if (list.length === 0) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * list.length);
+
+  return list[randomIndex];
+};
+
 export const getPublicShareLink = async (
   uuid: string,
   itemType: 'folder' | 'file',
@@ -362,7 +373,11 @@ export const getPublicShareLink = async (
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
     window.focus();
-    const publicShareLink = `${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`;
+    const domains = domainManager.getDomainsList();
+    console.log({ domains });
+    const selectedDomain = getRandomElement(domains);
+    console.log({ selectedDomain });
+    const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
     // workaround to enable copy after login, because first copy always fails
     copy(publicShareLink);
     const isCopied = copy(publicShareLink);
