@@ -168,7 +168,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { folders, last } = await httpService.get<GetDirectoryFoldersResponse>(
-      `/api/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -196,7 +196,7 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { files, last } = await httpService.get<GetDirectoryFilesResponse>(
-      `/api/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -497,7 +497,7 @@ async function fetchFolderTree(folderId: number): Promise<{
   fileDecryptedNames: Record<number, string>;
   size: number;
 }> {
-  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/api/storage/tree/${folderId}`);
+  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
   const folderDecryptedNames: Record<number, string> = {};
   const fileDecryptedNames: Record<number, string> = {};
 

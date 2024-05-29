@@ -1,13 +1,13 @@
-import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
 import { Auth, Token } from '@internxt/sdk/dist/auth';
+import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
+import { Photos } from '@internxt/sdk/dist/photos';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import packageJson from '../../../../../package.json';
-import { LocalStorageService } from '../../services/local-storage.service';
-import { Workspace } from '../../types';
+import authService from '../../../auth/services/auth.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
-import { Photos } from '@internxt/sdk/dist/photos';
-import authService from '../../../auth/services/auth.service';
+import { LocalStorageService } from '../../services/local-storage.service';
+import { Workspace } from '../../types';
 
 export class SdkFactory {
   private static sdk: {
@@ -26,7 +26,7 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
+      instance: new SdkFactory(process.env.REACT_APP_API_URL),
       newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
