@@ -71,7 +71,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
         <title>{title} - Internxt Drive</title>
       </Helmet>
       {/* SIDEBAR MENU */}
-      <section className="w-56 border-r border-gray-10 px-2.5">
+      <section className="w-56 shrink-0 border-r border-gray-10 px-2.5">
         <h1 className="py-3 pl-4 text-xl font-semibold">{translate('preferences.title')}</h1>
         <SectionListContainer activeSection={activeSection} changeSection={changeSection} />
       </section>
