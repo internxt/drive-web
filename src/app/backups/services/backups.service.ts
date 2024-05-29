@@ -12,7 +12,7 @@ const backupsService = {
   },
 
   async getAllDevicesAsFolders(): Promise<DriveFolderData[]> {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/api/backup/deviceAsFolder`, {
+    const res = await fetch(`${process.env.REACT_APP_API_URL}/backup/deviceAsFolder`, {
       headers: httpService.getHeaders(true, false),
     });
     if (res.ok) {
