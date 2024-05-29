@@ -16,7 +16,7 @@ const Section = ({
 }): JSX.Element => {
   return (
     <div className={`relative w-full rounded-tr-2xl ${className}`}>
-      <div className="absolute z-50 flex w-full items-center justify-between rounded-tr-2xl p-2.5 pl-6 before:absolute before:inset-0 before:-z-1 before:bg-surface/85 before:backdrop-blur-3xl">
+      <div className="absolute z-50 flex w-full items-center justify-between rounded-tr-2xl p-2.5 pl-6 before:absolute before:inset-0 before:-z-1 before:bg-surface/85 before:backdrop-blur-3xl before:transition-colors">
         <div className="flex items-center">
           {onBackButtonClicked && (
             <button onClick={onBackButtonClicked}>
