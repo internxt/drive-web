@@ -285,8 +285,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           />
         </div>
       </div>
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-col items-center space-y-2.5">
+      <div className="flex flex-row space-x-6">
+        <div className="flex flex-1 flex-col items-center items-stretch space-y-2.5">
           <PlanSelectionCard
             key={FREE_PLAN_DATA.id}
             onClick={() => setPriceSelected(FREE_PLAN_DATA)}

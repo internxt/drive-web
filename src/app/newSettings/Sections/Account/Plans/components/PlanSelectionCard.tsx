@@ -30,12 +30,12 @@ const PlanSelectionCard = ({
   const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
   return (
     <div
-      className={`w-fit rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
+      className={`rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
         !isSelected && 'hover:bg-highlight/5 dark:hover:bg-highlight/10'
       } ${isSelectedOutsideBorderStyle}`}
     >
       <button
-        className={`flex w-80 flex-col rounded-xl border-2 border-transparent p-4 ring-offset-2 ring-offset-transparent ${isSelectedInsideBorderStyle}`}
+        className={`flex w-full flex-col rounded-xl border-2 border-transparent p-4 ring-offset-2 ring-offset-transparent ${isSelectedInsideBorderStyle}`}
         onClick={onClick}
       >
         <div className="flex w-full flex-row justify-between">
@@ -44,7 +44,7 @@ const PlanSelectionCard = ({
             <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
           )}
         </div>
-        <span className=" text-base font-normal leading-5 text-gray-60">
+        <span className="text-base font-normal leading-5 text-gray-60">
           {currency + amount}
           {billing && billingText}
         </span>
