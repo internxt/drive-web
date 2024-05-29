@@ -30,7 +30,9 @@ const PlanSelectionCard = ({
   const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
   return (
     <div
-      className={`w-fit rounded-2xl border border-gray-10 bg-surface hover:bg-highlight/5 dark:border-highlight/10 dark:bg-highlight/5 dark:hover:bg-highlight/10 ${isSelectedOutsideBorderStyle}`}
+      className={`w-fit rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
+        !isSelected && 'hover:bg-highlight/5 dark:hover:bg-highlight/10'
+      } ${isSelectedOutsideBorderStyle}`}
     >
       <button
         className={`flex w-80 flex-col rounded-xl border-2 border-transparent p-4 ring-offset-2 ring-offset-transparent ${isSelectedInsideBorderStyle}`}
