@@ -56,7 +56,7 @@ export default i18next
       de: {
         translation: require('../locales/de.json'),
       },
-      'zh-tw': {
+      'zh-TW': {
         translation: require('../locales/tw.json'),
       },
     },
