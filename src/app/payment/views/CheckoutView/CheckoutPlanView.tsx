@@ -79,7 +79,7 @@ export default function CheckoutPlanView(): JSX.Element {
     } else {
       if (mode === 'payment') {
         try {
-          if (coupon !== 'null') {
+          if (coupon && coupon !== 'null') {
             checkoutOptions.coupon_code = coupon;
           }
           response = await paymentService.createCheckoutSession(checkoutOptions);
