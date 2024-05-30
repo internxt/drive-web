@@ -1,8 +1,8 @@
 import { initReactI18next } from 'react-i18next';
 import i18next from 'i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
-import localStorageService from 'app/core/services/local-storage.service';
-import envService from 'app/core/services/env.service';
+
+import dayjs from 'dayjs';
 import es from 'dayjs/locale/es';
 import fr from 'dayjs/locale/fr';
 import it from 'dayjs/locale/it';
@@ -10,7 +10,10 @@ import zh from 'dayjs/locale/zh';
 import ru from 'dayjs/locale/ru';
 import de from 'dayjs/locale/de';
 import en from 'dayjs/locale/en';
-import dayjs from 'dayjs';
+import tw from 'dayjs/locale/zh-tw';
+
+import localStorageService from 'app/core/services/local-storage.service';
+import envService from 'app/core/services/env.service';
 
 const dayJsLocale = {
   es,
@@ -20,9 +23,10 @@ const dayJsLocale = {
   zh,
   ru,
   de,
+  tw,
 };
 
-const deviceLang = localStorageService.get('i18nextLng') || navigator.language.split('-')[0];
+const deviceLang = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
 
 dayjs.locale(dayJsLocale[deviceLang] || 'en');
 
@@ -51,6 +55,9 @@ export default i18next
       },
       de: {
         translation: require('../locales/de.json'),
+      },
+      'zh-tw': {
+        translation: require('../locales/tw.json'),
       },
     },
     debug: !envService.isProduction(),
