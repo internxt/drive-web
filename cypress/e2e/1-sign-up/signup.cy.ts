@@ -1,6 +1,6 @@
 import * as crypto from 'crypto';
-import { PAGINATION_ENDPOINT_REGEX } from '../../../test/e2e/cypress/constans';
-import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR } from '../../constans';
+
+import { EXAMPLE_FILENAME, MENU_ITEM_SELECTOR, PAGINATION_ENDPOINT_REGEX } from '../../constans';
 
 describe('Signup user', () => {
   const username = `${crypto.randomBytes(32).toString('hex')}@inxt.com`;
