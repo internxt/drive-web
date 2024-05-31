@@ -373,20 +373,7 @@ async function downloadFolderAsZip(
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
-  let totalSizeIsReady = false;
-  const zip = new FlatFolderZip(folderName, {});
-
-  // TODO: CHECK WHY UPADATE PROGRESS IS CAUSING CORRUPTED ZIPS IN BRAVE BROWSER
-  // const zip =
-  //   options?.destination ||
-  //   new FlatFolderZip(rootFolder.name, {
-  //     progress(loadedBytes) {
-  //       if (!totalSizeIsReady) {
-  //         return;
-  //       }
-  //       updateProgress(Math.min(loadedBytes / totalSize, 1));
-  //     },
-  //   });
+  const zip = options?.destination || new FlatFolderZip(folderName, {});
 
   const user = localStorageService.getUser();
 
@@ -475,7 +462,6 @@ async function downloadFolderAsZip(
       );
     } while (pendingFolders.length > 0);
 
-    totalSizeIsReady = true;
     if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
       updateProgress(1);
       await zip.close();
