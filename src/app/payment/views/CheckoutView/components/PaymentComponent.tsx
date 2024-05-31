@@ -1,6 +1,7 @@
 import { Elements, PaymentElement } from '@stripe/react-stripe-js';
 import { Stripe, StripeElementsOptions, StripePaymentElementOptions, loadStripe } from '@stripe/stripe-js';
 import envService from '../../../../core/services/env.service';
+import Button from 'app/shared/components/Button/Button';
 
 let stripe;
 
@@ -16,18 +17,19 @@ async function getStripe(): Promise<Stripe> {
 
 const stripePromise = getStripe();
 
-export const PaymentComponent = () => {
+export const PaymentComponent = ({ handleCheckout, clientSecret }) => {
   const elementsOptions: StripeElementsOptions = {
     mode: 'subscription',
     amount: 1099,
     currency: 'eur',
-    payment_method_types: ['card', 'paypal', 'bancontact', 'ideal', 'sofort'],
+    capture_method: 'automatic',
+    clientSecret: clientSecret,
     appearance: {
       labels: 'above',
       variables: {
         spacingAccordionItem: '8px',
-        colorBackground: '',
       },
+      theme: 'flat',
     },
   };
 
@@ -41,11 +43,12 @@ export const PaymentComponent = () => {
   };
 
   return (
-    <div className="flex flex-col space-y-8">
+    <form className="flex flex-col space-y-8 pb-20" onSubmit={handleCheckout}>
       <p className="text-2xl font-semibold text-gray-100">2. Select a payment method</p>
       <Elements stripe={stripePromise} options={elementsOptions}>
         <PaymentElement options={paymentElementOptions} />
+        <Button id="submit">Pay</Button>
       </Elements>
-    </div>
+    </form>
   );
 };

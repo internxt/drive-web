@@ -18,7 +18,7 @@ type UpdateInfoFunction = (
   xToken: string;
   mnemonic: string;
 }>;
-type RegisterFunction = (
+export type RegisterFunction = (
   email: string,
   password: string,
   captcha: string,

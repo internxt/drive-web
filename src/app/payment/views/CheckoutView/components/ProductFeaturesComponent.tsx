@@ -1,17 +1,21 @@
 import { Menu, Transition } from '@headlessui/react';
-import { Check, SealPercent } from '@phosphor-icons/react';
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { Check } from '@phosphor-icons/react';
+import { bytesToString } from 'app/drive/services/size.service';
 import Button from 'app/shared/components/Button/Button';
 import { ReactComponent as GuaranteeDays } from 'assets/icons/30-days.svg';
 
 interface ProductFeaturesComponentProps {
-  selectedPlan: string;
+  selectedPlan: DisplayPrice;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
 
 export const ProductFeaturesComponent = ({ selectedPlan }: ProductFeaturesComponentProps) => {
+  const bytes = bytesToString(selectedPlan.bytes);
+
   const features = [
-    `${selectedPlan} encrypted storage`,
+    `${bytes} encrypted storage`,
     'Encrypted file and folder sharing',
     'Password-protected file sharing',
     'Access your files from any device',
@@ -33,24 +37,24 @@ export const ProductFeaturesComponent = ({ selectedPlan }: ProductFeaturesCompon
       <div className="flex w-full rounded-2xl border-gray-10 bg-surface p-5">
         <div className="flex w-full flex-col space-y-5">
           <p>Selected plan</p>
-          <p className="text-2xl font-bold text-gray-100">200GB - 1 month plan</p>
+          <p className="text-2xl font-bold text-gray-100">{bytes} - 1 month plan</p>
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">Billed monthly</p>
-            <p className="font-semibold">1.25€</p>
+            <p className="font-semibold">{selectedPlan.amount}€</p>
           </div>
           <div className="flex flex-row items-center justify-between font-semibold">
-            <div className="flex flex-row items-center space-x-2 text-green-dark">
+            {/* <div className="flex flex-row items-center space-x-2 text-green-dark">
               <SealPercent weight="fill" size={24} />
               <p className="">You're saving 75%</p>
             </div>
-            <p className="text-gray-50 line-through">4.99€</p>
+            <p className="text-gray-50 line-through">4.99€</p> */}
           </div>
           <Separator />
           <div className="flex flex-col space-y-5">
-            <p className="font-medium text-gray-100">PLan details:</p>
+            <p className="font-medium text-gray-100">Plan details:</p>
             <div className="flex flex-col space-y-4">
               {features.map((feature) => (
-                <div className="flex flex-row items-center space-x-3">
+                <div key={feature} className="flex flex-row items-center space-x-3">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>
                 </div>
@@ -60,7 +64,7 @@ export const ProductFeaturesComponent = ({ selectedPlan }: ProductFeaturesCompon
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
             <p>Total:</p>
-            <p>1.25€</p>
+            <p>{selectedPlan.amount}€</p>
           </div>
           <Separator />
           <Menu>

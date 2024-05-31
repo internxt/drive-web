@@ -14,6 +14,7 @@ import {
   UserSubscription,
   FreeTrialAvailable,
   RedeemCodePayload,
+  CreatedSubscriptionObj,
 } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
@@ -46,6 +47,25 @@ const paymentService = {
     }
 
     return stripe;
+  },
+
+  async createCustomer(name: string, email: string): Promise<{ customerId: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createCustomer(name, email);
+  },
+  async createSubscription(customerId: string, priceId: string, promoCode?: string): Promise<CreatedSubscriptionObj> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createSubscription(customerId, priceId, promoCode);
+  },
+
+  async createPaymentIntent(
+    customerId: string,
+    amount: number,
+    currency: string,
+    promoCode?: string,
+  ): Promise<{ clientSecret: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createPaymentIntent(customerId, amount, currency, promoCode);
   },
 
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {

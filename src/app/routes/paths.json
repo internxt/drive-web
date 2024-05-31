@@ -173,6 +173,13 @@
       "auth": false
     },
     {
+      "id": "checkout-status",
+      "layout": "empty",
+      "path": "/checkout/status",
+      "exact": true,
+      "auth": false
+    },
+    {
       "id": "checkout-plan",
       "layout": "empty",
       "path": "/checkout-plan/",
