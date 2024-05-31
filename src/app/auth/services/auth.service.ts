@@ -306,7 +306,7 @@ export const deactivate2FA = (
 };
 
 export async function getNewToken(): Promise<string> {
-  const res = await fetch(`${process.env.REACT_APP_API_URL}/api/new-token`, {
+  const res = await fetch(`${process.env.REACT_APP_API_URL}/new-token`, {
     headers: httpService.getHeaders(true, false),
   });
   if (!res.ok) {

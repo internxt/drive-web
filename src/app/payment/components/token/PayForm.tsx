@@ -1,13 +1,13 @@
 import React from 'react';
-import { Form, Col, Button, Container, Row } from 'react-bootstrap';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 
-import Finish from './finish/Finish';
 import { match } from 'react-router-dom';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
+import Finish from './finish/Finish';
 
-import './PayForm.scss';
 import httpService from '../../../core/services/http.service';
+import './PayForm.scss';
 
 interface PayTokenProps {
   match: match<{ token: string }>;
@@ -107,7 +107,7 @@ class PayToken extends React.Component<PayTokenProps, PayTokenState> {
 
     const json = JSON.stringify(object);
 
-    return fetch(`${process.env.REACT_APP_API_URL}/api/token/buy`, {
+    return fetch(`${process.env.REACT_APP_API_URL}/token/buy`, {
       method: 'post',
       headers: httpService.getHeaders(true, false),
       body: json,

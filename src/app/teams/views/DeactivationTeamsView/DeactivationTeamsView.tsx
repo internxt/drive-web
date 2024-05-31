@@ -32,7 +32,7 @@ class DeactivationTeamsView extends Component<DeactivationTeamsViewProps> {
     console.log(token);
 
     return httpService
-      .get<void>('/api/confirmDeactivationTeam/' + token)
+      .get<void>('/confirmDeactivationTeam/' + token)
       .then(() => {
         this.ClearAndRedirect();
       })
