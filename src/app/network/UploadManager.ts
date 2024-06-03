@@ -24,7 +24,6 @@ enum FileSizeType {
 
 type Options = {
   isRetriedUpload?: boolean;
-  // relatedTaskId?: string;
   showNotifications?: boolean;
   showErrors?: boolean;
   ownerUserAuthenticationData?: {

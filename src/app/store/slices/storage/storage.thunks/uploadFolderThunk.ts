@@ -404,9 +404,9 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
             subtitle: t('tasks.subtitles.upload-failed') as string,
           },
         });
-        continue;
         // Log the error or report it but don't re-throw it to allow the next folder to be processed
-        // errorService.reportError(castedError);
+        errorService.reportError(castedError);
+        continue;
       }
     }
   }
