@@ -31,6 +31,7 @@ import {
   topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
+import navigationService from 'app/core/services/navigation.service';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -78,7 +79,8 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-
+    navigationService.replaceState(currentFile.uuid);
+    dispatch(uiActions.setFileViewerItem(currentFile));
     if (currentFile && !updateProgress && !isDownloadStarted) {
       setIsDownloadStarted(true);
       fileContentManager

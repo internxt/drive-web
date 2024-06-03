@@ -15,6 +15,7 @@ import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
+import { useAppSelector } from 'app/store/hooks';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -27,12 +28,19 @@ const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
+  const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
   }, []);
+
+  useEffect(() => {
+    if (fileViewer) {
+      setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
+    }
+  }, [fileViewer]);
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));

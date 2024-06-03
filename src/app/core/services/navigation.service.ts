@@ -57,6 +57,12 @@ const navigationService = {
     const lastSegment = pathname[pathname.length - 1];
     return lastSegment;
   },
+  replaceState(uuid: string | undefined): void {
+    const pathname = navigationService.history.location.pathname.split('/');
+    pathname[pathname.length - 1] = uuid ?? '';
+    const newPathname = pathname.join('/');
+    window.history.replaceState(null, '', newPathname);
+  },
 };
 
 export default navigationService;
