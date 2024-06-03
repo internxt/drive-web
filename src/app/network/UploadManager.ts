@@ -163,7 +163,7 @@ class UploadManager {
             content: file.content,
             parentFolderId: file.parentFolderId,
           },
-          async (uploadProgress) => {
+          (uploadProgress) => {
             this.uploadsProgress[uploadId] = uploadProgress;
             const isTaskPaused = task?.status === TaskStatus.Paused;
             const isTaskCancelled = task?.status === TaskStatus.Cancelled;
