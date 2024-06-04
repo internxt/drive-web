@@ -67,7 +67,9 @@ const FileViewerWrapper = ({
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
   const [blob, setBlob] = useState<Blob | null>(null);
+
   const user = localStorageService.getUser();
+  const userEmail = user?.email;
 
   const path = getAppConfig().views.find((view) => view.path === location.pathname);
   const pathId = path?.id as pathProps;
@@ -79,16 +81,19 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-    navigationService.replaceState(currentFile?.uuid);
+    navigationService.replaceState(currentFile.uuid);
     dispatch(uiActions.setFileViewerItem(currentFile));
     if (currentFile && !updateProgress && !isDownloadStarted) {
       setIsDownloadStarted(true);
       fileContentManager
         .download()
-        .then((blob) => {
-          setBlob(blob);
+        .then((downloadedFile) => {
+          setBlob(downloadedFile.blob);
           setUpdateProgress(0);
           setIsDownloadStarted(false);
+          if (downloadedFile.shouldHandleFileThumbnail) {
+            handleFileThumbnail(currentFile, downloadedFile.blob).catch(errorService.reportError);
+          }
         })
         .catch((error) => {
           if (error.name === 'AbortError') {
@@ -249,7 +254,7 @@ const FileViewerWrapper = ({
         content: thumbnailGenerated.file,
       };
 
-      const thumbnailUploaded = await uploadThumbnail(user?.email as string, thumbnailToUpload, false, () => {});
+      const thumbnailUploaded = await uploadThumbnail(userEmail as string, thumbnailToUpload, false, () => {});
 
       setCurrentThumbnail(thumbnailGenerated.file, thumbnailUploaded, driveFile as DriveItemData, dispatch);
 
@@ -264,7 +269,7 @@ const FileViewerWrapper = ({
     }
   };
 
-  const fileContentManager = getFileContentManager(currentFile, downloadFile, handleFileThumbnail);
+  const fileContentManager = getFileContentManager(currentFile, downloadFile);
 
   const handlersForSpecialItems = {
     handleUpdateProgress: handleProgress,
