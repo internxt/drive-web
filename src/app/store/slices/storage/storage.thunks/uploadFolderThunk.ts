@@ -71,7 +71,7 @@ const stopUploadTask = async (
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
   async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
-    options = Object.assign({ withNotification: true }, options || {});
+    options = { withNotification: true, ...options };
     const uploadFolderAbortController = new AbortController();
 
     let alreadyUploaded = 0;
@@ -257,7 +257,7 @@ function getNextNewName(filename: string, i: number): string {
 
 const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]) => {
   return foldersPayload.map(({ root, currentFolderId, options: payloadOptions }) => {
-    const options = Object.assign({ withNotification: true }, payloadOptions || {});
+    const options = { withNotification: true, ...payloadOptions };
 
     const uploadFolderAbortController = new AbortController();
 
@@ -294,7 +294,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   const payloadWithTaskId = generateTaskIdForFolders(payload);
   // checking why is not aborting correctly the folder upload
   for (const { root, currentFolderId, options: payloadOptions, taskId, abortController } of payloadWithTaskId) {
-    const options = Object.assign({ withNotification: true }, payloadOptions || {});
+    const options = { withNotification: true, ...payloadOptions };
 
     let alreadyUploaded = 0;
 
