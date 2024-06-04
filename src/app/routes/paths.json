@@ -194,12 +194,6 @@
     {
       "id": "share-token-2",
       "layout": "share",
-      "path": "/d/sh/file/:token/:code?",
-      "exact": false
-    },
-    {
-      "id": "share-token-3",
-      "layout": "share",
       "path": "/d/file/:token/:code?",
       "exact": false
     },
@@ -212,12 +206,6 @@
     {
       "id": "share-folder-token-2",
       "layout": "share",
-      "path": "/d/sh/folder/:token/:code?",
-      "exact": false
-    },
-    {
-      "id": "share-folder-token-3",
-      "layout": "share",
       "path": "/d/folder/:token/:code?",
       "exact": false
     },
@@ -225,24 +213,6 @@
       "id": "share-guest-accept-invite",
       "layout": "empty",
       "path": "/shared-guest",
-      "exact": false
-    },
-    {
-      "id": "share-photos-token",
-      "layout": "share",
-      "path": "/sh/photos/:token([a-z0-9]{24})/:code",
-      "exact": false
-    },
-    {
-      "id": "share-photos-token-2",
-      "layout": "share",
-      "path": "/d/sh/photos/:token([a-z0-9]{24})/:code",
-      "exact": false
-    },
-    {
-      "id": "share-photos-token-3",
-      "layout": "share",
-      "path": "/d/photos/:token([a-z0-9]{24})/:code",
       "exact": false
     },
     {
