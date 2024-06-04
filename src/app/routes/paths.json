@@ -194,6 +194,12 @@
     {
       "id": "share-token",
       "layout": "share",
+      "path": "/d/sh/file/:token/:code?",
+      "exact": false
+    },
+    {
+      "id": "share-token",
+      "layout": "share",
       "path": "/d/file/:token/:code?",
       "exact": false
     },
@@ -201,6 +207,12 @@
       "id": "share-folder-token",
       "layout": "share",
       "path": "/sh/folder/:token/:code?",
+      "exact": false
+    },
+    {
+      "id": "share-folder-token",
+      "layout": "share",
+      "path": "/d/sh/folder/:token/:code?",
       "exact": false
     },
     {
@@ -222,9 +234,15 @@
       "exact": false
     },
     {
-      "id": "share-folder-token",
+      "id": "share-photos-token",
       "layout": "share",
-      "path": "/d/folder/:token/:code?",
+      "path": "/d/sh/photos/:token([a-z0-9]{24})/:code",
+      "exact": false
+    },
+    {
+      "id": "share-photos-token",
+      "layout": "share",
+      "path": "/d/photos/:token([a-z0-9]{24})/:code",
       "exact": false
     },
     {
