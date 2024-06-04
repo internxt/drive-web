@@ -47,8 +47,8 @@ const wait = (ms: number): Promise<void> => {
 
 const stopUploadTask = async (
   uploadFolderAbortController: AbortController,
-  relatedTaskId: string,
   dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  relatedTaskId?: string,
   rootFolderItem?: DriveFolderData,
 ) => {
   uploadFolderAbortController.abort();
@@ -144,7 +144,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           tasksService.updateTask({
             taskId,
             merge: {
-              stop: () => stopUploadTask(uploadFolderAbortController, taskId, dispatch, rootFolderItem),
+              stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
             },
           });
         }
@@ -325,7 +325,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         tasksService.updateTask({
           taskId,
           merge: {
-            stop: () => stopUploadTask(uploadFolderAbortController, taskId, dispatch, rootFolderItem),
+            stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
           },
         });
         if (!rootFolderData) {
