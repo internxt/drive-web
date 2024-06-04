@@ -61,7 +61,6 @@ const stopUploadTask = async (
   );
   // Deletes the root folder
   if (rootFolderItem) {
-    console.log('rootFolderItemDeleted');
     promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
     const storageClient = SdkFactory.getInstance().createStorageClient();
     promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
