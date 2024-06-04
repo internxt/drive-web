@@ -37,7 +37,8 @@
     "it": "Italiano (Italiano)",
     "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
-    "de": "Deutsch (Alemán)"
+    "de": "Deutsch (Alemán)",
+    "zh-tw": "臺灣 (Taiwanés)"
   },
   "theme": {
     "title": "Apariencia",
