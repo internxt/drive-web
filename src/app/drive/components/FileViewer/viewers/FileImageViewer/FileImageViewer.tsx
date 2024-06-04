@@ -28,9 +28,9 @@ const FileImageViewer = ({
           const convertedBlob = await heic2any({ blob: blob });
           updatedFile.type = 'png';
 
-          await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
-
           setImageBlob(convertedBlob as Blob);
+
+          await handlersForSpecialItems?.handleUpdateThumbnail(updatedFile, convertedBlob as Blob);
         } else {
           setImageBlob(blob);
         }
