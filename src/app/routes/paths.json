@@ -194,12 +194,6 @@
     {
       "id": "share-token-2",
       "layout": "share",
-      "path": "/d/sh/file/:token/:code?",
-      "exact": false
-    },
-    {
-      "id": "share-token-3",
-      "layout": "share",
       "path": "/d/file/:token/:code?",
       "exact": false
     },
@@ -211,12 +205,6 @@
     },
     {
       "id": "share-folder-token-2",
-      "layout": "share",
-      "path": "/d/sh/folder/:token/:code?",
-      "exact": false
-    },
-    {
-      "id": "share-folder-token-3",
       "layout": "share",
       "path": "/d/folder/:token/:code?",
       "exact": false
