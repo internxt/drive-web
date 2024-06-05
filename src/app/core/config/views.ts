@@ -67,6 +67,7 @@ const views: Array<{
   { id: AppView.Checkout, component: CheckoutView },
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
+  { id: AppView.ShareFileToken, component: ShareFileView },
   { id: AppView.ShareFileToken2, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
   { id: AppView.ShareFolderToken2, component: ShareFolderView },
