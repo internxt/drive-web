@@ -233,16 +233,7 @@ async function downloadSharedFolderAsZip(
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
-  const zip =
-    options?.destination ||
-    new FlatFolderZip(rootFolder.name, {
-      progress(loadedBytes) {
-        if (!totalSizeIsReady) {
-          return;
-        }
-        updateProgress(Math.min(loadedBytes / totalSize, 1));
-      },
-    });
+  const zip = options?.destination || new FlatFolderZip(rootFolder.name, {});
 
   const user = localStorageService.getUser();
 
