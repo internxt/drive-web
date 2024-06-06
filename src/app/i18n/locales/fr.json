@@ -4,18 +4,18 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 75%",
-    "title": "Protégez vos données du côté obscur",
+    "label": "Économisez 70%",
+    "title": "Stockage sécurisé à vie",
     "cta": "Choisir un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
-    "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
+    "lastCta": "*L'offre est pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur les plans Internxt",
+      "Économisez jusqu'à 70% sur les plans à vie",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 20 mai"
+      "L'offre se termine le 11 juin"
     ]
   },
   "valentinesBanner": {
