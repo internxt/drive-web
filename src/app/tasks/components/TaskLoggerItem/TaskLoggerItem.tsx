@@ -3,6 +3,7 @@ import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
 import { t } from 'i18next';
+import errorService from '../../../core/services/error.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxActions';
 import tasksService from '../../services/tasks.service';
@@ -133,6 +134,14 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
 
   const handleRetryClick = () => {
     if (!isRetryActionDisabled) {
+      errorService.addBreadcrumb({
+        level: 'info',
+        category: 'button',
+        message: 'Retry button clicked',
+        data: {
+          task,
+        },
+      });
       retryFunction();
       setIsRetryActionDisabled(true);
       setTimeout(() => {
