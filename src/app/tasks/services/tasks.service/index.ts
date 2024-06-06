@@ -1,25 +1,25 @@
 import { items as itemsLib } from '@internxt/lib';
-import { FunctionComponent, SVGProps } from 'react';
-import { uniqueId } from 'lodash';
 import EventEmitter from 'events';
+import { uniqueId } from 'lodash';
+import { FunctionComponent, SVGProps } from 'react';
 
+import iconService from 'app/drive/services/icon.service';
 import {
+  BaseTask,
+  DownloadFilesData,
+  DownloadFolderData,
+  DownloadPhotosTask,
+  TaskData,
   TaskEvent,
+  TaskFilter,
+  TaskNotification,
   TaskProgress,
   TaskStatus,
   TaskType,
-  TaskNotification,
-  TaskData,
-  TaskFilter,
   UpdateTaskPayload,
-  BaseTask,
-  DownloadPhotosTask,
-  DownloadFilesData,
-  DownloadFolderData,
   UploadFileData,
   UploadFolderData,
 } from '../../types';
-import iconService from 'app/drive/services/icon.service';
 
 class TaskManagerService {
   private tasks: TaskData[];

@@ -64,13 +64,19 @@ export interface CreateFolderTask extends BaseTask {
 export interface DownloadFileTask extends BaseTask {
   action: TaskType.DownloadFile;
   cancellable: true;
+  file: DriveFileData;
+}
+
+export interface DownloadFilesTask extends BaseTask {
+  action: TaskType.DownloadFile;
+  cancellable: true;
   file: { name: string; type: string; items?: DriveItemData[] };
 }
 
 export interface DownloadFolderTask extends BaseTask {
   action: TaskType.DownloadFolder;
   cancellable: boolean;
-  folder: { id: number; name: string };
+  folder: DriveFolderData;
   compressionFormat: string;
 }
 
@@ -135,6 +141,7 @@ export interface RenameFolderTask extends BaseTask {
 export type TaskData = (
   | CreateFolderTask
   | DownloadFileTask
+  | DownloadFilesTask
   | DownloadFolderTask
   | DownloadBackupTask
   | UploadFileTask
@@ -145,7 +152,7 @@ export type TaskData = (
   | RenameFileTask
   | RenameFolderTask
 ) & { file?: DriveFileData | DownloadFilesData } & {
-  folder?: DownloadFolderData;
+  folder?: DriveFolderData;
 } & { item?: UploadFileData } & { fileType?: string } & {
   item?: IRoot;
   parentFolderId?: number;
@@ -154,7 +161,7 @@ export type TaskData = (
 };
 
 export type DownloadFilesData = { name: string; type: string; items?: DriveItemData[] };
-export type DownloadFolderData = { id: number; name: string };
+export type DownloadFolderData = { id: number; name: string; type: string; isFolder: boolean };
 export type UploadFileData = { uploadFile: File; parentFolderId: number };
 export type UploadFolderData = { folder: IRoot; parentFolderId: number };
 export type UploadSharedItemData = UploadFileData & SharedItemAuthenticationData;

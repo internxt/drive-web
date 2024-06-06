@@ -1,22 +1,22 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
-import { sessionSelectors } from '../../session/session.selectors';
-import downloadService from 'app/drive/services/download.service';
-import tasksService from 'app/tasks/services/tasks.service';
-import { DriveFileData } from 'app/drive/types';
-import AppError from 'app/core/types';
-import { t } from 'i18next';
+import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
-import { TaskStatus } from 'app/tasks/types';
+import AppError from 'app/core/types';
+import downloadService from 'app/drive/services/download.service';
+import { DriveFileData } from 'app/drive/types';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { TaskStatus } from 'app/tasks/types';
 import { saveAs } from 'file-saver';
+import { t } from 'i18next';
+import { RootState } from '../../..';
 import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 import { ConnectionLostError } from '../../../../network/requests';
-import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
+import { sessionSelectors } from '../../session/session.selectors';
+import { StorageState } from '../storage.model';
 
 interface DownloadFileThunkOptions {
   taskId: string;
@@ -90,8 +90,22 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
         },
       });
 
-      const cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
-      const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+      let cachedFile;
+      let isCachedFileOlder = false;
+      try {
+        cachedFile = await getDatabaseFileSourceData({ fileId: file.id });
+        isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
+      } catch (error) {
+        errorService.addBreadcrumb({
+          level: 'info',
+          category: 'download-file',
+          message: 'Failed to check if cached file is older',
+          data: {
+            fileId: file.id,
+          },
+        });
+        errorService.reportError(error);
+      }
 
       if (cachedFile?.source && !isCachedFileOlder) {
         updateProgressCallback(1);

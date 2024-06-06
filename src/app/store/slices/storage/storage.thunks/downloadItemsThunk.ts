@@ -13,7 +13,7 @@ import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
 import { downloadFile } from 'app/network/download';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
-import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { DownloadFileTask, DownloadFilesTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import { t } from 'i18next';
 import storageThunks from '.';
 import { RootState } from '../../..';
@@ -85,7 +85,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
     // * 2. Executes tasks
     for (const [index, item] of items.entries()) {
       const taskId = tasksIds[index];
-
       if (item.isFolder) {
         await dispatch(
           storageThunks.downloadFolderThunk({
@@ -164,8 +163,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     if (!user) throw new Error('User not found');
 
     const taskId =
-      existingTaskId ||
-      tasksService.create<DownloadFileTask>({
+      existingTaskId ??
+      tasksService.create<DownloadFilesTask>({
         action: TaskType.DownloadFile,
         showNotification: true,
         stop: async () => {
