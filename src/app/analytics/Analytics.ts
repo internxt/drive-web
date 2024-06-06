@@ -1,11 +1,12 @@
-// analytics.ts
 import { sendAnalyticsError } from './utils';
 import errorService from '../core/services/error.service';
 
 const CONTEXT_APP_NAME = 'drive-web';
 
-class RudderAnalyticsWrapper {
-  constructor() {
+export default class Analytics {
+  private static instance: Analytics;
+
+  private constructor() {
     const method = 'track';
 
     const originalMethod = window.rudderanalytics[method];
@@ -17,15 +18,7 @@ class RudderAnalyticsWrapper {
 
       return originalMethod.apply(window.rudderanalytics, args);
     };
-  }
-}
 
-new RudderAnalyticsWrapper();
-
-export default class Analytics {
-  private static instance: Analytics;
-
-  private constructor() {
     const analytics = window.rudderanalytics;
     return analytics;
   }
