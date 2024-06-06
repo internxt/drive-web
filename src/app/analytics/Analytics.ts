@@ -6,35 +6,17 @@ const CONTEXT_APP_NAME = 'drive-web';
 
 class RudderAnalyticsWrapper {
   constructor() {
-    const methods = [
-      'load',
-      'page',
-      'track',
-      'identify',
-      'alias',
-      'group',
-      'ready',
-      'reset',
-      'getAnonymousId',
-      'setAnonymousId',
-      'getUserId',
-      'getUserTraits',
-      'getGroupId',
-      'getGroupTraits',
-    ];
+    const method = 'track';
 
-    methods.forEach((method) => {
-      const originalMethod = window.rudderanalytics[method];
-      window.rudderanalytics[method] = (...args: any[]) => {
-        if (['track', 'page', 'identify', 'alias', 'group'].includes(method)) {
-          args[2] = args[2] || {};
-          args[2].context = args[2].context || {};
-          args[2].context.app = args[2].context.app || {};
-          args[2].context.app.name = CONTEXT_APP_NAME;
-        }
-        return originalMethod.apply(window.rudderanalytics, args);
-      };
-    });
+    const originalMethod = window.rudderanalytics[method];
+    window.rudderanalytics[method] = (...args: any[]) => {
+      args[2] = args[2] || {};
+      args[2].context = args[2].context || {};
+      args[2].context.app = args[2].context.app || {};
+      args[2].context.app.name = CONTEXT_APP_NAME;
+
+      return originalMethod.apply(window.rudderanalytics, args);
+    };
   }
 }
 
