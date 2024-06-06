@@ -14,7 +14,7 @@ export default function UsageDetails({
   products: {
     name: string;
     usageInBytes: number;
-    color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'teal' | 'mint' | 'primary' | 'gray';
+    color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'primary' | 'gray';
   }[];
   planUsage: number;
 }): JSX.Element {
@@ -38,14 +38,12 @@ export default function UsageDetails({
   }, []);
 
   const colorMapping: { [key in (typeof products)[number]['color']]: string } = {
-    red: 'bg-red-std',
+    red: 'bg-red',
     orange: 'bg-orange',
     yellow: 'bg-yellow',
     green: 'bg-green',
     pink: 'bg-pink',
     indigo: 'bg-indigo',
-    teal: 'bg-teal',
-    mint: 'bg-mint',
     primary: 'bg-primary',
     gray: 'bg-gray-40',
   };
@@ -62,24 +60,25 @@ export default function UsageDetails({
       <div className="flex justify-between">
         <p className="text-gray-80">
           {translate('views.account.tabs.account.usage', {
-            totalUsed: bytesToString(planUsage),
+            totalUsed: bytesToString(planUsage) || '0',
             totalSpace: bytesToString(planLimitInBytes),
           })}
         </p>
         <p className="text-gray-50">{percentageUsed}%</p>
       </div>
-      <div className="mt-2 flex h-2 rounded-sm bg-gray-5" ref={barRef}>
+      <div className="mt-2 flex h-5 rounded bg-gray-5" ref={barRef}>
         {usedProducts.map((product, i) => (
           <Tooltip
             key={product.name}
-            style="light"
             title={product.name}
             subtitle={bytesToString(product.usageInBytes)}
             popsFrom="top"
           >
             <div
               style={{ width: `${Math.max((product.usageInBytes / maxBytesLimit) * barWidth, 12)}px` }}
-              className={`${colorMapping[product.color]} h-2 border-r-2 border-white ${i === 0 ? 'rounded-l-sm' : ''}`}
+              className={`${colorMapping[product.color]} h-full border-r-2 border-surface dark:border-gray-1 ${
+                i === 0 ? 'rounded-l' : ''
+              }`}
             />
           </Tooltip>
         ))}

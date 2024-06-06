@@ -73,19 +73,22 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
           <div className="hidden">{DevicesImg}</div>
         </div>
       ) : (
-        <div className="flex h-auto w-auto min-w-max flex-row rounded-2xl bg-white" data-test="download-desktop-modal">
+        <div
+          className="flex h-auto w-auto min-w-max flex-row rounded-2xl bg-surface dark:bg-gray-5"
+          data-test="download-desktop-modal"
+        >
           <div
             onClick={onCloseModalPressed}
-            className="absolute top-3 right-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full"
+            className="absolute right-3 top-3 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full"
             data-test="download-desktop-modal-close-button"
           >
             <img src={XSVG} />
-            <div className="absolute inset-0 h-7 w-7 rounded-full bg-black opacity-5"></div>
+            <div className="absolute inset-0 h-7 w-7 rounded-full bg-black/5 dark:bg-white/10" />
           </div>
           <div className="flex w-96 flex-col p-10">
             <div>
-              <p className="text-3xl leading-9 text-cool-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
-              <p className="mt-2 text-base leading-5 text-cool-gray-80	">
+              <p className="text-3xl leading-9 text-gray-100">{t('tutorial.signUpTutorial.stepOne.title')}</p>
+              <p className="mt-2 text-base leading-5 text-gray-80	">
                 {t('tutorial.signUpTutorial.stepOne.description')}
               </p>
             </div>
@@ -96,7 +99,7 @@ export const OnboardingModal: FC<OnBoardingModalProps> = ({ onCloseModalPressed 
                   <p className="mt-2 text-base leading-5">{logoName}</p>
                 </div>
                 {separatorV}
-                <div className="flex flex-grow items-center justify-center">
+                <div className="flex grow items-center justify-center">
                   <Button variant="primary" onClick={onDownloadAppButtonClicked} autofocus>
                     <span>{translate('views.account.popover.downloadApp')}</span>
                   </Button>

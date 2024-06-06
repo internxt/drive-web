@@ -9,9 +9,9 @@ const AuthButton = ({
 }): JSX.Element => (
   <button
     type="submit"
-    className={`base-button w-full transition duration-200 easi-in-out flex items-center justify-center ${
-      isDisabled ? 'bg-blue-30 cursor-default' : 'bg-blue-60 hover:bg-blue-80'
-    } py-2 rounded text-white text-sm`}
+    className={`base-button easi-in-out flex w-full items-center justify-center transition duration-200 ${
+      isDisabled ? 'cursor-default bg-gray-30' : 'bg-primary hover:bg-primary-dark'
+    } rounded py-2 text-sm text-white`}
     disabled={isDisabled}
   >
     <span>{isDisabled ? textWhenDisabled : text}</span>

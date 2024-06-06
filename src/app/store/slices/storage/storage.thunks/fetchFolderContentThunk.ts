@@ -1,15 +1,15 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
+import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageState } from '../storage.model';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { SdkFactory } from '../../../../core/factory/sdk';
+import errorService from '../../../../core/services/error.service';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { t } from 'i18next';
-import errorService from '../../../../core/services/error.service';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { StorageState } from '../storage.model';
 
 const DEFAULT_LIMIT = 50;
 
@@ -20,8 +20,9 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
     const storageState = getState().storage;
-    const hasMoreDriveFolders = storageState.hasMoreDriveFolders;
-    const hasMoreDriveFiles = storageState.hasMoreDriveFiles;
+    const hasMoreDriveFolders = storageState.hasMoreDriveFolders[folderId] ?? true;
+    const hasMoreDriveFiles = storageState.hasMoreDriveFiles[folderId] ?? true;
+
     const foldersOffset = (storageState.levels[folderId] ?? []).filter(filterFolderItems).length;
     const filesOffset = (storageState.levels[folderId] ?? []).filter(filterFilesItems).length;
     const driveItemsSort = storageState.driveItemsSort;
@@ -34,7 +35,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       let itemsPromise;
 
       if (hasMoreDriveFolders) {
-        [itemsPromise] = await storageClient.getFolderFolders(
+        [itemsPromise] = storageClient.getFolderFolders(
           folderId,
           foldersOffset,
           DEFAULT_LIMIT,
@@ -42,7 +43,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
           driveItemsOrder,
         );
       } else if (hasMoreDriveFiles) {
-        [itemsPromise] = await storageClient.getFolderFiles(
+        [itemsPromise] = storageClient.getFolderFiles(
           folderId,
           filesOffset,
           DEFAULT_LIMIT,
@@ -63,10 +64,10 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, number, {
       dispatch(storageActions.addItems({ folderId, items: parsedItems }));
 
       if (hasMoreDriveFolders) {
-        dispatch(storageActions.setHasMoreDriveFolders(!areLastItems));
+        dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
         dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
       } else {
-        dispatch(storageActions.setHasMoreDriveFiles(!areLastItems));
+        dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
         dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
       }
     } catch (error) {
@@ -99,13 +100,15 @@ export const fetchFolderContentThunk = createAsyncThunk<void, number, { state: R
     responsePromise.then((response) => {
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
+      const parsedItems = items.map((item) => ({ ...item, plainName: item?.plain_name }));
+
       dispatch(
         storageActions.setItems({
           folderId,
-          items,
+          items: parsedItems,
         }),
       );
-      databaseService.put(DatabaseCollection.Levels, folderId, items);
+      databaseService.put(DatabaseCollection.Levels, folderId, parsedItems);
     });
   },
 );

@@ -9,8 +9,9 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import Button from 'app/shared/components/Button/Button';
 import Input from 'app/shared/components/Input';
 import PasswordStrengthIndicator from 'app/shared/components/PasswordStrengthIndicator';
-
 import { CaretLeft, WarningCircle, CheckCircle } from '@phosphor-icons/react';
+import { TrackingPlan } from 'app/analytics/TrackingPlan';
+import { trackPasswordRecovered } from 'app/analytics/services/analytics.service';
 
 interface RestartAccount {
   setHasBackupKey: Dispatch<SetStateAction<boolean | undefined>>;
@@ -94,6 +95,9 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     setIsLoading(true);
 
     const token = window.location.pathname.split('/').pop();
+    const trackPasswordRecoveredProperties: TrackingPlan.PasswordRecoveredProperties = {
+      method: 'reset',
+    };
 
     if (!token) {
       notificationsService.show({
@@ -105,6 +109,7 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
     try {
       await authService.resetAccountWithToken(token, newPassword);
       setIsEmailSent(true);
+      trackPasswordRecovered(trackPasswordRecoveredProperties);
     } catch (error) {
       notificationsService.show({
         text: translate('auth.restartAccount.error'),
@@ -122,16 +127,16 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
         <>
           <span
             onClick={() => props.setHasBackupKey(undefined)}
-            className="font-regular mb-1 flex cursor-pointer items-center text-base text-blue-60"
+            className="font-regular mb-1 flex cursor-pointer items-center text-base text-primary"
           >
             <CaretLeft size={18} className="mr-0.5" />
             {translate('auth.recoverAccount.title')}
           </span>
           <h3 className="mb-1 text-2xl font-medium">{translate('auth.restartAccount.title')}</h3>
           <p className="font-regular mb-5 text-sm text-gray-80">{translate('auth.restartAccount.description')}</p>
-          <div className="font-regular mb-4 flex rounded-md border border-red-std border-opacity-30 bg-red-std bg-opacity-5 p-4 text-sm text-red-dark">
+          <div className="font-regular mb-4 flex rounded-md border border-red/30 bg-red/5 p-4 text-sm text-red-dark">
             <span className="mr-1.5 pt-0.5">
-              <WarningCircle size={18} weight="fill" className="text-red-std" />
+              <WarningCircle size={18} weight="fill" className="text-red" />
             </span>
             <div className="flex flex-col">
               <p>{translate('auth.restartAccount.alert1')}</p>
@@ -170,9 +175,9 @@ export default function RestartAccount(props: RestartAccount): JSX.Element {
               {confirmNewPassword && !isEqualPassword && (
                 <div className="flex flex-row items-start pt-1">
                   <div className="flex h-5 flex-row items-center">
-                    <WarningCircle weight="fill" className="mr-1 h-4 text-red-std" />
+                    <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
                   </div>
-                  <span className="font-base w-56 text-sm text-red-60">
+                  <span className="font-base w-56 text-sm text-red">
                     {translate('auth.recoverAccount.changePassword.notMatch')}
                   </span>
                 </div>

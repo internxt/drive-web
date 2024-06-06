@@ -3,29 +3,31 @@
     "title": "Verwalte deine Dateien, dein Konto und dein Abonnement in der App",
     "logOut": "Log-out"
   },
+  "featuresBanner": {
+    "label": "Sparen Sie 75%",
+    "title": "Schützen Sie Ihre Daten vor der dunklen Seite",
+    "cta": "Plan auswählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
+    "features": [
+      "Sparen Sie bei Internxt-Plänen",
+      "Sicherer und geschützter Cloud-Speicher",
+      "Open Source und transparent",
+      "Ende-zu-Ende-verschlüsselte Übertragungen",
+      "Kein unbefugter Zugriff",
+      "Angebot endet am 20. Mai"
+    ]
+  },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
     "subtitle": "Erhalte 90 % Rabatt auf unseren 2-TB-Plan mit dem Code VDAY",
     "cta": "Hol dir das Angebot"
   },
-  "lifetimeBanner": {
-    "title": "Lifetime Deal!",
-    "description": "Kaufe einmal und erhalte Privatsphäre für immer.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Hol dir das Angebot"
+  "banner": {
+    "label": "Sichern Sie Ihre Dateien für immer",
+    "title": "Erhalten Sie lebenslangen Zugang zu sicherem, privatem Cloud-Speicher mit Internxt!",
+    "cta": "Wählen Sie Ihren Plan",
+    "guarantee": "30-Tage-Geld-zurück-Garantie"
   },
   "lang": {
     "title": "Sprache",
@@ -33,9 +35,17 @@
     "es": "Español (Spanisch)",
     "fr": "Français (Französisch)",
     "it": "Italiano (Italienisch)",
-    "cn": "简体中文 (Chinesisch)",
+    "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
-    "de": "Deutsch (Deutsch)"
+    "de": "Deutsch (Deutsch)",
+    "zh-tw": "臺灣 (Taiwanisch)"
+  },
+  "theme": {
+    "title": "Erscheinung",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-Mail",
@@ -55,7 +65,19 @@
       "title": "Konto erstellen",
       "haveAccount": "Haben Sie bereits ein Konto?",
       "login": "Anmelden",
-      "encrypting": "Verschlüsselung im Gange"
+      "encrypting": "Verschlüsselung im Gange",
+      "info": {
+        "normalText": "Internxt speichert keine Passwörter.",
+        "boldText": "Wenn Sie Ihr Passwort vergessen, können Sie einen Backup-Schlüssel herunterladen, um wieder Zugriff auf Ihre Dateien zu erhalten.",
+        "cta": "Erfahre mehr"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup-Schlüssel",
+      "description": "Der Backup-Schlüssel ermöglicht die Wiederherstellung des Kontos, falls Sie Ihr Passwort vergessen. Teilen Sie es niemals.",
+      "downloadCta": "Backup-Schlüssel herunterladen",
+      "settingsTab": "Sie können auf Ihren Backup-Schlüssel zugreifen unter Einstellungen > Sicherheit",
+      "skip": "Überspringen"
     },
     "forgotPassword": {
       "title": "Konto-Wiederherstellung",
@@ -67,6 +89,10 @@
       "successTitle": "Überprüfen Sie Ihren Posteingang",
       "successDescription": "Wir haben Ihnen einen einmaligen Link geschickt, um Ihr Kontopasswort wiederherzustellen",
       "invalidEmail": "Ungültige E-Mail Adresse"
+    },
+    "linkExpired": {
+      "title": "Link abgelaufen oder gelöscht",
+      "description": "Der von Ihnen besuchte Link oder die Einladung ist abgelaufen oder wurde entfernt"
     },
     "recoverAccount": {
       "title": "Konto wiederherstellen",
@@ -115,6 +141,7 @@
     "new": "Neu",
     "of": "von",
     "terms": "Geschäftsbedingungen",
+    "contactSupport": "Kundensupport kontaktieren",
     "help": "Brauchst du Hilfe?",
     "searchBar": "Durchsuche diesen Ordner",
     "stage": {
@@ -148,7 +175,8 @@
     },
     "files": "Dateien",
     "file": "Datei",
-    "folder": "Ordner"
+    "folder": "Ordner",
+    "reloadPageMessage": "Änderungen, die Sie vorgenommen haben, wurden möglicherweise nicht gespeichert."
   },
   "shareLayout": {
     "title": "WIR SIND INTERNXT",
@@ -266,8 +294,26 @@
               "name": "Name",
               "lastname": "Nachname"
             },
+            "changeEmail": {
+              "title": "E-Mail ändern",
+              "email": "E-Mail",
+              "newEmail": "Neue E-Mail",
+              "password": "Passwort",
+              "errorSameEmail": "Die neue E-Mail muss sich von der aktuellen unterscheiden",
+              "errorPassword": "Falsches Passwort, bitte versuchen Sie es erneut",
+              "sendVerification": "Verifikation senden",
+              "sendingVerification": "Verifikation wird gesendet",
+              "sucessSendingVerification": "Verifikation an {{email}} gesendet",
+              "errorSendingVerification": "Fehler beim Senden der Verifikation",
+              "confirm": "Bestätigen"
+            },
             "updateProfile": "Profil erfolgreich aktualisiert",
             "errorUpdatingProfile": "Wir konnten dein Profil nicht aktualisieren"
+          },
+          "support": {
+            "title": "Support",
+            "description": "Navigieren Sie durch hilfreiche Artikel oder erhalten Sie Unterstützung von unserem Team.",
+            "cta": "Support-Center öffnen"
           },
           "deleteAccount": {
             "head": "Lösche Konto",
@@ -341,9 +387,9 @@
           },
           "viewAllFeatures": "Alle Funktionen anzeigen",
           "card": {
-            "annually": "€{{amount}} Jährliche Rechnung",
-            "monthly": "€{{amount}} pro Monat",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} Jährliche Rechnung",
+            "monthly": "{{amount}} pro Monat",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Einmalige Zahlung"
           },
           "features": {
@@ -536,6 +582,21 @@
       "placeholder": "Unbenannter Ordner",
       "untitled": "Unbenannter Ordner"
     },
+    "itemDetailsModal": {
+      "title": "Einzelheiten",
+      "fileCta": "Vorschau öffnen",
+      "folderCta": "Ordner öffnen",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Typ",
+        "uploaded": "Hochgeladen",
+        "uploadedBy": "Hochgeladen von",
+        "shared": "Freigegeben",
+        "size": "Größe",
+        "modified": "Feändert",
+        "Ort": "Ort"
+      }
+    },
     "shareModal": {
       "title": "Aktie \"{{name}}\"",
       "list": {
@@ -552,7 +613,8 @@
       },
       "error": {
         "updatingRole": "Die Rolle konnte nicht aktualisiert werden, bitte versuchen Sie es später noch einmal.",
-        "copy-to-clipboard": "Fehler beim Teilen des Elements, versuchen Sie es später noch einmal."
+        "copy-to-clipboard": "Fehler beim Teilen des Elements, versuchen Sie es später noch einmal.",
+        "update-sharing-access": "Der Zugriffsmodus konnte nicht aktualisiert werden, bitte versuchen Sie es später erneut"
       },
       "general": {
         "generalAccess": "Allgemeiner Zugriff",
@@ -592,6 +654,17 @@
           "error": "Die Freigabe konnte nicht beendet werden, bitte versuchen Sie es erneut"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "In den Papierkorb verschieben?",
+        "subtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf \"{{name}}\"",
+        "multipleItemsSubtitle": "Benutzer mit dem Link oder eingeladen haben keinen Zugriff mehr auf diese geteilten Elemente",
+        "cancel": "Abbrechen",
+        "confirm": "In den Papierkorb verschieben",
+        "notification": {
+          "success": "Nicht mehr teilen \"{{name}}\"",
+          "error": "Konnte nicht in den Papierkorb verschoben werden, bitte versuchen Sie es erneut"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "Benutzer \"{{name}}\" entfernt",
@@ -611,6 +684,10 @@
         "successSentInvitation": "Erfolgreiche Freigabe mit {{email}}",
         "acceptedSuccessfully": "Einladung zum freigegebenen Ordner erfolgreich angenommen",
         "declinedSuccessfully": "Einladung zu gemeinsamem Ordner erfolgreich abgelehnt",
+        "inviteNewUsersBody": "Personen ohne Internxt-Konto erhalten eine Anmeldeeinladung per E-Mail.",
+        "inviteNewUsersTitle": "Neue benutzer einladen?",
+        "accept": "Akzeptieren",
+        "cancel": "Abbrechen",
         "error": {
           "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
           "acceptedError": "Fehler beim Akzeptieren der Einladung zum gemeinsamen Ordner",
@@ -626,6 +703,19 @@
         "change": "Ändern",
         "requestSent": "Anfrage gesendet",
         "confirmation": "Sie erhalten eine E-Mail, wenn die Datei/der Ordner für Sie freigegeben wurde"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Ein Passwort ist nur für Benutzer erforderlich, die keine Viewer- oder Bearbeitungsberechtigungen für das freigegebene Element haben.",
+        "protect": "Mit Passwort schützen",
+        "disablePasswordTitle": "Passwortschutz deaktivieren?",
+        "disablePasswordBody": "Wenn deaktiviert, können Personen mit dem Link auf den Inhalt zugreifen.",
+        "editPasswordTitle": "Passwort bearbeiten",
+        "buttons": {
+          "cancel": "Abbrechen",
+          "save": "Speichern",
+          "disable": "Deaktivieren",
+          "changePassword": "Passwort ändern"
+        }
       }
     },
     "deletePhotosModal": {
@@ -745,6 +835,7 @@
     "noFilePreview": "Keine Dateivorschau vorhanden",
     "browserNotSupported": "Browser wird nicht unterstützt ({{userAgent}})",
     "inviteAFriend": "Fehler beim Senden der Einladung an einen Freund: {{message}}",
+    "inviteAFriendEmpty": "Fehler beim Senden der Einladung Sie müssen eine E-Mail angeben",
     "subscribeToNewsletter": "Fehler beim Abonnieren des Newsletters: {{message}}",
     "lastPasswordError": "Das von dir zuletzt eingegebene Passwort scheint ungültig zu sein. Versuche es noch einmal. Wenn das Problem weiterhin besteht, wende dich bitte an unseren Support.",
     "incorrectPassword": "Das von dir eingegebene aktuelle Passwort stimmt nicht überein. Achte bitte darauf, dass es richtig ist.",
@@ -840,6 +931,8 @@
       "allProcessesHaveFinished": "Alle Prozesse sind abgeschlossen",
       "processing": "Wird bearbeitet {{pending}} von {{finished}}"
     },
+    "waiting": "Warten",
+    "paused": "Pausiert",
     "create-folder": {
       "status": {
         "pending": "Ordner muss noch erstellt werden",
@@ -957,6 +1050,15 @@
         "cancelled": "Umbenennung abgebrochen"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload fehlgeschlagen"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Beim erneuten Hochladen ist etwas schiefgegangen. Versuche es erneut",
+      "retryDownloadFailed": "Etwas ist schief gelaufen beim erneuten Versuch des Downloads. Versuche den Download erneut.",
+      "openUploadedFileFailed": "Etwas ist schief gelaufen beim Versuch, die Datei zu öffnen",
+      "openUploadedFolderFailed": "Etwas ist schief gelaufen beim Versuch, zum Ordner zu navigieren"
     }
   },
   "success": {
@@ -1047,7 +1149,10 @@
     "rename": "Umbenennen",
     "restore": "Wiederherstellen",
     "copyLink": "Kopiere Link",
-    "report": "Missbrauch melden"
+    "report": "Missbrauch melden",
+    "yes": "Ja",
+    "no": "Nein",
+    "more": "Mehr"
   },
   "drive": {
     "usage": "Verwendung",
@@ -1070,10 +1175,13 @@
     },
     "dropdown": {
       "openPreview": "Öffne Vorschau",
+      "details": "Einzelheiten",
+      "shareLink": "Teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
-      "download": "Download",
+      "download": "Herunterladen",
       "manageLinkAccess": "Zugang verwalten",
+      "manageAccess": "Zugang verwalten",
       "moveToTrash": "In den Papierkorb verschieben",
       "copyLink": "Kopiere Link",
       "linkSettings": "Link Einstellungen",
@@ -1174,6 +1282,24 @@
         "title": "Lass uns anfangen...",
         "description": "Klicke auf \"Hochladen\", um deine erste Datei hochzuladen."
       }
+    }
+  },
+  "blockedAccount": {
+    "title": "Überprüfen Sie, dass Sie es sind",
+    "text1": "Es wurden zu viele fehlgeschlagene Anmeldeversuche unternommen.",
+    "text2": "Aus Sicherheitsgründen haben wir eine E-Mail an Ihre Adresse {{email}} gesendet. Folgen Sie den Schritten in der E-Mail, um zu bestätigen, dass Sie es sind, und sich anzumelden",
+    "forgotPassword": "Ich habe mein Passwort vergessen",
+    "text3": "Haben Sie keine E-Mail erhalten?",
+    "resend": "Erneut senden"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Map niet gevonden",
+      "description": "Controleer of de URL correct is en of de map niet verplaatst of verwijderd is."
+    },
+    "file": {
+      "title": "Bestand niet gevonden",
+      "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
     }
   }
 }

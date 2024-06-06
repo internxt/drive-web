@@ -25,7 +25,7 @@ class DomainManager {
       this.domains = domainsList;
     } catch (error) {
       errorService.reportError(error);
-      this.domains = [];
+      this.domains = [process.env.REACT_APP_SHARE_LINKS_DOMAIN];
     }
   }
 

@@ -145,6 +145,25 @@ export const deleteUserAvatarThunk = createAsyncThunk<void, void, { state: RootS
   },
 );
 
+const updateUserEmailCredentialsThunk = createAsyncThunk<
+  void,
+  { newUserData: UserSettings; token: string; newToken: string },
+  { state: RootState }
+>('user/updateUser', async (payload, { dispatch, getState }) => {
+  const currentUser = getState().user.user as UserSettings;
+  const { newUserData, token, newToken } = payload;
+
+  const user = {
+    ...currentUser,
+    email: newUserData.email,
+    bridgeUser: newUserData.email,
+    username: newUserData.email,
+  };
+  localStorageService.set('xToken', token);
+  localStorageService.set('xNewToken', newToken);
+  dispatch(userActions.setUser(user));
+});
+
 export const userSlice = createSlice({
   name: 'user',
   initialState,
@@ -227,6 +246,7 @@ export const userThunks = {
   initializeUserThunk,
   refreshUserThunk,
   logoutThunk,
+  updateUserEmailCredentialsThunk,
 };
 
 export default userSlice.reducer;

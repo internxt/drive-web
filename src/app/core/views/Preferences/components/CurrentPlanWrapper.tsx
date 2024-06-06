@@ -1,8 +1,8 @@
 import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import { useContext } from 'react';
-import { TabContext } from '..';
 import CurrentPlan from '../../../../shared/components/CurrentPlan';
+import navigationService from '../../../services/navigation.service';
+import { AppView } from '../../../types';
 
 const CURRENCY_SYMBOLS = {
   USD: '$', // US Dollar
@@ -73,10 +73,8 @@ export default function CurrentPlanWrapper({
     planSubtitle = { mainLabel, beforeMainLabelCrossed, amount, amountAfterCoupon };
   }
 
-  const tabContext = useContext(TabContext);
-
   function onClick() {
-    tabContext.setActiveTab('plans');
+    navigationService.push(AppView.Preferences, { tab: 'plans' });
   }
 
   return (

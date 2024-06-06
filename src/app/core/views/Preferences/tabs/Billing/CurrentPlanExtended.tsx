@@ -15,6 +15,7 @@ import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import CurrentPlanWrapper from '../../components/CurrentPlanWrapper';
 import Section from '../../components/Section';
 import CancelSubscriptionModal from './CancelSubscriptionModal';
+import Button from 'app/shared/components/Button/Button';
 
 export default function CurrentPlanExtended({ className = '' }: { className?: string }): JSX.Element {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -99,31 +100,35 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
           <>
             <CurrentPlanWrapper userSubscription={userSubscription} bytesInPlan={plan.planLimit} />
             {subscriptionExtension && (
-              <div className="border-translate mt-4 flex flex-col items-center border-gray-5">
-                <h1 className="mt-4 font-medium text-gray-80">
-                  {translate('views.account.tabs.billing.subsRenew', {
-                    daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
-                  })}
-                </h1>
-                <p className="text-xs text-gray-50">
-                  {translate('views.account.tabs.billing.billed', {
-                    interval:
-                      subscriptionExtension.interval === 'monthly'
-                        ? translate('general.renewalPeriod.monthly')
-                        : translate('general.renewalPeriod.annually'),
-                    renewDate: subscriptionExtension.renewDate,
-                  })}
-                </p>
-                <button
+              <div className="mt-4 flex flex-col items-center border-t border-gray-5">
+                <div className="flex flex-col items-center py-4">
+                  <p className="font-medium text-gray-80">
+                    {translate('views.account.tabs.billing.subsRenew', {
+                      daysUntilRenewal: subscriptionExtension.daysUntilRenewal,
+                    })}
+                  </p>
+                  <p className="text-sm text-gray-50">
+                    {translate('views.account.tabs.billing.billed', {
+                      interval:
+                        subscriptionExtension.interval === 'monthly'
+                          ? translate('general.renewalPeriod.monthly')
+                          : translate('general.renewalPeriod.annually'),
+                      renewDate: subscriptionExtension.renewDate,
+                    })}
+                  </p>
+                </div>
+
+                <Button
+                  variant="secondary"
                   disabled={cancellingSubscription}
                   onClick={() => {
                     analyticsService.page('Cancelation Incentive');
                     setIsCancelSubscriptionModalOpen(true);
                   }}
-                  className="mt-2 text-xs text-gray-60"
                 >
                   {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
-                </button>
+                </Button>
+
                 <CancelSubscriptionModal
                   isOpen={isCancelSubscriptionModalOpen}
                   onClose={() => {

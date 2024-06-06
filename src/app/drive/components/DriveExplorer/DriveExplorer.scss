@@ -1,3 +1,5 @@
+@tailwind components;
+
 @layer components {
   .navigation-buttons {
     height: max-content;
@@ -9,6 +11,6 @@
     height: 24px;
     line-height: 24px !important;
 
-    @apply cursor-pointer rounded-1px text-neutral-500 text-xs hover:bg-neutral-10 flex items-center justify-center;
+    @apply flex cursor-pointer items-center justify-center rounded-px text-xs text-gray-70 hover:bg-gray-1;
   }
 }

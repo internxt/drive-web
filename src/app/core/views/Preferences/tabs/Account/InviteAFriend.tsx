@@ -37,7 +37,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
       const castedError = errorService.castError(err);
       if (castedError.message !== 'Mail invitation daily limit reached') {
         notificationsService.show({
-          text: translate('error.inviteAFriend', { message: castedError.message }),
+          text: translate('error.inviteAFriendEmpty'),
           type: ToastType.Error,
         });
         setStatus('READY');
@@ -73,7 +73,7 @@ export default function InviteAFriend({ className = '' }: { className?: string }
               {translate('inviteAFriend.actions.sendInvitation')}
             </Button>
           )}
-          <button onClick={() => setModalOpen(true)} className="font-medium text-primary underline">
+          <button onClick={() => setModalOpen(true)} className="font-medium text-primary">
             {translate('inviteAFriend.actions.seeInvitations')}
           </button>
         </div>

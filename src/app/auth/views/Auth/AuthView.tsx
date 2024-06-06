@@ -56,13 +56,13 @@ export const SignupComponent = ({
       })}
     >
       <div className="flex w-full max-w-lg flex-col items-center space-y-2 pt-10 lg:w-max lg:items-start lg:pt-0">
-        <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
+        <div className="flex w-full flex-col space-y-3 lg:flex-row lg:space-x-3 lg:space-y-0">
           <div className="flex w-full">
             <TextInput
               placeholder={textContent.email}
               label="email"
               type="email"
-              className={'w-full'}
+              className={'w-full rounded-lg bg-white'}
               register={register}
               autoComplete="off"
               minLength={{ value: 1, message: textContent.emailEmpty }}
@@ -74,7 +74,7 @@ export const SignupComponent = ({
             <PasswordInput
               placeholder={textContent.passwordLabel}
               label="password"
-              className={'w-full'}
+              className={'w-full rounded-lg bg-white'}
               register={register}
               autoComplete="new-password"
               required={true}
@@ -87,18 +87,18 @@ export const SignupComponent = ({
         {error && (
           <div className="flex w-full flex-row items-start justify-center lg:justify-start">
             <div className="flex h-5 flex-row items-center">
-              <WarningCircle weight="fill" className="text-red mr-1 h-4" />
+              <WarningCircle weight="fill" className="mr-1 h-4 text-red" />
             </div>
-            <span className="text-sm text-red-std">{error}</span>
+            <span className="text-sm text-red">{error}</span>
           </div>
         )}
 
-        <div className="flex w-full flex-col items-center space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3">
+        <div className="flex w-full flex-col items-center space-y-3 lg:flex-row lg:space-x-3 lg:space-y-0">
           <div className="w-full">
             <button
               type="submit"
               disabled={loading}
-              className={`focus:outline-none shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg ${
+              className={`shadow-xm relative flex h-11 w-full flex-row items-center justify-center space-x-4 whitespace-nowrap rounded-lg focus:outline-none ${
                 buttonColor || 'bg-pcComponentes-orange focus-visible:bg-orange-dark active:bg-orange-dark'
               }  px-0 py-2.5 text-lg text-white transition duration-100  disabled:cursor-not-allowed disabled:text-white/75 sm:text-base`}
             >
@@ -143,8 +143,8 @@ export const SignupComponent = ({
 
 export default function Auth(): JSX.Element {
   return (
-    <div className="flex flex-col items-center justify-center py-3 px-5 lg:py-16 lg:px-40">
-      <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-y-0 lg:space-x-48">
+    <div className="flex flex-col items-center justify-center px-5 py-3 lg:px-40 lg:py-16">
+      <div className="flex h-full w-full flex-col items-center justify-center space-y-7 px-5 lg:flex-row lg:space-x-48 lg:space-y-0">
         <div className="flex w-full max-w-md flex-col justify-between space-y-3 lg:space-y-10">
           <div>
             <p
@@ -159,7 +159,7 @@ export default function Auth(): JSX.Element {
           <SignupComponent textContent={textContent} />
         </div>
         <div
-          className="flex h-full flex-col items-center space-y-6 rounded-lg py-9 px-6 text-center"
+          className="flex h-full flex-col items-center space-y-6 rounded-lg px-6 py-9 text-center"
           style={{
             backgroundColor: '#13094F',
           }}

@@ -23,7 +23,7 @@ const UploadItemsDialog = (): JSX.Element => {
       onClose={onClose}
       closeClass={'hidden'}
     >
-      <span className="mt-20px block w-full px-5 text-left text-base text-neutral-900">
+      <span className="mt-20px block w-full px-5 text-left text-base text-gray-100">
         {translate('drive.uploadItems.advice')}
       </span>
 

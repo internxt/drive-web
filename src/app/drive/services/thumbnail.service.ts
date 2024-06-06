@@ -1,26 +1,27 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
-import analyticsService from '../../analytics/services/analytics.service';
-import { AppView, DevicePlatform } from '../../core/types';
-import localStorageService from '../../core/services/local-storage.service';
-import navigationService from '../../core/services/navigation.service';
-import { getEnvironmentConfig } from './network.service';
-import { SdkFactory } from '../../core/factory/sdk';
-import { uploadFile as uploadToBucket } from 'app/network/upload';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import {
   thumbnailableExtension,
   thumbnailableImageExtension,
   thumbnailablePdfExtension,
 } from 'app/drive/types/file-types';
-import { FileToUpload } from './file.service/uploadFile';
+import { Downloadable } from 'app/network/download';
+import { uploadFile as uploadToBucket } from 'app/network/upload';
+import { AppDispatch } from 'app/store';
+import { storageActions } from 'app/store/slices/storage';
 import Resizer from 'react-image-file-resizer';
+import { pdfjs } from 'react-pdf';
+import analyticsService from '../../analytics/services/analytics.service';
+import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
+import localStorageService from '../../core/services/local-storage.service';
+import navigationService from '../../core/services/navigation.service';
+import { AppView, DevicePlatform } from '../../core/types';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import { DriveItemData, ThumbnailConfig } from '../types';
 import fetchFileBlob from './download.service/fetchFileBlob';
-import { Downloadable } from 'app/network/download';
-import { storageActions } from 'app/store/slices/storage';
-import { AppDispatch } from 'app/store';
-import { pdfjs } from 'react-pdf';
+import { FileToUpload } from './file.service/uploadFile';
+import { getEnvironmentConfig } from './network.service';
 
 export interface ThumbnailToUpload {
   fileId: number;
@@ -199,7 +200,7 @@ export const generateThumbnailFromFile = async (
         };
       }
     } catch (error) {
-      console.log(error);
+      errorService.reportError(error);
     }
   }
   return null;

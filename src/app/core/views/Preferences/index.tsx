@@ -1,13 +1,15 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { createContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { createContext, useEffect, useMemo, useState } from 'react';
+import { Helmet } from 'react-helmet-async';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
-type PreferencesTabID = typeof PREFERENCES_TABS[number];
+type PreferencesTabID = (typeof PREFERENCES_TABS)[number];
 
 export const TabContext = createContext<{
   activeTab: PreferencesTabID;
@@ -26,48 +28,47 @@ export default function Preferences(): JSX.Element {
     { id: 'plans', label: translate('views.account.tabs.plans.label'), component: PlansTab },
     { id: 'security', label: translate('views.account.tabs.security.label'), component: SecurityTab },
   ];
-
+  const params = new URLSearchParams(window.location.search);
+  const urlTab = params.get('tab');
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');
+  const [currentTabTitle, setCurrentTabTitle] = useState<string>('account');
 
-  const history = useHistory();
-
-  function updateUrlWithState() {
-    history.replace({ search: new URLSearchParams({ tab: activeTab }).toString() });
-  }
-
-  const firstRun = useRef(true);
-
-  useEffect(() => {
-    if (firstRun.current) {
-      firstRun.current = false;
-      return;
-    }
-    updateUrlWithState();
-  }, [activeTab]);
+  const tabContextValues = useMemo(
+    () => ({
+      activeTab,
+      setActiveTab,
+    }),
+    [activeTab, setActiveTab],
+  );
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const tab = params.get('tab');
-
-    if (tab && PREFERENCES_TABS.includes(tab as PreferencesTabID)) {
-      setActiveTab(tab as PreferencesTabID);
-    } else if (!tab) {
-      updateUrlWithState();
+    if (urlTab) {
+      const currentTab = TABS.filter((tab) => tab.id === urlTab);
+      setActiveTab(urlTab as PreferencesTabID);
+      setCurrentTabTitle(currentTab[0].label);
+    } else {
+      navigationService.history.replace({ search: new URLSearchParams({ tab: activeTab }).toString() });
     }
-  }, []);
+  }, [urlTab]);
+
+  const navigateTab = (tabId) => {
+    navigationService.push(AppView.Preferences, { tab: `${tabId}` });
+  };
 
   return (
     <div className="flex h-full w-full flex-col">
-      <TabSelector tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
-      <TabContext.Provider value={{ activeTab, setActiveTab }}>
-        {/* overflow-y-auto and overflow-x-visible is not a valid combination in the same element */}
-        <div className="flex flex-grow flex-row justify-center overflow-y-auto p-8">
+      <Helmet>
+        <title>{currentTabTitle} - Internxt Drive</title>
+      </Helmet>
+      <TabSelector tabs={TABS} activeTab={activeTab} onChange={navigateTab} />
+      <TabContext.Provider value={tabContextValues}>
+        <div className="flex grow flex-row justify-center overflow-y-auto p-8">
           <div className="w-screen max-w-screen-xl overflow-x-visible">
             {TABS.map(
               ({ component: Component, id }) =>
                 Component && <Component className={`${activeTab !== id ? 'hidden' : ''}`} key={id} />,
             )}
-            <div className="h-8" /> {/* flexbox glitch trick */}
+            <div className="h-8" />
           </div>
         </div>
       </TabContext.Provider>
@@ -86,11 +87,11 @@ function TabSelector({
 }): JSX.Element {
   return (
     <div className="px-8 pt-5">
-      <div className="flex space-x-5 border-b border-gray-5 px-2">
+      <div className="flex space-x-8 border-b border-gray-5">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`flex h-10 items-center border-b-2 px-2 font-medium ${
+            className={`flex h-10 items-center border-b-2 font-medium ${
               tab.id === activeTab
                 ? 'border-primary text-primary'
                 : 'cursor-pointer border-transparent text-gray-60 hover:text-gray-70'

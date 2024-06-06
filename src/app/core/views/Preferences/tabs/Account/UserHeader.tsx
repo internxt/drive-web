@@ -1,5 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { Camera, Image } from '@phosphor-icons/react';
+import { Image, PencilSimple } from '@phosphor-icons/react';
 import React, { lazy, Suspense, useEffect, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import Button from '../../../../../shared/components/Button/Button';
@@ -48,15 +48,13 @@ export default function UserHeader({ className = '' }: { className?: string }): 
     <div className={`${className} flex h-44 flex-col items-center p-5`}>
       <Dropdown
         options={dropdownOptions}
-        classMenuItems={
-          '-left-6 mt-1 w-max rounded-md border border-black border-opacity-8 bg-white py-1.5 drop-shadow'
-        }
+        classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
         openDirection={'right'}
       >
         <div className="relative">
           <Avatar diameter={80} fullName={fullName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
-          <div className="absolute right-0 -bottom-1 flex h-7 w-7 items-center justify-center rounded-full border-3 border-white bg-gray-5 text-gray-60">
-            <Camera size={16} />
+          <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
+            <PencilSimple size={16} />
           </div>
         </div>
       </Dropdown>

@@ -3,42 +3,31 @@
     "title": "Gestiona tus archivos, la cuenta y la suscripción en la app",
     "logOut": "Cerrar sesión"
   },
-  "blackFridayBanner": {
-    "header": "¡Elige la privacidad!",
-    "title": "Oferta de internxt de Black Friday",
-    "cta": "¡Obtén el descuento!",
-    "features": {
-      "discount": "91% de descuento en planes anuales",
-      "safeCloud": "Almacenamiento seguro en la nube",
-      "openSource": "Código abierto y transparente",
-      "endToEnd": "Cifrado de extremo a extremo",
-      "unauthorized": "Sin acceso no autorizado",
-      "offerEnds": "La oferta termina el 30 de Noviembre"
-    }
+  "featuresBanner": {
+    "label": "Ahorra un 75%",
+    "title": "Protege tus datos del lado oscuro",
+    "cta": "Elegir plan",
+    "guarantee": "Garantía de devolución del dinero de 30 días",
+    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "features": [
+      "Ahorra en los planes de Internxt",
+      "Almacenamiento en la nube seguro y protegido",
+      "Código abierto y transparente",
+      "Transferencias cifradas de extremo a extremo",
+      "Sin acceso no autorizado",
+      "La oferta termina el 20 de mayo"
+    ]
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
     "subtitle": "90% de descuento en nuestro plan de 2TB. Código: VDAY",
     "cta": "Obtén la oferta"
   },
-  "lifetimeBanner": {
-    "title": "Oferta lifetime",
-    "description": "¡Privacidad en la nube para siempre!",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Obtén la oferta"
+  "banner": {
+    "label": "Protege tus archivos de por vida",
+    "title": "Obtén acceso de por vida a tu almacenamiento en la nube en Internxt",
+    "cta": "Elige tu plan",
+    "guarantee": "Garantía de devolución de 30 días"
   },
   "lang": {
     "title": "Idioma",
@@ -46,10 +35,19 @@
     "es": "Español (Español)",
     "fr": "Français (Francés)",
     "it": "Italiano (Italiano)",
-    "cn": "简体中文 (Chino)",
+    "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
-    "de": "Deutsch (Alemán)"
+    "de": "Deutsch (Alemán)",
+    "zh-tw": "臺灣 (Taiwanés)"
   },
+  "theme": {
+    "title": "Apariencia",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "system": "Sistema",
+    "starwars": "Star Wars"
+  },
+
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",
@@ -68,7 +66,19 @@
       "title": "Crear cuenta",
       "haveAccount": "¿Ya tienes una cuenta?",
       "login": "Iniciar sesión",
-      "encrypting": "Cifrando"
+      "encrypting": "Cifrando",
+      "info": {
+        "normalText": "Internxt no almacena contraseñas.",
+        "boldText": "Si olvidas tu contraseña, puedes descargar una clave de respaldo para recuperar el acceso a tus archivos.",
+        "cta": "Más información"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Clave de respaldo",
+      "description": "La clave de respaldo permite la recuperación de la cuenta en caso de que olvides tu contraseña. Nunca la compartas.",
+      "downloadCta": "Descargar clave",
+      "settingsTab": "Puedes acceder a tu clave de respaldo en Configuración > Seguridad",
+      "skip": "Omitir"
     },
     "forgotPassword": {
       "title": "Recuperación de cuenta",
@@ -134,6 +144,7 @@
     "new": "nuevo",
     "of": "de",
     "terms": "Términos y condiciones",
+    "contactSupport": "Contactar con soporte",
     "help": "¿Necesitas ayuda?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Buscar en esta carpeta",
@@ -154,6 +165,10 @@
         "title": "No hay resultados",
         "subtitle": "Ninguna coincidencia para tu búsqueda"
       }
+    },
+    "linkExpired": {
+      "title": "Enlace caducado o eliminado",
+      "description": "El enlace o invitación que visitó ha caducado o ha sido eliminado"
     },
     "stage": {
       "development": "Development",
@@ -186,7 +201,8 @@
     },
     "files": "Archivos",
     "file": "Archivo",
-    "folder": "Carpeta"
+    "folder": "Carpeta",
+    "reloadPageMessage": "Los cambios que realizaste pueden no haberse guardado."
   },
   "shareLayout": {
     "title": "",
@@ -316,8 +332,14 @@
               "sendVerification": "Enviar verificación",
               "sendingVerification": "Enviando verificación",
               "sucessSendingVerification": "Verificación enviada a {{email}}",
-              "errorSendingVerification": "Error enviando verificación"
+              "errorSendingVerification": "Error enviando verificación",
+              "confirm": "Confirmar"
             }
+          },
+          "support": {
+            "title": "Soporte",
+            "description": "Navega por artículos útiles o recibe asistencia de nuestro equipo.",
+            "cta": "Abrir Centro de Soporte"
           },
           "deleteAccount": {
             "head": "Eliminar cuenta",
@@ -403,9 +425,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "{{amount}}€ facturado al año",
-            "monthly": "{{amount}} €/mes",
-            "lifetime": "{{amount}}€",
+            "annually": "{{amount}} facturado al año",
+            "monthly": "{{amount}} al mes",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "Pago único"
           },
           "features": {
@@ -635,6 +657,21 @@
       "placeholder": "Carpeta sin titulo",
       "untitled": "Carpeta sin título"
     },
+    "itemDetailsModal": {
+      "title": "Detalles",
+      "fileCta": "Abrir previsualización",
+      "folderCta": "Abrir carpeta",
+      "itemDetails": {
+        "name": "Nombre",
+        "type": "Tipo",
+        "uploaded": "Subido",
+        "uploadedBy": "Subido por",
+        "shared": "Compartido",
+        "size": "Tamaño",
+        "modified": "Modificado",
+        "location": "Ubicación"
+      }
+    },
     "shareModal": {
       "title": "Compartir \"{{name}}\"",
       "list": {
@@ -651,7 +688,8 @@
       },
       "errors": {
         "updatingRole": "El rol no pudo ser actualizado, por favor inténtalo nuevamente más tarde.",
-        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde."
+        "copy-to-clipboard": "Error al compartir el elemento, inténtalo de nuevo más tarde.",
+        "update-sharing-access": "El modo de acceso no se pudo actualizar, por favor inténtelo de nuevo más tarde"
       },
       "general": {
         "generalAccess": "Acceso general",
@@ -691,6 +729,13 @@
           "error": "No se ha podido dejar de compartir, inténtalo de nuevo"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "¿Mover a la papelera?",
+        "subtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a \"{{name}}\"",
+        "multipleItemsSubtitle": "Los usuarios con el enlace o invitados ya no tendrán acceso a estos elementos compartidos",
+        "cancel": "Cancelar",
+        "confirm": "Mover a la papelera"
+      },
       "removeUser": {
         "notification": {
           "success": "Usuario \"{{name}}\" eliminado",
@@ -710,6 +755,10 @@
         "successSentInvitation": "Compartido con éxito con {{email}}",
         "acceptedSuccessfully": "Invitación a carpeta compartida aceptada con éxito",
         "declinedSuccessfully": "Invitación a carpeta compartida rechazada con éxito",
+        "inviteNewUsersBody": "Las personas sin una cuenta de Internxt recibirán un correo electrónico de invitación para registrarse.",
+        "inviteNewUsersTitle": "¿Invitar a nuevos usuarios?",
+        "accept": "Aceptar",
+        "cancel": "Cancelar",
         "error": {
           "errorInviting": "Error al enviar la invitación a {{email}}",
           "acceptedError": "Error al aceptar la invitación a la carpeta compartida",
@@ -725,6 +774,19 @@
         "change": "Cambiar",
         "requestSent": "Solicitud enviada",
         "confirmation": "Recibirás un correo electrónico si el archivo/carpeta se comparte"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "La contraseña solo es necesaria para los usuarios sin acceso de visor o editor al elemento compartido.",
+        "protect": "Proteger con contraseña",
+        "disablePasswordTitle": "¿Desactivar la protección con contraseña?",
+        "disablePasswordBody": "Cuando está desactivada, las personas con el enlace podrán acceder al contenido.",
+        "editPasswordTitle": "Editar contraseña",
+        "buttons": {
+          "cancel": "Cancelar",
+          "save": "Guardar",
+          "disable": "Desactivar",
+          "changePassword": "Cambiar contraseña"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -846,6 +908,7 @@
     "noFilePreview": "No hay vista previa de archivos disponible",
     "browserNotSupported": "Navegador no compatible ({{userAgent}})",
     "inviteAFriend": "Error al enviar la invitación a un amigo: {{message}}",
+    "inviteAFriendEmpty": "Error al enviar la invitación: Debe especificar un correo electrónico",
     "subscribeToNewsletter": "Error al suscribirse al boletín: {{message}}",
     "lastPasswordError": "La contraseña que has introducido como última parece no ser válida. Inténtalo de nuevo y, si el problema persiste, ponte en contacto con nuestro servicio de asistencia.",
     "incorrectPassword": "La contraseña no coincide. Asegúrate de que la contraseña que has introducido es correcta.",
@@ -853,7 +916,7 @@
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
     "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
-    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
   },
@@ -883,7 +946,7 @@
     },
     "dropdown": {
       "download": "Descargar",
-      "delete": "Eliminar permanentemente"
+      "delete": "Eliminar"
     }
   },
   "shared": {
@@ -954,6 +1017,8 @@
       "allProcessesHaveFinished": "Todos los procesos han finalizado",
       "processing": "Procesando {{pending}} de {{finished}}"
     },
+    "waiting": "Esperando",
+    "paused": "Pausado",
     "create-folder": {
       "status": {
         "pending": "Esperando para completar tarea",
@@ -1073,6 +1138,15 @@
         "cancelled": "Cancelado"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Error al subir"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Algo salió mal al reintentar la subida. Intenta subirlo de nuevo",
+      "retryDownloadFailed": "Algo salió mal al reintentar la subida. Intenta la descarga de nuevo",
+      "openUploadedFileFailed": "Algo salió mal al intentar abrir el archivo",
+      "openUploadedFolderFailed": "Algo salió mal al intentar navegar hasta la carpeta"
     }
   },
   "shareItemDialog": {
@@ -1168,7 +1242,10 @@
     "rename": "Renombrar",
     "restore": "Restaurar",
     "copyLink": "Copiar enlace",
-    "report": "Reportar abuso"
+    "report": "Reportar abuso",
+    "yes": "Si",
+    "no": "No",
+    "more": "Más"
   },
   "drive": {
     "usage": "Uso",
@@ -1191,8 +1268,12 @@
     },
     "dropdown": {
       "openPreview": "Abrir previsualización",
+      "shareLink": "Compartir",
       "getLink": "Copiar enlace",
+      "details": "Detalles",
       "rename": "Renombrar",
+      "manageLinkAccess": "Gestionar acceso",
+      "manageAccess": "Gestionar acceso",
       "download": "Descargar",
       "moveToTrash": "Mover a la papelera",
       "copyLink": "Copiar enlace",
@@ -1292,8 +1373,26 @@
       },
       "stepTwo": {
         "title": "Empecemos...",
-        "description": "Haga clic en el botón Cargar para cargar su primer archivo."
+        "description": "Haga clic en el botón Subir archivos para cargar su primer archivo."
       }
+    }
+  },
+  "blockedAccount": {
+    "title": "Verifica que eres tú",
+    "text1": "Se han detectado demasiados inicios de sesion fallidos.",
+    "text2": "Por motivos de seguridad te hemos enviado un email a tu dirección {{email}} sigue los pasos del email para confirmar que eres tú e iniciar sesión",
+    "forgotPassword": "He olvidado mi contraseña",
+    "text3": "¿No has recibido ningún correo electrónico?",
+    "resend": "Reenviar"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Carpeta no encontrada",
+      "description": "Asegúrese de que la URL es correcta y de que la carpeta no se ha movido ni eliminado."
+    },
+    "file": {
+      "title": "Archivo no encontrado",
+      "description": "Asegúrese de que la URL es correcta y de que el archivo no se ha movido ni eliminado."
     }
   }
 }

@@ -27,11 +27,9 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
           items: databaseContent,
         }),
       );
-    } else {
-      await responsePromise;
     }
 
-    responsePromise.then((response) => {
+    await responsePromise.then(async (response) => {
       const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
@@ -40,13 +38,17 @@ export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: R
           items,
         }),
       );
-      databaseService.put(DatabaseCollection.MoveDialogLevels, folderId, items);
+      await databaseService.delete(DatabaseCollection.MoveDialogLevels, folderId);
+      await databaseService.put(DatabaseCollection.MoveDialogLevels, folderId, items);
     });
   },
 );
 
 export const fetchDialogContentThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
-  builder.addCase(fetchDialogContentThunk.rejected, (state, action) => {
-    notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
-  });
+  builder
+    .addCase(fetchDialogContentThunk.pending, () => undefined)
+    .addCase(fetchDialogContentThunk.fulfilled, () => undefined)
+    .addCase(fetchDialogContentThunk.rejected, (state, action) => {
+      notificationsService.show({ text: t('error.fetchingFolderContent'), type: ToastType.Error });
+    });
 };

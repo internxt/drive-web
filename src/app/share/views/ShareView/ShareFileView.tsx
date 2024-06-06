@@ -1,34 +1,34 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { useState, useEffect } from 'react';
-import { match } from 'react-router';
-import shareService from 'app/share/services/share.service';
 import iconService from 'app/drive/services/icon.service';
 import sizeService from 'app/drive/services/size.service';
-import { TaskProgress } from 'app/tasks/types';
 import network from 'app/network';
+import shareService from 'app/share/services/share.service';
+import { TaskProgress } from 'app/tasks/types';
+import { useEffect, useState } from 'react';
+import { match } from 'react-router';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../../../app/store/hooks';
 import FileViewer from '../../../../app/drive/components/FileViewer/FileViewer';
+import { useAppSelector } from '../../../../app/store/hooks';
 import fileExtensionService from '../../../drive/services/file-extension.service';
 import { fileExtensionPreviewableGroups } from '../../../drive/types/file-types';
 
-import UilCheck from '@iconscout/react-unicons/icons/uil-check';
-import UilEye from '@iconscout/react-unicons/icons/uil-eye';
 import UilArrowRight from '@iconscout/react-unicons/icons/uil-arrow-right';
-import UilImport from '@iconscout/react-unicons/icons/uil-import';
+import { Check, DownloadSimple, Eye } from '@phosphor-icons/react';
 
-import './ShareView.scss';
 import downloadService from 'app/drive/services/download.service';
+import './ShareView.scss';
 
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { binaryStreamToBlob } from 'app/core/services/stream.service';
-import ShareItemPwdView from './ShareItemPwdView';
-import SendBanner from './SendBanner';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { ShareTypes } from '@internxt/sdk/dist/drive';
+import { PublicSharedItemInfo, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import errorService from 'app/core/services/error.service';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError from '../../../core/types';
 import Button from '../../../shared/components/Button/Button';
+import SendBanner from './SendBanner';
+import ShareItemPwdView from './ShareItemPwdView';
 
 export interface ShareViewProps extends ShareViewState {
   match: match<{
@@ -61,6 +61,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
   const [blobProgress, setBlobProgress] = useState(TaskProgress.Min);
   const [isDownloading, setIsDownloading] = useState(false);
   const [info, setInfo] = useState<SharingMeta | Record<string, any>>({});
+  const [itemData, setItemData] = useState<PublicSharedItemInfo>();
   const [isLoaded, setIsLoaded] = useState(false);
   const [isError, setIsError] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
@@ -74,7 +75,7 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
 
   useEffect(() => {
     loadInfo().catch((err) => {
-      if (err.message !== 'Forbidden') {
+      if (err.status !== HTTP_CODES.FORBIDDEN) {
         setIsLoaded(true);
         setIsError(true);
         throw new Error(translate('error.linkExpired') as string);
@@ -133,15 +134,24 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
           name: res.item.plainName,
         });
       })
-      .catch((err) => {
-        if (err.message === 'Forbidden') {
+      .catch(async (err) => {
+        if (err.status === HTTP_CODES.FORBIDDEN) {
+          await getSharedItemInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-
-        throw err;
+        throw new AppError(err.message, err.status);
       });
   }
+
+  const getSharedItemInfo = async (id: string) => {
+    try {
+      const itemData = await shareService.getPublicSharedItemInfo(id);
+      setItemData(itemData);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   function getBlob(abortController: AbortController): Promise<Blob> {
     const fileInfo = info as unknown as ShareTypes.ShareLink;
@@ -227,19 +237,19 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     body = (
       <>
         <div className="relative h-32 w-32">
-          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 transform drop-shadow-soft filter" />
-          <ItemIconComponent className="absolute top-0.5 -left-7 rotate-10- transform drop-shadow-soft filter" />
+          <ItemIconComponent className="absolute -top-2.5 left-7 rotate-10 drop-shadow-soft" />
+          <ItemIconComponent className="absolute -left-7 top-0.5 -rotate-10 drop-shadow-soft" />
         </div>
 
         <div className="flex flex-col items-center justify-center">
           <span className="text-2xl font-semibold">Shared files no longer available</span>
-          <span className="text-cool-gray-60">Link expired or files deleted</span>
+          <span className="text-gray-60">Link expired or files deleted</span>
         </div>
 
         {isAuthenticated && (
-          <Link to="/app" className="cursor-pointer text-cool-gray-90 no-underline hover:text-cool-gray-90">
+          <Link to="/" className="cursor-pointer text-gray-100 no-underline hover:text-gray-100">
             <div
-              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-cool-gray-10
+              className="flex h-10 flex-row items-center justify-center space-x-2 rounded-lg bg-gray-5
                           px-6 font-medium"
             >
               <span>Open Internxt Drive</span>
@@ -253,12 +263,17 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
     const FileIcon = iconService.getItemIcon(false, info?.item?.type);
 
     body = requiresPassword ? (
-      <ShareItemPwdView onPasswordSubmitted={loadInfo} itemPassword={itemPassword} setItemPassword={setItemPassword} />
+      <ShareItemPwdView
+        onPasswordSubmitted={loadInfo}
+        itemPassword={itemPassword}
+        setItemPassword={setItemPassword}
+        itemData={itemData}
+      />
     ) : (
       <>
         {/* File info */}
-        <div className="flex flex-grow-0 flex-col items-center justify-center space-y-4">
-          <div className="h-32 w-32 drop-shadow-soft filter">
+        <div className="flex grow-0 flex-col items-center justify-center space-y-4">
+          <div className="h-32 w-32 drop-shadow-soft">
             <FileIcon />
           </div>
 
@@ -267,13 +282,13 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
               <abbr className="w-screen max-w-prose break-words px-10 text-xl sm:w-full" title={getFormatFileName()}>
                 {getFormatFileName()}
               </abbr>
-              <span className="text-cool-gray-60">{getFormatFileSize()}</span>
+              <span className="text-gray-60">{getFormatFileSize()}</span>
             </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex flex-row items-center justify-center space-x-3">
+        <div className="flex flex-row items-center justify-center space-x-2">
           {isTypeAllowed() && (
             <Button
               variant="secondary"
@@ -290,42 +305,38 @@ export default function ShareFileView(props: ShareViewProps): JSX.Element {
                   });
               }}
             >
-              <UilEye height={24} width={24} color="text-gray-80" />
+              <Eye size={24} className="text-gray-80" />
               <span className="ml-2">{translate('actions.view')}</span>
             </Button>
           )}
 
-          <button
-            onClick={download}
-            className={`flex h-10 cursor-pointer flex-row items-center space-x-2 rounded-lg px-6 font-medium
-                        text-white ${progress && !(progress < 100) ? 'bg-green' : 'bg-blue-60'}`}
-          >
+          <Button onClick={download} variant="primary">
             {Number(progress) == 100 ? (
               <>
                 {/* Download completed */}
-                <UilCheck height="24" width="24" />
-                <span className="font-medium">{translate('actions.downloaded')}</span>
+                <Check size={24} />
+                <span>{translate('actions.downloaded')}</span>
               </>
             ) : isDownloading ? (
               <>
                 {/* Download in progress */}
-                <div className="mr-1 h-5 w-5 text-white">{Spinner}</div>
+                <div className="h-5 w-5 text-white">{Spinner}</div>
                 <span>{translate('actions.downloading')}</span>
-                <span className="font-normal text-blue-20">{progress}%</span>
+                <span className="text-white/50">{progress}%</span>
               </>
             ) : (
               <>
                 {/* Download button */}
-                <UilImport height="20" width="20" />
-                <span className="font-medium">{translate('actions.download')}</span>
+                <DownloadSimple size={24} />
+                <span>{translate('actions.download')}</span>
               </>
             )}
-          </button>
+          </Button>
         </div>
       </>
     );
   } else {
-    body = <div className="h-8 w-8 text-cool-gray-30">{Spinner}</div>;
+    body = <div className="h-8 w-8 text-gray-30">{Spinner}</div>;
   }
 
   return (

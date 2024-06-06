@@ -1,25 +1,38 @@
-import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
-import { RootState } from 'app/store';
-import { useAppSelector } from 'app/store/hooks';
-import { PlanState } from 'app/store/slices/plan';
-import { userSelectors } from 'app/store/slices/user';
+import localStorageService from '../core/services/local-storage.service';
+import { RootState } from '../store';
+import { useAppSelector } from '../store/hooks';
+import { PlanState } from '../store/slices/plan';
+import { userSelectors } from '../store/slices/user';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import BlackFridayBanner from './BlackFridayBanner';
-import { getCookie, setCookie } from 'app/analytics/utils';
 
-const SHOW_BANNER_COOKIE_NAME = 'showBanner';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+
+import Banner from './Banner';
+
+const SHOW_BANNER_COOKIE_NAME = 'lifetime_soft_banner';
+const OFFER_OFF_DAY = new Date('2024-05-26');
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const isTutorialCompleted = localStorageService.get(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
+  const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
   const userPlan = plan.subscription?.type;
+
+  const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const shouldShowBanner = userPlan === 'free' && !getCookie(SHOW_BANNER_COOKIE_NAME);
+  const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
+  const isOfferOffDay = new Date() > OFFER_OFF_DAY;
+
+  const shouldShowBanner = isNewUser && !isLocalStorage && !isOfferOffDay;
+
+  useEffect(() => {
+    handleBannerDisplay();
+  }, [isTutorialCompleted, userPlan, isNewAccount]);
 
   const onCloseBanner = () => {
-    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', 31);
+    localStorageService.set(SHOW_BANNER_COOKIE_NAME, 'false');
     setShowBanner(false);
   };
 
@@ -29,11 +42,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  useEffect(() => {
-    handleBannerDisplay();
-  }, [isTutorialCompleted, userPlan, isNewAccount]);
-
-  return <BlackFridayBanner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;

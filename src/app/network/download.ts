@@ -14,9 +14,9 @@ import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
 import {
-  getDatabasePhotosPrewiewData,
+  getDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
-  updateDatabasePhotosPrewiewData,
+  updateDatabasePhotosPreviewData,
   updateDatabasePhotosSourceData,
 } from '../drive/services/database.service';
 import errorService from '../core/services/error.service';
@@ -253,7 +253,7 @@ export async function getPhotoPreview(
   let previewInCache;
   let blob: Blob;
   try {
-    previewInCache = await getDatabasePhotosPrewiewData({ photoId: photo.id });
+    previewInCache = await getDatabasePhotosPreviewData({ photoId: photo.id });
   } catch (err) {
     errorService.reportError(err);
   }
@@ -274,7 +274,7 @@ export async function getPhotoPreview(
 
     blob = await binaryStreamToBlob(readable);
     try {
-      await updateDatabasePhotosPrewiewData({ photoId: photo.id, preview: blob });
+      await updateDatabasePhotosPreviewData({ photoId: photo.id, preview: blob });
     } catch (err) {
       errorService.reportError(err);
     }

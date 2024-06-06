@@ -1,9 +1,11 @@
+@tailwind components;
+
 @layer components {
   .file-list-item {
-    @apply relative flex flex-grow flex-row items-center text-base;
+    @apply relative flex w-full grow flex-row items-center text-base;
 
     &.selected {
-      @apply border-blue-20 border-opacity-65;
+      @apply border-primary/10;
     }
 
     &.is-dragging {
@@ -38,6 +40,6 @@
   // }
 
   .file-list-item-actions-button {
-    @apply h-5 w-5 rounded-1/2 bg-neutral-20 p-0.5 font-bold text-primary;
+    @apply h-5 w-5 rounded-1/2 bg-gray-5 p-0.5 font-bold text-primary;
   }
 }

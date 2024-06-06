@@ -69,16 +69,16 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
       <div
         className={`${
           isPlanActive ? 'visible' : 'invisible'
-        } rounded-translate-lg flex items-center justify-center bg-blue-60 py-2 text-xs font-semibold text-white`}
+        } rounded-translate-lg flex items-center justify-center bg-primary py-2 text-xs font-semibold text-white`}
       >
         {translate('drive.currentPlan')}
       </div>
       <div
         className={`${sizeClassName} flex flex-col justify-center
-         rounded-lg border border-neutral-30 bg-white p-6 text-neutral-700`}
+         rounded-lg border border-gray-5 bg-white p-6 text-gray-80`}
       >
         {/* SIMPLE NAME */}
-        <h4 className="mx-auto mb-4 w-min rounded-3xl bg-neutral-20 px-4 py-1 font-semibold text-neutral-80">
+        <h4 className="mx-auto mb-4 w-min rounded-3xl bg-gray-5 px-4 py-1 font-semibold text-gray-40">
           {props.product.metadata.simple_name}
         </h4>
 
@@ -90,7 +90,7 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
 
         {/* TOTAL AMOUNT */}
         {props.product.metadata.is_teams ? (
-          <div className="mt-6 mb-2 rounded-lg border border-neutral-20 bg-neutral-10 p-4">
+          <div className="mb-2 mt-6 rounded-lg border border-gray-5 bg-gray-1 p-4">
             <NumberInput
               className="mb-2"
               initialValue={teamMembersCount}
@@ -102,14 +102,14 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
             <div className="flex w-full items-center justify-center">
               <Fragment>
                 <span className="mr-1">{totalAmountFormatted}</span>
-                <span className="text-xs text-neutral-100">
+                <span className="text-xs text-gray-50">
                   /{translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase()}
                 </span>
               </Fragment>
             </div>
           </div>
         ) : (
-          <span className="mt-2 mb-4 text-center text-xs text-neutral-80">
+          <span className="mb-4 mt-2 text-center text-xs text-gray-40">
             {translate('general.billing.billedEachPeriod', {
               price: totalAmountFormatted,
               period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),
@@ -130,12 +130,12 @@ const ProductItem = (props: ProductItemProps): JSX.Element => {
   const tabletTemplate = (
     <div className="product-item tablet">
       <div className="w-36">
-        <div className={`${isPlanActive ? 'text-blue-60' : ''} flex`}>
+        <div className={`${isPlanActive ? 'text-primary' : ''} flex`}>
           <span className="mr-3 block text-xl font-bold">{props.product.metadata.simple_name}</span>
           {isPlanActive && <UilCheck />}
         </div>
 
-        <span className={`${isPlanActive ? 'text-blue-60' : 'text-neutral-80'} block text-xs`}>
+        <span className={`${isPlanActive ? 'text-primary' : 'text-gray-40'} block text-xs`}>
           {translate('general.billing.billedEachPeriod', {
             price: totalAmountFormatted,
             period: translate(`general.renewalPeriod.${props.product.renewalPeriod}`).toLowerCase(),

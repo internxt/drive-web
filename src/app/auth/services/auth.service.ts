@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/react';
 import { aes } from '@internxt/lib';
 import {
   CryptoProvider,
@@ -7,8 +6,23 @@ import {
   Password,
   SecurityDetails,
   TwoFactorAuthQR,
-  UserAccessError,
 } from '@internxt/sdk/dist/auth';
+import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as Sentry from '@sentry/react';
+import analyticsService from 'app/analytics/services/analytics.service';
+import { getCookie, setCookie } from 'app/analytics/utils';
+import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
+import RealtimeService from 'app/core/services/socket.service';
+import { AppView } from 'app/core/types';
+import {
+  assertPrivateKeyIsValid,
+  assertValidateKeys,
+  decryptPrivateKey,
+  getAesInitFromEnv,
+} from 'app/crypto/services/keys.service';
+import { generateNewKeys } from 'app/crypto/services/pgp.service';
 import {
   decryptText,
   decryptTextWithKey,
@@ -17,31 +31,18 @@ import {
   passToHash,
 } from 'app/crypto/services/utils';
 import databaseService from 'app/database/services/database.service';
-import navigationService from 'app/core/services/navigation.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import analyticsService from 'app/analytics/services/analytics.service';
-import {
-  getAesInitFromEnv,
-  assertPrivateKeyIsValid,
-  decryptPrivateKey,
-  assertValidateKeys,
-} from 'app/crypto/services/keys.service';
-import { AppView } from 'app/core/types';
-import { generateNewKeys } from 'app/crypto/services/pgp.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
-import { ChangePasswordPayload } from '@internxt/sdk/dist/drive/users/types';
 import httpService from '../../core/services/http.service';
-import RealtimeService from 'app/core/services/socket.service';
-import { getCookie, setCookie } from 'app/analytics/utils';
-import { validateMnemonic, generateMnemonic } from 'bip39';
 
-export async function logOut(): Promise<void> {
+export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  navigationService.push(AppView.Login);
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount)) {
+    navigationService.push(AppView.Login, loginParams);
+  }
 }
 
 export function cancelAccount(): Promise<void> {
@@ -156,9 +157,7 @@ export const doLogin = async (
       };
     })
     .catch((error) => {
-      if (error instanceof UserAccessError) {
-        analyticsService.signInAttempted(email, error.message);
-      }
+      analyticsService.signInAttempted(email, error.message);
       throw error;
     });
 };
@@ -268,8 +267,11 @@ export const changePassword = async (newPassword: string, currentPassword: strin
       encryptedMnemonic: encryptedMnemonic,
       encryptedPrivateKey: privateKeyEncrypted,
     })
-    .then(() => {
+    .then((res) => {
       // !TODO: Add the correct analytics event  when change password is completed
+      const { token, newToken } = res as any;
+      if (token) localStorageService.set('xToken', token);
+      if (newToken) localStorageService.set('xNewToken', newToken);
     })
     .catch((error) => {
       // !TODO: Add the correct analytics event when change password fails
@@ -398,6 +400,16 @@ const sendChangePasswordEmail = (email: string): Promise<void> => {
   return authClient.sendChangePasswordEmail(email);
 };
 
+export const requestUnblockAccount = (email: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.requestUnblockAccount(email);
+};
+
+export const unblockAccount = (token: string): Promise<void> => {
+  const authClient = SdkFactory.getNewApiInstance().createAuthClient();
+  return authClient.unblockAccount(token);
+};
+
 const authService = {
   logOut,
   doLogin,
@@ -411,6 +423,8 @@ const authService = {
   sendChangePasswordEmail,
   updateCredentialsWithToken,
   resetAccountWithToken,
+  requestUnblockAccount,
+  unblockAccount,
 };
 
 export default authService;

@@ -3,42 +3,31 @@
     "title": "Manage your files, account and subscription on the app",
     "logOut": "Log Out"
   },
-  "blackFridayBanner": {
-    "header": "Save big on privacy.",
-    "title": "Internxt's Black Friday Deal",
-    "cta": "Get the deal!",
-    "features": {
-      "discount": "Get 91% discount on all annual plans",
-      "safeCloud": "Safe and secure cloud storage",
-      "openSource": "Open source and transparent",
-      "endToEnd": "End-to-end encrypted transfers",
-      "unauthorized": "No unauthorized access",
-      "offerEnds": "Offer ends November 30th"
-    }
+  "featuresBanner": {
+    "label": "Save 75%",
+    "title": "Protect your data from the dark side",
+    "cta": "Choose plan",
+    "guarantee": "30-day money-back guarantee",
+    "lastCta": "*Offer is for free accounts or new customers",
+    "features": [
+      "Save on Internxt plans",
+      "Safe and secure cloud storage",
+      "Open source and transparent",
+      "End-to-end encrypted transfers",
+      "No unauthorized access",
+      "Offer ends May 20"
+    ]
   },
   "valentinesBanner": {
     "title": "Love without limits!",
     "subtitle": "Get 90% off our 2TB plan with code VDAY",
     "cta": "Get the deal"
   },
-  "lifetimeBanner": {
-    "title": "Lifetime deal!",
-    "description": "Buy once and get privacy forever.",
-    "cards": {
-      "1": {
-        "space": "10TB",
-        "price": "499"
-      },
-      "2": {
-        "space": "5TB",
-        "price": "249"
-      },
-      "3": {
-        "space": "2TB",
-        "price": "149"
-      }
-    },
-    "cta": "Get the deal"
+  "banner": {
+    "label": "Secure your files forever",
+    "title": "Get lifetime access to secure, private cloud storage with Internxt!",
+    "cta": "Choose your plan",
+    "guarantee": "30-day money-back guarantee"
   },
   "notFound": {
     "header": "Error 404",
@@ -57,15 +46,27 @@
       "description": "Reach out to our Support Team at hello@internxt.com."
     }
   },
+  "linkExpired": {
+    "title": "Link expired or deleted",
+    "description": "The link or invitation you visited has expired or has been removed"
+  },
   "lang": {
     "title": "Language",
     "en": "English (English)",
     "es": "Español (Spanish)",
     "fr": "Français (French)",
     "it": "Italiano (Italian)",
-    "cn": "简体中文 (Chinese)",
+    "zh": "简体中文 (Chinese)",
     "ru": "Русский (Russian)",
-    "de": "Deutsch (German)"
+    "de": "Deutsch (German)",
+    "zh-tw": "臺灣 (Taiwan)"
+  },
+  "theme": {
+    "title": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",
@@ -85,7 +86,19 @@
       "title": "Create account",
       "haveAccount": "Already have an account?",
       "login": "Log in",
-      "encrypting": "Encrypting"
+      "encrypting": "Encrypting",
+      "info": {
+        "normalText": "Internxt doesn’t store passwords.",
+        "boldText": "If you forget your password, you can download a backup key to regain access to your files.",
+        "cta": "Learn more"
+      }
+    },
+    "downloadBackupKey": {
+      "title": "Backup key",
+      "description": "The backup key enables account recovery in the event you forget your password. Never share it.",
+      "downloadCta": "Download backup key",
+      "settingsTab": "You can access your backup key in Settings > Security",
+      "skip": "Skip"
     },
     "forgotPassword": {
       "title": "Account recovery",
@@ -151,6 +164,7 @@
     "new": "new",
     "of": "of",
     "terms": "Terms and conditions",
+    "contactSupport": "Contact Support",
     "help": "Need help?",
     "searchBar": {
       "oldSearchBarPlaceholder": "Search this folder",
@@ -203,7 +217,8 @@
     },
     "files": "Files",
     "file": "File",
-    "folder": "Folder"
+    "folder": "Folder",
+    "reloadPageMessage": "Changes you have made may not have been saved."
   },
   "shareLayout": {
     "title": "WE ARE INTERNXT",
@@ -229,7 +244,7 @@
     "putPwd": "Please enter the password provided",
     "putPwd1": "by the sender for access.",
     "password": "Password",
-    "pwdLayout": "password",
+    "pwdLayout": "Password",
     "access": "Access"
   },
   "sideNav": {
@@ -296,7 +311,7 @@
             },
             "subscription": {
               "planName": "Subscription",
-              "button": "change",
+              "button": "Change",
               "yearly": "year",
               "monthly": "month"
             }
@@ -334,8 +349,14 @@
               "sendVerification": "Send verification",
               "sendingVerification": "Sending verification",
               "sucessSendingVerification": "Email verification sent to {{email}}",
-              "errorSendingVerification": "Error sending verification"
+              "errorSendingVerification": "Error sending verification",
+              "confirm": "Confirm"
             }
+          },
+          "support": {
+            "title": "Support",
+            "description": "Navigate helpful articles or get assistance from our team.",
+            "cta": "Open Support Centre"
           },
           "deleteAccount": {
             "head": "Delete account",
@@ -421,9 +442,9 @@
           },
           "viewAllFeatures": "View all features",
           "card": {
-            "annually": "€{{amount}} billed annually",
-            "monthly": "€{{amount}} per month",
-            "lifetime": "€{{amount}}",
+            "annually": "{{amount}} billed annually",
+            "monthly": "{{amount}} per month",
+            "lifetime": "{{amount}}",
             "oneTimePayment": "One-time payment"
           },
           "features": {
@@ -653,6 +674,21 @@
       "placeholder": "Untitled folder",
       "untitled": "Untitled folder"
     },
+    "itemDetailsModal": {
+      "title": "Details",
+      "fileCta": "Open preview",
+      "folderCta": "Open folder",
+      "itemDetails": {
+        "name": "Name",
+        "type": "Type",
+        "uploaded": "Uploaded",
+        "uploadedBy": "Uploaded by",
+        "shared": "Shared",
+        "size": "Size",
+        "modified": "Modified",
+        "location": "Location"
+      }
+    },
     "shareModal": {
       "title": "Share \"{{name}}\"",
       "list": {
@@ -669,7 +705,8 @@
       },
       "errors": {
         "updatingRole": "The role could not be updated, please try again later.",
-        "copy-to-clipboard": "Error sharing item, try again later."
+        "copy-to-clipboard": "Error sharing item, try again later.",
+        "update-sharing-access": "The acces mode could not be updated, please try again later"
       },
       "general": {
         "generalAccess": "General access",
@@ -709,6 +746,18 @@
           "error": "Couldn't stop sharing, please try again"
         }
       },
+      "stopSharingAndMoveToTrash": {
+        "title": "Move to trash?",
+        "subtitle": "Users with the link or invited will no longer have access to \"{{name}}\"",
+        "multipleItemsSubtitle": "Users with the link or invited will no longer have access to these shared items",
+        "cancel": "Cancel",
+        "confirm": "Move to trash",
+        "notification": {
+          "success": "No longer sharing \"{{name}}\"",
+          "successForMultipleItems": "No longer sharing these items",
+          "error": "Couldn't move to trash, please try again"
+        }
+      },
       "removeUser": {
         "notification": {
           "success": "User \"{{name}}\" removed",
@@ -728,6 +777,10 @@
         "successSentInvitation": "Successful sharing with {{email}}",
         "acceptedSuccessfully": "Shared folder invitation successfully accepted",
         "declinedSuccessfully": "Shared folder invitation successfully declined",
+        "inviteNewUsersBody": "People without an Internxt account will be sent a signup invitation email.",
+        "inviteNewUsersTitle": "Invite new users?",
+        "accept": "Accept",
+        "cancel": "Cancel",
         "error": {
           "errorInviting": "Error sending invitation to {{email}}",
           "acceptedError": "Error accepting invitation to shared folder",
@@ -743,6 +796,19 @@
         "change": "Change",
         "requestSent": "Request Sent",
         "confirmation": "You will get an email if the file/folder is shared with you"
+      },
+      "protectSharingModal": {
+        "protectTooltipText": "Password is only required for users without viewer or editor access to the shared item.",
+        "protect": "Protect with password",
+        "disablePasswordTitle": "Disable password protection?",
+        "disablePasswordBody": "When disabled, people with the link will be able to access the content.",
+        "editPasswordTitle": "Edit password",
+        "buttons": {
+          "cancel": "Cancel",
+          "save": "Save",
+          "disable": "Disable",
+          "changePassword": "Change password"
+        }
       }
     },
     "sharedInvitationsModal": {
@@ -864,6 +930,7 @@
     "noFilePreview": "No file preview available",
     "browserNotSupported": "Browser not supported ({{userAgent}})",
     "inviteAFriend": "Error sending the invitation to a friend: {{message}}",
+    "inviteAFriendEmpty": "Error sending the invitation: You have to specify an email",
     "subscribeToNewsletter": "Error subscribing to newsletter: {{message}}",
     "lastPasswordError": "The password you entered as your last seems not to be valid. Try again, and if the problem persists, please contact our support.",
     "incorrectPassword": "The current password you introduce doesn't match. Please make sure it is correct.",
@@ -871,7 +938,7 @@
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
     "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
-    "maxSizeUploadLimitError": "File too large (greater than 10GB)",
+    "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
   },
@@ -972,6 +1039,8 @@
       "allProcessesHaveFinished": "All processes have finished",
       "processing": "Processing {{pending}} of {{finished}}"
     },
+    "waiting": "Waiting",
+    "paused": "Paused",
     "create-folder": {
       "status": {
         "pending": "Pending to create folder",
@@ -1090,6 +1159,15 @@
         "cancelled": "Cancelled renaming"
       },
       "errors": {}
+    },
+    "subtitles": {
+      "upload-failed": "Upload failed"
+    },
+    "generalErrorMessages": {
+      "retryUploadFailed": "Something went wrong when retrying the upload. Try uploading again",
+      "retryDownloadFailed": "Something went wrong while retrying the download. Please try downloading again.",
+      "openUploadedFileFailed": "Something went wrong while trying to open the file",
+      "openUploadedFolderFailed": "Something went wrong while trying to navigate to the folder"
     }
   },
   "success": {
@@ -1185,7 +1263,10 @@
     "rename": "Rename",
     "restore": "Restore",
     "copyLink": "Copy link",
-    "report": "Report abuse"
+    "report": "Report abuse",
+    "yes": "Yes",
+    "no": "No",
+    "more": "More"
   },
   "drive": {
     "usage": "Usage",
@@ -1208,6 +1289,7 @@
     },
     "dropdown": {
       "openPreview": "Open preview",
+      "details": "Details",
       "shareLink": "Share",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
@@ -1315,6 +1397,24 @@
         "title": "Let's get started...",
         "description": "Click Upload button to upload your first file."
       }
+    }
+  },
+  "blockedAccount": {
+    "title": "Verify it’s you",
+    "text1": "Too many failed logins were attempted.",
+    "text2": "For security reasons we sent an email to your address {{email}} follow the email steps to confirm it’s you and login",
+    "forgotPassword": "I forgot my password",
+    "text3": "Didn’t received any email?",
+    "resend": "Resend"
+  },
+  "itemNotFound": {
+    "folder": {
+      "title": "Folder not found",
+      "description": "Make sure that the URL is correct and the folder hasn’t been moved or deleted."
+    },
+    "file": {
+      "title": "File not found",
+      "description": "Make sure that the URL is correct and the file hasn’t been moved or deleted."
     }
   }
 }

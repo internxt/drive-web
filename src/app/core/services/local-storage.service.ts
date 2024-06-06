@@ -3,7 +3,7 @@ import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
-  SIGN_UP_TUTORIAL_COMPLETED: 'signUpTutorialCompleted',
+  TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
 };
 
 function get(key: string): string | null {
@@ -38,11 +38,15 @@ function exists(key: string): boolean {
   return !!localStorage.getItem(key);
 }
 
-function getIsSignUpTutorialCompleted(): boolean {
-  return localStorage.getItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED) === 'true';
+function hasCompletedTutorial(id?: string): boolean {
+  return localStorage.getItem(STORAGE_KEYS.TUTORIAL_COMPLETED_ID) === id;
 }
 
 function clear(): void {
+  if (localStorage.getItem('theme') === 'starwars') {
+    localStorage.setItem('theme', 'system');
+  }
+
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
@@ -51,10 +55,10 @@ function clear(): void {
   localStorage.removeItem('xTokenTeam');
   localStorage.removeItem('workspace');
   localStorage.removeItem('language');
-  localStorage.removeItem(STORAGE_KEYS.SIGN_UP_TUTORIAL_COMPLETED);
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('star_wars_theme_enabled');
 }
 
 const localStorageService = {
@@ -63,7 +67,7 @@ const localStorageService = {
   getUser,
   getTeams,
   getWorkspace,
-  getIsSignUpTutorialCompleted,
+  hasCompletedTutorial,
   removeItem,
   exists,
   clear,

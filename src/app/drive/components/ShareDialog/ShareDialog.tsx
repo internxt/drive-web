@@ -8,7 +8,18 @@ import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { ArrowLeft, CaretDown, Check, CheckCircle, Globe, Link, UserPlus, Users, X } from '@phosphor-icons/react';
+import {
+  ArrowLeft,
+  CaretDown,
+  Check,
+  CheckCircle,
+  Globe,
+  Link,
+  Question,
+  UserPlus,
+  Users,
+  X,
+} from '@phosphor-icons/react';
 import Avatar from 'app/shared/components/Avatar';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
@@ -21,6 +32,18 @@ import { Role } from 'app/store/slices/sharedLinks/types';
 import copy from 'copy-to-clipboard';
 import { AdvancedSharedItem } from '../../../share/types';
 import { DriveItemData } from '../../types';
+import { TrackingPlan } from '../../../analytics/TrackingPlan';
+import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
+import { Tooltip } from 'react-tooltip';
+import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
+import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -60,7 +83,7 @@ const isRequestPending = (status: RequestStatus): boolean =>
   status !== REQUEST_STATUS.DENIED && status !== REQUEST_STATUS.ACCEPTED;
 
 const cropSharedName = (name: string) => {
-  if (name.length > 32) {
+  if (name.length > MAX_SHARED_NAME_LENGTH) {
     return name.substring(0, 32).concat('...');
   } else {
     return name;
@@ -71,18 +94,47 @@ type ShareDialogProps = {
   user: UserSettings;
   isDriveItem?: boolean;
   onShareItem?: () => void;
+  onCloseDialog?: () => void;
+};
+
+const isAdvanchedShareItem = (item: DriveItemData | AdvancedSharedItem): item is AdvancedSharedItem => {
+  return item['encryptionKey'];
+};
+
+const getLocalUserData = () => {
+  const user = localStorageService.getUser() as UserSettings;
+  const onwerData = {
+    name: user.name,
+    lastname: user.lastname,
+    email: user.email,
+    sharingId: '',
+    avatar: user.avatar,
+    uuid: user.uuid,
+    role: {
+      id: 'NONE',
+      name: 'OWNER',
+      createdAt: '',
+      updatedAt: '',
+    },
+  };
+  return onwerData;
+};
+
+// TODO: THIS IS TEMPORARY, REMOVE WHEN NEED TO SHOW OTHER ROLES
+const filterEditorAndReader = (users: Role[]): Role[] => {
+  return users.filter((user) => user.name === 'EDITOR' || user.name === 'READER');
 };
 
 const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
-  const isToastNotificacionOpen = useAppSelector((state: RootState) => state.ui.isToastNotificacionOpen);
+  const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
+  const { onCloseDialog } = props;
 
   const [roles, setRoles] = useState<Role[]>([]);
   const [inviteDialogRoles, setInviteDialogRoles] = useState<Role[]>([]);
-  const [showLoader, setShowLoader] = useState(true);
 
   const [selectedUserListIndex, setSelectedUserListIndex] = useState<number | null>(null);
   const [accessMode, setAccessMode] = useState<AccessMode>('restricted');
@@ -90,6 +142,10 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [invitedUsers, setInvitedUsers] = useState<InvitedUserProps[]>([]);
   const [currentUserFolderRole, setCurrentUserFolderRole] = useState<string | undefined>('');
+  const [isPasswordProtected, setIsPasswordProtected] = useState(false);
+  const [openPasswordInput, setOpenPasswordInput] = useState(false);
+  const [openPasswordDisableDialog, setOpenPasswordDisableDialog] = useState(false);
+  const [sharingMeta, setSharingMeta] = useState<SharingMeta | null>(null);
 
   const [accessRequests, setAccessRequests] = useState<RequestProps[]>([]);
   const [userOptionsEmail, setUserOptionsEmail] = useState<InvitedUserProps>();
@@ -97,9 +153,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const [view, setView] = useState<Views>('general');
   const userList = useRef<HTMLDivElement>(null);
   const userOptions = useRef<HTMLButtonElement>(null);
-  const itemOwnerEmail = (itemToShare?.item as any)?.user?.email;
-  const isUserOwner = !!itemOwnerEmail && itemOwnerEmail === props?.user?.email;
 
+  const isUserOwner = isUserItemOwner({
+    isDriveItem: !!props?.isDriveItem,
+    item: itemToShare?.item as AdvancedSharedItem,
+    userEmail: props?.user?.email,
+  });
   const closeSelectedUserPopover = () => setSelectedUserListIndex(null);
 
   const resetDialogData = () => {
@@ -112,25 +171,18 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     setUserOptionsEmail(undefined);
     setUserOptionsY(0);
     setView('general');
-    setShowLoader(true);
+    setIsPasswordProtected(false);
+    setSharingMeta(null);
+    onCloseDialog?.();
   };
-
-  useEffect(() => {
-    if (isOpen) {
-      const timer = setTimeout(() => {
-        setShowLoader(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [isOpen]);
 
   useEffect(() => {
     const OWNER_ROLE = { id: 'NONE', name: 'owner' };
     if (isOpen) {
       getSharingRoles().then((roles) => {
-        setRoles([...roles, OWNER_ROLE]);
-        setInviteDialogRoles(roles);
+        const parsedRoles = filterEditorAndReader(roles);
+        setRoles([...parsedRoles, OWNER_ROLE]);
+        setInviteDialogRoles(parsedRoles);
       });
     }
 
@@ -140,8 +192,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   useEffect(() => {
     if (roles.length === 0) dispatch(sharedThunks.getSharedFolderRoles());
 
-    if (roles.length > 0) loadShareInfo();
-  }, [roles]);
+    if (roles.length > 0 && isOpen) loadShareInfo();
+  }, [roles, isOpen]);
 
   useEffect(() => {
     const removeDeniedRequests = () => {
@@ -175,24 +227,47 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
       setInvitedUsers(invitedUsersListParsed);
     } catch (error) {
+      // the server throws an error when there are no users with shared item,
+      // that means that the local user is the owner as there is nobody else with this shared file.
+      if (isUserOwner) {
+        const onwerData = getLocalUserData();
+        setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
+      }
       errorService.reportError(error);
     }
   }, [itemToShare, roles]);
 
   const loadShareInfo = async () => {
+    if (!itemToShare?.item) return;
+
     setIsLoading(true);
     // Change object type of itemToShare to AdvancedSharedItem
     let shareAccessMode: AccessMode = 'public';
-    const sharingType = props.isDriveItem
-      ? (itemToShare?.item as DriveItemData & { sharings: { type: string; id: string }[] }).sharings?.[0]?.type
-      : (itemToShare?.item as unknown as AdvancedSharedItem)?.sharingType;
+    let sharingType = 'public';
+    let isAlreadyPasswordProtected = false;
+
+    const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+    const itemId = itemToShare?.item.uuid ?? '';
+
+    const isItemNotSharedYet =
+      !isAdvanchedShareItem(itemToShare?.item) && !itemToShare.item.sharings?.length && !sharingMeta;
+
+    if (!isItemNotSharedYet) {
+      try {
+        const sharingData = await shareService.getSharingType(itemId, itemType);
+        sharingType = sharingData.type;
+        isAlreadyPasswordProtected = sharingData.encryptedPassword !== null;
+        setSharingMeta(sharingData);
+      } catch (error) {
+        errorService.reportError(error);
+      }
+    }
+
     if (sharingType === 'private') {
       shareAccessMode = 'restricted';
     }
     setAccessMode(shareAccessMode);
-
-    // TODO -> Load invited users
-    if (!itemToShare?.item) return;
+    setIsPasswordProtected(isAlreadyPasswordProtected);
 
     try {
       await getAndUpdateInvitedUsers();
@@ -241,7 +316,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
 
   const getPrivateShareLink = () => {
     try {
-      copy(`${process.env.REACT_APP_HOSTNAME}/app/shared/?folderuuid=${itemToShare?.item.uuid}`);
+      copy(`${process.env.REACT_APP_HOSTNAME}/shared/?folderuuid=${itemToShare?.item.uuid}`);
       notificationsService.show({ text: translate('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
     } catch (error) {
       notificationsService.show({
@@ -259,17 +334,29 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     }
 
     if (itemToShare?.item.uuid) {
-      await shareService.getPublicShareLink(itemToShare?.item.uuid, itemToShare.item.isFolder ? 'folder' : 'file');
+      const trackingPublicSharedProperties: TrackingPlan.PublicSharedProperties = {
+        is_folder: itemToShare.item.isFolder,
+        share_type: 'public',
+        user_id: itemToShare.item.userId,
+        item_id: itemToShare.item.id,
+      };
+
+      trackPublicShared(trackingPublicSharedProperties);
+      const encryptionKey = isAdvanchedShareItem(itemToShare.item) ? itemToShare?.item?.encryptionKey : undefined;
+      const sharingInfo = await shareService.getPublicShareLink(
+        itemToShare?.item.uuid,
+        itemToShare.item.isFolder ? 'folder' : 'file',
+        encryptionKey,
+      );
+      if (sharingInfo) {
+        setSharingMeta(sharingInfo);
+      }
       props.onShareItem?.();
       closeSelectedUserPopover();
     }
   };
 
   const onInviteUser = () => {
-    // TODO -> Open invite user screen
-    // TODO: ADD LOGIC TO SHARE LINK WHEN INVITE A USER, WAIT
-    // UNTIL BACKEND LOGIC IS DONE TO KNOW IF WE NEED TO SHARE FIRST A INVITE AFTER
-    // OR THAT LOGIC WILL BE DONE BY THE BACKEND
     setView('invite');
     closeSelectedUserPopover();
   };
@@ -292,15 +379,74 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     closeSelectedUserPopover();
   };
 
-  const changeAccess = (mode: AccessMode) => {
+  const onPasswordCheckboxChange = useCallback(() => {
+    if (!isPasswordProtected) {
+      setOpenPasswordInput(true);
+    } else {
+      setOpenPasswordDisableDialog(true);
+    }
+  }, [isPasswordProtected]);
+
+  const onSavePublicSharePassword = useCallback(
+    async (plainPassword: string) => {
+      try {
+        let sharingInfo = sharingMeta;
+
+        if (!sharingInfo?.encryptedCode) {
+          const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+          const itemId = itemToShare?.item.uuid ?? '';
+          sharingInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType, plainPassword);
+          setSharingMeta(sharingInfo);
+        } else {
+          await shareService.saveSharingPassword(sharingInfo.id, plainPassword, sharingInfo.encryptedCode);
+        }
+
+        setIsPasswordProtected(true);
+      } catch (error) {
+        errorService.castError(error);
+      } finally {
+        setOpenPasswordInput(false);
+      }
+    },
+    [sharingMeta, itemToShare],
+  );
+
+  const onDisablePassword = useCallback(async () => {
+    try {
+      if (sharingMeta) {
+        await shareService.removeSharingPassword(sharingMeta.id);
+        setIsPasswordProtected(false);
+      }
+    } catch (error) {
+      errorService.castError(error);
+    } finally {
+      setOpenPasswordDisableDialog(false);
+    }
+  }, [sharingMeta]);
+
+  const changeAccess = async (mode: AccessMode) => {
     closeSelectedUserPopover();
     if (mode != accessMode) {
       setIsLoading(true);
-      setAccessMode(mode);
+      try {
+        const sharingType = mode === 'restricted' ? 'private' : 'public';
+        const itemType = itemToShare?.item.isFolder ? 'folder' : 'file';
+        const itemId = itemToShare?.item.uuid ?? '';
 
-      // TODO -> Change access
-      // If error change back to the previous mode
-
+        await shareService.updateSharingType(itemId, itemType, sharingType);
+        if (sharingType === 'public') {
+          const shareInfo = await shareService.createPublicShareFromOwnerUser(itemId, itemType);
+          setSharingMeta(shareInfo);
+          setIsPasswordProtected(false);
+        }
+        setAccessMode(mode);
+      } catch (error) {
+        errorService.reportError(error);
+        notificationsService.show({
+          text: translate('modals.shareModal.errors.update-sharing-access'),
+          type: ToastType.Error,
+        });
+      }
       setIsLoading(false);
     }
   };
@@ -366,12 +512,12 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       general: (
         <>
           <span
-            className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium"
+            className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium"
             title={translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           >
             {translate('modals.shareModal.title', { name: itemToShare?.item.name })}
           </span>
-          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black bg-opacity-0 transition-all duration-200 ease-in-out hover:bg-opacity-4 active:bg-opacity-8">
+          <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black/0 transition-all duration-200 ease-in-out hover:bg-black/4 active:bg-black/8">
             <X onClick={() => (isLoading ? null : onClose())} size={22} />
           </div>
         </>
@@ -379,7 +525,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       invite: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.invite.title')}
           </span>
         </div>
@@ -387,7 +533,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
       requests: (
         <div className="flex items-center space-x-4">
           <ArrowLeft className="cursor-pointer" onClick={() => setView('general')} size={24} />
-          <span className="max-w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-xl font-medium">
+          <span className="max-w-full overflow-hidden text-ellipsis whitespace-nowrap text-xl font-medium">
             {translate('modals.shareModal.requests.title')}
           </span>
         </div>
@@ -404,7 +550,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
           <div className="relative flex flex-col">
             <div className="flex items-center space-x-4">
               <span
-                className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-base font-medium"
+                className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-base font-medium"
                 title={translate('modals.shareModal.list.peopleWithAccess')}
               >
                 {translate('modals.shareModal.list.peopleWithAccess')}
@@ -421,7 +567,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole !== 'reader' && accessMode !== 'public' ? (
+                {currentUserFolderRole !== 'reader' ? (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
@@ -437,15 +583,19 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               className="mt-1.5 flex flex-col overflow-y-auto"
               style={{ minHeight: '224px', maxHeight: '336px' }}
             >
-              {accessMode !== 'public' ? (
-                invitedUsers.length === 0 && showLoader ? (
-                  <>
-                    {Array.from({ length: 4 }, (_, i) => (
-                      <InvitedUsersSkeletonLoader key={`loader-${i}`} />
-                    ))}
-                  </>
-                ) : (
-                  invitedUsers.map((user, index) => (
+              {invitedUsers.length === 0 && isLoading ? (
+                <>
+                  {Array.from({ length: 4 }, (_, i) => (
+                    <InvitedUsersSkeletonLoader key={`loader-${i}`} />
+                  ))}
+                </>
+              ) : (
+                invitedUsers
+                  .sort((a, b) => {
+                    if (a.email === props.user.email && b.email !== props.user.email) return -1;
+                    return 0;
+                  })
+                  .map((user, index) => (
                     <User
                       user={user}
                       key={user.email}
@@ -461,15 +611,40 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                       disableRoleChange={currentUserFolderRole !== 'owner'}
                     />
                   ))
-                )
-              ) : (
-                <></>
               )}
             </div>
           </div>
 
           <div className="h-px w-full bg-gray-5" />
 
+          {accessMode === 'public' && !isLoading && isUserOwner && (
+            <div className="flex items-center justify-between">
+              <div className="flex flex-col space-y-2.5">
+                <div className="flex items-center">
+                  <BaseCheckbox checked={isPasswordProtected} onClick={onPasswordCheckboxChange} />
+                  <p className="ml-2 select-none text-base font-medium">
+                    {translate('modals.shareModal.protectSharingModal.protect')}
+                  </p>
+                  <Question
+                    size={20}
+                    className="ml-2 flex items-center justify-center font-medium text-gray-50"
+                    data-tooltip-id="uploadFolder-tooltip"
+                    data-tooltip-place="top"
+                  />
+                  <Tooltip id="uploadFolder-tooltip" delayShow={DELAY_SHOW_MS} className="z-40 rounded-md">
+                    <p className="break-word w-60 text-center text-white">
+                      {translate('modals.shareModal.protectSharingModal.protectTooltipText')}
+                    </p>
+                  </Tooltip>
+                </div>
+              </div>
+              {isPasswordProtected && (
+                <Button variant="secondary" onClick={() => setOpenPasswordInput(true)}>
+                  <span>{translate('modals.shareModal.protectSharingModal.buttons.changePassword')}</span>
+                </Button>
+              )}
+            </div>
+          )}
           <div className="flex items-end justify-between">
             <div className="flex flex-col space-y-2.5">
               <p className="font-medium">{translate('modals.shareModal.general.generalAccess')}</p>
@@ -477,8 +652,8 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
               <Popover className="relative z-10">
                 {({ open }) => (
                   <>
-                    <Popover.Button as="div" className="outline-none z-1">
-                      <Button variant="secondary" disabled={isLoading}>
+                    <Popover.Button as="div" className="z-1 outline-none">
+                      <Button variant="secondary" disabled={isLoading || !isUserOwner}>
                         {accessMode === 'public' ? <Globe size={24} /> : <Users size={24} />}
                         <span>
                           {accessMode === 'public'
@@ -496,7 +671,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </Popover.Button>
 
                     <Popover.Panel
-                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left transform rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                      className={`absolute bottom-full z-0 mb-1 w-80 origin-bottom-left rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
                         open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                       }`}
                       static
@@ -505,7 +680,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                         <>
                           {/* Public */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('public')}
                           >
                             <Globe size={32} weight="light" />
@@ -529,7 +704,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </button>
                           {/* Restricted */}
                           <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                             onClick={() => changeAccess('restricted')}
                           >
                             <Users size={32} weight="light" />
@@ -554,7 +729,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button
-                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5"
+                              className="flex h-11 w-full cursor-pointer items-center justify-start rounded-lg pl-14 pr-3 hover:bg-gray-5 dark:hover:bg-gray-10"
                               onClick={() => {
                                 setShowStopSharingConfirmation(true);
                                 close();
@@ -579,32 +754,26 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
             </Button>
           </div>
 
+          <SharePasswordInputDialog
+            onClose={() => setOpenPasswordInput(false)}
+            isOpen={openPasswordInput}
+            onSavePassword={onSavePublicSharePassword}
+            isAlreadyProtected={isPasswordProtected}
+          />
+          <SharePasswordDisableDialog
+            isOpen={openPasswordDisableDialog}
+            onClose={() => setOpenPasswordDisableDialog(false)}
+            onConfirmHandler={onDisablePassword}
+          />
+
           {/* Stop sharing confirmation dialog */}
-          <Modal
-            maxWidth="max-w-sm"
-            className="space-y-5 p-5"
-            isOpen={showStopSharingConfirmation}
+          <StopSharingItemDialog
+            showStopSharingConfirmation={showStopSharingConfirmation}
             onClose={() => setShowStopSharingConfirmation(false)}
-            preventClosing={showStopSharingConfirmation && isLoading}
-          >
-            <p className="text-2xl font-medium">{translate('modals.shareModal.stopSharing.title')}</p>
-            <p className="text-lg text-gray-80">
-              {translate('modals.shareModal.stopSharing.subtitle', { name: itemToShare?.item.name ?? '' })}
-            </p>
-            <div className="flex items-center justify-end space-x-2">
-              <Button
-                variant="secondary"
-                onClick={() => setShowStopSharingConfirmation(false)}
-                disabled={showStopSharingConfirmation && isLoading}
-              >
-                {translate('modals.shareModal.stopSharing.cancel')}
-              </Button>
-              <Button variant="accent" onClick={onStopSharing} disabled={showStopSharingConfirmation && isLoading}>
-                {isLoading && <Spinner className="h-4 w-4" />}
-                <span>{translate('modals.shareModal.stopSharing.confirm')}</span>
-              </Button>
-            </div>
-          </Modal>
+            itemToShareName={itemToShare?.item.name ?? ''}
+            isLoading={isLoading}
+            onStopSharing={onStopSharing}
+          />
         </>
       ),
       invite: (
@@ -627,14 +796,14 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                 } ${!isRequestPending(request.status) && 'hide-request'}`}
                 key={request.email + index}
               >
-                <div className="flex flex-shrink-0 items-center space-x-2.5">
+                <div className="flex shrink-0 items-center space-x-2.5">
                   <Avatar src={request.avatar} fullName={`${request.name} ${request.lastname}`} diameter={40} />
 
                   <div className="flex flex-1 flex-col overflow-hidden">
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
                       {request.name}&nbsp;{request.lastname}
                     </p>
-                    <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+                    <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
                       {request.email}
                     </p>
                   </div>
@@ -651,7 +820,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                           </Popover.Button>
 
                           <Popover.Panel
-                            className={`absolute right-0 z-10 mt-1 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+                            className={`absolute right-0 z-10 mt-1 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
                               open ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
                             }`}
                             style={{ minWidth: '160px' }}
@@ -723,7 +892,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   };
 
   return (
-    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificacionOpen}>
+    <Modal className="p-0" isOpen={isOpen} onClose={onClose} preventClosing={isLoading || isToastNotificationOpen}>
       <div className="flex h-16 w-full items-center justify-between space-x-4 border-b border-gray-10 px-5">
         <Header view={view} />
       </div>
@@ -761,7 +930,7 @@ export const UserOptions = ({
       }}
     >
       <Popover.Panel
-        className={`absolute right-0 z-10 origin-top-right transform whitespace-nowrap rounded-lg border border-gray-10 bg-white p-1 shadow-subtle transition-all duration-50 ease-out ${
+        className={`absolute right-0 z-10 origin-top-right whitespace-nowrap rounded-lg border border-gray-10 bg-surface p-1 shadow-subtle transition-all duration-50 ease-out dark:bg-gray-5 ${
           isUserSelected ? 'scale-100 opacity-100' : 'pointer-events-none scale-95 opacity-0'
         }`}
         style={{
@@ -776,7 +945,7 @@ export const UserOptions = ({
           <>
             {/* Editor */}
             <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
               onClick={() => {
                 onChangeRole('editor');
               }}
@@ -789,7 +958,7 @@ export const UserOptions = ({
 
             {/* Reader */}
             <button
-              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+              className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
               onClick={() => {
                 onChangeRole('reader');
               }}
@@ -805,7 +974,7 @@ export const UserOptions = ({
         )}
         {/* Remove */}
         <button
-          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5"
+          className="flex h-9 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
           onClick={() => {
             onRemoveUser(userOptionsEmail);
           }}
@@ -851,17 +1020,17 @@ const User = ({
   disableRoleChange: boolean;
 }) => (
   <div
-    className={`group flex h-14 flex-shrink-0 items-center space-x-2.5 border-t ${
+    className={`group flex h-14 shrink-0 items-center space-x-2.5 border-t ${
       user.roleName === 'owner' ? 'border-transparent' : 'border-gray-5'
     }`}
   >
     <Avatar src={user.avatar} fullName={`${user.name} ${user.lastname}`} diameter={40} />
 
     <div className="flex flex-1 flex-col overflow-hidden">
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap font-medium leading-tight">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap font-medium leading-tight">
         {user.name}&nbsp;{user.lastname}
       </p>
-      <p className="w-full overflow-hidden overflow-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
+      <p className="w-full overflow-hidden text-ellipsis whitespace-nowrap text-sm leading-none text-gray-50">
         {user.email}
       </p>
     </div>
@@ -871,7 +1040,7 @@ const User = ({
     ) : (
       <>
         <div
-          className="outline-none relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-black border-opacity-0 bg-white px-3 text-base font-medium text-gray-80 ring-2 ring-primary ring-opacity-0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-opacity-15 focus-visible:shadow-sm focus-visible:ring-opacity-50 active:bg-gray-1 group-hover:border-opacity-10 group-hover:shadow-sm"
+          className="relative flex h-9 cursor-pointer select-none flex-row items-center justify-center space-x-2 whitespace-nowrap rounded-lg border border-gray-10 bg-surface px-3 text-base font-medium text-gray-80 outline-none ring-2 ring-primary/0 ring-offset-2 ring-offset-transparent transition-all duration-100 ease-in-out hover:border-gray-20 focus-visible:shadow-sm focus-visible:ring-primary/50 active:bg-gray-1 group-hover:border-gray-20 group-hover:shadow-sm dark:bg-gray-5 dark:active:bg-gray-10"
           onMouseUpCapture={(event) => openUserOptions(event, user, listPosition)}
           tabIndex={-1}
         >
@@ -910,7 +1079,7 @@ const InvitedUsersSkeletonLoader = () => {
       width: 'flex w-1/12 cursor-pointer items-center',
     },
     {
-      width: 'flex flex-grow cursor-pointer items-center pl-4',
+      width: 'flex grow cursor-pointer items-center pl-4',
     },
     {
       width: 'hidden w-3/12 lg:flex pl-4',
@@ -918,11 +1087,11 @@ const InvitedUsersSkeletonLoader = () => {
   ].map((column) => column.width);
 
   return (
-    <div className="group relative flex h-14 w-full flex-shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
+    <div className="group relative flex h-14 w-full shrink-0 animate-pulse flex-row items-center pl-2 pr-2">
       {new Array(5).fill(0).map((col, i) => (
         <div
           key={`${col}-${i}`}
-          className={`relative flex h-full flex-shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
+          className={`relative flex h-full shrink-0 flex-row items-center overflow-hidden whitespace-nowrap border-b border-gray-5 ${columnsWidth[i]}`}
         >
           {skinSkeleton?.[i]}
         </div>

@@ -19,7 +19,9 @@ interface InputProps {
   onFocus?: () => void;
   onBlur?: () => void;
   autoComplete?: string;
+  inputDataCy?: string;
 }
+
 export default function TextInput({
   label,
   type,
@@ -35,6 +37,7 @@ export default function TextInput({
   className,
   autoFocus,
   autoComplete,
+  inputDataCy,
 }: InputProps): JSX.Element {
   return (
     <div className={`${className}`}>
@@ -47,6 +50,7 @@ export default function TextInput({
         min={0}
         required={true}
         autoFocus={autoFocus}
+        data-cy={inputDataCy}
         {...register(label, {
           required,
           minLength,
@@ -54,7 +58,7 @@ export default function TextInput({
           maxLength,
           pattern,
         })}
-        className={`relative h-11 w-full py-2 duration-100 ${error ? 'input-error' : 'input-primary'}`}
+        className={error ? 'inxt-input input-error' : 'inxt-input input-primary'}
       />
     </div>
   );

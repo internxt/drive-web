@@ -10,13 +10,13 @@ export const WarningMessage = (): JSX.Element => {
   };
 
   return (
-    <div className="mx-5 my-1 flex h-12 w-auto flex-row items-center rounded-lg bg-red-std-transparent">
-      <span className="flex w-auto flex-grow flex-row items-center px-4">
-        <WarningCircle size={24} weight="fill" className="mr-2 text-red-std" />
+    <div className="mx-5 my-1 flex h-12 w-auto flex-row items-center rounded-lg bg-red/10">
+      <span className="flex w-auto grow flex-row items-center px-4">
+        <WarningCircle size={24} weight="fill" className="mr-2 text-red" />
         <b>{t('error.storageIsFull')}.&nbsp;</b>
         {t('error.storageIsFullDescription')}
       </span>
-      <Button variant="tertiary" className="px-4 text-red-std" onClick={onUpgradeButtonClicked}>
+      <Button variant="tertiary" className="px-4 text-red" onClick={onUpgradeButtonClicked}>
         {t('actions.upgradeNow')}
       </Button>
     </div>

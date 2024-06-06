@@ -2,27 +2,19 @@ import { CaretRight, DotsThree } from '@phosphor-icons/react';
 import { forwardRef, ReactNode } from 'react';
 import Dropdown from '../Dropdown';
 import BreadcrumbsItem from './BreadcrumbsItem/BreadcrumbsItem';
-
-export interface BreadcrumbItemData {
-  id: number;
-  label: string;
-  icon: JSX.Element | null;
-  active: boolean;
-  isFirstPath?: boolean;
-  dialog?: boolean;
-  isBackup?: boolean;
-  onClick?: () => void;
-}
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from './types';
 
 interface BreadcrumbsProps {
   items: BreadcrumbItemData[];
+  rootBreadcrumbItemDataCy?: string;
+  menu?: (props: BreadcrumbsMenuProps) => JSX.Element;
 }
 
-export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
+export default function Breadcrumbs(props: Readonly<BreadcrumbsProps>): JSX.Element {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const MenuItem = forwardRef(({ children }: { children: ReactNode }, ref) => {
     return (
-      <div className="flex cursor-pointer items-center hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10">
+      <div className="flex cursor-pointer items-center hover:bg-gray-5 hover:text-gray-80 dark:hover:bg-gray-10">
         {children}
       </div>
     );
@@ -41,14 +33,17 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
     };
 
     for (let i = 0; i < items.length; i++) {
+      const separatorKey = 'breadcrumbSeparator-' + items[i].id + i.toString();
+      const itemKey = 'breadcrumbItem-' + items[i].id + i.toString();
+
       if (items.length > 3 && i !== 0 && i < items.length - 2) {
         if (i === 1) {
-          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+          itemsList.push(breadcrumbSeparator(separatorKey));
         }
         hiddenItemsList.push(
           <MenuItem>
             <BreadcrumbsItem
-              key={'breadcrumbItem' + items[i].id}
+              key={itemKey}
               item={items[i]}
               isHiddenInList
               totalBreadcrumbsLength={items.length}
@@ -59,14 +54,16 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
       } else {
         itemsList.push(
           <BreadcrumbsItem
-            key={'breadcrumbItem' + items[i].id}
+            breadcrumbButtonDataCy={i === 0 ? props?.rootBreadcrumbItemDataCy : undefined}
+            key={itemKey}
             item={items[i]}
             totalBreadcrumbsLength={items.length}
             items={items}
+            menu={props.menu}
           />,
         );
         if (i < items.length - 1) {
-          itemsList.push(breadcrumbSeparator('breadcrumbSeparator-' + items[i].id));
+          itemsList.push(breadcrumbSeparator(separatorKey));
         }
       }
     }
@@ -76,7 +73,7 @@ export default function Breadcrumbs(props: BreadcrumbsProps): JSX.Element {
         <Dropdown
           key="breadcrumbDropdownItems"
           openDirection="left"
-          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-black border-opacity-8 bg-white pr-1.5 shadow-subtle-hard z-10"
+          classMenuItems="left-0 top-1 w-max max-h-80 overflow-y-auto rounded-md border border-gray-10 bg-surface dark:bg-gray-5 shadow-subtle-hard z-10"
           menuItems={hiddenItemsList}
         >
           {({ open }) => {

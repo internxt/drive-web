@@ -3,6 +3,7 @@ import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
 import indexedDBService from './indexed-db.service';
 import { LRUCacheStruture } from './LRUCache';
+import { TaskStatus } from '../../../tasks/types';
 
 export enum DatabaseProvider {
   IndexedDB = 'indexed-db',
@@ -15,6 +16,7 @@ export enum DatabaseCollection {
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
+  UploadItemStatus = 'upload_item_status',
 }
 
 export enum LRUCacheTypes {
@@ -71,6 +73,10 @@ export interface AppDatabase extends DBSchema {
   account_settings: {
     key: string;
     value: AvatarBlobData;
+  };
+  upload_item_status: {
+    key: string;
+    value: TaskStatus;
   };
 }
 

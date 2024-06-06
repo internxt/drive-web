@@ -39,29 +39,29 @@ export default function Invoices({ className = '' }: { className?: string }): JS
       <Empty />
     ) : state.tag === 'ready' ? (
       <div className="flex">
-        <div className="flex flex-grow flex-col">
-          <h1 className="mb-0.5 text-xs font-medium text-gray-80">
+        <div className="flex grow flex-col">
+          <h1 className="pb-1 text-sm font-medium text-gray-80">
             {translate('views.account.tabs.billing.invoices.billingDate')}
           </h1>
           {invoices.map(({ created, id }, i) => (
             <div
               key={id}
-              className={`border-translate border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'} text-sm text-gray-80`}
+              className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-2' : 'py-2'} text-sm text-gray-80`}
             >
               {displayDate(created)}
             </div>
           ))}
         </div>
         <div className="flex flex-col">
-          <h1 className="mb-0.5 text-xs font-medium text-gray-80">
+          <h1 className="pb-1 text-sm font-medium text-gray-80">
             {translate('views.account.tabs.billing.invoices.plan')}
           </h1>
           {invoices.map(({ bytesInPlan, pdf, id }, i) => (
-            <div key={id} className={`border-translate border-gray-5 ${isLastInvoice(i) ? 'pt-1' : 'py-1'}`}>
+            <div key={id} className={`border-t border-gray-5 ${isLastInvoice(i) ? 'pt-2' : 'py-2'}`}>
               <div className="flex justify-between">
                 <p className="text-sm text-gray-50">{bytesToString(bytesInPlan)}</p>
                 <a
-                  className="ml-4 text-primary hover:text-primary-dark"
+                  className="ml-4 text-primary hover:text-primary-dark dark:text-white dark:hover:text-white"
                   href={pdf}
                   target="_blank"
                   rel="noopener noreferrer"

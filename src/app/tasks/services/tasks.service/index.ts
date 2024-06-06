@@ -14,10 +14,12 @@ import {
   UpdateTaskPayload,
   BaseTask,
   DownloadPhotosTask,
+  DownloadFilesData,
+  DownloadFolderData,
+  UploadFileData,
+  UploadFolderData,
 } from '../../types';
 import iconService from 'app/drive/services/icon.service';
-import { t } from 'i18next';
-import { isFirefox } from 'react-device-detect';
 
 class TaskManagerService {
   private tasks: TaskData[];
@@ -48,6 +50,11 @@ class TaskManagerService {
 
   public clearTasks() {
     this.tasks = [];
+  }
+
+  public removeTask(taskId: string) {
+    this.tasks = this.tasks.filter((task) => task.id !== taskId);
+    this.eventEmitter.emit(TaskEvent.TaskRemoved);
   }
 
   public getTasks(filter: TaskFilter = {}) {
@@ -83,14 +90,29 @@ class TaskManagerService {
   public findNotification(task: TaskData): TaskNotification {
     return {
       taskId: task.id,
+      action: task.action,
       status: task.status,
-      item: task.file || task.folder,
+      item: this.parseNotifcationItem(task),
+      sharedItemAuthenticationData: task.sharedItemAuthenticationData,
+      fileType: task?.fileType,
       title: this.getTaskNotificationTitle(task),
       subtitle: this.getTaskNotificationSubtitle(task),
       icon: this.getTaskNotificationIcon(task),
       progress: task.progress,
       isTaskCancellable: task.cancellable,
+      itemUUID: task?.itemUUID,
     };
+  }
+
+  private parseNotifcationItem(
+    task: TaskData,
+  ): DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData {
+    const parsedItem =
+      task.file ?? task.folder ?? task.action === TaskType.UploadFolder
+        ? { folder: task.item, parentFolderId: task.parentFolderId }
+        : task.item;
+
+    return parsedItem as DownloadFilesData | DownloadFolderData | UploadFileData | UploadFolderData;
   }
 
   public async cancelTask(taskId: string) {
@@ -103,7 +125,7 @@ class TaskManagerService {
       },
     });
 
-    await (task?.stop || (() => undefined))();
+    await (task?.stop ?? (() => undefined))();
 
     this.eventEmitter.emit(TaskEvent.TaskCancelled, task);
     this.eventEmitter.emit(`${TaskEvent.TaskCancelled}-${taskId}`, task);
@@ -199,19 +221,7 @@ class TaskManagerService {
     if (task.status === TaskStatus.Error && task.subtitle) {
       return task.subtitle;
     }
-
-    const notExistProgress = task.progress && task.progress === Infinity;
-    if (
-      isFirefox &&
-      task.action === TaskType.DownloadFolder &&
-      task.status === TaskStatus.InProcess &&
-      notExistProgress
-    )
-      return t(`tasks.${task.action}.status.in-process-without-progress`);
-
-    return t(`tasks.${task.action}.status.${task.status}`, {
-      progress: task.progress ? (task.progress * 100).toFixed(0) : 0,
-    });
+    return '';
   }
 
   private getTaskNotificationIcon(task: TaskData): FunctionComponent<SVGProps<SVGSVGElement>> {

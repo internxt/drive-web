@@ -33,7 +33,7 @@ export const PATH_NAMES = {
   '/settings': 'Settings',
   '/invite': 'Invite',
   '/remove': 'Remove Account',
-  '/app': 'App',
+  '/': 'App',
 };
 
 export function trackFileUploadStarted(properties: TrackingPlan.UploadProperties): void {
@@ -50,6 +50,18 @@ export function trackFileUploadError(properties: TrackingPlan.UploadErrorPropert
 
 export function trackFileUploadAborted(properties: TrackingPlan.UploadAbortedProperties): void {
   analytics.track(TrackingPlan.EventNames.FileUploadAborted, properties);
+}
+
+function trackFileUploadPaused(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadPause, properties);
+}
+
+function trackFileUploadResumed(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadResume, properties);
+}
+
+function trackFileUploadRetried(properties: TrackingPlan.UploadProperties): void {
+  analytics.track(TrackingPlan.EventNames.FileUploadRetry, properties);
 }
 
 export function trackFileDownloadStarted(properties: TrackingPlan.DownloadProperties): void {
@@ -70,6 +82,45 @@ export function trackFileDownloadAborted(properties: TrackingPlan.DownloadProper
 
 export function trackCanceledSubscription(properties: TrackingPlan.CanceledSubscriptionProperties): void {
   analytics.track(TrackingPlan.EventNames.CanceledSubscription, properties);
+}
+
+export function trackPublicShared(properties: TrackingPlan.PublicSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.PublicShared, properties);
+}
+
+export function trackRestrictedShared(properties: TrackingPlan.RestrictedSharedProperties): void {
+  analytics.track(TrackingPlan.EventNames.RestrictedShared, properties);
+}
+
+export function trackSharedInvitationsAccepted(properties: TrackingPlan.SharedInvitationsAcceptedProperties): void {
+  analytics.track(TrackingPlan.EventNames.SharedInvitationsAccepted, properties);
+}
+
+export function trackFilePreviewOpened(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewOpened, properties);
+}
+
+export function trackFilePreviewed(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewed, properties);
+}
+
+export function trackFilePreviewClicked(properties: TrackingPlan.FilePreviewProperties): void {
+  analytics.track(TrackingPlan.EventNames.FilePreviewClicked, properties);
+}
+
+export function trackBackupKeyDownloaded(properties: TrackingPlan.BackupKeyDownloadedProperties): void {
+  analytics.track(TrackingPlan.EventNames.BackupKeyDownloaded, properties);
+}
+
+export function trackPasswordRecovered(properties: TrackingPlan.PasswordRecoveredProperties): void {
+  analytics.track(TrackingPlan.EventNames.PasswordRecovered, properties);
+}
+
+export function trackAccountUnblockEmailSent(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.UnblockAccountEmailSent, properties);
+}
+export function trackAccountUnblocked(properties: TrackingPlan.AccountUnblockProperties): void {
+  analytics.track(TrackingPlan.EventNames.AccountUnblocked, properties);
 }
 
 function trackData(properties, actionName) {
@@ -467,6 +518,9 @@ const analyticsService = {
   trackFileUploadCompleted,
   trackFileUploadAborted,
   trackFileUploadError,
+  trackFileUploadPaused,
+  trackFileUploadResumed,
+  trackFileUploadRetried,
   trackMoveItem,
   trackDeleteItem,
   trackOpenWelcomeFile,

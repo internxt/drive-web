@@ -1,25 +1,28 @@
-import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
-import { FolderSimplePlus, CaretRight } from '@phosphor-icons/react';
-import Modal from 'app/shared/components/Modal';
-import BaseButton from 'app/shared/components/forms/BaseButton';
+import { FolderAncestor } from '@internxt/sdk/dist/drive/storage/types';
+import { CaretRight, FolderSimplePlus } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
-import { uiActions } from 'app/store/slices/ui';
-import { setItemsToMove, storageActions } from 'app/store/slices/storage';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { DriveItemData, FolderPathDialog } from '../../types';
-import restoreItemsFromTrash from '../../../../../src/use_cases/trash/recover-items-from-trash';
-import folderImage from 'assets/icons/light/folder.svg';
+import navigationService from 'app/core/services/navigation.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
-import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import Breadcrumbs, { BreadcrumbItemData } from 'app/shared/components/Breadcrumbs/Breadcrumbs';
+import newStorageService from 'app/drive/services/new-storage.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsMoveItemsDialogView';
+import Button from 'app/shared/components/Button/Button';
+import Modal from 'app/shared/components/Modal';
+import Spinner from 'app/shared/components/Spinner/Spinner';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
-import Spinner from 'app/shared/components/Spinner/Spinner';
-import Button from 'app/shared/components/Button/Button';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
+import { uiActions } from 'app/store/slices/ui';
+import folderImage from 'assets/icons/light/folder.svg';
 import { TFunction } from 'i18next';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import moveItems from '../../../../../src/use_cases/trash/recover-items-from-trash';
+import { DriveItemData, FolderPathDialog } from '../../types';
+import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -41,85 +44,72 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
   const [currentNamePaths, setCurrentNamePaths] = useState(arrayOfPaths);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isMoveItemsDialogOpen);
-  const newFolderIsOpen = useAppSelector((state: RootState) => state.ui.isCreateFolderDialogOpen);
+  const currentPath = useAppSelector((state: RootState) => state.storage.namePath);
   const rootFolderID: number = useSelector((state: RootState) => storageSelectors.rootFolderId(state));
+  const itemParentId = itemsToMove[0]?.parentId ?? itemsToMove[0]?.folderId;
+  const isDriveAndCurrentFolder = !props.isTrash && itemParentId === destinationId;
 
   const onCreateFolderButtonClicked = () => {
     dispatch(uiActions.setIsCreateFolderDialogOpen(true));
   };
 
-  const breadcrumbItems = (currentFolderPaths): BreadcrumbItemData[] => {
-    const items: BreadcrumbItemData[] = [];
-
-    if (currentFolderPaths.length > 0) {
-      currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
-        items.push({
-          id: path.id,
-          label: path.name,
-          icon: null,
-          active: i < namePath.length - 1,
-          dialog: isOpen,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
-        });
-      });
-    }
-    return items;
-  };
-
   useEffect(() => {
     if (isOpen) {
-      setIsLoading(true);
       setCurrentNamePaths([]);
       onShowFolderContentClicked(props.parentFolderId ?? rootFolderID, 'Drive');
-      setIsLoading(false);
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (isOpen && !newFolderIsOpen) {
-      onShowFolderContentClicked(currentFolderId, currentFolderName);
-    }
-  }, [newFolderIsOpen]);
-
   const onShowFolderContentClicked = (folderId: number, name: string): void => {
+    setIsLoading(true);
     dispatch(fetchDialogContentThunk(folderId))
       .unwrap()
       .then(() => {
-        databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
-          setCurrentFolderId(folderId);
-          setCurrentFolderName(name);
-          setDestinationId(folderId);
+        retrieveMoveDialogItems(folderId, name);
+      })
+      .finally(() => setIsLoading(false));
+  };
 
-          const files: DriveItemData[] = [];
-          const folders = items?.filter((i) => {
-            if (!i.isFolder) files.push(i);
-            return i.isFolder;
-          });
+  const handleDialogBreadcrumbs = (folderId: number, name: string) => {
+    let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
+    const currentIndex = auxCurrentPaths.findIndex((i) => {
+      return i.id === folderId;
+    });
+    if (currentIndex > -1) {
+      auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
+      dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
+    } else {
+      auxCurrentPaths.push({ id: folderId, name: name });
+      dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
+    }
 
-          let auxCurrentPaths: FolderPathDialog[] = [...currentNamePaths];
-          const currentIndex = auxCurrentPaths.findIndex((i) => {
-            return i.id === folderId;
-          });
-          if (currentIndex > -1) {
-            auxCurrentPaths = auxCurrentPaths.slice(0, currentIndex + 1);
-            dispatch(storageActions.popNamePathDialogUpTo({ id: folderId, name: name }));
-          } else {
-            auxCurrentPaths.push({ id: folderId, name: name });
-            dispatch(storageActions.pushNamePathDialog({ id: folderId, name: name }));
-          }
+    setCurrentNamePaths(auxCurrentPaths);
+  };
 
-          setCurrentNamePaths(auxCurrentPaths);
-          if (folders) {
-            const unselectedFolders = folders.filter((item) => item.id != itemsToMove[0].id);
-            setShownFolders(unselectedFolders);
-          } else {
-            setShownFolders([]);
-            setDestinationId(folderId);
-            setCurrentFolderId(folderId);
-            setCurrentFolderName(name);
-          }
-        });
+  const retrieveMoveDialogItems = (folderId: number, name: string) => {
+    databaseService.get(DatabaseCollection.MoveDialogLevels, folderId).then((items) => {
+      setCurrentFolderId(folderId);
+      setCurrentFolderName(name);
+      setDestinationId(folderId);
+
+      const folders = items?.filter((i) => {
+        return i.isFolder;
       });
+
+      handleDialogBreadcrumbs(folderId, name);
+
+      if (folders) {
+        const unselectedFolders = folders?.filter((folderItem) => {
+          return !itemsToMove.some((itemToMove) => itemToMove.id === folderItem.id);
+        });
+        setShownFolders(unselectedFolders);
+      } else {
+        setShownFolders([]);
+        setDestinationId(folderId);
+        setCurrentFolderId(folderId);
+        setCurrentFolderName(name);
+      }
+    });
   };
 
   const onFolderClicked = (folderId: number, name?: string): void => {
@@ -137,13 +127,29 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
     dispatch(setItemsToMove([]));
   };
 
-  const setDriveBreadcrumb = () => {
-    const driveBreadcrumbPath = [...currentNamePaths, { id: itemsToMove[0].id, name: itemsToMove[0].name }];
-    dispatch(storageActions.popNamePathUpTo({ id: currentNamePaths[0].id, name: currentNamePaths[0].name }));
-    itemsToMove[0].isFolder &&
-      driveBreadcrumbPath.forEach((item) => {
-        dispatch(storageActions.pushNamePath({ id: item.id, name: item.name }));
-      });
+  const setDriveBreadcrumb = async (itemsToMove) => {
+    const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(itemsToMove[0].uuid);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore:next-line
+    const fullPath = breadcrumbsList.toReversed();
+    const isRootPathNameList = fullPath.length === 0;
+    if (isRootPathNameList && !!currentPath?.[0]) {
+      fullPath.push(currentPath[0] as FolderAncestor);
+    }
+    const fullPathParsedNamesList = fullPath.map((pathItem) => ({ ...pathItem, name: pathItem.plainName }));
+
+    dispatch(storageActions.setNamePath(fullPathParsedNamesList));
+
+    const currentItemUuid = navigationService.getUuid();
+    const shouldUpdateBreadcrumb = itemsToMove[0].isFolder && currentItemUuid === itemsToMove[0].uuid;
+
+    if (itemsToMove.length > 1) {
+      return;
+    }
+
+    if (shouldUpdateBreadcrumb) {
+      await getAncestorsAndSetNamePath(itemsToMove[0].uuid as string, dispatch);
+    }
   };
 
   const onAccept = async (destinationFolderId, name, namePaths): Promise<void> => {
@@ -157,19 +163,19 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         if (!destinationFolderId) {
           destinationFolderId = currentFolderId;
         }
-        // TODO:  change function name or separate logic to prevent confusions between moving and restoring
-        await restoreItemsFromTrash(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
+
+        await moveItems(itemsToMove, destinationFolderId, translate as TFunction, props.isTrash);
       }
 
-      props.onItemsMoved && props.onItemsMoved();
+      props.onItemsMoved?.();
 
       setIsLoading(false);
       onClose();
-      setDriveBreadcrumb();
+      !props.isTrash && setDriveBreadcrumb(itemsToMove);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
+      errorService.reportError(castedError);
       setIsLoading(false);
-      console.log(castedError.message);
     }
   };
 
@@ -186,12 +192,22 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
         </div>
 
         {/* Create folder dialog */}
-        <CreateFolderDialog currentFolderId={currentFolderId} />
+        <CreateFolderDialog
+          currentFolderId={currentFolderId}
+          onFolderCreated={() => onShowFolderContentClicked(currentFolderId, currentFolderName)}
+        />
 
         {/* Folder list */}
         <div className="flex flex-col">
           <div className="flex h-10 items-center">
-            {isLoading ? <Spinner className="h-5 w-5" /> : <Breadcrumbs items={breadcrumbItems(currentNamePaths)} />}
+            {isLoading ? (
+              <Spinner className="h-5 w-5" />
+            ) : (
+              <BreadcrumbsMoveItemsDialogView
+                onShowFolderContentClicked={onShowFolderContentClicked}
+                currentNamePaths={currentNamePaths}
+              />
+            )}
           </div>
 
           <div className="h-60 divide-y divide-gray-5 overflow-scroll rounded-md border border-gray-10">
@@ -206,7 +222,9 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
                   return (
                     <div
                       className={`cursor-pointer ${
-                        destinationId === folder.id ? 'bg-primary bg-opacity-10 text-primary' : 'hover:bg-gray-1'
+                        destinationId === folder.id
+                          ? 'bg-primary/10 text-primary dark:bg-primary/20'
+                          : 'hover:bg-gray-1 dark:hover:bg-gray-5'
                       } flex h-12 items-center space-x-4 px-4`}
                       onDoubleClick={() => onShowFolderContentClicked(folder.id, folder.name)}
                       onClick={() => onFolderClicked(folder.id, folder.name)}
@@ -229,19 +247,17 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
 
         {/* Actions */}
         <div className="flex justify-between">
-          <BaseButton disabled={isLoading} className="tertiary mx-1 h-8" onClick={onCreateFolderButtonClicked}>
-            <div className="flex cursor-pointer items-center text-base font-medium text-primary">
-              <FolderSimplePlus className="mr-2 h-6 w-6" />
-              <span>{translate('actions.upload.folder')}</span>
-            </div>
-          </BaseButton>
+          <Button disabled={isLoading} variant="secondary" onClick={onCreateFolderButtonClicked}>
+            <FolderSimplePlus size={24} />
+            <span>{translate('actions.upload.folder')}</span>
+          </Button>
 
           <div className="flex space-x-2">
             <Button disabled={isLoading} variant="secondary" onClick={onClose}>
               {translate('actions.cancel')}
             </Button>
             <Button
-              disabled={isLoading}
+              disabled={isLoading || isDriveAndCurrentFolder}
               variant="primary"
               onClick={() =>
                 onAccept(destinationId ? destinationId : currentFolderId, currentFolderName, currentNamePaths)

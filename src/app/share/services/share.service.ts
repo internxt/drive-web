@@ -1,41 +1,41 @@
-import errorService from '../../core/services/error.service';
-import { ShareTypes } from '@internxt/sdk/dist/drive';
-import { SdkFactory } from '../../core/factory/sdk';
-import httpService from '../../core/services/http.service';
 import { aes } from '@internxt/lib';
+import { ShareTypes } from '@internxt/sdk/dist/drive';
 import {
+  AcceptInvitationToSharedFolderPayload,
+  CreateSharingPayload,
   ListAllSharedFoldersResponse,
   ListPrivateSharedFoldersResponse,
-  ListShareLinksItem,
+  ListSharedItemsResponse,
+  PublicSharedItemInfo,
   ShareDomainsResponse,
   ShareFolderWithUserPayload,
-  UpdateUserRolePayload,
-  ListSharedItemsResponse,
-  AcceptInvitationToSharedFolderPayload,
-  SharingInvite,
-  UpdateUserRoleResponse,
-  SharedFolders,
   SharedFiles,
+  SharedFolderSize,
+  SharedFolders,
   SharedFoldersInvitationsAsInvitedUserResponse,
-  CreateSharingPayload,
+  SharingInvite,
   SharingMeta,
+  UpdateUserRolePayload,
+  UpdateUserRoleResponse,
 } from '@internxt/sdk/dist/drive/share/types';
-import { domainManager } from './DomainManager';
-import _ from 'lodash';
-import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import folderService from 'app/drive/services/folder.service';
+import { Role } from 'app/store/slices/sharedLinks/types';
+import copy from 'copy-to-clipboard';
+import crypto from 'crypto';
+import { t } from 'i18next';
+import { Iterator } from '../../core/collections';
+import { SdkFactory } from '../../core/factory/sdk';
+import errorService from '../../core/services/error.service';
+import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
+import { decryptMessageWithPrivateKey } from '../../crypto/services/pgp.service';
+import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
 import {
   downloadItemsAsZipThunk,
   downloadItemsThunk,
 } from '../../store/slices/storage/storage.thunks/downloadItemsThunk';
-import notificationsService, { ToastType } from '../../notifications/services/notifications.service';
-import { t } from 'i18next';
-import { Iterator } from '../../core/collections';
-import { Role } from 'app/store/slices/sharedLinks/types';
-import folderService from 'app/drive/services/folder.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import crypto from 'crypto';
-import copy from 'copy-to-clipboard';
+import { domainManager } from './DomainManager';
 
 interface CreateShareResponse {
   created: boolean;
@@ -44,49 +44,6 @@ interface CreateShareResponse {
 
 export async function createShare(params: ShareTypes.GenerateShareLinkPayload): Promise<CreateShareResponse> {
   return await SdkFactory.getNewApiInstance().createShareClient().createShareLink(params);
-}
-
-export async function createShareLink(
-  plainCode: string,
-  mnemonic: string,
-  params: ShareTypes.GenerateShareLinkPayload,
-): Promise<string> {
-  const share = await createShare(params);
-
-  return getLinkFromShare(share, plainCode, mnemonic, params.type);
-}
-
-export function getLinkFromShare(
-  share: CreateShareResponse,
-  plainCode: string,
-  mnemonic: string,
-  type: string,
-): string {
-  const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
-  const shareDomain = _.sample(domainList);
-
-  if (share.created) {
-    return `${shareDomain}/sh/${type}/${share.token}/${plainCode}`;
-  } else {
-    return `${shareDomain}/sh/${type}/${share.token}/${aes.decrypt((share as any).encryptedCode, mnemonic)}`;
-  }
-}
-
-export function buildLinkFromShare(mnemonic: string, share: ListShareLinksItem & { code: string }): string {
-  const domainList =
-    domainManager.getDomainsList().length > 0 ? domainManager.getDomainsList() : [window.location.origin];
-  const shareDomain = _.sample(domainList);
-  const plainCode = aes.decrypt(share.code, mnemonic);
-
-  return `${shareDomain}/sh/${share.isFolder ? 'folder' : 'file'}/${share.token}/${plainCode}`;
-}
-
-export function incrementShareView(token: string): Promise<{ incremented: boolean; token: string }> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.incrementShareViewByToken(token).catch((error) => {
-    throw errorService.castError(error);
-  });
 }
 
 export function updateShareLink(params: ShareTypes.UpdateShareLinkPayload): Promise<ShareTypes.ShareLink> {
@@ -230,14 +187,6 @@ export function getSharedFolderInfo(token: string, password?: string): Promise<S
   });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function getSharedFolderSize(shareId: string, folderId: string): Promise<any> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinkFolderSize({ itemId: shareId, folderId }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
 export function getShareDomains(): Promise<ShareDomainsResponse> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getShareDomains().catch((error) => {
@@ -255,19 +204,6 @@ export function getSharingRoles(): Promise<Role[]> {
 export function inviteUserToSharedFolder(props: ShareFolderWithUserPayload): Promise<SharingInvite> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.inviteUserToSharedFolder({ ...props, encryptionAlgorithm: 'ed25519' }).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-export function getSharedFolderInvitations({
-  itemType,
-  itemId,
-}: {
-  itemType: 'folder';
-  itemId: string;
-}): Promise<any[]> {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getSharedFolderInvitations({ itemType, itemId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -326,9 +262,16 @@ export function acceptSharedFolderInvite({
   });
 }
 
-export function getUserRoleOfSharedRolder(sharingId: string): Promise<Role> {
+export function getUserRoleOfSharedFolder(sharingId: string): Promise<Role> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getUserRole(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPublicSharedItemInfo(sharingId: string): Promise<PublicSharedItemInfo> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getPublicSharedItemInfo(sharingId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -368,28 +311,79 @@ export function stopSharingItem(itemType: string, itemId: string): Promise<void>
   return shareClient.stopSharingFolder(itemType, itemId);
 }
 
-export const getPublicShareLink = async (uuid: string, itemType: 'folder' | 'file'): Promise<void> => {
+export const createPublicShareFromOwnerUser = async (
+  uuid: string,
+  itemType: 'folder' | 'file',
+  plainPassword?: string,
+  encryptionAlgorithm?: string,
+): Promise<SharingMeta> => {
   const user = localStorageService.getUser() as UserSettings;
   const { mnemonic } = user;
   const code = crypto.randomBytes(32).toString('hex');
 
   const encryptedMnemonic = aes.encrypt(mnemonic, code);
   const encryptedCode = aes.encrypt(code, mnemonic);
+  const encryptedPassword = plainPassword ? aes.encrypt(plainPassword, code) : null;
+
+  return createPublicSharingItem({
+    encryptionAlgorithm: encryptionAlgorithm ?? 'inxt-v2',
+    encryptionKey: encryptedMnemonic,
+    itemType,
+    itemId: uuid,
+    encryptedCode,
+    persistPreviousSharing: true,
+    ...(encryptedPassword && { encryptedPassword }),
+  });
+};
+
+export const decryptPublicSharingCodeWithOwner = (encryptedCode: string) => {
+  const user = localStorageService.getUser() as UserSettings;
+  const { mnemonic } = user;
+  return aes.decrypt(encryptedCode, mnemonic);
+};
+
+const getRandomElement = (list: string[]) => {
+  if (list.length === 0) {
+    return null;
+  }
+
+  const randomIndex = Math.floor(Math.random() * list.length);
+
+  return list[randomIndex];
+};
+
+export const getPublicShareLink = async (
+  uuid: string,
+  itemType: 'folder' | 'file',
+  encriptedMnemonic?: string,
+): Promise<SharingMeta | void> => {
+  const user = localStorageService.getUser() as UserSettings;
+  let { mnemonic } = user;
+  const code = crypto.randomBytes(32).toString('hex');
 
   try {
-    const publicSharingItemData = await createPublicSharingItem({
-      encryptionAlgorithm: 'inxt-v2',
-      encryptionKey: encryptedMnemonic,
-      itemType,
-      itemId: uuid,
-      encryptedCode,
-    });
+    const publicSharingItemData = await createPublicShareFromOwnerUser(uuid, itemType);
     const { id: sharingId, encryptedCode: encryptedCodeFromResponse } = publicSharingItemData;
+    const isUserInvited = publicSharingItemData.ownerId !== user.uuid;
+
+    if (isUserInvited && encriptedMnemonic) {
+      const ownerMnemonic = await decryptMnemonic(encriptedMnemonic);
+      if (ownerMnemonic) mnemonic = ownerMnemonic;
+    }
     const plainCode = encryptedCodeFromResponse ? aes.decrypt(encryptedCodeFromResponse, mnemonic) : code;
 
-    copy(`${process.env.REACT_APP_HOSTNAME}/sh/${itemType}/${sharingId}/${plainCode}`);
+    window.focus();
+    const domains = domainManager.getDomainsList();
+    const selectedDomain = getRandomElement(domains);
+
+    const publicShareLink = `${selectedDomain}/sh/${itemType}/${sharingId}/${plainCode}`;
+    // workaround to enable copy after login, because first copy always fails
+    copy(publicShareLink);
+    const isCopied = copy(publicShareLink);
+    if (!isCopied) throw Error('Error copying shared public link');
 
     notificationsService.show({ text: t('shared-links.toast.copy-to-clipboard'), type: ToastType.Success });
+    return publicSharingItemData;
   } catch (error) {
     notificationsService.show({
       text: t('modals.shareModal.errors.copy-to-clipboard'),
@@ -448,24 +442,6 @@ export function getSharedDirectoryFiles(
     password: payload.password,
   });
 }
-
-// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-export function getAllShareLinks(
-  page: number,
-  perPage: number,
-  orderBy?: 'views:ASC' | 'views:DESC' | 'createdAt:ASC' | 'createdAt:DESC',
-) {
-  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
-  return shareClient.getShareLinks(page, perPage, orderBy).catch((error) => {
-    throw errorService.castError(error);
-  });
-}
-
-const getFormatFileName = (info): string => {
-  const hasType = info?.type !== null;
-  const extension = hasType ? `.${info?.type}` : '';
-  return `${info.name}${extension}`;
-};
 
 class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
   private page: number;
@@ -771,31 +747,73 @@ export function createPublicSharingItem(publicSharingPayload: CreateSharingPaylo
     throw errorService.castError(error);
   });
 }
+export function validateSharingInvitation(sharingId: string): Promise<{ uuid: string }> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.validateInviteExpiration(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 
 export function getPublicSharingMeta(sharingId: string, code: string, password?: string): Promise<SharingMeta> {
   const shareClient = SdkFactory.getNewApiInstance().createShareClient();
   return shareClient.getSharingMeta(sharingId, code, password).catch((error) => {
+    throw error;
+  });
+}
+
+export function updateSharingType(itemId: string, itemType: 'file' | 'folder', sharingType: string): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.updateSharingType({ itemId, itemType, sharingType }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getSharingType(itemId: string, itemType: 'file' | 'folder'): Promise<SharingMeta> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharingType({ itemId, itemType }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function saveSharingPassword(
+  sharingId: string,
+  plainPassword: string,
+  encryptedCode: string,
+): Promise<SharingMeta> {
+  const code = shareService.decryptPublicSharingCodeWithOwner(encryptedCode);
+  const encryptedPassword = aes.encrypt(plainPassword, code);
+
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.saveSharingPassword(sharingId, encryptedPassword).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function removeSharingPassword(sharingId: string): Promise<void> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.removeSharingPassword(sharingId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export async function getSharedFolderSize(id: string): Promise<SharedFolderSize> {
+  const shareClient = SdkFactory.getNewApiInstance().createShareClient();
+  return shareClient.getSharedFolderSize(id).catch((error) => {
     throw errorService.castError(error);
   });
 }
 
 const shareService = {
   createShare,
-  createShareLink,
   updateShareLink,
   deleteShareLink,
   getSharedFileInfo,
-  getSharedFolderInvitations,
   getSharedDirectoryFiles,
   getSharedDirectoryFolders,
   getSentSharedFolders,
-  getReceivedSharedFolders,
   getAllSharedFolders,
   getAllSharedFiles,
-  getLinkFromShare,
-  getAllShareLinks,
-  buildLinkFromShare,
-  incrementShareView,
+  getSharingType,
   getShareDomains,
   stopSharingItem,
   removeUserRole,
@@ -803,14 +821,22 @@ const shareService = {
   downloadSharedFiles,
   getUsersOfSharedFolder,
   updateUserRoleOfSharedFolder,
-  getUserRoleOfSharedRolder,
+  getUserRoleOfSharedFolder,
   acceptSharedFolderInvite,
   declineSharedFolderInvite,
   processInvitation,
   createPublicSharingItem,
+  createPublicShareFromOwnerUser,
+  updateSharingType,
   getPublicSharingMeta,
   getPublicSharedFolderContent,
   getPublicShareLink,
+  saveSharingPassword,
+  removeSharingPassword,
+  decryptPublicSharingCodeWithOwner,
+  validateSharingInvitation,
+  getPublicSharedItemInfo,
+  getSharedFolderSize,
 };
 
 export default shareService;

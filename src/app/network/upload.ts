@@ -21,6 +21,10 @@ interface IUploadParams {
   mnemonic: string;
   progressCallback: UploadProgressCallback;
   abortController?: AbortController;
+  continueUploadOptions?: {
+    taskId: string;
+    isPaused: boolean;
+  };
 }
 
 export async function uploadFileBlob(
@@ -131,11 +135,13 @@ export function uploadFile(bucketId: string, params: IUploadParams): Promise<str
       uploadingCallback: params.progressCallback,
       abortController: uploadAbortController,
       parts: Math.ceil(params.filesize / partSize),
+      continueUploadOptions: params?.continueUploadOptions,
     });
   } else {
     uploadPromise = facade.upload(bucketId, params.mnemonic, file, {
       uploadingCallback: params.progressCallback,
       abortController: uploadAbortController,
+      continueUploadOptions: params?.continueUploadOptions,
     });
   }
 

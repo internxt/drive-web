@@ -2,6 +2,7 @@ import { SVGProps } from 'react';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { RenewalPeriod } from '../../payment/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AdvancedSharedItem } from 'app/share/types';
 
 export interface DriveFolderData {
   id: number;
@@ -23,6 +24,7 @@ export interface DriveFolderData {
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
+  sharings?: { type: string; id: string }[];
   uuid?: string;
 }
 
@@ -42,6 +44,7 @@ export interface DriveFileData {
   fileId: string;
   folderId: number;
   folder_id: number;
+  folderUuid?: string;
   id: number;
   name: string;
   plain_name: string | null;
@@ -53,6 +56,7 @@ export interface DriveFileData {
   thumbnails: Array<Thumbnail>;
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
+  sharings?: { type: string; id: string }[];
   uuid?: string;
 }
 
@@ -80,7 +84,7 @@ export interface DriveFileMetadataPayload {
   itemName?: string;
 }
 
-export type DriveItemData = DriveFileData & DriveFolderData & { sharings?: { type: string; id: string }[] };
+export type DriveItemData = DriveFileData & DriveFolderData;
 
 export interface DriveItemPatch {
   name?: string;
@@ -133,6 +137,7 @@ export type StoragePlan = {
 export interface FolderPath {
   name: string;
   id: number;
+  uuid?: string;
 }
 
 export interface FolderPathDialog {
@@ -154,3 +159,20 @@ export enum FreeStoragePlan {
   simpleName = '2GB',
   storageLimit = 2147483648,
 }
+
+export type DriveItemDetails = (DriveItemData | AdvancedSharedItem) & {
+  isShared: boolean;
+  userEmail?: string;
+  view: 'Drive' | 'Shared';
+};
+
+export type ItemDetailsProps = {
+  name: string;
+  uploadedBy: string;
+  location: string;
+  uploaded: string;
+  modified: string;
+  shared: string;
+  type?: string;
+  size?: string;
+};
