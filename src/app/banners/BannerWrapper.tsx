@@ -16,8 +16,6 @@ const OFFER_END_DAY = new Date('2024-06-14');
 
 const COOKIE_EXPIRE_DATE = OFFER_END_DAY.getDate() - new Date().getDate();
 
-console.log('EXPIRE DATE: ', COOKIE_EXPIRE_DATE);
-
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
