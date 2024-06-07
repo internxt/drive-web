@@ -12,12 +12,6 @@ interface ProductFeaturesComponentProps {
 
 const Separator = () => <div className="border border-gray-10" />;
 
-const BILLING_FREQUENCY = {
-  year: '',
-  month: '',
-  lifetime: '',
-};
-
 export const ProductFeaturesComponent = ({ selectedPlan }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
   const bytes = bytesToString(selectedPlan.bytes);
