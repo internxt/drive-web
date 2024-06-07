@@ -1,4 +1,4 @@
-import { ProductFeaturesComponent } from './components/ProductFeaturesComponent';
+import { ProductFeaturesComponent } from './components/ProductCardComponent';
 import { HeaderComponent } from './components/Header';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
@@ -9,7 +9,6 @@ import { IFormValues } from 'app/core/types';
 import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import paymentService from 'app/payment/services/payment.service';
-import checkoutService from './services/checkout.service';
 import { AuthMethodTypes, PAYMENT_ELEMENT_OPTIONS, PasswordStateProps } from './types';
 import { UserAuthComponent } from './components/UserAuthComponent';
 import { useEffect, useState } from 'react';
@@ -19,6 +18,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import databaseService from 'app/database/services/database.service';
 import localStorageService from 'app/core/services/local-storage.service';
 import RealtimeService from 'app/core/services/socket.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import checkoutService from './services/checkout.service';
 
 interface CheckoutViewProps {
   isLoading: boolean;
@@ -37,6 +38,8 @@ const CheckoutView = ({
 }: CheckoutViewProps) => {
   let type: string;
   let clientSecret: string;
+
+  const { translate } = useTranslationContext();
 
   const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
@@ -91,13 +94,29 @@ const CheckoutView = ({
   const handleCheckout: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
 
+    let userData;
+
     // Sign up for the user
     const { email, password, token } = formData;
 
+    if (user) {
+      userData = {
+        name: fullName,
+        email: user.email,
+      };
+    } else {
+      userData = {
+        name: 'My Internxt',
+        email: email,
+      };
+    }
+
     try {
       if (authMethod === 'signIn') {
+        console.log('signin');
         authCheckoutService.logIn(email, password, '', dispatch);
       } else if (authMethod === 'signUp') {
+        console.log('signup');
         authCheckoutService.signUp(doRegister, email, password, token, dispatch);
       }
 
@@ -108,8 +127,8 @@ const CheckoutView = ({
         return;
       }
 
-      // Create the customer
-      const { customerId } = await paymentService.createCustomer('Internxt User', email);
+      // Get customer or create one
+      const { customerId } = await paymentService.getCustomerId(userData.fullName, userData.email);
 
       // Trigger form validation and wallet collection before the creation of the subscription or PI (Payment Intent)
       const { error: submitError } = await elements.submit();
@@ -123,7 +142,7 @@ const CheckoutView = ({
         const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
           customerId,
           selectedPlan.amount,
-          selectedPlan.currency,
+          selectedPlan.id,
         );
 
         type = clientSecretType;
@@ -171,7 +190,7 @@ const CheckoutView = ({
           {/* Header */}
           <div className="flex flex-col space-y-16">
             <HeaderComponent />
-            <p className="text-3xl font-bold text-gray-100">You're almost there! Checkout securely:</p>
+            <p className="text-3xl font-bold text-gray-100">{translate('checkout.title')}</p>
           </div>
           {!isLoading && selectedPlan ? (
             <div className="relative flex flex-row justify-between">
@@ -190,10 +209,10 @@ const CheckoutView = ({
 
                 {/* PAYMENT SECTION */}
                 <form className="flex flex-col space-y-8 pb-20" onSubmit={handleSubmit(handleCheckout)}>
-                  <p className="text-2xl font-semibold text-gray-100">2. Select a payment method</p>
+                  <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   <Button type="submit" id="submit">
-                    Pay
+                    {translate('checkout.pay')}
                   </Button>
                 </form>
               </div>

@@ -5,17 +5,19 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ArrowRight } from '@phosphor-icons/react';
 import { bytesToString } from '../../../../../drive/services/size.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import Button from '../../../../../shared/components/Button/Button';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../../store/slices/plan';
 import Modal from 'app/shared/components/Modal';
-import moneyService from 'app/payment/services/money.service';
-import { loadStripe, Stripe } from '@stripe/stripe-js';
-import envService from 'app/core/services/env.service';
+import currencyService from 'app/payment/services/money.service';
 import errorService from 'app/core/services/error.service';
+import envService from 'app/core/services/env.service';
+import { Stripe, loadStripe } from '@stripe/stripe-js';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
 
@@ -64,6 +66,12 @@ export default function PlanSelector({ className = '' }: { className?: string })
       });
   }, []);
 
+  const pricesFilteredAndSorted = prices
+    ?.filter((price) => price.interval === interval)
+    .sort((a, b) => a.amount - b.amount);
+
+  const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
+
   let stripe;
 
   async function getStripe(): Promise<Stripe> {
@@ -76,115 +84,59 @@ export default function PlanSelector({ className = '' }: { className?: string })
     return stripe;
   }
 
-  const pricesFilteredAndSorted = prices
-    ?.filter((price) => price.interval === interval)
-    .sort((a, b) => a.amount - b.amount);
-
-  const [loadingPlanAction, setLoadingPlanAction] = useState<string | null>(null);
-
-  async function onPlanClick(priceId: string, currency: string) {
+  async function onPlanClick(priceId: string) {
     setLoadingPlanAction(priceId);
 
-    if (subscription?.type !== 'subscription') {
+    const selectedPlanToPurchase = prices.find((price) => price.id === priceId);
+
+    if (subscription?.type === 'subscription' && selectedPlanToPurchase?.interval !== 'lifetime') {
       try {
-        const response = await paymentService.createCheckoutSession({
-          price_id: priceId,
-          success_url: `${window.location.origin}/checkout/success`,
-          cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-          customer_email: user.email,
-          mode: interval === 'lifetime' ? 'payment' : 'subscription',
-          currency: currency,
-        });
-        localStorage.setItem('sessionId', response.sessionId);
-        await paymentService.redirectToCheckout(response);
+        const stripe = await getStripe();
+        const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
+        if (updatedSubscription.request3DSecure) {
+          stripe
+            .confirmCardPayment(updatedSubscription.clientSecret)
+            .then(async (result) => {
+              if (result.error) {
+                notificationsService.show({
+                  type: ToastType.Error,
+                  text: result.error.message as string,
+                });
+              } else {
+                notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+                dispatch(planThunks.initializeThunk()).unwrap();
+              }
+            })
+            .catch((err) => {
+              const error = errorService.castError(err);
+              errorService.reportError(error);
+              notificationsService.show({
+                text: translate('notificationMessages.errorCancelSubscription'),
+                type: ToastType.Error,
+              });
+            });
+        } else {
+          notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
+          dispatch(planThunks.initializeThunk()).unwrap();
+        }
       } catch (err) {
         const error = errorService.castError(err);
+        errorService.reportError(error);
         notificationsService.show({
           text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
         });
-        errorService.reportError(error);
       } finally {
+        dispatch(planThunks.initializeThunk()).unwrap();
         setLoadingPlanAction(null);
         setIsDialogOpen(false);
       }
     } else {
-      if (interval === 'lifetime') {
-        try {
-          const response = await paymentService.createCheckoutSession({
-            price_id: priceId,
-            success_url: `${window.location.origin}/checkout/success`,
-            cancel_url: `${window.location.origin}/checkout/cancel?price_id=${priceId}`,
-            customer_email: user.email,
-            mode: 'payment',
-            currency: currency,
-          });
-          localStorage.setItem('sessionId', response.sessionId);
-          await paymentService.redirectToCheckout(response).then(async (result) => {
-            await paymentService.cancelSubscription();
-            if (result.error) {
-              notificationsService.show({
-                type: ToastType.Error,
-                text: result.error.message as string,
-              });
-            } else {
-              notificationsService.show({
-                type: ToastType.Success,
-                text: 'Payment successful',
-              });
-            }
-          });
-        } catch (err) {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        }
-      } else {
-        try {
-          const stripe = await getStripe();
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(priceId);
-          if (updatedSubscription.request3DSecure) {
-            stripe
-              .confirmCardPayment(updatedSubscription.clientSecret)
-              .then(async (result) => {
-                if (result.error) {
-                  notificationsService.show({
-                    type: ToastType.Error,
-                    text: result.error.message as string,
-                  });
-                } else {
-                  notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-                  dispatch(planThunks.initializeThunk()).unwrap();
-                }
-              })
-              .catch((err) => {
-                const error = errorService.castError(err);
-                errorService.reportError(error);
-                notificationsService.show({
-                  text: translate('notificationMessages.errorCancelSubscription'),
-                  type: ToastType.Error,
-                });
-              });
-          } else {
-            notificationsService.show({ text: 'Subscription updated successfully', type: ToastType.Success });
-            dispatch(planThunks.initializeThunk()).unwrap();
-          }
-        } catch (err) {
-          const error = errorService.castError(err);
-          errorService.reportError(error);
-          notificationsService.show({
-            text: translate('notificationMessages.errorCancelSubscription'),
-            type: ToastType.Error,
-          });
-        } finally {
-          dispatch(planThunks.initializeThunk()).unwrap();
-          setLoadingPlanAction(null);
-          setIsDialogOpen(false);
-        }
-      }
+      // Redirect the user to checkout with the priceId and currency to get the price data
+      navigationService.push(AppView.Checkout, {
+        planId: selectedPlanToPurchase?.id,
+        currency: selectedPlanToPurchase?.currency,
+      });
     }
   }
 
@@ -235,7 +187,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
               onClick={() => onPlanSelected(price.id)}
               loading={loadingPlanAction === price.id}
               disabled={loadingPlanAction !== null}
-              onPlanClick={() => onPlanClick(price.id, price.currency)}
+              onPlanClick={() => onPlanClick(price.id)}
               priceID={price.id}
               currency={price.currency}
             />
@@ -318,7 +270,7 @@ function Price({
       <h1 className="text-4xl font-medium text-primary">{bytesToString(bytes)}</h1>
       <div className="border-translate mt-5 border-gray-10" />
       <p className="mt-5 text-2xl font-medium text-gray-100">
-        <span>{moneyService.getCurrencySymbol(currency.toUpperCase())}</span>
+        <span>{currencyService.getCurrencySymbol(currency.toUpperCase())}</span>
         {interval === 'lifetime'
           ? translate('views.account.tabs.plans.card.lifetime', {
               amount: displayAmount(amount),
@@ -329,7 +281,7 @@ function Price({
       </p>
       {interval !== 'lifetime' ? (
         <p className=" text-gray-50">
-          <span>{moneyService.getCurrencySymbol(currency.toUpperCase())}</span>
+          <span>{currencyService.getCurrencySymbol(currency.toUpperCase())}</span>
           {translate('views.account.tabs.plans.card.annually', {
             amount: displayAmount(amountAnnually),
           })}
@@ -398,7 +350,7 @@ const ChangePlanDialog = ({
   }
 
   if (subscription?.type === 'subscription') {
-    subscriptionCurrencySymbol = moneyService.getCurrencySymbol(subscription?.currency.toUpperCase());
+    subscriptionCurrencySymbol = currencyService.getCurrencySymbol(subscription?.currency.toUpperCase());
     if (subscription.interval === 'month') {
       currentAmountMonthly = subscription.amount;
     } else if (subscription.interval === 'year') {

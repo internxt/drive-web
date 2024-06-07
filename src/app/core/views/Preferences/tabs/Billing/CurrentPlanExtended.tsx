@@ -1,9 +1,9 @@
 import analyticsService, { trackCanceledSubscription } from '../../../../../analytics/services/analytics.service';
 import { FreeStoragePlan, StoragePlan } from '../../../../../drive/types';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import moneyService from '../../../../../payment/services/money.service';
+import currencyService from '../../../../../payment/services/money.service';
 import { RenewalPeriod } from '../../../../../payment/types';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import paymentService from '../../../../../payment/services/payment.service';
@@ -71,14 +71,14 @@ export default function CurrentPlanExtended({ className = '' }: { className?: st
     if (storagePlan) {
       if (storagePlan.paymentInterval === RenewalPeriod.Annually) {
         return (
-          moneyService.getCurrencySymbol(storagePlan.currency) +
+          currencyService.getCurrencySymbol(storagePlan.currency) +
           storagePlan.price +
           '/' +
           translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.year')
         );
       } else {
         return (
-          moneyService.getCurrencySymbol(storagePlan.currency) +
+          currencyService.getCurrencySymbol(storagePlan.currency) +
           storagePlan.monthlyPrice +
           '/' +
           translate('views.account.tabs.billing.cancelSubscriptionModal.infoBox.month')

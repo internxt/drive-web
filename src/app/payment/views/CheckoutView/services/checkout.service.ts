@@ -19,13 +19,13 @@ const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
 const getClientSecretForPaymentIntent = async (
   customerId: string,
   amount: number,
-  currency: string,
+  planId: string,
   promoCode?: string,
 ): Promise<ClientSecretObj> => {
   const { clientSecret: client_secret } = await paymentService.createPaymentIntent(
     customerId,
     amount,
-    currency,
+    planId,
     promoCode,
   );
 
