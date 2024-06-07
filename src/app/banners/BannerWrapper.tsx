@@ -25,10 +25,10 @@ const BannerWrapper = (): JSX.Element => {
 
   const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const isCookie = getCookie(SHOW_BANNER_COOKIE_NAME);
+  const showBannerCookieExists = getCookie(SHOW_BANNER_COOKIE_NAME);
   const isOfferOffDay = new Date() > OFFER_END_DAY;
 
-  const shouldShowBanner = isNewUser && !isCookie && !isOfferOffDay;
+  const shouldShowBanner = isNewUser && !showBannerCookieExists && !isOfferOffDay;
 
   useEffect(() => {
     handleBannerDisplay();
