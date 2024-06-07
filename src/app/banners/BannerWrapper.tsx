@@ -9,7 +9,7 @@ import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 import FeaturesBanner from './FeaturesBanner';
-import { getCookie, setCookie } from 'app/analytics/utils';
+import { getCookie, setInternalCookie } from 'app/analytics/utils';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_banner';
 const OFFER_END_DAY = new Date('2024-06-14');
@@ -35,7 +35,7 @@ const BannerWrapper = (): JSX.Element => {
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
   const onCloseBanner = () => {
-    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', COOKIE_EXPIRE_DATE);
+    setInternalCookie(SHOW_BANNER_COOKIE_NAME, 'false', COOKIE_EXPIRE_DATE);
     setShowBanner(false);
   };
 
