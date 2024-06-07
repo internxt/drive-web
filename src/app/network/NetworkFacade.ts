@@ -1,19 +1,19 @@
 import { Environment } from '@internxt/inxt-js';
 import { Network as NetworkModule } from '@internxt/sdk';
-import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
-import { validateMnemonic } from 'bip39';
-import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
 import { downloadFile } from '@internxt/sdk/dist/network/download';
+import { uploadFile, uploadMultipartFile } from '@internxt/sdk/dist/network/upload';
+import { validateMnemonic } from 'bip39';
+import { createCipheriv, createDecipheriv, randomBytes } from 'crypto';
 
-import { getEncryptedFile, encryptStreamInParts, processEveryFileBlobReturnHash } from './crypto';
-import { DownloadProgressCallback, getDecryptedStream } from './download';
-import { uploadFileBlob, UploadProgressCallback } from './upload';
-import { buildProgressStream } from 'app/core/services/stream.service';
-import { queue, QueueObject } from 'async';
 import { EncryptFileFunction, UploadFileMultipartFunction } from '@internxt/sdk/dist/network';
-import { TaskStatus } from '../tasks/types';
-import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { QueueObject, queue } from 'async';
 import { WORKER_MESSAGE_STATES } from '../../WebWorker';
+import { buildProgressStream } from '../core/services/stream.service';
+import { waitForContinueUploadSignal } from '../drive/services/worker.service/uploadWorkerUtils';
+import { TaskStatus } from '../tasks/types';
+import { encryptStreamInParts, getEncryptedFile, processEveryFileBlobReturnHash } from './crypto';
+import { DownloadProgressCallback, getDecryptedStream } from './download';
+import { UploadProgressCallback, uploadFileBlob } from './upload';
 
 interface UploadOptions {
   uploadingCallback: UploadProgressCallback;
@@ -283,11 +283,12 @@ export class NetworkFacade {
         );
 
         fileStream = buildProgressStream(decryptedStream, (readBytes) => {
-          options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
+          options?.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
       (options?.token && { token: options.token }) || undefined,
     );
+    console.log('finalizdo');
 
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return fileStream!;

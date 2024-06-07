@@ -1,25 +1,25 @@
 import { Environment } from '@internxt/inxt-js';
-import { createDecipheriv, Decipher } from 'crypto';
 import * as Sentry from '@sentry/react';
+import { createDecipheriv, Decipher } from 'crypto';
 
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
-import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
-import { Abortable } from './Abortable';
-import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
 import localStorageService from 'app/core/services/local-storage.service';
+import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
+import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
+import { Abortable } from './Abortable';
+import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
-import { SerializablePhoto } from 'app/store/slices/photos';
-import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
 import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
-import downloadFileV2 from './download/v2';
+import { getEnvironmentConfig } from 'app/drive/services/network.service';
+import { SerializablePhoto } from 'app/store/slices/photos';
+import errorService from '../core/services/error.service';
 import {
   getDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
   updateDatabasePhotosPreviewData,
   updateDatabasePhotosSourceData,
 } from '../drive/services/database.service';
-import errorService from '../core/services/error.service';
+import downloadFileV2 from './download/v2';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -87,14 +87,17 @@ export function getDecryptedStream(
 
   const decryptedStream = new ReadableStream({
     async pull(controller) {
+      console.log('keepReading', keepReading);
       if (!keepReading) return;
 
       const reader = encryptedStream.getReader();
       const status = await reader.read();
-
+      console.log('status', status);
       if (status.done) {
+        console.log('statatus.done', status.done);
         controller.close();
       } else {
+        console.log('status.value', status.value);
         controller.enqueue(decipher.update(status.value));
       }
 

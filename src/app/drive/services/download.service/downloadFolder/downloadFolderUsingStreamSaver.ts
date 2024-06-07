@@ -1,14 +1,14 @@
-import JSZip from 'jszip';
-import { items } from '@internxt/lib';
-import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import { items } from '@internxt/lib';
+import JSZip from 'jszip';
 import internal from 'stream';
+import streamSaver from 'streamsaver';
 
 import errorService from 'app/core/services/error.service';
-import { getEnvironmentConfig, Network } from '../../network.service';
+import { t } from 'i18next';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import { t } from 'i18next';
+import { Network, getEnvironmentConfig } from '../../network.service';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -105,7 +105,7 @@ export default async function downloadFolderUsingStreamSaver({
           type: 'uint8array',
           streamFiles: true,
           compression: 'DEFLATE',
-        }) as internal.Readable;
+        }) as unknown as internal.Readable;
         folderStream
           ?.on('data', (chunk: Buffer) => {
             writer.write(chunk);

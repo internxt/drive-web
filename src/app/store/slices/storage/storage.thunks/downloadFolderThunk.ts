@@ -82,6 +82,13 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       });
 
       if (isFirefox) {
+        tasksService.updateTask({
+          taskId: options.taskId,
+          merge: {
+            status: TaskStatus.InProcess,
+            cancellable: false,
+          },
+        });
         await downloadFolderUsingBlobs({ folder, updateProgressCallback });
       } else {
         await folderService.downloadFolderAsZip(
@@ -94,7 +101,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
           },
         );
       }
-
+      console.log('FINISHED DOWNLAODING FOLDER');
       tasksService.updateTask({
         taskId: options.taskId,
         merge: {

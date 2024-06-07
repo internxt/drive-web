@@ -1,10 +1,36 @@
-import JSZip from 'jszip';
-import fileDownload from 'js-file-download';
 import { items } from '@internxt/lib';
+import fileDownload from 'js-file-download';
+import JSZip from 'jszip';
 
 import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
 import fetchFileBlob from '../fetchFileBlob';
+
+// Función para generar un Blob de 2GB
+function generarBlobDe2GB() {
+  // Definir el tamaño en bytes de 2GB (2 * 1024 * 1024 * 1024)
+  const tamanio2GB = 3.5 * 1024 * 1024 * 1024;
+
+  // Crear un array de bytes (Uint8Array) del tamaño deseado
+  // Debido a limitaciones de memoria, es posible que necesitemos hacerlo en partes
+  const chunkSize = 64 * 1024 * 1024; // Tamaño del chunk, por ejemplo, 64MB
+  const numChunks = Math.ceil(tamanio2GB / chunkSize);
+
+  const chunks = [] as Uint8Array[];
+  for (let i = 0; i < numChunks; i++) {
+    // Crear un chunk de 64MB (puede variar según las limitaciones de memoria)
+    const chunk = new Uint8Array(chunkSize);
+    chunks.push(chunk);
+  }
+
+  // Crear el Blob a partir de los chunks
+  const blob = new Blob(chunks, { type: 'application/octet-stream' });
+
+  // Verificar el tamaño del Blob
+  console.log(`Blob generado de tamaño: ${blob.size} bytes`);
+
+  return blob;
+}
 
 /**
  * @description Downloads a folder keeping all file blobs in memory
@@ -57,12 +83,15 @@ export default async function downloadFolderUsingBlobs({
         },
       );
       const fileBlob = await fileBlobPromise;
+      // const fileBlob = generarBlobDe2GB();
 
-      downloadedSize += file.size;
+      console.log('fileBlob', fileBlob);
+      downloadedSize += parseInt(file.size.toString());
+      console.log('downloadedSize', downloadedSize);
 
       currentFolderZip?.file(displayFilename, fileBlob);
     }
-
+    console.log('currentFolderZip', currentFolderZip);
     // * Adds current folder folders to pending
     pendingFolders.push(
       ...folders.map((data) => ({
@@ -71,10 +100,14 @@ export default async function downloadFolderUsingBlobs({
       })),
     );
   }
-
-  const folderContent = await zip.generateAsync({ type: 'blob' }).then((content) => {
-    fileDownload(content, `${folder.name}.zip`, 'application/zip');
-  });
+  console.log('before folderContent');
+  const folderContent = await zip
+    .generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } })
+    .then((content) => {
+      console.log('content', content);
+      fileDownload(content, `${folder.name}.zip`, 'application/zip');
+    });
+  console.log('folderContent', folderContent);
 
   return folderContent;
 }

@@ -1,6 +1,6 @@
 import { binaryStreamToBlob } from '../../../core/services/stream.service';
-import { getEnvironmentConfig } from '../network.service';
 import { Downloadable, downloadFile, NetworkCredentials } from '../../../network/download';
+import { getEnvironmentConfig } from '../network.service';
 
 type FetchFileBlobOptions = {
   updateProgressCallback: (progress: number) => void;
@@ -16,7 +16,9 @@ export default async function fetchFileBlob(
 ): Promise<Blob> {
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
 
-  const creds = credentials ? credentials : { pass: bridgePass, user: bridgeUser };
+  const creds = credentials ?? { pass: bridgePass, user: bridgeUser };
+
+  let lastReportedProgress = -1;
 
   const fileStream = await downloadFile({
     bucketId: item.bucketId,
@@ -25,7 +27,14 @@ export default async function fetchFileBlob(
     mnemonic: mnemonic ? mnemonic : encryptionKey,
     options: {
       notifyProgress: (totalBytes, downloadedBytes) => {
-        options.updateProgressCallback(downloadedBytes / totalBytes);
+        const progress = downloadedBytes / totalBytes;
+        const progressInt = Math.floor(progress * 100); // Convert to percentage and round down
+
+        if (progressInt > lastReportedProgress) {
+          lastReportedProgress = progressInt;
+          console.log('lastReportedProgress', lastReportedProgress);
+          options.updateProgressCallback(progressInt / 100); // Call with the progress as a fraction
+        }
       },
       abortController: options.abortController,
     },

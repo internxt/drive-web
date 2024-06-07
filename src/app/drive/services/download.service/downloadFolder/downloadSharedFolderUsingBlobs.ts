@@ -115,7 +115,7 @@ export async function downloadSharedFolderUsingBlobs(
 
   return zip
     .generateAsync({
-      type: 'blob',
+      type: 'nodebuffer',
     })
     .then((content) => {
       options.progressCallback(1);

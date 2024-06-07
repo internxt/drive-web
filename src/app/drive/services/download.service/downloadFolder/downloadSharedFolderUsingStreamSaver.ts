@@ -1,12 +1,12 @@
+import { items } from '@internxt/lib';
 import errorService from 'app/core/services/error.service';
 import { getSharedDirectoryFiles, getSharedDirectoryFolders } from 'app/share/services/share.service';
 import JSZip from 'jszip';
 import { Readable } from 'stream';
 import streamSaver from 'streamsaver';
-import { items } from '@internxt/lib';
 
-import { Network } from '../../network.service';
 import { t } from 'i18next';
+import { Network } from '../../network.service';
 
 interface FolderPackage {
   folderId: number;
@@ -133,7 +133,7 @@ export async function downloadSharedFolderUsingStreamSaver(
         type: 'uint8array',
         streamFiles: true,
         compression: 'DEFLATE',
-      }) as Readable;
+      }) as unknown as Readable;
       folderStream
         ?.on('data', (chunk: Buffer) => {
           writer.write(chunk);

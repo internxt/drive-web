@@ -8,15 +8,15 @@ export async function binaryStreamToBlob(stream: BinaryStream, mimeType?: string
 
   while (!finish) {
     const { done, value } = await reader.read();
-
+    console.log(value);
     if (!done) {
-      slices.push(value as Uint8Array);
+      slices.push(value);
     }
 
     finish = done;
   }
 
-  return new Blob(slices, mimeType ? { type: mimeType } : {});
+  return new Blob(slices, { type: 'application/octet-stream' });
 }
 
 export function buildProgressStream(source: BinaryStream, onRead: (readBytes: number) => void): BinaryStream {
@@ -26,11 +26,11 @@ export function buildProgressStream(source: BinaryStream, onRead: (readBytes: nu
   return new ReadableStream<Uint8Array>({
     async pull(controller) {
       const status = await reader.read();
-
+      console.log(status);
       if (status.done) {
         controller.close();
       } else {
-        readBytes += (status.value as Uint8Array).length;
+        readBytes += status.value.length;
 
         onRead(readBytes);
         controller.enqueue(status.value);
