@@ -9,18 +9,18 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia il 75%",
-    "title": "Proteggi i tuoi dati dal lato oscuro",
-    "cta": "Scegli un piano",
-    "guarantee": "Garanzia di rimborso entro 30 giorni",
-    "lastCta": "*L'offerta è valida solo per gli account gratuiti o i nuovi clienti",
+    "label": "Risparmia il 70%",
+    "title": "Archiviazione sicura a vita",
+    "cta": "Scegli il piano",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
     "features": [
-      "Risparmia sui piani di Internxt",
-      "Archiviazione cloud sicura e protetta",
+      "Risparmia fino al 70% sui piani a vita",
+      "Archiviazione cloud sicura",
       "Open source e trasparente",
-      "Trasferimenti crittografati di estremità in estremità",
+      "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 20 maggio"
+      "L'offerta termina l'14 giugno"
     ]
   },
   "banner": {

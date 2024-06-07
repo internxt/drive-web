@@ -8,10 +8,13 @@ import { useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
-import Banner from './Banner';
+import FeaturesBanner from './FeaturesBanner';
+import { getCookie, setCookie } from 'app/analytics/utils';
 
-const SHOW_BANNER_COOKIE_NAME = 'lifetime_soft_banner';
-const OFFER_OFF_DAY = new Date('2024-05-26');
+const SHOW_BANNER_COOKIE_NAME = 'show_banner';
+const OFFER_END_DAY = new Date('2024-06-14');
+
+const COOKIE_EXPIRE_DATE = OFFER_END_DAY.getDate() - new Date().getDate();
 
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState(false);
@@ -22,17 +25,17 @@ const BannerWrapper = (): JSX.Element => {
 
   const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);
-  const isLocalStorage = localStorageService.get(SHOW_BANNER_COOKIE_NAME);
-  const isOfferOffDay = new Date() > OFFER_OFF_DAY;
+  const showBannerCookieExists = getCookie(SHOW_BANNER_COOKIE_NAME);
+  const isOfferOffDay = new Date() > OFFER_END_DAY;
 
-  const shouldShowBanner = isNewUser && !isLocalStorage && !isOfferOffDay;
+  const shouldShowBanner = isNewUser && !showBannerCookieExists && !isOfferOffDay;
 
   useEffect(() => {
     handleBannerDisplay();
   }, [isTutorialCompleted, userPlan, isNewAccount]);
 
   const onCloseBanner = () => {
-    localStorageService.set(SHOW_BANNER_COOKIE_NAME, 'false');
+    setCookie(SHOW_BANNER_COOKIE_NAME, 'false', COOKIE_EXPIRE_DATE);
     setShowBanner(false);
   };
 
@@ -42,7 +45,7 @@ const BannerWrapper = (): JSX.Element => {
     }
   }
 
-  return <Banner showBanner={showBanner} onClose={onCloseBanner} />;
+  return <FeaturesBanner showBanner={showBanner} onClose={onCloseBanner} />;
 };
 
 export default BannerWrapper;
