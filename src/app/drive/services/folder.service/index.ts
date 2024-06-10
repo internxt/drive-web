@@ -251,12 +251,13 @@ async function downloadFolderAsZip(
   let totalSizeIsReady = false;
 
   const zip = new FlatFolderZip(rootFolder.name, {
-    progress(loadedBytes) {
-      if (!totalSizeIsReady) {
-        return;
-      }
-      updateProgress(Math.min(loadedBytes / totalSize, 1));
-    },
+    // TODO: check why opts.progress is causing zip corruption
+    // progress(loadedBytes) {
+    //   if (!totalSizeIsReady) {
+    //     return;
+    //   }
+    //   updateProgress(Math.min(loadedBytes / totalSize, 1));
+    // },
   });
 
   const user = localStorageService.getUser();

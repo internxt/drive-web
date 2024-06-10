@@ -118,7 +118,7 @@ const getDatabasePhotosSourceData = async ({ photoId }: { photoId: string }): Pr
 
 const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  return lruFilesCacheManager?.get(fileId.toString());
+  return lruFilesCacheManager?.get(fileId?.toString());
 };
 
 const updateDatabaseFileSourceData = async ({

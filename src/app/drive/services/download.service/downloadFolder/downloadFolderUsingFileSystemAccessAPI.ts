@@ -1,10 +1,10 @@
 import { items } from '@internxt/lib';
 
-import { getEnvironmentConfig } from '../../network.service';
-import { DriveFolderData, FolderTree } from '../../../types';
-import folderService from '../../folder.service';
 import { FlatFolderZip } from 'app/core/services/zipFolder.service';
 import network from 'app/network';
+import { DriveFolderData, FolderTree } from '../../../types';
+import folderService from '../../folder.service';
+import { getEnvironmentConfig } from '../../network.service';
 
 /**
  * @description Downloads a folder using File System Access API
@@ -47,7 +47,8 @@ async function downloadFolder(
 
   const zip = new FlatFolderZip(folder.name, {
     abortController: opts.abortController,
-    progress: (loadedBytes) => updateProgress?.(loadedBytes / size),
+    // TODO: check why progress is causing zip corruption
+    // progress: (loadedBytes) => updateProgress?.(loadedBytes / size),
   });
 
   while (pendingFolders.length > 0 && !abortController?.signal.aborted) {
