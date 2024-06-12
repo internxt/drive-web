@@ -6,7 +6,6 @@ import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';
 import Modal from '../../../../../shared/components/Modal';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import useEffectAsync from '../../../../hooks/useEffectAsync';
 import Section from '../../components/Section';
 
 import visaIcon from '../../../../../../assets/icons/card-brands/visa.png';
@@ -128,37 +127,25 @@ function InitialState({ payment, setIsModalOpen }: { payment: StateProps; setIsM
 }
 
 function PaymentMethodModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [setupIntentSecret, setSetupIntentSecret] = useState<null | string>(null);
   const { translate } = useTranslationContext();
-
-  useEffectAsync(async () => {
-    if (isOpen) {
-      setSetupIntentSecret(null);
-
-      const { clientSecret } = await paymentService.createSetupIntent();
-
-      setSetupIntentSecret(clientSecret);
-    }
-  }, [isOpen]);
-
-  const spinnerSection = (
-    <div className="flex h-32 items-center justify-center">
-      <Spinner className="h-8 w-8 text-gray-80" />
-    </div>
-  );
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       <h1 className="text-2xl font-medium text-gray-80">
         {translate('views.account.tabs.billing.paymentMethod.title')}
       </h1>
-      {setupIntentSecret ? (
-        <Elements stripe={paymentService.getStripe()} options={{ clientSecret: setupIntentSecret }}>
-          <PaymentForm onClose={onClose} />
-        </Elements>
-      ) : (
-        spinnerSection
-      )}
+      <Elements
+        stripe={paymentService.getStripe()}
+        options={{
+          mode: 'setup',
+          paymentMethodCreation: 'manual',
+          setupFutureUsage: 'off_session',
+          currency: 'eur',
+          payment_method_types: ['card'],
+        }}
+      >
+        <PaymentForm onClose={onClose} />
+      </Elements>
     </Modal>
   );
 }
@@ -170,16 +157,34 @@ function PaymentForm({ onClose }: { onClose: () => void }) {
   async function handleSubmit() {
     if (!stripe || !elements) return;
 
-    const result = await stripe.confirmSetup({
+    const { error: errorSubmit } = await elements.submit();
+    if (errorSubmit) return;
+
+    const { error: errorPaymentMethod, paymentMethod } = await stripe.createPaymentMethod({
       elements,
-      confirmParams: { return_url: window.location.href },
+      params: {
+        metadata: {
+          // type: 'business',
+          type: 'individual',
+        },
+      },
     });
 
-    if (result.error.message) {
-      setError(result.error.message);
-    } else {
-      setError('Something went wrong while trying to change your payment method');
+    if (errorPaymentMethod) {
+      setError(errorPaymentMethod.message || 'An error has ocurred');
+      return;
     }
+
+    await paymentService
+      .updateSubscriptionPaymentMethod({
+        // subscriptionType: 'B2B',
+        subscriptionType: 'individual',
+        paymentMethodId: paymentMethod.id,
+      })
+      .then((_) => window.location.reload())
+      .catch((err) => {
+        setError(err?.message || 'Something went wrong while trying to change your payment method');
+      });
   }
   return (
     <>

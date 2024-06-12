@@ -102,6 +102,14 @@ const paymentService = {
     });
   },
 
+  async updateSubscriptionPaymentMethod(payload: {
+    paymentMethodId: string;
+    subscriptionType: string;
+  }): Promise<void | Error> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.updateSubscriptionPaymentMethod(payload);
+  },
+
   async updateSubscriptionPrice(
     priceId: string,
     coupon?: string,
