@@ -4,18 +4,21 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Sparen Sie 70%",
-    "title": "Sichere Speicherung für das Leben",
-    "cta": "Plan auswählen",
-    "guarantee": "30-Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "label": {
+      "upTo": "BIS ZU ",
+      "discount": "75% RABATT"
+    },
+    "title": "Schützen Sie Ihre Privatsphäre wie ein Profi",
+    "cta": "Plan wählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Sparen Sie bis zu 70% bei Lebenszeitplänen",
+      "Sparen Sie bei allen Internxt-Plänen",
       "Sichere und geschützte Cloud-Speicherung",
       "Open Source und transparent",
-      "Ende-zu-Ende verschlüsselte Übertragungen",
+      "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 14. Juni"
+      "Das Angebot endet am 14. Juli"
     ]
   },
   "valentinesBanner": {

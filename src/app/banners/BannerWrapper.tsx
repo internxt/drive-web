@@ -12,12 +12,12 @@ import FeaturesBanner from './FeaturesBanner';
 import { getCookie, setInternalCookie } from 'app/analytics/utils';
 
 const SHOW_BANNER_COOKIE_NAME = 'show_banner';
-const OFFER_END_DAY = new Date('2024-06-14');
+const OFFER_END_DAY = new Date('2024-06-17');
 
 const COOKIE_EXPIRE_DATE = OFFER_END_DAY.getDate() - new Date().getDate();
 
 const BannerWrapper = (): JSX.Element => {
-  const [showBanner, setShowBanner] = useState(false);
+  const [showBanner, setShowBanner] = useState(true);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
