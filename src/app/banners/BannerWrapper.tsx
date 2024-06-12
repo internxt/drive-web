@@ -11,7 +11,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import FeaturesBanner from './FeaturesBanner';
 import { getCookie, setInternalCookie } from 'app/analytics/utils';
 
-const SHOW_BANNER_COOKIE_NAME = 'show_banner';
+const SHOW_BANNER_COOKIE_NAME = 'show_euro_banner';
 const OFFER_END_DAY = new Date('2024-06-17');
 
 const COOKIE_EXPIRE_DATE = OFFER_END_DAY.getDate() - new Date().getDate();
