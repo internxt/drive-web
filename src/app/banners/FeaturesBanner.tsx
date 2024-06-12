@@ -10,7 +10,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
   const features = translateList('featuresBanner.features');
 
   const handleOnClick = () => {
-    window.open('https://internxt.com/lifetime', '_blank', 'noopener noreferrer');
+    window.open('https://internxt.com/pricing', '_blank', 'noopener noreferrer');
   };
 
   return (
