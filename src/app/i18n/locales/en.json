@@ -4,18 +4,21 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save 70%",
-    "title": "Secure storage for life",
+    "label": {
+      "upTo": "UP TO ",
+      "discount": "75% OFF"
+    },
+    "title": "Defend your privacy like a pro",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Save up to 70% on lifetime plans",
+      "Save on all Internxt plans",
       "Safe and secure cloud storage",
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends June 14th"
+      "Offer ends July 14th"
     ]
   },
   "valentinesBanner": {
