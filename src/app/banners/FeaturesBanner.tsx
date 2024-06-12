@@ -22,7 +22,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
       {/* Banner */}
       <div
         className={
-          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl border-4 border-primary/10 px-10'
+          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl px-10'
         }
         style={{
           backgroundImage: `url(${GrassImage})`,
