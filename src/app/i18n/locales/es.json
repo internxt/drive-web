@@ -4,7 +4,10 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra un 75%",
+    "label": {
+      "upTo": "",
+      "discount": "Ahorra un 75%"
+    },
     "title": "Defiende tu privacidad como un crack",
     "cta": "Elegir plan",
     "guarantee": "Garantía de devolución del dinero de 30 días",
