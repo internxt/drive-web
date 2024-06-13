@@ -1,25 +1,26 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
 
+import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import dayjs from 'dayjs';
+import authService from '../../../auth/services/auth.service';
+import userService from '../../../auth/services/user.service';
+import localStorageService from '../../../core/services/local-storage.service';
+import navigationService from '../../../core/services/navigation.service';
+import { AppView, LocalStorageItem } from '../../../core/types';
+import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
+import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import tasksService from '../../../tasks/services/tasks.service';
+import { storeTeamsInfo } from '../../../teams/services/teams.service';
+import { isTokenExpired } from '../../utils';
+import { referralsActions } from '../referrals';
+import { sessionActions } from '../session';
+import { sessionSelectors } from '../session/session.selectors';
+import { storageActions } from '../storage';
 import { teamActions } from '../team';
 import { uiActions } from '../ui';
-import { sessionActions } from '../session';
-import { storageActions } from '../storage';
-import navigationService from '../../../core/services/navigation.service';
-import { sessionSelectors } from '../session/session.selectors';
-import { AppView, LocalStorageItem } from '../../../core/types';
-import tasksService from '../../../tasks/services/tasks.service';
-import authService from '../../../auth/services/auth.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import userService from '../../../auth/services/user.service';
-import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
-import { storeTeamsInfo } from '../../../teams/services/teams.service';
-import localStorageService from '../../../core/services/local-storage.service';
-import { referralsActions } from '../referrals';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
-import dayjs from 'dayjs';
 
 export interface UserState {
   isInitializing: boolean;
@@ -78,18 +79,24 @@ export const initializeUserThunk = createAsyncThunk<
   }
 });
 
-export const refreshUserThunk = createAsyncThunk<void, void, { state: RootState }>(
+export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean } | undefined, { state: RootState }>(
   'user/refresh',
-  async (payload: void, { dispatch, getState }) => {
-    const { user, token } = await userService.refreshUser();
+  async ({ forceRefresh } = {}, { dispatch, getState }) => {
+    const userToken = localStorageService.get(LocalStorageItem.UserToken);
+    const isExpired = isTokenExpired(userToken);
+    console.log({ isExpired });
+    if (isExpired || forceRefresh) {
+      console.log('Refreshing user');
+      const { user, token } = await userService.refreshUser();
 
-    const currentUser = getState().user.user;
-    if (!currentUser) throw new Error('Current user is not defined');
+      const currentUser = getState().user.user;
+      if (!currentUser) throw new Error('Current user is not defined');
 
-    const { avatar, emailVerified, name, lastname } = user;
+      const { avatar, emailVerified, name, lastname } = user;
 
-    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
-    dispatch(userActions.setToken(token));
+      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+      dispatch(userActions.setToken(token));
+    }
   },
 );
 
