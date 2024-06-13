@@ -1,7 +1,7 @@
-name: Drive Web CD
+name: Drive Web Cloudflare CD
 on:
   push:
-    branches: [master, feat/cd]
+    branches: [master, feature/IN-57-migrate-drive-web-to-cloudflare]
 jobs:
   build:
     runs-on: ubuntu-latest
