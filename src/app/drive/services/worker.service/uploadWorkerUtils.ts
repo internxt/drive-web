@@ -106,7 +106,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
   }
 
   const messageHandler = messageResultHandlers[msgData.result];
-  console.log('[MAIN_THREAD]: Received message from worker', msgData);
+
   if (messageHandler) {
     messageHandler({ msgData, resolve, reject, worker, continueUploadOptions });
     return;

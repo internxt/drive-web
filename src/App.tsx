@@ -150,6 +150,8 @@ const App = (props: AppProps): JSX.Element => {
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
+
+    dispatch(uiActions.setFileViewerItem(null));
   };
 
   if (!isAuthenticated || isInitialized) {

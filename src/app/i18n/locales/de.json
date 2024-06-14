@@ -4,18 +4,21 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Sparen Sie 75%",
-    "title": "Schützen Sie Ihre Daten vor der dunklen Seite",
-    "cta": "Plan auswählen",
+    "label": {
+      "upTo": "BIS ZU ",
+      "discount": "75% RABATT"
+    },
+    "title": "Schützen Sie Ihre Privatsphäre wie ein Profi",
+    "cta": "Plan wählen",
     "guarantee": "30-tägige Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Sparen Sie bei Internxt-Plänen",
-      "Sicherer und geschützter Cloud-Speicher",
+      "Sparen Sie bei allen Internxt-Plänen",
+      "Sichere und geschützte Cloud-Speicherung",
       "Open Source und transparent",
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 20. Mai"
+      "Das Angebot endet am 14. Juli"
     ]
   },
   "valentinesBanner": {
@@ -37,7 +40,8 @@
     "it": "Italiano (Italienisch)",
     "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
-    "de": "Deutsch (Deutsch)"
+    "de": "Deutsch (Deutsch)",
+    "zh-tw": "臺灣 (Taiwanisch)"
   },
   "theme": {
     "title": "Erscheinung",

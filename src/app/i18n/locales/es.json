@@ -4,18 +4,21 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra un 75%",
-    "title": "Protege tus datos del lado oscuro",
+    "label": {
+      "upTo": "",
+      "discount": "Ahorra un 75%"
+    },
+    "title": "Defiende tu privacidad como un crack",
     "cta": "Elegir plan",
     "guarantee": "Garantía de devolución del dinero de 30 días",
-    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "lastCta": "*Oferta válida para cuentas gratuitas o nuevos usuarios",
     "features": [
-      "Ahorra en los planes de Internxt",
+      "Ahorra en todos los planes de Internxt",
       "Almacenamiento en la nube seguro y protegido",
       "Código abierto y transparente",
       "Transferencias cifradas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 20 de mayo"
+      "La oferta termina el 14 de julio"
     ]
   },
   "valentinesBanner": {
@@ -37,7 +40,8 @@
     "it": "Italiano (Italiano)",
     "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
-    "de": "Deutsch (Alemán)"
+    "de": "Deutsch (Alemán)",
+    "zh-tw": "臺灣 (Taiwanés)"
   },
   "theme": {
     "title": "Apariencia",

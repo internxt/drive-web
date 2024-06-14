@@ -4,6 +4,7 @@ import queryString from 'query-string';
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
+import errorService from './error.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -56,6 +57,16 @@ const navigationService = {
     const pathname = navigationService.history.location.pathname.split('/');
     const lastSegment = pathname[pathname.length - 1];
     return lastSegment;
+  },
+  replaceState(uuid: string | undefined): void {
+    try {
+      const pathname = navigationService.history.location.pathname.split('/');
+      pathname[pathname.length - 1] = uuid ?? '';
+      const newPathname = pathname.join('/');
+      window.history.replaceState(null, '', newPathname);
+    } catch (error) {
+      errorService.reportError(error);
+    }
   },
 };
 
