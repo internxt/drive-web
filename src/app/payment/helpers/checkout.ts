@@ -13,7 +13,7 @@ export const fetchPlanById = async (planId: string): Promise<SelectedPlanData> =
   };
 };
 
-export const fetchPromotionCodeById = async (promotionCode: string): Promise<CouponCodeData> => {
+export const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCodeData> => {
   const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
   return {
     codeId: promoCodeData.codeId,

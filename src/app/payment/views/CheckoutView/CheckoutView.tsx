@@ -5,43 +5,52 @@ import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import Button from 'app/shared/components/Button/Button';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
-import { useSignUp } from 'app/auth/components/SignUp/useSignUp';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useAppSelector } from 'app/store/hooks';
 import paymentService from 'app/payment/services/payment.service';
-import { AuthMethodTypes, CouponCodeData, PAYMENT_ELEMENT_OPTIONS, SelectedPlanData } from './types';
+import {
+  AuthMethodTypes,
+  CouponCodeData,
+  ErrorStates,
+  ErrorType,
+  PAYMENT_ELEMENT_OPTIONS,
+  SelectedPlanData,
+} from './types';
 import { UserAuthComponent } from './components/UserAuthComponent';
 import { useEffect, useState } from 'react';
-import authCheckoutService from './services/auth-checkout.service';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import databaseService from 'app/database/services/database.service';
-import localStorageService from 'app/core/services/local-storage.service';
-import RealtimeService from 'app/core/services/socket.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import checkoutService from './services/checkout.service';
 
 interface CheckoutViewProps {
-  isLoading: boolean;
   selectedPlan: SelectedPlanData | null;
+  errorStates: ErrorStates;
   couponCodeData?: CouponCodeData;
   handleOnInputChange: (promoCode: string) => void;
+  authenticateUser: (email: string, password: string, token: string) => Promise<void>;
+  onLogOut: () => Promise<void>;
+  handleStripeError: (type: ErrorType, error: string) => void;
 }
 
-const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputChange }: CheckoutViewProps) => {
+const CheckoutView = ({
+  selectedPlan,
+  couponCodeData,
+  errorStates,
+  handleOnInputChange,
+  authenticateUser,
+  onLogOut,
+  handleStripeError,
+}: CheckoutViewProps) => {
   let type: string;
   let clientSecret: string;
 
   const { translate } = useTranslationContext();
 
-  const dispatch = useAppDispatch();
   const stripe = useStripe();
   const elements = useElements();
-  const { doRegister } = useSignUp('activate');
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const user = useAppSelector((state) => state.user.user);
 
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-  const [authError, setAuthError] = useState<string>('');
-  const [stripeError, setStripeError] = useState<string>();
   const [authMethod, setAuthMethod] = useState<AuthMethodTypes>('signUp');
   const [isExecutingPaymentAndAuth, setIsExecutingPaymentAndAuth] = useState<boolean>(false);
 
@@ -77,35 +86,6 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
     reset(undefined, { keepErrors: false, keepValues: false });
   }
 
-  const handleAuthError = (error: string) => {
-    setAuthError(error);
-  };
-
-  const handleStripeError = (error: string) => {
-    setStripeError(error);
-  };
-
-  const onLogOut = async () => {
-    await databaseService.clear();
-    localStorageService.clear();
-    RealtimeService.getInstance().stop();
-    setAuthMethod('signIn');
-  };
-
-  const authenticateUser = async (email: string, password: string, token: string) => {
-    try {
-      if (authMethod === 'signIn') {
-        await authCheckoutService.logIn(email, password, '', dispatch);
-      } else if (authMethod === 'signUp') {
-        await authCheckoutService.signUp(doRegister, email, password, token, dispatch);
-      }
-    } catch (err) {
-      const error = err as Error;
-      handleAuthError(error.message);
-      throw new Error('Authentication failed');
-    }
-  };
-
   const handleCheckout: SubmitHandler<IFormValues> = async (formData, event) => {
     event?.preventDefault();
     setIsExecutingPaymentAndAuth(true);
@@ -131,15 +111,16 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
 
     try {
       if (!stripe || !elements) {
-        handleStripeError('Stripe.js has not loaded yet. Please try again later.');
+        handleStripeError('stripe', 'Stripe.js has not loaded yet. Please try again later.');
         return;
       }
 
       const { customerId } = await paymentService.getCustomerId(userData.name, userData.email);
 
       const { error: submitError } = await elements.submit();
+
       if (submitError) {
-        handleStripeError(submitError.message as string);
+        handleStripeError('stripe', submitError.message as string);
         console.error('Error getting wallet info and validating form', submitError.message);
         return;
       }
@@ -149,7 +130,7 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
           customerId,
           selectedPlan.amount,
           selectedPlan.id,
-          couponCodeData?.codeId,
+          couponCodeData?.codeName,
         );
 
         type = clientSecretType;
@@ -158,7 +139,7 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
         const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
           customerId,
           selectedPlan?.id as string,
-          couponCodeData?.codeId,
+          couponCodeData?.codeName,
         );
 
         type = clientSecretType;
@@ -176,7 +157,7 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
       });
 
       if (error) {
-        handleStripeError('Error in payment intent confirmation: ' + error.message);
+        handleStripeError('stripe', 'Something went wrong while confirming payment. Try again.');
         console.error('Error in payment intent confirmation: ', error.message);
       }
     } catch (err) {
@@ -198,12 +179,12 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
             <HeaderComponent />
             <p className="text-3xl font-bold text-gray-100">{translate('checkout.title')}</p>
           </div>
-          {!isLoading && selectedPlan ? (
+          {selectedPlan ? (
             <div className="relative flex flex-row justify-between">
               <div className="flex w-full max-w-xl flex-col space-y-14">
                 <UserAuthComponent
                   errors={errors}
-                  authError={authError}
+                  authError={errorStates.authError}
                   register={register}
                   authMethod={authMethod}
                   onAuthMethodToggled={onAuthMethodToggled}
@@ -213,7 +194,7 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
                 <div className="flex flex-col space-y-8 pb-20">
                   <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
-                  {stripeError && <div className="text-red-dark">{stripeError}</div>}
+                  {errorStates.stripeError && <div className="text-red-dark">{errorStates.stripeError}</div>}
                   <Button type="submit" id="submit">
                     {isExecutingPaymentAndAuth && isValid ? translate('auth.decrypting') : translate('checkout.pay')}
                   </Button>
@@ -224,6 +205,7 @@ const CheckoutView = ({ isLoading, selectedPlan, couponCodeData, handleOnInputCh
                   selectedPlan={selectedPlan}
                   couponCodeData={couponCodeData}
                   handleOnInputChange={handleOnInputChange}
+                  couponError={errorStates.couponError}
                 />
               </div>
             </div>

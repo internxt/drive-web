@@ -11,8 +11,9 @@ import { useHotkeys } from 'react-hotkeys-hook';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: SelectedPlanData;
-  handleOnInputChange: (promoCode: string) => void;
   couponCodeData?: CouponCodeData;
+  couponError: string;
+  handleOnInputChange: (promoCode: string) => void;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
@@ -33,8 +34,9 @@ const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: Coupo
 
 export const ProductFeaturesComponent = ({
   selectedPlan,
-  handleOnInputChange,
   couponCodeData,
+  couponError,
+  handleOnInputChange,
 }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
   const [couponName, setCouponName] = useState<string>('');
@@ -137,6 +139,7 @@ export const ProductFeaturesComponent = ({
                     <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
                     <div className="flex w-full flex-row space-x-3">
                       <input
+                        value={couponName}
                         onChange={(e) => {
                           e.preventDefault();
                           setCouponName(e.target.value);
@@ -159,6 +162,7 @@ export const ProductFeaturesComponent = ({
                         {translate('checkout.productCard.addCoupon.applyCodeButtonTitle')}
                       </Button>
                     </div>
+                    {couponError ? <p className="text-red-dark">{couponError}</p> : undefined}
                   </div>
                 </Menu.Items>
               </Transition>

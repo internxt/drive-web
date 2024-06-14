@@ -1,6 +1,4 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import paymentService from 'app/payment/services/payment.service';
 import { ClientSecretData, CouponCodeData } from '../types';
 
@@ -10,7 +8,7 @@ const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
   });
 
   if (response.status !== 200) {
-    navigationService.push(AppView.Drive);
+    throw new Error('Plan not found');
   }
 
   return response.json();
@@ -18,11 +16,12 @@ const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
 
 const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCodeData> => {
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-id?promotionCode=${promotionCode}`,
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?promotionCode=${promotionCode}`,
   );
 
   if (response.status !== 200) {
-    navigationService.push(AppView.Drive);
+    const message = await response.text();
+    throw new Error(message);
   }
 
   return response.json();

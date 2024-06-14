@@ -30,3 +30,11 @@ export interface CouponCodeData {
   amountOff?: number;
   percentOff?: number;
 }
+
+export interface ErrorStates {
+  authError: string;
+  stripeError: string;
+  couponError: string;
+}
+
+export type ErrorType = 'auth' | 'stripe' | 'coupon';
