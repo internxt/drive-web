@@ -1,12 +1,14 @@
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useAppDispatch } from '../../../store/hooks';
+import { userThunks } from '../../../store/slices/user';
 import AccountTab from './tabs/Account';
 import BillingTab from './tabs/Billing';
 import PlansTab from './tabs/Plans';
 import SecurityTab from './tabs/Security';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 
 const PREFERENCES_TABS = ['account', 'billing', 'plans', 'security'] as const;
 type PreferencesTabID = (typeof PREFERENCES_TABS)[number];
@@ -18,6 +20,7 @@ export const TabContext = createContext<{
 
 export default function Preferences(): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const TABS: {
     id: PreferencesTabID;
     label: string;
@@ -32,6 +35,10 @@ export default function Preferences(): JSX.Element {
   const urlTab = params.get('tab');
   const [activeTab, setActiveTab] = useState<PreferencesTabID>('account');
   const [currentTabTitle, setCurrentTabTitle] = useState<string>('account');
+
+  useEffect(() => {
+    dispatch(userThunks.refreshUserDataThunk());
+  }, []);
 
   const tabContextValues = useMemo(
     () => ({

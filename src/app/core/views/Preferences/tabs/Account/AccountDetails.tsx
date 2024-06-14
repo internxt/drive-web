@@ -13,21 +13,16 @@ import Modal from '../../../../../shared/components/Modal';
 import Tooltip from '../../../../../shared/components/Tooltip';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { updateUserProfileThunk, userThunks } from '../../../../../store/slices/user';
+import { updateUserProfileThunk } from '../../../../../store/slices/user';
 import errorService from '../../../../services/error.service';
 import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
-  const dispatch = useAppDispatch();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
-
-  useEffect(() => {
-    dispatch(userThunks.refreshUserDataThunk());
-  }, []);
 
   async function onResend() {
     setIsSendingVerificationEmail(true);
