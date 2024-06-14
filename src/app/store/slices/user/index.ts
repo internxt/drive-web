@@ -6,6 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import dayjs from 'dayjs';
 import authService from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
@@ -105,11 +106,14 @@ export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootSt
     const currentUser = getState().user.user;
     if (!currentUser) throw new Error('Current user is not defined');
 
-    const { user } = await userService.refreshUserData(currentUser.uuid);
-    const { avatar, emailVerified, name, lastname } = user;
+    try {
+      const { user } = await userService.refreshUserData(currentUser.uuid);
+      const { avatar, emailVerified, name, lastname } = user;
 
-    // TODO: IN THIS CALL emailVerified and avatar is wrong, not merge until this was resolved
-    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+      dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
+    } catch (err) {
+      errorService.reportError(err, { extra: { thunk: 'refreshUserData' } });
+    }
   },
 );
 
