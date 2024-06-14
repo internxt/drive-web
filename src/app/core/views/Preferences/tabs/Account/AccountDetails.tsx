@@ -1,6 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CheckCircle, Warning } from '@phosphor-icons/react';
+import { areCredentialsCorrect } from 'app/auth/services/auth.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import userService from '../../../../../auth/services/user.service';
@@ -12,17 +13,21 @@ import Modal from '../../../../../shared/components/Modal';
 import Tooltip from '../../../../../shared/components/Tooltip';
 import { RootState } from '../../../../../store';
 import { useAppDispatch } from '../../../../../store/hooks';
-import { updateUserProfileThunk } from '../../../../../store/slices/user';
-import Section from '../../components/Section';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
+import { updateUserProfileThunk, userThunks } from '../../../../../store/slices/user';
 import errorService from '../../../../services/error.service';
+import Section from '../../components/Section';
 
 export default function AccountDetails({ className = '' }: { className?: string }): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useAppDispatch();
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
 
   const [isSendingVerificationEmail, setIsSendingVerificationEmail] = useState(false);
+
+  useEffect(() => {
+    dispatch(userThunks.refreshUserDataThunk());
+  }, []);
 
   async function onResend() {
     setIsSendingVerificationEmail(true);

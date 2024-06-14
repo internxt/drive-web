@@ -84,19 +84,32 @@ export const refreshUserThunk = createAsyncThunk<void, { forceRefresh?: boolean 
   async ({ forceRefresh } = {}, { dispatch, getState }) => {
     const userToken = localStorageService.get(LocalStorageItem.UserToken);
     const isExpired = isTokenExpired(userToken);
-    console.log({ isExpired });
-    if (isExpired || forceRefresh) {
-      console.log('Refreshing user');
-      const { user, token } = await userService.refreshUser();
 
-      const currentUser = getState().user.user;
-      if (!currentUser) throw new Error('Current user is not defined');
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    if (isExpired || forceRefresh) {
+      const { user, token } = await userService.refreshUser();
 
       const { avatar, emailVerified, name, lastname } = user;
 
       dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
       dispatch(userActions.setToken(token));
     }
+  },
+);
+
+export const refreshUserDataThunk = createAsyncThunk<void, void, { state: RootState }>(
+  'user/refreshUser',
+  async (_, { dispatch, getState }) => {
+    const currentUser = getState().user.user;
+    if (!currentUser) throw new Error('Current user is not defined');
+
+    const { user } = await userService.refreshUserData(currentUser.uuid);
+    const { avatar, emailVerified, name, lastname } = user;
+
+    // TODO: IN THIS CALL emailVerified and avatar is wrong, not merge until this was resolved
+    dispatch(userActions.setUser({ ...currentUser, avatar, emailVerified, name, lastname }));
   },
 );
 
@@ -252,6 +265,7 @@ export const userActions = userSlice.actions;
 export const userThunks = {
   initializeUserThunk,
   refreshUserThunk,
+  refreshUserDataThunk,
   logoutThunk,
   updateUserEmailCredentialsThunk,
 };
