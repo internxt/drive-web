@@ -1,6 +1,7 @@
-import { Asterisk, CheckCircle, X } from '@phosphor-icons/react';
+import { CheckCircle, SoccerBall, X } from '@phosphor-icons/react';
 
-import StarWarsBG from '../../assets/images/banner/star-wars-bg.webp';
+import GrassImage from '../../assets/images/banner/grass.webp';
+
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
@@ -21,19 +22,22 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
       {/* Banner */}
       <div
         className={
-          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl border-4 border-primary/10 px-10'
+          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl px-10'
         }
         style={{
-          backgroundImage: `url(${StarWarsBG})`,
+          backgroundImage: `url(${GrassImage})`,
         }}
       >
-        <button className="absolute  right-0 m-7 flex text-white" onClick={onClose}>
+        <button className="absolute  right-0 m-7 flex text-white hover:bg-white/5" onClick={onClose}>
           <X size={32} />
         </button>
         <div className="flex w-full flex-col space-x-10 py-14 lg:flex-row">
           <div className="flex  w-max max-w-[310px] flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
-            <div className="flex rounded-lg border-4 border-primary/90 bg-black px-3 py-1.5">
-              <p className="text-2xl font-bold text-white">{translate('featuresBanner.label')}</p>
+            <div className="flex rounded-xl border-4 border-primary bg-gray-100 px-3 py-1.5 dark:bg-surface">
+              <p className="flex items-center gap-1 text-xs font-bold text-white">
+                {translate('featuresBanner.label.upTo')}
+                <label className="text-2xl">{translate('featuresBanner.label.discount')}</label>
+              </p>
             </div>
             <p className="w-full text-4xl font-bold leading-tight text-white">{translate('featuresBanner.title')}</p>
 
@@ -57,7 +61,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row space-x-4" key={card}>
-                    <Asterisk weight="fill" size={32} className="text-primary" />
+                    <SoccerBall weight="fill" size={32} className="text-primary" />
                     <p className="whitespace-nowrap text-xl font-semibold text-white">{card}</p>
                   </div>
                 ))}
