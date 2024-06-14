@@ -14,7 +14,7 @@ import {
   UserSubscription,
   FreeTrialAvailable,
   RedeemCodePayload,
-  CreatedSubscriptionObj,
+  CreatedSubscriptionData,
 } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
@@ -59,7 +59,7 @@ const paymentService = {
     return paymentsClient.getCustomerId(name, email);
   },
 
-  async createSubscription(customerId: string, priceId: string, promoCode?: string): Promise<CreatedSubscriptionObj> {
+  async createSubscription(customerId: string, priceId: string, promoCode?: string): Promise<CreatedSubscriptionData> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createSubscription(customerId, priceId, promoCode);
   },

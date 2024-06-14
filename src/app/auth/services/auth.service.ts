@@ -13,9 +13,7 @@ import * as Sentry from '@sentry/react';
 import analyticsService from 'app/analytics/services/analytics.service';
 import { getCookie, setCookie } from 'app/analytics/utils';
 import localStorageService from 'app/core/services/local-storage.service';
-import navigationService from 'app/core/services/navigation.service';
 import RealtimeService from 'app/core/services/socket.service';
-import { AppView } from 'app/core/types';
 import {
   assertPrivateKeyIsValid,
   assertValidateKeys,
@@ -34,13 +32,15 @@ import databaseService from 'app/database/services/database.service';
 import { generateMnemonic, validateMnemonic } from 'bip39';
 import { SdkFactory } from '../../core/factory/sdk';
 import httpService from '../../core/services/http.service';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 export async function logOut(loginParams?: Record<string, string>): Promise<void> {
   analyticsService.trackSignOut();
   await databaseService.clear();
   localStorageService.clear();
   RealtimeService.getInstance().stop();
-  if (!navigationService.isCurrentPath(AppView.BlockedAccount)) {
+  if (!navigationService.isCurrentPath(AppView.BlockedAccount) && !navigationService.isCurrentPath(AppView.Checkout)) {
     navigationService.push(AppView.Login, loginParams);
   }
 }

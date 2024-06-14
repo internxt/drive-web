@@ -44,7 +44,7 @@ const signUp = async (
 };
 
 const logIn = async (email: string, password: string, twoFactorCode: string, dispatch: AppDispatch) => {
-  const { user } = await doLogin(email, password, twoFactorCode, 'web');
+  const { user } = await doLogin(email, password, twoFactorCode);
   dispatch(userActions.setUser(user));
 
   window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
@@ -57,7 +57,9 @@ const logIn = async (email: string, password: string, twoFactorCode: string, dis
     dispatch(referralsThunks.initializeThunk());
     await dispatch(initializeUserThunk()).unwrap();
   } catch (e: unknown) {
-    // PASS
+    const error = e as Error;
+
+    throw new Error(error.message);
   }
 
   userActions.setUser(user);

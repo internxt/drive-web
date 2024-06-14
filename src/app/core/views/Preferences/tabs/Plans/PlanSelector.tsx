@@ -135,7 +135,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
       // Redirect the user to checkout with the priceId and currency to get the price data
       navigationService.push(AppView.Checkout, {
         planId: selectedPlanToPurchase?.id,
-        currency: selectedPlanToPurchase?.currency,
+        // promotion_code: 'PROMOCODE75',
       });
     }
   }

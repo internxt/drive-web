@@ -2,7 +2,7 @@ import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import paymentService from 'app/payment/services/payment.service';
-import { ClientSecretObj } from '../types';
+import { ClientSecretData, CouponCodeData } from '../types';
 
 const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
   const response = await fetch(`${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}`, {
@@ -16,12 +16,24 @@ const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
   return response.json();
 };
 
+const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCodeData> => {
+  const response = await fetch(
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-id?promotionCode=${promotionCode}`,
+  );
+
+  if (response.status !== 200) {
+    navigationService.push(AppView.Drive);
+  }
+
+  return response.json();
+};
+
 const getClientSecretForPaymentIntent = async (
   customerId: string,
   amount: number,
   planId: string,
   promoCode?: string,
-): Promise<ClientSecretObj> => {
+): Promise<ClientSecretData> => {
   const { clientSecret: client_secret } = await paymentService.createPaymentIntent(
     customerId,
     amount,
@@ -38,12 +50,12 @@ const getClientSecretForPaymentIntent = async (
 const getClientSecretForSubscriptionIntent = async (
   customerId: string,
   priceId: string,
-  promoCode?: string,
-): Promise<ClientSecretObj> => {
+  promoCodeId?: string,
+): Promise<ClientSecretData> => {
   const { type: paymentType, clientSecret: client_secret } = await paymentService.createSubscription(
     customerId,
     priceId,
-    promoCode,
+    promoCodeId,
   );
 
   return {
@@ -54,6 +66,7 @@ const getClientSecretForSubscriptionIntent = async (
 
 const checkoutService = {
   fetchPlanById,
+  fetchPromotionCodeByName,
   getClientSecretForPaymentIntent,
   getClientSecretForSubscriptionIntent,
 };

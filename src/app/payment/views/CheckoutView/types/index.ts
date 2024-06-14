@@ -1,8 +1,11 @@
+import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
+
+export type SelectedPlanData = DisplayPrice & { amountWithDecimals: number };
 
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
 
-export interface ClientSecretObj {
+export interface ClientSecretData {
   clientSecretType: 'payment' | 'setup';
   client_secret: string;
 }
@@ -20,3 +23,10 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
     spacedAccordionItems: true,
   },
 };
+
+export interface CouponCodeData {
+  codeId: string;
+  codeName: string;
+  amountOff?: number;
+  percentOff?: number;
+}
