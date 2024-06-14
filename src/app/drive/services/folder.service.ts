@@ -111,6 +111,33 @@ export function createFolder(
   return [finalPromise, requestCanceler];
 }
 
+export function createFolderByUuid(
+  parentFolderUuid: string,
+  plainName: string,
+): [Promise<StorageTypes.CreateFolderResponse>, RequestCanceler] {
+  const payload: StorageTypes.CreateFolderByUuidPayload = {
+    plainName: plainName,
+    parentFolderUuid: parentFolderUuid,
+  };
+  const storageClient = SdkFactory.getNewApiInstance().createStorageClient();
+  const [promise, requestCanceler] = storageClient.createFolderByUuid(payload);
+
+  const finalPromise = promise
+    .then((response) => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackFolderCreated({
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
+    })
+    .catch((error) => {
+      throw errorService.castError(error);
+    });
+
+  return [finalPromise, requestCanceler];
+}
+
 export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.UpdateFolderMetadataPayload = {
@@ -555,10 +582,42 @@ export async function moveFolder(folderId: number, destination: number): Promise
     });
 }
 
+export async function moveFolderByUuid(
+  folderUuid: string,
+  destinationFolderUuid: string,
+): Promise<StorageTypes.FolderMeta> {
+  const storageClient = SdkFactory.getInstance().createNewStorageClient();
+  const payload: StorageTypes.MoveFolderUuidPayload = {
+    folderUuid: folderUuid,
+    destinationFolderUuid: destinationFolderUuid,
+  };
+
+  return storageClient
+    .moveFolderByUuid(payload)
+    .then((response) => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackMoveItem('folder', {
+        uuid: response.uuid,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
+    })
+    .catch((err) => {
+      const castedError = errorService.castError(err);
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-folder.errors.${castedError.status}`);
+      }
+      throw castedError;
+    });
+}
+
 const folderService = {
   createFolder,
+  createFolderByUuid,
   updateMetaData,
   moveFolder,
+  moveFolderByUuid,
   fetchFolderTree,
   downloadFolderAsZip,
   addAllFoldersToZip,

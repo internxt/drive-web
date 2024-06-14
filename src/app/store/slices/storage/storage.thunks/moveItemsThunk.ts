@@ -16,7 +16,7 @@ import errorService from '../../../../core/services/error.service';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
-  destinationFolderId: number;
+  destinationFolderId: string;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
@@ -25,12 +25,12 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
     const { items, destinationFolderId } = payload;
     const promises: Promise<void>[] = [];
 
-    if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
+    if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
 
     for (const [index, item] of items.entries()) {
-      const fromFolderId = item.parentId || item.folderId;
+      const fromFolderId = item.folderUuid || '';
       let taskId: string;
 
       if (item.isFolder) {
@@ -51,7 +51,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId, storageSelectors.bucket(getState())));
+      promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
         .then(async () => {

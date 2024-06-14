@@ -5,10 +5,10 @@ import notificationsService, { ToastType } from '../../app/notifications/service
 import { DriveItemData } from '../../app/drive/types';
 import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { Trash } from '@internxt/sdk/dist/drive';
-import recoverItemsFromTrash from './recover-items-from-trash';
 import { deleteDatabaseItems } from '../../app/drive/services/database.service';
 import { t } from 'i18next';
 import errorService from '../../app/core/services/error.service';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 const MAX_ITEMS_TO_DELETE = 10;
 const MAX_CONCURRENT_REQUESTS = 3;
@@ -19,7 +19,7 @@ async function sendItemsToTrashConcurrent({
   maxConcurrentRequests,
   trashClient,
 }: {
-  items: { id: number | string; type: string }[];
+  items: { uuid: string; type: string }[];
   maxItemsToDelete: number;
   maxConcurrentRequests: number;
   trashClient: Trash;
@@ -43,9 +43,9 @@ async function sendItemsToTrashConcurrent({
 }
 
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
-  const items: Array<{ id: number | string; type: string }> = itemsToTrash.map((item) => {
+  const items: Array<{ uuid: string; type: string }> = itemsToTrash.map((item) => {
     return {
-      id: item.isFolder ? item.id : item.fileId,
+      uuid: item.isFolder ? item.uuid : item.uuid,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
@@ -92,13 +92,18 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         onClick: async () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
-            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentId : itemsToTrash[0].folderId;
+            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].uuid : itemsToTrash[0].uuid;
             store.dispatch(
               storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
             );
 
             store.dispatch(storageActions.clearSelectedItems());
-            await recoverItemsFromTrash(itemsToTrash, destinationId, t);
+            await store.dispatch(
+              storageThunks.moveItemsThunk({
+                items: itemsToTrash,
+                destinationFolderId: destinationId,
+              }),
+            );
           }
         },
       },

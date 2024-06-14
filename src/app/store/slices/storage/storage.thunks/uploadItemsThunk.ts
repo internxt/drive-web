@@ -37,7 +37,7 @@ interface UploadItemsPayload {
   files: File[];
   taskId?: string;
   fileType?: string;
-  parentFolderId: number;
+  parentFolderId: string;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
 }
@@ -90,7 +90,7 @@ const prepareFilesToUpload = async ({
   fileType,
 }: {
   files: File[];
-  parentFolderId: number;
+  parentFolderId: string;
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {

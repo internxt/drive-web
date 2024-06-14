@@ -24,7 +24,7 @@ export interface ShareViewState {
   clickedShareItemUser?: AdvancedSharedItem['user'];
   clickedShareItemEncryptionKey: string;
   currentFolderId: string;
-  currentParentFolderId?: number;
+  currentParentFolderId: string;
   currentShareOwnerAvatar: string;
   filesOwnerCredentials?: {
     networkPass: string;

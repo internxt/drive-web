@@ -40,7 +40,7 @@ const DriveTopBarActions = ({
   driveActionsRef,
 }: {
   selectedItems: DriveItemData[];
-  currentFolderId: number;
+  currentFolderId: string;
   setEditNameItem: (item: DriveItemData) => void;
   hasAnyItemSelected: boolean;
   isTrash: boolean;

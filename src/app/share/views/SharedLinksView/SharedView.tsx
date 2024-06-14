@@ -352,7 +352,7 @@ function SharedView({
 
     dispatch(
       storageActions.setItems({
-        folderId: currentParentFolderId as number,
+        folderId: currentParentFolderId as string,
         items: shareItems as unknown as DriveItemData[],
       }),
     );

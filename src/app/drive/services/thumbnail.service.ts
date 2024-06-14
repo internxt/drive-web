@@ -228,8 +228,8 @@ export const setCurrentThumbnail = (
 
   dispatch(
     storageActions.patchItem({
-      id: item.id,
-      folderId: item.isFolder ? item.parentId : item.folderId,
+      uuid: item.uuid,
+      folderId: item.isFolder ? item.uuid : item.folderUuid,
       isFolder: item.isFolder,
       patch: {
         currentThumbnail: currentThumbnail,
@@ -241,8 +241,8 @@ export const setCurrentThumbnail = (
 export const setThumbnails = (thumbnails: Thumbnail[], item: DriveItemData, dispatch: AppDispatch): void => {
   dispatch(
     storageActions.patchItem({
-      id: item.id,
-      folderId: item.isFolder ? item.parentId : item.folderId,
+      uuid: item.uuid,
+      folderId: item.isFolder ? item.uuid : item.folderUuid,
       isFolder: item.isFolder,
       patch: {
         thumbnails: thumbnails,

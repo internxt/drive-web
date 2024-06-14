@@ -33,7 +33,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
-    const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
+    const breadcrumbIndex = namePath.findIndex((level) => level.uuid === props.item.uuid);
     const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
     namePathDestinationArray[0] = '';
     const folderPath = namePathDestinationArray.join('/');
@@ -51,9 +51,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         return i.isFolder;
       });
 
-      dispatch(storageActions.setMoveDestinationFolderId(props.item.id));
+      dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
       const storageClient = SdkFactory.getInstance().createStorageClient();
-      const [folderContentPromise] = storageClient.getFolderContent(props.item.id);
+      const [folderContentPromise] = storageClient.getFolderContent(props.item.uuid);
 
       const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
 
@@ -74,12 +74,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       );
       const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
+      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(''));
 
       dispatch(
         storageThunks.moveItemsThunk({
           items: unrepeatedItems,
-          destinationFolderId: props.item.id,
+          destinationFolderId: props.item.uuid,
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
@@ -87,12 +87,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         async ({ rootList, files }) => {
           if (files.length) {
             // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id }));
+            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.uuid }));
           }
           if (rootList.length) {
             // Directory tree
             for (const root of rootList) {
-              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: props.item.id }));
+              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: props.item.uuid }));
             }
           }
         },
@@ -111,7 +111,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         const droppedType = monitor.getItemType();
         const droppedDataParentId = item.parentId || item.folderId || -1;
 
-        return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id;
+        return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.uuid;
       },
       drop: onItemDropped,
     }),
@@ -142,7 +142,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
             ? 'text-gray-80'
             : 'text-gray-50 hover:text-gray-80'
         }`}
-          key={props.item.id}
+          key={props.item.uuid}
           onClick={() => onItemClicked(props.item)}
           onKeyDown={() => {}}
           data-cy={props?.breadcrumbButtonDataCy}

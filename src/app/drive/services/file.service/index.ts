@@ -67,6 +67,32 @@ export async function moveFile(
     });
 }
 
+export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
+  const storageClient = SdkFactory.getInstance().createNewStorageClient();
+  const payload: StorageTypes.MoveFileUuidPayload = {
+    fileUuid: fileUuid,
+    destinationFolderUuid: destinationFolderUuid,
+  };
+  return storageClient
+    .moveFileByUuid(payload)
+    .then((response) => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackMoveItem('file', {
+        uuid: fileUuid,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
+    })
+    .catch((error) => {
+      const castedError = errorService.castError(error);
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
+      }
+      throw castedError;
+    });
+}
+
 export function deleteFile(fileData: DriveFileData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
 
@@ -105,6 +131,7 @@ export function getFile(uuid: string): Promise<FileMeta> {
 const fileService = {
   updateMetaData,
   moveFile,
+  moveFileByUuid,
   fetchRecents,
   uploadFile,
   fetchDeleted,

@@ -16,7 +16,7 @@ interface CreateFolderThunkOptions {
 }
 
 interface CreateFolderPayload {
-  parentFolderId: number;
+  parentFolderId: string;
   folderName: string;
   options?: Partial<CreateFolderThunkOptions>;
   uuid?: string;
@@ -29,7 +29,7 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
     const currentFolderId = storageSelectors.currentFolderId(getState());
 
     try {
-      const [createdFolderPromise, requestCanceler] = folderService.createFolder(parentFolderId, folderName);
+      const [createdFolderPromise, requestCanceler] = folderService.createFolderByUuid(parentFolderId, folderName);
 
       const taskId = tasksService.create<CreateFolderTask>({
         relatedTaskId: options.relatedTaskId,

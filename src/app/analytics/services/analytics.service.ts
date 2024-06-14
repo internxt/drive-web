@@ -257,7 +257,7 @@ export function trackFileRename(payload: { email: string; file_id: number | stri
 
 export function trackMoveItem(
   keyOp: string,
-  payload: { email: string; file_id: number; platform: DevicePlatform },
+  payload: { email: string; file_id?: number; uuid?: string; platform: DevicePlatform },
 ): void {
   // window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }

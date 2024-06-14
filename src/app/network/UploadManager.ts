@@ -45,7 +45,7 @@ type UploadManagerFileParams = {
   taskId?: string;
   fileType?: string;
   userEmail: string;
-  parentFolderId: number;
+  parentFolderId: string;
   onFinishUploadFile?: (driveItemData: DriveFileData, taskId: string) => void;
   abortController?: AbortController;
 };

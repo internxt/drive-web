@@ -15,6 +15,8 @@ import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
+// import { useAppSelector } from 'app/store/hooks';
+// import { fetchWorkspaceFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchWorkspaceFolderContentThunk';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -27,6 +29,14 @@ const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
+  // const rootFolderId = useAppSelector(storageSelectors.rootFolderId);
+
+  // useEffect(() => {
+  //   dispatch(uiActions.setIsGlobalSearch(false));
+  //   dispatch(storageThunks.resetNamePathThunk());
+  //   dispatch(storageActions.clearSelectedItems());
+  //   dispatch(fetchWorkspaceFolderContentThunk(rootFolderId));
+  // }, [rootFolderId]);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -53,7 +63,6 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
-          id: folderMeta.id,
           uuid: folderMeta.uuid,
         }),
       );

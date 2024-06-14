@@ -47,12 +47,12 @@ export type AvatarBlobData = {
 
 export interface AppDatabase extends DBSchema {
   levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   move_levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };

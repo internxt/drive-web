@@ -16,7 +16,7 @@ import { planThunks } from '../../plan';
 
 export interface IRoot {
   name: string;
-  folderId: number | null;
+  folderId: string | null;
   childrenFiles: File[];
   childrenFolders: IRoot[];
   fullPathEdited: string;
@@ -24,7 +24,7 @@ export interface IRoot {
 
 interface UploadFolderThunkPayload {
   root: IRoot;
-  currentFolderId: number;
+  currentFolderId: string;
   options?: {
     taskId?: string;
     withNotification?: boolean;
@@ -32,7 +32,7 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: number) => {
+const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const [parentFolderContentPromise] = storageClient.getFolderContent(currentFolderId);
   const parentFolderContent = await parentFolderContentPromise;
@@ -107,7 +107,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
-            parentFolderId: level.folderId as number,
+            parentFolderId: level.folderId as string,
             folderName: level.name,
             options: { relatedTaskId: taskId, showErrors: false },
           }),
@@ -124,7 +124,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           await dispatch(
             uploadItemsParallelThunk({
               files: level.childrenFiles,
-              parentFolderId: createdFolder.id,
+              parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
                 showNotifications: false,
@@ -151,7 +151,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.id });
+          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
         levels.push(...childrenFolders);
@@ -286,7 +286,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
-            parentFolderId: level.folderId as number,
+            parentFolderId: level.folderId as string,
             folderName: level.name,
             options: { relatedTaskId: taskId, showErrors: false },
           }),
@@ -304,7 +304,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
           await dispatch(
             uploadItemsParallelThunk({
               files: level.childrenFiles,
-              parentFolderId: createdFolder.id,
+              parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
                 showNotifications: false,
@@ -331,7 +331,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
         const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.id });
+          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
         levels.push(...childrenFolders);

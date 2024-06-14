@@ -154,7 +154,7 @@ const FileViewerWrapper = ({
       size: driveFile.size,
       type: driveFile.type,
       content: fileObject,
-      parentFolderId: driveFile.folderId,
+      parentFolderId: driveFile.folderUuid,
     };
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);

@@ -43,9 +43,9 @@ const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: Breadcrumbs
   };
   const breadcrumbShareViewItems = (): BreadcrumbItemData[] => {
     const items: BreadcrumbItemData[] = [];
-    const ROOT_FOLDER_ID = 1;
+    const ROOT_FOLDER_ID = 'ROOT_FOLDER_ID';
     items.push({
-      id: ROOT_FOLDER_ID,
+      uuid: ROOT_FOLDER_ID,
       label: t('shared-links.shared-links'),
       icon: null,
       active: true,
@@ -57,7 +57,7 @@ const BreadcrumbsSharedView = ({ resetSharedItems, sharedNamePath }: Breadcrumbs
 
     sharedNamePath.slice().forEach((path: SharedNamePath, i: number, namePath: SharedNamePath[]) => {
       items.push({
-        id: path.id,
+        uuid: path.uuid,
         label: path.name,
         icon: null,
         active: i < namePath.length - 1,

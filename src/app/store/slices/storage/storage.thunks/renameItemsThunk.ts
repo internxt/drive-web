@@ -98,7 +98,7 @@ export const handleRepeatedUploadingFolders = (
 
 export interface RenameItemsPayload {
   items: DriveItemData[];
-  destinationFolderId: number;
+  destinationFolderId: string;
 }
 
 export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { state: RootState }>(
@@ -106,7 +106,7 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
   async ({ items, destinationFolderId }: RenameItemsPayload, { getState, dispatch }) => {
     const promises: Promise<any>[] = [];
 
-    if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
+    if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
     const state = getState();

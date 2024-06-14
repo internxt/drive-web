@@ -18,7 +18,7 @@ export interface FileToUpload {
   size: number;
   type: string;
   content: File;
-  parentFolderId: number;
+  parentFolderId: string;
 }
 
 export interface FileUploadOptions {
@@ -109,7 +109,7 @@ export async function uploadFile(
     const name = encryptFilename(file.name, file.parentFolderId);
 
     const storageClient = SdkFactory.getInstance().createStorageClient();
-    const fileEntry: StorageTypes.FileEntry = {
+    const fileEntry: StorageTypes.FileEntryByUuid = {
       id: fileId,
       type: file.type,
       size: file.size,
@@ -120,7 +120,7 @@ export async function uploadFile(
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
-    let response = await storageClient.createFileEntry(fileEntry, options.ownerUserAuthenticationData?.token);
+    let response = await storageClient.createFileEntryByUuid(fileEntry);
     if (!response.thumbnails) {
       response = {
         ...response,

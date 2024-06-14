@@ -20,7 +20,7 @@ interface NavbarProps {
   workspace: Workspace;
   isTeam: boolean;
   storageFilters: StorageFilters;
-  currentFolderId: number;
+  currentFolderId: string;
   dispatch: AppDispatch;
   hideSearch?: boolean;
   plan: PlanState;

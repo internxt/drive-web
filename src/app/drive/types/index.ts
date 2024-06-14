@@ -25,7 +25,7 @@ export interface DriveFolderData {
   user_id: number;
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
-  uuid?: string;
+  uuid: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -44,7 +44,7 @@ export interface DriveFileData {
   fileId: string;
   folderId: number;
   folder_id: number;
-  folderUuid?: string;
+  folderUuid: string;
   id: number;
   name: string;
   plain_name: string | null;
@@ -57,7 +57,7 @@ export interface DriveFileData {
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
-  uuid?: string;
+  uuid: string;
 }
 
 interface Thumbnail {
@@ -136,13 +136,12 @@ export type StoragePlan = {
 
 export interface FolderPath {
   name: string;
-  id: number;
-  uuid?: string;
+  uuid: string;
 }
 
 export interface FolderPathDialog {
   name: string;
-  id: number;
+  uuid: string;
 }
 
 export enum FileViewMode {
