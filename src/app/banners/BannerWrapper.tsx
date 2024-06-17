@@ -8,13 +8,11 @@ import FeaturesBanner from './FeaturesBanner';
 import { BannerManager } from './BannerManager';
 import { useEffect, useState } from 'react';
 
-const EXPIRATION_DATE_NAME = 'expiration_banner_date';
-const OFFER_END_DAY = new Date('2024-07-14');
-
 const BannerWrapper = (): JSX.Element => {
   const [showBanner, setShowBanner] = useState<boolean>(false);
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+
   const bannerManager = new BannerManager(user, plan);
 
   useEffect(() => {
