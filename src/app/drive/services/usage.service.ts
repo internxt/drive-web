@@ -20,7 +20,6 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
 
   let drive = 0;
   let backups = 0;
-  let photos = 0;
 
   try {
     const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage();
@@ -32,7 +31,7 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
 
   return {
     drive,
-    photos,
+    photos: 0,
     backups,
   };
 }
