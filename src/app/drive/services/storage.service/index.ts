@@ -1,11 +1,13 @@
+import { DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { DriveFolderData, DriveItemData } from '../../types';
 import fileService from '../file.service';
 import folderService from '../folder.service';
-import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
+// TODO: QA THIS
 export function moveItem(item: DriveItemData, destinationFolderId: string): Promise<void> {
   return item.isFolder
-    ? folderService.moveFolderByUuid((item as DriveFolderData).plain_name, destinationFolderId).then()
-    : fileService.moveFileByUuid((item as DriveFileData).name, destinationFolderId).then();
+    ? folderService.moveFolderByUuid((item as DriveFolderData).uuid, destinationFolderId).then()
+    : fileService.moveFileByUuid((item as DriveFileData).folderUuid, destinationFolderId).then();
 }
 
 const storageService = {

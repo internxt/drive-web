@@ -15,8 +15,6 @@ import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
-// import { useAppSelector } from 'app/store/hooks';
-// import { fetchWorkspaceFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchWorkspaceFolderContentThunk';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -31,6 +29,7 @@ const DriveView = (props: DriveViewProps) => {
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
   // const rootFolderId = useAppSelector(storageSelectors.rootFolderId);
 
+  // TODO: CHECK IF THIS IS ONLY FOR WORKSPACES (B2B)
   // useEffect(() => {
   //   dispatch(uiActions.setIsGlobalSearch(false));
   //   dispatch(storageThunks.resetNamePathThunk());

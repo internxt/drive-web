@@ -60,11 +60,13 @@ export const fetchWorkspaceFolderContentThunk = createAsyncThunk<void, string, {
 
       const items = await itemsPromise;
 
-      const parsedItems = items.result.map(
+      // TODO: CHECK THIS CALLS WHEN IMPLEMENT FILES AND FOLDERS LIST IN WORKSPACES (B2B)
+      // Better to delete this thunk to avoid having to maintain two fetch folder content thunks, create a manager for when there is workspace or individual and select calls according to what is needed.
+      const parsedItems = items.folders.map(
         (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
       );
 
-      const itemslength = items.result.length;
+      const itemslength = items.files.length;
       const areLastItems = itemslength < DEFAULT_LIMIT;
 
       dispatch(storageActions.addItems({ folderId, items: parsedItems }));

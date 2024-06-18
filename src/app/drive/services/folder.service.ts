@@ -119,7 +119,7 @@ export function createFolderByUuid(
     plainName: plainName,
     parentFolderUuid: parentFolderUuid,
   };
-  const storageClient = SdkFactory.getNewApiInstance().createStorageClient();
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const [promise, requestCanceler] = storageClient.createFolderByUuid(payload);
 
   const finalPromise = promise

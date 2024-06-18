@@ -43,7 +43,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
 
       const itemsFolder = await folderPromise;
 
-      const parsedItemsFolder = itemsFolder.result.map(
+      const parsedItemsFolder = itemsFolder.folders.map(
         (item) => ({ ...item, isFolder: true, name: item.plainName } as DriveItemData),
       );
 
@@ -60,7 +60,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { st
       }
       const itemsFiles = await filesPromise;
 
-      const parsedItemsFiles = itemsFiles.result.map(
+      const parsedItemsFiles = itemsFiles.files.map(
         (item) => ({ ...item, isFolder: false, name: item.plainName } as DriveItemData),
       );
 

@@ -1,18 +1,18 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
-import { uploadItemsParallelThunk } from './uploadItemsThunk';
-import { deleteItemsThunk } from './deleteItemsThunk';
+import { t } from 'i18next';
 import storageThunks from '.';
-import tasksService from '../../../../tasks/services/tasks.service';
+import { RootState } from '../../..';
+import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
-import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { t } from 'i18next';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
+import { StorageState } from '../storage.model';
+import { deleteItemsThunk } from './deleteItemsThunk';
+import { uploadItemsParallelThunk } from './uploadItemsThunk';
 
 export interface IRoot {
   name: string;
@@ -33,8 +33,8 @@ interface UploadFolderThunkPayload {
 }
 
 const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContent(currentFolderId);
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId);
   const parentFolderContent = await parentFolderContentPromise;
   const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
   const fileContent: IRoot = { ...root, name: finalFilename };

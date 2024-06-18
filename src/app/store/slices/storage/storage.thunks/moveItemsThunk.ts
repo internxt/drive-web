@@ -1,18 +1,17 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { storageActions } from '..';
-import { RootState } from '../../..';
-import { DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageService from 'app/drive/services/storage.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
-import storageSelectors from '../storage.selectors';
-import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import storageService from 'app/drive/services/storage.service';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
+import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import { t } from 'i18next';
+import { storageActions } from '..';
+import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
+import { StorageState } from '../storage.model';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];

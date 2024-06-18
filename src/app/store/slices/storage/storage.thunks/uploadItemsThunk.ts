@@ -95,11 +95,11 @@ const prepareFilesToUpload = async ({
   fileType?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   const filesToUpload: FileToUpload[] = [];
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   let parentFolderContent;
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
+    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId);
     parentFolderContent = await parentFolderContentPromise;
   }
 
@@ -144,7 +144,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   async ({ files, parentFolderId, options, taskId, fileType }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const errors: Error[] = [];
-
+    console.log({ parentFolderId });
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
@@ -156,7 +156,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
     });
-
+    console.log({ filesToUpload });
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({

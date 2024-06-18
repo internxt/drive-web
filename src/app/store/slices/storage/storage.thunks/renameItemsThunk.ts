@@ -1,20 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
+import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { t } from 'i18next';
+import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { DriveItemData } from 'app/drive/types';
-import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageSelectors from '../storage.selectors';
-import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
-import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
-import { uiActions } from '../../ui';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
-import storageThunks from '.';
 import errorService from '../../../../core/services/error.service';
+import { uiActions } from '../../ui';
+import { StorageState } from '../storage.model';
+import storageSelectors from '../storage.selectors';
+import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
 
 const checkRepeatedNameFiles = (destinationFolderFiles: DriveItemData[], files: (DriveItemData | File)[]) => {
   const repeatedFilesInDrive: DriveItemData[] = [];
@@ -115,8 +115,8 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
     for (const [index, item] of items.entries()) {
       let itemParsed;
 
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-      const [parentFolderContentPromise] = storageClient.getFolderContent(destinationFolderId);
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(destinationFolderId);
       const parentFolderContent = await parentFolderContentPromise;
 
       if (item.isFolder) {

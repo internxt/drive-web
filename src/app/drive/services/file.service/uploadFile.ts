@@ -1,16 +1,16 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import analyticsService from '../../../analytics/services/analytics.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { AppView } from '../../../core/types';
+import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig } from '../network.service';
+import { AppView } from '../../../core/types';
 import { encryptFilename } from '../../../crypto/services/utils';
-import errorService from '../../../core/services/error.service';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { Network } from 'app/drive/services/network.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
@@ -108,7 +108,7 @@ export async function uploadFile(
 
     const name = encryptFilename(file.name, file.parentFolderId);
 
-    const storageClient = SdkFactory.getInstance().createStorageClient();
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
     const fileEntry: StorageTypes.FileEntryByUuid = {
       id: fileId,
       type: file.type,

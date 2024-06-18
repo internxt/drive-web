@@ -166,7 +166,7 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
 
   if (foldersInFolder.length) {
     await foldersInFolder.forEach(async (folder) => {
-      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.id as number);
+      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
         deleteDatabaseItems(folderItems as DriveItemData[]);
@@ -184,18 +184,18 @@ const canFileBeCached = (file: DriveFileData): boolean => {
 };
 
 export {
-  getDatabaseProfileAvatar,
-  updateDatabaseProfileAvatar,
+  canFileBeCached,
+  deleteDatabaseItems,
+  deleteDatabasePhotos,
   deleteDatabaseProfileAvatar,
   getDatabaseFilePreviewData,
-  updateDatabaseFilePreviewData,
   getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
   getDatabasePhotosPreviewData,
-  updateDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
+  getDatabaseProfileAvatar,
+  updateDatabaseFilePreviewData,
+  updateDatabaseFileSourceData,
+  updateDatabasePhotosPreviewData,
   updateDatabasePhotosSourceData,
-  deleteDatabasePhotos,
-  deleteDatabaseItems,
-  canFileBeCached,
+  updateDatabaseProfileAvatar,
 };

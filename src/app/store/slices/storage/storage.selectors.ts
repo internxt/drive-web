@@ -12,7 +12,6 @@ import { sessionSelectors } from '../session/session.selectors';
 
 const rootFolderId = (state: RootState): string => {
   const { user } = state.user;
-  console.log(user);
 
   const selectedWorkspace = state.workspaces.selectedWorkspace;
   return (selectedWorkspace ? selectedWorkspace?.workspaceUser.rootFolderId : user?.rootFolderId) || '';

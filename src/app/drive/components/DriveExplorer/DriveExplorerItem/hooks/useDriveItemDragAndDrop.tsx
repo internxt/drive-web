@@ -87,10 +87,11 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             return i.isFolder;
           });
 
-          const storageClient = SdkFactory.getInstance().createStorageClient();
+          const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-          dispatch(storageActions.setMoveDestinationFolderId(item.id));
-          const [folderContentPromise] = storageClient.getFolderContent(item.id);
+          dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
+          // TODO: CHANGE FOR UUID
+          const [folderContentPromise] = storageClient.getFolderContentByUuid(item.uuid);
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,
@@ -108,7 +109,8 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           );
           const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-          if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
+          if (unrepeatedItems.length === itemsToMove.length)
+            dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
           dispatch(
             storageThunks.moveItemsThunk({
