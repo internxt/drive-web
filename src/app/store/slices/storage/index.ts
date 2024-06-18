@@ -40,7 +40,7 @@ const initialState: StorageState = {
   driveFilesToRename: [],
   foldersToRename: [],
   driveFoldersToRename: [],
-  moveDestinationFolderId: '',
+  moveDestinationFolderId: null,
   folderPathDialog: [],
   driveItemsSort: 'plainName',
   driveItemsOrder: 'ASC',
@@ -162,7 +162,7 @@ export const storageSlice = createSlice({
     setDriveFoldersToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.driveFoldersToRename = action.payload;
     },
-    setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string>) => {
+    setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string | null>) => {
       state.moveDestinationFolderId = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {

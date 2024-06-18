@@ -14,7 +14,7 @@ import { DriveItemData } from '../../types';
 
 type NameCollisionContainerProps = {
   currentFolderId: string;
-  moveDestinationFolderId: string;
+  moveDestinationFolderId: string | null;
   filesToRename: (File | DriveItemData)[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (IRoot | DriveItemData)[];
@@ -41,8 +41,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
-  // TODO: CHECK WHY folderId IS EMPTY IN SOME CASES
-  console.log({ folderId });
+
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
     ...files,
     ...folders,
@@ -70,7 +69,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
 
   const closeRenameDialog = () => {
     dispatch(uiActions.setIsNameCollisionDialogOpen(false));
-    dispatch(storageActions.setMoveDestinationFolderId(''));
+    dispatch(storageActions.setMoveDestinationFolderId(null));
   };
 
   const onCancelRenameDialogButtonPressed = () => {
@@ -100,7 +99,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
-        destinationFolderId: moveDestinationFolderId,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };
@@ -110,7 +109,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToUpload,
-        destinationFolderId: moveDestinationFolderId,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };

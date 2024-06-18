@@ -39,7 +39,7 @@ export interface StorageState {
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
   driveFoldersToRename: DriveItemData[];
-  moveDestinationFolderId: string;
+  moveDestinationFolderId: string | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   folderPathDialog: FolderPathDialog[];

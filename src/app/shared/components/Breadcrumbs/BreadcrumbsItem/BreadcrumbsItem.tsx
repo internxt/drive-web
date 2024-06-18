@@ -74,7 +74,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       );
       const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(''));
+      if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
 
       dispatch(
         storageThunks.moveItemsThunk({
