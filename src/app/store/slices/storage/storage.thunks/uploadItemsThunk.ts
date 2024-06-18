@@ -144,7 +144,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
   async ({ files, parentFolderId, options, taskId, fileType }: UploadItemsPayload, { getState, dispatch }) => {
     const user = getState().user.user as UserSettings;
     const errors: Error[] = [];
-    console.log({ parentFolderId });
+
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
@@ -156,7 +156,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
     });
-    console.log({ filesToUpload });
+
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
     const filesToUploadData = filesToUpload.map((file) => ({

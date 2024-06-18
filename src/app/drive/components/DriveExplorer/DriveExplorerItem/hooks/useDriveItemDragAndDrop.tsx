@@ -90,7 +90,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
           dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
-          // TODO: CHANGE FOR UUID
+
           const [folderContentPromise] = storageClient.getFolderContentByUuid(item.uuid);
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({

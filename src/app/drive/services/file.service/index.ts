@@ -1,15 +1,15 @@
-import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { t } from 'i18next';
+import * as uuid from 'uuid';
 import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DevicePlatform } from '../../../core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
 import uploadFile from './uploadFile';
-import * as uuid from 'uuid';
-import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { t } from 'i18next';
-import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 
 export function updateMetaData(
   fileId: string,
@@ -68,7 +68,7 @@ export async function moveFile(
 }
 
 export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
-  const storageClient = SdkFactory.getInstance().createNewStorageClient();
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
   const payload: StorageTypes.MoveFileUuidPayload = {
     fileUuid: fileUuid,
     destinationFolderUuid: destinationFolderUuid,
