@@ -3,13 +3,13 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import { Desktop, SignOut, UserPlus, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
-import { Link } from 'react-router-dom';
 import Popover from '../../../shared/components/Popover';
 import { useAppDispatch } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
 import AvatarWrapper from '../../views/Preferences/tabs/Account/AvatarWrapper';
+import navigationService from '../../../core/services/navigation.service';
 
 export default function AccountPopover({
   className = '',
@@ -77,9 +77,15 @@ export default function AccountPopover({
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
         </p>
         {plan.showUpgrade && (
-          <Link to="/preferences?tab=billing" className="text-sm font-medium text-primary no-underline">
+          <div
+            className="cursor-pointer text-sm font-medium text-primary no-underline"
+            onClick={() => {
+              navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
+              dispatch(uiActions.setIsPreferencesDialogOpen(true));
+            }}
+          >
             {translate('actions.upgrade')}
-          </Link>
+          </div>
         )}
       </div>
       {separator}
@@ -87,13 +93,16 @@ export default function AccountPopover({
         <Desktop size={20} />
         <p className="ml-3">{translate('views.account.popover.downloadApp')}</p>
       </Item>
-      <Link
-        to="/preferences"
+      <div
         className="flex cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+        onClick={() => {
+          navigationService.openPreferencesDialog({ section: 'general', subsection: 'general' });
+          dispatch(uiActions.setIsPreferencesDialogOpen(true));
+        }}
       >
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
-      </Link>
+      </div>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
           <UserPlus size={20} />
