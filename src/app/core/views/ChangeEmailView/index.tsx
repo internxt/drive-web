@@ -1,11 +1,11 @@
 import { CheckCircle, ClockCountdown, Envelope, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Input from 'app/shared/components/Input';
-import Button from 'app/shared/components/Button/Button';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Input from '../../../shared/components/Input';
+import Button from '../../../shared/components/Button/Button';
+import { areCredentialsCorrect } from '../../../auth/services/auth.service';
+import Spinner from '../../../shared/components/Spinner/Spinner';
 import localStorageService from '../../services/local-storage.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../services/error.service';
