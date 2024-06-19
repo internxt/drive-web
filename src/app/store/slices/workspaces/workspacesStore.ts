@@ -43,7 +43,7 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspace }, { state: RootState }>(
   'workspaces/setupWorkspace',
   async ({ pendingWorkspace }, { dispatch, getState }) => {
-    // TODO: ADD LOADER WHILE WORKSPACE IS SETTING UP
+    // ADD LOADER WHILE WORKSPACE IS SETTING UP
     try {
       const rootState = getState();
       const user = rootState.user.user;
