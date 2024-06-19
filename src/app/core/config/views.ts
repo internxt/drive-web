@@ -58,7 +58,6 @@ const views: Array<{
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedViewWrapper },
-  { id: AppView.Preferences, component: Preferences },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },
