@@ -1,7 +1,7 @@
 import { aes } from '@internxt/lib';
-import * as bip39 from 'bip39';
 import { Keys, RegisterDetails } from '@internxt/sdk';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import * as bip39 from 'bip39';
 
 import { readReferalCookie } from 'app/auth/services/auth.service';
 import { SdkFactory } from 'app/core/factory/sdk';
@@ -75,7 +75,7 @@ export function useSignUp(
       }
     };
 
-    const raw = await fetch(`${process.env.REACT_APP_API_URL}/api/${registerSource}/update`, {
+    const raw = await fetch(`${process.env.REACT_APP_API_URL}/${registerSource}/update`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(registerUserPayload),

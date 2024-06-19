@@ -2,13 +2,13 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { RootState } from 'app/store';
 import { useSelector } from 'react-redux';
 import AccountDetails from './AccountDetails';
+import Appearance from './Appearance';
+import ContactSupport from './ContactSupport';
 import DeleteAccount from './DeleteAccount';
 import InviteAFriend from './InviteAFriend';
 import Language from './Language';
 import Usage from './Usage';
 import UserHeader from './UserHeader';
-import Appearance from './Appearance';
-import ContactSupport from './ContactSupport';
 
 export default function AccountTab({ className = '' }: { className?: string }): JSX.Element {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);

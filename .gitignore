@@ -31,3 +31,7 @@ debug.log
 **/cypress/screenshots
 **/cypress/fixtures/test-user.json
 **/cypress.env.json
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/

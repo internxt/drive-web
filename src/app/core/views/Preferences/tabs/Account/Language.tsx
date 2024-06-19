@@ -12,13 +12,13 @@ import MenuItem from './components/MenuItem';
 
 const localStorageLanguage = localStorageService.get('i18nextLng');
 
-const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de'];
+const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw'];
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();
   const [lang, setLang] = React.useState<string>();
 
-  function changeLang(lang: string = localStorageLanguage || i18next.language) {
+  function changeLang(lang: string = localStorageLanguage ?? i18next.language) {
     setLang(lang);
   }
 

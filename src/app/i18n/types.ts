@@ -6,4 +6,5 @@ export enum Locale {
   Chinese = 'zh',
   Russian = 'ru',
   German = 'de',
+  Taiwanese = 'zh-tw',
 }

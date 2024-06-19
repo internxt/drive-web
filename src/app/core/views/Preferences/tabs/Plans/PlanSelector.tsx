@@ -25,6 +25,10 @@ const productValue = {
   US: 'usd',
 };
 
+function displayAmount(value, decimalPoints = 2) {
+  return (value / 100).toFixed(decimalPoints);
+}
+
 export default function PlanSelector({ className = '' }: { className?: string }): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -254,10 +258,6 @@ function Price({
     amountAnnually = amount;
   }
 
-  function displayAmount(value) {
-    return (value / 100).toFixed(2);
-  }
-
   const displayButtonText =
     button === 'change'
       ? translate('actions.change')
@@ -273,7 +273,7 @@ function Price({
         <span>{currencyService.getCurrencySymbol(currency.toUpperCase())}</span>
         {interval === 'lifetime'
           ? translate('views.account.tabs.plans.card.lifetime', {
-              amount: displayAmount(amount),
+              amount: displayAmount(amount, 0),
             })
           : translate('views.account.tabs.plans.card.monthly', {
               amount: displayAmount(amountMonthly),
@@ -362,10 +362,6 @@ const ChangePlanDialog = ({
     setIsDialogOpen(false);
   };
 
-  const displayAmount = (value) => {
-    return (value / 100).toFixed(2);
-  };
-
   return (
     <Modal isOpen={isDialgOpen} onClose={onClose}>
       <h3 className="mb-5 text-2xl font-medium">{translate('views.account.tabs.plans.dialog.title')}</h3>
@@ -406,6 +402,7 @@ const ChangePlanDialog = ({
             <div>
               <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
                 selectedPlanAmount,
+                0,
               )}`}</span>
             </div>
           ) : (

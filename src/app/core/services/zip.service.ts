@@ -1,8 +1,8 @@
-import streamSaver from 'streamsaver';
 import fileDownload from 'js-file-download';
+import streamSaver from 'streamsaver';
 
-import { binaryStreamToBlob, buildProgressStream } from './stream.service';
 import browserService from './browser.service';
+import { binaryStreamToBlob, buildProgressStream } from './stream.service';
 
 type FlatFolderZipOpts = {
   abortController?: AbortController;
@@ -21,6 +21,7 @@ export class FlatFolderZip {
     this.zip = createFolderWithFilesWritable();
     this.abortController = opts.abortController;
 
+    // TODO: check why opts.progress is causing zip corruption
     this.passThrough = opts.progress ? buildProgressStream(this.zip.stream, opts.progress) : this.zip.stream;
 
     if (browserService.isBrave()) return;

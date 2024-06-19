@@ -1,6 +1,6 @@
-import streamSaver from 'streamsaver';
-import { loadWritableStreamPonyfill } from 'app/network/download';
 import createZipReadable from 'app/drive/services/download.service/downloadFolder/zipStream';
+import { loadWritableStreamPonyfill } from 'app/network/download';
+import streamSaver from 'streamsaver';
 import { buildProgressStream } from './stream.service';
 
 type FlatFolderZipOpts = {
@@ -50,6 +50,7 @@ export class FlatFolderZip {
     this.zip = createFolderWithFilesWritable();
     this.abortController = opts.abortController;
 
+    // TODO: check why opts.progress is causing zip corruption
     const passThrough = opts.progress ? buildProgressStream(this.zip.stream, opts.progress) : this.zip.stream;
 
     const isFirefox = navigator.userAgent.indexOf('Firefox') != -1;

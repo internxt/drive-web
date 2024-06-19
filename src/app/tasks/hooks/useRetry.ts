@@ -1,6 +1,14 @@
 import { useCallback } from 'react';
 import { DriveItemData } from '../../drive/types';
-import { SharedItemAuthenticationData, TaskNotification, TaskType, UploadFolderData } from '../types';
+import {
+  DownloadFileTask,
+  DownloadFilesData,
+  SharedItemAuthenticationData,
+  TaskData,
+  TaskNotification,
+  TaskType,
+  UploadFolderData,
+} from '../types';
 
 interface RetryDownload {
   retryDownload: () => void;
@@ -8,6 +16,7 @@ interface RetryDownload {
 
 type RetryDownloadArgs = {
   notification: TaskNotification;
+  task?: TaskData;
   downloadItemsAsZip: (items: DriveItemData[], existingTaskId: string) => void;
   downloadItems: (item: DriveItemData, existingTaskId: string) => void;
   showErrorNotification: () => void;
@@ -16,26 +25,31 @@ type RetryDownloadArgs = {
 
 export const useRetryDownload = ({
   notification,
+  task,
   downloadItemsAsZip,
   downloadItems,
   showErrorNotification,
   resetProgress,
 }: RetryDownloadArgs): RetryDownload => {
   const retryDownload = useCallback(() => {
-    const { item, taskId } = notification;
-    const isZipAndMultipleItems = item && 'items' in item && item?.items && item?.type === 'zip';
-    const hasOneItemAndTaskID = item && taskId;
+    const { taskId } = notification;
+    const folder = task?.folder;
+    const isOneFileDownload = !!(task as DownloadFileTask)?.file?.uuid;
+    const isZipAndMultipleItems = task?.file && (task?.file as DownloadFilesData)?.items && task?.file?.type === 'zip';
 
-    if (isZipAndMultipleItems) {
+    if (folder) {
+      downloadItems(folder as DriveItemData, taskId);
       resetProgress(notification);
-      downloadItemsAsZip(item.items as DriveItemData[], taskId);
-    } else if (hasOneItemAndTaskID) {
+    } else if (isZipAndMultipleItems && task.file && (task.file as DownloadFilesData)?.items) {
       resetProgress(notification);
-      downloadItems(item as DriveItemData, taskId);
-    } else {
+      downloadItemsAsZip((task?.file as DownloadFilesData)?.items as DriveItemData[], taskId);
+    } else if (isOneFileDownload) {
+      resetProgress(notification);
+      downloadItems(task?.file as DriveItemData, taskId);
+
       showErrorNotification();
     }
-  }, [notification]);
+  }, [notification, task, downloadItemsAsZip, downloadItems, showErrorNotification, resetProgress]);
 
   return { retryDownload };
 };
