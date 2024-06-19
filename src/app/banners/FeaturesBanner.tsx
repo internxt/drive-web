@@ -3,6 +3,8 @@ import { CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
 import GrassImage from '../../assets/images/banner/free-users-banner-bg.webp';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate, translateList } = useTranslationContext();
@@ -10,7 +12,10 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
   const features = translateList('featuresBanner.features');
 
   const handleOnClick = () => {
-    window.open('https://internxt.com/pricing', '_blank', 'noopener noreferrer');
+    navigationService.push(AppView.Preferences, {
+      tab: 'plans',
+    });
+    onClose();
   };
 
   return (
@@ -31,7 +36,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
           backgroundSize: 'cover',
         }}
       >
-        <button className="absolute  right-0 m-7 flex text-white hover:bg-white/5" onClick={onClose}>
+        <button className="absolute  right-0 m-7 flex text-black hover:bg-white/5" onClick={onClose}>
           <X size={32} />
         </button>
         <div className="flex w-full flex-col space-x-10 py-14 lg:flex-row">

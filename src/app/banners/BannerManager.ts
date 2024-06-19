@@ -6,7 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
-const OFFER_END_DAY = new Date('2024-07-14');
+const OFFER_END_DAY = new Date('2024-07-01');
 
 export class BannerManager {
   private plan: PlanState;
@@ -27,6 +27,7 @@ export class BannerManager {
 
     if (isOfferOffDay) {
       localStorageService.removeItem(BANNER_NAME_IN_LOCAL_STORAGE);
+      localStorageService.removeItem(BANNER_NAME_FOR_FREE_USERS);
     }
 
     return (
@@ -44,7 +45,7 @@ export class BannerManager {
   }
 
   onCloseBanner(setShowBanner: (show: boolean) => void): void {
-    localStorageService.set(BANNER_NAME_IN_LOCAL_STORAGE, 'false');
+    localStorageService.set(BANNER_NAME_FOR_FREE_USERS, 'false');
     setShowBanner(false);
   }
 }
