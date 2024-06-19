@@ -6,7 +6,7 @@ import { decryptPGP, encryptPGPInvitations } from '../../crypto/services/utilspg
 import { InfoInvitationsMembers, TeamsSettings } from '../types';
 
 export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTeams: string }> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/info`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/teams/info`, {
     method: 'get',
     headers: httpService.getHeaders(true, false, false),
   })
@@ -19,7 +19,7 @@ export async function getTeamsInfo(): Promise<{ userTeam: TeamsSettings; tokenTe
 }
 
 export async function getKeys(mail: string): Promise<{ publicKey: string }> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/user/keys/${mail}`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/user/keys/${mail}`, {
     method: 'GET',
     headers: httpService.getHeaders(true, false),
   }).then(async (res) => {
@@ -57,7 +57,7 @@ export async function storeTeamsInfo(): Promise<void> {
 }
 
 export function getMembers(): Promise<InfoInvitationsMembers[]> {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/members`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/teams/members`, {
     method: 'get',
     headers: httpService.getHeaders(true, false),
   })
@@ -72,7 +72,7 @@ export function getMembers(): Promise<InfoInvitationsMembers[]> {
 export function removeMember(item: InfoInvitationsMembers): Promise<void> {
   const typeMember = item.isMember ? 'member' : 'invitation';
 
-  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/${typeMember}`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/teams/${typeMember}`, {
     method: 'delete',
     headers: httpService.getHeaders(true, false),
     body: JSON.stringify({
@@ -109,7 +109,7 @@ export async function sendEmailTeamsMember(mail: string): Promise<void> {
 }
 
 const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string, bridgeuser: string) => {
-  return fetch(`${process.env.REACT_APP_API_URL}/api/teams/team/invitations`, {
+  return fetch(`${process.env.REACT_APP_API_URL}/teams/team/invitations`, {
     method: 'POST',
     headers: httpService.getHeaders(true, false, true),
     body: JSON.stringify({
@@ -131,7 +131,7 @@ const fetchInvitation = (email: string, bridgePass: string, mnemonicTeam: string
 };
 
 function getTeamInfoStripeSuccess() {
-  return httpService.get<TeamsSettings>('/api/teams/team/info', { authWorkspace: Workspace.Individuals });
+  return httpService.get<TeamsSettings>('/teams/team/info', { authWorkspace: Workspace.Individuals });
 }
 
 export async function checkSessionStripe(
@@ -142,7 +142,7 @@ export async function checkSessionStripe(
 
   return httpService
     .post<{ checkoutSessionId: string; test: boolean; mnemonic: string }, void>(
-      '/api/teams/checkout/session',
+      '/teams/checkout/session',
       {
         checkoutSessionId: sessionId,
         test: !envService.isProduction(),

@@ -168,7 +168,7 @@ class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { folders, last } = await httpService.get<GetDirectoryFoldersResponse>(
-      `/api/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -196,7 +196,7 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
   async next() {
     const { directoryId } = this.queryValues;
     const { files, last } = await httpService.get<GetDirectoryFilesResponse>(
-      `/api/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
+      `/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
     );
 
     this.offset += this.limit;
@@ -233,16 +233,7 @@ async function downloadSharedFolderAsZip(
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
-  const zip =
-    options?.destination ||
-    new FlatFolderZip(rootFolder.name, {
-      progress(loadedBytes) {
-        if (!totalSizeIsReady) {
-          return;
-        }
-        updateProgress(Math.min(loadedBytes / totalSize, 1));
-      },
-    });
+  const zip = options?.destination || new FlatFolderZip(rootFolder.name, {});
 
   const user = localStorageService.getUser();
 
@@ -373,17 +364,7 @@ async function downloadFolderAsZip(
   const rootFolder: FolderRef = { folderId: folderId, name: folderName };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
-  let totalSizeIsReady = false;
-  const zip =
-    options?.destination ||
-    new FlatFolderZip(rootFolder.name, {
-      progress(loadedBytes) {
-        if (!totalSizeIsReady) {
-          return;
-        }
-        updateProgress(Math.min(loadedBytes / totalSize, 1));
-      },
-    });
+  const zip = options?.destination || new FlatFolderZip(folderName, {});
 
   const user = localStorageService.getUser();
 
@@ -415,7 +396,6 @@ async function downloadFolderAsZip(
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           if (cachedFile?.source && !isCachedFileOlder) {
-            updateProgress(1);
             return cachedFile.source.stream();
           }
 
@@ -473,8 +453,8 @@ async function downloadFolderAsZip(
       );
     } while (pendingFolders.length > 0);
 
-    totalSizeIsReady = true;
     if (options?.closeWhenFinished === undefined || options.closeWhenFinished === true) {
+      updateProgress(1);
       await zip.close();
     }
   } catch (err) {
@@ -485,7 +465,6 @@ async function downloadFolderAsZip(
       error_message: castedError.message,
       stack_trace: castedError.stack ?? '',
     });
-    console.error('ERROR WHILE DOWNLOADING FOLDER', castedError);
     zip.abort();
     throw castedError;
   }
@@ -497,7 +476,7 @@ async function fetchFolderTree(folderId: number): Promise<{
   fileDecryptedNames: Record<number, string>;
   size: number;
 }> {
-  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/api/storage/tree/${folderId}`);
+  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
   const folderDecryptedNames: Record<number, string> = {};
   const fileDecryptedNames: Record<number, string> = {};
 

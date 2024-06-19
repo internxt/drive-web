@@ -1,19 +1,19 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
-import errorService from 'app/core/services/error.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { t } from 'i18next';
-import { TaskStatus } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
-import AppError from 'app/core/types';
-import { DriveFileData, DriveFolderData } from '../../../../drive/types';
-import folderService from 'app/drive/services/folder.service';
-import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
-import { isFirefox } from 'react-device-detect';
-import { ConnectionLostError } from '../../../../network/requests';
 import { Iterator } from 'app/core/collections';
+import errorService from 'app/core/services/error.service';
+import AppError from 'app/core/types';
+import folderService from 'app/drive/services/folder.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { TaskStatus } from 'app/tasks/types';
+import { t } from 'i18next';
+import { isFirefox } from 'react-device-detect';
+import { RootState } from '../../..';
+import downloadFolderUsingBlobs from '../../../../drive/services/download.service/downloadFolder/downloadFolderUsingBlobs';
+import { DriveFileData, DriveFolderData } from '../../../../drive/types';
+import { ConnectionLostError } from '../../../../network/requests';
+import { StorageState } from '../storage.model';
 
 interface DownloadFolderThunkOptions {
   taskId: string;
