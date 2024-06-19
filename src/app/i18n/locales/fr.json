@@ -6,15 +6,15 @@
   "featuresBanner": {
     "label": {
       "upTo": "",
-      "discount": "Offre limitée!"
+      "discount": "Changements apportés à votre plan gratuit"
     },
-    "title": "Débloquez plus de stockage",
+    "title": "Attention !",
     "subtitle": {
-      "line1": "90% de réduction!",
+      "line1": "Le plan gratuit d'Internxt sera réduit à 1 Go le 1er juillet.",
       "line2": {
-        "normal1": "Utilisez le code ",
+        "normal1": "Évitez cette dégradation en utilisant le code ",
         "blue": "FREEVIP",
-        "normal2": " pour mettre à niveau."
+        "normal2": " pour obtenir 90% de réduction sur n'importe quel plan premium."
       }
     },
     "cta": "Choisissez un plan",
@@ -26,7 +26,7 @@
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 1 juillet"
+      "L'offre se termine le 30 juin"
     ],
     "copied": "Copié dans le presse-papiers"
   },

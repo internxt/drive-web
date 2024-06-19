@@ -54,20 +54,22 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
             <div className="flex rounded-xl bg-primary/10 px-3 py-1.5">
               <p className="flex items-center gap-1 text-lg font-bold text-primary">
                 {/* {translate('featuresBanner.label.upTo')} */}
-                <label className="text-2xl">{translate('featuresBanner.label.discount')}</label>
+                <label>{translate('featuresBanner.label.discount')}</label>
               </p>
             </div>
             <p className="w-full text-4xl font-bold leading-tight text-gray-80 dark:text-gray-20">
               {translate('featuresBanner.title')}
             </p>
 
-            <p className="w-full text-xl font-semibold text-gray-80 dark:text-gray-20">
-              {translate('featuresBanner.subtitle.line1')} <br />
-              {translate('featuresBanner.subtitle.line2.normal1')}{' '}
-              <button onClick={handleCopyOnClipboardAction} className="cursor-pointer text-primary hover:underline">
-                {translate('featuresBanner.subtitle.line2.blue')}
-              </button>
-              {translate('featuresBanner.subtitle.line2.normal2')}
+            <p className="w-full text-lg font-semibold text-gray-80 dark:text-gray-20">
+              {translate('featuresBanner.subtitle.line1')}{' '}
+              <span className="font-bold">
+                {translate('featuresBanner.subtitle.line2.normal1')}
+                <button onClick={handleCopyOnClipboardAction} className="cursor-pointer text-primary hover:underline">
+                  {translate('featuresBanner.subtitle.line2.blue')}
+                </button>
+                {translate('featuresBanner.subtitle.line2.normal2')}
+              </span>
             </p>
 
             <div className="flex flex-col items-center space-y-3 lg:items-start">
