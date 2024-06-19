@@ -5,6 +5,7 @@ import { userSelectors } from '../store/slices/user';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
+const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
 const OFFER_END_DAY = new Date('2024-07-14');
 
 export class BannerManager {
@@ -16,7 +17,7 @@ export class BannerManager {
   constructor(user: UserSettings, plan: PlanState) {
     this.plan = plan;
     this.isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
-    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_IN_LOCAL_STORAGE);
+    this.bannerItemInLocalStorage = localStorageService.get(BANNER_NAME_FOR_FREE_USERS);
     this.isNewAccount = useAppSelector(userSelectors.hasSignedToday);
   }
 

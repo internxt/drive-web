@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "UP TO ",
-      "discount": "75% OFF"
+      "discount": "Limited offer!"
     },
-    "title": "Defend your privacy like a pro",
+    "title": "Unlock more storage",
+    "subtitle": {
+      "line1": "90% OFF all plans!",
+      "line2": {
+        "normal1": "Use code ",
+        "blue": "FREEVIP",
+        "normal2": " to upgrade."
+      }
+    },
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -18,7 +26,7 @@
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends July 14th"
+      "Offer ends July 1"
     ]
   },
   "valentinesBanner": {

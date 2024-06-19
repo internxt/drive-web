@@ -1,6 +1,6 @@
-import { CheckCircle, SoccerBall, X } from '@phosphor-icons/react';
+import { CheckCircle, ShieldCheck, X } from '@phosphor-icons/react';
 
-import GrassImage from '../../assets/images/banner/grass.webp';
+import GrassImage from '../../assets/images/banner/free-users-banner-bg.webp';
 
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
@@ -22,10 +22,13 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
       {/* Banner */}
       <div
         className={
-          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-2xl px-10'
+          'fixed left-1/2 top-1/2 flex h-auto -translate-x-[50%] -translate-y-[50%] flex-col overflow-hidden rounded-[32px] px-10'
         }
         style={{
           backgroundImage: `url(${GrassImage})`,
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'cover',
         }}
       >
         <button className="absolute  right-0 m-7 flex text-white hover:bg-white/5" onClick={onClose}>
@@ -33,13 +36,22 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
         </button>
         <div className="flex w-full flex-col space-x-10 py-14 lg:flex-row">
           <div className="flex  w-max max-w-[310px] flex-col  items-center justify-center space-y-3 text-center lg:items-start lg:justify-between lg:text-start">
-            <div className="flex rounded-xl border-4 border-primary bg-gray-100 px-3 py-1.5 dark:bg-surface">
-              <p className="flex items-center gap-1 text-xs font-bold text-white">
-                {translate('featuresBanner.label.upTo')}
+            <div className="flex rounded-xl bg-primary/10 px-3 py-1.5">
+              <p className="flex items-center gap-1 text-lg font-bold text-primary">
+                {/* {translate('featuresBanner.label.upTo')} */}
                 <label className="text-2xl">{translate('featuresBanner.label.discount')}</label>
               </p>
             </div>
-            <p className="w-full text-4xl font-bold leading-tight text-white">{translate('featuresBanner.title')}</p>
+            <p className="w-full text-4xl font-bold leading-tight text-gray-80 dark:text-gray-20">
+              {translate('featuresBanner.title')}
+            </p>
+
+            <p className="w-full text-xl font-semibold text-gray-80 dark:text-gray-20">
+              {translate('featuresBanner.subtitle.line1')} <br />
+              {translate('featuresBanner.subtitle.line2.normal1')}{' '}
+              <span className="text-primary">{translate('featuresBanner.subtitle.line2.blue')}</span>
+              {translate('featuresBanner.subtitle.line2.normal2')}
+            </p>
 
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
@@ -48,12 +60,12 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               >
                 {translate('featuresBanner.cta')}
               </button>
-              <div className="flex flex-row items-center space-x-3 pt-2 text-white">
+              <div className="flex flex-row items-center space-x-3 pt-2 text-gray-80 dark:text-gray-20">
                 <CheckCircle size={24} className="text-primary" />
                 <p className="font-medium lg:text-lg">{translate('featuresBanner.guarantee')}</p>
               </div>
 
-              <p className="text-sm font-medium text-gray-50">{translate('featuresBanner.lastCta')}</p>
+              {/* <p className="text-sm font-medium text-gray-50">{translate('featuresBanner.lastCta')}</p> */}
             </div>
           </div>
           <div className="hidden items-center lg:flex">
@@ -61,8 +73,8 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
                   <div className="flex flex-row space-x-4" key={card}>
-                    <SoccerBall weight="fill" size={32} className="text-primary" />
-                    <p className="whitespace-nowrap text-xl font-semibold text-white">{card}</p>
+                    <ShieldCheck weight="fill" size={32} className="text-primary" />
+                    <p className="whitespace-nowrap text-xl font-semibold text-gray-80 dark:text-gray-20">{card}</p>
                   </div>
                 ))}
               </div>

@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "高達 ",
-      "discount": "75% 折扣"
+      "discount": "限時優惠!"
     },
-    "title": "像專業人士一樣捍衛您的隱私",
+    "title": "解鎖更多存儲空間",
+    "subtitle": {
+      "line1": "所有計劃享受90%折扣！",
+      "line2": {
+        "normal1": "使用代碼 ",
+        "blue": "FREEVIP",
+        "normal2": " 進行升級。"
+      }
+    },
     "cta": "選擇計劃",
     "guarantee": "30天退款保證",
     "lastCta": "*優惠僅限於免費帳戶或新客戶",
@@ -18,7 +26,7 @@
       "開源和透明",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至7月14日"
+      "優惠截止至7月1日"
     ]
   },
   "valentinesBanner": {

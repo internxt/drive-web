@@ -11,9 +11,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "FINO A ",
-      "discount": "75% DI SCONTO"
+      "discount": "Offerta limitata!"
     },
-    "title": "Difendi la tua privacy come un professionista",
+    "title": "Sblocca più spazio di archiviazione",
+    "subtitle": {
+      "line1": "90% di sconto!",
+      "line2": {
+        "normal1": "Usa il codice ",
+        "blue": "FREEVIP",
+        "normal2": " per aggiornare."
+      }
+    },
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
@@ -23,7 +31,7 @@
       "Open source e trasparente",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 14 luglio"
+      "L'offerta termina il 1 luglio"
     ]
   },
   "banner": {

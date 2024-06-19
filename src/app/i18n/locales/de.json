@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "BIS ZU ",
-      "discount": "75% RABATT"
+      "discount": "Begrenztes Angebot!"
     },
-    "title": "Schützen Sie Ihre Privatsphäre wie ein Profi",
+    "title": "Mehr Speicherplatz freischalten",
+    "subtitle": {
+      "line1": "90% Rabatt!",
+      "line2": {
+        "normal1": "Verwenden Sie den Code ",
+        "blue": "FREEVIP",
+        "normal2": " zum Upgrade."
+      }
+    },
     "cta": "Plan wählen",
     "guarantee": "30-tägige Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
@@ -18,7 +26,7 @@
       "Open Source und transparent",
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Das Angebot endet am 14. Juli"
+      "Das Angebot endet am 1. Juli"
     ]
   },
   "valentinesBanner": {

@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "",
-      "discount": "Ahorra un 75%"
+      "discount": "¡Oferta limitada!"
     },
-    "title": "Defiende tu privacidad como un crack",
+    "title": "Desbloquea más almacenamiento",
+    "subtitle": {
+      "line1": "¡90% de descuento!",
+      "line2": {
+        "normal1": "Usa el código ",
+        "blue": "FREEVIP",
+        "normal2": " para actualizar."
+      }
+    },
     "cta": "Elegir plan",
     "guarantee": "Garantía de devolución del dinero de 30 días",
     "lastCta": "*Oferta válida para cuentas gratuitas o nuevos usuarios",
@@ -18,7 +26,7 @@
       "Código abierto y transparente",
       "Transferencias cifradas de extremo a extremo",
       "Sin acceso no autorizado",
-      "La oferta termina el 14 de julio"
+      "La oferta termina el 1 de julio"
     ]
   },
   "valentinesBanner": {
