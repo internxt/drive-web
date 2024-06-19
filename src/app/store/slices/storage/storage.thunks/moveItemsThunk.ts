@@ -20,16 +20,17 @@ export interface MoveItemsPayload {
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
-  async (payload: MoveItemsPayload, { getState, dispatch }) => {
+  async (payload: MoveItemsPayload, { dispatch }) => {
     const { items, destinationFolderId } = payload;
     const promises: Promise<void>[] = [];
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
-      return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
+      notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
+      return;
     }
 
     for (const [index, item] of items.entries()) {
-      const fromFolderId = item.folderUuid || '';
+      const fromFolderId = item.folderUuid || item.parentUuid;
       let taskId: string;
 
       if (item.isFolder) {
