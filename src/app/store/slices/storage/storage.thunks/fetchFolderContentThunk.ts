@@ -1,12 +1,10 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import _, { isNumber } from 'lodash';
 
 import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
-import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { StorageState } from '../storage.model';
@@ -80,55 +78,9 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
         dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
       }
     } catch (error) {
-      // console.log(error);
       errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
       throw error;
     }
-
-    // try {
-    //   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    //   let itemsPromise;
-
-    //   if (hasMoreDriveFolders) {
-    //     [itemsPromise] = storageClient.getFolderFolders(
-    //       folderId,
-    //       foldersOffset,
-    //       DEFAULT_LIMIT,
-    //       driveItemsSort,
-    //       driveItemsOrder,
-    //     );
-    //   } else if (hasMoreDriveFiles) {
-    //     [itemsPromise] = storageClient.getFolderFiles(
-    //       folderId,
-    //       filesOffset,
-    //       DEFAULT_LIMIT,
-    //       driveItemsSort,
-    //       driveItemsOrder,
-    //     );
-    //   } else {
-    //     return;
-    //   }
-    //   const items = await itemsPromise;
-
-    //   const parsedItems = items.result.map(
-    //     (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
-    //   );
-    //   const itemslength = items.result.length;
-    //   const areLastItems = itemslength < DEFAULT_LIMIT;
-
-    //   dispatch(storageActions.addItems({ folderId, items: parsedItems }));
-
-    //   if (hasMoreDriveFolders) {
-    //     dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: !areLastItems }));
-    //     dispatch(storageActions.addFolderFoldersLength({ folderId, foldersLength: itemslength }));
-    //   } else {
-    //     dispatch(storageActions.setHasMoreDriveFiles({ folderId, status: !areLastItems }));
-    //     dispatch(storageActions.addFolderFilesLength({ folderId, filesLength: itemslength }));
-    //   }
-    // } catch (error) {
-    //   errorService.reportError(error, { extra: { folderId, foldersOffset, filesOffset } });
-    //   throw error;
-    // }
   },
 );
 
