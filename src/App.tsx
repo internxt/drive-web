@@ -26,7 +26,7 @@ import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './app/newSettings/PreferencesDialog';
-import { useParamsChange } from './app/newSettings/hooks/useParamsChange';
+import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
 import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
@@ -71,7 +71,7 @@ const App = (props: AppProps): JSX.Element => {
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
-  const haveParamsChanged = useParamsChange();
+  const havePreferencesParamsChanged = usePreferencesParamsChange();
   const routes = getRoutes();
   const isDev = !envService.isProduction();
   const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
@@ -177,7 +177,11 @@ const App = (props: AppProps): JSX.Element => {
             <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
             <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
-            <Redirect from="/account" to="/preferences" />
+            <Redirect from="/account" to="/?preferences=open&section=account&subsection=account" />
+            <Redirect
+              from="/preferences"
+              to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
+            />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
             {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
               <Route path="*">
@@ -194,7 +198,10 @@ const App = (props: AppProps): JSX.Element => {
             }}
           />
 
-          <PreferencesDialog haveParamsChanged={haveParamsChanged} isPreferencesDialogOpen={isPreferencesDialogOpen} />
+          <PreferencesDialog
+            haveParamsChanged={havePreferencesParamsChanged}
+            isPreferencesDialogOpen={isPreferencesDialogOpen}
+          />
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
