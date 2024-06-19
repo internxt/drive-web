@@ -9,15 +9,24 @@ import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
+  const selectedWorkpace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const pendingWorkspaces = useSelector((state: RootState) => state.workspaces.pendingWorkspaces);
   const parsedWorkspaces = parseWorkspaces(workspaces);
   const parsedPendingWorksapces = parsePendingWorkspaces(pendingWorkspaces);
   const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorksapces];
+
   useEffect(() => {
     dispatch(workspaceThunks.fetchWorkspaces());
   }, []);
 
+  useEffect(() => {
+    if (selectedWorkpace) {
+      handleWorkspaceChange(selectedWorkpace?.workspace.id);
+    }
+  }, [selectedWorkpace]);
+
   const handleWorkspaceChange = (workspaceId: string | null) => {
+    console.log('handleWorkspaceChange', workspaceId);
     const selectedWorkspace = allParsedWorkspaces.find((workspace) => workspace.uuid === workspaceId);
 
     if (selectedWorkspace?.isPending) {
@@ -42,6 +51,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
       workspaces={allParsedWorkspaces}
       onChangeWorkspace={handleWorkspaceChange}
       onCreateWorkspaceButtonClicked={() => undefined}
+      selectedWorkspace={selectedWorkpace ? parseWorkspaces([selectedWorkpace])[0] : null}
     />
   );
 };

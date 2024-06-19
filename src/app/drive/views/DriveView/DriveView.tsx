@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -13,6 +14,8 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import { useAppSelector } from '../../../store/hooks';
+import { fetchPaginatedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchFolderContentThunk';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 
@@ -21,10 +24,11 @@ export interface DriveViewProps {
   isLoading: boolean;
   items: DriveItemData[];
   dispatch: AppDispatch;
+  selectedWorkpace: WorkspaceData | null;
 }
 
 const DriveView = (props: DriveViewProps) => {
-  const { dispatch, namePath, items, isLoading } = props;
+  const { dispatch, namePath, items, isLoading, selectedWorkpace } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
 
@@ -33,6 +37,16 @@ const DriveView = (props: DriveViewProps) => {
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
   }, []);
+
+  const rootFolderId = useAppSelector(storageSelectors.rootFolderId);
+  useEffect(() => {
+    console.log({ rootFolderId });
+    dispatch(uiActions.setIsGlobalSearch(false));
+    // dispatch(storageActions.resetDrivePagination());
+    dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageActions.clearSelectedItems());
+    dispatch(fetchPaginatedFolderContentThunk(rootFolderId));
+  }, [rootFolderId, selectedWorkpace]);
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
@@ -101,5 +115,6 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
     currentFolderId,
     items: sortedItems,
+    selectedWorkpace: state.workspaces.selectedWorkspace,
   };
 })(DriveView);

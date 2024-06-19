@@ -17,6 +17,7 @@ interface WorkspaceSelectorProps {
   workspaces: Workspace[];
   onCreateWorkspaceButtonClicked: () => void;
   onChangeWorkspace: (workspaceId: string | null) => void;
+  selectedWorkspace: Workspace | null;
 }
 
 const WorkspaceCard = ({
@@ -57,9 +58,11 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   workspaces,
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
+  selectedWorkspace: selectedWorkspaceProp,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
+  const selectedWorkspace = selectedWorkspaceProp ?? userWorkspace;
+  // const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
 
   const { translate } = useTranslationContext();
 
@@ -70,10 +73,8 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   const handleWorkspaceClick = (workspace: Workspace | null) => {
     if (workspace?.type === 'Personal') {
       onChangeWorkspace(null);
-      setSelectedWorkspace(workspace);
     } else {
       onChangeWorkspace(workspace?.uuid ?? null);
-      setSelectedWorkspace(workspace);
     }
     setIsOpen(false);
   };

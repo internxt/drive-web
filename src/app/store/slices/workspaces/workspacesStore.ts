@@ -1,6 +1,7 @@
 import { PendingWorkspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../..';
+import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
@@ -37,6 +38,12 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 
     dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
     dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+
+    const b2bWorkspace = localStorageService.getB2BWorkspace();
+
+    if (b2bWorkspace) {
+      dispatch(workspacesActions.setSelectedWorkspace(b2bWorkspace.workspace.id));
+    }
   },
 );
 
@@ -75,6 +82,10 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
       );
 
       dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace?.workspace.id ?? null));
+
+      if (selectedWorkspace) {
+        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+      }
     } catch (error) {
       notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
     }
@@ -94,6 +105,13 @@ export const workspacesSlice = createSlice({
     setSelectedWorkspace: (state: WorkspacesState, action: PayloadAction<string | null>) => {
       const workspace = state.workspaces.find((workspace) => workspace.workspace.id === action.payload);
       state.selectedWorkspace = workspace ?? null;
+      console.log('setselectedworkspace state', state.workspaces);
+      console.log('setSelectedWorkspace', workspace);
+      if (workspace) {
+        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      } else {
+        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+      }
     },
   },
   extraReducers: (builder) => {

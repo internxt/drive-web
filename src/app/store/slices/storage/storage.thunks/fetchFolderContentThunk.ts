@@ -18,6 +18,9 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
     const storageState = getState().storage;
+    const workspacesState = getState().workspaces;
+    const selectedWorkspace = workspacesState.selectedWorkspace;
+
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders[folderId] ?? true;
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles[folderId] ?? true;
 
@@ -28,42 +31,71 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
 
     if (foldersOffset === 0 && filesOffset === 0) dispatch(storageActions.resetOrder());
     try {
-      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
       let itemsPromise;
 
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
       if (hasMoreDriveFolders) {
-        [itemsPromise] = storageClient.getFolderFoldersByUuid(
-          folderId,
-          foldersOffset,
-          DEFAULT_LIMIT,
-          driveItemsSort,
-          driveItemsOrder,
-        );
+        if (selectedWorkspace) {
+          const workspaceId = selectedWorkspace.workspace.id;
+          [itemsPromise] = workspaceClient.getFolders(
+            workspaceId ?? '',
+            folderId,
+            foldersOffset,
+            DEFAULT_LIMIT,
+            driveItemsSort,
+            driveItemsOrder,
+          );
+        } else {
+          [itemsPromise] = storageClient.getFolderFoldersByUuid(
+            folderId,
+            foldersOffset,
+            DEFAULT_LIMIT,
+            driveItemsSort,
+            driveItemsOrder,
+          );
+        }
       } else if (hasMoreDriveFiles) {
-        [itemsPromise] = storageClient.getFolderFilesByUuid(
-          folderId,
-          filesOffset,
-          DEFAULT_LIMIT,
-          driveItemsSort,
-          driveItemsOrder,
-        );
+        if (selectedWorkspace) {
+          const workspaceId = selectedWorkspace.workspace.id;
+          [itemsPromise] = workspaceClient.getFiles(
+            workspaceId ?? '',
+            folderId,
+            filesOffset,
+            DEFAULT_LIMIT,
+            driveItemsSort,
+            driveItemsOrder,
+          );
+        } else {
+          [itemsPromise] = storageClient.getFolderFilesByUuid(
+            folderId,
+            filesOffset,
+            DEFAULT_LIMIT,
+            driveItemsSort,
+            driveItemsOrder,
+          );
+        }
       } else {
         return;
       }
-      const items = await itemsPromise;
+      const itemsUnparsed = await itemsPromise;
       let parsedItems;
       let itemslength;
 
       if (hasMoreDriveFolders) {
-        parsedItems = items.folders.map(
+        const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.folders;
+
+        parsedItems = items.map(
           (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
         );
-        itemslength = items.folders.length;
+        itemslength = items.length;
       } else if (!hasMoreDriveFolders) {
-        parsedItems = items.files.map(
+        const items = selectedWorkspace ? itemsUnparsed.result : itemsUnparsed.files;
+
+        parsedItems = items.map(
           (item) => ({ ...item, isFolder: hasMoreDriveFolders, name: item.plainName } as DriveItemData),
         );
-        itemslength = items.files.length;
+        itemslength = items.length;
       }
 
       const areLastItems = itemslength < DEFAULT_LIMIT;
