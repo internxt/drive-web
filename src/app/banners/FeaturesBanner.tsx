@@ -20,6 +20,14 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
     onClose();
   };
 
+  const handleCopyOnClipboardAction = () => {
+    copy(translate('featuresBanner.subtitle.line2.blue'));
+    notificationsService.show({
+      text: translate('featuresBanner.copied'),
+      type: ToastType.Success,
+    });
+  };
+
   return (
     //Background
     <div
@@ -56,18 +64,9 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
             <p className="w-full text-xl font-semibold text-gray-80 dark:text-gray-20">
               {translate('featuresBanner.subtitle.line1')} <br />
               {translate('featuresBanner.subtitle.line2.normal1')}{' '}
-              <span
-                onClick={() => {
-                  copy(translate('featuresBanner.subtitle.line2.blue'));
-                  notificationsService.show({
-                    text: translate('featuresBanner.copied'),
-                    type: ToastType.Success,
-                  });
-                }}
-                className="cursor-pointer text-primary hover:underline"
-              >
+              <button onClick={handleCopyOnClipboardAction} className="cursor-pointer text-primary hover:underline">
                 {translate('featuresBanner.subtitle.line2.blue')}
-              </span>
+              </button>
               {translate('featuresBanner.subtitle.line2.normal2')}
             </p>
 
