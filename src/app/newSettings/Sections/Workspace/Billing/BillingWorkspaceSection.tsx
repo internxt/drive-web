@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { PlanState } from 'app/store/slices/plan';
 
-import Section from '../../../../core/views/Preferences/components/Section';
+import Section from '../../General/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import { BillingDetails } from '../../../types/types';

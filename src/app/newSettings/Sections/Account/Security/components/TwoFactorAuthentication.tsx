@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { userHas2FAStored } from 'app/auth/services/auth.service';
-
-import Section from 'app/core/views/Preferences/components/Section';
-import Card from 'app/shared/components/Card';
-import Button from 'app/shared/components/Button/Button';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
+import { userHas2FAStored } from '../../../../../auth/services/auth.service';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
+import Card from '../../../../../shared/components/Card';
+import Button from '../../../../../shared/components/Button/Button';
+import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import TwoFactorAuthenticationEnableModal from './TwoFactorAuthenticationEnableModal';
 import TwoFactorAuthenticationDisableModal from './TwoFactorAuthenticationDisableModal';
 

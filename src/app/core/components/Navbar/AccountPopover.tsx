@@ -8,7 +8,7 @@ import { useAppDispatch } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
-import AvatarWrapper from '../../views/Preferences/tabs/Account/AvatarWrapper';
+import AvatarWrapper from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import navigationService from '../../../core/services/navigation.service';
 
 export default function AccountPopover({
