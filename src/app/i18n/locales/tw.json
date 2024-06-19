@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "高達 ",
-      "discount": "75% 折扣"
+      "discount": "免費計劃的變更"
     },
-    "title": "像專業人士一樣捍衛您的隱私",
+    "title": "注意！",
+    "subtitle": {
+      "line1": "Internxt 的免費計劃將於 7 月 1 日減少到 1GB。",
+      "line2": {
+        "normal1": "使用代碼 ",
+        "blue": "FREEVIP",
+        "normal2": " 來繞過此降級，享受任何高級計劃 90% 的折扣。"
+      }
+    },
     "cta": "選擇計劃",
     "guarantee": "30天退款保證",
     "lastCta": "*優惠僅限於免費帳戶或新客戶",
@@ -18,8 +26,9 @@
       "開源和透明",
       "端到端加密傳輸",
       "無未經授權的訪問",
-      "優惠截止至7月14日"
-    ]
+      "優惠截止至 6 月 30 日"
+    ],
+    "copied": "已複製到剪貼板"
   },
   "valentinesBanner": {
     "title": "愛無極限！",

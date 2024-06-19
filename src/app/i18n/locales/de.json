@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "BIS ZU ",
-      "discount": "75% RABATT"
+      "discount": "Änderungen an Ihrem kostenlosen Plan"
     },
-    "title": "Schützen Sie Ihre Privatsphäre wie ein Profi",
+    "title": "Achtung!",
+    "subtitle": {
+      "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
+      "line2": {
+        "normal1": "Umgehen Sie dieses Downgrade mit dem Code ",
+        "blue": "FREEVIP",
+        "normal2": " um 90% Rabatt auf jeden Premium-Plan zu erhalten."
+      }
+    },
     "cta": "Plan wählen",
     "guarantee": "30-tägige Geld-zurück-Garantie",
     "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
@@ -18,8 +26,9 @@
       "Open Source und transparent",
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Das Angebot endet am 14. Juli"
-    ]
+      "Angebot endet am 30. Juni"
+    ],
+    "copied": "In die Zwischenablage kopiert"
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
