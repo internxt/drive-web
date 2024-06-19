@@ -5,6 +5,8 @@ import GrassImage from '../../assets/images/banner/free-users-banner-bg.webp';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
+import copy from 'copy-to-clipboard';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 
 const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose: () => void }): JSX.Element => {
   const { translate, translateList } = useTranslationContext();
@@ -54,7 +56,18 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
             <p className="w-full text-xl font-semibold text-gray-80 dark:text-gray-20">
               {translate('featuresBanner.subtitle.line1')} <br />
               {translate('featuresBanner.subtitle.line2.normal1')}{' '}
-              <span className="text-primary">{translate('featuresBanner.subtitle.line2.blue')}</span>
+              <span
+                onClick={() => {
+                  copy(translate('featuresBanner.subtitle.line2.blue'));
+                  notificationsService.show({
+                    text: translate('featuresBanner.copied'),
+                    type: ToastType.Success,
+                  });
+                }}
+                className="cursor-pointer text-primary hover:underline"
+              >
+                {translate('featuresBanner.subtitle.line2.blue')}
+              </span>
               {translate('featuresBanner.subtitle.line2.normal2')}
             </p>
 
