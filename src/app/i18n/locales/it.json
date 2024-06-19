@@ -11,9 +11,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "FINO A ",
-      "discount": "75% DI SCONTO"
+      "discount": "Modifiche al tuo piano gratuito"
     },
-    "title": "Difendi la tua privacy come un professionista",
+    "title": "Attenzione!",
+    "subtitle": {
+      "line1": "Il piano gratuito di Internxt sarà ridotto a 1GB il 1 luglio.",
+      "line2": {
+        "normal1": "Evita questo downgrade usando il codice ",
+        "blue": "FREEVIP",
+        "normal2": " per ottenere il 90% di sconto su qualsiasi piano premium."
+      }
+    },
     "cta": "Scegli il piano",
     "guarantee": "Garanzia di rimborso di 30 giorni",
     "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
@@ -23,8 +31,9 @@
       "Open source e trasparente",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina il 14 luglio"
-    ]
+      "L'offerta termina il 30 giugno"
+    ],
+    "copied": "Copiato negli appunti"
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",

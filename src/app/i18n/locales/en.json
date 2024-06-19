@@ -6,9 +6,17 @@
   "featuresBanner": {
     "label": {
       "upTo": "UP TO ",
-      "discount": "75% OFF"
+      "discount": "Changes to your free plan"
     },
-    "title": "Defend your privacy like a pro",
+    "title": "Heads up!",
+    "subtitle": {
+      "line1": "Internxt's free plan will be reduced to 1GB on July 1st.",
+      "line2": {
+        "normal1": "Bypass this downgrade using code  ",
+        "blue": "FREEVIP",
+        "normal2": " to get 90% off any premium plan."
+      }
+    },
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -18,8 +26,9 @@
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends July 14th"
-    ]
+      "Offer ends June 30th"
+    ],
+    "copied": "Copied to clipboard"
   },
   "valentinesBanner": {
     "title": "Love without limits!",
