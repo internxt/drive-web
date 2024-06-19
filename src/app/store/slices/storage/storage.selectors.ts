@@ -2,19 +2,11 @@ import { RootState } from '../..';
 import { DriveItemData } from '../../../drive/types';
 import { sessionSelectors } from '../session/session.selectors';
 
-// const rootFolderId = (state: RootState): number => {
-//   const { team } = state.team;
-//   const { user } = state.user;
-//   const isTeam: boolean = sessionSelectors.isTeam(state);
-
-//   return (isTeam ? team?.root_folder_id : user?.root_folder_id) || 0;
-// };
-
 const rootFolderId = (state: RootState): string => {
   const { user } = state.user;
 
   const selectedWorkspace = state.workspaces.selectedWorkspace;
-  return (selectedWorkspace ? selectedWorkspace?.workspaceUser.rootFolderId : user?.rootFolderId) || '';
+  return (selectedWorkspace ? selectedWorkspace?.workspaceUser.rootFolderId : user?.rootFolderId) ?? '';
 };
 
 const storageSelectors = {
@@ -30,7 +22,7 @@ const storageSelectors = {
     const { team } = state.team;
     const isTeam: boolean = sessionSelectors.isTeam(state);
 
-    return (isTeam ? team?.bucket : state.user.user?.bucket) || '';
+    return (isTeam ? team?.bucket : state.user.user?.bucket) ?? '';
   },
   isCurrentFolderEmpty(state: RootState): boolean {
     const currentFolderId = this.currentFolderId(state);

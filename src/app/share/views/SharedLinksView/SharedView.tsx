@@ -251,7 +251,6 @@ function SharedView({
         actionDispatch(setHasMoreFolders(true));
         actionDispatch(setHasMoreFiles(true));
         actionDispatch(setCurrentFolderId(sharedFolderId));
-        //TODO: not sure, review before merge
         actionDispatch(setCurrentParentFolderId(shareItem.uuid));
         actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
         actionDispatch(setSelectedItems([]));

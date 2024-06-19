@@ -13,6 +13,7 @@ import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
+import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { fetchDialogContentThunk } from 'app/store/slices/storage/storage.thunks/fetchDialogContentThunk';
 import { getAncestorsAndSetNamePath } from 'app/store/slices/storage/storage.thunks/goToFolderThunk';
 import { uiActions } from 'app/store/slices/ui';
@@ -21,13 +22,11 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import storageThunks from 'app/store/slices/storage/storage.thunks';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
   isTrash?: boolean;
   items: DriveItemData[];
-  parentFolderId?: string;
 }
 
 const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {

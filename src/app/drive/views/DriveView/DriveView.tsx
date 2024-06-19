@@ -27,15 +27,6 @@ const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
-  // const rootFolderId = useAppSelector(storageSelectors.rootFolderId);
-
-  // TODO: CHECK IF THIS IS ONLY FOR WORKSPACES (B2B)
-  // useEffect(() => {
-  //   dispatch(uiActions.setIsGlobalSearch(false));
-  //   dispatch(storageThunks.resetNamePathThunk());
-  //   dispatch(storageActions.clearSelectedItems());
-  //   dispatch(fetchWorkspaceFolderContentThunk(rootFolderId));
-  // }, [rootFolderId]);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));

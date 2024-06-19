@@ -1,14 +1,14 @@
-import { SdkFactory } from '../../app/core/factory/sdk';
-import { storageActions } from '../../app/store/slices/storage';
-import { store } from '../../app/store';
-import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
-import { DriveItemData } from '../../app/drive/types';
-import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { Trash } from '@internxt/sdk/dist/drive';
-import { deleteDatabaseItems } from '../../app/drive/services/database.service';
-import { t } from 'i18next';
-import errorService from '../../app/core/services/error.service';
+import { AddItemsToTrashPayload } from '@internxt/sdk/dist/drive/trash/types';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
+import { t } from 'i18next';
+import { SdkFactory } from '../../app/core/factory/sdk';
+import errorService from '../../app/core/services/error.service';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { DriveItemData } from '../../app/drive/types';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import { store } from '../../app/store';
+import { storageActions } from '../../app/store/slices/storage';
 
 const MAX_ITEMS_TO_DELETE = 10;
 const MAX_CONCURRENT_REQUESTS = 3;
@@ -45,14 +45,14 @@ async function sendItemsToTrashConcurrent({
 const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () => void): Promise<void> => {
   const items: Array<{ uuid: string; type: string }> = itemsToTrash.map((item) => {
     return {
-      uuid: item.isFolder ? item.uuid : item.uuid,
+      uuid: item.uuid,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
   let movingItemsToastId;
 
   try {
-    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
 
     movingItemsToastId = notificationsService.show({
       type: ToastType.Loading,

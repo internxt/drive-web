@@ -40,7 +40,6 @@ const BreadcrumbsBackupsView = ({
     });
 
     if (currentDevice && 'mac' in currentDevice) {
-      // TODO: REVIEW THIS AFTER MERGE
       items.push({
         uuid: currentDevice.id.toString(),
         label: currentDevice.name,
