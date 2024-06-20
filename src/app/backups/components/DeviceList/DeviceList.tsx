@@ -1,7 +1,7 @@
 import desktopService from '../../../core/services/desktop.service';
 import { Device } from '../../types';
 import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { DriveFolderData } from '../../../drive/types';
+
 import folderEmptyImage from 'assets/icons/light/folder-backup.svg';
 import { DownloadSimple } from '@phosphor-icons/react';
 import Empty from '../../../shared/components/Empty/Empty';
@@ -15,14 +15,15 @@ import UilWindows from '@iconscout/react-unicons/icons/uil-windows';
 import UilDesktop from '@iconscout/react-unicons/icons/uil-desktop';
 import dateService from '../../../core/services/date.service';
 import sizeService from '../../../drive/services/size.service';
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 
 interface Props {
   items: (Device | DriveFolderData)[];
   selectedItems: (Device | DriveFolderData)[];
   isLoading: boolean;
   onDeviceSelected: (changes: { device: Device | DriveFolderData; isSelected: boolean }[]) => void;
-  onDeviceDeleted: (device: (DriveFolderData | Device)[]) => void;
-  onDeviceClicked: (device: DriveFolderData | Device) => void;
+  onDeviceDeleted: (device: (Device | DriveFolderData)[]) => void;
+  onDeviceClicked: (device: Device | DriveFolderData) => void;
 }
 
 const DeviceList = (props: Props): JSX.Element => {
