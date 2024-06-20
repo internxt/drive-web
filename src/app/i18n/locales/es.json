@@ -10,11 +10,11 @@
     },
     "title": "¡Atención!",
     "subtitle": {
-      "line1": "El plan gratuito de Internxt se reducirá a 1GB el 1 de julio.",
+      "line1": "A partir del 1 de julio, el plan gratuito de Internxt se reducirá a 1GB. No te quedes sin espacio. ",
       "line2": {
-        "normal1": "Evita esta degradación usando el código ",
+        "normal1": "Usa el código ",
         "blue": "FREEVIP",
-        "normal2": " para obtener un 90% de descuento en cualquier plan premium."
+        "normal2": " y obtén un 90% de descuento en cualquier plan premium."
       }
     },
     "cta": "Elegir plan",
