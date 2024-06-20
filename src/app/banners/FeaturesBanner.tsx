@@ -79,8 +79,10 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
               >
                 {translate('featuresBanner.cta')}
               </button>
-              <div className="flex flex-row items-center space-x-3 pt-2 text-gray-80 dark:text-gray-20">
-                <CheckCircle size={24} className="text-primary" />
+              <div className="flex flex-row space-x-3 pt-2 text-gray-80 dark:text-gray-20">
+                <div className="flex h-6 w-6">
+                  <CheckCircle size={24} className="mt-0.5 w-max text-primary" />
+                </div>
                 <p className="font-medium lg:text-lg">{translate('featuresBanner.guarantee')}</p>
               </div>
 
@@ -91,7 +93,7 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
             <div className="flex flex-col">
               <div className="flex flex-col space-y-8">
                 {features.map((card) => (
-                  <div className="flex flex-row space-x-4" key={card}>
+                  <div className="flex flex-row items-center space-x-4" key={card}>
                     <ShieldCheck weight="fill" size={32} className="text-primary" />
                     <p className="whitespace-nowrap text-xl font-semibold text-gray-80 dark:text-gray-20">{card}</p>
                   </div>
