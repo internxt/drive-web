@@ -134,7 +134,6 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
           dispatch(fetchSortedFolderContentThunk(folderId));
         });
       } else {
-        console.log({ folderId });
         dispatch(
           storageThunks.uploadItemsThunk({
             files: [itemToUpload] as File[],
