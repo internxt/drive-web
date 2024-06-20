@@ -1,15 +1,13 @@
 import i18next from 'i18next';
 import React, { useEffect } from 'react';
-
-import localStorageService from 'app/core/services/local-storage.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Card from 'app/shared/components/Card';
-
+import localStorageService from '../../../../core/services/local-storage.service';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import Card from '../../../../shared/components/Card';
 import { CaretDown } from '@phosphor-icons/react';
 import dayjs from 'dayjs';
-import Section from '../../../../core/views/Preferences/components/Section';
-import ItemsDropdown from '../../../../core/views/Preferences/tabs/Account/components/ItemsDropdown';
-import MenuItem from '../../../../core/views/Preferences/tabs/Account/components/MenuItem';
+import Section from './Section';
+import ItemsDropdown from './ItemsDropdown';
+import MenuItem from './MenuItem';
 
 const localStorageLanguage = localStorageService.get('i18nextLng');
 
