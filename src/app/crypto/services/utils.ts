@@ -51,8 +51,7 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-// BEFORE MERGE! - GET SURE IF THIS COULD BREAK SOMETHING OLD
-function encryptFilename(filename: string, folderId: string): string {
+function encryptFilename(filename: string, folderId: number): string {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
   if (!CRYPTO_KEY) {

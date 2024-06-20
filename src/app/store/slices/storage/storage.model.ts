@@ -12,7 +12,7 @@ export interface StorageState {
   loadingFolders: Record<number, boolean>;
   forceLoading: boolean;
   isDeletingItems: boolean;
-  levels: Record<number, DriveItemData[]>;
+  levels: Record<string, DriveItemData[]>;
   moveDialogLevels: Record<number, DriveItemData[]>;
   levelsFoldersLength: Record<number, number>;
   levelsFilesLength: Record<number, number>;
