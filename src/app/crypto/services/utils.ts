@@ -1,8 +1,8 @@
-import { aes, items as itemUtils } from '@internxt/lib';
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
-import { AdvancedSharedItem } from '../../share/types';
+import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
+import { AdvancedSharedItem } from '../../share/types';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -86,13 +86,13 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 export {
-  decryptText,
-  decryptTextWithKey,
-  encryptFilename,
-  encryptText,
-  encryptTextWithKey,
-  excludeHiddenItems,
-  getItemPlainName,
   passToHash,
+  encryptText,
+  decryptText,
+  encryptFilename,
+  encryptTextWithKey,
+  decryptTextWithKey,
+  excludeHiddenItems,
   renameFile,
+  getItemPlainName,
 };
