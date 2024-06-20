@@ -1,5 +1,5 @@
-import checkoutService from '../views/CheckoutView/services/checkout.service';
-import { CouponCodeData, SelectedPlanData } from '../views/CheckoutView/types';
+import checkoutService from '../services/checkout.service';
+import { CouponCodeData, SelectedPlanData } from '../types';
 
 export const fetchPlanById = async (planId: string): Promise<SelectedPlanData> => {
   const plan = await checkoutService.fetchPlanById(planId);

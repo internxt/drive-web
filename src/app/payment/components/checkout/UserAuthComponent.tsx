@@ -1,5 +1,5 @@
 /* eslint-disable quotes */
-import { AuthMethodTypes } from '../types';
+import { AuthMethodTypes } from '../../types';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
 import Avatar from 'app/shared/components/Avatar';
@@ -11,9 +11,10 @@ interface CreateAccountComponentProps {
   userData: {
     name: string;
     avatar: Blob | null;
+    email?: string;
   };
   authMethod: AuthMethodTypes;
-  authError: string;
+  authError?: string;
   errors: FieldErrors<IFormValues>;
   onAuthMethodToggled: (authMethod: AuthMethodTypes) => void;
   register: UseFormRegister<IFormValues>;
@@ -58,7 +59,8 @@ export const UserAuthComponent = ({
                 fullName={userData.name}
                 src={userData.avatar ? URL.createObjectURL(userData.avatar) : null}
               />
-              <span className="flex items-center text-lg font-semibold">{userData.name}</span>
+              <p className="text-lg font-semibold">{userData.name}</p>
+              <p>{userData?.email}</p>
               <Button onClick={onLogOut}>Log out</Button>
             </div>
           </div>

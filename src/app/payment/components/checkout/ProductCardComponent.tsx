@@ -5,14 +5,14 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import { ReactComponent as GuaranteeDays } from 'assets/icons/30-days.svg';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { CouponCodeData, SelectedPlanData } from '../types';
+import { CouponCodeData, SelectedPlanData } from '../../types';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: SelectedPlanData;
   couponCodeData?: CouponCodeData;
-  couponError: string;
+  couponError?: string;
   handleOnInputChange: (promoCode: string) => void;
 }
 

@@ -8,7 +8,6 @@ import {
   Icon,
   Info,
   Link,
-  LinkBreak,
   PencilSimple,
   Trash,
   Users,

@@ -7,7 +7,7 @@ import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 interface InputsComponent {
   errors: FieldErrors<IFormValues>;
-  authError: string;
+  authError?: string;
   register: UseFormRegister<IFormValues>;
 }
 

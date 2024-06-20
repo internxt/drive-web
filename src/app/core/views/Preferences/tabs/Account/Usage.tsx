@@ -1,4 +1,3 @@
-import { SdkFactory } from 'app/core/factory/sdk';
 import usageService, { UsageDetailsProps } from 'app/drive/services/usage.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
