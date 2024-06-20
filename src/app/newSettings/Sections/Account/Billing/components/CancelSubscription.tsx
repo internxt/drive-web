@@ -1,7 +1,6 @@
 import { t } from 'i18next';
-
-import Button from 'app/shared/components/Button/Button';
-import CancelSubscriptionModal from 'app/core/views/Preferences/tabs/Billing/CancelSubscriptionModal';
+import Button from '../../../../../shared/components/Button/Button';
+import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
 
 interface CancelSubscriptionProps {
   isCancelSubscriptionModalOpen: boolean;

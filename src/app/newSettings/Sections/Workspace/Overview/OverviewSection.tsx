@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
-import Section from '../../../../core/views/Preferences/components/Section';
+import Section from '../../General/components/Section';
 import usageService, { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Avatar from '../../../../shared/components/Avatar';
 import Button from '../../../../shared/components/Button/Button';

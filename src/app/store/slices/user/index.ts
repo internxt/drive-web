@@ -1,6 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '../..';
-
 import { teamActions } from '../team';
 import { uiActions } from '../ui';
 import { sessionActions } from '../session';
@@ -18,8 +17,8 @@ import localStorageService from '../../../core/services/local-storage.service';
 import { referralsActions } from '../referrals';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import dayjs from 'dayjs';
+import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 
 export interface UserState {
   isInitializing: boolean;

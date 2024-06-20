@@ -3,7 +3,7 @@ import { ArrowCounterClockwise, Info } from '@phosphor-icons/react';
 import { useState } from 'react';
 import userService from '../../../../../auth/services/user.service';
 import errorService from '../../../../../core/services/error.service';
-import Section from '../../../../../core/views/Preferences/components/Section';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 import Button from '../../../../../shared/components/Button/Button';
