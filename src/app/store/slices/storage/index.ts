@@ -89,11 +89,11 @@ export const storageSlice = createSlice({
     },
     setFolderFoldersLength: (
       state: StorageState,
-      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+      action: PayloadAction<{ folderId: string; foldersLength: number }>,
     ) => {
       state.levelsFoldersLength[action.payload.folderId] = action.payload.foldersLength;
     },
-    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: string; filesLength: number }>) => {
       state.levelsFilesLength[action.payload.folderId] = action.payload.filesLength;
     },
     addFolderFoldersLength: (
@@ -278,8 +278,8 @@ export const storageSlice = createSlice({
       const { uuid, folderId, isFolder, patch } = action.payload;
 
       if (state.levels[folderId]) {
-        const item = state.levels[folderId].find((i) => i.id === uuid && i.isFolder === isFolder);
-        const itemIndex = state.levels[folderId].findIndex((i) => i.id === uuid && i.isFolder === isFolder);
+        const item = state.levels[folderId].find((i) => i.uuid === uuid && i.isFolder === isFolder);
+        const itemIndex = state.levels[folderId].findIndex((i) => i.uuid === uuid && i.isFolder === isFolder);
         const itemsToDatabase = [...state.levels[folderId]];
         itemsToDatabase[itemIndex] = Object.assign({}, item, patch);
 
@@ -336,7 +336,7 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: string[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
-      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => folderId);
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
       const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
@@ -363,7 +363,7 @@ export const storageSlice = createSlice({
       state: StorageState,
       action: PayloadAction<{ updateRecents?: boolean; folderIds?: string[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       folderIds.forEach((folderId) => {

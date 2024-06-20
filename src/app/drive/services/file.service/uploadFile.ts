@@ -11,6 +11,7 @@ import { AppView } from '../../../core/types';
 import { encryptFilename } from '../../../crypto/services/utils';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { getEnvironmentConfig } from '../network.service';
+import newStorageService from '../new-storage.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
@@ -106,7 +107,10 @@ export async function uploadFile(
 
     const fileId = await promise;
 
-    const name = encryptFilename(file.name, file.parentFolderId);
+    // TEMPORARY: For backward compatibility with id
+    const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);
+
+    const name = encryptFilename(file.name, folderMeta.id);
 
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
     const fileEntry: StorageTypes.FileEntryByUuid = {

@@ -45,7 +45,8 @@ const updateDatabaseFilePreviewData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
@@ -133,7 +134,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesCacheManager?.set(
     fileId.toString(),

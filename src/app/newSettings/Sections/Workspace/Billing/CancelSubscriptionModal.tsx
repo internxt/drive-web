@@ -1,15 +1,15 @@
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import { ArrowRight } from '@phosphor-icons/react';
-import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
-import Button from '../../../../../shared/components/Button/Button';
-import Modal from '../../../../../shared/components/Modal';
-import { FreeStoragePlan } from '../../../../../drive/types';
-import sizeService from '../../../../../drive/services/size.service';
-import paymentService from 'app/payment/services/payment.service';
-import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
-import { useAppDispatch } from '../../../../../store/hooks';
-import { planThunks } from '../../../../../store/slices/plan';
-import analyticsService from 'app/analytics/services/analytics.service';
+import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import Button from '../../../../shared/components/Button/Button';
+import Modal from '../../../../shared/components/Modal';
+import { FreeStoragePlan } from '../../../../drive/types';
+import sizeService from '../../../../drive/services/size.service';
+import paymentService from '../../../../payment/services/payment.service';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { useAppDispatch } from '../../../../store/hooks';
+import { planThunks } from '../../../../store/slices/plan';
+import analyticsService from '../../../../analytics/services/analytics.service';
 
 const CancelSubscriptionModal = ({
   isOpen,

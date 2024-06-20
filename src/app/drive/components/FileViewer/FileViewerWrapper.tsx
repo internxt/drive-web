@@ -106,14 +106,18 @@ const FileViewerWrapper = ({
   const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
-  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderUuid || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
 
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
-        if (driveItemsOrder === OrderDirection.Asc) return a[driveItemsSort] > b[driveItemsSort];
-        else if (driveItemsOrder === OrderDirection.Desc) return a[driveItemsSort] < b[driveItemsSort];
+        if (driveItemsOrder === OrderDirection.Asc) {
+          return a[driveItemsSort] > b[driveItemsSort] ? 1 : -1;
+        } else if (driveItemsOrder === OrderDirection.Desc) {
+          return a[driveItemsSort] < b[driveItemsSort] ? 1 : -1;
+        }
+        return 0;
       });
     }
     return [];

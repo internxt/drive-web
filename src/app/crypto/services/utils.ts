@@ -1,8 +1,8 @@
-import { aes, items as itemUtils } from '@internxt/lib';
 import CryptoJS from 'crypto-js';
 import { DriveItemData } from '../../drive/types';
-import { AdvancedSharedItem } from '../../share/types';
+import { aes, items as itemUtils } from '@internxt/lib';
 import { getAesInitFromEnv } from '../services/keys.service';
+import { AdvancedSharedItem } from '../../share/types';
 
 interface PassObjectInterface {
   salt?: string | null;
@@ -51,8 +51,7 @@ function decryptTextWithKey(encryptedText: string, keyToDecrypt: string): string
   return bytes.toString(CryptoJS.enc.Utf8);
 }
 
-// BEFORE MERGE! - GET SURE IF THIS COULD BREAK SOMETHING OLD
-function encryptFilename(filename: string, folderId: string): string {
+function encryptFilename(filename: string, folderId: number): string {
   const { REACT_APP_CRYPTO_SECRET2: CRYPTO_KEY } = process.env;
 
   if (!CRYPTO_KEY) {
@@ -87,13 +86,13 @@ const getItemPlainName = (item: DriveItemData | AdvancedSharedItem) => {
 };
 
 export {
-  decryptText,
-  decryptTextWithKey,
-  encryptFilename,
-  encryptText,
-  encryptTextWithKey,
-  excludeHiddenItems,
-  getItemPlainName,
   passToHash,
+  encryptText,
+  decryptText,
+  encryptFilename,
+  encryptTextWithKey,
+  decryptTextWithKey,
+  excludeHiddenItems,
   renameFile,
+  getItemPlainName,
 };
