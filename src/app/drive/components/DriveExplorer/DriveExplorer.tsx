@@ -84,7 +84,7 @@ interface DriveExplorerProps {
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
-  currentFolderId: number;
+  currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
@@ -1044,7 +1044,7 @@ const dropTargetCollect: DropTargetCollector<
 };
 
 export default connect((state: RootState) => {
-  const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const currentFolderId: string = storageSelectors.currentFolderId(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 

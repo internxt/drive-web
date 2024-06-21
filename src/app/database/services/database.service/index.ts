@@ -1,9 +1,9 @@
 import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
-import indexedDBService from './indexed-db.service';
-import { LRUCacheStruture } from './LRUCache';
 import { TaskStatus } from '../../../tasks/types';
+import { LRUCacheStruture } from './LRUCache';
+import indexedDBService from './indexed-db.service';
 
 export enum DatabaseProvider {
   IndexedDB = 'indexed-db',
@@ -47,17 +47,17 @@ export type AvatarBlobData = {
 
 export interface AppDatabase extends DBSchema {
   levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   move_levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   levels_blobs: {
-    key: number;
+    key: string;
     value: DriveItemBlobData;
     indexes?: Record<string, IDBValidKey>;
   };

@@ -12,7 +12,7 @@ export interface StorageState {
   loadingFolders: Record<number, boolean>;
   forceLoading: boolean;
   isDeletingItems: boolean;
-  levels: Record<number, DriveItemData[]>;
+  levels: Record<string, DriveItemData[]>;
   moveDialogLevels: Record<number, DriveItemData[]>;
   levelsFoldersLength: Record<number, number>;
   levelsFilesLength: Record<number, number>;
@@ -39,7 +39,7 @@ export interface StorageState {
   driveFilesToRename: DriveItemData[];
   foldersToRename: (DriveItemData | IRoot)[];
   driveFoldersToRename: DriveItemData[];
-  moveDestinationFolderId: number | null;
+  moveDestinationFolderId: string | null;
   viewMode: FileViewMode;
   namePath: FolderPath[];
   folderPathDialog: FolderPathDialog[];

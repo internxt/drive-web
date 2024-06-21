@@ -251,7 +251,7 @@ function SharedView({
         actionDispatch(setHasMoreFolders(true));
         actionDispatch(setHasMoreFiles(true));
         actionDispatch(setCurrentFolderId(sharedFolderId));
-        actionDispatch(setCurrentParentFolderId(shareItem.id));
+        actionDispatch(setCurrentParentFolderId(shareItem.uuid));
         actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
         actionDispatch(setSelectedItems([]));
       } else {
@@ -352,7 +352,7 @@ function SharedView({
 
     dispatch(
       storageActions.setItems({
-        folderId: currentParentFolderId as number,
+        folderId: currentParentFolderId as string,
         items: shareItems as unknown as DriveItemData[],
       }),
     );

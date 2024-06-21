@@ -30,20 +30,20 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
   async (path: FolderPath, { getState, dispatch }) => {
     const state = getState();
     const currentPath = state.storage.currentPath;
-    if (currentPath.id === path.id) {
+    if (currentPath.uuid === path.uuid) {
       // no need to go to the same folder
       return;
     }
 
-    dispatch(storageActions.setHasMoreDriveFolders({ folderId: path.id, status: true }));
-    dispatch(storageActions.setHasMoreDriveFiles({ folderId: path.id, status: true }));
-    dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.id }));
-    const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.id);
+    dispatch(storageActions.setHasMoreDriveFolders({ folderId: path.uuid, status: true }));
+    dispatch(storageActions.setHasMoreDriveFiles({ folderId: path.uuid, status: true }));
+    dispatch(storageActions.clearCurrentThumbnailItems({ folderId: path.uuid }));
+    const isInNamePath: boolean = storageSelectors.isFolderInNamePath(getState())(path.uuid);
 
     dispatch(storageActions.clearSelectedItems());
 
     dispatch(storageActions.resetDrivePagination());
-    dispatch(storageActions.resetLevelsFoldersLength({ folderId: path.id }));
+    dispatch(storageActions.resetLevelsFoldersLength({ folderId: path.uuid }));
 
     isInNamePath ? dispatch(storageActions.popNamePathUpTo(path)) : dispatch(storageActions.pushNamePath(path));
 

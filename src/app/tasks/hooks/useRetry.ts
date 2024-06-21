@@ -47,10 +47,10 @@ interface RetryUpload {
 type RetryUploadArgs = {
   notification: TaskNotification;
   uploadFolder: (data: UploadFolderData & { taskId: string }) => void;
-  uploadItem: (data: { uploadFile: File; parentFolderId: number; taskId: string; fileType: string }) => void;
+  uploadItem: (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => void;
   uploadSharedItem: (data: {
     uploadFile: File;
-    parentFolderId: number;
+    parentFolderId: string;
     taskId: string;
     fileType: string;
     sharedItemAuthenticationData: SharedItemAuthenticationData;
@@ -87,7 +87,7 @@ export const useRetryUpload = ({
         showErrorNotification();
       }
     } else if (item && taskId) {
-      const uploadItemData = item as { uploadFile: File; parentFolderId: number };
+      const uploadItemData = item as { uploadFile: File; parentFolderId: string };
 
       const isSharedItem = !!sharedItemAuthenticationData;
       if (isSharedItem) {

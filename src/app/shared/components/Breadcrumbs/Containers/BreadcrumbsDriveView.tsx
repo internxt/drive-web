@@ -24,7 +24,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
       const firstPath = namePath[0];
 
       items.push({
-        id: firstPath.id,
+        uuid: firstPath.uuid,
         label: t('sideNav.drive'),
         icon: null,
         active: true,
@@ -38,7 +38,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
 
       namePath.slice(1).forEach((path: FolderPath, i: number, namePath: FolderPath[]) => {
         items.push({
-          id: path.id,
+          uuid: path.uuid,
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,

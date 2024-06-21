@@ -1,10 +1,10 @@
+import { t } from 'i18next';
 import { SdkFactory } from '../../app/core/factory/sdk';
-import { storageActions } from '../../app/store/slices/storage';
-import { store } from '../../app/store';
+import errorService from '../../app/core/services/error.service';
 import { DriveItemData } from '../../app/drive/types';
 import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
-import errorService from '../../app/core/services/error.service';
-import { t } from 'i18next';
+import { store } from '../../app/store';
+import { storageActions } from '../../app/store/slices/storage';
 
 const getTrash = async (): Promise<void> => {
   const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();

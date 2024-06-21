@@ -1,20 +1,20 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 import _ from 'lodash';
 
+import { t } from 'i18next';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { StorageState } from '../storage.model';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { SdkFactory } from '../../../../core/factory/sdk';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
-import { SdkFactory } from '../../../../core/factory/sdk';
-import { t } from 'i18next';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { StorageState } from '../storage.model';
 
-export const fetchDialogContentThunk = createAsyncThunk<void, number, { state: RootState }>(
+export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchDialogContentThunk',
   async (folderId, { dispatch }) => {
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    const [responsePromise] = storageClient.getFolderContent(folderId);
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
     const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(
       DatabaseCollection.MoveDialogLevels,
       folderId,

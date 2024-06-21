@@ -87,10 +87,11 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
             return i.isFolder;
           });
 
-          const storageClient = SdkFactory.getInstance().createStorageClient();
+          const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
-          dispatch(storageActions.setMoveDestinationFolderId(item.id));
-          const [folderContentPromise] = storageClient.getFolderContent(item.id);
+          dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
+
+          const [folderContentPromise] = storageClient.getFolderContentByUuid(item.uuid);
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,
@@ -108,12 +109,13 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           );
           const unrepeatedItems: DriveItemData[] = [...unrepeatedFiles, ...unrepeatedFolders] as DriveItemData[];
 
-          if (unrepeatedItems.length === itemsToMove.length) dispatch(storageActions.setMoveDestinationFolderId(null));
+          if (unrepeatedItems.length === itemsToMove.length)
+            dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
           dispatch(
             storageThunks.moveItemsThunk({
               items: unrepeatedItems,
-              destinationFolderId: item.id,
+              destinationFolderId: item.uuid,
             }),
           );
         } else if (droppedType === NativeTypes.FILE) {
@@ -122,12 +124,12 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
           transformDraggedItems(droppedData.items, folderPath).then(async ({ rootList, files }) => {
             if (files.length) {
               // Only files
-              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.id }));
+              await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: item.uuid }));
             }
             if (rootList.length) {
               // Directory tree
               for (const root of rootList) {
-                const currentFolderId = item.id;
+                const currentFolderId = item.uuid;
 
                 await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId }));
               }

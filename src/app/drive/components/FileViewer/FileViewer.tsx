@@ -1,30 +1,30 @@
-import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import fileExtensionService from '../../services/file-extension.service';
-import viewers from './viewers';
 import UilImport from '@iconscout/react-unicons/icons/uil-import';
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import { DriveFileData, DriveItemData } from 'app/drive/types';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
-import iconService from 'app/drive/services/icon.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import TopBarActions from './components/TopBarActions';
-import { useHotkeys } from 'react-hotkeys-hook';
-import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
-import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { isLargeFile } from 'app/core/services/media.service';
+import iconService from 'app/drive/services/icon.service';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
+import { FileExtensionGroup, fileExtensionPreviewableGroups } from 'app/drive/types/file-types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
+import { Fragment, Suspense, useEffect, useState } from 'react';
+import { useHotkeys } from 'react-hotkeys-hook';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import {
-  trackFilePreviewed,
-  trackFilePreviewOpened,
   trackFilePreviewClicked,
+  trackFilePreviewOpened,
+  trackFilePreviewed,
 } from '../../../analytics/services/analytics.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { setItemsToMove, storageActions } from '../../../store/slices/storage';
+import fileExtensionService from '../../services/file-extension.service';
 import { TopBarActionsMenu } from './FileViewerWrapper';
+import TopBarActions from './components/TopBarActions';
+import viewers from './viewers';
 
 interface FileViewerProps {
   file: DriveFileData;

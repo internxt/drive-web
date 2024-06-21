@@ -42,7 +42,7 @@ const SurveyDialog = (props: { isOpen: boolean }): JSX.Element => {
             height={600}
             hidden={{
               clientid: clientId,
-              uuid: user.uuid
+              uuid: user.uuid,
             }}
           />
         </div>

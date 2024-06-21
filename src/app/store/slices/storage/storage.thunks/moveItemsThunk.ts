@@ -1,36 +1,36 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
-import { storageActions } from '..';
-import { RootState } from '../../..';
-import { DriveItemData } from 'app/drive/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageService from 'app/drive/services/storage.service';
 import databaseService, { DatabaseCollection } from 'app/database/services/database.service';
 import itemsListService from 'app/drive/services/items-list.service';
-import storageSelectors from '../storage.selectors';
-import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import storageService from 'app/drive/services/storage.service';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import tasksService from 'app/tasks/services/tasks.service';
+import { MoveFileTask, MoveFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
 import { t } from 'i18next';
+import { storageActions } from '..';
+import { RootState } from '../../..';
 import errorService from '../../../../core/services/error.service';
+import { StorageState } from '../storage.model';
 
 export interface MoveItemsPayload {
   items: DriveItemData[];
-  destinationFolderId: number;
+  destinationFolderId: string;
 }
 
 export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: RootState }>(
   'storage/moveItems',
-  async (payload: MoveItemsPayload, { getState, dispatch }) => {
+  async (payload: MoveItemsPayload, { dispatch }) => {
     const { items, destinationFolderId } = payload;
     const promises: Promise<void>[] = [];
 
-    if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
-      return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
+    if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
+      notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
+      return;
     }
 
     for (const [index, item] of items.entries()) {
-      const fromFolderId = item.parentId || item.folderId;
+      const fromFolderId = item.folderUuid || item.parentUuid;
       let taskId: string;
 
       if (item.isFolder) {
@@ -51,7 +51,7 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
         });
       }
 
-      promises.push(storageService.moveItem(item, destinationFolderId, storageSelectors.bucket(getState())));
+      promises.push(storageService.moveItem(item, destinationFolderId));
 
       promises[index]
         .then(async () => {

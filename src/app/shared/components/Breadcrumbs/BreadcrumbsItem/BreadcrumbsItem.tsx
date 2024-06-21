@@ -1,20 +1,20 @@
-import { DropTargetMonitor, useDrop } from 'react-dnd';
-import { NativeTypes } from 'react-dnd-html5-backend';
+import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
+import { DragAndDropType } from 'app/core/types';
+import iconService from 'app/drive/services/icon.service';
+import { DriveItemData } from 'app/drive/types';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import storageThunks from 'app/store/slices/storage/storage.thunks';
-import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
-import { transformDraggedItems } from 'app/core/services/drag-and-drop.service';
-import { DragAndDropType } from 'app/core/types';
-import { DriveItemData } from 'app/drive/types';
-import iconService from 'app/drive/services/icon.service';
+import { DropTargetMonitor, useDrop } from 'react-dnd';
+import { NativeTypes } from 'react-dnd-html5-backend';
+import { SdkFactory } from '../../../../core/factory/sdk';
 import { storageActions } from '../../../../store/slices/storage';
-import { uiActions } from '../../../../store/slices/ui';
 import {
   handleRepeatedUploadingFiles,
   handleRepeatedUploadingFolders,
 } from '../../../../store/slices/storage/storage.thunks/renameItemsThunk';
-import { SdkFactory } from '../../../../core/factory/sdk';
+import { uiActions } from '../../../../store/slices/ui';
+import { BreadcrumbItemData, BreadcrumbsMenuProps } from '../types';
 interface BreadcrumbsItemProps {
   item: BreadcrumbItemData;
   totalBreadcrumbsLength: number;
@@ -33,7 +33,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const onItemDropped = async (item, monitor: DropTargetMonitor) => {
     const droppedType = monitor.getItemType();
     const droppedData = monitor.getItem();
-    const breadcrumbIndex = namePath.findIndex((level) => level.id === props.item.id);
+    const breadcrumbIndex = namePath.findIndex((level) => level.uuid === props.item.uuid);
     const namePathDestinationArray = namePath.slice(0, breadcrumbIndex + 1).map((level) => level.name);
     namePathDestinationArray[0] = '';
     const folderPath = namePathDestinationArray.join('/');
@@ -51,9 +51,9 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         return i.isFolder;
       });
 
-      dispatch(storageActions.setMoveDestinationFolderId(props.item.id));
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-      const [folderContentPromise] = storageClient.getFolderContent(props.item.id);
+      dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const [folderContentPromise] = storageClient.getFolderContentByUuid(props.item.uuid);
 
       const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
 
@@ -79,7 +79,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
       dispatch(
         storageThunks.moveItemsThunk({
           items: unrepeatedItems,
-          destinationFolderId: props.item.id,
+          destinationFolderId: props.item.uuid,
         }),
       );
     } else if (droppedType === NativeTypes.FILE) {
@@ -87,12 +87,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         async ({ rootList, files }) => {
           if (files.length) {
             // Only files
-            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.id }));
+            await dispatch(storageThunks.uploadItemsThunk({ files, parentFolderId: props.item.uuid }));
           }
           if (rootList.length) {
             // Directory tree
             for (const root of rootList) {
-              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: props.item.id }));
+              await dispatch(storageThunks.uploadFolderThunk({ root, currentFolderId: props.item.uuid }));
             }
           }
         },
@@ -111,7 +111,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
         const droppedType = monitor.getItemType();
         const droppedDataParentId = item.parentId || item.folderId || -1;
 
-        return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.id;
+        return droppedType === NativeTypes.FILE || droppedDataParentId !== props.item.uuid;
       },
       drop: onItemDropped,
     }),
@@ -142,7 +142,7 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
             ? 'text-gray-80'
             : 'text-gray-50 hover:text-gray-80'
         }`}
-          key={props.item.id}
+          key={props.item.uuid}
           onClick={() => onItemClicked(props.item)}
           onKeyDown={() => {}}
           data-cy={props?.breadcrumbButtonDataCy}

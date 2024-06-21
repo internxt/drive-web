@@ -1,16 +1,17 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import analyticsService from '../../../analytics/services/analytics.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { AppView } from '../../../core/types';
+import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig } from '../network.service';
+import { AppView } from '../../../core/types';
 import { encryptFilename } from '../../../crypto/services/utils';
-import errorService from '../../../core/services/error.service';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { Network } from 'app/drive/services/network.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { getEnvironmentConfig } from '../network.service';
+import newStorageService from '../new-storage.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
@@ -18,7 +19,7 @@ export interface FileToUpload {
   size: number;
   type: string;
   content: File;
-  parentFolderId: number;
+  parentFolderId: string;
 }
 
 export interface FileUploadOptions {
@@ -106,10 +107,13 @@ export async function uploadFile(
 
     const fileId = await promise;
 
-    const name = encryptFilename(file.name, file.parentFolderId);
+    // TEMPORARY: For backward compatibility with id
+    const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);
 
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    const fileEntry: StorageTypes.FileEntry = {
+    const name = encryptFilename(file.name, folderMeta.id);
+
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const fileEntry: StorageTypes.FileEntryByUuid = {
       id: fileId,
       type: file.type,
       size: file.size,
@@ -120,7 +124,7 @@ export async function uploadFile(
       encrypt_version: StorageTypes.EncryptionVersion.Aes03,
     };
 
-    let response = await storageClient.createFileEntry(fileEntry, options.ownerUserAuthenticationData?.token);
+    let response = await storageClient.createFileEntryByUuid(fileEntry);
     if (!response.thumbnails) {
       response = {
         ...response,
