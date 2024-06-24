@@ -58,9 +58,9 @@ const paymentService = {
     return paymentsClient.getSetupIntent();
   },
 
-  async getDefaultPaymentMethod(): Promise<PaymentMethod | Source> {
+  async getDefaultPaymentMethod(subscriptionType?: 'individual' | 'business'): Promise<PaymentMethod | Source> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getDefaultPaymentMethod();
+    return paymentsClient.getDefaultPaymentMethod(subscriptionType);
   },
 
   async getInvoices(): Promise<Invoice[]> {
@@ -74,14 +74,14 @@ const paymentService = {
     return stripe.redirectToCheckout(options);
   },
 
-  async getUserSubscription(): Promise<UserSubscription> {
+  async getUserSubscription(subscriptionType?: 'individual' | 'business'): Promise<UserSubscription> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getUserSubscription();
+    return paymentsClient.getUserSubscription(subscriptionType);
   },
 
-  async getPrices(currency?: string): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string, subscriptionType?: 'individual' | 'business'): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices(currency);
+    return paymentsClient.getPrices(currency, subscriptionType);
   },
 
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
@@ -111,10 +111,10 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice(priceId, coupon);
   },
 
-  async cancelSubscription(): Promise<void> {
+  async cancelSubscription(subscriptionType?: 'individual' | 'business'): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.cancelSubscription();
+    return paymentsClient.cancelSubscription(subscriptionType);
   },
 
   async createCheckoutSession(

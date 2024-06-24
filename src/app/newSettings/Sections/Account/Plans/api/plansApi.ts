@@ -13,21 +13,26 @@ const getCountry = async () =>
     method: 'GET',
   });
 
-const getPlanPrices = async ({ currencyValue = 'eur' }: { currencyValue: string }) =>
-  paymentService.getPrices(currencyValue);
+const getPlanPrices = async ({
+  currencyValue = 'eur',
+  subscriptionType = 'individual',
+}: {
+  currencyValue: string;
+  subscriptionType: 'individual' | 'business';
+}) => paymentService.getPrices(currencyValue, subscriptionType);
 
-const fetchPlanPrices = async () => {
+const fetchPlanPrices = async (subscriptionType: 'individual' | 'business') => {
   try {
     const { country } = await getCountry().then((res) => res.json());
     const currencyValue = productValue[country] || 'eur';
 
-    return getPlanPrices({ currencyValue });
+    return getPlanPrices({ currencyValue, subscriptionType });
   } catch (error) {
     const errorCasted = errorService.castError(error);
     errorService.reportError(errorCasted);
 
     // by default in euros
-    return getPlanPrices({ currencyValue: 'eur' });
+    return getPlanPrices({ currencyValue: 'eur', subscriptionType });
   }
 };
 

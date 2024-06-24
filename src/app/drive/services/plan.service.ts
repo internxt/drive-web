@@ -10,6 +10,14 @@ const fetchIndividualPlan = async (): Promise<StoragePlan | null> => {
   return response;
 };
 
+const fetchBusinessPlan = async (): Promise<StoragePlan | null> => {
+  const response = await httpService.get<StoragePlan | null>('/api/plan/business', {
+    authWorkspace: Workspace.Individuals,
+  });
+
+  return response;
+};
+
 const fetchTeamPlan = async (): Promise<StoragePlan | null> => {
   const response = await httpService.get<StoragePlan | null>('/api/plan/team', {
     authWorkspace: Workspace.Individuals,
@@ -20,6 +28,7 @@ const fetchTeamPlan = async (): Promise<StoragePlan | null> => {
 
 const planService = {
   fetchIndividualPlan,
+  fetchBusinessPlan,
   fetchTeamPlan,
 };
 

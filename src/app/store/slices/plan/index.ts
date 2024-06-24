@@ -15,15 +15,19 @@ export interface PlanState {
   isLoadingPlanLimit: boolean;
   isLoadingPlanUsage: boolean;
   individualPlan: StoragePlan | null;
+  businessPlan: StoragePlan | null;
   teamPlan: StoragePlan | null;
   planLimit: number;
   planUsage: number;
   usageDetails: UsageResponse | null;
-  subscription: UserSubscription | null;
+  subscription: UserSubscription | null; //TODO: Please review this field, it may be necessary to remove it and use the field for each subscription separately
+  subscriptionIndividual: UserSubscription | null;
+  subscriptionBusiness: UserSubscription | null;
 }
 
 interface FetchPlansResult {
   individualPlan: StoragePlan | null;
+  businessPlan: StoragePlan | null;
   teamPlan: StoragePlan | null;
 }
 
@@ -32,11 +36,14 @@ const initialState: PlanState = {
   isLoadingPlanLimit: false,
   isLoadingPlanUsage: false,
   individualPlan: null,
+  businessPlan: null,
   teamPlan: null,
   planLimit: 0,
   planUsage: 0,
   usageDetails: null,
-  subscription: null,
+  subscription: null, //TODO: Please review this field, it may be necessary to remove it and use the field for each subscription separately
+  subscriptionIndividual: null,
+  subscriptionBusiness: null,
 };
 
 export const initializeThunk = createAsyncThunk<void, void, { state: RootState }>(
@@ -49,7 +56,8 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
       promises.push(dispatch(fetchPlans()).then());
       promises.push(dispatch(fetchLimitThunk()).then());
       promises.push(dispatch(fetchUsageThunk()).then());
-      promises.push(dispatch(fetchSubscriptionThunk()).then());
+      promises.push(dispatch(fetchSubscriptionThunk({ type: 'individual' })).then());
+      promises.push(dispatch(fetchSubscriptionThunk({ type: 'business' })).then());
     }
 
     await Promise.all(promises);
@@ -63,13 +71,14 @@ export const fetchPlans = createAsyncThunk<FetchPlansResult, void, { state: Root
     const promises: Promise<StoragePlan | null>[] = [];
 
     promises.push(planService.fetchIndividualPlan());
+    promises.push(planService.fetchBusinessPlan());
     if (user?.teams) {
       promises.push(planService.fetchTeamPlan());
     }
 
-    const [individualPlan, teamPlan] = await Promise.all(promises);
+    const [individualPlan, businessPlan, teamPlan] = await Promise.all(promises);
 
-    return { individualPlan, teamPlan };
+    return { individualPlan, businessPlan, teamPlan };
   },
 );
 
@@ -100,25 +109,33 @@ export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { st
   },
 );
 
-export const fetchSubscriptionThunk = createAsyncThunk<UserSubscription | null, void, { state: RootState }>(
-  'plan/fetchSubscription',
-  async (payload: void, { getState }) => {
-    const isAuthenticated = getState().user.isAuthenticated;
+export const fetchSubscriptionThunk = createAsyncThunk<
+  UserSubscription | null,
+  { type: 'individual' | 'business' },
+  { state: RootState }
+>('plan/fetchSubscription', async (payload, { getState }) => {
+  const isAuthenticated = getState().user.isAuthenticated;
 
-    if (isAuthenticated) {
-      return paymentService.getUserSubscription();
-    } else {
-      return null;
-    }
-  },
-);
+  if (isAuthenticated) {
+    return paymentService.getUserSubscription(payload.type);
+  } else {
+    return null;
+  }
+});
 
 export const planSlice = createSlice({
   name: 'plan',
   initialState,
   reducers: {
     setSubscription: (state: PlanState, action: PayloadAction<UserSubscription>) => {
+      //TODO: Please review this field, it may be necessary to remove it and use the field for each subscription separately
       state.subscription = action.payload;
+    },
+    setSubscriptionIndividual: (state: PlanState, action: PayloadAction<UserSubscription>) => {
+      state.subscriptionIndividual = action.payload;
+    },
+    setSubscriptionBusiness: (state: PlanState, action: PayloadAction<UserSubscription>) => {
+      state.subscriptionBusiness = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -134,6 +151,7 @@ export const planSlice = createSlice({
       .addCase(fetchPlans.fulfilled, (state, action) => {
         state.isLoadingPlans = false;
         state.individualPlan = action.payload.individualPlan;
+        state.businessPlan = action.payload.businessPlan;
         state.teamPlan = action.payload.teamPlan;
       })
       .addCase(fetchPlans.rejected, (state) => {
@@ -169,18 +187,21 @@ export const planSlice = createSlice({
 
     builder.addCase(fetchSubscriptionThunk.fulfilled, (state, action) => {
       if (action.payload !== null) {
+        if (action.meta.arg.type == 'individual') state.subscriptionIndividual = action.payload;
+        if (action.meta.arg.type == 'business') state.subscriptionBusiness = action.payload;
+        //TODO: Please review this field, it may be necessary to remove it and use the field for each subscription separately
         state.subscription = action.payload;
       }
     });
   },
 });
-
+// TODO: review this behavior
 const currentPlanSelector = (state: RootState): StoragePlan | null => {
   const isTeam = sessionSelectors.isTeam(state);
 
   return isTeam ? state.plan.teamPlan : state.plan.individualPlan;
 };
-
+// TODO: review this behavior
 export const planSelectors = {
   currentPlan: currentPlanSelector,
   isCurrentPlanLifetime: (state: RootState): boolean => {
