@@ -3,7 +3,7 @@ import streamSaver from 'streamsaver';
 import { AsyncZipDeflate, Zip } from 'fflate';
 
 import browserService from './browser.service';
-import { binaryStreamToBlob, buildProgressStream } from './stream.service';
+import { binaryStreamToBlob } from './stream.service';
 
 type FlatFolderZipOpts = {
   abortController?: AbortController;
@@ -21,11 +21,11 @@ export class FlatFolderZip {
     this.folderName = folderName;
 
     console.info('Using fast method for creating a zip');
-    this.zip = createFolderWithFilesWritable();
+    this.zip = createFolderWithFilesWritable(opts.progress);
     this.abortController = opts.abortController;
 
     // TODO: check why opts.progress is causing zip corruption
-    this.passThrough = opts.progress ? buildProgressStream(this.zip.stream, opts.progress) : this.zip.stream;
+    this.passThrough = this.zip.stream;
 
     if (browserService.isBrave()) return;
 
@@ -94,7 +94,7 @@ export interface ZipStream {
   end: () => void;
 }
 
-export function createFolderWithFilesWritable(): ZipStream {
+export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['progress']): ZipStream {
   const zip = new Zip();
   let passthroughController: ReadableStreamDefaultController<Uint8Array> | null = null;
 
@@ -126,6 +126,8 @@ export function createFolderWithFilesWritable(): ZipStream {
     }
   };
 
+  let processedSize = 0;
+
   // todo: abort with .terminate()
   return {
     addFile: (name: string, source: ReadableStream<Uint8Array>): void => {
@@ -137,6 +139,10 @@ export function createFolderWithFilesWritable(): ZipStream {
 
       source.pipeTo(new WritableStream({
         write(chunk) {
+          processedSize += chunk.length;
+
+          progress?.(processedSize);
+
           writer.push(chunk, false);
         },
         close() {
