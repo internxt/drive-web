@@ -261,7 +261,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backup",
     "shared": "Condiviso",
     "recents": "Recenti",
@@ -279,12 +278,6 @@
         "uploadFiles": "Caricare i file",
         "noResults": "Non ci sono risultati per questa ricerca",
         "dragNDrop": "Trascinare e rilasciare qui o fare clic sul pulsante di caricamento"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "La tua galleria è vuota",
-        "description": "Usa l'app mobile Internxt per sincronizzare le tue foto"
       }
     },
     "account": {
@@ -312,7 +305,6 @@
           "usage": "Usati {{totalUsed}} di {{totalSpace}}",
           "view": {
             "backups": "Backups",
-            "photos": "Photos",
             "trash": "Cestino",
             "free": {
               "planName": "Piano gratuito",
@@ -823,32 +815,6 @@
       "sharedWith": "Condiviso con te ",
       "todayAt": "oggi alle "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "file selezionati",
-      "singleToolBar": "file selezionati",
-      "multiTitle": "Eliminare i {{item}} file selezionati?",
-      "singleTitle": "Eliminare i {{item}} file selezionati?",
-      "subtitle": "Non è possibile annullare l'azione",
-      "buttons": {
-        "cancel": "Annulla",
-        "delete": "Elimina"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Condividi {{item}} foto",
-      "multiTitle": "Condividi {{item}} foto",
-      "options": "Opzioni link",
-      "limit": "Limita il numero di volte che il link può essere aperto",
-      "openCount": "Limite apertura",
-      "times": "volte",
-      "change": "Modifica",
-      "buttons": {
-        "cancel": "Annulla",
-        "create": "Creazione collegamento",
-        "creating": "Creare un collegamento...",
-        "copyLink": "Copia link"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Amici invitati",
       "email": "E-mail",
@@ -941,7 +907,6 @@
     "emptyPassword": "La password precedente non deve essere vuota",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
-    "braveNotSupportMultiplePhotosDowload": "Brave non supporta il download di più foto.",
     "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
@@ -1084,15 +1049,6 @@
         "in-process": "{{progress}}% Download del file",
         "success": "File scaricati",
         "error": "Download fallito, fare clic su ↻ per riprovare",
-        "cancelled": "Download annullato"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Download di {{progress}}%",
-        "success": "Scaricato",
-        "error": "Error during download",
         "cancelled": "Download annullato"
       },
       "errors": {}

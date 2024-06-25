@@ -245,7 +245,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backups",
     "shared": "Compartido",
     "recents": "Recientes",
@@ -263,12 +262,6 @@
         "uploadFiles": "Subir archivos",
         "noResults": "No hay resultados para esta búsqueda",
         "dragNDrop": "Arrastra un archivo o haz clic en el botón para subir un archivo"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "Tu galería está vacía",
-        "description": "Usa la app móvil de Internxt para sincronizar tus fotos"
       }
     },
     "account": {
@@ -296,7 +289,6 @@
           "usage": "{{totalUsed}} de {{totalSpace}} usado",
           "view": {
             "backups": "Copias de seguridad",
-            "photos": "Photos",
             "trash": "Papelera",
             "free": {
               "planName": "Plan gratuito",
@@ -809,32 +801,6 @@
       "sharedWith": "Compartido contigo ",
       "todayAt": "hoy a las "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "archivos seleccionados",
-      "singleToolBar": "archivo seleccionado",
-      "singleTitle": "Eliminar {{item}} archivo seleccionado?",
-      "multiTitle": "Eliminar los {{item}} archivos seleccionados?",
-      "subtitle": "Esta acción no se puede deshacer",
-      "buttons": {
-        "cancel": "Cancelar",
-        "delete": "Eliminar"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Compartir {{item}} foto",
-      "multiTitle": "Compartir {{item}} fotos",
-      "options": "Opciones del enlace",
-      "limit": "Limita el número de veces que se puede abrir el enlace",
-      "openCount": "Límite de apertura",
-      "times": "veces",
-      "change": "Cambiar",
-      "buttons": {
-        "cancel": "Cancelar",
-        "create": "Crear enlace",
-        "creating": "Creando enlace...",
-        "copyLink": "Copiar enlace"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
@@ -927,7 +893,6 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
     "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
@@ -1072,15 +1037,6 @@
         "success": "Archivo descargado",
         "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Descargando {{progress}}%",
-        "success": "descargado",
-        "error": "Error durante la descarga",
-        "cancelled": "Descara cancelada"
       },
       "errors": {}
     },

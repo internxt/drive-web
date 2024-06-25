@@ -261,7 +261,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -279,12 +278,6 @@
         "uploadFiles": "Upload files",
         "noResults": "There are no results for this search",
         "dragNDrop": "Drag and drop here or click on upload button"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "Your photo gallery is empty",
-        "description": "Use the Internxt mobile app to sync all your photos from your device"
       }
     },
     "account": {
@@ -312,7 +305,6 @@
           "usage": "Used {{totalUsed}} of {{totalSpace}}",
           "view": {
             "backups": "Backups",
-            "photos": "Photos",
             "trash": "Trash",
             "free": {
               "planName": "Free plan",
@@ -831,32 +823,6 @@
       "sharedWith": "Shared with you ",
       "todayAt": "today at "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Delete {{item}} selected items?",
-      "singleTitle": "Delete {{item}} selected item?",
-      "subtitle": "You can't undo this action",
-      "buttons": {
-        "cancel": "Cancel",
-        "delete": "Delete"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Share {{item}} photo",
-      "multiTitle": "Share {{item}} photos",
-      "options": "Link options",
-      "limit": "Limit number of time users can open this link",
-      "openCount": "Open count limit",
-      "times": "times",
-      "change": "Change",
-      "buttons": {
-        "cancel": "Cancel",
-        "create": "Create link",
-        "creating": "Creating link...",
-        "copyLink": "Copy link"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
@@ -949,7 +915,6 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
@@ -1092,15 +1057,6 @@
         "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
         "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Downloading {{progress}}%",
-        "success": "Downloaded",
-        "error": "Error during download",
         "cancelled": "Download cancelled"
       },
       "errors": {}

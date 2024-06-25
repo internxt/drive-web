@@ -261,7 +261,6 @@
   },
   "sideNav": {
     "drive": "雲端硬碟",
-    "photos": "照片",
     "backups": "備份",
     "shared": "共享",
     "recents": "最近",
@@ -279,12 +278,6 @@
         "uploadFiles": "上傳檔案",
         "noResults": "沒有找到匹配的結果",
         "dragNDrop": "拖放至此或點擊上傳按鈕"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "您的相片庫是空的",
-        "description": "使用 Internxt 行動應用程式從您的設備同步所有照片"
       }
     },
     "account": {
@@ -312,7 +305,6 @@
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
             "backups": "備份",
-            "photos": "照片",
             "trash": "垃圾桶",
             "free": {
               "planName": "免費計劃",
@@ -829,32 +821,6 @@
       "sharedWith": "與您共享",
       "todayAt": "今天在"
     },
-    "deletePhotosModal": {
-      "multiToolBar": "已選擇項目",
-      "singleToolBar": "已選擇項目",
-      "multiTitle": "刪除{{item}}個選定的項目？",
-      "singleTitle": "刪除{{item}}個選定的項目？",
-      "subtitle": "此操作無法撤消",
-      "buttons": {
-        "cancel": "取消",
-        "delete": "刪除"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "分享{{item}}張照片",
-      "multiTitle": "分享{{item}}張照片",
-      "options": "連結選項",
-      "limit": "限制用戶打開此連結的次數",
-      "openCount": "打開次數限制",
-      "times": "次",
-      "change": "更改",
-      "buttons": {
-        "cancel": "取消",
-        "create": "創建連結",
-        "creating": "正在創建連結...",
-        "copyLink": "複製連結"
-      }
-    },
     "friendsInvitedModal": {
       "title": "已邀請的朋友",
       "email": "電子郵件",
@@ -947,7 +913,6 @@
     "emptyPassword": "以前的密碼不能為空",
     "errorMovingToTrash": "將項目移動到垃圾桶時出錯。",
     "errorDeletingFromTrash": "從垃圾桶中刪除項目時出錯。",
-    "braveNotSupportMultiplePhotosDowload": "Brave不支持多張照片下載。",
     "maxSizeUploadLimitError": "文件過大（大於20GB）",
     "connectionLostError": "網絡連接已丟失",
     "errorLoadingTrashItems": "加載垃圾桶項目時出錯"
@@ -1090,15 +1055,6 @@
         "in-process": "{{progress}}% 正在下載檔案",
         "success": "檔案下載成功",
         "error": "下載失敗，點擊 ↻ 重試",
-        "cancelled": "取消下載"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "下載中 {{progress}}%",
-        "success": "下載完成",
-        "error": "下載過程中出錯",
         "cancelled": "取消下載"
       },
       "errors": {}

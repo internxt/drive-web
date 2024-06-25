@@ -1,6 +1,6 @@
 import { items } from '@internxt/lib';
 
-import { FlatFolderZip } from 'app/core/services/zipFolder.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
 import network from 'app/network';
 import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
