@@ -2,13 +2,12 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { useEffect, useRef, useState } from 'react';
 import { bytesToString } from '../../../drive/services/size.service';
 import Tooltip from '../Tooltip';
-import { RootState } from 'app/store';
-import { useAppSelector } from 'app/store/hooks';
 
 export default function UsageDetails({
   className = '',
   planLimitInBytes,
   products,
+  planUsage,
 }: {
   className?: string;
   planLimitInBytes: number;
@@ -17,6 +16,7 @@ export default function UsageDetails({
     usageInBytes: number;
     color: 'red' | 'orange' | 'yellow' | 'green' | 'pink' | 'indigo' | 'primary' | 'gray';
   }[];
+  planUsage: number;
 }): JSX.Element {
   const { translate } = useTranslationContext();
   const [barWidth, setBarWidth] = useState(0);
@@ -48,7 +48,6 @@ export default function UsageDetails({
     gray: 'bg-gray-40',
   };
 
-  const planUsage = useAppSelector((state: RootState) => state.plan.planUsage);
   const maxBytesLimit = Math.max(planUsage, planLimitInBytes);
   const percentageUsed = Math.round((planUsage / planLimitInBytes) * 100);
 
