@@ -118,7 +118,6 @@ export enum AppView {
   Backups = 'backups',
   SharedLinks = 'shared-links',
   Shared = 'shared',
-  Photos = 'photos',
   Preferences = 'preferences',
   DriveItems = 'drive-items',
   FolderFileNotFound = 'folder-file-not-found',

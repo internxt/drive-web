@@ -244,7 +244,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Sauvegardes",
     "shared": "Partagé",
     "recents": "Récent",
@@ -262,12 +261,6 @@
         "uploadFiles": "Charger des fichiers",
         "noResults": "Il n'y a pas de résultats pour cette recherche",
         "dragNDrop": "Glisser-déposer ici ou cliquer sur le bouton de téléchargement"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "Votre galerie est vide",
-        "description": "Utilisez l'app mobile Internxt pour synchroniser vos photos."
       }
     },
     "account": {
@@ -295,7 +288,6 @@
           "usage": "{{totalUsed}} de {{totalSpace}} utilisés",
           "view": {
             "backups": "Sauvegarde",
-            "photos": "Photos",
             "trash": "Corbeille",
             "free": {
               "planName": "Plan gratuit",
@@ -764,32 +756,6 @@
       "sharedWith": "Partagé avec vous ",
       "todayAt": "aujourd'hui à "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Supprimer les {{item}} fichiers sélectionnés ?",
-      "singleTitle": "Supprimer {{item}} fichier sélectionné?",
-      "subtitle": "Cette action ne peut pas être annulée",
-      "buttons": {
-        "cancel": "Annuler",
-        "delete": "Supprimer"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Partager {{item}} photo",
-      "multiTitle": "Partager {{item}} photos",
-      "options": "Options du lien",
-      "limit": "Limiter le nombre de fois que le lien peut être ouvert.",
-      "openCount": "Limiter l'ouverture à",
-      "times": "fois",
-      "change": "Modifier",
-      "buttons": {
-        "cancel": "Annuler",
-        "create": "Créer un lien",
-        "creating": "En cours de création...",
-        "copyLink": "Copier le lien"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
@@ -881,7 +847,6 @@
     "incorrectPassword": "Le mot de passe actuel que vous avez introduit ne correspond pas. Veuillez vous assurer qu'il est correct.",
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
-    "braveNotSupportMultiplePhotosDowload": "Brave ne prend pas en charge le téléchargement de plusieurs photos.",
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 20GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
@@ -1024,15 +989,6 @@
         "in-process": "{{progress}}% Téléchargement du fichier",
         "success": "Fichier téléchargé",
         "error": "Le téléchargement a échoué, cliquez sur ↻ pour réessayer",
-        "cancelled": "Téléchargement annulé"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Téléchargement de {{progress}}%",
-        "success": "Téléchargé",
-        "error": "Erreur pendant le téléchargement",
         "cancelled": "Téléchargement annulé"
       },
       "errors": {}
