@@ -236,7 +236,6 @@ async function downloadSharedFolderAsZip(
   const zip = options?.destination || new FlatFolderZip(rootFolder.name, {
     progress: (loadedBytes: number) => {
       if (totalSizeIsReady) {
-        console.log('progress', loadedBytes / totalSize);
         updateProgress(loadedBytes / totalSize);
       }
     }
