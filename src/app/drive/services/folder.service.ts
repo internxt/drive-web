@@ -233,7 +233,13 @@ async function downloadSharedFolderAsZip(
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   let totalSizeIsReady = false;
-  const zip = options?.destination || new FlatFolderZip(rootFolder.name, {});
+  const zip = options?.destination || new FlatFolderZip(rootFolder.name, {
+    progress: (loadedBytes: number) => {
+      if (totalSizeIsReady) {
+        updateProgress(loadedBytes / totalSize);
+      }
+    }
+  });
 
   const user = localStorageService.getUser();
 
@@ -425,7 +431,7 @@ async function downloadFolderAsZip(
           });
           analyticsService.trackFileDownloadCompleted(trackingDownloadProperties);
 
-          const sourceBlob = await binaryStreamToBlob(downloadedFileStream);
+          const sourceBlob = await binaryStreamToBlob(downloadedFileStream, file.type || '');
           await updateDatabaseFileSourceData({
             folderId: file.folderId,
             sourceBlob,
