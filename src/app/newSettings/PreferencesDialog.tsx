@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { RootState } from 'app/store';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { useAppDispatch } from 'app/store/hooks';
 import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -26,7 +25,6 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
-  // const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
 
   const params = new URLSearchParams(window.location.search);
   const currentSectionParams = params.getAll('section');
