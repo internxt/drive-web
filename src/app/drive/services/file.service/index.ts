@@ -121,9 +121,9 @@ async function fetchDeleted(): Promise<DriveFileData[]> {
   });
 }
 
-export function getFile(uuid: string): Promise<FileMeta> {
+export function getFile(uuid: string, workspacesToken?: string): Promise<FileMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [responsePromise] = storageClient.getFile(uuid);
+  const [responsePromise] = storageClient.getFile(uuid, workspacesToken);
 
   return responsePromise;
 }

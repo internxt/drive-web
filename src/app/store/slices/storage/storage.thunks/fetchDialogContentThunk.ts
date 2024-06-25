@@ -8,13 +8,18 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
 import { DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
 export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchDialogContentThunk',
-  async (folderId, { dispatch }) => {
+  async (folderId, { dispatch, getState }) => {
+    const state = getState();
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
     const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
+
+    const [responsePromise] = storageClient.getFolderContentByUuid(folderId, false, workspaceCredentials?.tokenHeader);
     const databaseContent = await databaseService.get<DatabaseCollection.MoveDialogLevels>(
       DatabaseCollection.MoveDialogLevels,
       folderId,

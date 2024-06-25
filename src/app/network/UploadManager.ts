@@ -27,12 +27,16 @@ type Options = {
   relatedTaskId?: string;
   showNotifications?: boolean;
   showErrors?: boolean;
+  // TOOD: REMOVE DUPLICATED TYPE FileUploadOptions IN uploadFile.ts
   ownerUserAuthenticationData?: {
     token: string;
     bridgeUser: string;
     bridgePass: string;
     encryptionKey: string;
     bucketId: string;
+    // to manage B2B workspaces
+    workspaceId?: string;
+    workspacesToken?: string;
   };
   sharedItemData?: {
     isDeepFolder?: boolean;

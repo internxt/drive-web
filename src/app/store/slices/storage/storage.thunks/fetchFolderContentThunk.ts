@@ -7,6 +7,7 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
 const DEFAULT_LIMIT = 50;
@@ -18,8 +19,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
   'storage/fetchFolderContent',
   async (folderId, { getState, dispatch }) => {
     const storageState = getState().storage;
-    const workspacesState = getState().workspaces;
-    const selectedWorkspace = workspacesState.selectedWorkspace;
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(getState());
 
     const hasMoreDriveFolders = storageState.hasMoreDriveFolders[folderId] ?? true;
     const hasMoreDriveFiles = storageState.hasMoreDriveFiles[folderId] ?? true;
@@ -35,6 +35,7 @@ export const fetchPaginatedFolderContentThunk = createAsyncThunk<void, string, {
 
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
       const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+
       if (hasMoreDriveFolders) {
         if (selectedWorkspace) {
           const workspaceId = selectedWorkspace.workspace.id;

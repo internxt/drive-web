@@ -1318,6 +1318,7 @@
     "dropdown": {
       "openPreview": "打开预览",
       "shareLink": "分享",
+      "shareTeam": "与团队分享",
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",
