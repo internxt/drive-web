@@ -1,15 +1,15 @@
-import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
+import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { t } from 'i18next';
+import * as uuid from 'uuid';
 import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import { DevicePlatform } from '../../../core/types';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { DriveFileData, DriveFileMetadataPayload, DriveItemData } from '../../types';
 import uploadFile from './uploadFile';
-import * as uuid from 'uuid';
-import { StorageTypes } from '@internxt/sdk/dist/drive';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { t } from 'i18next';
-import { FileMeta } from '@internxt/sdk/dist/drive/storage/types';
 
 export function updateMetaData(
   fileId: string,
@@ -67,6 +67,32 @@ export async function moveFile(
     });
 }
 
+export async function moveFileByUuid(fileUuid: string, destinationFolderUuid: string): Promise<StorageTypes.FileMeta> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const payload: StorageTypes.MoveFileUuidPayload = {
+    fileUuid: fileUuid,
+    destinationFolderUuid: destinationFolderUuid,
+  };
+  return storageClient
+    .moveFileByUuid(payload)
+    .then((response) => {
+      const user = localStorageService.getUser() as UserSettings;
+      analyticsService.trackMoveItem('file', {
+        uuid: fileUuid,
+        email: user.email,
+        platform: DevicePlatform.Web,
+      });
+      return response;
+    })
+    .catch((error) => {
+      const castedError = errorService.castError(error);
+      if (castedError.status) {
+        castedError.message = t(`tasks.move-file.errors.${castedError.status}`);
+      }
+      throw castedError;
+    });
+}
+
 export function deleteFile(fileData: DriveFileData): Promise<void> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
 
@@ -105,6 +131,7 @@ export function getFile(uuid: string): Promise<FileMeta> {
 const fileService = {
   updateMetaData,
   moveFile,
+  moveFileByUuid,
   fetchRecents,
   uploadFile,
   fetchDeleted,

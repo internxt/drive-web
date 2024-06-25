@@ -1,20 +1,20 @@
 import { FC, useEffect, useMemo, useState } from 'react';
 import { connect } from 'react-redux';
-import NameCollisionDialog, { OnSubmitPressed, OPERATION_TYPE } from '.';
+import NameCollisionDialog, { OPERATION_TYPE, OnSubmitPressed } from '.';
 import moveItemsToTrash from '../../../../use_cases/trash/move-items-to-trash';
+import errorService from '../../../core/services/error.service';
 import { RootState } from '../../../store';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { storageActions, storageSelectors } from '../../../store/slices/storage';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import { IRoot } from '../../../store/slices/storage/storage.thunks/uploadFolderThunk';
 import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
-import errorService from '../../../core/services/error.service';
-import { fetchSortedFolderContentThunk } from '../../../store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 
 type NameCollisionContainerProps = {
-  currentFolderId: number;
-  moveDestinationFolderId: number | null;
+  currentFolderId: string;
+  moveDestinationFolderId: string | null;
   filesToRename: (File | DriveItemData)[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (IRoot | DriveItemData)[];
@@ -41,6 +41,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
+
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
     ...files,
     ...folders,
@@ -98,7 +99,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
-        destinationFolderId: moveDestinationFolderId as number,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };
@@ -108,7 +109,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToUpload,
-        destinationFolderId: moveDestinationFolderId as number,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };
@@ -249,7 +250,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   );
 };
 export default connect((state: RootState) => {
-  const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const currentFolderId: string = storageSelectors.currentFolderId(state);
 
   return {
     currentFolderId,

@@ -11,7 +11,7 @@ import { StorageState } from '../storage.model';
 
 const DEFAULT_LIMIT = 50;
 
-export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { state: RootState }>(
+export const fetchSortedFolderContentThunk = createAsyncThunk<void, string, { state: RootState }>(
   'storage/fetchSortedFolderContentThunk',
   async (folderId, { getState, dispatch }) => {
     dispatch(storageActions.setHasMoreDriveFolders({ folderId, status: true }));
@@ -32,7 +32,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { st
       let folderPromise;
 
       if (hasMoreDriveFolders) {
-        [folderPromise] = await storageClient.getFolderFolders(
+        [folderPromise] = await storageClient.getFolderFoldersByUuid(
           folderId,
           foldersOffset,
           DEFAULT_LIMIT,
@@ -43,14 +43,14 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { st
 
       const itemsFolder = await folderPromise;
 
-      const parsedItemsFolder = itemsFolder.result.map(
+      const parsedItemsFolder = itemsFolder.folders.map(
         (item) => ({ ...item, isFolder: true, name: item.plainName } as DriveItemData),
       );
 
       let filesPromise;
 
       if (hasMoreDriveFiles) {
-        [filesPromise] = await storageClient.getFolderFiles(
+        [filesPromise] = await storageClient.getFolderFilesByUuid(
           folderId,
           filesOffset,
           DEFAULT_LIMIT,
@@ -60,7 +60,7 @@ export const fetchSortedFolderContentThunk = createAsyncThunk<void, number, { st
       }
       const itemsFiles = await filesPromise;
 
-      const parsedItemsFiles = itemsFiles.result.map(
+      const parsedItemsFiles = itemsFiles.files.map(
         (item) => ({ ...item, isFolder: false, name: item.plainName } as DriveItemData),
       );
 

@@ -1,7 +1,7 @@
 import { Invoice } from '@internxt/sdk/dist/drive/payments/types';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 import { useEffect, useState } from 'react';
-import Section from '../../core/views/Preferences/components/Section';
+import Section from '../Sections/General/components/Section';
 import paymentService from '../../payment/services/payment.service';
 import Card from '../../shared/components/Card';
 import InvoicesList from '../components/Invoices/InvoicesList';

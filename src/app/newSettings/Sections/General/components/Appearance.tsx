@@ -1,6 +1,6 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Section from '../../../../core/views/Preferences/components/Section';
+import Section from './Section';
 import { useThemeContext } from '../../../../theme/ThemeProvider';
 
 import appearance_dark from 'assets/dark.svg';

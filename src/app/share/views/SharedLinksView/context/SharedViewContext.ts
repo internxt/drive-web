@@ -1,7 +1,7 @@
 import { createContext, Dispatch } from 'react';
-import { AdvancedSharedItem, PreviewFileItem } from '../../../types';
-import { DriveItemData } from '../../../../drive/types';
 import { OrderDirection } from '../../../../core/types';
+import { DriveItemData } from '../../../../drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from '../../../types';
 import { OrderField } from '../components/SharedItemList';
 
 export interface ShareViewState {
@@ -24,7 +24,7 @@ export interface ShareViewState {
   clickedShareItemUser?: AdvancedSharedItem['user'];
   clickedShareItemEncryptionKey: string;
   currentFolderId: string;
-  currentParentFolderId?: number;
+  currentParentFolderId?: string;
   currentShareOwnerAvatar: string;
   filesOwnerCredentials?: {
     networkPass: string;
@@ -54,7 +54,7 @@ export type Action =
   | { type: 'SET_CLICKED_SHARE_ITEM_USER'; payload?: AdvancedSharedItem['user'] }
   | { type: 'SET_CLICKED_SHARE_ITEM_ENCRYPTION_KEY'; payload: string }
   | { type: 'SET_CURRENT_FOLDER_ID'; payload: string }
-  | { type: 'SET_CURRENT_PARENT_FOLDER_ID'; payload?: number }
+  | { type: 'SET_CURRENT_PARENT_FOLDER_ID'; payload?: string }
   | { type: 'SET_CURRENT_SHARE_OWNER_AVATAR'; payload: string }
   | { type: 'SET_FILES_OWNER_CREDENTIALS'; payload: { networkPass: string; networkUser: string } }
   | { type: 'SET_OWNER_BUCKET'; payload: null | string }

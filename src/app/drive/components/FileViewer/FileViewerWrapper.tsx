@@ -1,33 +1,33 @@
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
 import { DriveItemData } from '../../types';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 
-import FileViewer from './FileViewer';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
+import { getAppConfig } from 'app/core/services/config.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import downloadService from '../../services/download.service';
-import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
+import errorService from '../../../core/services/error.service';
+import { OrderDirection } from '../../../core/types';
+import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import {
+  ThumbnailToUpload,
   compareThumbnail,
   getThumbnailFrom,
   setCurrentThumbnail,
   setThumbnails,
-  ThumbnailToUpload,
 } from '../../../drive/services/thumbnail.service';
-import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
-import { FileToUpload } from '../../../drive/services/file.service/uploadFile';
 import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
-import errorService from '../../../core/services/error.service';
-import { OrderDirection } from '../../../core/types';
-import { uiActions } from '../../../store/slices/ui';
 import { RootState } from '../../../store';
-import localStorageService from 'app/core/services/local-storage.service';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { getAppConfig } from 'app/core/services/config.service';
+import { sessionSelectors } from '../../../store/slices/session/session.selectors';
+import { uiActions } from '../../../store/slices/ui';
+import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
+import downloadService from '../../services/download.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
+import FileViewer from './FileViewer';
 import {
-  topDropdownBarActionsMenu,
   getFileContentManager,
+  topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
 
@@ -61,6 +61,7 @@ const FileViewerWrapper = ({
 
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
+
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const [blob, setBlob] = useState<Blob | null>(null);
   const user = localStorageService.getUser();
@@ -92,7 +93,7 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-    if (dirtyName) {
+    if (dirtyName && dirtyName !== '') {
       setCurrentFile?.({
         ...currentFile,
         plainName: dirtyName,
@@ -105,14 +106,18 @@ const FileViewerWrapper = ({
   const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
-  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderUuid || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
 
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
-        if (driveItemsOrder === OrderDirection.Asc) return a[driveItemsSort] > b[driveItemsSort];
-        else if (driveItemsOrder === OrderDirection.Desc) return a[driveItemsSort] < b[driveItemsSort];
+        if (driveItemsOrder === OrderDirection.Asc) {
+          return a[driveItemsSort] > b[driveItemsSort] ? 1 : -1;
+        } else if (driveItemsOrder === OrderDirection.Desc) {
+          return a[driveItemsSort] < b[driveItemsSort] ? 1 : -1;
+        }
+        return 0;
       });
     }
     return [];
@@ -154,7 +159,7 @@ const FileViewerWrapper = ({
       size: driveFile.size,
       type: driveFile.type,
       content: fileObject,
-      parentFolderId: driveFile.folderId,
+      parentFolderId: driveFile.folderUuid,
     };
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);

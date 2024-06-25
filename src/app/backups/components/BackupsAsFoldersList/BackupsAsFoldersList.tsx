@@ -1,23 +1,23 @@
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import folderEmptyImage from 'assets/icons/light/folder-open.svg';
+import _ from 'lodash';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import _ from 'lodash';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
 import { SdkFactory } from '../../../core/factory/sdk';
+import dateService from '../../../core/services/date.service';
+import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
+import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
+import { deleteFile } from '../../../drive/services/file.service';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import iconService from '../../../drive/services/icon.service';
+import sizeService from '../../../drive/services/size.service';
+import { DriveItemData, DriveFolderData as DriveWebFolderData } from '../../../drive/types';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Empty from '../../../shared/components/Empty/Empty';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
+import List from '../../../shared/components/List';
 import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import folderEmptyImage from 'assets/icons/light/folder-open.svg';
 import { downloadItemsThunk } from '../../../store/slices/storage/storage.thunks/downloadItemsThunk';
 import { uiActions } from '../../../store/slices/ui';
-import DriveListItemSkeleton from '../../../drive/components/DriveListItemSkeleton/DriveListItemSkeleton';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
-import { deleteFile } from '../../../drive/services/file.service';
-import List from '../../../shared/components/List';
-import { contextMenuSelectedBackupItems } from '../../../drive/components/DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import iconService from '../../../drive/services/icon.service';
-import dateService from '../../../core/services/date.service';
-import sizeService from '../../../drive/services/size.service';
 
 export default function BackupsAsFoldersList({
   className = '',
@@ -25,7 +25,7 @@ export default function BackupsAsFoldersList({
   onFolderPush,
 }: {
   className?: string;
-  folderId: number;
+  folderId: string;
   onFolderPush: (folder: DriveFolderData) => void;
 }): JSX.Element {
   const dispatch = useDispatch();
@@ -42,8 +42,8 @@ export default function BackupsAsFoldersList({
   async function refreshFolderContent() {
     setIsloading(true);
     setSelectedItems([]);
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    const [responsePromise] = storageClient.getFolderContent(folderId);
+    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+    const [responsePromise] = storageClient.getFolderContentByUuid(folderId);
     const response = await responsePromise;
     const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
     const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);

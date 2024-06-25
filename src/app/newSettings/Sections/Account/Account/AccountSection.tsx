@@ -2,22 +2,16 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import { areCredentialsCorrect } from '../../../../auth/services/auth.service';
 import userService from '../../../../auth/services/user.service';
-
 import errorService from '../../../../core/services/error.service';
 import Section from 'app/newSettings/components/Section';
-
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-
 import Button from '../../../../shared/components/Button/Button';
-
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { updateUserProfileThunk } from '../../../../store/slices/user';
-
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import AccountDetailsModal from './components/AccountDetailsModal';
 import ChangeEmailModal from './components/ChangeEmailModal';

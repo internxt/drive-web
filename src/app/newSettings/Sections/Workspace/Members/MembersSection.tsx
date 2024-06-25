@@ -1,23 +1,20 @@
 import { useEffect, useState } from 'react';
 import Section from 'app/newSettings/components/Section';
-
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
-import { useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import workspacesService from 'app/core/services/workspace.service';
+import { useAppSelector } from '../../../../store/hooks';
+import { RootState } from '../../../../store';
+import workspacesService from '../../../../core/services/workspace.service';
 import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import errorService from 'app/core/services/error.service';
-
+import errorService from '../../../../core/services/error.service';
 import Button from '../../../../shared/components/Button/Button';
 import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
-
 import UserCard from './components/UserCard';
 import InviteDialogContainer from './containers/InviteDialogContainer';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
-import { getMemberRole, searchMembers } from 'app/newSettings/utils/membersUtils';
-import UsageBar from 'app/newSettings/components/Usage/UsageBar';
+import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
+import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 
 const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();

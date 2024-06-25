@@ -1,8 +1,8 @@
-import { SVGProps } from 'react';
-import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
-import { RenewalPeriod } from '../../payment/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
+import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
+import { SVGProps } from 'react';
+import { RenewalPeriod } from '../../payment/types';
 
 export interface DriveFolderData {
   id: number;
@@ -19,13 +19,14 @@ export interface DriveFolderData {
   plain_name: string;
   plainName?: string | null;
   parentId: number;
+  parentUuid: string;
   parent_id: number | null;
   updatedAt: string;
   userId: number;
   user_id: number;
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
-  uuid?: string;
+  uuid: string;
 }
 
 export interface DriveFolderMetadataPayload {
@@ -44,7 +45,7 @@ export interface DriveFileData {
   fileId: string;
   folderId: number;
   folder_id: number;
-  folderUuid?: string;
+  folderUuid: string;
   id: number;
   name: string;
   plain_name: string | null;
@@ -57,7 +58,7 @@ export interface DriveFileData {
   currentThumbnail: Thumbnail | null;
   shares?: Array<ShareLink>;
   sharings?: { type: string; id: string }[];
-  uuid?: string;
+  uuid: string;
 }
 
 interface Thumbnail {
@@ -136,13 +137,12 @@ export type StoragePlan = {
 
 export interface FolderPath {
   name: string;
-  id: number;
-  uuid?: string;
+  uuid: string;
 }
 
 export interface FolderPathDialog {
   name: string;
-  id: number;
+  uuid: string;
 }
 
 export enum FileViewMode {

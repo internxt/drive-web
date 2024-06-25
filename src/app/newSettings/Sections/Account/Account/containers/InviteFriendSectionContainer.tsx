@@ -1,7 +1,7 @@
 import { ReferralKey } from '@internxt/sdk/dist/drive/referrals/types';
 import { Info } from '@phosphor-icons/react';
 import { useState } from 'react';
-import Section from '../../../../../core/views/Preferences/components/Section';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Button from '../../../../../shared/components/Button/Button';
 import Card from '../../../../../shared/components/Card';

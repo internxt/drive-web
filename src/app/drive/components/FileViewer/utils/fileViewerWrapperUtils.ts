@@ -1,21 +1,21 @@
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { getAppConfig } from 'app/core/services/config.service';
+import dateService from 'app/core/services/date.service';
+import {
+  canFileBeCached,
+  getDatabaseFileSourceData,
+  updateDatabaseFileSourceData,
+} from 'app/drive/services/database.service';
+import { DriveItemData } from 'app/drive/types';
+import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
 import {
   contextMenuDriveItemShared,
   contextMenuDriveItemSharedAFS,
   contextMenuDriveNotSharedLink,
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
-import { ListItemMenu } from 'app/shared/components/List/ListItem';
-import { AdvancedSharedItem, PreviewFileItem } from 'app/share/types';
-import { DriveItemData } from 'app/drive/types';
-import { getAppConfig } from 'app/core/services/config.service';
-import {
-  canFileBeCached,
-  getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
-} from 'app/drive/services/database.service';
-import dateService from 'app/core/services/date.service';
-import { DriveItemActions } from '../../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
@@ -47,7 +47,7 @@ const topDropdownBarActionsMenu = ({
   const isSharedView = pathId === 'shared';
   const isTrashView = pathId === 'trash';
 
-  const isSharedItem = (currentFile.sharings && currentFile.sharings?.length > 0) ?? false;
+  const isSharedItem = (currentFile?.sharings && currentFile.sharings?.length > 0) ?? false;
 
   // TODO: QUICK FIX TO THE RELEASE
   // Check why the user field is networkUser in some cases instead of user
@@ -224,4 +224,4 @@ const useFileViewerKeyboardShortcuts = ({
   };
 };
 
-export { topDropdownBarActionsMenu, getFileContentManager, useFileViewerKeyboardShortcuts };
+export { getFileContentManager, topDropdownBarActionsMenu, useFileViewerKeyboardShortcuts };

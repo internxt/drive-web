@@ -1,5 +1,4 @@
 import { ReactNode } from 'react';
-
 import { Menu, Transition } from '@headlessui/react';
 
 const ItemsDropdown = ({ title, menuItems }: { title: JSX.Element; menuItems: ReactNode[] }) => {

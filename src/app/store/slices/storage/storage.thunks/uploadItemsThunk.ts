@@ -37,7 +37,7 @@ interface UploadItemsPayload {
   files: File[];
   taskId?: string;
   fileType?: string;
-  parentFolderId: number;
+  parentFolderId: string;
   options?: Partial<UploadItemsThunkOptions>;
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
 }
@@ -90,16 +90,16 @@ const prepareFilesToUpload = async ({
   fileType,
 }: {
   files: File[];
-  parentFolderId: number;
+  parentFolderId: string;
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   const filesToUpload: FileToUpload[] = [];
-  const storageClient = SdkFactory.getInstance().createStorageClient();
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   let parentFolderContent;
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContent(parentFolderId);
+    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId);
     parentFolderContent = await parentFolderContentPromise;
   }
 

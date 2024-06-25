@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import ChangePasswordModal from './ChangePasswordModal';
-
-import Section from 'app/core/views/Preferences/components/Section';
-import Card from 'app/shared/components/Card';
-import Button from 'app/shared/components/Button/Button';
+import Section from '../../../../../newSettings/Sections/General/components/Section';
+import Card from '../../../../../shared/components/Card';
+import Button from '../../../../../shared/components/Button/Button';
 
 const ChangePassword = ({
   currentPassword,

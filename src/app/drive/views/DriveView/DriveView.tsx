@@ -53,7 +53,6 @@ const DriveView = (props: DriveViewProps) => {
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
-          id: folderMeta.id,
           uuid: folderMeta.uuid,
         }),
       );

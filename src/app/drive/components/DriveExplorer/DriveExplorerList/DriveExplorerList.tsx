@@ -31,7 +31,7 @@ import {
 } from './DriveItemContextMenu';
 
 interface DriveExplorerListProps {
-  folderId: number;
+  folderId: string;
   isLoading: boolean;
   forceLoading: boolean;
   items: DriveItemData[];
@@ -87,7 +87,7 @@ const resetDriveOrder = ({
   dispatch;
   orderType: string;
   direction: string;
-  currentFolderId: number;
+  currentFolderId: string;
 }) => {
   dispatch(storageActions.setDriveItemsSort(orderType));
   dispatch(storageActions.setDriveItemsOrder(direction));

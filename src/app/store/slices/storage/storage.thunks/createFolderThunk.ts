@@ -1,14 +1,14 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { StorageState } from '../storage.model';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { t } from 'i18next';
 import { storageActions, storageSelectors } from '..';
 import { RootState } from '../../..';
-import { DriveFolderData, DriveItemData } from '../../../../drive/types';
-import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
-import tasksService from '../../../../tasks/services/tasks.service';
 import errorService from '../../../../core/services/error.service';
 import folderService from '../../../../drive/services/folder.service';
-import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { DriveFolderData, DriveItemData } from '../../../../drive/types';
+import tasksService from '../../../../tasks/services/tasks.service';
+import { CreateFolderTask, TaskProgress, TaskStatus, TaskType } from '../../../../tasks/types';
+import { StorageState } from '../storage.model';
 
 interface CreateFolderThunkOptions {
   relatedTaskId: string;
@@ -16,7 +16,7 @@ interface CreateFolderThunkOptions {
 }
 
 interface CreateFolderPayload {
-  parentFolderId: number;
+  parentFolderId: string;
   folderName: string;
   options?: Partial<CreateFolderThunkOptions>;
   uuid?: string;
@@ -29,7 +29,7 @@ export const createFolderThunk = createAsyncThunk<DriveFolderData, CreateFolderP
     const currentFolderId = storageSelectors.currentFolderId(getState());
 
     try {
-      const [createdFolderPromise, requestCanceler] = folderService.createFolder(parentFolderId, folderName);
+      const [createdFolderPromise, requestCanceler] = folderService.createFolderByUuid(parentFolderId, folderName);
 
       const taskId = tasksService.create<CreateFolderTask>({
         relatedTaskId: options.relatedTaskId,

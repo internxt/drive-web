@@ -1,8 +1,7 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { RootState } from 'app/store';
+import { RootState } from '../../../../store';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-
 import { t } from 'i18next';
 
 import Section from 'app/newSettings/components/Section';

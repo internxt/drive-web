@@ -11,7 +11,6 @@ import { RenewalPeriod } from 'app/payment/types';
 import { RootState } from 'app/store';
 import { useAppDispatch } from 'app/store/hooks';
 import { PlanState, planThunks } from 'app/store/slices/plan';
-
 import Section from 'app/newSettings/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';

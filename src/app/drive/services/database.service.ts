@@ -45,7 +45,8 @@ const updateDatabaseFilePreviewData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
@@ -133,7 +134,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesCacheManager?.set(
     fileId.toString(),
@@ -166,7 +169,7 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
 
   if (foldersInFolder.length) {
     await foldersInFolder.forEach(async (folder) => {
-      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.id as number);
+      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
         deleteDatabaseItems(folderItems as DriveItemData[]);
@@ -184,18 +187,18 @@ const canFileBeCached = (file: DriveFileData): boolean => {
 };
 
 export {
-  getDatabaseProfileAvatar,
-  updateDatabaseProfileAvatar,
+  canFileBeCached,
+  deleteDatabaseItems,
+  deleteDatabasePhotos,
   deleteDatabaseProfileAvatar,
   getDatabaseFilePreviewData,
-  updateDatabaseFilePreviewData,
   getDatabaseFileSourceData,
-  updateDatabaseFileSourceData,
   getDatabasePhotosPreviewData,
-  updateDatabasePhotosPreviewData,
   getDatabasePhotosSourceData,
+  getDatabaseProfileAvatar,
+  updateDatabaseFilePreviewData,
+  updateDatabaseFileSourceData,
+  updateDatabasePhotosPreviewData,
   updateDatabasePhotosSourceData,
-  deleteDatabasePhotos,
-  deleteDatabaseItems,
-  canFileBeCached,
+  updateDatabaseProfileAvatar,
 };

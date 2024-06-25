@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import CancelSubscriptionModal from '../../../../core/views/Preferences/tabs/Billing/CancelSubscriptionModal';
+import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';

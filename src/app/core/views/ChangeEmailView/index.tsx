@@ -1,16 +1,17 @@
 import { CheckCircle, ClockCountdown, Envelope, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
 import { Link, useRouteMatch } from 'react-router-dom';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import Input from 'app/shared/components/Input';
-import Button from 'app/shared/components/Button/Button';
-import { areCredentialsCorrect } from 'app/auth/services/auth.service';
-import Spinner from 'app/shared/components/Spinner/Spinner';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Input from '../../../shared/components/Input';
+import Button from '../../../shared/components/Button/Button';
+import { areCredentialsCorrect } from '../../../auth/services/auth.service';
+import Spinner from '../../../shared/components/Spinner/Spinner';
 import localStorageService from '../../services/local-storage.service';
 import userService from '../../../auth/services/user.service';
 import errorService from '../../services/error.service';
 import { userThunks } from '../../../store/slices/user';
 import { useDispatch } from 'react-redux';
+import { uiActions } from '../../../store/slices/ui';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 
@@ -116,11 +117,11 @@ export default function ChangeEmailView(): JSX.Element {
     },
     error: {
       label: translate('views.emailChange.error.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
     expired: {
       label: translate('views.emailChange.expired.cta'),
-      path: '/preferences?tab=account',
+      path: '/?preferences=open&section=account&subsection=account',
     },
   };
 
@@ -169,8 +170,11 @@ export default function ChangeEmailView(): JSX.Element {
             <State {...layout[status]} />
 
             <Link
-              className="flex h-10 items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
+              className="flex h-10 cursor-pointer items-center justify-center rounded-lg bg-primary px-5 font-medium text-white no-underline hover:text-white"
               to={cta[status]?.path}
+              onClick={() => {
+                if (status !== STATUS.SUCCESS) dispatch(uiActions.setIsPreferencesDialogOpen(true));
+              }}
             >
               {cta[status]?.label}
             </Link>

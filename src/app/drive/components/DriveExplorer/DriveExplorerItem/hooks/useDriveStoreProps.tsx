@@ -8,7 +8,7 @@ interface DriveItemStoreProps {
   isSomeItemSelected: boolean;
   selectedItems: DriveItemData[];
   namePath: FolderPath[];
-  currentFolderId: number;
+  currentFolderId: string;
   isItemSelected: (item: DriveItemData) => boolean;
   workspace: Workspace;
   isSidenavCollapsed: boolean;

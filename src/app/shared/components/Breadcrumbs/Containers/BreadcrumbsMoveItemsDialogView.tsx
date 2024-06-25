@@ -5,7 +5,7 @@ import { RootState } from 'app/store';
 import Breadcrumbs from 'app/shared/components/Breadcrumbs/Breadcrumbs';
 
 interface BreadcrumbsMoveItemsDialogViewProps {
-  onShowFolderContentClicked: (folderId: number, name: string) => void;
+  onShowFolderContentClicked: (folderId: string, name: string) => void;
   currentNamePaths: FolderPathDialog[];
 }
 
@@ -19,12 +19,12 @@ const BreadcrumbsMoveItemsDialogView = (props: BreadcrumbsMoveItemsDialogViewPro
     if (currentFolderPaths.length > 0) {
       currentFolderPaths.forEach((path: FolderPathDialog, i: number, namePath: FolderPathDialog[]) => {
         items.push({
-          id: path.id,
+          uuid: path.uuid,
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
           dialog: isOpen,
-          onClick: () => onShowFolderContentClicked(path.id, path.name),
+          onClick: () => onShowFolderContentClicked(path.uuid, path.name),
         });
       });
     }
