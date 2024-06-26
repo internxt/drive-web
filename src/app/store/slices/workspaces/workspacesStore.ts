@@ -45,8 +45,7 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
     const b2bWorkspace = localStorageService.getB2BWorkspace();
     if (b2bWorkspace) {
       const workspaceId = b2bWorkspace?.workspace.id;
-      dispatch(workspacesActions.setSelectedWorkspace(workspaceId));
-      dispatch(fetchCredentials());
+      dispatch(setSelectedWorkspace({ workspaceId }));
     }
   },
 );
@@ -60,6 +59,21 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
     if (selectedWorkspace) {
       const workspaceId = selectedWorkspace?.workspace.id;
 
+      const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
+
+      dispatch(workspacesActions.setCredentials(cretenditals));
+    }
+  },
+);
+
+const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null }, { state: RootState }>(
+  'workspaces/setSelectedWorkspace',
+  async ({ workspaceId }, { dispatch, getState }) => {
+    const state = getState();
+    const selectedWorkspace = state.workspaces.selectedWorkspace;
+
+    dispatch(workspacesActions.setSelectedWorkspace(workspaceId));
+    if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
       const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
 
       dispatch(workspacesActions.setCredentials(cretenditals));
@@ -129,6 +143,7 @@ export const workspacesSlice = createSlice({
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
       } else {
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+        state.workspaceCredentials = null;
       }
     },
     setCredentials: (state: WorkspacesState, action: PayloadAction<WorkspaceCredentialsDetails>) => {
@@ -157,6 +172,8 @@ export const workspacesActions = workspacesSlice.actions;
 export const workspaceThunks = {
   fetchWorkspaces,
   setupWorkspace,
+  fetchCredentials,
+  setSelectedWorkspace,
 };
 
 export default workspacesSlice.reducer;

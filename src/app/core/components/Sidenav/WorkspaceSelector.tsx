@@ -145,13 +145,14 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
               translate={translate}
             />
           ))}
-          <div className="mx-3 h-px bg-gray-10"></div>
+          {/* NOT USING FOR THE MOMENT */}
+          {/* <div className="mx-3 h-px bg-gray-10"></div>
           <button
             className="w-full rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
             onClick={onCreateWorkspaceButtonClicked}
           >
             {translate('workspaces.createWorkspace')}
-          </button>
+          </button> */}
         </div>
       </div>
     </div>
