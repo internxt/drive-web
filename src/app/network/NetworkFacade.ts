@@ -67,11 +67,11 @@ export class NetworkFacade {
     removeEventListener('message', this.handleWorkerMessage);
   }
 
-  private handleWorkerMessage = (msg) => {
+  private handleWorkerMessage(msg) {
     if (msg.data.result === WORKER_MESSAGE_STATES.UPLOAD_STATUS) {
       this.isPaused = msg.data.uploadStatus.status === TaskStatus.Paused;
     }
-  };
+  }
 
   upload(bucketId: string, mnemonic: string, file: File, options: UploadOptions): Promise<string> {
     let fileToUpload: Blob;
@@ -83,7 +83,7 @@ export class NetworkFacade {
       bucketId,
       mnemonic,
       file.size,
-      async (algorithm, key, iv) => {
+      async (_, key, iv) => {
         const cipher = createCipheriv('aes-256-ctr', key as Buffer, iv as Buffer);
         const [encryptedFile, hash] = await getEncryptedFile(file, cipher);
 
@@ -91,15 +91,13 @@ export class NetworkFacade {
         fileHash = hash;
       },
       async (url: string) => {
-        const useProxy = process.env.REACT_APP_DONT_USE_PROXY !== 'true' && !new URL(url).hostname.includes('internxt');
-        const fetchUrl = (useProxy ? process.env.REACT_APP_PROXY + '/' : '') + url;
         const isPaused = options.continueUploadOptions?.isPaused;
 
         postMessage({ result: WORKER_MESSAGE_STATES.CHECK_UPLOAD_STATUS });
         if (isPaused && options?.continueUploadOptions?.taskId)
           await waitForContinueUploadSignal(options?.continueUploadOptions?.taskId);
 
-        await uploadFileBlob(fileToUpload, fetchUrl, {
+        await uploadFileBlob(fileToUpload, url, {
           progressCallback: options.uploadingCallback,
           abortController: options.abortController,
         });
@@ -246,10 +244,20 @@ export class NetworkFacade {
     options?: DownloadOptions,
   ): Promise<ReadableStream> {
     const encryptedContentStreams: ReadableStream<Uint8Array>[] = [];
-    let fileStream: ReadableStream<Uint8Array>;
+    const abortSignal = options?.abortController?.signal;
+    let unifiedDecryptedFileStream = new ReadableStream<Uint8Array>();
+
+    async function getDownloadStream(url: string): Promise<ReadableStream<Uint8Array>> {
+      const { body } = await fetch(url, { signal: abortSignal });
+
+      if (!body) {
+        throw new Error('No content received');
+      }
+
+      return body;
+    }
 
     // TODO: Check hash when downloaded
-
     await downloadFile(
       fileId,
       bucketId,
@@ -259,37 +267,22 @@ export class NetworkFacade {
       Buffer.from,
       async (downloadables) => {
         for (const downloadable of downloadables) {
-          if (options?.abortController?.signal.aborted) {
-            throw new Error('Download aborted');
-          }
+          const stream = await getDownloadStream(downloadable.url);
 
-          const encryptedContentStream = await fetch(downloadable.url, {
-            signal: options?.abortController?.signal,
-          }).then((res) => {
-            if (!res.body) {
-              throw new Error('No content received');
-            }
-
-            return res.body;
-          });
-
-          encryptedContentStreams.push(encryptedContentStream);
+          encryptedContentStreams.push(stream);
         }
       },
-      async (algorithm, key, iv, fileSize) => {
-        const decryptedStream = getDecryptedStream(
-          encryptedContentStreams,
-          createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer),
-        );
+      async (_, key, iv, fileSize) => {
+        const decipher = createDecipheriv('aes-256-ctr', options?.key || (key as Buffer), iv as Buffer);
+        const decryptedStream = getDecryptedStream(encryptedContentStreams, decipher);
 
-        fileStream = buildProgressStream(decryptedStream, (readBytes) => {
+        unifiedDecryptedFileStream = buildProgressStream(decryptedStream, (readBytes) => {
           options && options.downloadingCallback && options.downloadingCallback(fileSize, readBytes);
         });
       },
       (options?.token && { token: options.token }) || undefined,
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    return fileStream!;
+    return unifiedDecryptedFileStream;
   }
 }
