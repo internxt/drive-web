@@ -125,8 +125,6 @@ export const workspacesSlice = createSlice({
     setSelectedWorkspace: (state: WorkspacesState, action: PayloadAction<string | null>) => {
       const workspace = state.workspaces.find((workspace) => workspace.workspace.id === action.payload);
       state.selectedWorkspace = workspace ?? null;
-      console.log('setselectedworkspace state', state.workspaces);
-      console.log('setSelectedWorkspace', workspace);
       if (workspace) {
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
       } else {

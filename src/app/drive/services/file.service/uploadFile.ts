@@ -111,8 +111,6 @@ export async function uploadFile(
 
     const fileId = await promise;
 
-    // comprobar los tipos de subida desde carpetas
-    // no esta llegando esto
     const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
     const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
     const isWorkspacesUpload = workspaceId && workspacesToken;
@@ -120,7 +118,6 @@ export async function uploadFile(
 
     if (isWorkspacesUpload) {
       // TEMPORARY: For backward compatibility with id
-      console.log({ isWorkspacesUpload });
       const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken);
       const name = encryptFilename(file.name, folderMeta.id);
       const dateISO = '2023-05-30T12:34:56.789Z';

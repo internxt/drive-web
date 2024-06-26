@@ -62,7 +62,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const selectedWorkspace = selectedWorkspaceProp ?? userWorkspace;
-  // const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
 
   const { translate } = useTranslationContext();
 

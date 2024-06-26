@@ -26,7 +26,6 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings }) => {
   }, [selectedWorkpace]);
 
   const handleWorkspaceChange = (workspaceId: string | null) => {
-    console.log('handleWorkspaceChange', workspaceId);
     const selectedWorkspace = allParsedWorkspaces.find((workspace) => workspace.uuid === workspaceId);
 
     if (selectedWorkspace?.isPending) {

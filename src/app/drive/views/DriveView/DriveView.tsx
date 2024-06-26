@@ -42,7 +42,6 @@ const DriveView = (props: DriveViewProps) => {
   }, []);
 
   useEffect(() => {
-    console.log({ rootFolderId });
     dispatch(uiActions.setIsGlobalSearch(false));
     // dispatch(storageActions.resetDrivePagination());
     dispatch(storageThunks.resetNamePathThunk());
@@ -52,7 +51,7 @@ const DriveView = (props: DriveViewProps) => {
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
-    console.log({ credentials });
+
     if (isFolderView && itemUuid) {
       goFolder(itemUuid, credentials?.tokenHeader);
     }
