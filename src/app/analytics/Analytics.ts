@@ -1,10 +1,24 @@
 import { sendAnalyticsError } from './utils';
 import errorService from '../core/services/error.service';
 
+const CONTEXT_APP_NAME = 'drive-web';
+
 export default class Analytics {
   private static instance: Analytics;
 
   private constructor() {
+    const method = 'track';
+
+    const originalMethod = window.rudderanalytics[method];
+    window.rudderanalytics[method] = (...args: any[]) => {
+      args[2] = args[2] || {};
+      args[2].context = args[2].context || {};
+      args[2].context.app = args[2].context.app || {};
+      args[2].context.app.name = CONTEXT_APP_NAME;
+
+      return originalMethod.apply(window.rudderanalytics, args);
+    };
+
     const analytics = window.rudderanalytics;
     return analytics;
   }
@@ -20,7 +34,7 @@ export default class Analytics {
     return Analytics.instance;
   }
 
-  public track(eventName, properties) {
+  public track(eventName: string, properties: any) {
     try {
       Analytics.instance.track(eventName, properties);
     } catch (err) {
