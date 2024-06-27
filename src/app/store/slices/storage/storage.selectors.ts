@@ -6,14 +6,17 @@ const rootFolderId = (state: RootState): string => {
   const { user } = state.user;
 
   const selectedWorkspace = state.workspaces.selectedWorkspace;
-  return (selectedWorkspace ? selectedWorkspace?.workspaceUser.rootFolderId : user?.rootFolderId) ?? '';
+  const rootFolderId = (selectedWorkspace ? selectedWorkspace?.workspaceUser.rootFolderId : user?.rootFolderId) ?? '';
+  return rootFolderId;
 };
 
 const storageSelectors = {
   rootFolderId,
   currentFolderId(state: RootState): string {
     const { namePath } = state.storage;
-    return namePath.length > 0 ? namePath[namePath.length - 1].uuid : rootFolderId(state);
+
+    const currentFolderId = namePath.length > 0 ? namePath[namePath.length - 1].uuid : rootFolderId(state);
+    return currentFolderId;
   },
   currentFolderPath(state: RootState): string {
     return state.storage.namePath.reduce((t, path) => `${t}${path.name}/`, '/');
@@ -21,7 +24,7 @@ const storageSelectors = {
   bucket(state: RootState): string {
     const { team } = state.team;
     const isTeam: boolean = sessionSelectors.isTeam(state);
-
+    // TODO: NEED TO CHANGE THIS BY WORKSPACE BUCKET
     return (isTeam ? team?.bucket : state.user.user?.bucket) ?? '';
   },
   isCurrentFolderEmpty(state: RootState): boolean {

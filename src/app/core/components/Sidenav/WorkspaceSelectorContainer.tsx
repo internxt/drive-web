@@ -24,7 +24,6 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
         dispatch(workspaceThunks.setupWorkspace({ pendingWorkspace: selectedPendingWorkspace }));
       return;
     }
-
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
   };
 

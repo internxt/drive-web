@@ -116,6 +116,7 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
       // TODO: CHANGE BY WORKSPACE INITIALIZATOR
       dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,

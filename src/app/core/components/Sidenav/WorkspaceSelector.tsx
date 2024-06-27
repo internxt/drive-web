@@ -42,10 +42,10 @@ const WorkspaceCard = ({
       <div className="flex w-full flex-row items-center justify-between space-x-2">
         <Avatar diameter={28} fullName={workspace.name} src={workspace.avatar ? workspace.avatar : null} />
         <div className="flex grow flex-col truncate">
-          <text className="truncate text-sm font-medium leading-4 text-gray-100">{workspace.name}</text>
-          <text className="truncate text-xs font-medium leading-3 text-gray-60">
+          <p className="truncate text-sm font-medium leading-4 text-gray-100">{workspace.name}</p>
+          <p className="truncate text-xs font-medium leading-3 text-gray-60">
             {translate(`workspaces.workspaceTypes.${workspace.type.toLocaleLowerCase()}`)}
-          </text>
+          </p>
         </div>
         <div className="h-4 w-4">{isSelected && <Icon colorRendering="bg-gray-100" weight="bold" size={16} />}</div>
       </div>
@@ -94,10 +94,10 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
             src={selectedWorkspace?.avatar ? selectedWorkspace.avatar : null}
           />
           <div className="flex grow flex-col truncate">
-            <text className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</text>
-            <text className="truncate text-xs font-medium leading-3 text-gray-60">
+            <p className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</p>
+            <p className="truncate text-xs font-medium leading-3 text-gray-60">
               {translate(`workspaces.workspaceTypes.${selectedWorkspace?.type?.toLocaleLowerCase()}`)}
-            </text>
+            </p>
           </div>
           <div className="w-4">
             <CaretUpDown colorRendering="bg-gray-100" weight="bold" size={16} />
