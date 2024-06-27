@@ -485,19 +485,6 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
 export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(uploadItemsThunk.pending, () => undefined)
-    .addCase(uploadItemsThunk.fulfilled, () => undefined)
-    .addCase(uploadItemsThunk.rejected, (state, action) => {
-      const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
-      if (requestOptions?.showErrors) {
-        console.error('message Error when upload', action.error.message);
-
-        notificationsService.show({
-          text: t('error.uploadingFile', { reason: action.error.message ?? '' }),
-          type: ToastType.Error,
-        });
-      }
-    })
     .addCase(uploadItemsParallelThunk.pending, () => undefined)
     .addCase(uploadItemsParallelThunk.fulfilled, () => undefined)
     .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
