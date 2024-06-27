@@ -1,6 +1,11 @@
+import { CreateFolderResponse, DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
+  CreateFolderPayload,
   CreateTeamData,
+  FileEntry,
   InviteMemberBody,
+  WorkspaceCredentialsDetails,
   WorkspaceMembers,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
@@ -130,6 +135,29 @@ export function changeTeamManager(teamId: string): Promise<void> {
   });
 }
 
+export function createFileEntry(
+  fileEntry: FileEntry,
+  workspaceId: string,
+  resourcesToken?: string,
+): Promise<DriveFileData> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.createFileEntry(fileEntry, workspaceId, resourcesToken).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function createFolder(payload: CreateFolderPayload): [Promise<CreateFolderResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.createFolder(payload);
+}
+
+export function getWorkspaceCretenditals(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceCredentials(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function changeUserRole({
   teamId,
   memberId,
@@ -160,6 +188,9 @@ const workspacesService = {
   changeTeamManager,
   changeUserRole,
   processInvitation,
+  createFileEntry,
+  createFolder,
+  getWorkspaceCretenditals,
 };
 
 export default workspacesService;

@@ -10,6 +10,7 @@ import notificationsService, { ToastType } from '../../../../notifications/servi
 import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
@@ -32,9 +33,9 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: string) => {
+const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId);
+  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
   const parentFolderContent = await parentFolderContentPromise;
   const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
   const fileContent: IRoot = { ...root, name: finalFilename };
@@ -47,7 +48,10 @@ const wait = (ms: number): Promise<void> => {
 
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
+  async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
+    const state = getState();
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
     options = Object.assign({ withNotification: true }, options || {});
     const uploadFolderAbortController = new AbortController();
 
@@ -55,7 +59,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
 
-    const renamedRoot = await handleFoldersRename(root, currentFolderId);
+    const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
     const levels = [renamedRoot];
 
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);

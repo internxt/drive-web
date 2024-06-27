@@ -18,9 +18,10 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
-import shareService from '../../../../share/services/share.service';
+import shareService, { decryptMnemonic } from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {
@@ -88,18 +89,21 @@ const prepareFilesToUpload = async ({
   parentFolderId,
   disableDuplicatedNamesCheck,
   fileType,
+  workspaceToken,
 }: {
   files: File[];
   parentFolderId: string;
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
+  workspaceToken?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   const filesToUpload: FileToUpload[] = [];
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   let parentFolderContent;
+
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId);
+    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
     parentFolderContent = await parentFolderContentPromise;
   }
 
@@ -147,6 +151,23 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    let ownerUserAuthenticationData: any = null;
+    const workspaceId = selectedWorkspace?.workspace?.id;
+    if (workspaceId) {
+      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
+      ownerUserAuthenticationData = {
+        bridgeUser: workspaceCredentials?.credentials.networkUser,
+        bridgePass: workspaceCredentials?.credentials.networkPass,
+        encryptionKey: decryptedMnemonic,
+        bucketId: workspaceCredentials?.bucket,
+        workspaceId: workspaceId,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      };
+    }
+
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
 
@@ -155,6 +176,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
+      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -187,6 +209,14 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: parentFolderId,
+          },
+        },
       );
     } catch (error) {
       errors.push(error as Error);
@@ -200,7 +230,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (errors.length > 0) {
       for (const error of errors) {
-        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) {
+          console.error('message Error when upload', error.message);
+          notificationsService.show({ text: error.message, type: ToastType.Error });
+        }
       }
     }
   },
@@ -355,16 +388,33 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
   async ({ files, parentFolderId, options, filesProgress }: UploadItemsPayload, { getState, dispatch }) => {
-    const user = getState().user.user as UserSettings;
+    const state = getState();
+    const user = state.user.user as UserSettings;
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: Error[] = [];
     const abortController = options?.abortController ?? new AbortController();
 
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
+    let ownerUserAuthenticationData: any = null;
+    const workspaceId = selectedWorkspace?.workspace?.id;
+    if (workspaceId) {
+      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
+      ownerUserAuthenticationData = {
+        bridgeUser: workspaceCredentials?.credentials.networkUser,
+        bridgePass: workspaceCredentials?.credentials.networkPass,
+        encryptionKey: decryptedMnemonic,
+        bucketId: workspaceCredentials?.bucket,
+        workspaceId: workspaceId,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      };
+    }
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -393,7 +443,15 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
         abortController,
-        options,
+
+        {
+          ...options,
+          ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: parentFolderId,
+          },
+        },
         filesProgress,
       );
     } catch (error) {
@@ -419,6 +477,8 @@ export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<S
     .addCase(uploadItemsThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
       if (requestOptions?.showErrors) {
+        console.error('message Error when upload', action.error.message);
+
         notificationsService.show({
           text: t('error.uploadingFile', { reason: action.error.message ?? '' }),
           type: ToastType.Error,

@@ -37,6 +37,7 @@ import { AppDispatch, RootState } from './app/store';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
+import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
@@ -113,7 +114,9 @@ const App = (props: AppProps): JSX.Element => {
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
-
+      // TODO: CHANGE BY WORKSPACE INITIALIZATOR
+      dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
