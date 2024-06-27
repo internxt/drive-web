@@ -1,20 +1,20 @@
-import { generateMnemonic } from 'bip39';
-import { encryptPGP } from '../../crypto/services/utilspgp';
-import httpService from '../../core/services/http.service';
-import envService from '../../core/services/env.service';
-import { LifetimeTier, StripeSessionMode } from '../types';
-import { loadStripe } from '@stripe/stripe-js/pure';
-import { RedirectToCheckoutServerOptions, Stripe, Source, StripeError } from '@stripe/stripe-js';
-import { SdkFactory } from '../../core/factory/sdk';
 import {
   CreateCheckoutSessionPayload,
   DisplayPrice,
+  FreeTrialAvailable,
   Invoice,
   PaymentMethod,
-  UserSubscription,
-  FreeTrialAvailable,
   RedeemCodePayload,
+  UserSubscription,
 } from '@internxt/sdk/dist/drive/payments/types';
+import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
+import { loadStripe } from '@stripe/stripe-js/pure';
+import { generateMnemonic } from 'bip39';
+import { SdkFactory } from '../../core/factory/sdk';
+import envService from '../../core/services/env.service';
+import httpService from '../../core/services/http.service';
+import { encryptPGP } from '../../crypto/services/utilspgp';
+import { LifetimeTier, StripeSessionMode } from '../types';
 
 export interface CreatePaymentSessionPayload {
   test?: boolean;
@@ -84,6 +84,14 @@ const paymentService = {
     return paymentsClient.getPrices(currency);
   },
 
+  async isCouponUsedByUser(couponCode: string): Promise<{
+    couponUsed: boolean;
+  }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+
+    return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
+  },
+
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.requestPreventCancellation();
@@ -138,7 +146,7 @@ const paymentService = {
       test: !envService.isProduction(),
     };
 
-    const response = await fetch(`${process.env.REACT_APP_API_URL}/api/stripe/teams/session`, {
+    const response = await fetch(`${process.env.REACT_APP_API_URL}/stripe/teams/session`, {
       method: 'POST',
       headers: httpService.getHeaders(true, false),
       body: JSON.stringify(payload),

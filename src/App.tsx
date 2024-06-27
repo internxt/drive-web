@@ -21,8 +21,6 @@ import RealtimeService from './app/core/services/socket.service';
 import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './app/newSettings/PreferencesDialog';
@@ -108,8 +106,6 @@ const App = (props: AppProps): JSX.Element => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
-      await LRUPhotosCacheManager.getInstance();
-      await LRUPhotosPreviewsCacheManager.getInstance();
 
       await domainManager.fetchDomains();
 
@@ -159,6 +155,8 @@ const App = (props: AppProps): JSX.Element => {
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
+
+    dispatch(uiActions.setFileViewerItem(null));
   };
 
   if (!isAuthenticated || isInitialized) {

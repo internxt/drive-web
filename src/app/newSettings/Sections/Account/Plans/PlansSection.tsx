@@ -1,12 +1,10 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import Section from '../../General/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -15,6 +13,8 @@ import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
+import Section from '../../General/components/Section';
+import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
@@ -303,7 +303,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               isSelected={priceSelected?.id === plan.id}
               capacity={bytesToString(plan.bytes)}
               currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
-              amount={displayAmount(plan.amount)}
+              amount={displayAmount(plan.amount, plan.interval === 'lifetime' ? 0 : 2)}
               billing={
                 plan.interval === 'lifetime'
                   ? translate('views.account.tabs.plans.card.oneTimePayment')
@@ -339,6 +339,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
                 ? moneyService.getCurrencySymbol(priceSelected?.currency)
                 : translate('preferences.account.plans.freeForever')
             }
+            // TODO: CHECK AFTER MERGE IF NEED TO CHANGE THE DECIMALS DISPLAYED
             price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
             billing={
               priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''

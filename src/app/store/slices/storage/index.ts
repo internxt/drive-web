@@ -276,11 +276,12 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ uuid: string; folderId: string; isFolder: boolean; patch: DriveItemPatch }>,
     ) => {
       const { uuid, folderId, isFolder, patch } = action.payload;
+      const folderItems = [...state.levels[folderId]];
 
-      if (state.levels[folderId]) {
-        const item = state.levels[folderId].find((i) => i.uuid === uuid && i.isFolder === isFolder);
-        const itemIndex = state.levels[folderId].findIndex((i) => i.uuid === uuid && i.isFolder === isFolder);
-        const itemsToDatabase = [...state.levels[folderId]];
+      if (folderItems) {
+        const item = folderItems.find((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
+        const itemIndex = folderItems.findIndex((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
+        const itemsToDatabase = [...folderItems];
         itemsToDatabase[itemIndex] = Object.assign({}, item, patch);
 
         state.levels[folderId] = itemsToDatabase;
