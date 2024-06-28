@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
-import Section from '../../General/components/Section';
 import usageService, { UsageDetailsProps } from '../../../../drive/services/usage.service';
 import Avatar from '../../../../shared/components/Avatar';
 import Button from '../../../../shared/components/Button/Button';
@@ -18,6 +17,7 @@ import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
+import Section from 'app/newSettings/components/Section';
 
 // MOCKED DATA
 const avatarBlob = null;
@@ -27,8 +27,9 @@ const description =
 const isOwner = true;
 const members = 32;
 const teams = 4;
+const subscription = 'Free';
 
-const OverviewSection = () => {
+const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(description);
@@ -69,7 +70,7 @@ const OverviewSection = () => {
     getSubscriptionData({ userSubscription: plan.subscription, plan, local });
 
   return (
-    <Section title="Overview" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+    <Section title="Overview" onClosePreferences={onClosePreferences}>
       <UserProfileCard
         companyName={editedCompanyName}
         description={aboutCompany}
@@ -193,49 +194,58 @@ const WorkspaceOverviewDetails = ({
   const [integerPart, decimalPart] = subscriptionData?.amountInterval?.split('.') ?? [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-3">
       {isOwner && (
         <span className="text-xl font-medium">{t('views.preferences.workspace.overview.workspaceOverview')}</span>
       )}
-      <div className="flex flex-row space-x-6">
-        <button className={`${twoCardsClass} text-left`} onClick={onMembersCardClick}>
-          <Card className={twoCardsClass}>
-            <p className="text-3xl font-medium leading-9 text-gray-100">{members}</p>
-            <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.members')}</h1>
-          </Card>
-        </button>
-        <button className={`${twoCardsClass} text-left`} onClick={onTeamsCardClick}>
-          <Card className={twoCardsClass}>
-            <p className="text-3xl font-medium leading-9 text-gray-100">{teams}</p>
-            <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
-          </Card>
-        </button>
-        {isOwner && (
-          <button className="grow text-left" onClick={onBillingCardClick}>
-            <Card className="grow">
-              <p className="text-3xl font-medium leading-9 text-gray-100">
-                {integerPart}
-                <span className="text-xl font-medium">.{decimalPart}</span>
-              </p>
-              <h1 className="text-base font-normal leading-5">
-                {t('views.preferences.workspace.overview.billed', {
-                  renewDate: subscriptionData?.renewDate,
-                })}
-              </h1>
+
+      <div className="space-y-6">
+        <div className="flex flex-row space-x-6">
+          <button className={`${twoCardsClass} text-left`} onClick={onMembersCardClick}>
+            <Card className={twoCardsClass}>
+              <p className="text-3xl font-medium leading-9 text-gray-100">{members}</p>
+              <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.members')}</h1>
             </Card>
           </button>
-        )}
-      </div>
-      <div className="flex flex-row">
-        <Card className="flex grow">
-          {products && planLimit ? (
-            <UsageContainer planLimitInBytes={planLimit} products={products} />
-          ) : (
-            <div className="flex h-36 w-full items-center justify-center">
-              <Spinner className="h-7 w-7 text-primary" />
-            </div>
+          <button className={`${twoCardsClass} text-left`} onClick={onTeamsCardClick}>
+            <Card className={twoCardsClass}>
+              <p className="text-3xl font-medium leading-9 text-gray-100">{teams}</p>
+              <h1 className="text-base font-normal leading-5">{t('views.preferences.workspace.overview.teams')}</h1>
+            </Card>
+          </button>
+          {isOwner && (
+            <button className="grow text-left" onClick={onBillingCardClick}>
+              <Card className="grow">
+                {subscription === 'Free' ? (
+                  <p className="h-14 text-3xl font-medium leading-9 text-gray-100">{subscription}</p>
+                ) : (
+                  <>
+                    <p className="text-3xl font-medium leading-9 text-gray-100">
+                      {integerPart}
+                      <span className="text-xl font-medium">{decimalPart && `.${decimalPart}`}</span>
+                    </p>
+                    <h1 className="text-base font-normal leading-5">
+                      {t('views.preferences.workspace.overview.billed', {
+                        renewDate: subscriptionData?.renewDate,
+                      })}
+                    </h1>
+                  </>
+                )}
+              </Card>
+            </button>
           )}
-        </Card>
+        </div>
+        <div className="flex flex-row">
+          <Card className="flex grow">
+            {products && planLimit ? (
+              <UsageContainer planLimitInBytes={planLimit} products={products} />
+            ) : (
+              <div className="flex h-36 w-full items-center justify-center">
+                <Spinner className="h-7 w-7 text-primary" />
+              </div>
+            )}
+          </Card>
+        </div>
       </div>
     </div>
   );
@@ -268,14 +278,14 @@ const UserProfileCard: React.FC<UserProfileCardProps> = ({
         {isOwner ? (
           <Dropdown
             options={isOwner ? dropdownOptions : undefined}
-            classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
+            classMenuItems={'-left-10 mt-0 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
             openDirection={'right'}
           >
             <div className="relative">
               <Avatar diameter={128} fullName={companyName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
               {
-                <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
-                  <PencilSimple size={16} />
+                <div className="absolute bottom-0 right-0 flex h-10 w-10 items-center justify-center rounded-full border-4 border-surface bg-gray-5 text-gray-100 dark:bg-gray-10">
+                  <PencilSimple size={20} />
                 </div>
               }
             </div>

@@ -1,5 +1,5 @@
 import { CaretUpDown, Check, Icon } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Avatar from '../../../shared/components/Avatar';
@@ -58,10 +58,10 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   workspaces,
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
-  selectedWorkspace: selectedWorkspaceProp,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const selectedWorkspace = selectedWorkspaceProp ?? userWorkspace;
+  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
+  const dropdownRef = useRef<HTMLInputElement>(null);
 
   const { translate } = useTranslationContext();
 
@@ -75,8 +75,21 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     } else {
       onChangeWorkspace(workspace?.uuid ?? null);
     }
+    setSelectedWorkspace(workspace);
     setIsOpen(false);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  });
 
   return (
     <div className="relative mb-2 inline-block w-full">
@@ -106,6 +119,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       </button>
       {/* DROPDOWN LIST */}
       <div
+        ref={dropdownRef}
         className={`fixed left-2 z-50 w-72 overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}

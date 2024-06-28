@@ -1,5 +1,6 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
@@ -13,7 +14,6 @@ import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
-import Section from '../../General/components/Section';
 import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
@@ -24,9 +24,10 @@ import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, 
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
 }
 
-const PlansSection = ({ changeSection }: PlansSectionProps) => {
+const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const FREE_PLAN_DATA = {
@@ -255,7 +256,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   }
 
   return (
-    <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+    <Section title="Plans" onClosePreferences={onClosePreferences}>
       {prices && priceSelected && (
         <ChangePlanDialog
           prices={prices}
@@ -284,8 +285,8 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
           />
         </div>
       </div>
-      <div className="flex flex-row justify-between ">
-        <div className="-mb-1 flex flex-col space-y-2">
+      <div className="flex flex-row space-x-6">
+        <div className="flex flex-1 flex-col items-center items-stretch space-y-2.5">
           <PlanSelectionCard
             key={FREE_PLAN_DATA.id}
             onClick={() => setPriceSelected(FREE_PLAN_DATA)}

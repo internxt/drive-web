@@ -151,9 +151,8 @@ const displayDate = (unixSeconds: number) => {
 const Empty = () => {
   const { translate } = useTranslationContext();
   return (
-    <div className="text-center">
-      <h1 className="font-medium text-gray-60">{translate('views.account.tabs.billing.invoices.empty.title')}</h1>
-      <p className="text-sm text-gray-50">{translate('views.account.tabs.billing.invoices.empty.subtitle')}</p>
+    <div className="flex h-full items-center justify-center text-center">
+      <p className="font-regular text-base text-gray-50">{translate('preferences.workspace.billing.empty.text')}</p>
     </div>
   );
 };

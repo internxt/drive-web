@@ -39,7 +39,7 @@ const UsageBar = ({
   }, []);
 
   return (
-    <div className={`flex w-full rounded border border-gray-10 bg-gray-5 ${height}`} ref={barRef}>
+    <div className={`flex w-full rounded-lg border border-gray-10 bg-gray-5 ${height}`} ref={barRef}>
       <Tooltip
         key="Drive"
         title="Drive"
