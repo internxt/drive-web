@@ -1,4 +1,4 @@
-import { CreateFolderResponse, DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { CreateFolderResponse, DriveFileData, FetchTrashContentResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
   CreateFolderPayload,
@@ -173,6 +173,24 @@ export function changeUserRole({
   });
 }
 
+export function getTrashItems(
+  workspaceId: string,
+  type: 'file' | 'folder',
+  offset,
+): Promise<FetchTrashContentResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPersonalTrash(workspaceId, type, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function emptyTrash(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.emptyPersonalTrash(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -191,6 +209,8 @@ const workspacesService = {
   createFileEntry,
   createFolder,
   getWorkspaceCretenditals,
+  getTrashItems,
+  emptyTrash,
 };
 
 export default workspacesService;
