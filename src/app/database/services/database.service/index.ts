@@ -17,6 +17,7 @@ export enum DatabaseCollection {
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
   UploadItemStatus = 'upload_item_status',
+  WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
 }
 
 export enum LRUCacheTypes {
@@ -77,6 +78,10 @@ export interface AppDatabase extends DBSchema {
   upload_item_status: {
     key: string;
     value: TaskStatus;
+  };
+  workspaces_avatar_blobs: {
+    key: string;
+    value: AvatarBlobData;
   };
 }
 
