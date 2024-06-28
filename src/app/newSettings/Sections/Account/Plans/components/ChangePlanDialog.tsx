@@ -15,17 +15,20 @@ const ChangePlanDialog = ({
   setIsDialogOpen,
   onPlanClick,
   priceIdSelected,
+  subscriptionTypeSelected,
 }: {
   prices: DisplayPrice[];
   isDialgOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
+  subscriptionTypeSelected: 'individual' | 'business';
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { translate } = useTranslationContext();
 
-  const { planLimit, planUsage, subscription } = plan;
+  const { planLimit, planUsage, subscriptionIndividual, subscriptionBusiness } = plan;
+  const subscription = subscriptionTypeSelected == 'individual' ? subscriptionIndividual : subscriptionBusiness;
   const selectedPlan: DisplayPrice = prices.find((plan) => plan.id === priceIdSelected) as DisplayPrice;
 
   const selectedPlanSize = selectedPlan?.bytes;

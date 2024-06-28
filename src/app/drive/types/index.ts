@@ -131,6 +131,7 @@ export type StoragePlan = {
   isLifetime: boolean;
   renewalPeriod: RenewalPeriod;
   storageLimit: number;
+  type: 'individual' | 'business';
   isAppSumo?: boolean;
   details?: AppSumoDetails;
 };

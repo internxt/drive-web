@@ -22,7 +22,7 @@ const getCurrentChangePlanType = ({
 }): ChangePlanType => {
   const isIntervalSelected =
     priceSelected?.interval === 'month' || priceSelected?.interval === 'year' || priceSelected?.interval === 'lifetime';
-  const currentStorage = parseInt(currentPlan?.storageLimit.toString() ?? '0');
+  const currentStorage = currentPlan?.storageLimit ? parseInt(currentPlan.storageLimit.toString()) : 0;
   const selectedPlanStorage = priceSelected?.bytes;
 
   if (currentUserSubscription?.type === 'free' && isFreePriceSelected) {
