@@ -1,14 +1,10 @@
 import { Image } from '@phosphor-icons/react';
-import { Suspense, lazy, useEffect, useRef, useState } from 'react';
-
-import type AvatarEditorType from 'react-avatar-editor';
-
+import { Suspense, useEffect, useRef, useState } from 'react';
+import AvatarEditor from 'react-avatar-editor';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Button from '../../../../../shared/components/Button/Button';
 import Modal from '../../../../../shared/components/Modal';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-
-const AvatarEditor = lazy(() => import('react-avatar-editor'));
 
 interface UploadAvatarModalProps {
   isOpen: boolean;
@@ -26,7 +22,7 @@ const UploadAvatarModal = ({
 }: UploadAvatarModalProps) => {
   const { translate } = useTranslationContext();
   const inputRef = useRef<HTMLInputElement>(null);
-  const editorRef = useRef<AvatarEditorType>(null);
+  const editorRef = useRef<AvatarEditor>(null);
   const [state, setState] = useState<
     { tag: 'empty' } | { tag: 'editing' | 'loading' | 'error'; source: File; zoom: number }
   >({ tag: 'empty' });
