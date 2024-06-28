@@ -6,7 +6,6 @@ import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
 import Section from '../../General/components/Section';
 import usageService, { UsageDetailsProps } from '../../../../drive/services/usage.service';
-import Avatar from '../../../../shared/components/Avatar';
 import Button from '../../../../shared/components/Button/Button';
 import Card from '../../../../shared/components/Card';
 import Dropdown from '../../../../shared/components/Dropdown';
@@ -18,40 +17,46 @@ import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
-
-// MOCKED DATA
-const avatarBlob = null;
-const companyName = 'Internxt Universal Technologies SL';
-const description =
-  'Our goal is to create a cloud storage ecosystem that gives users total control, security, and privacy of the files and information online.';
-const isOwner = true;
-const members = 32;
-const teams = 4;
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
+import workspacesService from '../../../../core/services/workspace.service';
+import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import { workspaceThunks, workspacesActions } from '../../../../store/slices/workspaces/workspacesStore';
+import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
 
 const OverviewSection = () => {
+  const dispatch = useAppDispatch();
+  const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
+  const companyName = selectedWorkspace?.workspace.name || '';
+  const description = selectedWorkspace?.workspace.description || '';
+  const avatarSrcURL = selectedWorkspace?.workspace.avatar || '';
+  const isOwner =
+    (currentUserId && selectedWorkspace?.workspace.ownerId && currentUserId === selectedWorkspace.workspace.ownerId) ||
+    false;
+
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
   const [aboutCompany, setAboutCompany] = useState(description);
   const [isSavingProfileDetails, setIsSavingProfileDetails] = useState(false);
-
-  // temporary to mocked save behaviour
-  const onSaveProfileDetails = (newCompanyName: string, newAboutCompany: string) => {
-    setIsSavingProfileDetails(true);
-    setTimeout(() => {
-      setEditedCompanyName(newCompanyName);
-      setAboutCompany(newAboutCompany);
-      setIsEditingDetails(false);
-      setIsSavingProfileDetails(false);
-    }, 2000);
-  };
+  const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
+  const [teams, setTeams] = useState<WorkspaceTeam[] | null>(null);
 
   // PROBABLY NEED TO CHANGE WHEN IMPLEMENT API CALLS
   const [planUsage, setPlanUsage] = useState<UsageDetailsProps | null>(null);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
 
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
+  const products = planUsage ? getProductCaptions(planUsage) : null;
+  const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
+    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
 
   useEffect(() => {
+    if (selectedWorkspace?.workspace.id) {
+      getWorkspacesMembers(selectedWorkspace.workspace.id);
+      getWorkspacesTeams(selectedWorkspace.workspace.id);
+    }
     usageService
       .getUsageDetails()
       .then((usageDetails) => {
@@ -63,24 +68,99 @@ const OverviewSection = () => {
       });
   }, []);
 
-  const products = planUsage ? getProductCaptions(planUsage) : null;
+  const getWorkspacesMembers = async (selectedWorkspaceId: string) => {
+    try {
+      const members = await workspacesService.getWorkspacesMembers(selectedWorkspaceId);
+      setMembers(members.activatedUsers);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
-  const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
-    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
+  const getWorkspacesTeams = async (selectedWorkspaceId: string) => {
+    try {
+      const teams = await workspacesService.getWorkspaceTeams(selectedWorkspaceId);
+      setTeams(teams);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
+    setIsSavingProfileDetails(true);
+    try {
+      if (!selectedWorkspace?.workspace.id) {
+        throw new Error('Tried to edit workspace details without id');
+      }
+      await workspacesService.editWorkspace(selectedWorkspace.workspace.id, {
+        name: newCompanyName,
+        description: newAboutCompany,
+      });
+      setEditedCompanyName(newCompanyName);
+      setAboutCompany(newAboutCompany);
+      dispatch(
+        workspacesActions.patchWorkspace({
+          workspaceId: selectedWorkspace.workspace.id,
+          patch: {
+            name: newCompanyName,
+            description: newAboutCompany,
+          },
+        }),
+      );
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsEditingDetails(false);
+      setIsSavingProfileDetails(false);
+    }
+  };
+
+  const uploadAvatar = async ({ avatar }: { avatar: Blob }) => {
+    try {
+      if (!selectedWorkspace?.workspace.id) {
+        throw new Error('Tried to upload workspace avatar without id');
+      }
+      await dispatch(
+        workspaceThunks.updateWorkspaceAvatar({
+          workspaceId: selectedWorkspace.workspace.id,
+          avatar,
+        }),
+      ).unwrap();
+      notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.success') });
+    } catch (err) {
+      errorService.reportError(err);
+      notificationsService.show({ type: ToastType.Error, text: t('views.account.avatar.error') });
+    }
+  };
+
+  const deleteAvatar = async () => {
+    if (selectedWorkspace?.workspace.id) {
+      await dispatch(
+        workspaceThunks.deleteWorkspaceAvatar({
+          workspaceId: selectedWorkspace.workspace.id,
+          avatarSrcURL,
+        }),
+      ).unwrap();
+      notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.removed') });
+    } else {
+      errorService.reportError(new Error('Tried to delete workspace avatar without id'));
+    }
+  };
 
   return (
     <Section title="Overview" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
-      <UserProfileCard
+      <WorkspaceProfileCard
         companyName={editedCompanyName}
         description={aboutCompany}
-        avatarBlob={avatarBlob}
+        avatarSrcURL={avatarSrcURL}
         onEditButtonClick={() => setIsEditingDetails(true)}
         isOwner={isOwner}
+        onUploadAvatarClicked={uploadAvatar}
+        onDeleteAvatarClicked={deleteAvatar}
       />
-
       <WorkspaceOverviewDetails
-        members={members}
-        teams={teams}
+        members={members?.length || 0}
+        teams={teams?.length || 0}
         planLimit={plan.planLimit}
         products={products}
         isOwner={isOwner}
@@ -89,7 +169,7 @@ const OverviewSection = () => {
         onTeamsCardClick={() => undefined}
         onBillingCardClick={() => undefined}
       />
-      <EditProfileDetailsModal
+      <EditWorkspaceDetailsModal
         isOpen={isEditingDetails}
         onClose={() => setIsEditingDetails(false)}
         companyName={editedCompanyName}
@@ -101,7 +181,7 @@ const OverviewSection = () => {
   );
 };
 
-const EditProfileDetailsModal = ({
+const EditWorkspaceDetailsModal = ({
   isOpen,
   onClose,
   companyName,
@@ -241,47 +321,65 @@ const WorkspaceOverviewDetails = ({
   );
 };
 
-interface UserProfileCardProps {
-  avatarBlob?: Blob | null;
+interface WorkspaceProfileCardProps {
+  avatarSrcURL: string | null;
   companyName: string;
   description: string;
-  onEditButtonClick: () => void;
   isOwner: boolean;
+  onEditButtonClick: () => void;
+  onUploadAvatarClicked: ({ avatar }: { avatar: Blob }) => Promise<void>;
+  onDeleteAvatarClicked: () => void;
 }
 
-const UserProfileCard: React.FC<UserProfileCardProps> = ({
-  avatarBlob,
+const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
+  avatarSrcURL,
   companyName,
   description,
-  onEditButtonClick,
   isOwner,
+  onEditButtonClick,
+  onUploadAvatarClicked,
+  onDeleteAvatarClicked,
 }) => {
-  const containerClass = 'flex flex-col w-full justify-center items-center space-y-4';
-  const dropdownOptions = [{ text: t('views.account.avatar.updatePhoto'), onClick: () => {} }];
+  const [openEditAvatarModal, setOpenEditAvatarModal] = useState(false);
+  const dropdownOptions = [
+    { text: t('views.account.avatar.updatePhoto'), onClick: () => setOpenEditAvatarModal(true) },
+  ];
 
-  if (avatarBlob) {
-    dropdownOptions.push({ text: t('views.account.avatar.removePhoto'), onClick: () => undefined });
+  if (avatarSrcURL) {
+    dropdownOptions.push({ text: t('views.account.avatar.removePhoto'), onClick: onDeleteAvatarClicked });
   }
+
   return (
-    <div className={containerClass}>
+    <div className="flex w-full flex-col items-center justify-center space-y-4">
       <div className="flex flex-col justify-center">
         {isOwner ? (
-          <Dropdown
-            options={isOwner ? dropdownOptions : undefined}
-            classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
-            openDirection={'right'}
-          >
-            <div className="relative">
-              <Avatar diameter={128} fullName={companyName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
-              {
-                <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
-                  <PencilSimple size={16} />
-                </div>
+          <>
+            <Dropdown
+              options={isOwner ? dropdownOptions : undefined}
+              classMenuItems={'-left-6 mt-1 w-max rounded-md border border-gray-10 bg-surface dark:bg-gray-5 py-1.5'}
+              openDirection={'right'}
+            >
+              <div className="relative">
+                <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
+                {
+                  <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
+                    <PencilSimple size={16} />
+                  </div>
+                }
+              </div>
+            </Dropdown>
+            <UploadAvatarModal
+              isOpen={openEditAvatarModal}
+              onClose={() => setOpenEditAvatarModal(false)}
+              onUploadAvatarClicked={onUploadAvatarClicked}
+              displayFileLimitMessage={() =>
+                notificationsService.show({ type: ToastType.Error, text: t('views.account.avatar.underLimitSize') })
               }
-            </div>
-          </Dropdown>
+              onSavingAvatarError={errorService.reportError}
+            />
+          </>
         ) : (
-          <Avatar diameter={128} fullName={companyName} src={avatarBlob ? URL.createObjectURL(avatarBlob) : null} />
+          <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
         )}
       </div>
 
