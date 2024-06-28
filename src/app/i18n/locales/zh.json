@@ -4,19 +4,31 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": "最多节省 75%",
-    "title": "保护您的在线身份一生。",
+    "label": {
+      "upTo": "高达 ",
+      "discount": "免费计划的变更"
+    },
+    "title": "注意！",
+    "subtitle": {
+      "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
+      "line2": {
+        "normal1": "使用代码 ",
+        "blue": "FREEVIP",
+        "normal2": " 绕过此降级，享受任何高级计划 90% 的折扣。"
+      }
+    },
     "cta": "选择计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠仅适用于免费帐户或新客户",
+    "lastCta": "*优惠适用于免费账户或新客户",
     "features": [
-      "所有终身计划最高可享 75% 折扣",
+      "所有 Internxt 计划均可享受优惠",
       "安全可靠的云存储",
       "开源和透明",
       "端到端加密传输",
-      "没有未经授权的访问",
-      "优惠截止日期为4月18日"
-    ]
+      "无未授权访问",
+      "优惠截止至 6 月 30 日"
+    ],
+    "copied": "已复制到剪贴板"
   },
   "valentinesBanner": {
     "title": "爱无极限！",
@@ -58,13 +70,15 @@
     "it": "Italiano (意大利语)",
     "zh": "简体中文 (简体中文)",
     "ru": "Русский (俄语)",
-    "de": "Deutsch (德国)"
+    "de": "Deutsch (德国)",
+    "zh-tw": "臺灣 (臺灣人)"
   },
   "theme": {
     "title": "外观",
     "light": "明亮",
     "dark": "暗",
-    "system": "系统"
+    "system": "系统",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "电子邮件",
@@ -247,7 +261,6 @@
   },
   "sideNav": {
     "drive": "云盘",
-    "photos": "照片",
     "backups": "备份",
     "shared": "共享的",
     "recents": "最近",
@@ -265,12 +278,6 @@
         "uploadFiles": "上传文件",
         "noResults": "此搜索没有结果",
         "dragNDrop": "拖放到此处或单击上传按钮"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "您的相册是空的",
-        "description": "使用Internxt移动应用程序来同步你的照片"
       }
     },
     "account": {
@@ -298,7 +305,6 @@
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
             "backups": "备份",
-            "photos": "照片",
             "trash": "垃圾箱",
             "free": {
               "planName": "免费计划",
@@ -847,32 +853,6 @@
       "sharedWith": "与您共享 ",
       "todayAt": "今天在 "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "个文件 已选择 ",
-      "singleToolBar": "个文件 已选择 ",
-      "multiTitle": "要删除已选择的 {{item}} 个文件吗?",
-      "singleTitle": "要删除已选择的 {{item}} 个文件吗？",
-      "subtitle": "此操作不能被撤销",
-      "buttons": {
-        "cancel": "取消",
-        "delete": "删除"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "分享 {{item}} 张照片",
-      "multiTitle": "分享 {{item}} 张照片",
-      "options": "链接选项",
-      "limit": "限制链接的打开次数",
-      "openCount": "限制打开 ",
-      "times": "次",
-      "change": "更改",
-      "buttons": {
-        "cancel": "取消",
-        "create": "创建链接",
-        "creating": "正在创建链接...",
-        "copyLink": "复制链接"
-      }
-    },
     "friendsInvitedModal": {
       "title": "被邀请的朋友",
       "email": "电子邮件",
@@ -965,7 +945,6 @@
     "emptyPassword": "之前的密码不能为空",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
-    "braveNotSupportMultiplePhotosDowload": "Brave 浏览器不支持多张照片下载。",
     "maxSizeUploadLimitError": "文件太大（大于20GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
@@ -1108,15 +1087,6 @@
         "in-process": "文件已下载 {{progress}}%",
         "success": "文件已下载",
         "error": "下载失败，点击↻重试",
-        "cancelled": "下载已取消"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "正在下载 {{progress}}%",
-        "success": "已下载",
-        "error": "下载时出错",
         "cancelled": "下载已取消"
       },
       "errors": {}
@@ -1318,6 +1288,7 @@
     "dropdown": {
       "openPreview": "打开预览",
       "shareLink": "分享",
+      "shareTeam": "与团队分享",
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",

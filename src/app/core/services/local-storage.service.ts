@@ -1,9 +1,11 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
   TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
+  B2B_WORKSPACE: 'b2bWorkspace',
 };
 
 function get(key: string): string | null {
@@ -27,7 +29,16 @@ function getTeams(): TeamsSettings | null {
 }
 
 function getWorkspace(): string {
-  return localStorage.getItem('workspace') || Workspace.Individuals;
+  return localStorage.getItem('workspace') ?? Workspace.Individuals;
+}
+
+function getB2BWorkspace(): WorkspaceData | null {
+  const b2bWorkspace = localStorage.getItem(STORAGE_KEYS.B2B_WORKSPACE);
+  if (b2bWorkspace === 'null') return null;
+
+  if (b2bWorkspace) return JSON.parse(b2bWorkspace);
+
+  return null;
 }
 
 function removeItem(key: string): void {
@@ -43,6 +54,10 @@ function hasCompletedTutorial(id?: string): boolean {
 }
 
 function clear(): void {
+  if (localStorage.getItem('theme') === 'starwars') {
+    localStorage.setItem('theme', 'system');
+  }
+
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
@@ -54,6 +69,8 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('star_wars_theme_enabled');
+  localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
 }
 
 const localStorageService = {
@@ -66,6 +83,7 @@ const localStorageService = {
   removeItem,
   exists,
   clear,
+  getB2BWorkspace,
 };
 
 export default localStorageService;

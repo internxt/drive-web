@@ -989,18 +989,19 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         },
       });
       const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
-      if (unrepeatedUploadedFolders.length > 0)
-        await dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: unrepeatedUploadedFolders[0],
-            currentFolderId,
-            options: {
-              onSuccess: onDragAndDropEnd,
-            },
-          }),
-        ).then(() => {
+
+      if (unrepeatedUploadedFolders.length > 0) {
+        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
+          root,
+          currentFolderId,
+          options: {
+            onSuccess: onDragAndDropEnd,
+          },
+        }));
+        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
         });
+      }
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));

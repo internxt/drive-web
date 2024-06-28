@@ -11,7 +11,7 @@ import MenuItem from './MenuItem';
 
 const localStorageLanguage = localStorageService.get('i18nextLng');
 
-const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de'];
+const languages = ['en', 'es', 'fr', 'it', 'zh', 'ru', 'de', 'zh-tw'];
 
 export default function Language(): JSX.Element {
   const { translate } = useTranslationContext();

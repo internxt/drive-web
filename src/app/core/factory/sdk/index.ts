@@ -1,6 +1,5 @@
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
-import { Photos } from '@internxt/sdk/dist/photos';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
 import { Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
@@ -27,7 +26,7 @@ export class SdkFactory {
     this.sdk = {
       dispatch,
       localStorage,
-      instance: new SdkFactory(process.env.REACT_APP_API_URL + '/api'),
+      instance: new SdkFactory(process.env.REACT_APP_API_URL),
       newApiInstance: new SdkFactory(process.env.REACT_APP_DRIVE_NEW_API_URL),
     };
   }
@@ -138,19 +137,6 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public async createPhotosClient(): Promise<Photos> {
-    if (!SdkFactory.sdk.localStorage.get('xToken')) {
-      return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
-    }
-
-    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
-    }
-    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
-  }
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {

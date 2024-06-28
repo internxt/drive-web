@@ -18,9 +18,10 @@ import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
-import shareService from '../../../../share/services/share.service';
+import shareService, { decryptMnemonic } from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
 interface UploadItemsThunkOptions {
@@ -42,7 +43,10 @@ interface UploadItemsPayload {
   filesProgress?: { filesUploaded: number; totalFilesToUpload: number };
 }
 
-const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = { showNotifications: true, showErrors: true };
+const DEFAULT_OPTIONS: Partial<UploadItemsThunkOptions> = {
+  showNotifications: true,
+  showErrors: true,
+};
 
 const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   if (zeroLengthFilesNumber > 0) {
@@ -88,18 +92,21 @@ const prepareFilesToUpload = async ({
   parentFolderId,
   disableDuplicatedNamesCheck,
   fileType,
+  workspaceToken,
 }: {
   files: File[];
   parentFolderId: string;
   disableDuplicatedNamesCheck?: boolean;
   fileType?: string;
+  workspaceToken?: string;
 }): Promise<{ filesToUpload: FileToUpload[]; zeroLengthFilesNumber: number }> => {
   const filesToUpload: FileToUpload[] = [];
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
 
   let parentFolderContent;
+
   if (!disableDuplicatedNamesCheck) {
-    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId);
+    const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(parentFolderId, false, workspaceToken);
     parentFolderContent = await parentFolderContentPromise;
   }
 
@@ -141,11 +148,31 @@ const prepareFilesToUpload = async ({
  */
 export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, options, taskId, fileType }: UploadItemsPayload, { getState, dispatch }) => {
+  async (
+    { files, parentFolderId, options: payloadOptions, taskId, fileType }: UploadItemsPayload,
+    { getState, dispatch },
+  ) => {
     const user = getState().user.user as UserSettings;
     const errors: Error[] = [];
 
-    options = Object.assign(DEFAULT_OPTIONS, options ?? {});
+    const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
+
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    let ownerUserAuthenticationData: any = null;
+    const workspaceId = selectedWorkspace?.workspace?.id;
+    if (workspaceId) {
+      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
+      ownerUserAuthenticationData = {
+        bridgeUser: workspaceCredentials?.credentials.networkUser,
+        bridgePass: workspaceCredentials?.credentials.networkPass,
+        encryptionKey: decryptedMnemonic,
+        bucketId: workspaceCredentials?.bucket,
+        workspaceId: workspaceId,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      };
+    }
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
@@ -155,6 +182,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
       fileType,
+      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -165,6 +193,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       userEmail: user.email,
       parentFolderId,
       taskId,
+      relatedTaskId: options?.relatedTaskId,
       onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
         const uploadRespository = DatabaseUploadRepository.getInstance();
         uploadRespository.removeUploadState(taskId);
@@ -187,6 +216,14 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
         filesToUploadData,
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
+        undefined,
+        {
+          ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: parentFolderId,
+          },
+        },
       );
     } catch (error) {
       errors.push(error as Error);
@@ -200,7 +237,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     if (errors.length > 0) {
       for (const error of errors) {
-        if (error.message) notificationsService.show({ text: error.message, type: ToastType.Error });
+        if (error.message) {
+          console.error('message Error when upload', error.message);
+          notificationsService.show({ text: error.message, type: ToastType.Error });
+        }
       }
     }
   },
@@ -230,7 +270,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       taskId,
       fileType,
       parentFolderId,
-      options,
+      options: payloadOptions,
       ownerUserAuthenticationData,
       currentFolderId,
       isDeepFolder,
@@ -241,7 +281,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
 
-    options = Object.assign(DEFAULT_OPTIONS, options || {});
+    const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
@@ -298,6 +338,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       fileType: file.type,
       userEmail: user.email,
       taskId,
+      relatedTaskId: options?.relatedTaskId,
       parentFolderId,
       onFinishUploadFile: (driveItemData: DriveFileData, taskId: string) => {
         const uploadRespository = DatabaseUploadRepository.getInstance();
@@ -354,17 +395,38 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
  */
 export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayload, { state: RootState }>(
   'storage/uploadItems',
-  async ({ files, parentFolderId, options, filesProgress }: UploadItemsPayload, { getState, dispatch }) => {
-    const user = getState().user.user as UserSettings;
+  async (
+    { files, parentFolderId, options: payloadOptions, filesProgress }: UploadItemsPayload,
+    { getState, dispatch },
+  ) => {
+    const state = getState();
+    const user = state.user.user as UserSettings;
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const errors: Error[] = [];
-    const abortController = options?.abortController ?? new AbortController();
+    const abortController = payloadOptions?.abortController ?? new AbortController();
 
-    options = Object.assign(DEFAULT_OPTIONS, options ?? {});
+    const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
+    // TODO: REMOVE ANY AND ADD TYPE
+    let ownerUserAuthenticationData: any = null;
+    const workspaceId = selectedWorkspace?.workspace?.id;
+    if (workspaceId) {
+      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
+      ownerUserAuthenticationData = {
+        bridgeUser: workspaceCredentials?.credentials.networkUser,
+        bridgePass: workspaceCredentials?.credentials.networkPass,
+        encryptionKey: decryptedMnemonic,
+        bucketId: workspaceCredentials?.bucket,
+        workspaceId: workspaceId,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      };
+    }
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
       files,
       parentFolderId,
       disableDuplicatedNamesCheck: options.disableDuplicatedNamesCheck,
+      workspaceToken: workspaceCredentials?.tokenHeader,
     });
 
     showEmptyFilesNotification(zeroLengthFilesNumber);
@@ -373,6 +435,7 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
       filecontent: file,
       userEmail: user.email,
       parentFolderId,
+      relatedTaskId: options?.relatedTaskId,
       // TODO: EXTRACT WHEN MANAGE UPLOAD TASK IS MERGED
       onFinishUploadFile: (driveItemData: DriveFileData) => {
         dispatch(
@@ -393,7 +456,15 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
         openMaxSpaceOccupiedDialog,
         DatabaseUploadRepository.getInstance(),
         abortController,
-        options,
+
+        {
+          ...options,
+          ownerUserAuthenticationData: ownerUserAuthenticationData ?? undefined,
+          sharedItemData: {
+            isDeepFolder: false,
+            currentFolderId: parentFolderId,
+          },
+        },
         filesProgress,
       );
     } catch (error) {
@@ -414,9 +485,9 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
 
 export const uploadItemsThunkExtraReducers = (builder: ActionReducerMapBuilder<StorageState>): void => {
   builder
-    .addCase(uploadItemsThunk.pending, () => undefined)
-    .addCase(uploadItemsThunk.fulfilled, () => undefined)
-    .addCase(uploadItemsThunk.rejected, (state, action) => {
+    .addCase(uploadItemsParallelThunk.pending, () => undefined)
+    .addCase(uploadItemsParallelThunk.fulfilled, () => undefined)
+    .addCase(uploadItemsParallelThunk.rejected, (state, action) => {
       const requestOptions = Object.assign(DEFAULT_OPTIONS, action.meta.arg.options ?? {});
       if (requestOptions?.showErrors) {
         notificationsService.show({

@@ -5,6 +5,7 @@ import { SelectSectionProps } from 'app/newSettings/types/types';
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
+import errorService from './error.service';
 
 const browserHistoryConfig: BrowserHistoryBuildOptions = {
   forceRefresh: false,
@@ -63,6 +64,16 @@ const navigationService = {
   },
   closePreferencesDialog() {
     instance.push(navigationService.history.location.pathname);
+  },
+  replaceState(uuid: string | undefined): void {
+    try {
+      const pathname = navigationService.history.location.pathname.split('/');
+      pathname[pathname.length - 1] = uuid ?? '';
+      const newPathname = pathname.join('/');
+      window.history.replaceState(null, '', newPathname);
+    } catch (error) {
+      errorService.reportError(error);
+    }
   },
 };
 

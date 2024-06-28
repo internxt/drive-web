@@ -22,7 +22,6 @@ jobs:
       - run: echo REACT_APP_SENTRY_DSN=${{ secrets.REACT_APP_SENTRY_DSN }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_STORJ_BRIDGE=${{ secrets.REACT_APP_STORJ_BRIDGE }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_HOSTNAME=${{ secrets.REACT_APP_HOSTNAME }} >> ./infrastructure/share/share.env
-      - run: echo REACT_APP_PHOTOS_API_URL=${{ secrets.REACT_APP_PHOTOS_API_URL }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_PAYMENTS_API_URL=${{ secrets.REACT_APP_PAYMENTS_API_URL }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_DRIVE_NEW_API_URL=${{ secrets.REACT_APP_DRIVE_NEW_API_URL }} >> ./infrastructure/share/share.env
       - run: echo REACT_APP_RECAPTCHA_V3=${{ secrets.REACT_APP_RECAPTCHA_V3 }} >> ./infrastructure/share/share.env
@@ -57,10 +56,9 @@ jobs:
         uses: steebchen/kubectl@v2.0.0
         with: # defaults to latest kubectl binary version
           config: ${{ secrets.KUBE_CONFIG_DRIVE_SERVER }}
-          command: set image --record deployment/drive-web-share-dp drive-web-share-dp=${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }}
+          command: set image --record deployment/drive-web-share-dp drive-web-share=${{ secrets.DOCKERHUB_USERNAME }}/drive-web-dev:${{ github.sha }} -n drive
       - name: Verify deployment
         uses: steebchen/kubectl@v2.0.0
         with:
           config: ${{ secrets.KUBE_CONFIG_DRIVE_SERVER }}
-          version: v1.20.2 # specify kubectl binary version explicitly
-          command: rollout status deployment/drive-web-share-dp
+          command: rollout status deployment/drive-web-share-dp -n drive

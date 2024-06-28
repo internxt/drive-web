@@ -20,6 +20,8 @@ const parsePathNames = (breadcrumbsList: FolderAncestor[]) => {
 };
 
 export const getAncestorsAndSetNamePath = async (uuid: string, dispatch) => {
+  // TODO: FOR WORKSPACES IT IS NOT WORKING PROPERLY
+  // CHECK HOW IT WORKS IN WORKSPACES AND IN THE PERSONAL DRIVE TO COMPARE AND SEE THE DIFFERENCE
   const breadcrumbsList: FolderAncestor[] = await newStorageService.getFolderAncestors(uuid);
   const fullPathParsedNames = parsePathNames(breadcrumbsList);
   dispatch(storageActions.setNamePath(fullPathParsedNames));
@@ -49,6 +51,7 @@ export const goToFolderThunk = createAsyncThunk<void, FolderPath, { state: RootS
 
     dispatch(uiActions.setFileInfoItem(null));
     dispatch(uiActions.setIsDriveItemInfoMenuOpen(false));
+
     dispatch(storageActions.setCurrentPath(path));
 
     if (path.uuid && !isInNamePath) {

@@ -21,8 +21,6 @@ import RealtimeService from './app/core/services/socket.service';
 import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './app/newSettings/PreferencesDialog';
@@ -37,6 +35,7 @@ import { AppDispatch, RootState } from './app/store';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
+import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
@@ -108,13 +107,13 @@ const App = (props: AppProps): JSX.Element => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
-      await LRUPhotosCacheManager.getInstance();
-      await LRUPhotosPreviewsCacheManager.getInstance();
 
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
-
+      // TODO: CHANGE BY WORKSPACE INITIALIZATOR
+      dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -157,6 +156,8 @@ const App = (props: AppProps): JSX.Element => {
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
+
+    dispatch(uiActions.setFileViewerItem(null));
   };
 
   if (!isAuthenticated || isInitialized) {

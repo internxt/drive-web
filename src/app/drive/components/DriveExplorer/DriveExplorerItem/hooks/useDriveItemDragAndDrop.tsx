@@ -49,6 +49,7 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
   const dispatch = useAppDispatch();
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const { selectedItems } = useAppSelector((state) => state.storage);
+  const workspacesCredentials = useAppSelector((state) => state.workspaces.workspaceCredentials);
   const namePath = useAppSelector((state) => state.storage.namePath);
   const [{ isDraggingOverThisItem, canDrop }, connectDropTarget] = useDrop<
     DriveItemData | DriveItemData[],
@@ -91,7 +92,11 @@ export const useDriveItemDrop = (item: DriveItemData): DriveItemDrop => {
 
           dispatch(storageActions.setMoveDestinationFolderId(item.uuid));
 
-          const [folderContentPromise] = storageClient.getFolderContentByUuid(item.uuid);
+          const [folderContentPromise] = storageClient.getFolderContentByUuid(
+            item.uuid,
+            false,
+            workspacesCredentials?.tokenHeader,
+          );
           const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
           const foldersInDestinationFolderParsed = foldersInDestinationFolder.map((folder) => ({
             ...folder,

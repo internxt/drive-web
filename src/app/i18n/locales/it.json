@@ -9,19 +9,31 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": "Risparmia fino al 75%",
-    "title": "Proteggi la tua identità online per tutta la vita.",
-    "cta": "Scegli un piano",
-    "guarantee": "Garanzia di rimborso entro 30 giorni",
-    "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
+    "label": {
+      "upTo": "FINO A ",
+      "discount": "Modifiche al tuo piano gratuito"
+    },
+    "title": "Attenzione!",
+    "subtitle": {
+      "line1": "Il piano gratuito di Internxt sarà ridotto a 1GB il 1 luglio.",
+      "line2": {
+        "normal1": "Evita questo downgrade usando il codice ",
+        "blue": "FREEVIP",
+        "normal2": " per ottenere il 90% di sconto su qualsiasi piano premium."
+      }
+    },
+    "cta": "Scegli il piano",
+    "guarantee": "Garanzia di rimborso di 30 giorni",
+    "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
     "features": [
-      "Fino al 75% di sconto su tutti i piani a vita",
+      "Risparmia su tutti i piani Internxt",
       "Archiviazione cloud sicura e protetta",
       "Open source e trasparente",
       "Trasferimenti crittografati end-to-end",
       "Nessun accesso non autorizzato",
-      "L'offerta termina l'18 aprile"
-    ]
+      "L'offerta termina il 30 giugno"
+    ],
+    "copied": "Copiato negli appunti"
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",
@@ -58,13 +70,15 @@
     "it": "Italiano (Italiano)",
     "zh": "简体中文 (Cinese)",
     "ru": "Русский (Russo)",
-    "de": "Deutsch (Tedesco)"
+    "de": "Deutsch (Tedesco)",
+    "zh-tw": "臺灣 (Taiwanese)"
   },
   "theme": {
     "title": "Aspetto",
     "light": "Chiaro",
     "dark": "Scuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",
@@ -247,7 +261,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backup",
     "shared": "Condiviso",
     "recents": "Recenti",
@@ -265,12 +278,6 @@
         "uploadFiles": "Caricare i file",
         "noResults": "Non ci sono risultati per questa ricerca",
         "dragNDrop": "Trascinare e rilasciare qui o fare clic sul pulsante di caricamento"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "La tua galleria è vuota",
-        "description": "Usa l'app mobile Internxt per sincronizzare le tue foto"
       }
     },
     "account": {
@@ -298,7 +305,6 @@
           "usage": "Usati {{totalUsed}} di {{totalSpace}}",
           "view": {
             "backups": "Backups",
-            "photos": "Photos",
             "trash": "Cestino",
             "free": {
               "planName": "Piano gratuito",
@@ -840,32 +846,6 @@
       "sharedWith": "Condiviso con te ",
       "todayAt": "oggi alle "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "file selezionati",
-      "singleToolBar": "file selezionati",
-      "multiTitle": "Eliminare i {{item}} file selezionati?",
-      "singleTitle": "Eliminare i {{item}} file selezionati?",
-      "subtitle": "Non è possibile annullare l'azione",
-      "buttons": {
-        "cancel": "Annulla",
-        "delete": "Elimina"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Condividi {{item}} foto",
-      "multiTitle": "Condividi {{item}} foto",
-      "options": "Opzioni link",
-      "limit": "Limita il numero di volte che il link può essere aperto",
-      "openCount": "Limite apertura",
-      "times": "volte",
-      "change": "Modifica",
-      "buttons": {
-        "cancel": "Annulla",
-        "create": "Creazione collegamento",
-        "creating": "Creare un collegamento...",
-        "copyLink": "Copia link"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Amici invitati",
       "email": "E-mail",
@@ -958,7 +938,6 @@
     "emptyPassword": "La password precedente non deve essere vuota",
     "errorMovingToTrash": "Si è verificato un errore durante lo spostamento degli elementi nel cestino.",
     "errorDeletingFromTrash": "Si è verificato un errore durante l'eliminazione degli elementi dal cestino.",
-    "braveNotSupportMultiplePhotosDowload": "Brave non supporta il download di più foto.",
     "maxSizeUploadLimitError": "File troppo grande (superiore a 20GB)",
     "connectionLostError": "Connessione Internet persa",
     "errorLoadingTrashItems": "Errore nel caricamento degli elementi del cestino"
@@ -1101,15 +1080,6 @@
         "in-process": "{{progress}}% Download del file",
         "success": "File scaricati",
         "error": "Download fallito, fare clic su ↻ per riprovare",
-        "cancelled": "Download annullato"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Download di {{progress}}%",
-        "success": "Scaricato",
-        "error": "Error during download",
         "cancelled": "Download annullato"
       },
       "errors": {}
@@ -1307,6 +1277,7 @@
     "dropdown": {
       "openPreview": "Anteprima aperta",
       "shareLink": "Condividi",
+      "shareTeam": "Condividi con il team",
       "getLink": "Ottenere link",
       "rename": "Rinomina",
       "download": "Scarica",

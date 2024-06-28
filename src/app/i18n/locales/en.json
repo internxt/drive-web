@@ -4,19 +4,31 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": "Save up to 75%",
-    "title": "Secure your online ID for life",
+    "label": {
+      "upTo": "UP TO ",
+      "discount": "Changes to your free plan"
+    },
+    "title": "Heads up!",
+    "subtitle": {
+      "line1": "Internxt's free plan will be reduced to 1GB on July 1st.",
+      "line2": {
+        "normal1": "Bypass this downgrade using code  ",
+        "blue": "FREEVIP",
+        "normal2": " to get 90% off any premium plan."
+      }
+    },
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
     "features": [
-      "Up to 75% OFF all lifetime plans",
+      "Save on all Internxt plans",
       "Safe and secure cloud storage",
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends April 18th"
-    ]
+      "Offer ends June 30th"
+    ],
+    "copied": "Copied to clipboard"
   },
   "valentinesBanner": {
     "title": "Love without limits!",
@@ -58,13 +70,15 @@
     "it": "Italiano (Italian)",
     "zh": "简体中文 (Chinese)",
     "ru": "Русский (Russian)",
-    "de": "Deutsch (German)"
+    "de": "Deutsch (German)",
+    "zh-tw": "臺灣 (Taiwan)"
   },
   "theme": {
     "title": "Appearance",
     "light": "Light",
     "dark": "Dark",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "Email",
@@ -247,7 +261,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backups",
     "shared": "Shared",
     "recents": "Recents",
@@ -265,12 +278,6 @@
         "uploadFiles": "Upload files",
         "noResults": "There are no results for this search",
         "dragNDrop": "Drag and drop here or click on upload button"
-      }
-    },
-    "photos": {
-      "empty": {
-        "title": "Your photo gallery is empty",
-        "description": "Use the Internxt mobile app to sync all your photos from your device"
       }
     },
     "account": {
@@ -298,7 +305,6 @@
           "usage": "Used {{totalUsed}} of {{totalSpace}}",
           "view": {
             "backups": "Backups",
-            "photos": "Photos",
             "trash": "Trash",
             "free": {
               "planName": "Free plan",
@@ -848,32 +854,6 @@
       "sharedWith": "Shared with you ",
       "todayAt": "today at "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Delete {{item}} selected items?",
-      "singleTitle": "Delete {{item}} selected item?",
-      "subtitle": "You can't undo this action",
-      "buttons": {
-        "cancel": "Cancel",
-        "delete": "Delete"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Share {{item}} photo",
-      "multiTitle": "Share {{item}} photos",
-      "options": "Link options",
-      "limit": "Limit number of time users can open this link",
-      "openCount": "Open count limit",
-      "times": "times",
-      "change": "Change",
-      "buttons": {
-        "cancel": "Cancel",
-        "create": "Create link",
-        "creating": "Creating link...",
-        "copyLink": "Copy link"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Friends invited",
       "email": "Email",
@@ -966,7 +946,6 @@
     "emptyPassword": "Previous password must not be empty",
     "errorMovingToTrash": "An error occurred while moving the items to trash.",
     "errorDeletingFromTrash": "An error occurred while deleting the items from trash.",
-    "braveNotSupportMultiplePhotosDowload": "Brave doesn't support multiple photo downloads.",
     "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Internet connection lost",
     "errorLoadingTrashItems": "Error loading trash items"
@@ -1109,15 +1088,6 @@
         "in-process": "{{progress}}% Downloading file",
         "success": "File downloaded",
         "error": "Download failed, click ↻ to retry",
-        "cancelled": "Download cancelled"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Downloading {{progress}}%",
-        "success": "Downloaded",
-        "error": "Error during download",
         "cancelled": "Download cancelled"
       },
       "errors": {}
@@ -1320,6 +1290,7 @@
       "openPreview": "Open preview",
       "details": "Details",
       "shareLink": "Share",
+      "shareTeam": "Share with team",
       "manageLinkAccess": "Manage access",
       "getLink": "Get link",
       "rename": "Rename",
