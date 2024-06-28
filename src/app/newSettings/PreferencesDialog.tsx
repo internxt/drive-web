@@ -63,7 +63,6 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       className="m-0 flex h-640 overflow-hidden shadow-sm"
       isOpen={isPreferencesDialogOpen}
       onClose={() => onClosePreferences()}
-      // preventClosing={isToastNotificationOpen}
     >
       <Helmet>
         <title>{title} - Internxt Drive</title>
@@ -76,28 +75,28 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       {/* SIDEBAR MENU */}
       <section className="w-full">
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && (
-          <GeneralSection onClosePreferences={() => onClosePreferences()} />
+          <GeneralSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && (
-          <OverviewSection onClosePreferences={() => onClosePreferences()} />
+          <OverviewSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && (
-          <MembersSection onClosePreferences={() => onClosePreferences()} />
+          <MembersSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection onClosePreferences={() => onClosePreferences()} />
+          <BillingWorkspaceSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
-          <AccountSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
+          <AccountSection changeSection={changeSection} onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'plans' && (
-          <PlansSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
+          <PlansSection changeSection={changeSection} onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'billing' && (
-          <BillingAccountSection changeSection={changeSection} onClosePreferences={() => onClosePreferences()} />
+          <BillingAccountSection changeSection={changeSection} onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'security' && (
-          <SecuritySection onClosePreferences={() => onClosePreferences()} />
+          <SecuritySection onClosePreferences={onClosePreferences} />
         )}
       </section>
       {/* ACTIVE SECTION */}
