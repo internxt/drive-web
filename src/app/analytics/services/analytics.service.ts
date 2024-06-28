@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
+import errorService from 'app/core/services/error.service';
 import * as prettySize from 'prettysize';
 import httpService from '../../../../src/app/core/services/http.service';
-import errorService from 'app/core/services/error.service';
 
-import Analytics from '../Analytics';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import localStorageService from 'app/core/services/local-storage.service';
 import { DevicePlatform, SignupDeviceSource } from 'app/core/types';
 import { DriveItemData } from 'app/drive/types';
-import { AnalyticsTrackNames } from '../types';
-import { TrackingPlan } from '../TrackingPlan';
-import { v4 as uuidv4 } from 'uuid';
-import { getCookie } from '../utils';
 import axios from 'axios';
 import dayjs from 'dayjs';
+import { v4 as uuidv4 } from 'uuid';
+import Analytics from '../Analytics';
+import { TrackingPlan } from '../TrackingPlan';
+import { AnalyticsTrackNames } from '../types';
+import { getCookie } from '../utils';
 
 const IMPACT_API = process.env.REACT_APP_IMPACT_API as string;
 
@@ -125,7 +125,7 @@ export function trackAccountUnblocked(properties: TrackingPlan.AccountUnblockPro
 
 function trackData(properties, actionName) {
   const user = localStorageService.getUser();
-  httpService.post(`${process.env.REACT_APP_API_URL}/api/data`, {
+  httpService.post(`${process.env.REACT_APP_API_URL}/data`, {
     actionName,
     user,
     properties,
@@ -315,7 +315,7 @@ export async function trackCancelPayment(priceId: string) {
       amount_total,
       id: sessionId,
       customer_email,
-    } = (await httpService.get(`${process.env.REACT_APP_API_URL}/api/stripe/session`, {
+    } = (await httpService.get(`${process.env.REACT_APP_API_URL}/stripe/session`, {
       params: {
         sessionId: checkoutSessionId,
       },
@@ -340,7 +340,7 @@ export async function trackPaymentConversion() {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
     const { metadata, amount_total, currency, customer, subscription, payment_intent } = (await httpService.get(
-      `${process.env.REACT_APP_API_URL}/api/stripe/session`,
+      `${process.env.REACT_APP_API_URL}/stripe/session`,
       {
         params: {
           sessionId: checkoutSessionId,
@@ -463,7 +463,7 @@ async function getBodyPage(segmentName?: string) {
 export async function serverPage(segmentName: string) {
   const page = await getBodyPage(segmentName);
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/p`, {
+    .post(`${process.env.REACT_APP_API_URL}/data/p`, {
       page,
     })
     .catch(() => {
@@ -487,7 +487,7 @@ export async function trackSignUpServer(payload: {
 }) {
   const page = await getBodyPage();
   return httpService
-    .post(`${process.env.REACT_APP_API_URL}/api/data/t`, {
+    .post(`${process.env.REACT_APP_API_URL}/data/t`, {
       page,
       track: payload,
       actionName: 'server_signup',

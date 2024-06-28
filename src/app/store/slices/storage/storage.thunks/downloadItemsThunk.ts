@@ -1,27 +1,27 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
 
-import storageThunks from '.';
-import { StorageState } from '../storage.model';
-import { RootState } from '../../..';
-import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
-import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { DownloadFileTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
-import errorService from 'app/core/services/error.service';
-import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
-import { downloadFile } from 'app/network/download';
-import localStorageService from 'app/core/services/local-storage.service';
-import { FlatFolderZip } from 'app/core/services/zip.service';
+import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import { Iterator } from 'app/core/collections';
 import date from 'app/core/services/date.service';
-import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
-import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
-import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
+import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
 import { binaryStreamToBlob } from 'app/core/services/stream.service';
+import { FlatFolderZip } from 'app/core/services/zip.service';
+import { LRUFilesCacheManager } from 'app/database/services/database.service/LRUFilesCacheManager';
+import { updateDatabaseFileSourceData } from 'app/drive/services/database.service';
+import { DriveFileData, DriveFolderData, DriveItemData } from 'app/drive/types';
+import { downloadFile } from 'app/network/download';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { DownloadFileTask, DownloadFilesTask, DownloadFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { t } from 'i18next';
+import storageThunks from '.';
+import { RootState } from '../../..';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
-import { Iterator } from 'app/core/collections';
-import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
+import { StorageState } from '../storage.model';
+import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
 
 type DownloadItemsThunkPayload = (DriveItemData & {
   taskId?: string;
@@ -85,7 +85,6 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
     // * 2. Executes tasks
     for (const [index, item] of items.entries()) {
       const taskId = tasksIds[index];
-
       if (item.isFolder) {
         await dispatch(
           storageThunks.downloadFolderThunk({
@@ -164,8 +163,8 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     if (!user) throw new Error('User not found');
 
     const taskId =
-      existingTaskId ||
-      tasksService.create<DownloadFileTask>({
+      existingTaskId ??
+      tasksService.create<DownloadFilesTask>({
         action: TaskType.DownloadFile,
         showNotification: true,
         stop: async () => {

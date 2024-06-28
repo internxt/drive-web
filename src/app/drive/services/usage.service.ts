@@ -10,30 +10,16 @@ export interface UsageDetailsProps {
 
 export async function fetchUsage(): Promise<UsageResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  const photosClient = await SdkFactory.getInstance().createPhotosClient();
-
-  let photosUsage = 0;
   const driveUsage = await storageClient.spaceUsage();
-
-  try {
-    const { usage } = await photosClient.photos.getUsage();
-    photosUsage = usage;
-  } catch (error) {
-    errorService.reportError(error);
-  }
-
-  driveUsage.total += photosUsage;
 
   return driveUsage;
 }
 
 async function getUsageDetails(): Promise<UsageDetailsProps> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
   let drive = 0;
   let backups = 0;
-  let photos = 0;
 
   try {
     const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage();
@@ -43,16 +29,9 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
     errorService.reportError(error);
   }
 
-  try {
-    const { usage } = await photosClient.photos.getUsage();
-    photos = usage;
-  } catch (error) {
-    errorService.reportError(error);
-  }
-
   return {
     drive,
-    photos,
+    photos: 0,
     backups,
   };
 }

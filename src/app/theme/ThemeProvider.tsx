@@ -1,10 +1,11 @@
+import StarWarsBG from 'assets/images/banner/star-wars-bg.webp';
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-export type Theme = 'system' | 'light' | 'dark';
+export type Theme = 'system' | 'light' | 'dark' | 'starwars';
 
 interface ThemeContextProps {
   currentTheme: Theme | undefined;
-  toggleTheme: (string) => void;
+  toggleTheme: (string: Theme) => void;
 }
 
 const ThemeContext = createContext<ThemeContextProps>({
@@ -17,6 +18,7 @@ interface ThemeProviderProps {
 }
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
+  const root = document.getElementById('root');
   const [currentTheme, setCurrentTheme] = useState<Theme>();
 
   const toggleTheme = (theme: Theme) => {
@@ -32,13 +34,20 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   }, []);
 
   useEffect(() => {
+    if (!root) return;
+
     const updateTheme = () => {
       if (
         currentTheme === 'dark' ||
         (currentTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
       ) {
+        root.style.backgroundImage = 'none';
+        document.documentElement.classList.add('dark');
+      } else if (currentTheme === 'starwars') {
+        root.style.backgroundImage = `url(${StarWarsBG})`;
         document.documentElement.classList.add('dark');
       } else {
+        root.style.backgroundImage = 'none';
         document.documentElement.classList.remove('dark');
       }
     };

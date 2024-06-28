@@ -54,6 +54,10 @@ function hasCompletedTutorial(id?: string): boolean {
 }
 
 function clear(): void {
+  if (localStorage.getItem('theme') === 'starwars') {
+    localStorage.setItem('theme', 'system');
+  }
+
   localStorage.removeItem('xUser');
   localStorage.removeItem('xMnemonic');
   localStorage.removeItem('xToken');
@@ -65,6 +69,7 @@ function clear(): void {
   localStorage.removeItem('showSummerBanner');
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
+  localStorage.removeItem('star_wars_theme_enabled');
   localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
 }
 

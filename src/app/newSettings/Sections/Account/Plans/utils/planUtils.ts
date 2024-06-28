@@ -5,9 +5,9 @@ import moneyService from '../../../../../payment/services/money.service';
 import { PlanState } from '../../../../../store/slices/plan';
 import { ChangePlanType } from '../components/PlanCard';
 
-const displayAmount = (amount: number) => {
-  return (amount / 100).toFixed(2);
-};
+function displayAmount(value: number, decimalPoints = 2) {
+  return (value / 100).toFixed(decimalPoints);
+}
 
 const getCurrentChangePlanType = ({
   priceSelected,
