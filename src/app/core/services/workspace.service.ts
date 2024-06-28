@@ -93,6 +93,30 @@ export function setupWorkspace(workspaceSetupInfo: WorkspaceSetupInfo): Promise<
   });
 }
 
+export async function editWorkspace(
+  workspaceId: string,
+  details: { name: string; description: string },
+): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.editWorkspace(workspaceId, details).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export async function updateWorkspaceAvatar(workspaceId: string, avatar: Blob): Promise<{ avatar: string }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.updateAvatar(workspaceId, { avatar }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export async function deleteWorkspaceAvatar(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.deleteAvatar(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function createTeam(createTeamData: CreateTeamData): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.createTeam(createTeamData).catch((error) => {
@@ -180,6 +204,9 @@ const workspacesService = {
   getTeamMembers,
   inviteUserToTeam,
   setupWorkspace,
+  editWorkspace,
+  updateWorkspaceAvatar,
+  deleteWorkspaceAvatar,
   createTeam,
   editTeam,
   deleteTeam,

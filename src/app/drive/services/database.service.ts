@@ -15,20 +15,39 @@ const updateDatabaseProfileAvatar = async ({
   uuid: string;
   sourceURL: string;
   avatarBlob: Blob;
-}): Promise<void> => {
+}): Promise<void> =>
   databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
     srcURL: sourceURL,
     avatarBlob,
     uuid,
   });
-};
 
 const getDatabaseProfileAvatar = async (): Promise<AvatarBlobData | undefined> =>
   databaseService.get(DatabaseCollection.Account_settings, 'profile_avatar');
 
-const deleteDatabaseProfileAvatar = async (): Promise<void> => {
+const deleteDatabaseProfileAvatar = async (): Promise<void> =>
   databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
-};
+
+const updateDatabaseWorkspaceAvatar = async ({
+  uuid,
+  sourceURL,
+  avatarBlob,
+}: {
+  uuid: string;
+  sourceURL: string;
+  avatarBlob: Blob;
+}): Promise<void> =>
+  databaseService.put(DatabaseCollection.WorkspacesAvatarBlobs, uuid, {
+    srcURL: sourceURL,
+    avatarBlob,
+    uuid,
+  });
+
+const getDatabaseWorkspaceAvatar = async (uuid: string): Promise<AvatarBlobData | undefined> =>
+  databaseService.get(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
+
+const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
+  databaseService.delete(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
 
 const updateDatabaseFilePreviewData = async ({
   fileId,
@@ -133,10 +152,13 @@ export {
   canFileBeCached,
   deleteDatabaseItems,
   deleteDatabaseProfileAvatar,
+  deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
   getDatabaseProfileAvatar,
+  getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
   updateDatabaseProfileAvatar,
+  updateDatabaseWorkspaceAvatar,
 };
