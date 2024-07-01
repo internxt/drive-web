@@ -10,6 +10,7 @@ import {
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
+  WorkspacePendingInvitations,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -173,6 +174,17 @@ export function changeUserRole({
   });
 }
 
+export function getWorkspacePendingInvitations(
+  workspaceId: string,
+  limit: number,
+  offset: number,
+): Promise<WorkspacePendingInvitations[]> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspacePendingInvitations(workspaceId, limit, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -191,6 +203,7 @@ const workspacesService = {
   createFileEntry,
   createFolder,
   getWorkspaceCretenditals,
+  getWorkspacePendingInvitations,
 };
 
 export default workspacesService;

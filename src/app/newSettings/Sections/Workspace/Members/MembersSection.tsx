@@ -16,6 +16,9 @@ import MemberDetailsContainer from './containers/MemberDetailsContainer';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 
+const PENDING_INVITATIONS_LIMIT = 25;
+const PENDING_INVITATIONS_OFFSET = 0;
+
 const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
@@ -25,104 +28,35 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
   const [selectedMember, setSelectedMember] = useState<WorkspaceUser | null>(null);
   const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(members);
-
-  // MOCKED GUESTS MEMBERS
-  const guestsNumber = 0;
-  //   {
-  //     id: '123123',
-  //     name: 'Jonh',
-  //     lastname: 'Doe',
-  //     email: 'jonh@internxt.com',
-  //     role: 'owner' as MemberRole,
-  //     products: [
-  //       { name: 'Drive', usageInBytes: 1720000000000, color: 'primary' },
-  //       { name: 'Backups', usageInBytes: 123000, color: 'indigo' },
-  //     ],
-  //     storage: 2200000000000,
-  //     isActivityEnabled: true,
-  //     activity: [
-  //       {
-  //         date: 'Feb 13, 2024',
-  //         records: [],
-  //       },
-  //       {
-  //         date: 'Feb 12, 2024',
-  //         records: [
-  //           { title: 'Logged out', description: 'IP: 111.222.333', time: '12:35' },
-  //           {
-  //             title: 'Uploaded a file',
-  //             description: 'Drive/Marketing Team/January Campaign/Budget.pdf',
-  //             time: '12:35',
-  //           },
-  //           {
-  //             title: 'Created new folder',
-  //             description: 'Drive/Marketing Team/January Campaign',
-  //             time: '12:35',
-  //           },
-  //           {
-  //             title: 'Logged in',
-  //             description: 'IP: 111.222.333',
-  //             time: '12:35',
-  //           },
-  //         ],
-  //       },
-  //     ],
-  //     isTeams: true,
-  //     teams: [
-  //       { team: 'Deveolpment', role: 'owner' },
-  //       { team: 'Marketing', role: 'member' },
-  //     ],
-  //   },
-  //   {
-  //     id: '123124',
-  //     name: 'Michael',
-  //     lastname: 'Dalesom',
-  //     email: 'michael@internxt.com',
-  //     role: 'manager' as MemberRole,
-  //     products: [
-  //       { name: 'Drive', usageInBytes: 524000000000, color: 'primary' },
-  //       { name: 'Backups', usageInBytes: 12300000, color: 'indigo' },
-  //     ],
-  //     storage: 1100000000000,
-  //     isActivityEnabled: false,
-  //     activity: [
-  //       {
-  //         date: 'Feb 13, 2024',
-  //         records: [],
-  //       },
-  //     ],
-  //     isTeams: false,
-  //     teams: [],
-  //   },
-  //   {
-  //     id: '123123214',
-  //     name: 'Bea',
-  //     lastname: 'Donell',
-  //     email: 'bea@internxt.com',
-  //     role: '' as MemberRole,
-  //     products: [{ name: 'Drive', usageInBytes: 824000000000, color: 'primary' }],
-  //     storage: 1100000000000,
-  //     isActivityEnabled: true,
-  //     activity: [
-  //       {
-  //         date: 'Feb 13, 2024',
-  //         records: [],
-  //       },
-  //     ],
-  //     isTeams: true,
-  //     teams: [],
-  //   },
-  // ] as Member[];
+  const [guestsUsers, setGuestUsers] = useState<number>(0);
 
   useEffect(() => {
     const selectedWorkspaceId = selectedWorkspace?.workspace.id;
     getWorkspacesMembers(selectedWorkspaceId);
+    getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   }, []);
 
   useEffect(() => {
     const newMembers = searchMembers(members, searchedMemberName);
     setDisplayedMembers(newMembers);
   }, [searchedMemberName]);
+
+  const getWorkspacePendingInvitations = async (workspaceId) => {
+    try {
+      const workspaceGuestsUsers = await workspacesService.getWorkspacePendingInvitations(
+        workspaceId,
+        PENDING_INVITATIONS_LIMIT,
+        PENDING_INVITATIONS_OFFSET,
+      );
+      const workspaceGuestsUsersLength = workspaceGuestsUsers.length;
+      console.log(workspaceGuestsUsersLength);
+      setGuestUsers(workspaceGuestsUsersLength);
+    } catch (error) {
+      console.log(error);
+
+      errorService.reportError(error);
+    }
+  };
 
   const getWorkspacesMembers = async (selectedWorkspaceId) => {
     try {
@@ -159,7 +93,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
             </Card>
             <Card className="w-full">
               <div className="flex grow flex-col">
-                <span className="text-xl font-medium text-gray-100">{guestsNumber}</span>
+                <span className="text-xl font-medium text-gray-100">{guestsUsers}</span>
                 <span className="text-base font-normal text-gray-60">
                   {translate('preferences.workspace.members.guests')}
                 </span>
