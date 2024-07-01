@@ -185,6 +185,13 @@ export function getWorkspacePendingInvitations(
   });
 }
 
+export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: string }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.validateWorkspaceInvitation(inviteId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -204,6 +211,7 @@ const workspacesService = {
   createFolder,
   getWorkspaceCretenditals,
   getWorkspacePendingInvitations,
+  validateWorkspaceInvitation,
 };
 
 export default workspacesService;

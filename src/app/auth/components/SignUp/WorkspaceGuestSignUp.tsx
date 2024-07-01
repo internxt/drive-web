@@ -21,6 +21,7 @@ import { SubmitHandler, useForm, useWatch } from 'react-hook-form';
 import { useSelector } from 'react-redux';
 import { onChangePasswordHandler } from '../../utils';
 import CreateAccountForm from './CreateAccountForm';
+import workspacesService from 'app/core/services/workspace.service';
 
 function WorkspaceGuestSingUpView(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -81,8 +82,7 @@ function WorkspaceGuestSingUpView(): JSX.Element {
     setInvitationValidation((prev) => ({ ...prev, isLoading: true }));
 
     try {
-      // need to validate WORKSPACE INVITATION
-      // await shareService.validateSharingInvitation(id);
+      await workspacesService.validateWorkspaceInvitation(id);
       setInvitationId(id);
       setInvitationValidation((prev) => ({ ...prev, isLoading: false, isValid: true }));
     } catch (error) {
