@@ -1,19 +1,28 @@
-import { Menu, Transition } from '@headlessui/react';
+import { Menu, Switch, Transition } from '@headlessui/react';
 import { Check, SealPercent } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
-import { ReactComponent as GuaranteeDays } from 'assets/icons/30-days.svg';
+import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
+import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { CouponCodeData, SelectedPlanData } from '../../types';
+import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
+import { useThemeContext } from 'app/theme/ThemeProvider';
 
 interface ProductFeaturesComponentProps {
-  selectedPlan: SelectedPlanData;
+  selectedPlan: CurrentPlanSelected;
   couponCodeData?: CouponCodeData;
   couponError?: string;
-  handleOnInputChange: (promoCode: string) => void;
+  onCouponInputChange: (promoCode: string) => void;
+  upsellManager: {
+    isUpsellSwitchActivated: boolean;
+    showUpsellSwitch: boolean;
+    onUpsellSwitchButtonClicked: () => void;
+    amountSaved: number | undefined;
+    amount: number | undefined;
+  };
 }
 
 const Separator = () => <div className="border border-gray-10" />;
@@ -36,24 +45,30 @@ export const ProductFeaturesComponent = ({
   selectedPlan,
   couponCodeData,
   couponError,
-  handleOnInputChange,
+  onCouponInputChange,
+  upsellManager,
 }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
+  const { currentTheme } = useThemeContext();
+
   const [couponName, setCouponName] = useState<string>('');
+  const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
+
   const bytes = bytesToString(selectedPlan.bytes);
   const features = translateList('checkout.productCard.planDetails.features', {
     spaceToUpgrade: bytes,
   });
 
-  const normalPriceAmount = selectedPlan.amountWithDecimals;
+  const normalPriceAmount = selectedPlan.decimalAmount;
 
-  const planAmount = getProductAmount(selectedPlan.amountWithDecimals, couponCodeData).toFixed(2);
+  const planAmount = getProductAmount(selectedPlan.decimalAmount, couponCodeData).toFixed(2);
+  const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
 
   useHotkeys(
     'enter',
     (event) => {
       event.preventDefault();
-      handleOnInputChange(couponName.toUpperCase());
+      onCouponInputChange(couponName.toUpperCase());
     },
     [couponName],
   );
@@ -63,7 +78,7 @@ export const ProductFeaturesComponent = ({
       <div className="flex w-full flex-row items-center justify-between space-x-4">
         <p className="text-2xl font-semibold text-gray-100">{translate('checkout.productCard.title')}</p>
         <div className="flex flex-row space-x-2">
-          <GuaranteeDays className="h-12" />
+          {currentTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
         </div>
       </div>
       <div className="flex w-full rounded-2xl border-gray-10 bg-surface p-5">
@@ -111,6 +126,45 @@ export const ProductFeaturesComponent = ({
             <p>{planAmount}€</p>
           </div>
           <Separator />
+          {showUpsellSwitch && upsellManager.amountSaved ? (
+            <>
+              <div className="flex w-full flex-row items-center justify-between">
+                <div className="flex flex-row items-center gap-4">
+                  <Switch
+                    checked={isUpsellSwitchActivated}
+                    onChange={() => {
+                      onUpsellSwitchButtonClicked();
+                    }}
+                    className={`${
+                      isUpsellSwitchActivated ? 'bg-green' : 'bg-gray-10'
+                    } relative inline-flex h-6 w-11 items-center rounded-full`}
+                  >
+                    <span
+                      id="switchButton"
+                      className={`${
+                        isUpsellSwitchActivated ? 'translate-x-6' : 'translate-x-1'
+                      } inline-block h-4 w-4 transform rounded-full bg-white transition`}
+                    />
+                  </Switch>
+
+                  <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
+                    <p className="text-sm text-green">
+                      {translate('checkout.productCard.amountSaved')}
+                      {upsellManager.amountSaved} {Currency[selectedPlan.currency]}
+                    </p>
+                  </div>
+                  <p className="font-medium text-gray-80">{translate('checkout.productCard.withAnnualBilling')}</p>
+                </div>
+                <div className="flex flex-row items-center">
+                  <p className="text-sm text-gray-80">
+                    {Currency[selectedPlan.currency]}
+                    {upsellPlanAmount}/{translate('views.account.tabs.account.view.subscription.yearly')}
+                  </p>
+                </div>
+              </div>
+              <Separator />
+            </>
+          ) : undefined}
           {couponCodeData?.codeName ? (
             <div className="flex w-full flex-row justify-between">
               <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
@@ -156,7 +210,7 @@ export const ProductFeaturesComponent = ({
                       <Button
                         disabled={!couponName?.length}
                         onClick={() => {
-                          handleOnInputChange(couponName.toUpperCase());
+                          onCouponInputChange(couponName.toUpperCase());
                         }}
                       >
                         {translate('checkout.productCard.addCoupon.applyCodeButtonTitle')}

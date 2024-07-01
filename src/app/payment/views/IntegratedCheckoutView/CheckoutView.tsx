@@ -13,7 +13,7 @@ import {
   PartialErrorState,
   ErrorType,
   PAYMENT_ELEMENT_OPTIONS,
-  SelectedPlanData,
+  CurrentPlanSelected,
 } from '../../types';
 import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
 import { useEffect, useState } from 'react';
@@ -25,11 +25,18 @@ import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 interface CheckoutViewProps {
-  selectedPlan: SelectedPlanData | null;
+  selectedPlan: CurrentPlanSelected | null;
   authMethod: AuthMethodTypes;
   error?: PartialErrorState;
   couponCodeData?: CouponCodeData;
-  handleOnInputChange: (promoCode: string) => void;
+  upsellManager: {
+    isUpsellSwitchActivated: boolean;
+    showUpsellSwitch: boolean;
+    onUpsellSwitchButtonClicked: () => void;
+    amountSaved: number | undefined;
+    amount: number | undefined;
+  };
+  onCouponInputChange: (promoCode: string) => void;
   authenticateUser: (email: string, password: string, token: string) => Promise<void>;
   onLogOut: () => Promise<void>;
   handleError: (type: ErrorType, error: string) => void;
@@ -41,7 +48,8 @@ const CheckoutView = ({
   couponCodeData,
   authMethod,
   error,
-  handleOnInputChange,
+  upsellManager,
+  onCouponInputChange,
   authenticateUser,
   onLogOut,
   handleError,
@@ -87,14 +95,6 @@ const CheckoutView = ({
         });
     }
   }, [user]);
-
-  const cancelSubscriptionForLifetimeUpgrade = async () => {
-    const userSubscription = await paymentService.getUserSubscription();
-
-    if (selectedPlan?.interval === 'lifetime' && userSubscription.type === 'subscription') {
-      await paymentService.cancelSubscription();
-    }
-  };
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     handleAuthMethod(authMethod);
@@ -145,7 +145,7 @@ const CheckoutView = ({
           customerId,
           selectedPlan.amount,
           selectedPlan.id,
-          couponCodeData?.codeName,
+          couponCodeData?.codeId,
         );
 
         type = clientSecretType;
@@ -154,7 +154,7 @@ const CheckoutView = ({
         const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
           customerId,
           selectedPlan?.id as string,
-          couponCodeData?.codeName,
+          couponCodeData?.codeId,
         );
         type = clientSecretType;
         clientSecret = client_secret;
@@ -218,8 +218,9 @@ const CheckoutView = ({
                 <ProductFeaturesComponent
                   selectedPlan={selectedPlan}
                   couponCodeData={couponCodeData}
-                  handleOnInputChange={handleOnInputChange}
                   couponError={error?.coupon}
+                  onCouponInputChange={onCouponInputChange}
+                  upsellManager={upsellManager}
                 />
                 <Button type="submit" id="submit" className="flex lg:hidden">
                   {isExecutingPaymentAndAuth && isValid ? 'Paying...' : translate('checkout.pay')}

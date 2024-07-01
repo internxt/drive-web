@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useReducer } from 'react';
+import { useEffect, useCallback, useReducer, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import { useThemeContext } from '../../../theme/ThemeProvider';
@@ -6,7 +6,6 @@ import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import errorService from '../../../core/services/error.service';
 import CheckoutView from './CheckoutView';
-import { fetchPlanById, fetchPromotionCodeByName } from '../../helpers/checkout';
 import envService from '../../../core/services/env.service';
 import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
 import databaseService from '../../../database/services/database.service';
@@ -17,6 +16,7 @@ import { useAppDispatch } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import { AuthMethodTypes, ErrorType, THEME_STYLES } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from './checkoutReducer';
+import checkoutService from 'app/payment/services/checkout.service';
 
 export const stripePromise = (async () => {
   const stripeKey = envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
@@ -29,9 +29,12 @@ const CheckoutViewWrapper = () => {
   const { doRegister } = useSignUp('activate');
 
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
+  const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
 
-  const { authMethod, error, selectedPlan, stripe, couponCodeData, elementsOptions, promoCode } = state;
+  const { authMethod, error, currentPlanSelected, plan, stripe, couponCodeData, elementsOptions, promoCodeName } =
+    state;
 
+  // TODO: Handle system and StarWars theme
   const { backgroundColor, textColor } = THEME_STYLES[currentTheme as string];
 
   const elementsOptionsParams: StripeElementsOptions = {
@@ -75,9 +78,9 @@ const CheckoutViewWrapper = () => {
             type: 'SET_ELEMENTS_OPTIONS',
             payload: {
               ...(elementsOptionsParams as any),
-              mode: plan?.interval === 'lifetime' ? 'payment' : 'subscription',
-              amount: plan?.amount,
-              currency: plan?.currency,
+              mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
+              amount: plan?.selectedPlan.amount,
+              currency: plan?.selectedPlan.currency,
               payment_method_types: ['card', 'paypal'],
             },
           });
@@ -108,8 +111,8 @@ const CheckoutViewWrapper = () => {
   }, []);
 
   useEffect(() => {
-    if (promoCode) {
-      handleFetchPromotionCode(promoCode)
+    if (promoCodeName) {
+      handleFetchPromotionCode(promoCodeName)
         .then((promoCode) => {
           dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCode });
         })
@@ -119,7 +122,30 @@ const CheckoutViewWrapper = () => {
           errorService.reportError(error);
         });
     }
-  }, [promoCode]);
+  }, [promoCodeName]);
+
+  const handleFetchSelectedPlan = useCallback(async (planId: string) => {
+    // TODO: save all plans and current selected plan (selectedPlan, not upsell plan)
+    try {
+      const plan = await checkoutService.fetchPlanById(planId);
+      dispatchReducer({ type: 'SET_PLAN', payload: plan });
+      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan.selectedPlan });
+      return plan;
+    } catch (error) {
+      console.error('Error fetching plan or payment intent:', error);
+    }
+  }, []);
+
+  const handleFetchPromotionCode = useCallback(async (promotionCode: string) => {
+    const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
+
+    return {
+      codeId: promoCodeData.codeId,
+      codeName: promotionCode,
+      amountOff: promoCodeData.amountOff,
+      percentOff: promoCodeData.percentOff,
+    };
+  }, []);
 
   const authenticateUser = async (email: string, password: string) => {
     try {
@@ -131,6 +157,7 @@ const CheckoutViewWrapper = () => {
     } catch (err) {
       const error = err as Error;
       handleError('auth', error.message);
+      errorService.reportError(error);
       throw new Error('Authentication failed');
     }
   };
@@ -142,23 +169,7 @@ const CheckoutViewWrapper = () => {
     handleAuthMethodChange('signIn');
   };
 
-  const handleFetchSelectedPlan = useCallback(async (planId: string) => {
-    try {
-      const plan = await fetchPlanById(planId);
-      dispatchReducer({ type: 'SET_SELECTED_PLAN', payload: plan });
-      return plan;
-    } catch (error) {
-      console.error('Error fetching plan or payment intent:', error);
-    }
-  }, []);
-
-  const handleFetchPromotionCode = useCallback(async (promotionCode: string) => {
-    const promoCodeData = await fetchPromotionCodeByName(promotionCode);
-
-    return promoCodeData;
-  }, []);
-
-  const handleOnInputChange = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
+  const onCouponInputChange = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
 
   const handleAuthMethodChange = (method: AuthMethodTypes) => {
     dispatchReducer({ type: 'SET_AUTH_METHOD', payload: method });
@@ -173,14 +184,22 @@ const CheckoutViewWrapper = () => {
     });
   };
 
+  const upsellManager = checkoutService.getUpsellManager(
+    isUpsellSwitchActivated,
+    plan,
+    setIsUpsellSwitchActivated,
+    dispatchReducer,
+  );
+
   return (
     <Elements stripe={stripe} options={elementsOptions}>
       <CheckoutView
-        selectedPlan={selectedPlan}
+        selectedPlan={currentPlanSelected}
         couponCodeData={couponCodeData}
         authMethod={authMethod}
         error={error}
-        handleOnInputChange={handleOnInputChange}
+        upsellManager={upsellManager}
+        onCouponInputChange={onCouponInputChange}
         handleError={handleError}
         onLogOut={onLogOut}
         authenticateUser={authenticateUser}

@@ -1,8 +1,9 @@
 import { Action, State } from '../../../payment/types';
 
 export const initialStateForCheckout: State = {
-  selectedPlan: null,
-  promoCode: '',
+  plan: null,
+  currentPlanSelected: null,
+  promoCodeName: '',
   couponCodeData: undefined,
   stripe: null,
   elementsOptions: undefined,
@@ -12,10 +13,12 @@ export const initialStateForCheckout: State = {
 
 export const checkoutReducer = (state: State, action: Action): State => {
   switch (action.type) {
-    case 'SET_SELECTED_PLAN':
-      return { ...state, selectedPlan: action.payload };
+    case 'SET_PLAN':
+      return { ...state, plan: action.payload };
+    case 'SET_CURRENT_PLAN_SELECTED':
+      return { ...state, currentPlanSelected: action.payload };
     case 'SET_PROMO_CODE_NAME':
-      return { ...state, promoCode: action.payload };
+      return { ...state, promoCodeName: action.payload };
     case 'SET_COUPON_CODE_DATA':
       return { ...state, couponCodeData: action.payload };
     case 'SET_STRIPE':

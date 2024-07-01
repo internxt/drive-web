@@ -1,8 +1,8 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import paymentService from 'app/payment/services/payment.service';
-import { ClientSecretData, CouponCodeData } from '../types';
+import { Action, ClientSecretData, CouponCodeData, PlanData } from '../types';
+import { Dispatch } from 'react';
 
-const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
+const fetchPlanById = async (planId: string): Promise<PlanData> => {
   const response = await fetch(`${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}`, {
     method: 'GET',
   });
@@ -11,7 +11,9 @@ const fetchPlanById = async (planId: string): Promise<DisplayPrice> => {
     throw new Error('Plan not found');
   }
 
-  return response.json();
+  const data = await response.json();
+
+  return data;
 };
 
 const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCodeData> => {
@@ -24,7 +26,14 @@ const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCo
     throw new Error(message);
   }
 
-  return response.json();
+  const dataJson = await response.json();
+
+  return {
+    codeId: dataJson.codeId,
+    codeName: promotionCode,
+    amountOff: dataJson.amountOff,
+    percentOff: dataJson.percentOff,
+  };
 };
 
 const getClientSecretForPaymentIntent = async (
@@ -63,11 +72,31 @@ const getClientSecretForSubscriptionIntent = async (
   };
 };
 
+const getUpsellManager = (
+  isUpsellSwitchActivated: boolean,
+  plan: PlanData | null,
+  setIsUpsellSwitchActivated: (isSwitchActivated: boolean) => void,
+  dispatchReducer: Dispatch<Action>,
+) => {
+  return {
+    onUpsellSwitchButtonClicked: () => {
+      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
+      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
+      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
+    },
+    isUpsellSwitchActivated,
+    showUpsellSwitch: !!plan?.upsellPlan,
+    amountSaved: plan?.upsellPlan ? (plan?.selectedPlan.amount * 12 - plan?.upsellPlan.amount) / 100 : undefined,
+    amount: plan?.upsellPlan.decimalAmount,
+  };
+};
+
 const checkoutService = {
   fetchPlanById,
   fetchPromotionCodeByName,
   getClientSecretForPaymentIntent,
   getClientSecretForSubscriptionIntent,
+  getUpsellManager,
 };
 
 export default checkoutService;

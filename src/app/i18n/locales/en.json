@@ -218,7 +218,9 @@
         "buttonTitle": "Add coupon",
         "inputText": "Coupon code",
         "applyCodeButtonTitle": "Apply"
-      }
+      },
+      "amountSaved": "Save ",
+      "withAnnualBilling": "with annual billing"
     }
   },
   "general": {

@@ -1,6 +1,11 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { StripePaymentElementOptions, Stripe, StripeElementsOptions } from '@stripe/stripe-js';
 
+export enum Currency {
+  'eur' = '€',
+  'usd' = '$',
+}
+
 export interface ProductMetadata {
   is_drive: boolean;
   is_teams: boolean;
@@ -65,7 +70,12 @@ export enum RenewalPeriod {
   Annually = 'annually',
 }
 
-export type SelectedPlanData = DisplayPrice & { amountWithDecimals: number };
+export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
+
+export type PlanData = {
+  selectedPlan: DisplayPrice & { decimalAmount: number };
+  upsellPlan: DisplayPrice & { decimalAmount: number };
+};
 
 export type AuthMethodTypes = 'signUp' | 'signIn' | 'userIsSignedIn';
 
@@ -117,17 +127,19 @@ export type ErrorType = 'auth' | 'stripe' | 'coupon';
 export type PartialErrorState = Partial<Record<ErrorType, string>>;
 
 export interface State {
-  selectedPlan: SelectedPlanData | null;
-  promoCode?: string;
-  couponCodeData?: CouponCodeData;
+  plan: PlanData | null;
+  currentPlanSelected: CurrentPlanSelected | null;
   stripe: Stripe | null;
+  authMethod: AuthMethodTypes;
+  promoCodeName?: string;
+  couponCodeData?: CouponCodeData;
   elementsOptions?: StripeElementsOptions;
   error?: PartialErrorState;
-  authMethod: AuthMethodTypes;
 }
 
 export type Action =
-  | { type: 'SET_SELECTED_PLAN'; payload: SelectedPlanData }
+  | { type: 'SET_PLAN'; payload: PlanData }
+  | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: CurrentPlanSelected }
   | { type: 'SET_PROMO_CODE_NAME'; payload: string }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData }
   | { type: 'SET_STRIPE'; payload: Stripe | null }
