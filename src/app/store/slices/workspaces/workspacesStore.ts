@@ -37,11 +37,16 @@ const initialState: WorkspacesState = {
 
 const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
   'workspaces/updateWorkspaces',
-  async (_, { dispatch }) => {
-    const workspaces = await workspacesService.getWorkspaces();
+  async (_, { dispatch, getState }) => {
+    const state = getState();
+    const isUserLogged = state.user.user;
 
-    dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
-    dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+    if (isUserLogged) {
+      const workspaces = await workspacesService.getWorkspaces();
+
+      dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
+      dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+    }
   },
 );
 

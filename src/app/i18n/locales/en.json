@@ -1627,6 +1627,9 @@
     "workspaceTypes": {
       "personal": "Personal Workspace",
       "business": "Business Workspace"
+    },
+    "messages": {
+      "sharedSuccess": "Item shared successfully with the team"
     }
   }
 }

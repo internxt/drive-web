@@ -1605,6 +1605,9 @@
     "workspaceTypes": {
       "personal": "Espacio de trabajo personal",
       "business": "Espacio de trabajo empresarial"
+    },
+    "messages": {
+      "sharedSuccess": "Elemento compartido exitosamente con el equipo"
     }
   }
 }
