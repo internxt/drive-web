@@ -1,4 +1,5 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import Section from 'app/newSettings/components/Section';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -7,7 +8,6 @@ import userService from '../../../../auth/services/user.service';
 import errorService from '../../../../core/services/error.service';
 import ClearTrashDialog from '../../../../drive/components/ClearTrashDialog/ClearTrashDialog';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
-import Section from '../../../../newSettings/Sections/General/components/Section';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Button from '../../../../shared/components/Button/Button';
 import { RootState } from '../../../../store';
@@ -24,9 +24,10 @@ import UserHeaderContainer from './containers/UserHeaderContainer';
 
 interface AccountSectionProps {
   changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
 }
 
-const AccountSection = ({ changeSection }: AccountSectionProps) => {
+const AccountSection = ({ changeSection, onClosePreferences }: AccountSectionProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
@@ -84,7 +85,7 @@ const AccountSection = ({ changeSection }: AccountSectionProps) => {
           ? translate('preferences.account.invitedFriends')
           : translate('preferences.account.title')
       }
-      className="flex flex-1 flex-col space-y-2 p-6"
+      onClosePreferences={onClosePreferences}
     >
       {isInvitationsViewVisible ? (
         <InvitedFriendsContainer />
@@ -97,7 +98,7 @@ const AccountSection = ({ changeSection }: AccountSectionProps) => {
           />
           <UserHeaderContainer />
           <div className="flex justify-center">
-            <Button variant="secondary" className="w-32" onClick={() => setIsDetailsModalOpen(true)}>
+            <Button variant="secondary" className="-mt-8 w-32" onClick={() => setIsDetailsModalOpen(true)}>
               <span>{t('views.preferences.workspace.overview.edit')}</span>
             </Button>
           </div>
@@ -106,7 +107,7 @@ const AccountSection = ({ changeSection }: AccountSectionProps) => {
           )}
           <AccountUsageContainer changeSection={changeSection} />
           <div>
-            <div className="my-8 h-px w-full bg-gray-10" />
+            <div className="h-px w-full bg-gray-10" />
           </div>
           <DeleteAccountContainer />
         </>

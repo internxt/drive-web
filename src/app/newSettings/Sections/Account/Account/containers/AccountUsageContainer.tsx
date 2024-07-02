@@ -58,7 +58,7 @@ const AccountUsageContainer = ({
   return (
     <Card className="space-y-6">
       <div className={`${className} w-full space-y-6 `}>
-        {products && planUsage && planLimitInBytes ? (
+        {products && planUsage >= 0 && planLimitInBytes ? (
           <>
             <Usage
               usedSpace={planUsage}
@@ -75,7 +75,7 @@ const AccountUsageContainer = ({
       </div>
 
       <Card>
-        <div className="-m-5 flex flex-row rounded-xl bg-surface p-5 ">
+        <div className="-m-5 flex flex-row rounded-xl bg-gray-1 p-5 dark:bg-surface">
           <div className="flex flex-col">
             <p className="text-base font-medium text-gray-100">{translate('preferences.account.upgrade')}</p>
             <p className="text-base font-normal text-gray-60">{translate('preferences.account.levelUpStorage')}</p>

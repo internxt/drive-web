@@ -1,5 +1,5 @@
-import Section from '../../General/components/Section';
 import { useEffect, useState } from 'react';
+import Section from 'app/newSettings/components/Section';
 import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { useAppSelector } from '../../../../store/hooks';
 import { RootState } from '../../../../store';
@@ -16,7 +16,7 @@ import MemberDetailsContainer from './containers/MemberDetailsContainer';
 import { getMemberRole, searchMembers } from '../../../../newSettings/utils/membersUtils';
 import UsageBar from '../../../../newSettings/components/Usage/UsageBar';
 
-const MembersSection = () => {
+const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const [searchedMemberName, setSearchedMemberName] = useState('');
@@ -141,8 +141,8 @@ const MembersSection = () => {
           ? selectedMember.member.name + ' ' + selectedMember.member.lastname
           : translate('preferences.workspace.members.members')
       }
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
       onBackButtonClicked={selectedMember ? () => setSelectedMember(null) : undefined}
+      onClosePreferences={onClosePreferences}
     >
       {selectedMember ? (
         <MemberDetailsContainer member={selectedMember} />
@@ -167,20 +167,20 @@ const MembersSection = () => {
             </Card>
           </div>
           {/* MEMBERS LIST */}
-          <div className="flex flex-row justify-between">
-            <Input
-              placeholder={translate('preferences.workspace.members.search')}
-              variant="email"
-              autoComplete="off"
-              onChange={setSearchedMemberName}
-              value={searchedMemberName}
-              name="memberName"
-            />
-            <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
-              {translate('preferences.workspace.members.invite')}
-            </Button>
-          </div>
-          <div>
+          <div className="flex flex-col space-y-3">
+            <div className="flex flex-row justify-between">
+              <Input
+                placeholder={translate('preferences.workspace.members.search')}
+                variant="email"
+                autoComplete="off"
+                onChange={setSearchedMemberName}
+                value={searchedMemberName}
+                name="memberName"
+              />
+              <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+                {translate('preferences.workspace.members.invite')}
+              </Button>
+            </div>
             <div className="flex">
               {/* LEFT COLUMN */}
               <div className="flex grow flex-col">

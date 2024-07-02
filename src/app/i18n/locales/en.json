@@ -284,8 +284,8 @@
       "title": "Account",
       "avatar": {
         "title": "Upload avatar",
-        "removePhoto": "Delete photo",
-        "updatePhoto": "Upload new photo",
+        "removePhoto": "Remove",
+        "updatePhoto": "Upload photo",
         "dragNDrop": "Select or drop a picture",
         "success": "Avatar has been successfully updated",
         "error": "Something happened while uploading your avatar",
@@ -1556,6 +1556,9 @@
           "title": "Cancel subscription",
           "text": "Your Plan will be downgraded to the free tier.",
           "button": "Cancel subscription"
+        },
+        "empty": {
+          "text": "No previous invoices"
         }
       }
     },
