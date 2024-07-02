@@ -233,7 +233,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 >
                   <div className="flex items-center">
                     <Avatar src="" fullName={`${user.email}`} diameter={40} />
-                    <p className="ml-2.5">{user.email}</p>
+                    <p className="ml-2.5 break-all">{user.email}</p>
                   </div>
                   <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                     <div className="relative">
