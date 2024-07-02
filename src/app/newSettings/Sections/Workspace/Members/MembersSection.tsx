@@ -49,7 +49,6 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
         PENDING_INVITATIONS_OFFSET,
       );
       const workspaceGuestsUsersLength = workspaceGuestsUsers.length;
-      console.log(workspaceGuestsUsersLength);
       setGuestUsers(workspaceGuestsUsersLength);
     } catch (error) {
       console.log(error);
