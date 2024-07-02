@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 
-import { useAppDispatch } from 'app/store/hooks';
-import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Modal from 'app/shared/components/Modal';
-import { userThunks } from '../store/slices/user';
+import { useAppDispatch } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
 import AccountSection from './Sections/Account/Account/AccountSection';
 import BillingAccountSection from './Sections/Account/Billing/BillingAccountSection';
 import PlansSection from './Sections/Account/Plans/PlansSection';
@@ -47,11 +46,6 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
       dispatch(uiActions.setIsPreferencesDialogOpen(false));
     }
   }, [haveParamsChanged, isPreferencesDialogOpen]);
-
-  // CHECK IF refreshUserDataThunk WORKS BEFORE MERGE
-  useEffect(() => {
-    dispatch(userThunks.refreshUserDataThunk());
-  }, []);
 
   const changeSection = ({ section, subsection }: SelectSectionProps) => {
     const selectedNavSection = findSectionItemsBySectionAndSubsection({ section, subsection });
