@@ -22,7 +22,7 @@ const UsageContainer = ({
 
   return (
     <div className={`${className} w-full space-y-6 `}>
-      {products && planUsage && planLimitInBytes ? (
+      {products && planUsage >= 0 && planLimitInBytes ? (
         <Usage
           usedSpace={planUsage}
           spaceLimit={planLimitInBytes}

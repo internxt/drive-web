@@ -55,7 +55,7 @@ const InvitedFriendsContainer = () => {
         <div className="flex flex-col space-y-5">
           <div className="flex flex-row">
             {/* EXTRA STORAGE */}
-            <div className="flex w-60 flex-row space-y-4">
+            <div className="flex flex-1 space-y-4">
               <ExtraStorageDiv
                 numberOfGBObtained={isLoading ? '-' : numberOfAcceptedInvites}
                 totalGB={maxInvitations}
@@ -63,7 +63,7 @@ const InvitedFriendsContainer = () => {
             </div>
             <VerticalDivider className="mx-8" />
             {/* FRIENDS INVITED */}
-            <div className="flex w-60 flex-row space-y-4">
+            <div className="flex flex-1 space-y-4">
               <div>
                 <div>
                   <span className="text-3xl font-medium text-gray-100">{isLoading ? '-' : numberOfPendingInvites}</span>
@@ -75,7 +75,7 @@ const InvitedFriendsContainer = () => {
             </div>
             <VerticalDivider className="mx-8" />
             {/* ACCEPTED REQUESTS */}
-            <div className="flex w-60 flex-row space-y-4">
+            <div className="flex flex-1 space-y-4">
               <div>
                 <div>
                   <span className="text-3xl font-medium text-gray-100">

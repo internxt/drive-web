@@ -5,24 +5,21 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { refreshUserThunk } from '../../../../store/slices/user';
-import Section from '../../General/components/Section';
 import ChangePassword from './components/ChangePassword';
 import EnterPassword from './components/EnterPassword';
 import ExportBackupKey from './components/ExportBackupKey';
 import FrecuentlyAskedQuestions from './components/FrecuentlyAskedQuestions';
 import TwoFactorAuthentication from './components/TwoFactorAuthentication';
+import Section from 'app/newSettings/components/Section';
 
-const SecuritySection = () => {
+const SecuritySection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const dispatch = useAppDispatch();
 
   const [state, setState] = useState<{ tag: 'locked' } | { tag: 'unlocked'; password: string }>({ tag: 'locked' });
 
   return (
-    <Section
-      title={t('preferences.account.security.title')}
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
-    >
+    <Section title={t('preferences.account.security.title')} onClosePreferences={onClosePreferences}>
       {state.tag === 'unlocked' ? (
         <>
           <div className="flex justify-between">
