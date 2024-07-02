@@ -135,7 +135,7 @@ export async function uploadFile(
         date: date.toISOString(),
       };
 
-      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId as string);
+      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId);
     } else {
       // TEMPORARY: For backward compatibility with id
       const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);

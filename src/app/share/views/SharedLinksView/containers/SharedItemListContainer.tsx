@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { DriveItemData, DriveItemDetails } from '../../../../drive/types';
 import { storageActions } from '../../../../store/slices/storage';
 import { uiActions } from '../../../../store/slices/ui';
@@ -11,6 +11,7 @@ import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
 import { OrderDirection } from '../../../../core/types';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import shareService, { decryptMnemonic } from '../../../services/share.service';
 import { setOrderBy, setPage, setSelectedItems } from '../context/SharedViewContext.actions';
 import { useShareViewContext } from '../context/SharedViewContextProvider';
@@ -41,7 +42,12 @@ const SharedItemListContainer = ({
   onOpenItemPreview,
 }: ShareItemListContainerProps) => {
   const dispatch = useDispatch();
+  const selectedWorskpace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceId = selectedWorskpace?.workspace.id;
+  const defaultTeamId = selectedWorskpace?.workspace.defaultTeamId;
+  const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const { state, actionDispatch } = useShareViewContext();
+
   const {
     page,
     hasMoreFiles,
@@ -96,17 +102,27 @@ const SharedItemListContainer = ({
           dispatch,
           selectedItems,
           encryptionKey: shareItem.encryptionKey,
+          token: undefined,
+          workspaceId,
+          teamId: defaultTeamId,
         });
       } else {
         const pageItemsNumber = 5;
-        // called to get the necessary token to download the items
-        const { token } = await shareService.getSharedFolderContent(
-          currentFolderId,
-          'files',
-          currentFolderLevelResourcesToken,
-          0,
-          pageItemsNumber,
-        );
+        let sharedToken;
+        if (workspaceCredentials) {
+          sharedToken = workspaceCredentials.tokenHeader;
+        } else {
+          // called to get the necessary token to download the items
+          const { token } = await shareService.getSharedFolderContent(
+            currentFolderId,
+            'files',
+            currentFolderLevelResourcesToken,
+            0,
+            pageItemsNumber,
+          );
+          sharedToken = token;
+        }
+
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -115,7 +131,9 @@ const SharedItemListContainer = ({
           dispatch,
           selectedItems,
           encryptionKey: sharedItemEncryptionKey,
-          token,
+          token: sharedToken,
+          workspaceId,
+          teamId: defaultTeamId,
         });
       }
     } catch (err) {

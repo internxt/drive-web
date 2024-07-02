@@ -16,6 +16,7 @@ import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
+import workspacesService from '../../../../core/services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
 import shareService, { decryptMnemonic } from '../../../../share/services/share.service';
@@ -277,13 +278,17 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     }: UploadSharedItemsPayload,
     { getState, dispatch },
   ) => {
-    const user = getState().user.user as UserSettings;
+    const state = getState();
+    const user = state.user.user as UserSettings;
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
-
+    const selectedWorkspace = state.workspaces.selectedWorkspace;
+    const workspaceId = selectedWorkspace?.workspace.id;
+    const workspaceCredentials = state.workspaces.workspaceCredentials;
+    const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch });
     if (!continueWithUpload) return;
 
     let zeroLengthFilesNumber = 0;
@@ -301,13 +306,27 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
       let hasMoreItems = true;
 
       while (hasMoreItems) {
-        const parentFolderContent = await shareService.getSharedFolderContent(
-          currentFolderId,
-          'files',
-          isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
-          page,
-          offset,
-        );
+        let parentFolderContent;
+        if (workspaceId && teamId) {
+          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+            workspaceId,
+            teamId,
+            currentFolderId,
+            page,
+            offset,
+          );
+          const response = await promise;
+          parentFolderContent = response;
+        } else {
+          parentFolderContent = await shareService.getSharedFolderContent(
+            currentFolderId,
+            'files',
+            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
+            page,
+            offset,
+          );
+        }
+
         const parentFolderFiles = parentFolderContent.items;
 
         if (parentFolderFiles.length === 0 || parentFolderFiles.length < offset) hasMoreItems = false;
@@ -333,6 +352,18 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     }
     showEmptyFilesNotification(zeroLengthFilesNumber);
 
+    let ownerUserAuthenticationDataForWorkspaces: any = null;
+    if (workspaceId) {
+      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
+      ownerUserAuthenticationDataForWorkspaces = {
+        bridgeUser: workspaceCredentials?.credentials.networkUser,
+        bridgePass: workspaceCredentials?.credentials.networkPass,
+        encryptionKey: decryptedMnemonic,
+        bucketId: workspaceCredentials?.bucket,
+        workspaceId: workspaceId,
+        workspacesToken: workspaceCredentials?.tokenHeader,
+      };
+    }
     const filesToUploadData = filesToUpload.map((file) => ({
       filecontent: file,
       fileType: file.type,
@@ -363,7 +394,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         DatabaseUploadRepository.getInstance(),
         undefined,
         {
-          ownerUserAuthenticationData,
+          ownerUserAuthenticationData: ownerUserAuthenticationDataForWorkspaces ?? ownerUserAuthenticationData,
           sharedItemData: {
             isDeepFolder,
             currentFolderId,

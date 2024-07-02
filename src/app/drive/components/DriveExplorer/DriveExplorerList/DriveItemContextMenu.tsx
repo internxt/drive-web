@@ -442,6 +442,37 @@ const contextMenuMultipleSharedViewAFS = ({
   moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
+const contextMenuWorkspaceFolder = ({
+  shareLink,
+  getLink,
+  shareWithTeam,
+  showDetails,
+  renameItem,
+  moveItem,
+  downloadItem,
+  moveToTrash,
+}: {
+  shareLink: (item: DriveItemData) => void;
+  getLink: (item: DriveItemData) => void;
+  shareWithTeam: (item: DriveItemData) => void;
+  showDetails: (item: DriveItemData) => void;
+  renameItem: (item: DriveItemData) => void;
+  moveItem: (item: DriveItemData) => void;
+  downloadItem: (item: DriveItemData) => void;
+  moveToTrash: (item: DriveItemData) => void;
+}): ListItemMenu<DriveItemData> => [
+  shareLinkMenuItem(shareLink),
+  getCopyLinkMenuItem(getLink),
+  shareWithTeamMenuItem(shareWithTeam),
+  { name: '', action: () => false, separator: true },
+  showDetailsMenuItem(showDetails),
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
 const contextMenuWorkspaceFile = ({
   shareLink,
   shareWithTeam,
@@ -493,4 +524,5 @@ export {
   contextMenuTrashFolder,
   contextMenuTrashItems,
   contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 };

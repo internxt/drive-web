@@ -2,13 +2,15 @@ import { useAppSelector } from 'app/store/hooks';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
 import { fetchSortedFolderContentThunk } from 'app/store/slices/storage/storage.thunks/fetchSortedFolderContentThunk';
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
-import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
+import { ListShareLinksItem, Role } from '@internxt/sdk/dist/drive/share/types';
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import moveItemsToTrash from '../../../../../use_cases/trash/move-items-to-trash';
+import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection, OrderSettings } from '../../../../core/types';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import List from '../../../../shared/components/List';
 import { AppDispatch, RootState } from '../../../../store';
@@ -16,6 +18,7 @@ import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import { storageActions } from '../../../../store/slices/storage';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
@@ -29,6 +32,7 @@ import {
   contextMenuTrashFolder,
   contextMenuTrashItems,
   contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 } from './DriveItemContextMenu';
 
 interface DriveExplorerListProps {
@@ -47,6 +51,7 @@ interface DriveExplorerListProps {
   title: JSX.Element | string;
   onOpenStopSharingAndMoveToTrashDialog: () => void;
   showStopSharingConfirmation: boolean;
+  roles: Role[];
 }
 
 type ObjectWithId = { id: string | number };
@@ -99,8 +104,13 @@ const resetDriveOrder = ({
 };
 
 const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
+  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading, roles } = props;
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
   const [isAllSelectedEnabled, setIsAllSelectedEnabled] = useState(false);
   const [editNameItem, setEditNameItem] = useState<DriveItemData | null>(null);
+
+  const workspaceSelected = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!workspaceSelected;
   const isSelectedMultipleItemsAndNotTrash = props.selectedItems.length > 1 && !props.isTrash;
   const isSelectedSharedItem =
     props.selectedItems.length === 1 &&
@@ -147,8 +157,6 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     dispatch(storageActions.deselectItems(deselectedItems));
     dispatch(storageActions.selectItems(updatedSelectedItems));
   };
-
-  const { dispatch, isLoading, order, hasMoreItems, onEndOfScroll, forceLoading } = props;
 
   const currentFolderId = useAppSelector(storageSelectors.currentFolderId);
   const isRecents = props.title === translate('views.recents.head');
@@ -363,10 +371,57 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
     moveToTrash: moveToTrash,
   });
 
+  const shareWithTeam = useCallback(
+    async (item: ContextMenuDriveItem) => {
+      const driveItem = item as DriveItemData;
+      if (selectedWorkspace) {
+        const editorRole = roles.find((role) => role.name === 'EDITOR');
+        if (editorRole) {
+          try {
+            await workspacesService.shareItemWithTeam({
+              workspaceId: selectedWorkspace?.workspace?.id,
+              itemId: driveItem.uuid,
+              itemType: driveItem.isFolder ? 'folder' : 'file',
+              teamUUID: selectedWorkspace?.workspace.defaultTeamId,
+              // ADDED EDITOR ROLE BY DEFAULT
+              roleId: editorRole?.id,
+            });
+            notificationsService.show({
+              text: translate('workspaces.messages.sharedSuccess'),
+              type: ToastType.Success,
+            });
+          } catch (error) {
+            notificationsService.show({
+              text: translate('modals.shareModal.errors.copy-to-clipboard'),
+              type: ToastType.Error,
+            });
+          }
+        } else {
+          notificationsService.show({
+            text: translate('modals.shareModal.errors.copy-to-clipboard'),
+            type: ToastType.Error,
+          });
+        }
+      }
+    },
+    [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
+  );
+
   const workspaceItemMenu = contextMenuWorkspaceFile({
     shareLink: openLinkSettings,
-    shareWithTeam: openLinkSettings, //CHANGE THIS BY SHARE WITH TEAM
+    shareWithTeam: shareWithTeam,
     openPreview: openPreview,
+    showDetails,
+    getLink: getLink,
+    renameItem: renameItem,
+    moveItem: moveItem,
+    downloadItem: downloadItem,
+    moveToTrash: moveToTrash,
+  });
+
+  const workspaceFolderMenu = contextMenuWorkspaceFolder({
+    shareLink: openLinkSettings,
+    shareWithTeam: shareWithTeam,
     showDetails,
     getLink: getLink,
     renameItem: renameItem,
@@ -400,10 +455,16 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
       return selectedSharedFileMenu;
     }
 
+    if (isWorkspaceSelected) {
+      if (props.selectedItems[0]?.isFolder) {
+        return workspaceFolderMenu;
+      }
+      return workspaceItemMenu;
+    }
+
     if (props.selectedItems[0]?.isFolder) {
       return selectedFolderMenu;
     }
-
     return selectedFileMenu;
   };
 
@@ -500,6 +561,7 @@ export default connect((state: RootState) => ({
   selectedItems: state.storage.selectedItems,
   order: state.storage.order,
   forceLoading: state.storage.forceLoading,
+  roles: state.shared.roles,
   disableKeyboardShortcuts:
     state.ui.isShareDialogOpen ||
     state.ui.isSurveyDialogOpen ||

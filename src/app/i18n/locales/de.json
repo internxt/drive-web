@@ -1571,6 +1571,9 @@
     "workspaceTypes": {
       "personal": "Persönlicher Arbeitsbereich",
       "business": "Geschäftsarbeitsbereich"
+    },
+    "messages": {
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
     }
   }
 }

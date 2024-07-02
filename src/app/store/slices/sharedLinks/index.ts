@@ -6,7 +6,7 @@ import shareService, {
 } from 'app/share/services/share.service';
 import { RootState } from '../..';
 
-import { SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
+import { Role, SharedFoldersInvitationsAsInvitedUserResponse } from '@internxt/sdk/dist/drive/share/types';
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -15,7 +15,6 @@ import { UserRoles } from 'app/share/types';
 import { t } from 'i18next';
 import userService from '../../../auth/services/user.service';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
-import { Role } from './types';
 
 export interface ShareLinksState {
   isLoadingRoles: boolean;

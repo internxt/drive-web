@@ -1,9 +1,10 @@
+import { History } from 'history';
 import { t } from 'i18next';
 import navigationService from '../../core/services/navigation.service';
+import workspacesService from '../../core/services/workspace.service';
 import { AppView } from '../../core/types';
-import shareService from './share.service';
-import { History } from 'history';
 import { AdvancedSharedItem } from '../types';
+import shareService from './share.service';
 
 /**
  * Handles access to a private shared folder, fetching its content and navigating accordingly.
@@ -19,15 +20,21 @@ const handlePrivateSharedFolderAccess = async ({
   history,
   navigateToFolder,
   onError,
+  workspaceItemData,
 }: {
   folderUUID: string;
   history: History;
   navigateToFolder: (sharedFolder: AdvancedSharedItem) => void;
   onError: (errorMessage: string) => void;
+  workspaceItemData: { workspaceId?: string; teamId?: string };
 }) => {
   let statusError: null | number = null;
   try {
-    const sharedFolderData = await getPrivateSharedFolderAccessData(folderUUID);
+    const sharedFolderData = await getPrivateSharedFolderAccessData(
+      folderUUID,
+      workspaceItemData?.workspaceId,
+      workspaceItemData?.teamId,
+    );
     navigateToFolder(sharedFolderData as AdvancedSharedItem);
   } catch (error: any) {
     let errorMessage;
@@ -52,8 +59,14 @@ const handlePrivateSharedFolderAccess = async ({
   }
 };
 
-const getPrivateSharedFolderAccessData = async (folderUUID: string) => {
-  const response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);
+const getPrivateSharedFolderAccessData = async (folderUUID: string, workspaceId?: string, teamId?: string) => {
+  let response;
+  if (workspaceId && teamId) {
+    const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(workspaceId, teamId, folderUUID, 0, 0);
+    response = await promise;
+  } else {
+    response = await shareService.getSharedFolderContent(folderUUID, 'folders', '', 0, 0);
+  }
 
   // TODO: ADD TO SDK TYPES THE NECESSARY FIELDS
   const sharedFolderData = { plainName: (response as any).name, uuid: folderUUID, isFolder: true };
