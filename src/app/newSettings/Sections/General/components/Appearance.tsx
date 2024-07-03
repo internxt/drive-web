@@ -1,31 +1,38 @@
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
-import Section from './Section';
 import { useThemeContext } from '../../../../theme/ThemeProvider';
+import Section from './Section';
 
 import appearance_dark from 'assets/dark.svg';
 import appearance_light from 'assets/light.svg';
 import appearance_system from 'assets/system.svg';
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import errorService from '../../../../core/services/error.service';
+import { isStarWarsThemeAvailable } from '../../../../payment/utils/checkStarWarsCode';
+import { RootState } from '../../../../store';
 
 function ThemeButton({ theme, toggleTheme, isSelected, img }) {
   const { translate } = useTranslationContext();
 
   return (
     <button
-      className={'mr-4 flex w-36 flex-col rounded-xl'}
+      className={'mr-4 flex w-36 flex-col space-y-1 rounded-xl'}
       onClick={() => {
         toggleTheme(theme);
       }}
     >
       <div
-        className={`box-border rounded-xl ${
-          isSelected ? 'border-2 border-primary drop-shadow' : 'border-2 border-transparent'
+        className={`box-border overflow-hidden rounded-xl ${
+          isSelected
+            ? 'border-2 border-primary outline outline-4 outline-primary/10 drop-shadow'
+            : 'border-2 border-transparent'
         }`}
       >
-        <img className="rounded-xl" src={img} alt={theme} />
+        <img src={img} alt={theme} />
       </div>
 
-      <span className={`${!isSelected ? 'text-gray-50' : ''}`}>{translate(`theme.${theme}`)}</span>
+      <span className={`text-sm font-medium ${!isSelected ? 'text-gray-50' : ''}`}>{translate(`theme.${theme}`)}</span>
     </button>
   );
 }
@@ -38,11 +45,32 @@ const themes = [
 const Appearance = () => {
   const { translate } = useTranslationContext();
   const { currentTheme, toggleTheme } = useThemeContext();
+  const plan = useSelector((state: RootState) => state.plan);
+
+  const [appearances, setAppearances] = useState(themes);
+
+  // CHECK IF THIS WORKS BEFORE MERGE
+  useEffect(() => {
+    isStarWarsThemeAvailable(plan)
+      .then((isStarWarsThemeAvailable) => {
+        if (
+          !appearances.some((appearance) => appearance.theme === 'starwars' && appearance.img === appearance_dark) &&
+          isStarWarsThemeAvailable
+        ) {
+          // TODO: add img of starwars
+          setAppearances([...appearances, { theme: 'starwars', img: appearance_dark }]);
+        }
+      })
+      .catch((err) => {
+        const error = err as Error;
+        errorService.reportError(error);
+      });
+  }, []);
 
   return (
     <Section className="" title={translate('theme.title')}>
       <div className="flex flex-row">
-        {themes.map((themeInfo) => (
+        {appearances.map((themeInfo) => (
           <ThemeButton
             key={themeInfo.theme}
             theme={themeInfo.theme}

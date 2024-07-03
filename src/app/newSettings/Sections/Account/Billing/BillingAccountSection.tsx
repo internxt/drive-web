@@ -1,16 +1,17 @@
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
-import { FreeStoragePlan, StoragePlan } from '../../../../drive/types';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import moneyService from '../../../../payment/services/money.service';
-import paymentService from '../../../../payment/services/payment.service';
-import { RenewalPeriod } from '../../../../payment/types';
-import { RootState } from '../../../../store';
-import { useAppDispatch } from '../../../../store/hooks';
-import { PlanState, planThunks } from '../../../../store/slices/plan';
-import Section from '../../General/components/Section';
+
+import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
+import { FreeStoragePlan, StoragePlan } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import moneyService from 'app/payment/services/money.service';
+import paymentService from 'app/payment/services/payment.service';
+import { RenewalPeriod } from 'app/payment/types';
+import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
+import { PlanState, planThunks } from 'app/store/slices/plan';
+import Section from 'app/newSettings/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';
@@ -18,9 +19,10 @@ import BillingAccountOverview from './containers/BillingAccountOverview';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
 }
 
-const BillingAccountSection = ({ changeSection }: BillingAccountSectionProps) => {
+const BillingAccountSection = ({ changeSection, onClosePreferences }: BillingAccountSectionProps) => {
   const dispatch = useAppDispatch();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
@@ -89,10 +91,7 @@ const BillingAccountSection = ({ changeSection }: BillingAccountSectionProps) =>
   };
 
   return (
-    <Section
-      title={t('preferences.workspace.billing.title')}
-      className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
-    >
+    <Section title={t('preferences.workspace.billing.title')} onClosePreferences={onClosePreferences}>
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
       <BillingPaymentMethodCard />
       <Invoices />

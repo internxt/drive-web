@@ -15,6 +15,8 @@ import { useEffect, useState } from 'react';
 import { match } from 'react-router';
 import { Link } from 'react-router-dom';
 import { WritableStream } from 'streamsaver';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError from '../../../core/types';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { useAppSelector } from '../../../store/hooks';
 import SendBanner from './SendBanner';
@@ -69,7 +71,7 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
 
   useEffect(() => {
     loadFolderInfo().catch((err) => {
-      if (err.message !== 'Forbidden') {
+      if (err.status !== HTTP_CODES.FORBIDDEN) {
         setIsLoaded(true);
         if (err.message === CHROME_IOS_ERROR_MESSAGE) {
           notificationsService.show({
@@ -114,12 +116,12 @@ export default function ShareFolderView(props: ShareViewProps): JSX.Element {
         setSize(folderSize);
       })
       .catch(async (err) => {
-        if (err.message === 'Forbidden') {
+        if (err.status === HTTP_CODES.FORBIDDEN) {
           await getSharedFolderInfo(sharingId);
           setRequiresPassword(true);
           setIsLoaded(true);
         }
-        throw err;
+        throw new AppError(err.message, err.status);
       });
   }
 

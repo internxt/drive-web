@@ -1,17 +1,17 @@
 import { CheckCircle, ClockCountdown, Envelope, WarningCircle } from '@phosphor-icons/react';
 import { useEffect, useState } from 'react';
-import { Link, useRouteMatch } from 'react-router-dom';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Input from '../../../shared/components/Input';
-import Button from '../../../shared/components/Button/Button';
-import { areCredentialsCorrect } from '../../../auth/services/auth.service';
-import Spinner from '../../../shared/components/Spinner/Spinner';
-import localStorageService from '../../services/local-storage.service';
-import userService from '../../../auth/services/user.service';
-import errorService from '../../services/error.service';
-import { userThunks } from '../../../store/slices/user';
 import { useDispatch } from 'react-redux';
+import { Link, useRouteMatch } from 'react-router-dom';
+import { areCredentialsCorrect } from '../../../auth/services/auth.service';
+import userService from '../../../auth/services/user.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import Button from '../../../shared/components/Button/Button';
+import Input from '../../../shared/components/Input';
+import Spinner from '../../../shared/components/Spinner/Spinner';
 import { uiActions } from '../../../store/slices/ui';
+import { userThunks } from '../../../store/slices/user';
+import errorService from '../../services/error.service';
+import localStorageService from '../../services/local-storage.service';
 
 type StatusType = 'loading' | 'auth' | 'error' | 'success' | 'expired';
 
@@ -39,18 +39,23 @@ export default function ChangeEmailView(): JSX.Element {
   const [auth, setAuth] = useState<boolean>(false);
 
   async function getInfo() {
-    const isExpired = (await userService.checkChangeEmailLinkExpiration(token)).isExpired;
+    try {
+      const isExpired = (await userService.checkChangeEmailLinkExpiration(token)).isExpired;
 
-    if (isExpired) {
-      setStatus(STATUS.EXPIRED);
-      setExpired(true);
-    } else {
-      setStatus(STATUS.AUTH);
-      setExpired(false);
+      if (isExpired) {
+        setStatus(STATUS.EXPIRED);
+        setExpired(true);
+      } else {
+        setStatus(STATUS.AUTH);
+        setExpired(false);
 
-      const user = localStorageService.getUser();
-      if (user) setEmail(user.email);
-      if (newEmailParam) setNewEmail(newEmailParam);
+        const user = localStorageService.getUser();
+        if (user) setEmail(user.email);
+        if (newEmailParam) setNewEmail(newEmailParam);
+      }
+    } catch (error) {
+      errorService.reportError(error, { extra: { view: 'Change email view', emailLinkExpirationToken: token } });
+      setStatus(STATUS.ERROR);
     }
   }
 

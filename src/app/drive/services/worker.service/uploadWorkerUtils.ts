@@ -1,8 +1,8 @@
 import { Abortable } from '@internxt/inxt-js/build/api';
 import { WORKER_MESSAGE_STATES } from '../../../../WebWorker';
+import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 import { TaskStatus } from '../../../tasks/types';
 import { IUploadParams } from '../network.service';
-import DatabaseUploadRepository from '../../../repositories/DatabaseUploadRepository';
 
 /**
  * Checks the upload progress for the specified task.
@@ -106,6 +106,7 @@ const handleMessage = (msgData, params, resolve, reject, worker, continueUploadO
   }
 
   const messageHandler = messageResultHandlers[msgData.result];
+
   if (messageHandler) {
     messageHandler({ msgData, resolve, reject, worker, continueUploadOptions });
     return;
@@ -148,4 +149,4 @@ const createWorkerMessageHandlerPromise = (
   ];
 };
 
-export { waitForContinueUploadSignal, createWorkerMessageHandlerPromise };
+export { createWorkerMessageHandlerPromise, waitForContinueUploadSignal };

@@ -24,14 +24,14 @@ const Usage = ({
   return (
     <div className="flex flex-col">
       <div className="flex flex-row">
-        <div className="flex w-full grow flex-col">
+        <div className="flex w-full grow flex-col py-2">
           <p className="text-3xl font-medium leading-9 text-gray-100">{bytesString}</p>
           <h1 className="text-base font-normal leading-5 text-gray-60">
             {t('views.preferences.workspace.overview.spaceUsed', { percentageUsed })}
           </h1>
         </div>
         <div className="mx-8 border border-gray-10" />
-        <div className="flex w-full grow flex-col justify-start">
+        <div className="flex w-full grow flex-col justify-start py-2">
           <p className="text-3xl font-medium leading-9 text-gray-100">{spaceLimitString}</p>
           <h1 className="text-base font-normal leading-5 text-gray-60">
             {t('views.preferences.workspace.overview.totalSpace')}

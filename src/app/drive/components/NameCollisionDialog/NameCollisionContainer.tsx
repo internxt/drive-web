@@ -126,10 +126,12 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     itemsToUpload.forEach((itemToUpload) => {
       if ((itemToUpload as IRoot).fullPathEdited) {
         dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: { ...(itemToUpload as IRoot) },
-            currentFolderId: folderId,
-          }),
+          storageThunks.uploadMultipleFolderThunkNoCheck([
+            {
+              root: { ...(itemToUpload as IRoot) },
+              currentFolderId: folderId,
+            },
+          ]),
         ).then(() => {
           dispatch(fetchSortedFolderContentThunk(folderId));
         });

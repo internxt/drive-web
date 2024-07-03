@@ -2,12 +2,9 @@ import databaseService, {
   AvatarBlobData,
   DatabaseCollection,
   DriveItemBlobData,
-  PhotosData,
 } from '../../database/services/database.service';
 import { LRUFilesCacheManager } from '../../database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from '../../database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosCacheManager } from '../../database/services/database.service/LRUPhotosCacheManager';
-import { LRUPhotosPreviewsCacheManager } from '../../database/services/database.service/LRUPhotosPreviewCacheManager';
 import { DriveFileData, DriveFolderData, DriveItemData } from '../types';
 
 const updateDatabaseProfileAvatar = async ({
@@ -86,59 +83,9 @@ const getDatabaseFilePreviewData = async ({ fileId }: { fileId: number }): Promi
   return lruFilesPreviewCacheManager?.get(fileId.toString());
 };
 
-const updateDatabasePhotosPreviewData = async ({
-  photoId,
-  preview,
-}: {
-  photoId: string;
-  preview: Blob;
-}): Promise<void> => {
-  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
-  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
-
-  lruPhotosPreviewCacheManager?.set(
-    photoId,
-    {
-      ...photoData,
-      preview: preview,
-    },
-    preview.size,
-  );
-};
-
-const getDatabasePhotosPreviewData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
-  const lruPhotosPreviewCacheManager = await LRUPhotosPreviewsCacheManager.getInstance();
-  return lruPhotosPreviewCacheManager.get(photoId);
-};
-
-const updateDatabasePhotosSourceData = async ({
-  photoId,
-  source,
-}: {
-  photoId: string;
-  source: Blob;
-}): Promise<void> => {
-  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
-  const photoData = await databaseService.get(DatabaseCollection.Photos, photoId);
-
-  lruPhotosCacheManager?.set(
-    photoId,
-    {
-      ...photoData,
-      source: source,
-    },
-    source.size,
-  );
-};
-
-const getDatabasePhotosSourceData = async ({ photoId }: { photoId: string }): Promise<PhotosData | undefined> => {
-  const lruPhotosCacheManager = await LRUPhotosCacheManager.getInstance();
-  return lruPhotosCacheManager?.get(photoId);
-};
-
 const getDatabaseFileSourceData = async ({ fileId }: { fileId: number }): Promise<DriveItemBlobData | undefined> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  return lruFilesCacheManager?.get(fileId.toString());
+  return lruFilesCacheManager?.get(fileId?.toString());
 };
 
 const updateDatabaseFileSourceData = async ({
@@ -168,10 +115,6 @@ const updateDatabaseFileSourceData = async ({
     },
     sourceBlob.size,
   );
-};
-
-const deleteDatabasePhotos = async (photosId: string[]): Promise<void> => {
-  photosId.forEach(async (photoId) => await databaseService.delete(DatabaseCollection.Photos, photoId));
 };
 
 const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
@@ -208,19 +151,14 @@ const canFileBeCached = (file: DriveFileData): boolean => {
 export {
   canFileBeCached,
   deleteDatabaseItems,
-  deleteDatabasePhotos,
   deleteDatabaseProfileAvatar,
   deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
-  getDatabasePhotosPreviewData,
-  getDatabasePhotosSourceData,
   getDatabaseProfileAvatar,
   getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
-  updateDatabasePhotosPreviewData,
-  updateDatabasePhotosSourceData,
   updateDatabaseProfileAvatar,
   updateDatabaseWorkspaceAvatar,
 };

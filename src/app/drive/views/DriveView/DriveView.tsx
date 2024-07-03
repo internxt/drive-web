@@ -30,12 +30,19 @@ const DriveView = (props: DriveViewProps) => {
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
+  const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
     dispatch(storageThunks.resetNamePathThunk());
     dispatch(storageActions.clearSelectedItems());
   }, []);
+
+  useEffect(() => {
+    if (fileViewer) {
+      setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
+    }
+  }, [fileViewer]);
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
@@ -51,7 +58,7 @@ const DriveView = (props: DriveViewProps) => {
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
-      const folderMeta = await newStorageService.getFolderMeta(folderUuid, workspacesToken);
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
 
       dispatch(
         storageThunks.goToFolderThunk({

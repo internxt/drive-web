@@ -12,7 +12,6 @@ export enum DatabaseProvider {
 export enum DatabaseCollection {
   Levels = 'levels',
   MoveDialogLevels = 'move_levels',
-  Photos = 'photos',
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
@@ -23,8 +22,6 @@ export enum DatabaseCollection {
 export enum LRUCacheTypes {
   LevelsBlobs = 'levels_blobs',
   LevelsBlobsPreview = 'levels_blobs_preview',
-  PhotosPreview = 'photos_preview',
-  PhotosSource = 'photos_source',
 }
 
 export type DriveItemBlobData = {
@@ -33,11 +30,6 @@ export type DriveItemBlobData = {
   preview?: Blob;
   source?: Blob;
   updatedAt?: string;
-};
-
-export type PhotosData = {
-  preview?: Blob;
-  source?: Blob;
 };
 
 export type AvatarBlobData = {
@@ -65,11 +57,6 @@ export interface AppDatabase extends DBSchema {
   lru_cache: {
     key: LRUCacheTypes;
     value: LRUCacheStruture;
-  };
-  photos: {
-    key: string;
-    value: PhotosData;
-    indexes?: Record<string, IDBValidKey>;
   };
   account_settings: {
     key: string;

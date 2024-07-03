@@ -1,11 +1,11 @@
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { NavLink } from 'react-router-dom';
+import { uiActions } from 'app/store/slices/ui';
 import { Transition } from '@headlessui/react';
 import { CheckCircle, Info, Warning, WarningOctagon, X } from '@phosphor-icons/react';
-import { NavLink } from 'react-router-dom';
 import Spinner from '../../../shared/components/Spinner/Spinner';
 import { ToastShowProps, ToastType } from '../../services/notifications.service';
-import { useDispatch } from 'react-redux';
-import { uiActions } from '../../../store/slices/ui';
-import { useEffect } from 'react';
 
 const NotificationToast = ({
   text,
@@ -20,12 +20,8 @@ const NotificationToast = ({
   let IconColor: string | undefined;
 
   useEffect(() => {
-    dispatch(uiActions.setIsToastNotificacionOpen(true));
-
-    return () => {
-      dispatch(uiActions.setIsToastNotificacionOpen(false));
-    };
-  }, []);
+    visible && dispatch(uiActions.setIsToastNotificacionOpen(visible));
+  }, [visible]);
 
   switch (type) {
     case ToastType.Success:
@@ -85,7 +81,12 @@ const NotificationToast = ({
           ))}
 
         {closable && (
-          <button onClick={onClose} className="ml-3 text-gray-40">
+          <button
+            onClick={() => {
+              onClose();
+            }}
+            className="ml-3 text-gray-40"
+          >
             <X size={20} />
           </button>
         )}

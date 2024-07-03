@@ -1,15 +1,15 @@
-import { useState } from 'react';
 import { AxiosError, AxiosResponse } from 'axios';
+import { useState } from 'react';
 import { Form } from 'react-bootstrap';
 
-import { getPasswordDetails } from '../../../auth/services/auth.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import BaseButton from '../../../shared/components/forms/BaseButton';
+import { useAppDispatch } from 'app/store/hooks';
+import { userThunks } from 'app/store/slices/user';
+import { getPasswordDetails } from '../../../auth/services/auth.service';
 import httpService from '../../../core/services/http.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { useAppDispatch } from 'app/store/hooks';
-import { userThunks } from 'app/store/slices/user';
+import BaseButton from '../../../shared/components/forms/BaseButton';
 
 export default function GuestAcceptInvitationView(): JSX.Element {
   const [loading, setLoading] = useState(false);
@@ -26,7 +26,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
       password: details.encryptedCurrentPassword,
     });
 
-    return fetch(`${process.env.REACT_APP_API_URL}/api/access`, {
+    return fetch(`${process.env.REACT_APP_API_URL}/access`, {
       method: 'post',
       headers: httpService.getHeaders(false, false),
       body,
@@ -63,7 +63,7 @@ export default function GuestAcceptInvitationView(): JSX.Element {
       const details = await verifyPassword();
       const payload = Buffer.from(password).toString('hex');
 
-      await httpService.post('/api/guest/accept', { payload, details });
+      await httpService.post('/guest/accept', { payload, details });
 
       notificationsService.show({
         text: 'Invitation to workspace accepted. Log in again to start using the workspace',

@@ -18,7 +18,7 @@ import { Menu, Transition } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
@@ -104,6 +104,13 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
+  getTrashPaginated?: (
+    limit: number,
+    offset: number | undefined,
+    type: 'files' | 'folders',
+    root: boolean,
+    folderId?: number | undefined,
+  ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -127,6 +134,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     hasMoreFolders,
     hasMoreFiles,
     user,
+    getTrashPaginated,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -312,19 +320,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
   const getMoreTrashFolders = async () => {
     setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-    const existsMoreFolders = !result.finished;
-
-    setHasMoreTrashFolders(existsMoreFolders);
+    if (getTrashPaginated) {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+      const existsMoreFolders = !result.finished;
+      setHasMoreTrashFolders(existsMoreFolders);
+    }
     setIsLoadingTrashItems(false);
   };
 
   const getMoreTrashFiles = async () => {
     setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-
-    const existsMoreItems = !result.finished;
-    setHasMoreItems(existsMoreItems);
+    if (getTrashPaginated) {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+      const existsMoreItems = !result.finished;
+      setHasMoreItems(existsMoreItems);
+    }
     setIsLoadingTrashItems(false);
   };
 
@@ -989,18 +999,19 @@ const uploadItems = async (props: DriveExplorerProps, rootList: IRoot[], files: 
         },
       });
       const unrepeatedUploadedFolders = handleRepeatedUploadingFolders(rootList, items, dispatch) as IRoot[];
-      if (unrepeatedUploadedFolders.length > 0)
-        await dispatch(
-          storageThunks.uploadFolderThunkNoCheck({
-            root: unrepeatedUploadedFolders[0],
-            currentFolderId,
-            options: {
-              onSuccess: onDragAndDropEnd,
-            },
-          }),
-        ).then(() => {
+
+      if (unrepeatedUploadedFolders.length > 0) {
+        const folderDataToUpload = unrepeatedUploadedFolders.map((root) => ({
+          root,
+          currentFolderId,
+          options: {
+            onSuccess: onDragAndDropEnd,
+          },
+        }));
+        dispatch(storageThunks.uploadMultipleFolderThunkNoCheck(folderDataToUpload)).then(() => {
           dispatch(fetchSortedFolderContentThunk(currentFolderId));
         });
+      }
     }
   } else {
     dispatch(uiActions.setIsUploadItemsFailsDialogOpen(true));

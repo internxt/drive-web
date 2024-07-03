@@ -61,7 +61,7 @@ const BillingPaymentMethodCard = () => {
           )}
         </Button>
       </div>
-      <Card>
+      <Card className={`${defaultPaymentMethod.tag === 'empty' && 'h-20'}`}>
         {isPaymentMethod ? (
           <div className="flex">
             {defaultPaymentMethod.card ? (
@@ -98,7 +98,7 @@ const BillingPaymentMethodCard = () => {
             <Spinner className="h-5 w-5" />
           </div>
         ) : (
-          <div className="text-center">
+          <div className="flex h-full items-center justify-center text-center">
             <p className="font-regular text-base text-gray-60">
               {t('preferences.workspace.billing.paymentMethod.empty')}
             </p>

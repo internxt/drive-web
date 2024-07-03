@@ -4,19 +4,31 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": "Ahorra hasta un 75%",
-    "title": "Asegura tu identidad en línea de por vida.",
-    "cta": "Consíguela",
-    "guarantee": "Garantía de devolución de 30 días",
-    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
+    "label": {
+      "upTo": "",
+      "discount": "Cambios en tu plan gratuito"
+    },
+    "title": "¡Atención!",
+    "subtitle": {
+      "line1": "A partir del 1 de julio, el plan gratuito de Internxt se reducirá a 1GB. No te quedes sin espacio. ",
+      "line2": {
+        "normal1": "Usa el código ",
+        "blue": "FREEVIP",
+        "normal2": " y obtén un 90% de descuento en cualquier plan premium."
+      }
+    },
+    "cta": "Elegir plan",
+    "guarantee": "Garantía de devolución del dinero de 30 días",
+    "lastCta": "*Oferta válida para cuentas gratuitas o nuevos usuarios",
     "features": [
-      "Hasta el 75% en planes lifetime",
-      "Almacenamiento seguro en la nube",
-      "Código abierto y auditado",
+      "Ahorra en todos los planes de Internxt",
+      "Almacenamiento en la nube seguro y protegido",
+      "Código abierto y transparente",
       "Transferencias cifradas de extremo a extremo",
-      "Sin accesos no autorizados",
-      "La promoción finaliza el 18 de abril"
-    ]
+      "Sin acceso no autorizado",
+      "La oferta termina el 30 de junio"
+    ],
+    "copied": "Copiado al portapapeles"
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",
@@ -37,13 +49,15 @@
     "it": "Italiano (Italiano)",
     "zh": "简体中文 (Chino)",
     "ru": "Русский (Ruso)",
-    "de": "Deutsch (Alemán)"
+    "de": "Deutsch (Alemán)",
+    "zh-tw": "臺灣 (Taiwanés)"
   },
   "theme": {
     "title": "Apariencia",
     "light": "Claro",
     "dark": "Oscuro",
-    "system": "Sistema"
+    "system": "Sistema",
+    "starwars": "Star Wars"
   },
 
   "auth": {
@@ -231,7 +245,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Backups",
     "shared": "Compartido",
     "recents": "Recientes",
@@ -251,18 +264,12 @@
         "dragNDrop": "Arrastra un archivo o haz clic en el botón para subir un archivo"
       }
     },
-    "photos": {
-      "empty": {
-        "title": "Tu galería está vacía",
-        "description": "Usa la app móvil de Internxt para sincronizar tus fotos"
-      }
-    },
     "account": {
       "title": "Cuenta",
       "avatar": {
         "title": "Subir imagen",
-        "removePhoto": "Eliminar imagen",
-        "updatePhoto": "Subir nueva foto",
+        "removePhoto": "Eliminar",
+        "updatePhoto": "Subir foto",
         "dragNDrop": "Selecciona o arrastra una imagen",
         "success": "Imagen actualizada correctamente",
         "error": "Algo salió mal actualizando la imagen",
@@ -282,7 +289,6 @@
           "usage": "{{totalUsed}} de {{totalSpace}} usado",
           "view": {
             "backups": "Copias de seguridad",
-            "photos": "Photos",
             "trash": "Papelera",
             "free": {
               "planName": "Plan gratuito",
@@ -826,32 +832,6 @@
       "sharedWith": "Compartido contigo ",
       "todayAt": "hoy a las "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "archivos seleccionados",
-      "singleToolBar": "archivo seleccionado",
-      "singleTitle": "Eliminar {{item}} archivo seleccionado?",
-      "multiTitle": "Eliminar los {{item}} archivos seleccionados?",
-      "subtitle": "Esta acción no se puede deshacer",
-      "buttons": {
-        "cancel": "Cancelar",
-        "delete": "Eliminar"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Compartir {{item}} foto",
-      "multiTitle": "Compartir {{item}} fotos",
-      "options": "Opciones del enlace",
-      "limit": "Limita el número de veces que se puede abrir el enlace",
-      "openCount": "Límite de apertura",
-      "times": "veces",
-      "change": "Cambiar",
-      "buttons": {
-        "cancel": "Cancelar",
-        "create": "Crear enlace",
-        "creating": "Creando enlace...",
-        "copyLink": "Copiar enlace"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Invitaciones enviadas",
       "email": "Correo electrónico",
@@ -944,7 +924,6 @@
     "emptyPassword": "La contraseña no puede estar vacía.",
     "errorMovingToTrash": "Ha ocurrido un error mientras se movian los items a la basura.",
     "errorDeletingFromTrash": "Ha ocurrido un error mientras se eliminaban los items de la basura.",
-    "braveNotSupportMultiplePhotosDowload": "Brave no admite la descarga multiple de fotos.",
     "maxSizeUploadLimitError": "File too large (greater than 20GB)",
     "connectionLostError": "Conexión a internet perdida",
     "errorLoadingTrashItems": "Error al cargar items de la papelera"
@@ -1089,15 +1068,6 @@
         "success": "Archivo descargado",
         "error": "La descarga ha fallado, haga clic en ↻ para volver a intentarlo",
         "cancelled": "Descarga cancelada"
-      },
-      "errors": {}
-    },
-    "download-photos": {
-      "status": {
-        "pending": "Descargando {{progress}}%",
-        "success": "descargado",
-        "error": "Error durante la descarga",
-        "cancelled": "Descara cancelada"
       },
       "errors": {}
     },
@@ -1564,6 +1534,9 @@
           "title": "Cancelar suscripción",
           "text": "Tu suscripción pasará al plan gratuito.",
           "button": "Cancelar suscripción"
+        },
+        "empty": {
+          "text": "Sin facturas anteriores"
         }
       }
     },
@@ -1635,6 +1608,9 @@
     "workspaceTypes": {
       "personal": "Espacio de trabajo personal",
       "business": "Espacio de trabajo empresarial"
+    },
+    "messages": {
+      "sharedSuccess": "Elemento compartido exitosamente con el equipo"
     }
   }
 }

@@ -17,6 +17,11 @@ import {
   contextMenuTrashItems,
 } from '../../DriveExplorer/DriveExplorerList/DriveItemContextMenu';
 
+interface DownloadedBlobData {
+  blob: Blob;
+  shouldHandleFileThumbnail: boolean;
+}
+
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem>;
 
 type PathProps = 'drive' | 'trash' | 'shared' | 'recents';
@@ -146,24 +151,27 @@ const topDropdownBarActionsMenu = ({
   return contextMenuActions();
 };
 
-function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
+function getFileContentManager(currentFile, downloadFile) {
   const abortController = new AbortController();
 
   return {
-    download: async (): Promise<Blob> => {
-      const shouldFileBeCached = canFileBeCached(currentFile);
-
-      const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
-      const isCached = !!fileSource;
+    download: async (): Promise<DownloadedBlobData> => {
       let fileContent: Blob;
 
+      const fileSource = await getDatabaseFileSourceData({ fileId: currentFile.id });
+
+      const shouldFileBeCached = canFileBeCached(currentFile);
+      const isCached = !!fileSource;
+      const isCacheExpired = !fileSource?.updatedAt
+        ? true
+        : dateService.isDateOneBefore({
+            dateOne: fileSource?.updatedAt,
+            dateTwo: currentFile?.updatedAt,
+          });
+
+      const shouldHandleFileThumbnail = !isCached || isCacheExpired;
+
       if (isCached) {
-        const isCacheExpired = !fileSource?.updatedAt
-          ? true
-          : dateService.isDateOneBefore({
-              dateOne: fileSource?.updatedAt,
-              dateTwo: currentFile?.updatedAt,
-            });
         if (isCacheExpired) {
           fileContent = await downloadFile(currentFile, abortController);
           await updateDatabaseFileSourceData({
@@ -174,7 +182,6 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
           });
         } else {
           fileContent = fileSource.source as Blob;
-          await handleFileThumbnail(currentFile, fileSource.source as File);
         }
       } else {
         fileContent = await downloadFile(currentFile, abortController);
@@ -188,7 +195,7 @@ function getFileContentManager(currentFile, downloadFile, handleFileThumbnail) {
         }
       }
 
-      return fileContent;
+      return { blob: fileContent, shouldHandleFileThumbnail };
     },
     abort: () => {
       abortController.abort();
