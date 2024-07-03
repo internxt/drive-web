@@ -1,7 +1,6 @@
 import { useEffect, useCallback, useReducer, useState } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
-import { useThemeContext } from '../../../theme/ThemeProvider';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView } from '../../../core/types';
 import errorService from '../../../core/services/error.service';
@@ -17,6 +16,7 @@ import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import { AuthMethodTypes, ErrorType, THEME_STYLES } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from './checkoutReducer';
 import checkoutService from 'app/payment/services/checkout.service';
+import { useThemeContext } from 'app/theme/ThemeProvider';
 
 export const stripePromise = (async () => {
   const stripeKey = envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
@@ -24,7 +24,7 @@ export const stripePromise = (async () => {
 })();
 
 const CheckoutViewWrapper = () => {
-  const { currentTheme } = useThemeContext();
+  const { checkoutTheme } = useThemeContext();
   const dispatch = useAppDispatch();
   const { doRegister } = useSignUp('activate');
 
@@ -33,43 +33,41 @@ const CheckoutViewWrapper = () => {
 
   const { authMethod, error, currentPlanSelected, plan, stripe, couponCodeData, elementsOptions, promoCodeName } =
     state;
-
-  // TODO: Handle system and StarWars theme
-  const { backgroundColor, textColor } = THEME_STYLES[currentTheme as string];
-
-  const elementsOptionsParams: StripeElementsOptions = {
-    appearance: {
-      labels: 'above',
-      variables: {
-        spacingAccordionItem: '8px',
-        colorPrimary: textColor,
-      },
-      theme: 'flat',
-      rules: {
-        '.AccordionItem:hover': {
-          color: textColor,
-        },
-        '.TermsText': {
-          color: textColor,
-        },
-        '.AccordionItem': {
-          border: `1px solid ${backgroundColor}`,
-          backgroundColor: backgroundColor,
-        },
-        '.Label': {
-          color: textColor,
-        },
-        '.RedirectText': {
-          color: textColor,
-        },
-      },
-    },
-  };
+  const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
     const promotionCode = params.get('promotion_code');
+
+    const elementsOptionsParams: StripeElementsOptions = {
+      appearance: {
+        labels: 'above',
+        variables: {
+          spacingAccordionItem: '8px',
+          colorPrimary: textColor,
+        },
+        theme: 'flat',
+        rules: {
+          '.AccordionItem:hover': {
+            color: textColor,
+          },
+          '.TermsText': {
+            color: textColor,
+          },
+          '.AccordionItem': {
+            border: `1px solid ${backgroundColor}`,
+            backgroundColor: backgroundColor,
+          },
+          '.Label': {
+            color: textColor,
+          },
+          '.RedirectText': {
+            color: textColor,
+          },
+        },
+      },
+    };
 
     if (planId) {
       handleFetchSelectedPlan(planId)
@@ -125,7 +123,6 @@ const CheckoutViewWrapper = () => {
   }, [promoCodeName]);
 
   const handleFetchSelectedPlan = useCallback(async (planId: string) => {
-    // TODO: save all plans and current selected plan (selectedPlan, not upsell plan)
     try {
       const plan = await checkoutService.fetchPlanById(planId);
       dispatchReducer({ type: 'SET_PLAN', payload: plan });
@@ -184,12 +181,24 @@ const CheckoutViewWrapper = () => {
     });
   };
 
-  const upsellManager = checkoutService.getUpsellManager(
+  const upsellManager = {
+    onUpsellSwitchButtonClicked: () => {
+      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
+      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
+      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
+      dispatchReducer({
+        type: 'SET_ELEMENTS_OPTIONS',
+        payload: {
+          ...(elementsOptions as any),
+          amount: plan![planType].amount,
+        },
+      });
+    },
     isUpsellSwitchActivated,
-    plan,
-    setIsUpsellSwitchActivated,
-    dispatchReducer,
-  );
+    showUpsellSwitch: !!plan?.upsellPlan,
+    amountSaved: plan?.upsellPlan ? (plan?.selectedPlan.amount * 12 - plan?.upsellPlan.amount) / 100 : undefined,
+    amount: plan?.upsellPlan.decimalAmount,
+  };
 
   return (
     <Elements stripe={stripe} options={elementsOptions}>

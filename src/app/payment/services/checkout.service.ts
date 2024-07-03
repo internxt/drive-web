@@ -1,6 +1,5 @@
 import paymentService from 'app/payment/services/payment.service';
-import { Action, ClientSecretData, CouponCodeData, PlanData } from '../types';
-import { Dispatch } from 'react';
+import { ClientSecretData, CouponCodeData, PlanData } from '../types';
 
 const fetchPlanById = async (planId: string): Promise<PlanData> => {
   const response = await fetch(`${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}`, {
@@ -72,31 +71,11 @@ const getClientSecretForSubscriptionIntent = async (
   };
 };
 
-const getUpsellManager = (
-  isUpsellSwitchActivated: boolean,
-  plan: PlanData | null,
-  setIsUpsellSwitchActivated: (isSwitchActivated: boolean) => void,
-  dispatchReducer: Dispatch<Action>,
-) => {
-  return {
-    onUpsellSwitchButtonClicked: () => {
-      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
-      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
-      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
-    },
-    isUpsellSwitchActivated,
-    showUpsellSwitch: !!plan?.upsellPlan,
-    amountSaved: plan?.upsellPlan ? (plan?.selectedPlan.amount * 12 - plan?.upsellPlan.amount) / 100 : undefined,
-    amount: plan?.upsellPlan.decimalAmount,
-  };
-};
-
 const checkoutService = {
   fetchPlanById,
   fetchPromotionCodeByName,
   getClientSecretForPaymentIntent,
   getClientSecretForSubscriptionIntent,
-  getUpsellManager,
 };
 
 export default checkoutService;
