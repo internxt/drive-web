@@ -1558,6 +1558,9 @@
       "personal": "Espace de travail personnel",
       "business": "Espace de travail professionnel"
     },
-    "pending": "Invitations en attente"
+    "pending": "Invitations en attente",
+    "messages": {
+      "sharedSuccess": "Élément partagé avec succès avec l'équipe"
+    }
   }
 }

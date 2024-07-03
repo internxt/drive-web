@@ -1630,6 +1630,9 @@
       "personal": "个人工作区",
       "business": "商务工作区"
     },
-    "pending": "待发邀请"
+    "pending": "待发邀请",
+    "messages": {
+      "sharedSuccess": "项目成功与团队共享"
+    }
   }
 }

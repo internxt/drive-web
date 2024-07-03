@@ -1572,6 +1572,9 @@
       "personal": "Persönlicher Arbeitsbereich",
       "business": "Geschäftsarbeitsbereich"
     },
-    "pending": "Ausstehende Einladungen"
+    "pending": "Ausstehende Einladungen",
+    "messages": {
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+    }
   }
 }
