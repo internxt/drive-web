@@ -1608,6 +1608,7 @@
     "workspaceTypes": {
       "personal": "Espacio de trabajo personal",
       "business": "Espacio de trabajo empresarial"
-    }
+    },
+    "pending": "Invitaciones pendientes"
   }
 }

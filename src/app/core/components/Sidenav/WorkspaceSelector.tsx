@@ -18,6 +18,8 @@ interface WorkspaceSelectorProps {
   onCreateWorkspaceButtonClicked: () => void;
   onChangeWorkspace: (workspaceId: string | null) => void;
   selectedWorkspace: Workspace | null;
+  setIsDialogOpen: (boolean) => void;
+  pendingWorkspacesInvitesLength: number;
 }
 
 const WorkspaceCard = ({
@@ -58,6 +60,8 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   workspaces,
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
+  setIsDialogOpen,
+  pendingWorkspacesInvitesLength,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(userWorkspace);
@@ -160,13 +164,24 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
             />
           ))}
           {/* NOT USING FOR THE MOMENT */}
-          {/* <div className="mx-3 h-px bg-gray-10"></div>
-          <button
+          <div className="mx-3 h-px bg-gray-10"></div>
+          {/* <button
             className="w-full rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
             onClick={onCreateWorkspaceButtonClicked}
           >
             {translate('workspaces.createWorkspace')}
           </button> */}
+          {pendingWorkspacesInvitesLength > 0 && (
+            <button
+              className="flex w-full items-center space-x-2 rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <span>{translate('workspaces.pending')}</span>
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
+                {pendingWorkspacesInvitesLength}
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>

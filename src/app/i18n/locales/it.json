@@ -1617,6 +1617,7 @@
     "workspaceTypes": {
       "personal": "Spazio di lavoro personale",
       "business": "Spazio di lavoro aziendale"
-    }
+    },
+    "pending": "Inviti in sospeso"
   }
 }

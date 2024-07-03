@@ -1630,6 +1630,7 @@
     "workspaceTypes": {
       "personal": "Personal Workspace",
       "business": "Business Workspace"
-    }
+    },
+    "pending": "Pending Invitations"
   }
 }

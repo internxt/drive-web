@@ -1571,6 +1571,7 @@
     "workspaceTypes": {
       "personal": "Persönlicher Arbeitsbereich",
       "business": "Geschäftsarbeitsbereich"
-    }
+    },
+    "pending": "Ausstehende Einladungen"
   }
 }

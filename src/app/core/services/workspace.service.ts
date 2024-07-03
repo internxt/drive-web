@@ -11,6 +11,7 @@ import {
   WorkspaceTeamResponse,
   WorkspacesResponse,
   WorkspacePendingInvitations,
+  PendingInvitesResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -192,6 +193,13 @@ export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: s
   });
 }
 
+export function getPendingInvites(): Promise<PendingInvitesResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPendingInvites().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -212,6 +220,9 @@ const workspacesService = {
   getWorkspaceCretenditals,
   getWorkspacePendingInvitations,
   validateWorkspaceInvitation,
+  getPendingInvites,
+  acceptWorkspaceInvite,
+  declineWorkspaceInvite,
 };
 
 export default workspacesService;
