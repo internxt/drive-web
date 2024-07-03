@@ -20,6 +20,8 @@ interface WorkspaceSelectorProps {
   selectedWorkspace: Workspace | null;
   setIsDialogOpen: (boolean) => void;
   pendingWorkspacesInvitesLength: number;
+  isWorkspaceSelectorOpen: boolean;
+  setIsWorkspaceSelectorOpen: (isWorkspaceSelectorOpen) => void;
 }
 
 const WorkspaceCard = ({
@@ -63,15 +65,16 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   setIsDialogOpen,
   pendingWorkspacesInvitesLength,
   selectedWorkspace: selectedWorkspaceProp,
+  isWorkspaceSelectorOpen,
+  setIsWorkspaceSelectorOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(selectedWorkspaceProp ?? userWorkspace);
   const dropdownRef = useRef<HTMLInputElement>(null);
 
   const { translate } = useTranslationContext();
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsWorkspaceSelectorOpen(!isWorkspaceSelectorOpen);
   };
 
   const handleWorkspaceClick = (workspace: Workspace | null) => {
@@ -81,13 +84,13 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       onChangeWorkspace(workspace?.uuid ?? null);
     }
     setSelectedWorkspace(workspace);
-    setIsOpen(false);
+    setIsWorkspaceSelectorOpen(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+        setIsWorkspaceSelectorOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -101,7 +104,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       {/* TOGGLE BUTTON */}
       <button
         className={`w-full justify-center rounded-lg border border-gray-10 ${
-          isOpen ? 'bg-gray-1' : 'bg-surface'
+          isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
         } p-3 text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
       >
@@ -126,13 +129,13 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       <div
         ref={dropdownRef}
         className={`fixed left-2 z-50 w-72 overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          isWorkspaceSelectorOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="h-1"></div>
         <div
           className={`rounded-lg border border-gray-10 bg-surface shadow-xl dark:bg-gray-5 ${
-            isOpen ? 'block' : 'hidden'
+            isWorkspaceSelectorOpen ? 'block' : 'hidden'
           }`}
         >
           <p className="px-2 pt-3 text-sm font-medium text-gray-100">{translate('workspaces.workspaces')}</p>

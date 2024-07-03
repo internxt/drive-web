@@ -21,10 +21,11 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
   const [pendingWorkspacesInvites, setPendingWorkspacesInvites] = useState<PendingInvitesResponse>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isWorkspaceSelectorOpen, setIsWorkspaceSelectorOpen] = useState<boolean>(false);
 
   useEffect(() => {
-    getPendingInvites();
-  }, [isLoading]);
+    (isDialogOpen || isWorkspaceSelectorOpen) && getPendingInvites();
+  }, [isLoading, isWorkspaceSelectorOpen]);
 
   const getPendingInvites = async () => {
     try {
@@ -76,6 +77,8 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
         selectedWorkspace={selectedWorkpace ? parseWorkspaces([selectedWorkpace])[0] : null}
         pendingWorkspacesInvitesLength={pendingWorkspacesInvites.length}
         setIsDialogOpen={setIsDialogOpen}
+        isWorkspaceSelectorOpen={isWorkspaceSelectorOpen}
+        setIsWorkspaceSelectorOpen={setIsWorkspaceSelectorOpen}
       />
     </>
   );
