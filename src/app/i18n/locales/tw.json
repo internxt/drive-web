@@ -1382,5 +1382,220 @@
       "title": "找不到文件",
       "description": "請確保 URL 正確且文件未被移動或刪除。"
     }
+  },
+  "preferences": {
+    "title": "偏好",
+    "general": {
+      "title": "一般"
+    },
+    "workspace": {
+      "title": "工作區",
+      "overview": {
+        "title": "概覽"
+      },
+      "members": {
+        "title": "成員",
+        "members": "成員",
+        "guests": "訪客",
+        "search": "搜尋成員",
+        "invite": "邀請",
+        "inviteDialog": {
+          "title": "邀請加入工作區",
+          "inputDescription": "按Enter、空格或逗號分隔電子郵件",
+          "remove": "移除",
+          "inviteUsersDescription": "沒有Internxt帳戶的用戶將收到註冊電子郵件，然後才能加入工作區。",
+          "enterUserEmail": "輸入要邀請的用戶電子郵件",
+          "addMessage": "添加訊息",
+          "invite": "邀請"
+        },
+        "invitationFlow": {
+          "acceptedSuccessfully": "工作區邀請已成功接受",
+          "declinedSuccessfully": "工作區邀請已成功拒絕",
+          "invitationSent": "邀請已成功發送",
+          "error": {
+            "errorInviting": "發送邀請至{{email}}時出錯",
+            "acceptedError": "接受工作區邀請時出錯",
+            "declinedError": "拒絕工作區邀請時出錯"
+          }
+        },
+        "list": {
+          "user": "用戶",
+          "usage": "使用情況",
+          "storage": "存儲"
+        },
+        "role": {
+          "owner": "擁有者",
+          "manager": "經理",
+          "member": "成員",
+          "deactivated": "已停用"
+        },
+        "deactivationModal": {
+          "title": "停用成員",
+          "description": "{{name}} 將失去對工作區的訪問權限。所有文件和資料夾將保持不變。",
+          "deactivate": "停用",
+          "deactivating": "正在停用"
+        },
+        "changePasswordModal": {
+          "title": "要求更改密碼",
+          "description": "用戶將收到更新個人帳戶密碼的建議。如果您認為其密碼可能已被洩露，請使用此功能。",
+          "inputPlaceholder": "輸入您的訊息文本（可選）",
+          "actionButton": "發送請求"
+        },
+        "tabs": {
+          "activity": {
+            "name": "活動",
+            "empty": "沒有活動",
+            "disabilitedOwner": {
+              "title": "開始使用活動",
+              "subtitle": "通過活動日誌記錄，清晰使用見解以進行文件和帳戶管理",
+              "action": "啟用活動"
+            },
+            "disabilitedMember": {
+              "title": "活動已禁用",
+              "subtitle": "聯繫工作區擁有者以啟用活動日誌以進行文件和帳戶管理"
+            },
+            "roles": {
+              "title": "角色",
+              "member": "成員",
+              "manager": "經理",
+              "owner": "擁有者"
+            },
+            "filter": {
+              "button": "篩選",
+              "title": "篩選條件",
+              "clear": "清除",
+              "dateRange": {
+                "title": "日期範圍",
+                "7days": "最近7天",
+                "30days": "最近30天",
+                "90days": "最近90天"
+              }
+            }
+          },
+          "teams": {
+            "title": "團隊",
+            "role": "角色",
+            "emptyTeamsOwner": {
+              "title": "開始使用團隊",
+              "subtitle": "通過將成員分組到團隊中來更快地管理工作區成員",
+              "action": "創建一個團隊"
+            },
+            "emptyTeamsMember": {
+              "title": "尚未創建團隊",
+              "subtitle": "工作區擁有者可以通過將成員分組到團隊中來更快地管理成員"
+            },
+            "emptyTeams": {
+              "title": "不是任何團隊的成員"
+            }
+          }
+        },
+        "actions": {
+          "deactivate": "停用成員",
+          "passwordChange": "要求更改密碼"
+        }
+      },
+      "teams": {
+        "title": "團隊"
+      },
+      "billing": {
+        "title": "計費",
+        "nextBillingDate": "下次計費日期",
+        "planLimit": "計費計劃：{{planLimit}}",
+        "subscription": "訂閱",
+        "lifetimeSubscription": {
+          "planType": "終身",
+          "text": "沒有即將到來的賬單"
+        },
+        "freeSubscription": {
+          "planType": "免費",
+          "action": "升級",
+          "actionDescription": "增加您的存儲空間並獲得更多功能"
+        },
+        "paymentMethod": {
+          "title": "付款方式",
+          "editButton": "編輯付款方式",
+          "freePlanTitle": "您在免費 {{planLimit}} 計劃上",
+          "addButton": "添加付款方式",
+          "empty": "沒有關聯的付款方式"
+        },
+        "cancelSubscription": {
+          "title": "取消訂閱",
+          "text": "您的計劃將降級到免費等級。",
+          "button": "取消訂閱"
+        }
+      }
+    },
+    "account": {
+      "title": "帳戶",
+      "inviteFriend": "邀請朋友",
+      "seeInvitations": "查看邀請",
+      "sendInvitationDescription": "傳播消息並免費獲得每位朋友邀請1 GB。您最多可以獲得 {{N}}GB。",
+      "sendInvitation": "發送邀請",
+      "enterFriendEmail": "輸入朋友的電子郵件",
+      "extraStorage": "額外存儲",
+      "invitedFriends": "邀請的朋友",
+      "friendsInvited": "已邀請朋友",
+      "acceptedRequests": "已接受的請求",
+      "user": "用戶",
+      "status": "狀態",
+      "accepted": "已接受",
+      "pending": "待定",
+      "noInvitations": "尚未發送邀請",
+      "upgrade": "升級",
+      "levelUpStorage": "提升您的存儲空間並獲得許多其他好處",
+      "upgradeNow": "立即升級",
+      "emptyTrash": "清空垃圾桶",
+      "emptryTrashDescription": "垃圾桶中的項目將在15天後永久刪除",
+      "plans": {
+        "title": "計劃",
+        "current": "當前",
+        "upgrade": "升級",
+        "downgrade": "降級",
+        "free": "免費獲得最多10 GB",
+        "manageBilling": "管理計費",
+        "freeForever": "永久免費",
+        "year": "年",
+        "month": "月",
+        "lifetime": "終身",
+        "planFeaturesList": {
+          "title": "計劃詳情",
+          "storage": "存儲",
+          "featureOne": "跨設備同步。",
+          "featureTwo": "無限帶寬。",
+          "featureThree": "零知識文件存儲和共享。",
+          "featureFour": "軍事級加密。",
+          "featureFive": "備份您電腦中的任何文件夾。"
+        }
+      },
+      "billing": {
+        "title": "計費"
+      },
+      "security": {
+        "title": "安全"
+      }
+    },
+    "navBarSections": {
+      "general": "一般",
+      "workspace": "工作區",
+      "overview": "概覽",
+      "members": "成員",
+      "teams": "團隊",
+      "billing": "計費",
+      "account": "帳戶",
+      "plans": "計劃",
+      "security": "安全"
+    }
+  },
+  "workspaces": {
+    "workspaces": "工作區",
+    "workspace": "工作區",
+    "createWorkspace": "創建工作區",
+    "workspaceTypes": {
+      "personal": "個人工作區",
+      "business": "商務工作區"
+    },
+    "messages": {
+      "sharedSuccess": "項目成功與團隊共享"
+    }
   }
 }

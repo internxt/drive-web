@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
@@ -32,6 +32,7 @@ import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../sh
 import { RootState } from '../../../store';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
 import TopBarButtons from './components/TopBarButtons';
 import SharedItemListContainer from './containers/SharedItemListContainer';
@@ -120,18 +121,22 @@ function SharedView({
   const shareItems = [...shareFolders, ...shareFiles];
   const { fetchRootFolders, fetchFiles } = useFetchSharedData();
 
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
+
   useLayoutEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
 
     if (page === 0 && !folderUUID) {
-      fetchRootFolders();
+      fetchRootFolders(workspaceId, defaultTeamId);
       dispatch(storageActions.resetSharedNamePath());
     }
 
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
-        fetchRootFolders();
+        fetchRootFolders(workspaceId, defaultTeamId);
       };
 
       handlePrivateSharedFolderAccess({
@@ -139,6 +144,7 @@ function SharedView({
         navigateToFolder: handleOnItemDoubleClick,
         history,
         onError: onRedirectionToFolderError,
+        workspaceItemData: { workspaceId, teamId: defaultTeamId },
       });
     }
   }, []);
@@ -217,7 +223,7 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders();
+    fetchRootFolders(workspaceId, defaultTeamId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -405,7 +411,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true);
+    fetchFiles(true, workspaceId, defaultTeamId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {
@@ -470,7 +476,7 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders();
+        fetchRootFolders(workspaceId, defaultTeamId);
       }
     }, 200);
   };
