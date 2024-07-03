@@ -68,6 +68,7 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
       const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
 
       dispatch(workspacesActions.setCredentials(cretenditals));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(cretenditals));
     }
   },
 );
@@ -85,6 +86,7 @@ const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null
       localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
       dispatch(workspacesActions.setSelectedWorkspace(null));
       dispatch(workspacesActions.setCredentials(null));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
     } else if (isSelectedWorkspace) {
       dispatch(workspacesActions.setSelectedWorkspace(localStorageB2BWorkspace ?? null));
     } else {
@@ -96,8 +98,7 @@ const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null
     }
 
     if (workspaceId && workspaceId !== selectedWorkspace?.workspace.id) {
-      const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
-      dispatch(workspacesActions.setCredentials(cretenditals));
+      dispatch(fetchCredentials());
     }
     dispatch(sessionThunks.changeWorkspaceThunk());
   },

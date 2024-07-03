@@ -58,7 +58,7 @@ const DriveView = (props: DriveViewProps) => {
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
-      const folderMeta = await newStorageService.getFolderMeta(folderUuid, workspacesToken);
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
 
       dispatch(
         storageThunks.goToFolderThunk({

@@ -1,4 +1,4 @@
-import { CreateFolderResponse, DriveFileData } from '@internxt/sdk/dist/drive/storage/types';
+import { CreateFolderResponse, DriveFileData, FetchTrashContentResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
   CreateFolderPayload,
@@ -185,6 +185,16 @@ export function getWorkspacePendingInvitations(
     throw errorService.castError(error);
   });
 }
+export function getTrashItems(
+  workspaceId: string,
+  type: 'file' | 'folder',
+  offset,
+): Promise<FetchTrashContentResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPersonalTrash(workspaceId, type, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 
 export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: string }> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
@@ -196,6 +206,12 @@ export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: s
 export function getPendingInvites(): Promise<PendingInvitesResponse> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getPendingInvites().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+export function emptyTrash(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.emptyPersonalTrash(workspaceId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -223,6 +239,8 @@ const workspacesService = {
   getPendingInvites,
   acceptWorkspaceInvite,
   declineWorkspaceInvite,
+  getTrashItems,
+  emptyTrash,
 };
 
 export default workspacesService;
