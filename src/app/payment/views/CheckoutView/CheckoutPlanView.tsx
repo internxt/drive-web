@@ -9,6 +9,7 @@ import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useEffect } from 'react';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface CheckoutOptions {
   price_id: string;
@@ -30,7 +31,9 @@ export default function CheckoutPlanView(): JSX.Element {
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
-  const { subscription } = plan;
+  const { individualSubscription, businessSubscription } = plan;
+  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const subscription = !workspace ? individualSubscription : businessSubscription;
 
   useEffect(() => {
     if (subscription) {
@@ -108,8 +111,13 @@ export default function CheckoutPlanView(): JSX.Element {
       } else {
         try {
           const couponCode = coupon === 'null' ? undefined : coupon;
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(planId, couponCode);
-          dispatch(planActions.setSubscription(updatedSubscription.userSubscription));
+          const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
+          if (userSubscription && userSubscription.type === 'subscription') {
+            if (userSubscription.userType == UserType.Individual)
+              dispatch(planActions.setSubscriptionIndividual(userSubscription));
+            if (userSubscription.userType == UserType.Business)
+              dispatch(planActions.setSubscriptionBusiness(userSubscription));
+          }
           navigationService.push(AppView.Preferences);
         } catch (err) {
           console.error(err);

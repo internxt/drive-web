@@ -8,8 +8,12 @@ import { planThunks } from '../../plan';
 
 export const deleteItemsThunk = createAsyncThunk<void, DriveItemData[], { state: RootState }>(
   'storage/deleteItems',
-  async (itemsToDelete: DriveItemData[], { dispatch }) => {
+  async (itemsToDelete: DriveItemData[], { dispatch, getState }) => {
+    const { workspaces, selectedWorkspace } = getState().workspaces;
+    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
+
     dispatch(planThunks.fetchUsageThunk());
+    if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
     dispatch(storageActions.popItems({ updateRecents: true, items: itemsToDelete }));
     dispatch(storageActions.clearSelectedItems());
   },

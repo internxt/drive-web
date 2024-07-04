@@ -1,4 +1,4 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import Section from '../../General/components/Section';
 import { useCallback, useEffect, useState } from 'react';
@@ -39,7 +39,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
-  const { subscriptionIndividual, subscriptionBusiness } = plan;
+  const { individualSubscription, businessSubscription } = plan;
   let stripe;
 
   if (user === undefined) throw new Error('User is not defined');
@@ -49,16 +49,11 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   const [individualPrices, setIndividualPrices] = useState<DisplayPrice[]>([]);
   const [businessPrices, setBusinessPrices] = useState<DisplayPrice[]>([]);
 
-  const [selectedIntervalSubscription, setSelectedIntervalSubscription] = useState<'individual' | 'business'>(
-    'individual',
-  );
-  const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(
-    subscriptionIndividual?.type === 'free'
-      ? 'year'
-      : plan.individualPlan?.renewalPeriod === 'monthly'
-      ? 'month'
-      : 'year',
-  );
+  const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
+  const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
+
+  const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
+  const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState(false);
   const [cancellingSubscription, setCancellingSubscription] = useState(false);
 
@@ -66,14 +61,13 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   const [priceSelected, setPriceSelected] = useState<DisplayPrice>(FREE_PLAN_DATA);
   const currentChangePlanType = getCurrentChangePlanType({
     priceSelected,
-    currentUserSubscription:
-      selectedIntervalSubscription == 'individual' ? subscriptionIndividual : subscriptionBusiness,
-    currentPlan: selectedIntervalSubscription == 'individual' ? plan.individualPlan : plan.businessPlan,
+    currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
+    currentPlan: isIndividualSubscriptionSelected ? plan.individualPlan : plan.businessPlan,
     isFreePriceSelected: priceSelected?.id === 'free',
   });
 
-  const pricesFilteredAndSorted = (type: 'individual' | 'business') =>
-    type == 'individual'
+  const pricesFilteredAndSorted = (userType: UserType) =>
+    userType == UserType.Individual
       ? individualPrices?.filter((price) => price.interval === selectedInterval).sort((a, b) => a.amount - b.amount)
       : businessPrices?.filter((price) => price.interval === selectedInterval).sort((a, b) => a.amount - b.amount);
 
@@ -84,7 +78,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   }, []);
 
   const handleOnPlanSelected = (price: DisplayPrice) => {
-    const subs = selectedIntervalSubscription == 'individual' ? subscriptionIndividual : subscriptionBusiness;
+    const subs = isIndividualSubscriptionSelected ? individualSubscription : businessSubscription;
     if (subs?.type === 'free' && currentChangePlanType === 'upgrade') {
       onChangePlanClicked(price.id, price.currency);
       return;
@@ -104,8 +98,8 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
 
   const fetchDataAndSetPrices = useCallback(async () => {
     try {
-      const individualPrices = await fetchPlanPrices('individual');
-      const businessPrices = await fetchPlanPrices('business');
+      const individualPrices = await fetchPlanPrices(UserType.Individual);
+      const businessPrices = await fetchPlanPrices(UserType.Business);
 
       setIndividualPrices(individualPrices);
       setBusinessPrices(businessPrices);
@@ -207,7 +201,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
       });
       localStorage.setItem('sessionId', response.sessionId);
       await paymentService.redirectToCheckout(response).then(async (result) => {
-        await paymentService.cancelSubscription(selectedIntervalSubscription);
+        await paymentService.cancelSubscription(selectedSubscription);
         if (result.error) {
           notificationsService.show({
             type: ToastType.Error,
@@ -230,10 +224,10 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
 
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
-    const isCurrentPlanTypeSubscription =
-      selectedIntervalSubscription == 'individual'
-        ? subscriptionIndividual?.type === 'subscription'
-        : subscriptionBusiness?.type === 'subscription';
+    const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected
+      ? individualSubscription?.type === 'subscription'
+      : businessSubscription?.type === 'subscription';
+
     if (!isCurrentPlanTypeSubscription) {
       const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
       await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
@@ -254,7 +248,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
     try {
-      await paymentService.cancelSubscription(selectedIntervalSubscription);
+      await paymentService.cancelSubscription(selectedSubscription);
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
@@ -273,37 +267,67 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   }
 
   const handleChangePlanDialog = () =>
-    (selectedIntervalSubscription == 'individual' &&
+    (isIndividualSubscriptionSelected &&
       plan.individualPlan?.planId != priceSelected.id &&
       individualPrices.find((p) => p.id == priceSelected.id)) ||
-    (selectedIntervalSubscription == 'business' &&
+    (!isIndividualSubscriptionSelected &&
       plan.businessPlan?.planId != priceSelected.id &&
       businessPrices.find((p) => p.id == priceSelected.id));
+
+  const getDefaultPlanPrice = (userType: UserType): DisplayPrice | undefined => {
+    const planId = userType === UserType.Individual ? plan.individualPlan?.planId : plan.businessPlan?.planId;
+
+    const findPrice =
+      userType === UserType.Individual
+        ? individualPrices.find((i) => i.id == planId)
+        : businessPrices.find((i) => i.id == planId);
+    if (findPrice) return findPrice;
+
+    const intervalPrice =
+      userType === UserType.Individual
+        ? individualPrices.filter((p) => p.interval == selectedInterval)[0]
+        : businessPrices.filter((p) => p.interval == selectedInterval)[0];
+    if (intervalPrice) return intervalPrice;
+
+    const firstPrice = userType === UserType.Individual ? individualPrices[0] : businessPrices[0];
+    if (firstPrice) setSelectedInterval(firstPrice.interval);
+    return firstPrice;
+  };
+
+  const handleSubscriptionInterval = (userType: UserType) => {
+    if (userType !== selectedSubscription) {
+      setSelectedSubscription(userType);
+      const price = getDefaultPlanPrice(userType);
+      if (price) setPriceSelected(price);
+    }
+  };
 
   return (
     <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
       {handleChangePlanDialog() && priceSelected && (
         <ChangePlanDialog
-          prices={selectedIntervalSubscription == 'individual' ? individualPrices : businessPrices}
+          prices={isIndividualSubscriptionSelected ? individualPrices : businessPrices}
           isDialgOpen={isDialogOpen}
           setIsDialogOpen={setIsDialogOpen}
           onPlanClick={onChangePlanClicked}
           priceIdSelected={priceSelected.id}
-          subscriptionTypeSelected={selectedIntervalSubscription}
+          subscriptionSelected={selectedSubscription}
         />
       )}
       <div className="flex justify-center">
         <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
           <IntervalSwitch
-            active={selectedIntervalSubscription === 'individual'}
+            active={isIndividualSubscriptionSelected}
             text={translate('general.workspaces.personal')}
-            onClick={() => setSelectedIntervalSubscription('individual')}
+            onClick={() => handleSubscriptionInterval(UserType.Individual)}
           />
-          <IntervalSwitch
-            active={selectedIntervalSubscription === 'business'}
-            text={translate('general.workspaces.business')}
-            onClick={() => setSelectedIntervalSubscription('business')}
-          />
+          {businessPrices.length > 0 && (
+            <IntervalSwitch
+              active={!isIndividualSubscriptionSelected}
+              text={translate('general.workspaces.business')}
+              onClick={() => handleSubscriptionInterval(UserType.Business)}
+            />
+          )}
         </div>
       </div>
       <div className="flex justify-center">
@@ -327,7 +351,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
       </div>
       <div className="flex flex-row justify-between ">
         <div className="-mb-1 flex flex-col space-y-2">
-          {selectedIntervalSubscription == 'individual' && individualPrices && (
+          {isIndividualSubscriptionSelected && individualPrices && (
             <PlanSelectionCard
               key={FREE_PLAN_DATA.id}
               onClick={() => setPriceSelected(FREE_PLAN_DATA)}
@@ -336,10 +360,10 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               currency={FREE_PLAN_DATA.currency}
               amount={''}
               billing={''}
-              isCurrentPlan={FREE_PLAN_DATA.id === subscriptionIndividual?.type}
+              isCurrentPlan={FREE_PLAN_DATA.id === individualSubscription?.type}
             />
           )}
-          {pricesFilteredAndSorted(selectedIntervalSubscription).map((plan) => (
+          {pricesFilteredAndSorted(selectedSubscription).map((plan) => (
             <PlanSelectionCard
               key={plan.id}
               onClick={() => setPriceSelected(plan)}
@@ -353,10 +377,9 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
                   : translate(`preferences.account.plans.${plan.interval}`)?.toLowerCase()
               }
               isCurrentPlan={
-                // currentUserSubscription?.type === 'subscription' && currentUserSubscription?.priceId === plan.id
-                selectedIntervalSubscription == 'individual'
-                  ? subscriptionIndividual?.type === 'subscription' && subscriptionIndividual?.priceId === plan.id
-                  : subscriptionBusiness?.type === 'subscription' && subscriptionBusiness?.priceId === plan.id
+                isIndividualSubscriptionSelected
+                  ? individualSubscription?.type === 'subscription' && individualSubscription?.priceId === plan.id
+                  : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id
               }
               displayBillingSlash={plan.interval !== 'lifetime'}
             />
@@ -365,7 +388,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
         {priceSelected?.id === FREE_PLAN_DATA.id ? (
           <PlanCard
             onClick={() => setIsCancelSubscriptionModalOpen(true)}
-            isCurrentPlan={FREE_PLAN_DATA.id === subscriptionIndividual?.type}
+            isCurrentPlan={FREE_PLAN_DATA.id === individualSubscription?.type}
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
             currency={translate('preferences.account.plans.freeForever')}
             price={''}
@@ -377,10 +400,10 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
           <PlanCard
             onClick={() => handleOnPlanSelected(priceSelected)}
             isCurrentPlan={
-              selectedIntervalSubscription == 'individual'
-                ? subscriptionIndividual?.type === 'subscription' &&
-                  subscriptionIndividual?.priceId === priceSelected.id
-                : subscriptionBusiness?.type === 'subscription' && subscriptionBusiness?.priceId === priceSelected.id
+              isIndividualSubscriptionSelected
+                ? individualSubscription?.type === 'subscription' &&
+                  individualSubscription?.priceId === priceSelected.id
+                : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === priceSelected.id
             }
             capacity={bytesToString(priceSelected?.bytes ?? 0)}
             currency={
@@ -405,16 +428,21 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
         cancellingSubscription={cancellingSubscription}
         cancelSubscription={cancelSubscription}
         currentPlanName={
-          selectedIntervalSubscription == 'individual'
-            ? getPlanName(plan.individualPlan || plan.teamPlan)
-            : getPlanName(plan.businessPlan)
+          isIndividualSubscriptionSelected
+            ? getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit)
+            : getPlanName(plan.businessPlan, plan.businessPlanLimit)
         }
         currentPlanInfo={
-          selectedIntervalSubscription == 'individual'
+          isIndividualSubscriptionSelected
             ? getPlanInfo(plan.individualPlan || plan.teamPlan)
             : getPlanInfo(plan.businessPlan)
         }
-        currentUsage={getCurrentUsage(plan)}
+        currentUsage={
+          isIndividualSubscriptionSelected
+            ? getCurrentUsage(plan.usageDetails)
+            : getCurrentUsage(plan.businessPlanUsageDetails)
+        }
+        userType={selectedSubscription}
       />
     </Section>
   );

@@ -21,7 +21,7 @@ const DeleteAccountContainer = (): JSX.Element => {
   };
 
   const onClick = () => {
-    if (plan.subscription?.type === 'subscription') {
+    if (plan.individualSubscription?.type === 'subscription' || plan.businessSubscription?.type === 'subscription') {
       notificationsService.show({
         text: translate('views.account.tabs.account.deleteAccount.isSubscribed'),
         type: ToastType.Info,

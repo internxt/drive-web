@@ -78,14 +78,14 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
 
       {/* ACTIVE SECTION */}
       <section className="relative w-full overflow-y-auto">
-        <button className="fixed right-0 z-50 m-4 flex w-auto" onClick={() => onClose()}>
+        <button className="fixed right-2 z-50 m-4 flex w-auto" onClick={() => onClose()}>
           <X size={22} />
         </button>
         {activeSection?.section === 'general' && activeSection?.subsection === 'general' && <GeneralSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'overview' && <OverviewSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'members' && <MembersSection />}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection />
+          <BillingWorkspaceSection changeSection={changeSection} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
           <AccountSection changeSection={changeSection} />

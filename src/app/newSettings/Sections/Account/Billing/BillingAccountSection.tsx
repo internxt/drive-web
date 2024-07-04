@@ -2,11 +2,8 @@ import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
-import { FreeStoragePlan, StoragePlan } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import moneyService from '../../../../payment/services/money.service';
 import paymentService from '../../../../payment/services/payment.service';
-import { RenewalPeriod } from '../../../../payment/types';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
@@ -15,6 +12,8 @@ import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCa
 import Invoices from '../../../containers/InvoicesContainer';
 import CancelSubscription from './components/CancelSubscription';
 import BillingAccountOverview from './containers/BillingAccountOverview';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { getCurrentUsage, getPlanInfo, getPlanName } from '../Plans/utils/planUtils';
 
 interface BillingAccountSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -31,11 +30,11 @@ const BillingAccountSection = ({ changeSection }: BillingAccountSectionProps) =>
   const [currentUsage, setCurrentUsage] = useState<number>(-1);
 
   useEffect(() => {
-    plan.subscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
-    getPlanName(plan.individualPlan || plan.teamPlan);
-    getPlanInfo(plan.individualPlan || plan.teamPlan);
-    getCurrentUsage();
-  }, [plan]);
+    plan.individualSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    setPlanName(getPlanName(plan.individualPlan || plan.teamPlan, plan.planLimit));
+    setPlanInfo(getPlanInfo(plan.individualPlan || plan.teamPlan));
+    setCurrentUsage(getCurrentUsage(plan.usageDetails));
+  }, [plan.individualSubscription]);
 
   async function cancelSubscription(feedback: string) {
     setCancellingSubscription(true);
@@ -58,44 +57,16 @@ const BillingAccountSection = ({ changeSection }: BillingAccountSectionProps) =>
     }
   }
 
-  const getPlanName = (storagePlan: StoragePlan | null) => {
-    setPlanName(storagePlan?.simpleName ?? FreeStoragePlan.simpleName);
-  };
-
-  const getPlanInfo = (storagePlan: StoragePlan | null) => {
-    if (storagePlan) {
-      if (storagePlan.paymentInterval === RenewalPeriod.Annually) {
-        setPlanInfo(
-          moneyService.getCurrencySymbol(storagePlan.currency) +
-            storagePlan.price +
-            '/' +
-            t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.year'),
-        );
-      } else {
-        setPlanInfo(
-          moneyService.getCurrencySymbol(storagePlan.currency) +
-            storagePlan.monthlyPrice +
-            '/' +
-            t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.month'),
-        );
-      }
-    } else {
-      setPlanInfo(`${t('views.account.tabs.billing.cancelSubscriptionModal.infoBox.free')}`);
-    }
-  };
-
-  const getCurrentUsage = () => {
-    setCurrentUsage(plan.usageDetails?.total || -1);
-  };
-
   return (
     <Section
       title={t('preferences.workspace.billing.title')}
       className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6"
     >
       <BillingAccountOverview plan={plan} changeSection={changeSection} />
-      <BillingPaymentMethodCard />
-      <Invoices />
+      <BillingPaymentMethodCard userType={UserType.Individual} />
+      {plan.individualSubscription?.type == 'subscription' && (
+        <Invoices subscriptionId={plan.individualSubscription.subscriptionId} />
+      )}
       {isSubscription && (
         <CancelSubscription
           isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}

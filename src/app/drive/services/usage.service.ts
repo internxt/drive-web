@@ -8,15 +8,15 @@ export interface UsageDetailsProps {
   backups: number;
 }
 
-export async function fetchUsage(): Promise<UsageResponse> {
+export async function fetchUsage(workspaceUserId?: string): Promise<UsageResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
   let photosUsage = 0;
-  const driveUsage = await storageClient.spaceUsage();
+  const driveUsage = await storageClient.spaceUsage(workspaceUserId);
 
   try {
-    const { usage } = await photosClient.photos.getUsage();
+    const { usage } = await photosClient.photos.getUsage(workspaceUserId);
     photosUsage = usage;
   } catch (error) {
     errorService.reportError(error);
@@ -27,7 +27,7 @@ export async function fetchUsage(): Promise<UsageResponse> {
   return driveUsage;
 }
 
-async function getUsageDetails(): Promise<UsageDetailsProps> {
+async function getUsageDetails(workspaceUserId?: string): Promise<UsageDetailsProps> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const photosClient = await SdkFactory.getInstance().createPhotosClient();
 
@@ -36,7 +36,7 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
   let photos = 0;
 
   try {
-    const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage();
+    const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage(workspaceUserId);
     drive = storageDrive;
     backups = storageBackups;
   } catch (error) {
@@ -44,7 +44,7 @@ async function getUsageDetails(): Promise<UsageDetailsProps> {
   }
 
   try {
-    const { usage } = await photosClient.photos.getUsage();
+    const { usage } = await photosClient.photos.getUsage(workspaceUserId);
     photos = usage;
   } catch (error) {
     errorService.reportError(error);

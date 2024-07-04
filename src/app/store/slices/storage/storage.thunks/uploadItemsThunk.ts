@@ -145,6 +145,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const user = getState().user.user as UserSettings;
     const errors: Error[] = [];
 
+    const { workspaces, selectedWorkspace } = getState().workspaces;
+    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
+
     options = Object.assign(DEFAULT_OPTIONS, options ?? {});
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
@@ -196,6 +199,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
+      if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
     }, 1000);
 
     if (errors.length > 0) {
@@ -245,6 +249,9 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
     if (!continueWithUpload) return;
+
+    const { workspaces, selectedWorkspace } = getState().workspaces;
+    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
 
     let zeroLengthFilesNumber = 0;
     for (const file of files) {
@@ -337,6 +344,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
+      if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
     }, 1000);
 
     if (errors.length > 0) {

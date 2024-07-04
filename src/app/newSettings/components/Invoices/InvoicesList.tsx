@@ -5,6 +5,7 @@ import dateService from '../../../core/services/date.service';
 import { bytesToString } from '../../../drive/services/size.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Spinner from '../../../shared/components/Spinner/Spinner';
+import moneyService from 'app/payment/services/money.service';
 
 const InvoicesList = ({ invoices, state }: { invoices: Invoice[]; state: 'loading' | 'empty' | 'ready' }) => {
   const [hoverItemIndex, setHoverItemIndex] = useState<string | null>(null);
@@ -123,7 +124,7 @@ const InvoiceAmmountColumn = ({
     >
       {translate('views.account.tabs.billing.invoices.plan')}
     </h1>
-    {invoices.map(({ pdf, id }, i) => (
+    {invoices.map(({ pdf, id, total, currency }, i) => (
       <div
         key={id}
         className={`flex w-56 flex-row items-center justify-between border-gray-10 py-2 pl-5 text-base font-normal text-gray-60 ${
@@ -132,8 +133,7 @@ const InvoiceAmmountColumn = ({
         onMouseEnter={() => setHoverItemIndex(id)}
         onMouseLeave={() => setHoverItemIndex(null)}
       >
-        {/* TODO: CHANGE WHEN IMPLEMENT BACKEND API CALLS */}
-        36,49€
+        {`${total / 100} ` + moneyService.getCurrencySymbol(currency.toUpperCase())}
         <a className="px-2 text-gray-100" href={pdf} target="_blank" rel="noopener noreferrer">
           <DownloadSimple colorRendering={'bg-gray-100'} size={20} />
         </a>

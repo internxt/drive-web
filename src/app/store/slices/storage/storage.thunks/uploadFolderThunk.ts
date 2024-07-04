@@ -47,13 +47,15 @@ const wait = (ms: number): Promise<void> => {
 
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
+  async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
     options = Object.assign({ withNotification: true }, options || {});
     const uploadFolderAbortController = new AbortController();
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
+    const { workspaces, selectedWorkspace } = getState().workspaces;
+    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
 
     const renamedRoot = await handleFoldersRename(root, currentFolderId);
     const levels = [renamedRoot];
@@ -169,6 +171,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       options.onSuccess?.();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -228,7 +231,7 @@ function getNextNewName(filename: string, i: number): string {
 
 export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { dispatch }) => {
+  async ({ root, currentFolderId, options }, { dispatch, getState }) => {
     options = Object.assign({ withNotification: true }, options || {});
 
     const uploadFolderAbortController = new AbortController();
@@ -237,6 +240,8 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
     let rootFolderData: DriveFolderData | undefined;
     const levels = [root];
     const itemsUnderRoot = countItemsUnderRoot(root);
+    const { workspaces, selectedWorkspace } = getState().workspaces;
+    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
 
     let taskId = options?.taskId;
 
@@ -349,6 +354,7 @@ export const uploadFolderThunkNoCheck = createAsyncThunk<void, UploadFolderThunk
 
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

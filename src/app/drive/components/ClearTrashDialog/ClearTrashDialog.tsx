@@ -18,6 +18,8 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isClearTrashDialogOpen);
+  const { workspaces, selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
 
   const onClose = (): void => {
     dispatch(uiActions.setIsClearTrashDialogOpen(false));
@@ -34,6 +36,7 @@ const ClearTrashDialog = (props: ClearTrashDialogProps): JSX.Element => {
       onClose();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

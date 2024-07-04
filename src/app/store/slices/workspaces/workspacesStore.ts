@@ -6,6 +6,7 @@ import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { planThunks } from '../plan';
 
 export interface PersonalWorkspace {
   uuid: string;
@@ -37,6 +38,9 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 
     dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
     dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+
+    if (workspaces && workspaces.availableWorkspaces[0]?.workspace?.workspaceUserId)
+      dispatch(planThunks.initializeThunk());
   },
 );
 

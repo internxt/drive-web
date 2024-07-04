@@ -14,6 +14,8 @@ import {
   UserSubscription,
   FreeTrialAvailable,
   RedeemCodePayload,
+  UserType,
+  InvoicePayload,
 } from '@internxt/sdk/dist/drive/payments/types';
 
 export interface CreatePaymentSessionPayload {
@@ -53,19 +55,19 @@ const paymentService = {
     return paymentsClient.createSession(payload);
   },
 
-  async createSetupIntent(): Promise<{ clientSecret: string }> {
+  async createSetupIntent(userType?: UserType): Promise<{ clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getSetupIntent();
+    return paymentsClient.getSetupIntent(userType);
   },
 
-  async getDefaultPaymentMethod(subscriptionType?: 'individual' | 'business'): Promise<PaymentMethod | Source> {
+  async getDefaultPaymentMethod(userType?: UserType): Promise<PaymentMethod | Source> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getDefaultPaymentMethod(subscriptionType);
+    return paymentsClient.getDefaultPaymentMethod(userType);
   },
 
-  async getInvoices(): Promise<Invoice[]> {
+  async getInvoices(payload: InvoicePayload): Promise<Invoice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getInvoices({});
+    return paymentsClient.getInvoices(payload);
   },
 
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
@@ -74,14 +76,14 @@ const paymentService = {
     return stripe.redirectToCheckout(options);
   },
 
-  async getUserSubscription(subscriptionType?: 'individual' | 'business'): Promise<UserSubscription> {
+  async getUserSubscription(userType?: UserType): Promise<UserSubscription> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getUserSubscription(subscriptionType);
+    return paymentsClient.getUserSubscription(userType);
   },
 
-  async getPrices(currency?: string, subscriptionType?: 'individual' | 'business'): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string, userType?: UserType): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices(currency, subscriptionType);
+    return paymentsClient.getPrices(currency, userType);
   },
 
   async requestPreventCancellation(): Promise<FreeTrialAvailable> {
@@ -111,10 +113,10 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice(priceId, coupon);
   },
 
-  async cancelSubscription(subscriptionType?: 'individual' | 'business'): Promise<void> {
+  async cancelSubscription(userType?: UserType): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.cancelSubscription(subscriptionType);
+    return paymentsClient.cancelSubscription(userType);
   },
 
   async createCheckoutSession(

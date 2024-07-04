@@ -1,6 +1,3 @@
-import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
@@ -12,17 +9,17 @@ export default function PlanUsage({
   limit,
   usage,
   isLoading,
+  subscriptionType,
   className = '',
 }: {
   limit: number;
   usage: number;
   isLoading: boolean;
+  subscriptionType?: string;
   className?: string;
 }): JSX.Element {
   const { translate } = useTranslationContext();
   const usagePercent = usageService.getUsagePercent(usage, limit);
-  const plan = useSelector<RootState, PlanState>((state) => state.plan);
-  const subscriptionType = plan.subscription?.type;
 
   const isLimitReached = usage >= limit;
   const componentColor = isLimitReached ? 'bg-red' : 'bg-primary';

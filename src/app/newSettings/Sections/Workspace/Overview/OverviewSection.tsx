@@ -18,6 +18,7 @@ import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 // MOCKED DATA
 const avatarBlob = null;
@@ -66,7 +67,7 @@ const OverviewSection = () => {
   const products = planUsage ? getProductCaptions(planUsage) : null;
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
-    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
+    getSubscriptionData({ userSubscription: plan.businessSubscription, plan, local, userType: UserType.Business });
 
   return (
     <Section title="Overview" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
@@ -81,7 +82,7 @@ const OverviewSection = () => {
       <WorkspaceOverviewDetails
         members={members}
         teams={teams}
-        planLimit={plan.planLimit}
+        planLimit={plan.businessPlanLimit}
         products={products}
         isOwner={isOwner}
         subscriptionData={subscriptionData}

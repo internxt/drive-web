@@ -17,7 +17,7 @@ const BannerWrapper = (): JSX.Element => {
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const isTutorialCompleted = localStorageService.hasCompletedTutorial(user.userId);
-  const userPlan = plan.subscription?.type;
+  const userPlan = plan.individualSubscription?.type;
 
   const isNewUser = userPlan === 'free';
   const isNewAccount = useAppSelector(userSelectors.hasSignedToday);

@@ -2,6 +2,7 @@ import { Stripe, loadStripe } from '@stripe/stripe-js';
 import envService from '../../../../../core/services/env.service';
 import errorService from '../../../../../core/services/error.service';
 import paymentService from '../../../../../payment/services/payment.service';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
 const productValue = {
@@ -15,24 +16,24 @@ const getCountry = async () =>
 
 const getPlanPrices = async ({
   currencyValue = 'eur',
-  subscriptionType = 'individual',
+  userType = UserType.Individual,
 }: {
   currencyValue: string;
-  subscriptionType: 'individual' | 'business';
-}) => paymentService.getPrices(currencyValue, subscriptionType);
+  userType: UserType;
+}) => paymentService.getPrices(currencyValue, userType);
 
-const fetchPlanPrices = async (subscriptionType: 'individual' | 'business') => {
+const fetchPlanPrices = async (userType: UserType) => {
   try {
     const { country } = await getCountry().then((res) => res.json());
     const currencyValue = productValue[country] || 'eur';
 
-    return getPlanPrices({ currencyValue, subscriptionType });
+    return getPlanPrices({ currencyValue, userType });
   } catch (error) {
     const errorCasted = errorService.castError(error);
     errorService.reportError(errorCasted);
 
     // by default in euros
-    return getPlanPrices({ currencyValue: 'eur', subscriptionType });
+    return getPlanPrices({ currencyValue: 'eur', userType });
   }
 };
 

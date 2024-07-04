@@ -3,12 +3,11 @@ import { SdkFactory } from '../../core/factory/sdk';
 
 export const INFINITE_LIMIT = 108851651149824;
 
-async function fetchLimit(): Promise<number> {
+async function fetchLimit(workspaceUserId?: string): Promise<number> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.spaceLimit()
-    .then(response => {
-      return response.maxSpaceBytes;
-    });
+  return storageClient.spaceLimit(workspaceUserId).then((response) => {
+    return response.maxSpaceBytes;
+  });
 }
 
 const formatLimit = (limit: number): string => {
