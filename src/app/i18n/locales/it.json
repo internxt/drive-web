@@ -1618,6 +1618,7 @@
       "personal": "Spazio di lavoro personale",
       "business": "Spazio di lavoro aziendale"
     },
+    "pending": "Inviti in sospeso",
     "messages": {
       "sharedSuccess": "Elemento condiviso con successo con il team"
     }
