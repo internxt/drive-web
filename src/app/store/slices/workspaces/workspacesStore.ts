@@ -205,7 +205,10 @@ export const workspacesSlice = createSlice({
         const workspace = item.workspace;
         if (workspace.id === workspaceId) {
           item.workspace = Object.assign(workspace, patch);
-          state.selectedWorkspace = item ?? null;
+          if (state.selectedWorkspace?.workspace.id === workspaceId) {
+            state.selectedWorkspace = item;
+            localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(item));
+          }
         }
         return item;
       });

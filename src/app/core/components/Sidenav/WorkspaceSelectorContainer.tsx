@@ -8,11 +8,11 @@ import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
-  const selectedWorkpace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const pendingWorkspaces = useSelector((state: RootState) => state.workspaces.pendingWorkspaces);
   const parsedWorkspaces = parseWorkspaces(workspaces);
-  const parsedPendingWorksapces = parsePendingWorkspaces(pendingWorkspaces);
-  const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorksapces];
+  const parsedPendingWorkspaces = parsePendingWorkspaces(pendingWorkspaces);
+  const allParsedWorkspaces = [...parsedWorkspaces, ...parsedPendingWorkspaces];
 
   const handleWorkspaceChange = (workspaceId: string | null) => {
     const selectedWorkspace = allParsedWorkspaces.find((workspace) => workspace.uuid === workspaceId);
@@ -29,18 +29,20 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
 
   if (!user) return null;
 
+  const userWorkspace: Workspace = {
+    name: user.name,
+    type: 'Personal',
+    uuid: user.uuid,
+    avatar: user?.avatar,
+  };
+
   return (
     <WorkspaceSelector
-      userWorkspace={{
-        name: user.name,
-        type: 'Personal',
-        uuid: user.uuid,
-        avatar: user?.avatar,
-      }}
+      userWorkspace={userWorkspace}
       workspaces={allParsedWorkspaces}
       onChangeWorkspace={handleWorkspaceChange}
       onCreateWorkspaceButtonClicked={() => undefined}
-      selectedWorkspace={selectedWorkpace ? parseWorkspaces([selectedWorkpace])[0] : null}
+      selectedWorkspace={selectedWorkspace ? parseWorkspaces([selectedWorkspace])[0] : userWorkspace}
     />
   );
 };
