@@ -68,7 +68,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   isWorkspaceSelectorOpen,
   setIsWorkspaceSelectorOpen,
 }) => {
-  const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLInputElement>(null);
 
   const { translate } = useTranslationContext();
