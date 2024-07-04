@@ -18,6 +18,10 @@ interface WorkspaceSelectorProps {
   onCreateWorkspaceButtonClicked: () => void;
   onChangeWorkspace: (workspaceId: string | null) => void;
   selectedWorkspace: Workspace | null;
+  setIsDialogOpen: (boolean) => void;
+  pendingWorkspacesInvitesLength: number;
+  isWorkspaceSelectorOpen: boolean;
+  setIsWorkspaceSelectorOpen: (isWorkspaceSelectorOpen) => void;
 }
 
 const WorkspaceCard = ({
@@ -58,7 +62,11 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   workspaces,
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
+  setIsDialogOpen,
+  pendingWorkspacesInvitesLength,
   selectedWorkspace,
+  isWorkspaceSelectorOpen,
+  setIsWorkspaceSelectorOpen,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLInputElement>(null);
@@ -66,7 +74,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   const { translate } = useTranslationContext();
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen);
+    setIsWorkspaceSelectorOpen(!isWorkspaceSelectorOpen);
   };
 
   const handleWorkspaceClick = (workspace: Workspace | null) => {
@@ -75,13 +83,13 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     } else {
       onChangeWorkspace(workspace?.uuid ?? null);
     }
-    setIsOpen(false);
+    setIsWorkspaceSelectorOpen(false);
   };
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
+        setIsWorkspaceSelectorOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -95,7 +103,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       {/* TOGGLE BUTTON */}
       <button
         className={`w-full justify-center rounded-lg border border-gray-10 ${
-          isOpen ? 'bg-gray-1' : 'bg-surface'
+          isWorkspaceSelectorOpen ? 'bg-gray-1' : 'bg-surface'
         } p-3 text-left dark:bg-gray-5`}
         onClick={toggleDropdown}
       >
@@ -120,13 +128,13 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       <div
         ref={dropdownRef}
         className={`fixed left-2 z-50 w-72 overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          isWorkspaceSelectorOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}
       >
         <div className="h-1"></div>
         <div
           className={`rounded-lg border border-gray-10 bg-surface shadow-xl dark:bg-gray-5 ${
-            isOpen ? 'block' : 'hidden'
+            isWorkspaceSelectorOpen ? 'block' : 'hidden'
           }`}
         >
           <p className="px-2 pt-3 text-sm font-medium text-gray-100">{translate('workspaces.workspaces')}</p>
@@ -159,13 +167,24 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
             />
           ))}
           {/* NOT USING FOR THE MOMENT */}
-          {/* <div className="mx-3 h-px bg-gray-10"></div>
-          <button
+          <div className="mx-3 h-px bg-gray-10"></div>
+          {/* <button
             className="w-full rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
             onClick={onCreateWorkspaceButtonClicked}
           >
             {translate('workspaces.createWorkspace')}
           </button> */}
+          {pendingWorkspacesInvitesLength > 0 && (
+            <button
+              className="flex w-full items-center space-x-2 rounded-b-lg px-2 py-3 text-left text-sm font-medium leading-4 text-gray-100 hover:bg-gray-5 dark:hover:bg-gray-10"
+              onClick={() => setIsDialogOpen(true)}
+            >
+              <span>{translate('workspaces.pending')}</span>
+              <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
+                {pendingWorkspacesInvitesLength}
+              </span>
+            </button>
+          )}
         </div>
       </div>
     </div>

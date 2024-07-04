@@ -28,14 +28,14 @@ const UserCard = ({ name, lastname, role, email, avatarsrc, styleOptions }: User
           <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} size={'small'} />
         )}
         <div className="flex flex-row justify-between space-x-2">
-          <span className={styleOptions?.nameStyle ?? 'text-base font-medium leading-5 text-gray-100'}>
+          <span className={styleOptions?.nameStyle ?? 'break-all text-base font-medium leading-5 text-gray-100'}>
             {name} {lastname}
           </span>
           {rolePosition === 'row' && (
             <RoleBadge role={role} roleText={translate(`preferences.workspace.members.role.${role}`)} size={'small'} />
           )}
         </div>
-        <span className={styleOptions?.emailStyle ?? 'text-left text-sm font-normal leading-4 text-gray-50'}>
+        <span className={styleOptions?.emailStyle ?? 'break-all text-left text-sm font-normal leading-4 text-gray-50'}>
           {email}
         </span>
       </div>
