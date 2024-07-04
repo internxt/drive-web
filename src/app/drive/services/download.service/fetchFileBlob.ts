@@ -1,10 +1,10 @@
 import { binaryStreamToBlob } from '../../../core/services/stream.service';
-import { getEnvironmentConfig } from '../network.service';
 import { Downloadable, downloadFile, NetworkCredentials } from '../../../network/download';
+import { getEnvironmentConfig } from '../network.service';
 
 type FetchFileBlobOptions = {
   updateProgressCallback: (progress: number) => void;
-  isTeam?: boolean;
+  isWorkspace: boolean;
   abortController?: AbortController;
 };
 
@@ -14,7 +14,7 @@ export default async function fetchFileBlob(
   credentials?: NetworkCredentials,
   mnemonic?: string,
 ): Promise<Blob> {
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(!!options.isWorkspace);
 
   const creds = credentials ? credentials : { pass: bridgePass, user: bridgeUser };
 

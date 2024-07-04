@@ -1,8 +1,8 @@
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { Iterator } from 'app/core/collections';
+import { binaryStreamToBlob } from '../../core/services/stream.service';
 import { FlatFolderZip } from '../../core/services/zip.service';
 import { DriveFileData } from '../types';
-import { binaryStreamToBlob } from '../../core/services/stream.service';
 
 type File = SharedFiles | DriveFileData;
 
@@ -17,7 +17,7 @@ async function addFilesToZip<T extends File>(
 
   const addFileToZip = async (file: T) => {
     const fileStream = await downloadFile(file);
-    zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
+    zip.addFile(path + '/' + (file.plainName ?? file.name) + (file.type ? '.' + file.type : ''), fileStream);
   };
 
   let pack;
@@ -48,7 +48,7 @@ async function addFilesToZip<T extends File>(
         for (const file of filesChunk) {
           const downloadPromise = downloadFile(file).then(async (fileStream) => {
             const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
-            return { name: file.name, type: file.type, blob: fileBlob };
+            return { name: file.plainName ?? file.name, type: file.type, blob: fileBlob };
           });
 
           downloadPromises.push(downloadPromise);

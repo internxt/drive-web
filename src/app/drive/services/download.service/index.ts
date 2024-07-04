@@ -1,8 +1,8 @@
-import fetchFileBlob from './fetchFileBlob';
-import downloadFileFromBlob from './downloadFileFromBlob';
-import downloadFile from './downloadFile';
 import downloadBackup from './downloadBackup';
+import downloadFile from './downloadFile';
+import downloadFileFromBlob from './downloadFileFromBlob';
 import downloadFolder from './downloadFolder';
+import fetchFileBlob from './fetchFileBlob';
 
 const downloadService = {
   fetchFileBlob,

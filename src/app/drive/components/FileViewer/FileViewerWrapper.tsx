@@ -21,8 +21,8 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import { RootState } from '../../../store';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
 import downloadService from '../../services/download.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
@@ -58,7 +58,7 @@ const FileViewerWrapper = ({
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
@@ -187,7 +187,7 @@ const FileViewerWrapper = ({
       { ...currentFile, bucketId: currentFile.bucket },
       {
         updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
-        isTeam,
+        isWorkspace,
         abortController,
       },
       currentFile.credentials,
