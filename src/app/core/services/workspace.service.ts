@@ -179,7 +179,7 @@ export function createFolder(payload: CreateFolderPayload): [Promise<CreateFolde
   return workspaceClient.createFolder(payload);
 }
 
-export function getWorkspaceCretenditals(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
+export function getWorkspaceCredentials(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspaceCredentials(workspaceId).catch((error) => {
     throw errorService.castError(error);
@@ -302,7 +302,7 @@ const workspacesService = {
   processInvitation,
   createFileEntry,
   createFolder,
-  getWorkspaceCretenditals,
+  getWorkspaceCredentials,
   getTrashItems,
   emptyTrash,
   shareItemWithTeam,

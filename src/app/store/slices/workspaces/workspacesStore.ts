@@ -74,10 +74,10 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
     if (selectedWorkspace) {
       const workspaceId = selectedWorkspace?.workspace.id;
 
-      const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
+      const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
-      dispatch(workspacesActions.setCredentials(cretenditals));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(cretenditals));
+      dispatch(workspacesActions.setCredentials(credentials));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
     }
   },
 );
