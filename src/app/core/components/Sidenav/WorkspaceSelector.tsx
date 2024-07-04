@@ -58,10 +58,9 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   workspaces,
   onCreateWorkspaceButtonClicked,
   onChangeWorkspace,
-  selectedWorkspace: selectedWorkspaceProp,
+  selectedWorkspace,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selectedWorkspace, setSelectedWorkspace] = useState<Workspace | null>(selectedWorkspaceProp ?? userWorkspace);
   const dropdownRef = useRef<HTMLInputElement>(null);
 
   const { translate } = useTranslationContext();
@@ -76,7 +75,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
     } else {
       onChangeWorkspace(workspace?.uuid ?? null);
     }
-    setSelectedWorkspace(workspace);
     setIsOpen(false);
   };
 
