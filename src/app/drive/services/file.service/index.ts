@@ -14,18 +14,12 @@ import uploadFile from './uploadFile';
 export function updateMetaData(
   fileId: string,
   metadata: DriveFileMetadataPayload,
-  bucketId: string,
   resourcesToken?: string,
 ): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFilePayload = {
-    fileId: fileId,
-    metadata: metadata,
-    bucketId: bucketId,
-    destinationPath: uuid.v4(),
-  };
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const payload = { fileUuid: fileId, name: metadata.itemName };
 
-  return storageClient.updateFile(payload, resourcesToken).then(() => {
+  return storageClient.updateFileNameWithUUID(payload, resourcesToken).then(() => {
     const user = localStorageService.getUser() as UserSettings;
     analyticsService.trackFileRename({
       file_id: fileId,

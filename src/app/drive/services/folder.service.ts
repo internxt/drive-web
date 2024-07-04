@@ -140,17 +140,19 @@ export function createFolderByUuid(
   return [finalPromise, requestCanceler];
 }
 
-export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFolderMetadataPayload = {
-    folderId: folderId,
-    changes: metadata,
+export async function updateMetaData(folderUuid: string, metadata: DriveFolderMetadataPayload): Promise<void> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+
+  const payload = {
+    folderUuid,
+    name: metadata.itemName,
   };
-  return storageClient.updateFolder(payload).then(() => {
+
+  return storageClient.updateFolderNameWithUUID(payload).then(() => {
     const user: UserSettings = localStorageService.getUser() as UserSettings;
     analyticsService.trackFolderRename({
       email: user.email,
-      fileId: folderId,
+      fileId: folderUuid,
       platform: DevicePlatform.Web,
     });
   });

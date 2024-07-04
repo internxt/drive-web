@@ -2,7 +2,7 @@ import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import httpService from '../../../core/services/http.service';
 import { DevicePlatform } from '../../../core/types';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../../types';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
@@ -91,22 +91,6 @@ export function createFolder(
     });
 
   return [finalPromise, requestCanceler];
-}
-
-export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFolderMetadataPayload = {
-    folderId: folderId,
-    changes: metadata,
-  };
-  return storageClient.updateFolder(payload).then(() => {
-    const user: UserSettings = localStorageService.getUser() as UserSettings;
-    analyticsService.trackFolderRename({
-      email: user.email,
-      fileId: folderId,
-      platform: DevicePlatform.Web,
-    });
-  });
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
@@ -349,7 +333,6 @@ export async function moveFolder(folderId: number, destination: number): Promise
 
 const folderService = {
   createFolder,
-  updateMetaData,
   deleteFolder,
   moveFolder,
   downloadFolderAsZip,

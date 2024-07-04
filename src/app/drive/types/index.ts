@@ -30,7 +30,7 @@ export interface DriveFolderData {
 }
 
 export interface DriveFolderMetadataPayload {
-  itemName?: string;
+  itemName: string;
   color?: string;
   icon?: string;
 }
@@ -82,7 +82,7 @@ export enum ThumbnailConfig {
 }
 
 export interface DriveFileMetadataPayload {
-  itemName?: string;
+  itemName: string;
 }
 
 export type DriveItemData = DriveFileData & DriveFolderData;
