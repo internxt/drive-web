@@ -1,14 +1,14 @@
-import JSZip from 'jszip';
-import { items } from '@internxt/lib';
-import streamSaver from 'streamsaver';
 import { ActionState } from '@internxt/inxt-js/build/api/ActionState';
+import { items } from '@internxt/lib';
+import JSZip from 'jszip';
 import internal from 'stream';
+import streamSaver from 'streamsaver';
 
 import errorService from 'app/core/services/error.service';
-import { getEnvironmentConfig, Network } from '../../network.service';
+import { t } from 'i18next';
 import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
-import { t } from 'i18next';
+import { getEnvironmentConfig, Network } from '../../network.service';
 
 /**
  * @description Downloads a folder using StreamSaver.js
@@ -23,18 +23,18 @@ export default async function downloadFolderUsingStreamSaver({
   decryptedCallback,
   updateProgressCallback,
   errorCallback,
-  isTeam,
+  isWorkspace,
 }: {
   folder: DriveFolderData;
   decryptedCallback?: () => void;
   updateProgressCallback?: (progress: number) => void;
   errorCallback?: (err: Error) => void;
-  isTeam: boolean;
+  isWorkspace: boolean;
 }): Promise<[Promise<void>, () => void]> {
   const downloadingSize: Record<number, number> = {};
   const fileStreams: { file: DriveFileData; stream: internal.Readable }[] = [];
   const actionStates: ActionState[] = [];
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isWorkspace);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
   const zip = new JSZip();

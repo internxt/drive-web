@@ -1,6 +1,6 @@
-import JSZip from 'jszip';
-import fileDownload from 'js-file-download';
 import { items } from '@internxt/lib';
+import fileDownload from 'js-file-download';
+import JSZip from 'jszip';
 
 import { DriveFolderData, FolderTree } from '../../../types';
 import folderService from '../../folder.service';
@@ -16,10 +16,12 @@ export default async function downloadFolderUsingBlobs({
   folder,
   decryptedCallback,
   updateProgressCallback,
+  isWorkspace,
 }: {
   folder: DriveFolderData;
   decryptedCallback?: () => void;
   updateProgressCallback?: (progress: number) => void;
+  isWorkspace: boolean;
 }): Promise<void> {
   const zip = new JSZip();
   const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
@@ -54,6 +56,7 @@ export default async function downloadFolderUsingBlobs({
 
             (updateProgressCallback || (() => undefined))(totalProgress);
           },
+          isWorkspace,
         },
       );
       const fileBlob = await fileBlobPromise;

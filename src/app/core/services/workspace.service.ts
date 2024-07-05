@@ -1,5 +1,10 @@
 import { ListAllSharedFoldersResponse, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import { CreateFolderResponse, DriveFileData, FetchTrashContentResponse } from '@internxt/sdk/dist/drive/storage/types';
+import {
+  CreateFolderResponse,
+  DriveFileData,
+  FetchPaginatedFolderContentResponse,
+  FetchTrashContentResponse,
+} from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
   CreateFolderPayload,
@@ -307,6 +312,25 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   );
 }
 
+export function getWorkspaceFolders(
+  workspaceId: string,
+  folderId: string,
+  offset: number,
+  limit: number,
+): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getFolders(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+}
+export function getWorkspaceFiles(
+  workspaceId: string,
+  folderId: string,
+  offset: number,
+  limit: number,
+): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getFiles(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -340,6 +364,8 @@ const workspacesService = {
   getAllWorkspaceTeamSharedFolders,
   getAllWorkspaceTeamSharedFolderFiles,
   getAllWorkspaceTeamSharedFolderFolders,
+  getWorkspaceFolders,
+  getWorkspaceFiles,
 };
 
 export default workspacesService;

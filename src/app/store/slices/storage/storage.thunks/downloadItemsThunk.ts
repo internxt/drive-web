@@ -20,6 +20,7 @@ import { RootState } from '../../..';
 import { TrackingPlan } from '../../../../analytics/TrackingPlan';
 import analyticsService from '../../../../analytics/services/analytics.service';
 import folderService, { createFilesIterator, createFoldersIterator } from '../../../../drive/services/folder.service';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { checkIfCachedSourceIsOlder } from './downloadFileThunk';
 
@@ -134,8 +135,8 @@ type DownloadItemsAsZipThunkType = {
   sharedFolderName?: string;
 };
 
-type FolderIterator = (directoryId: number) => Iterator<DriveFolderData>;
-type FileIterator = (directoryId: number) => Iterator<DriveFileData>;
+type FolderIterator = (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>;
+type FileIterator = (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>;
 
 type SharedFolderIterator = (directoryId: string, resourcesToken) => Iterator<SharedFolders>;
 type SharedFileIterator = (directoryId: string, resourcesToken) => Iterator<SharedFiles>;
@@ -144,8 +145,11 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
   'storage/downloadItemsAsZip',
   async (
     { items, credentials, mnemonic, existingTaskId, folderIterator, fileIterator, areSharedItems, sharedFolderName },
-    { rejectWithValue },
+    { rejectWithValue, getState },
   ) => {
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
     const errors: unknown[] = [];
     const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
     const downloadProgress: number[] = [];
@@ -154,8 +158,12 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const folderName = sharedFolderName ?? `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
 
+    const workspaceCredentialsForOptions = {
+      user: workspaceCredentials?.credentials.networkUser,
+      pass: workspaceCredentials?.credentials.networkPass,
+    };
     const moreOptions = {
-      credentials,
+      credentials: workspaceCredentialsForOptions ?? credentials,
       mnemonic,
     };
 
@@ -237,20 +245,26 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              driveItem.uuid as string,
+              driveItem.uuid,
               { destination: folder, closeWhenFinished: false, ...moreOptions },
             );
           } else {
             await folderService.downloadFolderAsZip(
               driveItem.id,
               driveItem.name,
+              driveItem.uuid,
               folderIterator as FolderIterator,
               fileIterator as FileIterator,
               (progress) => {
                 downloadProgress[index] = progress;
                 updateProgressCallback(calculateProgress());
               },
-              { destination: folder, closeWhenFinished: false, ...moreOptions },
+              {
+                destination: folder,
+                closeWhenFinished: false,
+                ...moreOptions,
+                workspaceId: selectedWorkspace?.workspace.id,
+              },
             );
           }
           downloadProgress[index] = 1;
@@ -260,7 +274,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file: driveItem });
 
           if (cachedFile?.source && !isCachedFileOlder) {
-            const blob = cachedFile.source as Blob;
+            const blob = cachedFile.source;
             downloadProgress[index] = 1;
             fileStream = blob.stream();
           } else {
@@ -281,10 +295,10 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
               fileId: driveItem.fileId,
               bucketId: driveItem.bucket,
               creds: {
-                user: credentials?.user || user.bridgeUser,
-                pass: credentials?.pass || user.userId,
+                user: workspaceCredentials?.credentials.networkUser ?? credentials?.user ?? user.bridgeUser,
+                pass: workspaceCredentials?.credentials.networkPass ?? credentials?.pass ?? user.userId,
               },
-              mnemonic: mnemonic || user.mnemonic,
+              mnemonic: mnemonic ?? user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {

@@ -95,6 +95,7 @@ const localStorageService = {
   exists,
   clear,
   getB2BWorkspace,
+  getWorkspaceCredentials,
 };
 
 export default localStorageService;

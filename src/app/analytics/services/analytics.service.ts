@@ -247,7 +247,7 @@ export function trackFolderCreated(payload: { email: string; platform: DevicePla
   // window.analytics.track(AnalyticsTrackNames.FolderCreated, payload);
 }
 
-export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
+export function trackFolderRename(payload: { email: string; fileId: string; platform: DevicePlatform }): void {
   // window.analytics.track(AnalyticsTrackNames.FolderRename, payload);
 }
 

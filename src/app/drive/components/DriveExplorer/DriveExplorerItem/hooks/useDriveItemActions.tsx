@@ -10,10 +10,10 @@ import { downloadThumbnail, setCurrentThumbnail } from '../../../../../drive/ser
 import { DriveItemData, DriveItemDetails } from '../../../../../drive/types';
 import shareService from '../../../../../share/services/share.service';
 import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
-import { sessionSelectors } from '../../../../../store/slices/session/session.selectors';
 import { storageActions } from '../../../../../store/slices/storage';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
+import workspacesSelectors from '../../../../../store/slices/workspaces/workspaces.selectors';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -37,7 +37,7 @@ export interface DriveItemActions {
 const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -134,7 +134,7 @@ const useDriveItemActions = (item): DriveItemActions => {
       const newThumbnail = item.thumbnails[0];
 
       if (!thumbnailBlob) {
-        thumbnailBlob = await downloadThumbnail(newThumbnail, isTeam);
+        thumbnailBlob = await downloadThumbnail(newThumbnail, isWorkspace);
         updateDatabaseFilePreviewData({
           fileId: item.id,
           folderId: item.folderId,

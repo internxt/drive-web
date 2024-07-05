@@ -10,20 +10,20 @@ import { getEnvironmentConfig } from '../../network.service';
  * @description Downloads a folder using File System Access API
  * TODO: Load levels paginated instead of loading the entire tree at once.
  * @param folderData
- * @param isTeam
+ * @param isWorkspace
  */
 export default function downloadFolderUsingFileSystemAccessAPI({
   folder,
   updateProgressCallback,
-  isTeam,
+  isWorkspace,
   abortController,
 }: {
   folder: DriveFolderData;
   updateProgressCallback?: (progress: number) => void;
-  isTeam: boolean;
+  isWorkspace: boolean;
   abortController?: AbortController;
 }): Promise<void> {
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isWorkspace);
 
   return downloadFolder(
     folder,

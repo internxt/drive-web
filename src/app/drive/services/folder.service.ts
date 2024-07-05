@@ -16,6 +16,7 @@ import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
 import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
+import workspacesService from '../../core/services/workspace.service';
 import { DevicePlatform } from '../../core/types';
 import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
@@ -82,6 +83,7 @@ export interface DownloadFolderAsZipOptions {
   };
   mnemonic?: string;
   isPublicShare?: boolean;
+  workspaceId?: string;
 }
 
 export function createFolder(
@@ -138,17 +140,19 @@ export function createFolderByUuid(
   return [finalPromise, requestCanceler];
 }
 
-export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFolderMetadataPayload = {
-    folderId: folderId,
-    changes: metadata,
+export async function updateMetaData(folderUuid: string, metadata: DriveFolderMetadataPayload): Promise<void> {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+
+  const payload = {
+    folderUuid,
+    name: metadata.itemName,
   };
-  return storageClient.updateFolder(payload).then(() => {
+
+  return storageClient.updateFolderNameWithUUID(payload).then(() => {
     const user: UserSettings = localStorageService.getUser() as UserSettings;
     analyticsService.trackFolderRename({
       email: user.email,
-      fileId: folderId,
+      fileId: folderUuid,
       platform: DevicePlatform.Web,
     });
   });
@@ -184,19 +188,40 @@ interface GetDirectoryFoldersResponse {
 class DirectoryFolderIterator implements Iterator<DriveFolderData> {
   private offset: number;
   private limit: number;
-  private readonly queryValues: { directoryId: number };
+  private readonly queryValues: { directoryId: number; workspaceId?: string; directoryUUID: string };
 
-  constructor(queryValues: { directoryId: number }, limit?: number, offset?: number) {
+  constructor(
+    queryValues: { directoryId: number; workspaceId?: string; directoryUUID: string },
+    limit?: number,
+    offset?: number,
+  ) {
     this.limit = limit ?? 5;
     this.offset = offset ?? 0;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId } = this.queryValues;
-    const { folders, last } = await httpService.get<GetDirectoryFoldersResponse>(
-      `/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
-    );
+    const { directoryId, workspaceId, directoryUUID } = this.queryValues;
+
+    let folders;
+    let last;
+    if (workspaceId) {
+      const [foldersPromise] = workspacesService.getWorkspaceFolders(
+        workspaceId,
+        directoryUUID,
+        this.offset,
+        this.limit,
+      );
+      folders = (await foldersPromise).result;
+      const isLast = folders.length <= this.limit;
+      last = isLast;
+    } else {
+      const { folders: storageFolders, last: storageLast } = await httpService.get<GetDirectoryFoldersResponse>(
+        `/storage/v2/folders/${directoryId}/folders?limit=${this.limit}&offset=${this.offset}`,
+      );
+      folders = storageFolders;
+      last = storageLast;
+    }
 
     this.offset += this.limit;
 
@@ -212,19 +237,36 @@ interface GetDirectoryFilesResponse {
 class DirectoryFilesIterator implements Iterator<DriveFileData> {
   private offset: number;
   private limit: number;
-  private readonly queryValues: { directoryId: number };
+  private readonly queryValues: { directoryId: number; workspaceId?: string; directoryUUID: string };
 
-  constructor(queryValues: { directoryId: number }, limit?: number, offset?: number) {
+  constructor(
+    queryValues: { directoryId: number; workspaceId?: string; directoryUUID: string },
+    limit?: number,
+    offset?: number,
+  ) {
     this.limit = limit ?? 5;
     this.offset = offset ?? 0;
     this.queryValues = queryValues;
   }
 
   async next() {
-    const { directoryId } = this.queryValues;
-    const { files, last } = await httpService.get<GetDirectoryFilesResponse>(
-      `/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
-    );
+    const { directoryId, workspaceId, directoryUUID } = this.queryValues;
+
+    let files;
+    let last;
+    if (workspaceId) {
+      const [filesPromise] = workspacesService.getWorkspaceFiles(workspaceId, directoryUUID, this.offset, this.limit);
+      files = (await filesPromise).result;
+
+      const isLast = files.length <= this.limit;
+      last = isLast;
+    } else {
+      const { files: storageFiles, last: storageLast } = await httpService.get<GetDirectoryFilesResponse>(
+        `/storage/v2/folders/${directoryId}/files?limit=${this.limit}&offset=${this.offset}`,
+      );
+      files = storageFiles;
+      last = storageLast;
+    }
 
     this.offset += this.limit;
 
@@ -232,12 +274,20 @@ class DirectoryFilesIterator implements Iterator<DriveFileData> {
   }
 }
 
-export const createFoldersIterator = (directoryId: number): Iterator<DriveFolderData> => {
-  return new DirectoryFolderIterator({ directoryId }, 20, 0);
+export const createFoldersIterator = (
+  directoryId: number,
+  directoryUUID: string,
+  workspaceId?: string,
+): Iterator<DriveFolderData> => {
+  return new DirectoryFolderIterator({ directoryId, workspaceId, directoryUUID }, 20, 0);
 };
 
-export const createFilesIterator = (directoryId: number): Iterator<DriveFileData> => {
-  return new DirectoryFilesIterator({ directoryId }, 20, 0);
+export const createFilesIterator = (
+  directoryId: number,
+  directoryUUID: string,
+  workspaceId?: string,
+): Iterator<DriveFileData> => {
+  return new DirectoryFilesIterator({ directoryId, workspaceId, directoryUUID }, 20, 0);
 };
 
 interface FolderRef {
@@ -299,7 +349,7 @@ async function downloadSharedFolderAsZip(
         folderToDownload.name,
         async (file) => {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           if (cachedFile?.source && !isCachedFileOlder) {
@@ -391,16 +441,17 @@ async function downloadSharedFolderAsZip(
 async function downloadFolderAsZip(
   folderId: DriveFolderData['id'],
   folderName: DriveFolderData['name'],
-  foldersIterator: (directoryId: number) => Iterator<DriveFolderData>,
-  filesIterator: (directoryId: number) => Iterator<DriveFileData>,
+  folderUUID: DriveFolderData['uuid'],
+  foldersIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFolderData>,
+  filesIterator: (directoryId: number, directoryUUID: string, workspaceId?: string) => Iterator<DriveFileData>,
   updateProgress: (progress: number) => void,
   options?: DownloadFolderAsZipOptions,
 ): Promise<void> {
-  const rootFolder: FolderRef = { folderId: folderId, name: folderName };
+  const rootFolder: FolderRef = { folderId: folderId, name: folderName, folderUuid: folderUUID };
   const pendingFolders: FolderRef[] = [rootFolder];
   let totalSize = 0;
   const zip = options?.destination || new FlatFolderZip(folderName, {});
-
+  const workspaceId = options?.workspaceId;
   const user = localStorageService.getUser();
 
   if (!user) {
@@ -427,7 +478,7 @@ async function downloadFolderAsZip(
         folderToDownload.name,
         async (file) => {
           const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-          const cachedFile = await lruFilesCacheManager.get(file.id.toString());
+          const cachedFile = await lruFilesCacheManager.get(file.uuid?.toString());
           const isCachedFileOlder = checkIfCachedSourceIsOlder({ cachedFile, file });
 
           if (cachedFile?.source && !isCachedFileOlder) {
@@ -470,19 +521,24 @@ async function downloadFolderAsZip(
 
           return sourceBlob.stream();
         },
-        filesIterator(folderToDownload.folderId),
+        filesIterator(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
         zip,
       );
 
       totalSize += files.reduce((a, f) => f.size + a, 0);
 
-      const folders = await addAllFoldersToZip(folderToDownload.name, foldersIterator(folderToDownload.folderId), zip);
+      const folders = await addAllFoldersToZip(
+        folderToDownload.name,
+        foldersIterator(folderToDownload.folderId, folderToDownload.folderUuid as string, workspaceId),
+        zip,
+      );
 
       pendingFolders.push(
         ...folders.map((f) => {
           return {
-            name: folderToDownload.name + '/' + f.name,
+            name: folderToDownload.name + '/' + (f.plainName ?? f.name),
             folderId: f.id,
+            folderUuid: f.uuid,
           };
         }),
       );
@@ -505,6 +561,7 @@ async function downloadFolderAsZip(
   }
 }
 
+// NEED TO REVIEW THIS FUNCTION BEFORE MERGE, FOR NOW IS NOT WORKING WITH WORKSPACES FILES
 async function fetchFolderTree(folderId: number): Promise<{
   tree: FolderTree;
   folderDecryptedNames: Record<number, string>;
