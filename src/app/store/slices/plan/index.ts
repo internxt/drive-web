@@ -119,7 +119,12 @@ export const planSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(initializeThunk.pending, () => undefined)
+      .addCase(initializeThunk.pending, (state) => {
+        state.businessPlan = null;
+        state.businessPlanLimit = 0;
+        state.businessPlanUsage = 0;
+        state.businessPlanUsageDetails = null;
+      })
       .addCase(initializeThunk.fulfilled, () => undefined)
       .addCase(initializeThunk.rejected, () => undefined);
 
