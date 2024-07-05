@@ -13,7 +13,8 @@ interface UploadAvatarModalProps {
   displayFileLimitMessage: () => void;
   onSavingAvatarError: (error: unknown) => void;
 }
-const UploadAvatarModal = ({
+
+const UploadWorkspaceAvatarModal = ({
   isOpen,
   onClose,
   onUploadAvatarClicked,
@@ -152,4 +153,4 @@ const UploadAvatarModal = ({
   );
 };
 
-export default UploadAvatarModal;
+export default UploadWorkspaceAvatarModal;
