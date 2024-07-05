@@ -6,9 +6,9 @@
   "featuresBanner": {
     "label": {
       "upTo": "UP TO ",
-      "discount": "Changes to your free plan"
+      "discount": "80% OFF"
     },
-    "title": "Heads up!",
+    "title": "Soak up Internxt's summer deals",
     "subtitle": {
       "line1": "Internxt's free plan will be reduced to 1GB on July 1st.",
       "line2": {
@@ -26,7 +26,7 @@
       "Open source and transparent",
       "End-to-end encrypted transfers",
       "No unauthorized access",
-      "Offer ends June 30th"
+      "Offer ends August 19th"
     ],
     "copied": "Copied to clipboard"
   },

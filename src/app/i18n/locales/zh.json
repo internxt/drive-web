@@ -6,9 +6,10 @@
   "featuresBanner": {
     "label": {
       "upTo": "高达 ",
-      "discount": "免费计划的变更"
+      "discount": "80% 折扣"
     },
-    "title": "注意！",
+    "title": "享受 Internxt 的夏季优惠",
+
     "subtitle": {
       "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
       "line2": {
@@ -26,7 +27,7 @@
       "开源和透明",
       "端到端加密传输",
       "无未授权访问",
-      "优惠截止至 6 月 30 日"
+      "优惠截止至8月19日"
     ],
     "copied": "已复制到剪贴板"
   },
