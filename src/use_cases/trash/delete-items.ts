@@ -1,13 +1,13 @@
-import { storageActions } from '../../app/store/slices/storage';
-import { store } from '../../app/store';
-import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
-import { SdkFactory } from '../../app/core/factory/sdk';
-import { DriveItemData } from '../../app/drive/types';
-import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
-import { deleteDatabaseItems } from '../../app/drive/services/database.service';
-import { t } from 'i18next';
 import { Trash } from '@internxt/sdk/dist/drive';
+import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
+import { t } from 'i18next';
+import { SdkFactory } from '../../app/core/factory/sdk';
 import errorService from '../../app/core/services/error.service';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { DriveItemData } from '../../app/drive/types';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import { store } from '../../app/store';
+import { storageActions } from '../../app/store/slices/storage';
 
 const MAX_ITEMS_TO_DELETE = 20;
 const MAX_CONCURRENT_REQUESTS = 2;
@@ -50,7 +50,7 @@ const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
   });
 
   try {
-    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
     await deleteItemsPermanently({
       items,
       maxItemsToDelete: MAX_ITEMS_TO_DELETE,

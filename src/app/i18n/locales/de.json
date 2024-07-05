@@ -4,19 +4,31 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": "Bis zu 75% sparen",
-    "title": "Sichern Sie Ihre Online-Identität fürs Leben.",
-    "cta": "Wähle einen Plan",
-    "guarantee": "30 Tage Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
+    "label": {
+      "upTo": "BIS ZU ",
+      "discount": "Änderungen an Ihrem kostenlosen Plan"
+    },
+    "title": "Achtung!",
+    "subtitle": {
+      "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
+      "line2": {
+        "normal1": "Umgehen Sie dieses Downgrade mit dem Code ",
+        "blue": "FREEVIP",
+        "normal2": " um 90% Rabatt auf jeden Premium-Plan zu erhalten."
+      }
+    },
+    "cta": "Plan wählen",
+    "guarantee": "30-tägige Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
     "features": [
-      "Bis zu 75% Rabatt auf alle lebenslangen Pläne",
-      "Sicherer Cloud-Speicher",
-      "Backup privater Dateien und Fotos",
-      "End-to-end verschlüsselte Übertragungen",
+      "Sparen Sie bei allen Internxt-Plänen",
+      "Sichere und geschützte Cloud-Speicherung",
+      "Open Source und transparent",
+      "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 18. April"
-    ]
+      "Angebot endet am 30. Juni"
+    ],
+    "copied": "In die Zwischenablage kopiert"
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
@@ -37,13 +49,15 @@
     "it": "Italiano (Italienisch)",
     "zh": "简体中文 (Chinesisch)",
     "ru": "Русский (Russisch)",
-    "de": "Deutsch (Deutsch)"
+    "de": "Deutsch (Deutsch)",
+    "zh-tw": "臺灣 (Taiwanisch)"
   },
   "theme": {
     "title": "Erscheinung",
     "light": "Hell",
     "dark": "Dunkel",
-    "system": "System"
+    "system": "System",
+    "starwars": "Star Wars"
   },
   "auth": {
     "email": "E-Mail",
@@ -235,8 +249,8 @@
       "title": "Konto",
       "avatar": {
         "title": "Avatar hochladen",
-        "removePhoto": "Foto löschen",
-        "updatePhoto": "Neues Foto hochladen",
+        "removePhoto": "Löschen",
+        "updatePhoto": "Foto hochladen",
         "dragNDrop": "Wähle ein Bild aus oder lege es ab",
         "success": "Avatar wurde erfolgreich aktualisiert",
         "error": "Beim Hochladen deines Avatars ist etwas passiert",
@@ -1218,6 +1232,7 @@
       "openPreview": "Öffne Vorschau",
       "details": "Einzelheiten",
       "shareLink": "Teilen",
+      "shareTeam": "Mit Team teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
       "download": "Herunterladen",
@@ -1482,6 +1497,9 @@
           "title": "Abonnement kündigen",
           "text": "Ihr Plan wird auf die kostenlose Stufe herabgestuft.",
           "button": "Abonnement kündigen"
+        },
+        "empty": {
+          "text": "Keine früheren Rechnungen"
         }
       }
     },
@@ -1553,6 +1571,10 @@
     "workspaceTypes": {
       "personal": "Persönlicher Arbeitsbereich",
       "business": "Geschäftsarbeitsbereich"
+    },
+    "pending": "Ausstehende Einladungen",
+    "messages": {
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
     }
   }
 }

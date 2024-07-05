@@ -12,6 +12,7 @@ import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import errorService from '../../../../core/services/error.service';
 import { uiActions } from '../../ui';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import storageSelectors from '../storage.selectors';
 import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
@@ -105,18 +106,25 @@ export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { sta
   'storage/renameItems',
   async ({ items, destinationFolderId }: RenameItemsPayload, { getState, dispatch }) => {
     const promises: Promise<any>[] = [];
+    const state = getState();
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
     if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
-    const state = getState();
+
     const currentFolderItems = storageSelectors.currentFolderItems(state);
 
     for (const [index, item] of items.entries()) {
       let itemParsed;
 
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(destinationFolderId);
+
+      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(
+        destinationFolderId,
+        false,
+        workspaceCredentials?.tokenHeader,
+      );
       const parentFolderContent = await parentFolderContentPromise;
 
       if (item.isFolder) {

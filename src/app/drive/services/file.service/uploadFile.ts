@@ -7,6 +7,7 @@ import { SdkFactory } from '../../../core/factory/sdk';
 import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
+import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
 import { encryptFilename } from '../../../crypto/services/utils';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
@@ -32,6 +33,9 @@ export interface FileUploadOptions {
     bridgePass: string;
     encryptionKey: string;
     bucketId: string;
+    // to manage B2B workspaces
+    workspaceId?: string;
+    workspacesToken?: string;
   };
   abortCallback?: (abort?: () => void) => void;
 }
@@ -107,24 +111,50 @@ export async function uploadFile(
 
     const fileId = await promise;
 
-    // TEMPORARY: For backward compatibility with id
-    const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);
+    const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+    const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+    const isWorkspacesUpload = workspaceId && workspacesToken;
+    let response;
 
-    const name = encryptFilename(file.name, folderMeta.id);
+    if (isWorkspacesUpload) {
+      // TEMPORARY: For backward compatibility with id
+      const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken);
+      const name = encryptFilename(file.name, folderMeta.id);
+      const dateISO = '2023-05-30T12:34:56.789Z';
+      const date = new Date(dateISO);
+      const workspaceFileEntry = {
+        name: name,
+        bucket: bucketId,
+        fileId: fileId,
+        encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+        folderUuid: file.parentFolderId,
+        size: file.size,
+        plainName: file.name,
+        type: file.type,
+        modificationTime: date.toISOString(),
+        date: date.toISOString(),
+      };
 
-    const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-    const fileEntry: StorageTypes.FileEntryByUuid = {
-      id: fileId,
-      type: file.type,
-      size: file.size,
-      name: name,
-      plain_name: file.name,
-      bucket: bucketId,
-      folder_id: file.parentFolderId,
-      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
-    };
+      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId);
+    } else {
+      // TEMPORARY: For backward compatibility with id
+      const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);
+      const name = encryptFilename(file.name, folderMeta.id);
 
-    let response = await storageClient.createFileEntryByUuid(fileEntry);
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const fileEntry: StorageTypes.FileEntryByUuid = {
+        id: fileId,
+        type: file.type,
+        size: file.size,
+        name: name,
+        plain_name: file.name,
+        bucket: bucketId,
+        folder_id: file.parentFolderId,
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+      };
+
+      response = await storageClient.createFileEntryByUuid(fileEntry);
+    }
     if (!response.thumbnails) {
       response = {
         ...response,

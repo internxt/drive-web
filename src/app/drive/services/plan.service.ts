@@ -3,7 +3,7 @@ import httpService from '../../core/services/http.service';
 import { Workspace } from '../../core/types';
 
 const fetchIndividualPlan = async (): Promise<StoragePlan | null> => {
-  const response = await httpService.get<StoragePlan | null>('/api/plan/individual', {
+  const response = await httpService.get<StoragePlan | null>('/plan/individual', {
     authWorkspace: Workspace.Individuals,
   });
 
@@ -11,7 +11,7 @@ const fetchIndividualPlan = async (): Promise<StoragePlan | null> => {
 };
 
 const fetchTeamPlan = async (): Promise<StoragePlan | null> => {
-  const response = await httpService.get<StoragePlan | null>('/api/plan/team', {
+  const response = await httpService.get<StoragePlan | null>('/plan/team', {
     authWorkspace: Workspace.Individuals,
   });
 

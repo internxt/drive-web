@@ -1,12 +1,11 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import Section from '../../General/components/Section';
+import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { bytesToString } from '../../../../drive/services/size.service';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -15,6 +14,7 @@ import paymentService from '../../../../payment/services/payment.service';
 import { RootState } from '../../../../store';
 import { useAppDispatch } from '../../../../store/hooks';
 import { PlanState, planThunks } from '../../../../store/slices/plan';
+import CancelSubscriptionModal from '../../Workspace/Billing/CancelSubscriptionModal';
 import { createCheckoutSession, fetchPlanPrices, getStripe } from './api/plansApi';
 import ChangePlanDialog from './components/ChangePlanDialog';
 import PlanCard from './components/PlanCard';
@@ -24,9 +24,10 @@ import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, 
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
 }
 
-const PlansSection = ({ changeSection }: PlansSectionProps) => {
+const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const FREE_PLAN_DATA = {
@@ -303,7 +304,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
   };
 
   return (
-    <Section title="Plans" className="flex max-h-640 flex-1 flex-col space-y-6 overflow-y-auto p-6">
+    <Section title="Plans" onClosePreferences={onClosePreferences}>
       {handleChangePlanDialog() && priceSelected && (
         <ChangePlanDialog
           prices={isIndividualSubscriptionSelected ? individualPrices : businessPrices}
@@ -349,8 +350,8 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
           />
         </div>
       </div>
-      <div className="flex flex-row justify-between ">
-        <div className="-mb-1 flex flex-col space-y-2">
+      <div className="flex flex-row space-x-6">
+        <div className="flex flex-1 flex-col items-center items-stretch space-y-2.5">
           {isIndividualSubscriptionSelected && individualPrices && (
             <PlanSelectionCard
               key={FREE_PLAN_DATA.id}
@@ -370,7 +371,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
               isSelected={priceSelected?.id === plan.id}
               capacity={bytesToString(plan.bytes)}
               currency={moneyService.getCurrencySymbol(plan.currency.toUpperCase())}
-              amount={displayAmount(plan.amount)}
+              amount={displayAmount(plan.amount, plan.interval === 'lifetime' ? 0 : 2)}
               billing={
                 plan.interval === 'lifetime'
                   ? translate('views.account.tabs.plans.card.oneTimePayment')
@@ -411,6 +412,7 @@ const PlansSection = ({ changeSection }: PlansSectionProps) => {
                 ? moneyService.getCurrencySymbol(priceSelected?.currency)
                 : translate('preferences.account.plans.freeForever')
             }
+            // TODO: CHECK AFTER MERGE IF NEED TO CHANGE THE DECIMALS DISPLAYED
             price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
             billing={
               priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''

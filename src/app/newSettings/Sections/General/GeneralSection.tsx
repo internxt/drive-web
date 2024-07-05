@@ -1,14 +1,15 @@
 import Appearance from './components/Appearance';
 import ContactSupport from './components/ContactSupport';
 import Language from './components/Language';
+import Section from 'app/newSettings/components/Section';
 
-const GeneralSection = () => {
+const GeneralSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   return (
-    <div className="flex flex-1 flex-col space-y-8 p-6">
+    <Section title="General" className="" onClosePreferences={onClosePreferences}>
       <Appearance />
       <Language />
       <ContactSupport />
-    </div>
+    </Section>
   );
 };
 

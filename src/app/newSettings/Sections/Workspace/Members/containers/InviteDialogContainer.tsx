@@ -15,10 +15,10 @@ const InviteDialogContainer = ({ isOpen, onClose }) => {
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const user = useSelector((state: RootState) => state.user.user);
 
-  const processWorkspaceInvitation = async (emailList: string[]) => {
+  const processWorkspaceInvitation = async (emailList: string[], messageText: string) => {
     if (selectedWorkspace && user) {
       const invitePromises = emailList.map((email) => {
-        return processInvitation(user, email, selectedWorkspace.workspace.id);
+        return processInvitation(user, email, selectedWorkspace.workspace.id, messageText);
       });
 
       await Promise.all(invitePromises);
@@ -28,7 +28,12 @@ const InviteDialogContainer = ({ isOpen, onClose }) => {
   return <UserInviteDialog isOpen={isOpen} onClose={onClose} processInvitation={processWorkspaceInvitation} />;
 };
 
-const processInvitation = async (user: UserSettings | null, email: string, workspaceId: string) => {
+const processInvitation = async (
+  user: UserSettings | null,
+  email: string,
+  workspaceId: string,
+  messageText: string,
+) => {
   try {
     if (!user) {
       navigationService.push(AppView.Login);
@@ -63,6 +68,7 @@ const processInvitation = async (user: UserSettings | null, email: string, works
       spaceLimitBytes: 52428800,
       encryptedMnemonicInBase64: encryptedMnemonicInBase64,
       encryptionAlgorithm: 'aes-256-gcm',
+      message: messageText,
     });
 
     notificationsService.show({

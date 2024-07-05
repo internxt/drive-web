@@ -2,6 +2,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { t } from 'i18next';
 import { useHistory } from 'react-router-dom';
 import { AppView } from '../../../core/types';
+import workspacesService from 'app/core/services/workspace.service';
 
 const useLoginRedirections = ({
   navigateTo,
@@ -46,24 +47,31 @@ const useLoginRedirections = ({
     }
   };
 
-  const handleWorkspaceInvitation = () => {
+  const handleWorkspaceInvitation = async () => {
     if (workspaceInvitationId && token) {
       const isDeclineAction = sharingAction === 'decline';
-
-      processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token)
-        .then(() => {
-          navigateTo(AppView.Login);
-          const notificationText = isDeclineAction
-            ? t('preferences.workspace.members.invitationFlow.declinedSuccessfully')
-            : t('preferences.workspace.members.invitationFlow.acceptedSuccessfully');
-          showNotification({ text: notificationText, isError: false });
-        })
-        .catch(() => {
-          const notificationText = isDeclineAction
-            ? t('preferences.workspace.members.invitationFlow.error.declinedError')
-            : t('preferences.workspace.members.invitationFlow.error.acceptedError');
-          showNotification({ text: notificationText, isError: true });
+      try {
+        await workspacesService.validateWorkspaceInvitation(workspaceInvitationId);
+        processWorkspaceInvitation(isDeclineAction, workspaceInvitationId, token)
+          .then(() => {
+            navigateTo(AppView.Login);
+            const notificationText = isDeclineAction
+              ? t('preferences.workspace.members.invitationFlow.declinedSuccessfully')
+              : t('preferences.workspace.members.invitationFlow.acceptedSuccessfully');
+            showNotification({ text: notificationText, isError: false });
+          })
+          .catch(() => {
+            const notificationText = isDeclineAction
+              ? t('preferences.workspace.members.invitationFlow.error.declinedError')
+              : t('preferences.workspace.members.invitationFlow.error.acceptedError');
+            showNotification({ text: notificationText, isError: true });
+          });
+      } catch (error) {
+        showNotification({
+          text: t('linkExpired.title'),
+          isError: true,
         });
+      }
     }
   };
 

@@ -4,7 +4,6 @@ import backupsReducer from './slices/backups';
 import fileViewerReducer from './slices/fileViewer';
 import newsletterReducer from './slices/newsletter';
 import paymentReducer from './slices/payment';
-import photosReducer from './slices/photos';
 import planReducer from './slices/plan';
 import productsReducer from './slices/products';
 import referralsReducer from './slices/referrals';
@@ -32,7 +31,6 @@ export const store = configureStore({
     taskManager: taskManagerReducer,
     referrals: referralsReducer,
     newsletter: newsletterReducer,
-    photos: photosReducer,
     shared: sharedReducer,
     workspaces: workspacesReducer,
   },

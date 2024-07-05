@@ -27,6 +27,7 @@ interface BreadcrumbsItemProps {
 const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
   const dispatch = useAppDispatch();
   const namePath = useAppSelector((state) => state.storage.namePath);
+  const workspacesCredentials = useAppSelector((state) => state.workspaces.workspaceCredentials);
   const isSomeItemSelected = useAppSelector(storageSelectors.isSomeItemSelected);
   const selectedItems = useAppSelector((state) => state.storage.selectedItems);
 
@@ -53,7 +54,12 @@ const BreadcrumbsItem = (props: BreadcrumbsItemProps): JSX.Element => {
 
       dispatch(storageActions.setMoveDestinationFolderId(props.item.uuid));
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-      const [folderContentPromise] = storageClient.getFolderContentByUuid(props.item.uuid);
+
+      const [folderContentPromise] = storageClient.getFolderContentByUuid(
+        props.item.uuid,
+        false,
+        workspacesCredentials?.tokenHeader,
+      );
 
       const { children: foldersInDestinationFolder, files: filesInDestinationFolder } = await folderContentPromise;
 

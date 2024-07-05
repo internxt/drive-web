@@ -30,7 +30,6 @@ import TeamSuccessView from '../../teams/views/TeamSuccessView/TeamSuccessView';
 import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
-import SharePhotosView from '../../share/views/ShareView/SharePhotosView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
 import SharedViewWrapper from '../../share/views/SharedLinksView/SharedViewWrapper';
 import ChangeEmailView from '../views/ChangeEmailView';
@@ -69,8 +68,9 @@ const views: Array<{
   { id: AppView.CheckoutPlan, component: CheckoutPlanView },
   { id: AppView.RecoveryLink, component: RecoveryLinkView },
   { id: AppView.ShareFileToken, component: ShareFileView },
+  { id: AppView.ShareFileToken2, component: ShareFileView },
   { id: AppView.ShareFolderToken, component: ShareFolderView },
-  { id: AppView.SharePhotosToken, component: SharePhotosView },
+  { id: AppView.ShareFolderToken2, component: ShareFolderView },
   { id: AppView.RedirectToApp, component: RedirectToAppView },
   { id: AppView.VerifyEmail, component: VerifyEmailView },
   { id: AppView.ChangeEmail, component: ChangeEmailView },

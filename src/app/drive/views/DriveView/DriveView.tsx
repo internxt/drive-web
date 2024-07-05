@@ -13,6 +13,8 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import { useAppSelector } from '../../../store/hooks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
 
@@ -27,6 +29,8 @@ const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
   const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
+  const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
+  const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -35,18 +39,24 @@ const DriveView = (props: DriveViewProps) => {
   }, []);
 
   useEffect(() => {
+    if (fileViewer) {
+      setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
+    }
+  }, [fileViewer]);
+
+  useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
 
     if (isFolderView && itemUuid) {
-      goFolder(itemUuid);
+      goFolder(itemUuid, credentials?.tokenHeader);
     }
 
     if (isFileView && itemUuid) {
-      showFile(itemUuid);
+      showFile(itemUuid, credentials?.tokenHeader);
     }
-  }, [isFileView, isFolderView, itemUuid]);
+  }, [isFileView, isFolderView, itemUuid, credentials]);
 
-  const goFolder = async (folderUuid: string) => {
+  const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
       const folderMeta = await newStorageService.getFolderMeta(folderUuid);
 
@@ -65,9 +75,9 @@ const DriveView = (props: DriveViewProps) => {
     }
   };
 
-  const showFile = async (fileUUID: string) => {
+  const showFile = async (fileUUID: string, workspacesToken?: string) => {
     try {
-      const fileMeta = await fileService.getFile(fileUUID);
+      const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
@@ -101,5 +111,6 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
     currentFolderId,
     items: sortedItems,
+    selectedWorkpace: state.workspaces.selectedWorkspace,
   };
 })(DriveView);

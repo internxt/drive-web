@@ -6,9 +6,9 @@ import { ChangePlanType } from '../components/PlanCard';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { bytesToString } from 'app/drive/services/size.service';
 
-const displayAmount = (amount: number) => {
-  return (amount / 100).toFixed(2);
-};
+function displayAmount(value: number, decimalPoints = 2) {
+  return (value / 100).toFixed(decimalPoints);
+}
 
 const getCurrentChangePlanType = ({
   priceSelected,

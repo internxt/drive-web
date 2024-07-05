@@ -14,7 +14,7 @@ import UserCard from './components/UserCard';
 interface UserInviteDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  processInvitation: (emailList: string[]) => Promise<void>;
+  processInvitation: (emailList: string[], messageText: string) => Promise<void>;
 }
 
 type UsersToInvite = {
@@ -57,7 +57,7 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
     setIsLoading(true);
 
     const emailList = usersToInvite.map((user) => user.email);
-    await processInvitation(emailList);
+    await processInvitation(emailList, messageText);
 
     setUsersToInvite([]);
     setIsLoading(false);

@@ -21,8 +21,6 @@ import RealtimeService from './app/core/services/socket.service';
 import { AppViewConfig } from './app/core/types';
 import { LRUFilesCacheManager } from './app/database/services/database.service/LRUFilesCacheManager';
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
-import { LRUPhotosCacheManager } from './app/database/services/database.service/LRUPhotosCacheManager';
-import { LRUPhotosPreviewsCacheManager } from './app/database/services/database.service/LRUPhotosPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
 import PreferencesDialog from './app/newSettings/PreferencesDialog';
@@ -37,9 +35,11 @@ import { AppDispatch, RootState } from './app/store';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
+import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import { Portal } from '@headlessui/react';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -107,13 +107,13 @@ const App = (props: AppProps): JSX.Element => {
     try {
       await LRUFilesCacheManager.getInstance();
       await LRUFilesPreviewCacheManager.getInstance();
-      await LRUPhotosCacheManager.getInstance();
-      await LRUPhotosPreviewsCacheManager.getInstance();
 
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
-
+      // TODO: CHANGE BY WORKSPACE INITIALIZATOR
+      dispatch(workspaceThunks.fetchWorkspaces());
+      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -156,6 +156,8 @@ const App = (props: AppProps): JSX.Element => {
     } else {
       navigationService.pushFolder(fileViewerItem?.folderUuid);
     }
+
+    dispatch(uiActions.setFileViewerItem(null));
   };
 
   if (!isAuthenticated || isInitialized) {
@@ -191,12 +193,15 @@ const App = (props: AppProps): JSX.Element => {
               routes
             )}
           </Switch>
-          <Toaster
-            position="bottom-center"
-            containerStyle={{
-              filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
-            }}
-          />
+
+          <Portal>
+            <Toaster
+              position="bottom-center"
+              containerStyle={{
+                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
+              }}
+            />
+          </Portal>
 
           <PreferencesDialog
             haveParamsChanged={havePreferencesParamsChanged}

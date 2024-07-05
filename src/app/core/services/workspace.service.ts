@@ -1,10 +1,21 @@
+import { ListAllSharedFoldersResponse, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { CreateFolderResponse, DriveFileData, FetchTrashContentResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
+  CreateFolderPayload,
   CreateTeamData,
+  CreateWorkspaceSharingPayload,
+  FileEntry,
   InviteMemberBody,
+  ListWorkspaceSharedItemsResponse,
+  OrderByOptions,
+  WorkspaceCredentialsDetails,
   WorkspaceMembers,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
+  WorkspacePendingInvitations,
+  PendingInvitesResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -130,6 +141,29 @@ export function changeTeamManager(teamId: string): Promise<void> {
   });
 }
 
+export function createFileEntry(
+  fileEntry: FileEntry,
+  workspaceId: string,
+  resourcesToken?: string,
+): Promise<DriveFileData> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.createFileEntry(fileEntry, workspaceId, resourcesToken).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function createFolder(payload: CreateFolderPayload): [Promise<CreateFolderResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.createFolder(payload);
+}
+
+export function getWorkspaceCretenditals(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceCredentials(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function changeUserRole({
   teamId,
   memberId,
@@ -143,6 +177,110 @@ export function changeUserRole({
   return workspaceClient.changeUserRole(teamId, memberId, role).catch((error) => {
     throw errorService.castError(error);
   });
+}
+
+export function getWorkspacePendingInvitations(
+  workspaceId: string,
+  limit: number,
+  offset: number,
+): Promise<WorkspacePendingInvitations[]> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspacePendingInvitations(workspaceId, limit, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+export function getTrashItems(
+  workspaceId: string,
+  type: 'file' | 'folder',
+  offset,
+): Promise<FetchTrashContentResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPersonalTrash(workspaceId, type, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: string }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.validateWorkspaceInvitation(inviteId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPendingInvites(): Promise<PendingInvitesResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPendingInvites().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+export function emptyTrash(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.emptyPersonalTrash(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function shareItemWithTeam(shareItemWithTeamPayload: CreateWorkspaceSharingPayload): Promise<SharingMeta> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.shareItem(shareItemWithTeamPayload).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getAllWorkspaceTeamSharedFolders(
+  workspaceId: string,
+  teamId: string,
+  orderBy?: OrderByOptions,
+): [Promise<ListAllSharedFoldersResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceTeamSharedFolders(workspaceId, teamId, orderBy);
+}
+
+export function getAllWorkspaceTeamSharedFiles(
+  workspaceId: string,
+  teamId: string,
+  orderBy?: OrderByOptions,
+): [Promise<ListAllSharedFoldersResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceTeamSharedFiles(workspaceId, teamId, orderBy);
+}
+
+export function getAllWorkspaceTeamSharedFolderFolders(
+  workspaceId: string,
+  teamId: string,
+  sharedFolderUUID: string,
+  page: number,
+  perPage: number,
+  orderBy?: OrderByOptions,
+): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceTeamSharedFolderFolders(
+    workspaceId,
+    teamId,
+    sharedFolderUUID,
+    page,
+    perPage,
+    orderBy,
+  );
+}
+
+export function getAllWorkspaceTeamSharedFolderFiles(
+  workspaceId: string,
+  teamId: string,
+  sharedFolderUUID: string,
+  page: number,
+  perPage: number,
+  orderBy?: OrderByOptions,
+): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspaceTeamSharedFolderFiles(
+    workspaceId,
+    teamId,
+    sharedFolderUUID,
+    page,
+    perPage,
+    orderBy,
+  );
 }
 
 const workspacesService = {
@@ -160,6 +298,21 @@ const workspacesService = {
   changeTeamManager,
   changeUserRole,
   processInvitation,
+  createFileEntry,
+  createFolder,
+  getWorkspaceCretenditals,
+  getWorkspacePendingInvitations,
+  validateWorkspaceInvitation,
+  getPendingInvites,
+  acceptWorkspaceInvite,
+  declineWorkspaceInvite,
+  getTrashItems,
+  emptyTrash,
+  shareItemWithTeam,
+  getAllWorkspaceTeamSharedFiles,
+  getAllWorkspaceTeamSharedFolders,
+  getAllWorkspaceTeamSharedFolderFiles,
+  getAllWorkspaceTeamSharedFolderFolders,
 };
 
 export default workspacesService;

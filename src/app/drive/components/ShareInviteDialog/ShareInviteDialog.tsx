@@ -8,7 +8,9 @@ import { useDispatch } from 'react-redux';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 import userService from '../../../auth/services/user.service';
-import { IFormValues } from '../../../core/types';
+import errorService from '../../../core/services/error.service';
+import { HTTP_CODES } from '../../../core/services/http.service';
+import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import Avatar from '../../../shared/components/Avatar';
 import Button from '../../../shared/components/Button/Button';
@@ -106,11 +108,8 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
       const publicKeyResponse = await userService.getPublicKeyByEmail(email);
       publicKey = publicKeyResponse.publicKey;
     } catch (error) {
-      if (error instanceof Error) {
-        // const errorBody = JSON.parse(error.message);
-        // if (errorBody.statusCode !== 404) {
-        //   errorService.reportError(error);
-        // }
+      if ((error as AppError)?.status !== HTTP_CODES.NOT_FOUND) {
+        errorService.reportError(error);
       }
     }
     return publicKey;
@@ -234,7 +233,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 >
                   <div className="flex items-center">
                     <Avatar src="" fullName={`${user.email}`} diameter={40} />
-                    <p className="ml-2.5">{user.email}</p>
+                    <p className="ml-2.5 break-all">{user.email}</p>
                   </div>
                   <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                     <div className="relative">

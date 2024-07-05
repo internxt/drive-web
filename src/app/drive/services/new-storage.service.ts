@@ -13,9 +13,9 @@ export async function getFolderAncestors(uuid: string): Promise<FolderAncestor[]
   return storageClient.getFolderAncestors(uuid);
 }
 
-export async function getFolderMeta(uuid: string): Promise<FolderMeta> {
+export async function getFolderMeta(uuid: string, workspaceId?: string): Promise<FolderMeta> {
   const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
-  return storageClient.getFolderMeta(uuid);
+  return storageClient.getFolderMeta(uuid, workspaceId);
 }
 
 const newStorageService = {

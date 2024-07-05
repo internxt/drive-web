@@ -23,7 +23,6 @@
     "remove-folder.spec.ts",
     "delete-file.spec.ts",
     "drag-and-drop.spec.ts",
-    "photos.spec.ts",
     "change-password.spec.ts"
   ],
   "viewportWidth": 1500,
