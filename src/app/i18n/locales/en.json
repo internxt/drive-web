@@ -1631,6 +1631,7 @@
       "personal": "Personal Workspace",
       "business": "Business Workspace"
     },
+    "pending": "Pending Invitations",
     "messages": {
       "sharedSuccess": "Item shared successfully with the team"
     }

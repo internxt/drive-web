@@ -19,6 +19,8 @@ import {
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
+  WorkspacePendingInvitations,
+  PendingInvitesResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -182,6 +184,16 @@ export function changeUserRole({
   });
 }
 
+export function getWorkspacePendingInvitations(
+  workspaceId: string,
+  limit: number,
+  offset: number,
+): Promise<WorkspacePendingInvitations[]> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspacePendingInvitations(workspaceId, limit, offset).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 export function getTrashItems(
   workspaceId: string,
   type: 'file' | 'folder',
@@ -193,6 +205,19 @@ export function getTrashItems(
   });
 }
 
+export function validateWorkspaceInvitation(inviteId: string): Promise<{ uuid: string }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.validateWorkspaceInvitation(inviteId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getPendingInvites(): Promise<PendingInvitesResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getPendingInvites().catch((error) => {
+    throw errorService.castError(error);
+  });
+}
 export function emptyTrash(workspaceId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.emptyPersonalTrash(workspaceId).catch((error) => {
@@ -300,6 +325,11 @@ const workspacesService = {
   createFileEntry,
   createFolder,
   getWorkspaceCretenditals,
+  getWorkspacePendingInvitations,
+  validateWorkspaceInvitation,
+  getPendingInvites,
+  acceptWorkspaceInvite,
+  declineWorkspaceInvite,
   getTrashItems,
   emptyTrash,
   shareItemWithTeam,
