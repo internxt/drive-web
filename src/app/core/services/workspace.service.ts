@@ -16,6 +16,7 @@ import {
   WorkspacesResponse,
   WorkspacePendingInvitations,
   PendingInvitesResponse,
+  GetMemberDetailsResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -44,6 +45,13 @@ export function getWorkspaceTeams(workspaceId: string): Promise<WorkspaceTeamRes
 export function getTeamMembers(workspaceId: string, teamId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspacesTeamMembers(workspaceId, teamId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export function getMemberDetails(workspaceId: string, memberId: string): Promise<GetMemberDetailsResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getMemberDetails(workspaceId, memberId).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -288,6 +296,7 @@ const workspacesService = {
   getWorkspacesMembers,
   getWorkspaceTeams,
   getTeamMembers,
+  getMemberDetails,
   inviteUserToTeam,
   setupWorkspace,
   createTeam,
