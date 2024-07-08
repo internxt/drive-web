@@ -318,39 +318,40 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           subscriptionSelected={selectedSubscription}
         />
       )}
-      <div className="flex justify-center">
-        <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-          <IntervalSwitch
-            active={isIndividualSubscriptionSelected}
-            text={translate('general.workspaces.personal')}
-            onClick={() => handleSubscriptionInterval(UserType.Individual)}
-          />
-          {businessPrices.length > 0 && (
+      <div className="flex flex-col">
+        <div className="mb-2 flex justify-center">
+          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
+            <IntervalSwitch
+              active={isIndividualSubscriptionSelected}
+              text={translate('general.workspaces.personal')}
+              onClick={() => handleSubscriptionInterval(UserType.Individual)}
+            />
+
             <IntervalSwitch
               active={!isIndividualSubscriptionSelected}
               text={translate('general.workspaces.business')}
               onClick={() => handleSubscriptionInterval(UserType.Business)}
             />
-          )}
+          </div>
         </div>
-      </div>
-      <div className="flex justify-center">
-        <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-          <IntervalSwitch
-            active={selectedInterval === 'month'}
-            text={translate('general.renewal.monthly')}
-            onClick={() => setSelectedInterval('month')}
-          />
-          <IntervalSwitch
-            active={selectedInterval === 'year'}
-            text={translate('general.renewal.annually')}
-            onClick={() => setSelectedInterval('year')}
-          />
-          <IntervalSwitch
-            active={selectedInterval === 'lifetime'}
-            text={translate('general.renewal.lifetime')}
-            onClick={() => setSelectedInterval('lifetime')}
-          />
+        <div className="flex justify-center">
+          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
+            <IntervalSwitch
+              active={selectedInterval === 'month'}
+              text={translate('general.renewal.monthly')}
+              onClick={() => setSelectedInterval('month')}
+            />
+            <IntervalSwitch
+              active={selectedInterval === 'year'}
+              text={translate('general.renewal.annually')}
+              onClick={() => setSelectedInterval('year')}
+            />
+            <IntervalSwitch
+              active={selectedInterval === 'lifetime'}
+              text={translate('general.renewal.lifetime')}
+              onClick={() => setSelectedInterval('lifetime')}
+            />
+          </div>
         </div>
       </div>
       <div className="flex flex-row space-x-6">
