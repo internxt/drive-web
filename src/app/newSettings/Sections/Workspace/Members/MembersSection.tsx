@@ -28,13 +28,18 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
   const [selectedMember, setSelectedMember] = useState<WorkspaceUser | null>(null);
   const [members, setMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(members);
-  const [guestsUsers, setGuestUsers] = useState<number>(0);
+  const [guestsUsers, setGuestsUsers] = useState<number>(0);
+  const [isCurrentMemberOwner, setIsCurrentMemberOwner] = useState<boolean>(false);
 
   useEffect(() => {
     const selectedWorkspaceId = selectedWorkspace?.workspace.id;
     getWorkspacesMembers(selectedWorkspaceId);
     getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   }, []);
+
+  useEffect(() => {
+    displayedMembers && getCurrentMember(selectedWorkspace?.workspaceUser.memberId);
+  }, [displayedMembers]);
 
   useEffect(() => {
     const newMembers = searchMembers(members, searchedMemberName);
@@ -49,10 +54,8 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
         PENDING_INVITATIONS_OFFSET,
       );
       const workspaceGuestsUsersLength = workspaceGuestsUsers.length;
-      setGuestUsers(workspaceGuestsUsersLength);
+      setGuestsUsers(workspaceGuestsUsersLength);
     } catch (error) {
-      console.log(error);
-
       errorService.reportError(error);
     }
   };
@@ -65,6 +68,11 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     } catch (error) {
       errorService.reportError(error);
     }
+  };
+
+  const getCurrentMember = (workspaceMemberId) => {
+    const workspaceCurrentMember = displayedMembers?.find((member) => member.memberId === workspaceMemberId);
+    workspaceCurrentMember?.isOwner && setIsCurrentMemberOwner(true);
   };
 
   return (
@@ -110,9 +118,11 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
                 value={searchedMemberName}
                 name="memberName"
               />
-              <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
-                {translate('preferences.workspace.members.invite')}
-              </Button>
+              {isCurrentMemberOwner && (
+                <Button variant="primary" onClick={() => setIsInviteDialogOpen(true)}>
+                  {translate('preferences.workspace.members.invite')}
+                </Button>
+              )}
             </div>
             <div className="flex">
               {/* LEFT COLUMN */}
