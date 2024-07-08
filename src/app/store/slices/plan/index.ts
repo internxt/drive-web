@@ -208,7 +208,7 @@ export const planSlice = createSlice({
       .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
   },
 });
-// TODO: review this behavior
+
 const currentPlanSelector = (state: RootState): StoragePlan | null => {
   const { selectedWorkspace } = state.workspaces;
   if (selectedWorkspace) return state.plan.businessPlan;
@@ -216,7 +216,7 @@ const currentPlanSelector = (state: RootState): StoragePlan | null => {
   const isTeam = sessionSelectors.isTeam(state);
   return isTeam ? state.plan.teamPlan : state.plan.individualPlan;
 };
-// TODO: review this behavior
+
 export const planSelectors = {
   currentPlan: currentPlanSelector,
   isCurrentPlanLifetime: (state: RootState): boolean => {
