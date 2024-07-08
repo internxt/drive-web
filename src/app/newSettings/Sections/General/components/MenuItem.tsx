@@ -1,6 +1,6 @@
 import { ReactNode, forwardRef } from 'react';
 
-const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }) => {
+const MenuItem = forwardRef(({ children, onClick }: { children: ReactNode; onClick: () => void }, ref) => {
   return (
     <button
       onKeyDown={() => {}}

@@ -1,11 +1,10 @@
 import { Environment } from '@internxt/inxt-js';
 import { ActionState, FileInfo } from '@internxt/inxt-js/build/api';
-import { Readable } from 'stream';
-import localStorageService from '../../../core/services/local-storage.service';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { TeamsSettings } from '../../../teams/types';
 import { Abortable } from 'app/network/Abortable';
+import { Readable } from 'stream';
 import { createUploadWebWorker } from '../../../../WebWorker';
+import localStorageService from '../../../core/services/local-storage.service';
 import { createWorkerMessageHandlerPromise } from '../worker.service/uploadWorkerUtils';
 
 export const MAX_ALLOWED_UPLOAD_SIZE = 20 * 1024 * 1024 * 1024;
@@ -207,20 +206,24 @@ export class Network {
   }
 }
 
+// MIRAR DE AÑADIR AQUI EL WORKSPACE TOKEN
 /**
  * Returns required config to upload files to the Internxt Network
  * @param isTeam Flag to indicate if is a team or not
  * @returns
  */
-export function getEnvironmentConfig(isTeam?: boolean): EnvironmentConfig {
-  if (isTeam) {
-    const team = localStorageService.getTeams() as TeamsSettings;
+export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
+  const workspaceCredentials = localStorageService.getWorkspaceCredentials();
+  const workspace = localStorageService.getB2BWorkspace();
+
+  if (isWorkspace && workspaceCredentials && workspace) {
+    const user = localStorageService.getUser() as UserSettings;
 
     return {
-      bridgeUser: team.bridge_user,
-      bridgePass: team.bridge_password,
-      encryptionKey: team.bridge_mnemonic,
-      bucketId: team.bucket,
+      bridgeUser: workspaceCredentials?.credentials?.networkUser,
+      bridgePass: workspaceCredentials?.credentials?.networkPass,
+      encryptionKey: user.mnemonic,
+      bucketId: workspaceCredentials?.bucket,
       useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     };
   }

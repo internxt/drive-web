@@ -1,4 +1,4 @@
-import { PendingWorkspace, WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { PendingWorkspace, WorkspaceCredentialsDetails, Workspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../..';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -10,6 +10,10 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
+import {
+  deleteWorkspaceAvatarFromDatabase,
+  saveWorkspaceAvatarToDatabase,
+} from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 
 export interface PersonalWorkspace {
   uuid: string;
@@ -72,10 +76,10 @@ const fetchCredentials = createAsyncThunk<void, undefined, { state: RootState }>
     if (selectedWorkspace) {
       const workspaceId = selectedWorkspace?.workspace.id;
 
-      const cretenditals = await workspacesService.getWorkspaceCretenditals(workspaceId);
+      const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
 
-      dispatch(workspacesActions.setCredentials(cretenditals));
-      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(cretenditals));
+      dispatch(workspacesActions.setCredentials(credentials));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
     }
   },
 );
@@ -158,6 +162,27 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
   },
 );
 
+const updateWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string; avatar: Blob }, { state: RootState }>(
+  'workspaces/updateAvatar',
+  async (payload, { dispatch }) => {
+    const { avatar } = await workspacesService.updateWorkspaceAvatar(payload.workspaceId, payload.avatar);
+
+    await saveWorkspaceAvatarToDatabase(avatar, payload.avatar);
+    dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar } }));
+  },
+);
+
+const deleteWorkspaceAvatar = createAsyncThunk<
+  void,
+  { workspaceId: string; avatarSrcURL: string },
+  { state: RootState }
+>('workspaces/deleteAvatar', async (payload, { dispatch }) => {
+  await workspacesService.deleteWorkspaceAvatar(payload.workspaceId);
+
+  await deleteWorkspaceAvatarFromDatabase(payload.avatarSrcURL);
+  dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar: undefined } }));
+});
+
 export const workspacesSlice = createSlice({
   name: 'user',
   initialState,
@@ -173,6 +198,23 @@ export const workspacesSlice = createSlice({
     },
     setCredentials: (state: WorkspacesState, action: PayloadAction<WorkspaceCredentialsDetails | null>) => {
       state.workspaceCredentials = action.payload;
+    },
+    patchWorkspace: (
+      state: WorkspacesState,
+      action: PayloadAction<{ workspaceId: string; patch: Partial<Workspace> }>,
+    ) => {
+      const { workspaceId, patch } = action.payload;
+      state.workspaces = state.workspaces.map((item) => {
+        const workspace = item.workspace;
+        if (workspace.id === workspaceId) {
+          item.workspace = Object.assign(workspace, patch);
+          if (state.selectedWorkspace?.workspace.id === workspaceId) {
+            state.selectedWorkspace = item;
+            localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(item));
+          }
+        }
+        return item;
+      });
     },
   },
   // TODO: TO CHANGE MESSAGES
@@ -255,6 +297,8 @@ export const workspaceThunks = {
   fetchCredentials,
   setSelectedWorkspace,
   checkAndSetLocalWorkspace,
+  updateWorkspaceAvatar,
+  deleteWorkspaceAvatar,
 };
 
 export default workspacesSlice.reducer;

@@ -109,14 +109,14 @@ export const fetchBusinessLimitUsageThunk = createAsyncThunk<
   { state: RootState }
 >('plan/fetchBusinessLimitUsage', async (payload: void, { getState }) => {
   const isAuthenticated = getState().user.isAuthenticated;
+  const userUuid = getState().user.user?.uuid;
 
   if (isAuthenticated) {
     const { selectedWorkspace } = getState().workspaces;
 
     if (selectedWorkspace) {
       const workspaceId = selectedWorkspace?.workspace.id;
-      const memberId = selectedWorkspace?.workspaceUser.memberId;
-      if (workspaceId && memberId) return workspacesService.getMemberDetails(workspaceId, memberId);
+      if (workspaceId && userUuid) return workspacesService.getMemberDetails(workspaceId, userUuid);
     }
   }
 

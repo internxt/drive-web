@@ -1,5 +1,10 @@
 import { ListAllSharedFoldersResponse, SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import { CreateFolderResponse, DriveFileData, FetchTrashContentResponse } from '@internxt/sdk/dist/drive/storage/types';
+import {
+  CreateFolderResponse,
+  DriveFileData,
+  FetchPaginatedFolderContentResponse,
+  FetchTrashContentResponse,
+} from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import {
   CreateFolderPayload,
@@ -107,6 +112,30 @@ export function setupWorkspace(workspaceSetupInfo: WorkspaceSetupInfo): Promise<
   });
 }
 
+export async function editWorkspace(
+  workspaceId: string,
+  details: { name: string; description: string },
+): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.editWorkspace(workspaceId, details).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export async function updateWorkspaceAvatar(workspaceId: string, avatar: Blob): Promise<{ avatar: string }> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.updateAvatar(workspaceId, { avatar }).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
+export async function deleteWorkspaceAvatar(workspaceId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.deleteAvatar(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 export function createTeam(createTeamData: CreateTeamData): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.createTeam(createTeamData).catch((error) => {
@@ -165,7 +194,7 @@ export function createFolder(payload: CreateFolderPayload): [Promise<CreateFolde
   return workspaceClient.createFolder(payload);
 }
 
-export function getWorkspaceCretenditals(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
+export function getWorkspaceCredentials(workspaceId: string): Promise<WorkspaceCredentialsDetails> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.getWorkspaceCredentials(workspaceId).catch((error) => {
     throw errorService.castError(error);
@@ -291,6 +320,25 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   );
 }
 
+export function getWorkspaceFolders(
+  workspaceId: string,
+  folderId: string,
+  offset: number,
+  limit: number,
+): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getFolders(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+}
+export function getWorkspaceFiles(
+  workspaceId: string,
+  folderId: string,
+  offset: number,
+  limit: number,
+): [Promise<FetchPaginatedFolderContentResponse>, RequestCanceler] {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getFiles(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -299,6 +347,9 @@ const workspacesService = {
   getMemberDetails,
   inviteUserToTeam,
   setupWorkspace,
+  editWorkspace,
+  updateWorkspaceAvatar,
+  deleteWorkspaceAvatar,
   createTeam,
   editTeam,
   deleteTeam,
@@ -309,7 +360,7 @@ const workspacesService = {
   processInvitation,
   createFileEntry,
   createFolder,
-  getWorkspaceCretenditals,
+  getWorkspaceCredentials,
   getWorkspacePendingInvitations,
   validateWorkspaceInvitation,
   getPendingInvites,
@@ -322,6 +373,8 @@ const workspacesService = {
   getAllWorkspaceTeamSharedFolders,
   getAllWorkspaceTeamSharedFolderFiles,
   getAllWorkspaceTeamSharedFolderFolders,
+  getWorkspaceFolders,
+  getWorkspaceFiles,
 };
 
 export default workspacesService;
