@@ -150,6 +150,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
 
       if (selectedWorkspace) {
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+        dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }
     } catch (error) {
       notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
