@@ -4,7 +4,7 @@ import { useTranslationContext } from '../../../../../i18n/provider/TranslationP
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import Tabs from '../../../../components/Tabs';
-import { ActiveTab, TypeTabs } from '../../../../types/types';
+import { ActiveTab, TypeTabs, MemberRole } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
@@ -16,7 +16,6 @@ import { getMemberRole } from 'app/newSettings/utils/membersUtils';
 import Usage from 'app/newSettings/components/Usage/Usage';
 import errorService from 'app/core/services/error.service';
 import workspacesService from 'app/core/services/workspace.service';
-import { MemberRole } from '../../../../types/types';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -129,6 +128,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
             {isOptionsOpen && (
               <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
                 <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
+                  {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
                   {/* <button
                   onClick={() => setIsRequestChangePasswordModalOpen(true)}
                   className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20"
@@ -161,6 +161,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
           </div>
         )}
       </Card>
+      {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
       {/* <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
       <DeactivateMemberModal
         name={member.member.name + ' ' + member.member.lastname}
