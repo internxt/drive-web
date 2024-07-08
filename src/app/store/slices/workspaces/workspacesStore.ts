@@ -47,9 +47,7 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 
       dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
       dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
-
-      if (workspaces && workspaces.availableWorkspaces[0]?.workspace?.workspaceUserId)
-        dispatch(planThunks.initializeThunk());
+      dispatch(planThunks.initializeThunk());
     }
   },
 );

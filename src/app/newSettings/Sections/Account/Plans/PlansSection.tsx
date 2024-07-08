@@ -85,9 +85,12 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       return;
     }
 
-    if (currentChangePlanType === 'manageBilling') {
+    if (currentChangePlanType === 'manageBilling' && isIndividualSubscriptionSelected) {
       navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
       changeSection({ section: 'account', subsection: 'billing' });
+    } else if (currentChangePlanType === 'manageBilling' && !isIndividualSubscriptionSelected) {
+      navigationService.openPreferencesDialog({ section: 'workspace', subsection: 'billing' });
+      changeSection({ section: 'workspace', subsection: 'billing' });
     } else if (currentChangePlanType === 'free') {
       navigationService.openPreferencesDialog({ section: 'account', subsection: 'account' });
       changeSection({ section: 'account', subsection: 'account' });
@@ -267,7 +270,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   }
 
-  const handleChangePlanDialog = () =>
+  const shouldDisplayChangePlanDialog = () =>
     (isIndividualSubscriptionSelected &&
       plan.individualPlan?.planId != priceSelected.id &&
       individualPrices.find((p) => p.id == priceSelected.id)) ||
@@ -278,11 +281,11 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const getDefaultPlanPrice = (userType: UserType): DisplayPrice | undefined => {
     const planId = userType === UserType.Individual ? plan.individualPlan?.planId : plan.businessPlan?.planId;
 
-    const findPrice =
+    const price =
       userType === UserType.Individual
         ? individualPrices.find((i) => i.id == planId)
         : businessPrices.find((i) => i.id == planId);
-    if (findPrice) return findPrice;
+    if (price) return price;
 
     const intervalPrice =
       userType === UserType.Individual
@@ -305,7 +308,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   return (
     <Section title="Plans" onClosePreferences={onClosePreferences}>
-      {handleChangePlanDialog() && priceSelected && (
+      {shouldDisplayChangePlanDialog() && priceSelected && (
         <ChangePlanDialog
           prices={isIndividualSubscriptionSelected ? individualPrices : businessPrices}
           isDialgOpen={isDialogOpen}

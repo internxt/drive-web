@@ -23,7 +23,7 @@ const getCurrentChangePlanType = ({
 }): ChangePlanType => {
   const isIntervalSelected =
     priceSelected?.interval === 'month' || priceSelected?.interval === 'year' || priceSelected?.interval === 'lifetime';
-  // TODO: Current Storage debemos obtener el valor apropiado de acuerdo al userType o un valor Global sobre el workspace
+
   const currentStorage = currentPlan?.storageLimit ? parseInt(currentPlan.storageLimit.toString()) : 0;
   const selectedPlanStorage = priceSelected?.bytes;
 

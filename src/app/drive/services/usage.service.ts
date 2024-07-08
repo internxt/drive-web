@@ -8,21 +8,21 @@ export interface UsageDetailsProps {
   backups: number;
 }
 
-export async function fetchUsage(workspaceUserId?: string): Promise<UsageResponse> {
+export async function fetchUsage(): Promise<UsageResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  const driveUsage = await storageClient.spaceUsage(workspaceUserId);
+  const driveUsage = await storageClient.spaceUsage();
 
   return driveUsage;
 }
 
-async function getUsageDetails(workspaceUserId?: string): Promise<UsageDetailsProps> {
+async function getUsageDetails(): Promise<UsageDetailsProps> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
 
   let drive = 0;
   let backups = 0;
 
   try {
-    const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage(workspaceUserId);
+    const { drive: storageDrive, backups: storageBackups } = await storageClient.spaceUsage();
     drive = storageDrive;
     backups = storageBackups;
   } catch (error) {

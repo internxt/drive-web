@@ -29,9 +29,9 @@ export default function AccountPopover({
 }): JSX.Element {
   const dispatch = useAppDispatch();
   const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
-  const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId;
-  const usage = !workspaceUserId ? plan.planUsage : plan.businessPlanUsage;
-  const limit = !workspaceUserId ? plan.planLimit : plan.businessPlanLimit;
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
+  const usage = !memberId ? plan.planUsage : plan.businessPlanUsage;
+  const limit = !memberId ? plan.planLimit : plan.businessPlanLimit;
 
   const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
@@ -40,7 +40,7 @@ export default function AccountPopover({
     <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
   );
 
-  const percentageUsed = Math.round((usage / limit) * 100);
+  const percentageUsed = Math.round((usage / limit) * 100) || 0;
 
   const separator = <div className="border-translate mx-3 my-0.5 border-gray-10" />;
 

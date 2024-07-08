@@ -44,7 +44,7 @@ const refreshUserReferrals = createAsyncThunk<void, void, { state: RootState }>(
   'referrals/refreshUserReferrals',
   (payload, { dispatch }) => {
     dispatch(referralsThunks.fetchUserReferralsThunk());
-    dispatch(planThunks.fetchLimitThunk());
+    dispatch(planThunks.fetchUsageThunk());
   },
 );
 

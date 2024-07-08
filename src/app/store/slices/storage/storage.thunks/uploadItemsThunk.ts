@@ -159,10 +159,9 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
     const state = getState();
-    const firstWorkspace = workspacesSelectors.getFirstWorkspace(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || firstWorkspace?.workspace?.workspaceUserId;
+    const memberId = selectedWorkspace?.workspaceUser?.memberId;
 
     let ownerUserAuthenticationData: any = null;
     const workspaceId = selectedWorkspace?.workspace?.id;
@@ -237,7 +236,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
-      if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
+      if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
     }, 1000);
 
     if (errors.length > 0) {
@@ -287,12 +286,11 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
 
-    const firstWorkspace = workspacesSelectors.getFirstWorkspace(state);
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
     const workspaceId = selectedWorkspace?.workspace.id;
-    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || firstWorkspace?.workspace?.workspaceUserId;
+    const memberId = selectedWorkspace?.workspaceUser?.memberId;
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
@@ -417,7 +415,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
-      if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
+      if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
     }, 1000);
 
     if (errors.length > 0) {

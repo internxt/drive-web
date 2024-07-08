@@ -7,6 +7,7 @@ import { sessionSelectors } from '../session/session.selectors';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import paymentService from '../../../payment/services/payment.service';
+import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 
 export interface PlanState {
   isLoadingPlans: boolean;
@@ -47,45 +48,40 @@ export const initializeThunk = createAsyncThunk<void, void, { state: RootState }
   async (payload: void, { dispatch, getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
     const promises: Promise<void>[] = [];
-    const { workspaces, selectedWorkspace } = getState().workspaces;
-    const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || workspaces[0]?.workspace?.workspaceUserId;
 
     if (isAuthenticated) {
       promises.push(dispatch(fetchSubscriptionThunk({ userType: UserType.Individual })).then());
       promises.push(dispatch(fetchSubscriptionThunk({ userType: UserType.Business })).then());
       promises.push(dispatch(fetchLimitThunk()).then());
       promises.push(dispatch(fetchUsageThunk()).then());
-      if (workspaceUserId) {
-        promises.push(dispatch(fetchLimitThunk(workspaceUserId)).then());
-        promises.push(dispatch(fetchUsageThunk(workspaceUserId)).then());
-      }
+      promises.push(dispatch(fetchBusinessLimitUsageThunk()).then());
     }
 
     await Promise.all(promises);
   },
 );
 
-export const fetchLimitThunk = createAsyncThunk<number, string | undefined, { state: RootState }>(
+export const fetchLimitThunk = createAsyncThunk<number, void, { state: RootState }>(
   'plan/fetchLimit',
-  async (payload: string | undefined, { getState }) => {
+  async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
     let limit = 0;
 
     if (isAuthenticated) {
-      limit = await limitService.fetchLimit(payload);
+      limit = await limitService.fetchLimit();
     }
 
     return limit;
   },
 );
 
-export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, string | undefined, { state: RootState }>(
+export const fetchUsageThunk = createAsyncThunk<UsageResponse | null, void, { state: RootState }>(
   'plan/fetchUsage',
-  async (payload: string | undefined, { getState }) => {
+  async (payload: void, { getState }) => {
     const isAuthenticated = getState().user.isAuthenticated;
 
     if (isAuthenticated) {
-      return usageService.fetchUsage(payload);
+      return usageService.fetchUsage();
     } else {
       return null;
     }
@@ -105,6 +101,20 @@ export const fetchSubscriptionThunk = createAsyncThunk<
     return null;
   }
 });
+
+export const fetchBusinessLimitUsageThunk = createAsyncThunk<WorkspaceUser | null, void, { state: RootState }>(
+  'plan/fetchBusinessLimitUsage',
+  async (payload: void, { getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
+
+    if (isAuthenticated) {
+      const { selectedWorkspace } = getState().workspaces;
+      return selectedWorkspace?.workspaceUser || null;
+    }
+
+    return null;
+  },
+);
 
 export const planSlice = createSlice({
   name: 'plan',
@@ -134,8 +144,7 @@ export const planSlice = createSlice({
       })
       .addCase(fetchLimitThunk.fulfilled, (state, action) => {
         state.isLoadingPlanLimit = false;
-        if (!action.meta.arg) state.planLimit = action.payload;
-        if (action.meta.arg) state.businessPlanLimit = action.payload;
+        state.planLimit = action.payload;
       })
       .addCase(fetchLimitThunk.rejected, (state) => {
         state.isLoadingPlanLimit = false;
@@ -148,14 +157,8 @@ export const planSlice = createSlice({
       .addCase(fetchUsageThunk.fulfilled, (state, action) => {
         state.isLoadingPlanUsage = false;
         if (action.payload !== null) {
-          if (!action.meta.arg) {
-            state.planUsage = action.payload.total;
-            state.usageDetails = action.payload;
-          }
-          if (action.meta.arg) {
-            state.businessPlanUsage = action.payload.total;
-            state.businessPlanUsageDetails = action.payload;
-          }
+          state.planUsage = action.payload.total;
+          state.usageDetails = action.payload;
         }
       })
       .addCase(fetchUsageThunk.rejected, (state) => {
@@ -164,13 +167,15 @@ export const planSlice = createSlice({
 
     builder.addCase(fetchSubscriptionThunk.fulfilled, (state, action) => {
       if (action.payload !== null) {
-        if (action.meta.arg.userType == UserType.Individual) {
+        const isIndividualSubscription = action.meta.arg.userType == UserType.Individual;
+
+        if (isIndividualSubscription) {
           state.individualSubscription = action.payload;
           if (action.payload.type === 'subscription') {
             state.individualPlan = action.payload.plan || null;
           }
         }
-        if (action.meta.arg.userType == UserType.Business) {
+        if (!isIndividualSubscription) {
           state.businessSubscription = action.payload;
           if (action.payload.type === 'subscription') {
             state.businessPlan = action.payload.plan || null;
@@ -178,6 +183,22 @@ export const planSlice = createSlice({
         }
       }
     });
+
+    builder
+      .addCase(fetchBusinessLimitUsageThunk.pending, () => undefined)
+      .addCase(fetchBusinessLimitUsageThunk.fulfilled, (state, action) => {
+        const spaceLimit = Number(action.payload?.spaceLimit) || 0;
+        const driveUsage = Number(action.payload?.driveUsage) || 0;
+        const backupsUsage = Number(action.payload?.backupsUsage) || 0;
+
+        state.businessPlanLimit = spaceLimit;
+        state.businessPlanUsage = driveUsage + backupsUsage;
+        state.businessPlanUsageDetails = {
+          driveUsage,
+          backupsUsage,
+        } as unknown as UsageResponse;
+      })
+      .addCase(fetchBusinessLimitUsageThunk.rejected, () => undefined);
   },
 });
 // TODO: review this behavior
@@ -199,9 +220,7 @@ export const planSelectors = {
   planLimitToShow: (state: RootState): number => {
     const { selectedWorkspace } = state.workspaces;
     if (selectedWorkspace) {
-      const businessPlanLimit = state.plan.businessPlan
-        ? state.plan.businessPlan.storageLimit * state.plan.businessPlan.amountOfSeats
-        : 0;
+      const businessPlanLimit = state.plan.businessPlan ? state.plan.businessPlan.storageLimit : 0;
       return state.plan.businessPlanLimit || businessPlanLimit;
     }
 
@@ -237,6 +256,7 @@ export const planThunks = {
   fetchLimitThunk,
   fetchUsageThunk,
   fetchSubscriptionThunk,
+  fetchBusinessLimitUsageThunk,
 };
 
 export default planSlice.reducer;

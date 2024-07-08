@@ -74,9 +74,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
   async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
     const state = getState();
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
-    const firstWorkspace = workspacesSelectors.getFirstWorkspace(state);
+
     const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
-    const workspaceUserId = workspaceSelected?.workspace?.workspaceUserId || firstWorkspace?.workspace?.workspaceUserId;
+    const memberId = workspaceSelected?.workspaceUser?.memberId;
 
     options = { withNotification: true, ...options };
     const uploadFolderAbortController = new AbortController();
@@ -205,7 +205,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       options.onSuccess?.();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
-        if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -302,9 +302,8 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   const state = getState();
   const payloadWithTaskId = generateTaskIdForFolders(payload);
 
-  const firstWorkspace = workspacesSelectors.getFirstWorkspace(state);
   const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
-  const workspaceUserId = selectedWorkspace?.workspace?.workspaceUserId || firstWorkspace?.workspace?.workspaceUserId;
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
 
   // checking why is not aborting correctly the folder upload
   for (const { root, currentFolderId, options: payloadOptions, taskId, abortController } of payloadWithTaskId) {
@@ -392,7 +391,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
 
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
-        if (workspaceUserId) dispatch(planThunks.fetchUsageThunk(workspaceUserId));
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
