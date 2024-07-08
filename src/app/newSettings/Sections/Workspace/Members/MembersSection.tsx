@@ -33,7 +33,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
 
   useEffect(() => {
     const selectedWorkspaceId = selectedWorkspace?.workspace.id;
-    getWorkspacesMembers(selectedWorkspaceId);
+    selectedWorkspaceId && getWorkspacesMembers(selectedWorkspaceId);
     getWorkspacePendingInvitations(selectedWorkspace?.workspaceUser.workspaceId);
   }, []);
 
@@ -60,11 +60,11 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
     }
   };
 
-  const getWorkspacesMembers = async (selectedWorkspaceId) => {
+  const getWorkspacesMembers = async (selectedWorkspaceId: string) => {
     try {
       const members = await workspacesService.getWorkspacesMembers(selectedWorkspaceId);
-      setMembers(members.activatedUsers);
-      setDisplayedMembers(members.activatedUsers);
+      setMembers([...members.activatedUsers, ...members.disabledUsers]);
+      setDisplayedMembers([...members.activatedUsers, ...members.disabledUsers]);
     } catch (error) {
       errorService.reportError(error);
     }
@@ -86,7 +86,7 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
       onClosePreferences={onClosePreferences}
     >
       {selectedMember ? (
-        <MemberDetailsContainer member={selectedMember} />
+        <MemberDetailsContainer member={selectedMember} getWorkspacesMembers={getWorkspacesMembers} />
       ) : (
         <>
           {/* MEMBERS AND GUESTS CARDS */}
