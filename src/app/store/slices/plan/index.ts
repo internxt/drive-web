@@ -7,7 +7,8 @@ import { sessionSelectors } from '../session/session.selectors';
 import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
 import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import paymentService from '../../../payment/services/payment.service';
-import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
+import { GetMemberDetailsResponse } from '@internxt/sdk/dist/workspaces';
+import workspacesService from 'app/core/services/workspace.service';
 
 export interface PlanState {
   isLoadingPlans: boolean;
@@ -102,19 +103,25 @@ export const fetchSubscriptionThunk = createAsyncThunk<
   }
 });
 
-export const fetchBusinessLimitUsageThunk = createAsyncThunk<WorkspaceUser | null, void, { state: RootState }>(
-  'plan/fetchBusinessLimitUsage',
-  async (payload: void, { getState }) => {
-    const isAuthenticated = getState().user.isAuthenticated;
+export const fetchBusinessLimitUsageThunk = createAsyncThunk<
+  GetMemberDetailsResponse | null,
+  void,
+  { state: RootState }
+>('plan/fetchBusinessLimitUsage', async (payload: void, { getState }) => {
+  const isAuthenticated = getState().user.isAuthenticated;
 
-    if (isAuthenticated) {
-      const { selectedWorkspace } = getState().workspaces;
-      return selectedWorkspace?.workspaceUser || null;
+  if (isAuthenticated) {
+    const { selectedWorkspace } = getState().workspaces;
+
+    if (selectedWorkspace) {
+      const workspaceId = selectedWorkspace?.workspace.id;
+      const memberId = selectedWorkspace?.workspaceUser.memberId;
+      if (workspaceId && memberId) return workspacesService.getMemberDetails(workspaceId, memberId);
     }
+  }
 
-    return null;
-  },
-);
+  return null;
+});
 
 export const planSlice = createSlice({
   name: 'plan',
@@ -187,9 +194,9 @@ export const planSlice = createSlice({
     builder
       .addCase(fetchBusinessLimitUsageThunk.pending, () => undefined)
       .addCase(fetchBusinessLimitUsageThunk.fulfilled, (state, action) => {
-        const spaceLimit = Number(action.payload?.spaceLimit) || 0;
-        const driveUsage = Number(action.payload?.driveUsage) || 0;
-        const backupsUsage = Number(action.payload?.backupsUsage) || 0;
+        const spaceLimit = Number(action.payload?.user.spaceLimit) || 0;
+        const driveUsage = Number(action.payload?.user.driveUsage) || 0;
+        const backupsUsage = Number(action.payload?.user.backupsUsage) || 0;
 
         state.businessPlanLimit = spaceLimit;
         state.businessPlanUsage = driveUsage + backupsUsage;
