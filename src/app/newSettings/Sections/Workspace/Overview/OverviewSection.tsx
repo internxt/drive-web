@@ -32,7 +32,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
 
-  if (!selectedWorkspace || !selectedWorkspace?.workspace.id) {
+  if (!selectedWorkspace?.workspace.id) {
     return null;
   }
 
