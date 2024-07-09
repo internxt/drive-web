@@ -32,13 +32,14 @@ export const sectionItems = [
     isSubsection: true,
     notificationsNumber: 0,
   },
-  {
-    section: 'workspace',
-    subsection: 'teams',
-    isDisabled: false,
-    isSubsection: true,
-    notificationsNumber: 0,
-  },
+  // DISABLED FOR THE MVP
+  // {
+  //   section: 'workspace',
+  //   subsection: 'teams',
+  //   isDisabled: false,
+  //   isSubsection: true,
+  //   notificationsNumber: 0,
+  // },
   {
     section: 'workspace',
     subsection: 'billing',
