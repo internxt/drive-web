@@ -18,6 +18,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       if (oldVersion <= 4) {
         db.createObjectStore('upload_item_status');
       }
+      if (oldVersion <= 5) {
+        db.createObjectStore('workspaces_avatar_blobs');
+      }
     },
     blocked: () => undefined,
     blocking: () => undefined,
