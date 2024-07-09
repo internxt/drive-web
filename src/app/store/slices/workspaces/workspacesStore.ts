@@ -164,21 +164,20 @@ const updateWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string; avat
   async (payload, { dispatch }) => {
     const { avatar } = await workspacesService.updateWorkspaceAvatar(payload.workspaceId, payload.avatar);
 
-    await saveWorkspaceAvatarToDatabase(avatar, payload.avatar);
+    await saveWorkspaceAvatarToDatabase(payload.workspaceId, avatar, payload.avatar);
     dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar } }));
   },
 );
 
-const deleteWorkspaceAvatar = createAsyncThunk<
-  void,
-  { workspaceId: string; avatarSrcURL: string },
-  { state: RootState }
->('workspaces/deleteAvatar', async (payload, { dispatch }) => {
-  await workspacesService.deleteWorkspaceAvatar(payload.workspaceId);
+const deleteWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string }, { state: RootState }>(
+  'workspaces/deleteAvatar',
+  async (payload, { dispatch }) => {
+    await workspacesService.deleteWorkspaceAvatar(payload.workspaceId);
 
-  await deleteWorkspaceAvatarFromDatabase(payload.avatarSrcURL);
-  dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar: undefined } }));
-});
+    await deleteWorkspaceAvatarFromDatabase(payload.workspaceId);
+    dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar: undefined } }));
+  },
+);
 
 export const workspacesSlice = createSlice({
   name: 'user',

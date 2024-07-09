@@ -31,12 +31,17 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
-  const companyName = selectedWorkspace?.workspace.name || '';
-  const description = selectedWorkspace?.workspace.description || '';
-  const avatarSrcURL = selectedWorkspace?.workspace.avatar || '';
-  const isOwner =
-    (currentUserId && selectedWorkspace?.workspace.ownerId && currentUserId === selectedWorkspace.workspace.ownerId) ||
-    false;
+
+  if (!selectedWorkspace || !selectedWorkspace?.workspace.id) {
+    return null;
+  }
+
+  const workspaceId = selectedWorkspace.workspace.id;
+  const companyName = selectedWorkspace.workspace.name;
+  const description = selectedWorkspace.workspace.description;
+  const avatarSrcURL = selectedWorkspace.workspace.avatar;
+  const ownerId = selectedWorkspace.workspace.ownerId;
+  const isOwner = (currentUserId && ownerId && currentUserId === ownerId) || false;
 
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
@@ -55,10 +60,8 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
     getSubscriptionData({ userSubscription: plan.subscription, plan, local });
 
   useEffect(() => {
-    if (selectedWorkspace?.workspace.id) {
-      getWorkspacesMembers(selectedWorkspace.workspace.id);
-      getWorkspacesTeams(selectedWorkspace.workspace.id);
-    }
+    getWorkspacesMembers(workspaceId);
+    getWorkspacesTeams(workspaceId);
     usageService
       .getUsageDetails()
       .then((usageDetails) => {
@@ -91,10 +94,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
     setIsSavingProfileDetails(true);
     try {
-      if (!selectedWorkspace?.workspace.id) {
-        throw new Error('Tried to edit workspace details without id');
-      }
-      await workspacesService.editWorkspace(selectedWorkspace.workspace.id, {
+      await workspacesService.editWorkspace(workspaceId, {
         name: newCompanyName,
         description: newAboutCompany,
       });
@@ -102,7 +102,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
       setAboutCompany(newAboutCompany);
       dispatch(
         workspacesActions.patchWorkspace({
-          workspaceId: selectedWorkspace.workspace.id,
+          workspaceId,
           patch: {
             name: newCompanyName,
             description: newAboutCompany,
@@ -119,12 +119,9 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
 
   const uploadAvatar = async ({ avatar }: { avatar: Blob }) => {
     try {
-      if (!selectedWorkspace?.workspace.id) {
-        throw new Error('Tried to upload workspace avatar without id');
-      }
       await dispatch(
         workspaceThunks.updateWorkspaceAvatar({
-          workspaceId: selectedWorkspace.workspace.id,
+          workspaceId,
           avatar,
         }),
       ).unwrap();
@@ -136,13 +133,8 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   };
 
   const deleteAvatar = async () => {
-    if (selectedWorkspace?.workspace.id) {
-      await dispatch(
-        workspaceThunks.deleteWorkspaceAvatar({
-          workspaceId: selectedWorkspace.workspace.id,
-          avatarSrcURL,
-        }),
-      ).unwrap();
+    if (workspaceId) {
+      await dispatch(workspaceThunks.deleteWorkspaceAvatar({ workspaceId })).unwrap();
       notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.removed') });
     } else {
       errorService.reportError(new Error('Tried to delete workspace avatar without id'));
@@ -152,6 +144,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   return (
     <Section title="Overview" onClosePreferences={onClosePreferences}>
       <WorkspaceProfileCard
+        workspaceId={workspaceId}
         companyName={editedCompanyName}
         description={aboutCompany}
         avatarSrcURL={avatarSrcURL}
@@ -333,6 +326,7 @@ const WorkspaceOverviewDetails = ({
 };
 
 interface WorkspaceProfileCardProps {
+  workspaceId: string;
   avatarSrcURL: string | null;
   companyName: string;
   description: string;
@@ -343,6 +337,7 @@ interface WorkspaceProfileCardProps {
 }
 
 const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
+  workspaceId,
   avatarSrcURL,
   companyName,
   description,
@@ -371,7 +366,12 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
               openDirection={'right'}
             >
               <div className="relative">
-                <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
+                <WorkspaceAvatarWrapper
+                  diameter={128}
+                  workspaceId={workspaceId}
+                  fullName={companyName}
+                  avatarSrcURL={avatarSrcURL}
+                />
                 {
                   <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
                     <PencilSimple size={16} />
@@ -390,7 +390,12 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
             />
           </>
         ) : (
-          <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
+          <WorkspaceAvatarWrapper
+            diameter={128}
+            workspaceId={workspaceId}
+            fullName={companyName}
+            avatarSrcURL={avatarSrcURL}
+          />
         )}
       </div>
 
