@@ -45,9 +45,9 @@ const UsageBar = ({
         title="Drive"
         subtitle={bytesToString(driveUsageBytes)}
         popsFrom="top"
-        className="mr-0.5 rounded-l bg-primary"
+        className="mr-0.5 rounded-l-lg bg-primary"
       >
-        <div style={{ width: `${driveWidth}px` }}></div>
+        <div style={{ width: `${driveWidth > 0 && driveWidth < 5 ? 5 : driveWidth}px` }}></div>
       </Tooltip>
 
       <Tooltip
@@ -55,7 +55,7 @@ const UsageBar = ({
         title="Backup"
         subtitle={bytesToString(driveUsageBytes)}
         popsFrom="top"
-        className="rounded-r bg-indigo"
+        className="rounded-r-lg bg-indigo"
       >
         <div style={{ width: `${backupWidth}px` }}></div>
       </Tooltip>
