@@ -1,4 +1,4 @@
-import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
+import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { ArrowRight } from '@phosphor-icons/react';
 import { useSelector } from 'react-redux';
 import { bytesToString } from '../../../../../drive/services/size.service';
@@ -15,25 +15,31 @@ const ChangePlanDialog = ({
   setIsDialogOpen,
   onPlanClick,
   priceIdSelected,
+  subscriptionSelected,
 }: {
   prices: DisplayPrice[];
   isDialgOpen: boolean;
   setIsDialogOpen: (value: boolean) => void;
   onPlanClick: (value: string, currency: string) => void;
   priceIdSelected: string;
+  subscriptionSelected: UserType;
 }): JSX.Element => {
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const { translate } = useTranslationContext();
+  const isIndividualSubscription = subscriptionSelected == UserType.Individual;
 
-  const { planLimit, planUsage, subscription } = plan;
-  const selectedPlan: DisplayPrice = prices.find((plan) => plan.id === priceIdSelected) as DisplayPrice;
+  const { planLimit, planUsage, businessPlanLimit, businessPlanUsage, individualSubscription, businessSubscription } =
+    plan;
+
+  const subscription = isIndividualSubscription ? individualSubscription : businessSubscription;
+  const selectedPlan: DisplayPrice = prices.find((price) => price.id === priceIdSelected) as DisplayPrice;
 
   const selectedPlanSize = selectedPlan?.bytes;
   const selectedPlanSizeString = bytesToString(selectedPlanSize);
   const selectedPlanAmount = selectedPlan?.amount;
   const selectedPlanInterval = selectedPlan?.interval;
-  const currentPlanSizeString = bytesToString(planLimit);
-
+  const currentPlanSizeString = bytesToString(isIndividualSubscription ? planLimit : businessPlanLimit);
+  const currentPlanUsage = isIndividualSubscription ? planUsage : businessPlanUsage;
   let amountMonthly: number | null = null;
   let currentAmountMonthly: number | null = null;
   let subscriptionCurrencySymbol: string | null = null;
@@ -79,9 +85,9 @@ const ChangePlanDialog = ({
           <p className="text-2xl font-medium text-primary">{currentPlanSizeString}</p>
           {subscription?.type === 'subscription' ? (
             <div>
-              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
-                currentAmountMonthly,
-              )}`}</span>
+              <span className="text-base font-medium">{`${displayAmount(currentAmountMonthly)} ${
+                subscriptionCurrencySymbol || ''
+              }`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
@@ -94,27 +100,27 @@ const ChangePlanDialog = ({
           <p className="mb-2.5 rounded-xl border border-gray-10 bg-gray-5 px-2 py-1 text-xs font-medium text-gray-80">
             {translate('views.account.tabs.plans.dialog.plan.new')}
           </p>
-          <p className={`text-2xl font-medium ${selectedPlanSize < planUsage ? 'text-red' : 'text-primary'}`}>
+          <p className={`text-2xl font-medium ${selectedPlanSize < currentPlanUsage ? 'text-red' : 'text-primary'}`}>
             {selectedPlanSizeString}
           </p>
           {selectedPlanInterval === 'lifetime' ? (
             <div>
-              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
-                selectedPlanAmount,
-              )}`}</span>
+              <span className="text-base font-medium">{`${displayAmount(selectedPlanAmount)} ${
+                subscriptionCurrencySymbol || ''
+              }`}</span>
             </div>
           ) : (
             <div>
-              <span className="text-base font-medium">{`${subscriptionCurrencySymbol}${displayAmount(
-                amountMonthly,
-              )}`}</span>
+              <span className="text-base font-medium">{`${displayAmount(amountMonthly)} ${
+                subscriptionCurrencySymbol || ''
+              }`}</span>
               <span>/</span>
               <span className="text-xs font-medium">{translate('views.account.tabs.plans.dialog.plan.interval')}</span>
             </div>
           )}
         </div>
       </div>
-      {selectedPlanSize < planUsage && (
+      {selectedPlanSize < currentPlanUsage && (
         <div className="mb-5 flex flex-col items-center rounded-xl border border-red/20 bg-red/10 px-4 py-5 text-red">
           <h4 className="mb-1.5 text-center text-xl font-semibold">
             {translate('views.account.tabs.plans.dialog.alert.title')}
@@ -122,7 +128,7 @@ const ChangePlanDialog = ({
           </h4>
           <p className="font-regular text-center text-base">
             {translate('views.account.tabs.plans.dialog.alert.text1')}
-            <span className="font-semibold">{bytesToString(planUsage)}</span>
+            <span className="font-semibold">{bytesToString(currentPlanUsage)}</span>
             {translate('views.account.tabs.plans.dialog.alert.text2')}
           </p>
         </div>

@@ -84,7 +84,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
           <MembersSection onClosePreferences={onClosePreferences} />
         )}
         {activeSection?.section === 'workspace' && activeSection?.subsection === 'billing' && (
-          <BillingWorkspaceSection onClosePreferences={onClosePreferences} />
+          <BillingWorkspaceSection onClosePreferences={onClosePreferences} changeSection={changeSection} />
         )}
         {activeSection?.section === 'account' && activeSection?.subsection === 'account' && (
           <AccountSection changeSection={changeSection} onClosePreferences={onClosePreferences} />

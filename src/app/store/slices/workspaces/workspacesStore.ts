@@ -7,6 +7,7 @@ import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
 import {
@@ -50,6 +51,7 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 
       dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
       dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+      dispatch(planThunks.initializeThunk());
     }
   },
 );
@@ -87,7 +89,7 @@ const setSelectedWorkspace = createAsyncThunk<void, { workspaceId: string | null
   async ({ workspaceId }, { dispatch, getState }) => {
     const state = getState();
     const selectedWorkspace = state.workspaces.selectedWorkspace;
-    const localStorageB2BWorkspace = await localStorageService.getB2BWorkspace();
+    const localStorageB2BWorkspace = localStorageService.getB2BWorkspace();
 
     const isUnselectingWorkspace = workspaceId === null;
     const isSelectedWorkspace = localStorageB2BWorkspace?.workspace.id === workspaceId;
@@ -152,6 +154,7 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
 
       if (selectedWorkspace) {
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+        dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }
     } catch (error) {
       notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
@@ -164,21 +167,20 @@ const updateWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string; avat
   async (payload, { dispatch }) => {
     const { avatar } = await workspacesService.updateWorkspaceAvatar(payload.workspaceId, payload.avatar);
 
-    await saveWorkspaceAvatarToDatabase(avatar, payload.avatar);
+    await saveWorkspaceAvatarToDatabase(payload.workspaceId, avatar, payload.avatar);
     dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar } }));
   },
 );
 
-const deleteWorkspaceAvatar = createAsyncThunk<
-  void,
-  { workspaceId: string; avatarSrcURL: string },
-  { state: RootState }
->('workspaces/deleteAvatar', async (payload, { dispatch }) => {
-  await workspacesService.deleteWorkspaceAvatar(payload.workspaceId);
+const deleteWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string }, { state: RootState }>(
+  'workspaces/deleteAvatar',
+  async (payload, { dispatch }) => {
+    await workspacesService.deleteWorkspaceAvatar(payload.workspaceId);
 
-  await deleteWorkspaceAvatarFromDatabase(payload.avatarSrcURL);
-  dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar: undefined } }));
-});
+    await deleteWorkspaceAvatarFromDatabase(payload.workspaceId);
+    dispatch(workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { avatar: undefined } }));
+  },
+);
 
 export const workspacesSlice = createSlice({
   name: 'user',

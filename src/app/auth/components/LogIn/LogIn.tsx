@@ -30,6 +30,7 @@ import useLoginRedirections from '../../../routes/hooks/Login/useLoginRedirectio
 import shareService from '../../../share/services/share.service';
 import PasswordInput from '../PasswordInput/PasswordInput';
 import TextInput from '../TextInput/TextInput';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 
 const showNotification = ({ text, isError }: { text: string; isError: boolean }) => {
   notificationsService.show({
@@ -147,6 +148,8 @@ export default function LogIn(): JSX.Element {
           dispatch(planThunks.initializeThunk());
           dispatch(referralsThunks.initializeThunk());
           await dispatch(initializeUserThunk()).unwrap();
+          dispatch(workspaceThunks.fetchWorkspaces());
+          dispatch(workspaceThunks.checkAndSetLocalWorkspace());
         } catch (e: unknown) {
           // PASS
         }

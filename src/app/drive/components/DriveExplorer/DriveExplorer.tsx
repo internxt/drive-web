@@ -1073,7 +1073,7 @@ export default connect((state: RootState) => {
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
-    planUsage: state.plan.planUsage,
+    planUsage: planSelectors.planUsageToShow(state),
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,

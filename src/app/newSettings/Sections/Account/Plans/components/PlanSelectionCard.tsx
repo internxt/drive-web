@@ -22,12 +22,12 @@ const PlanSelectionCard = ({
   isCurrentPlan,
   displayBillingSlash,
 }: PlanSelectionCardProps) => {
-  const isSelectedOutsideBorderStyle = (isSelected && isCurrentPlan) || isSelected ? 'border-transparent' : '';
-  const isSelectedInsideBorderStyle =
-    (isSelected && isCurrentPlan) || isSelected
-      ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
-      : '';
-  const billingText = displayBillingSlash ? ` /${billing}` : ` ${billing}`;
+  const selectedValidation = (isSelected && isCurrentPlan) || isSelected;
+  const isSelectedOutsideBorderStyle = selectedValidation ? 'border-transparent' : '';
+  const isSelectedInsideBorderStyle = selectedValidation
+    ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
+    : '';
+  const displayText = displayBillingSlash ? `${amount} ${currency}/${billing}` : `${amount} ${currency} ${billing}`;
   return (
     <div
       className={`rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
@@ -44,10 +44,7 @@ const PlanSelectionCard = ({
             <RoleBadge roleText={t('preferences.account.plans.current')} role={'current'} size={'small'} />
           )}
         </div>
-        <span className="text-base font-normal leading-5 text-gray-60">
-          {currency + amount}
-          {billing && billingText}
-        </span>
+        <span className=" text-base font-normal leading-5 text-gray-60">{displayText}</span>
       </button>
     </div>
   );

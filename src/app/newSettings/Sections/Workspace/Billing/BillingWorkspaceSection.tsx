@@ -1,9 +1,9 @@
 import { t } from 'i18next';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { RootState } from 'app/store';
-import { PlanState } from 'app/store/slices/plan';
+import { PlanState, planThunks } from 'app/store/slices/plan';
 
 import Section from 'app/newSettings/components/Section';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
@@ -12,6 +12,16 @@ import { BillingDetails } from '../../../types/types';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
+import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
+import paymentService from 'app/payment/services/payment.service';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import navigationService from 'app/core/services/navigation.service';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { useAppDispatch } from 'app/store/hooks';
 
 // MOCKED DATA
 const address = 'La Marina de Valencia, Muelle de la Aduana s/n, La Marina de Valencia, Muelle de la Aduana s/n, Spain';
@@ -24,8 +34,21 @@ const phone = '+34432445236';
 const owner = 'Fran Villalba Segarra';
 const isOwner = true;
 
-const BillingWorkspaceSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
+interface BillingWorkspaceSectionProps {
+  changeSection: ({ section, subsection }) => void;
+  onClosePreferences: () => void;
+}
+
+const BillingWorkspaceSection = ({ onClosePreferences, changeSection }: BillingWorkspaceSectionProps) => {
+  const dispatch = useAppDispatch();
+  const { translate } = useTranslationContext();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const [isSubscription, setIsSubscription] = useState<boolean>(false);
+  const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
+  const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState<boolean>(false);
+  const [planName, setPlanName] = useState<string>('');
+  const [planInfo, setPlanInfo] = useState<string>('');
+  const [currentUsage, setCurrentUsage] = useState<number>(-1);
 
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
@@ -38,6 +61,35 @@ const BillingWorkspaceSection = ({ onClosePreferences }: { onClosePreferences: (
     postalCode,
     phone,
   });
+
+  useEffect(() => {
+    plan.businessSubscription?.type === 'subscription' ? setIsSubscription(true) : setIsSubscription(false);
+    setPlanName(getPlanName(plan.businessPlan, plan.businessPlanLimit));
+    setPlanInfo(getPlanInfo(plan.businessPlan));
+    setCurrentUsage(plan.businessPlanUsageDetails?.total ?? -1);
+  }, [plan.businessSubscription]);
+
+  async function cancelSubscription(feedback: string) {
+    setCancellingSubscription(true);
+    try {
+      await paymentService.cancelSubscription(UserType.Business);
+      notificationsService.show({ text: translate('notificationMessages.successCancelSubscription'), duration: 8000 });
+      setIsCancelSubscriptionModalOpen(false);
+      trackCanceledSubscription({ feedback });
+      dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId: null }));
+      setTimeout(() => {
+        dispatch(workspaceThunks.fetchWorkspaces());
+        dispatch(workspaceThunks.checkAndSetLocalWorkspace());
+        dispatch(planThunks.initializeThunk());
+      }, 3000);
+    } catch (err) {
+      console.error(err);
+      notificationsService.show({
+        text: translate('notificationMessages.errorCancelSubscription'),
+        type: ToastType.Error,
+      });
+    }
+  }
 
   const onSaveBillingDetails = (newBillingDetails: BillingDetails) => {
     setIsSavingBillingDetails(true);
@@ -65,8 +117,22 @@ const BillingWorkspaceSection = ({ onClosePreferences }: { onClosePreferences: (
         onSave={onSaveBillingDetails}
         isLoading={isSavingBillingDetails}
       />
-      <BillingPaymentMethodCard />
-      <Invoices />
+      <BillingPaymentMethodCard userType={UserType.Business} />
+      {plan.businessSubscription?.type == 'subscription' && (
+        <Invoices subscriptionId={plan.businessSubscription.subscriptionId} />
+      )}
+      {isSubscription && (
+        <CancelSubscription
+          isCancelSubscriptionModalOpen={isCancelSubscriptionModalOpen}
+          setIsCancelSubscriptionModalOpen={setIsCancelSubscriptionModalOpen}
+          cancellingSubscription={cancellingSubscription}
+          cancelSubscription={cancelSubscription}
+          planName={planName}
+          planInfo={planInfo}
+          currentUsage={currentUsage}
+          userType={UserType.Business}
+        />
+      )}
     </Section>
   );
 };

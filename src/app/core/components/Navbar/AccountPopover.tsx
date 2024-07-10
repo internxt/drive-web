@@ -4,12 +4,13 @@ import notificationsService, { ToastType } from '../../../notifications/services
 import { Desktop, SignOut, UserPlus, Gear } from '@phosphor-icons/react';
 import { ReactNode } from 'react';
 import Popover from '../../../shared/components/Popover';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { uiActions } from '../../../store/slices/ui';
 import { userThunks } from '../../../store/slices/user';
 import desktopService from '../../services/desktop.service';
 import AvatarWrapper from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import navigationService from '../../../core/services/navigation.service';
+import { RootState } from 'app/store';
 
 export default function AccountPopover({
   className = '',
@@ -18,9 +19,19 @@ export default function AccountPopover({
 }: {
   className?: string;
   user: UserSettings;
-  plan: { planLimit: number; planUsage: number; showUpgrade: boolean };
+  plan: {
+    planLimit: number;
+    planUsage: number;
+    showUpgrade: boolean;
+    businessPlanLimit: number;
+    businessPlanUsage: number;
+  };
 }): JSX.Element {
   const dispatch = useAppDispatch();
+  const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
+  const usage = !memberId ? plan.planUsage : plan.businessPlanUsage;
+  const limit = !memberId ? plan.planLimit : plan.businessPlanLimit;
 
   const { translate } = useTranslationContext();
   const fullName = `${user.name} ${user.lastname}`;
@@ -29,7 +40,7 @@ export default function AccountPopover({
     <AvatarWrapper diameter={36} style={{ minWidth: 36 }} fullName={fullName} avatarSrcURL={user.avatar} />
   );
 
-  const percentageUsed = Math.round((plan.planUsage / plan.planLimit) * 100);
+  const percentageUsed = Math.round((usage / limit) * 100) || 0;
 
   const separator = <div className="border-translate mx-3 my-0.5 border-gray-10" />;
 

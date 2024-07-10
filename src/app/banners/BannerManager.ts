@@ -6,7 +6,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 const BANNER_NAME_IN_LOCAL_STORAGE = 'show_banner';
 const BANNER_NAME_FOR_FREE_USERS = 'show_free_users_banner';
-const OFFER_END_DAY = new Date('2024-06-30');
+const OFFER_END_DAY = new Date('2024-07-08');
 
 export class BannerManager {
   private plan: PlanState;
@@ -24,7 +24,7 @@ export class BannerManager {
   }
 
   shouldShowBanner(): boolean {
-    const isNewUser = this.plan.subscription?.type === 'free';
+    const isNewUser = this.plan.individualSubscription?.type === 'free';
     const isOfferOffDay = new Date() > OFFER_END_DAY;
     const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
 

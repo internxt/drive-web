@@ -10,6 +10,9 @@ const workspacesSelectors = {
     const { workspaceCredentials } = state.workspaces;
     return workspaceCredentials;
   },
+  getFirstWorkspace(state: RootState): WorkspaceData | null {
+    return state.workspaces.workspaces[0];
+  },
 };
 
 export default workspacesSelectors;

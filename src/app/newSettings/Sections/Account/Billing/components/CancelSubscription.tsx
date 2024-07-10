@@ -1,6 +1,7 @@
 import { t } from 'i18next';
 import Button from '../../../../../shared/components/Button/Button';
 import CancelSubscriptionModal from '../../../Workspace/Billing/CancelSubscriptionModal';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface CancelSubscriptionProps {
   isCancelSubscriptionModalOpen: boolean;
@@ -10,6 +11,7 @@ interface CancelSubscriptionProps {
   planName: string;
   planInfo: string;
   currentUsage: number;
+  userType?: UserType;
 }
 
 const CancelSubscription = ({
@@ -20,6 +22,7 @@ const CancelSubscription = ({
   planName,
   planInfo,
   currentUsage,
+  userType = UserType.Individual,
 }: CancelSubscriptionProps) => {
   const onCancelSubscriptionButtonClicked = () => {
     setIsCancelSubscriptionModalOpen(true);
@@ -45,6 +48,7 @@ const CancelSubscription = ({
         currentPlanName={planName}
         currentPlanInfo={planInfo}
         currentUsage={currentUsage}
+        userType={userType}
       />
     </section>
   );

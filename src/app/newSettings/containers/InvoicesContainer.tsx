@@ -6,7 +6,7 @@ import paymentService from '../../payment/services/payment.service';
 import Card from '../../shared/components/Card';
 import InvoicesList from '../components/Invoices/InvoicesList';
 
-const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
+const Invoices = ({ className = '', subscriptionId }: { className?: string; subscriptionId: string }): JSX.Element => {
   const { translate } = useTranslationContext();
   const [state, setState] = useState<{ tag: 'ready'; invoices: Invoice[] } | { tag: 'loading' | 'empty' }>({
     tag: 'loading',
@@ -15,7 +15,7 @@ const Invoices = ({ className = '' }: { className?: string }): JSX.Element => {
 
   useEffect(() => {
     paymentService
-      .getInvoices()
+      .getInvoices({ subscriptionId })
       .then((invoices) => setState({ tag: 'ready', invoices }))
       .catch(() => setState({ tag: 'empty' }));
   }, []);

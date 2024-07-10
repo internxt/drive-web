@@ -1,8 +1,8 @@
+import { RenewalPeriod } from '@internxt/sdk/dist/drive/payments/types';
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
 import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
 import { SVGProps } from 'react';
-import { RenewalPeriod } from '../../payment/types';
 
 export interface DriveFolderData {
   id: number;

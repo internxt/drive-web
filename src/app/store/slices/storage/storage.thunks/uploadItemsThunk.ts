@@ -161,6 +161,8 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     const state = getState();
     const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+    const memberId = selectedWorkspace?.workspaceUser?.memberId;
+
     let ownerUserAuthenticationData: any = null;
     const workspaceId = selectedWorkspace?.workspace?.id;
     if (workspaceId) {
@@ -234,6 +236,7 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
+      if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
     }, 1000);
 
     if (errors.length > 0) {
@@ -282,9 +285,12 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const user = state.user.user as UserSettings;
     const filesToUpload: FileToUpload[] = [];
     const errors: Error[] = [];
-    const selectedWorkspace = state.workspaces.selectedWorkspace;
+
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
     const workspaceId = selectedWorkspace?.workspace.id;
-    const workspaceCredentials = state.workspaces.workspaceCredentials;
+    const memberId = selectedWorkspace?.workspaceUser?.memberId;
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
@@ -409,6 +415,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     setTimeout(() => {
       dispatch(planThunks.fetchUsageThunk());
+      if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
     }, 1000);
 
     if (errors.length > 0) {

@@ -17,13 +17,13 @@ interface BillingAccountOverviewProps {
 
 const BillingAccountOverview = ({ plan, changeSection }: BillingAccountOverviewProps) => {
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
-  const isSubscription = plan.subscription?.type === 'subscription';
-  const isFreeSubscription = plan.subscription?.type === 'free';
-  const isLifetimeSubscription = plan.subscription?.type === 'lifetime';
+  const isSubscription = plan.individualSubscription?.type === 'subscription';
+  const isFreeSubscription = plan.individualSubscription?.type === 'free';
+  const isLifetimeSubscription = plan.individualSubscription?.type === 'lifetime';
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
-    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
-  const nextBillingDate = getNextBillingDate(plan.subscription);
+    getSubscriptionData({ userSubscription: plan.individualSubscription, plan, local });
+  const nextBillingDate = getNextBillingDate(plan.individualSubscription);
 
   return (
     <section className="flex flex-row">

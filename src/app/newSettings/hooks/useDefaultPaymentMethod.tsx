@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
+import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { Source } from '@stripe/stripe-js';
 
 import paymentService from 'app/payment/services/payment.service';
@@ -15,14 +15,14 @@ interface DefaultPaymentMethodProps {
 // MOCKED DATA
 const cardName = 'Fran Villalba Segarra';
 
-export const useDefaultPaymentMethod = () => {
+export const useDefaultPaymentMethod = (userType?: UserType) => {
   const [defaultPaymentMethod, setDefaultPaymentMethod] = useState<DefaultPaymentMethodProps>({
     tag: 'loading',
   });
 
   useEffect(() => {
     paymentService
-      .getDefaultPaymentMethod()
+      .getDefaultPaymentMethod(userType || UserType.Individual)
       .then((data: PaymentMethod | Source) => {
         if (data.card) {
           setDefaultPaymentMethod({ tag: 'ready', card: data.card as PaymentMethod['card'], name: cardName });

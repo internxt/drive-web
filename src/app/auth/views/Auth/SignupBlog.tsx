@@ -14,7 +14,7 @@ const textContent = {
     passwordLabel: 'Password',
     emailEmpty: 'Email cannot be empty',
     passwordLabelEmpty: 'Password cannot be empty',
-    buttonText: 'Get up to 10GB - For free!',
+    buttonText: 'Get up to 1GB - For free!',
     legal: {
       line1: 'By creating an account you accept the',
       line2: 'terms of service, and privacy policy',
@@ -30,7 +30,7 @@ const textContent = {
     passwordLabel: 'Contraseña',
     emailEmpty: 'El correo electrónico no puede estar vacío',
     passwordLabelEmpty: 'La contraseña no puede estar vacía',
-    buttonText: 'Consigue 10GB - ¡Gratis!',
+    buttonText: 'Consigue 1GB - ¡Gratis!',
     legal: {
       line1: 'Al crear una cuenta aceptas los',
       line2: 'términos de servicio y la política de privacidad',
