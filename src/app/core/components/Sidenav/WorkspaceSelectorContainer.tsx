@@ -9,6 +9,7 @@ import workspacesService from '../../../core/services/workspace.service';
 import errorService from '../../../core/services/error.service';
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
 import PendingInvitationsDialog from '../../../core/components/Sidenav/PendingInvitationsDialog';
+import { planThunks } from 'app/store/slices/plan';
 
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();
@@ -47,6 +48,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
       return;
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
+    dispatch(planThunks.fetchBusinessLimitUsageThunk());
   };
 
   if (!user) return null;

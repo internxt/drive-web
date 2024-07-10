@@ -7,6 +7,7 @@ import Card from 'app/shared/components/Card';
 
 import { PlanState } from 'app/store/slices/plan';
 import { getNextBillingDate, getSubscriptionData } from '../../../../utils/suscriptionUtils';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface BillingWorkspaceOverviewProps {
   plan: PlanState;
@@ -14,11 +15,11 @@ interface BillingWorkspaceOverviewProps {
 
 const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
-  const isFreeSuscription = plan.subscription?.type === 'free';
+  const isFreeSuscription = plan.businessSubscription?.type === 'free';
 
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
-    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
-  const nextBillingDate = getNextBillingDate(plan.subscription);
+    getSubscriptionData({ userSubscription: plan.businessSubscription, plan, local, userType: UserType.Business });
+  const nextBillingDate = getNextBillingDate(plan.businessSubscription);
   const [integerPart, decimalPart] = subscriptionData?.amountInterval?.split('.') ?? [];
 
   return (
@@ -39,7 +40,7 @@ const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
                 <span className="text-3xl">{integerPart}</span>.{decimalPart}
               </p>
               <p className="font-regular text-base text-gray-60">
-                {t('preferences.workspace.billing.planLimit', { planLimit: bytesToString(plan.planLimit) })}
+                {t('preferences.workspace.billing.planLimit', { planLimit: bytesToString(plan.businessPlanLimit) })}
               </p>
             </div>
           </Card>
@@ -48,7 +49,7 @@ const BillingWorkspaceOverview = ({ plan }: BillingWorkspaceOverviewProps) => {
         <Card className="w-full text-center">
           <h1 className="font-medium text-gray-60">
             {t('preferences.workspace.billing.paymentMethod.freePlanTitle', {
-              planLimit: bytesToString(plan.planLimit),
+              planLimit: bytesToString(plan.businessPlanLimit),
             })}
           </h1>
         </Card>

@@ -10,6 +10,7 @@ import notificationsService, { ToastType } from '../../../../notifications/servi
 import { useAppDispatch } from '../../../../store/hooks';
 import { planThunks } from '../../../../store/slices/plan';
 import analyticsService from '../../../../analytics/services/analytics.service';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -19,6 +20,7 @@ const CancelSubscriptionModal = ({
   currentUsage,
   cancellingSubscription,
   cancelSubscription,
+  userType = UserType.Individual,
 }: {
   isOpen: boolean;
   onClose: () => void;
@@ -26,26 +28,29 @@ const CancelSubscriptionModal = ({
   currentPlanInfo: string;
   currentUsage: number;
   cancellingSubscription: boolean;
+  userType: UserType;
   cancelSubscription: (feedback: string) => void;
 }): JSX.Element => {
+  const isIndividual = userType === UserType.Individual;
   const { translate } = useTranslationContext();
-  const [step, setStep] = useState<1 | 2 | 3>(2);
+  const [step, setStep] = useState<1 | 2 | 3>(!isIndividual ? 3 : 2);
   const [couponAvailable, setCouponAvailable] = useState(false);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    paymentService
-      .requestPreventCancellation()
-      .then((response) => {
-        setCouponAvailable(response.elegible);
-      })
-      .catch((error) => {
-        console.error(error);
-        notificationsService.show({
-          text: translate('notificationMessages.errorApplyCoupon'),
-          type: ToastType.Error,
+    if (userType === UserType.Individual)
+      paymentService
+        .requestPreventCancellation()
+        .then((response) => {
+          setCouponAvailable(response.elegible);
+        })
+        .catch((error) => {
+          console.error(error);
+          notificationsService.show({
+            text: translate('notificationMessages.errorApplyCoupon'),
+            type: ToastType.Error,
+          });
         });
-      });
   }, []);
 
   useEffect(() => {
@@ -87,12 +92,14 @@ const CancelSubscriptionModal = ({
           <h1 className="text-2xl font-medium text-gray-80">
             {translate('views.account.tabs.billing.cancelSubscriptionModal.title')}
           </h1>
-          <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>
+          {isIndividual && <h2 className="text-base font-light text-gray-50">{step - 1} of 2</h2>}
         </>
       )}
-      {step === 1 && <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />}
+      {isIndividual && step === 1 && (
+        <Step1 currentPlanName={currentPlanName} applyCoupon={applyCoupon} setStep={setStep} />
+      )}
 
-      {step === 2 && (
+      {isIndividual && step === 2 && (
         <Step2
           currentPlanName={currentPlanName}
           onClose={onClose}

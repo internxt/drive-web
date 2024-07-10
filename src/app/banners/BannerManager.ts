@@ -24,7 +24,7 @@ export class BannerManager {
   }
 
   shouldShowBanner(): boolean {
-    const isNewUser = this.plan.subscription?.type === 'free';
+    const isNewUser = this.plan.individualSubscription?.type === 'free';
     const isOfferOffDay = new Date() > OFFER_END_DAY;
     const showBannerIfLocalStorageItemExpires = JSON.parse(this.bannerItemInLocalStorage as string) < this.todayDate;
 

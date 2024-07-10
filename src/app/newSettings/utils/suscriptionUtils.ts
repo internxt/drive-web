@@ -1,7 +1,6 @@
-import { UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import dateService from 'app/core/services/date.service';
 import { t } from 'i18next';
-import { StoragePlan } from '../../drive/types';
 import moneyService from '../../payment/services/money.service';
 import { RenewalPeriod } from '../../payment/types';
 import { PlanState } from '../../store/slices/plan';
@@ -11,9 +10,10 @@ const formatPlanPaymentInterval = (storagePlan: StoragePlan | null) => {
     const isAnuallyPaymentInterval = storagePlan.paymentInterval === RenewalPeriod.Annually;
     const price = isAnuallyPaymentInterval ? storagePlan.price : storagePlan.monthlyPrice;
     const renewalPeriod = isAnuallyPaymentInterval ? 'year' : 'month';
+    const priceTruncated = Math.trunc(price * 100) / 100;
 
     return (
-      price +
+      `${priceTruncated} ` +
       moneyService.getCurrencySymbol(storagePlan.currency) +
       '/' +
       t(`views.account.tabs.billing.cancelSubscriptionModal.infoBox.${renewalPeriod}`)
@@ -27,10 +27,12 @@ const getSubscriptionData = ({
   userSubscription,
   plan,
   local,
+  userType = UserType.Individual,
 }: {
   userSubscription: UserSubscription | null;
   plan: PlanState;
   local: string;
+  userType?: UserType;
 }): { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined => {
   if (userSubscription?.type === 'subscription') {
     const nextPayment = new Date(userSubscription.nextPayment * 1000);
@@ -40,7 +42,9 @@ const getSubscriptionData = ({
     }).format(nextPayment);
     const interval = userSubscription.interval === 'month' ? 'monthly' : 'yearly';
 
-    const amountInterval = formatPlanPaymentInterval(plan.individualPlan ?? plan.teamPlan);
+    const amountInterval = formatPlanPaymentInterval(
+      userType == UserType.Business ? plan.businessPlan : plan.individualPlan ?? plan.teamPlan,
+    );
 
     return { amountInterval, interval, renewDate };
   }

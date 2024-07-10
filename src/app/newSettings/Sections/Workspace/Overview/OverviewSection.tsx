@@ -1,29 +1,30 @@
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
-import usageService, { UsageDetailsProps } from '../../../../drive/services/usage.service';
+import workspacesService from '../../../../core/services/workspace.service';
+import { UsageDetailsProps } from '../../../../drive/services/usage.service';
+import Section from '../../../../newSettings/components/Section';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Button from '../../../../shared/components/Button/Button';
 import Card from '../../../../shared/components/Card';
 import Dropdown from '../../../../shared/components/Dropdown';
 import Modal from '../../../../shared/components/Modal';
 import Spinner from '../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../store';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { PlanState } from '../../../../store/slices/plan';
+import { workspaceThunks, workspacesActions } from '../../../../store/slices/workspaces/workspacesStore';
 import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import workspacesService from '../../../../core/services/workspace.service';
-import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { workspaceThunks, workspacesActions } from '../../../../store/slices/workspaces/workspacesStore';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
-import Section from '../../../../newSettings/components/Section';
 
 const subscription = 'Free';
 
@@ -57,20 +58,32 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const local = localStorageService.get('i18nextLng') ?? navigator.language.split('-')[0];
   const products = planUsage ? getProductCaptions(planUsage) : null;
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
-    getSubscriptionData({ userSubscription: plan.subscription, plan, local });
+    getSubscriptionData({ userSubscription: plan.businessSubscription, plan, local, userType: UserType.Business });
 
   useEffect(() => {
-    getWorkspacesMembers(workspaceId);
-    getWorkspacesTeams(workspaceId);
-    usageService
-      .getUsageDetails()
-      .then((usageDetails) => {
-        setPlanUsage(usageDetails);
-      })
-      .catch((err) => {
-        const error = errorService.castError(err);
-        errorService.reportError(error);
-      });
+    if (selectedWorkspace?.workspace.id) {
+      const workspaceId = selectedWorkspace?.workspace.id;
+      const memberId = selectedWorkspace?.workspaceUser.memberId;
+
+      getWorkspacesMembers(workspaceId);
+      getWorkspacesTeams(workspaceId);
+
+      workspacesService
+        .getMemberDetails(workspaceId, memberId)
+        .then((data) => {
+          const usageDetails: UsageDetailsProps = {
+            drive: Number(data.user.driveUsage) || 0,
+            backups: Number(data.user.backupsUsage) || 0,
+            photos: 0,
+          };
+
+          setPlanUsage(usageDetails);
+        })
+        .catch((err) => {
+          const error = errorService.castError(err);
+          errorService.reportError(error);
+        });
+    }
   }, []);
 
   const getWorkspacesMembers = async (selectedWorkspaceId: string) => {
@@ -156,7 +169,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
       <WorkspaceOverviewDetails
         members={members?.length || 0}
         teams={teams?.length || 0}
-        planLimit={plan.planLimit}
+        planLimit={plan.businessPlanLimit}
         products={products}
         isOwner={isOwner}
         subscriptionData={subscriptionData}

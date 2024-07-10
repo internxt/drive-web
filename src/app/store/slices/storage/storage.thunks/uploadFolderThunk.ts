@@ -75,6 +75,9 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
     const state = getState();
     const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
+    const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
+    const memberId = workspaceSelected?.workspaceUser?.memberId;
+
     options = { withNotification: true, ...options };
     const uploadFolderAbortController = new AbortController();
 
@@ -202,6 +205,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       options.onSuccess?.();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -294,8 +298,13 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   void,
   UploadFolderThunkPayload[],
   { state: RootState }
->('storage/createFolderStructure', async (payload, { dispatch }) => {
+>('storage/createFolderStructure', async (payload, { dispatch, getState }) => {
+  const state = getState();
   const payloadWithTaskId = generateTaskIdForFolders(payload);
+
+  const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
+
   // checking why is not aborting correctly the folder upload
   for (const { root, currentFolderId, options: payloadOptions, taskId, abortController } of payloadWithTaskId) {
     const options = { withNotification: true, ...payloadOptions };
@@ -382,6 +391,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
 
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

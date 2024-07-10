@@ -1,8 +1,6 @@
 import { ShareLink } from '@internxt/sdk/dist/drive/share/types';
-import { AppSumoDetails } from '@internxt/sdk/dist/shared/types/appsumo';
 import { AdvancedSharedItem } from 'app/share/types';
 import { SVGProps } from 'react';
-import { RenewalPeriod } from '../../payment/types';
 
 export interface DriveFolderData {
   id: number;
@@ -117,23 +115,6 @@ export interface FolderTree {
   createdAt: string;
   updatedAt: string;
 }
-
-export type StoragePlan = {
-  planId: string;
-  productId: string;
-  name: string;
-  simpleName: string;
-  paymentInterval: RenewalPeriod;
-  price: number;
-  monthlyPrice: number;
-  currency: string;
-  isTeam: boolean;
-  isLifetime: boolean;
-  renewalPeriod: RenewalPeriod;
-  storageLimit: number;
-  isAppSumo?: boolean;
-  details?: AppSumoDetails;
-};
 
 export interface FolderPath {
   name: string;

@@ -28,7 +28,7 @@ const WarningMessageWrapper = ({
 };
 
 export default connect((state: RootState) => ({
-  planUsage: state.plan.planUsage,
+  planUsage: planSelectors.planUsageToShow(state),
   planLimit: planSelectors.planLimitToShow(state),
   isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
   isLoadingPlanUsage: state.plan.isLoadingPlanUsage,

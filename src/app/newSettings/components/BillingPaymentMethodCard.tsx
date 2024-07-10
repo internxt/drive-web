@@ -1,4 +1,4 @@
-import { PaymentMethod } from '@internxt/sdk/dist/drive/payments/types';
+import { PaymentMethod, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import Button from 'app/shared/components/Button/Button';
 import Card from 'app/shared/components/Card';
 import Spinner from 'app/shared/components/Spinner/Spinner';
@@ -16,10 +16,10 @@ import visaIcon from '../../../assets/icons/card-brands/visa.png';
 import EditPaymentMethodModal from '../Sections/Workspace/Billing/components/EditPaymentMethodModal';
 import { useDefaultPaymentMethod } from '../hooks/useDefaultPaymentMethod';
 
-const BillingPaymentMethodCard = () => {
+const BillingPaymentMethodCard = ({ userType }: { userType: UserType }) => {
   const [isEditPaymentMethodModalOpen, setIsEditPaymentMethodModalOpen] = useState<boolean>(false);
   const [isPaymentMethod, setIsPaimentMethod] = useState<boolean>(false);
-  const defaultPaymentMethod = useDefaultPaymentMethod();
+  const defaultPaymentMethod = useDefaultPaymentMethod(userType);
 
   useEffect(() => {
     (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||
