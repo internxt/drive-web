@@ -8,46 +8,39 @@ import Avatar from '../../../../../shared/components/Avatar';
 import * as Sentry from '@sentry/react';
 import notificationsService, { ToastType } from '../../../../../notifications/services/notifications.service';
 
-const extractAvatarURLID = (url: string): string | null => {
-  const regex = /internxt\.com\/(.*?)[?&]/;
-  const match = url.match(regex);
-  return match ? match[1] : null;
-};
-
 const showUpdateWorkspaceAvatarErrorToast = () =>
   notificationsService.show({
     text: 'Error updating workspace avatar photo',
     type: ToastType.Error,
   });
 
-export const saveWorkspaceAvatarToDatabase = async (url: string, avatar: Blob): Promise<void> => {
-  const uuid = extractAvatarURLID(url);
+export const saveWorkspaceAvatarToDatabase = async (workspaceId: string, url: string, avatar: Blob): Promise<void> => {
   return await updateDatabaseWorkspaceAvatar({
     sourceURL: url,
     avatarBlob: avatar,
-    uuid: uuid ?? '',
+    uuid: workspaceId,
   });
 };
 
-export const deleteWorkspaceAvatarFromDatabase = async (url: string): Promise<void> => {
-  const uuid = extractAvatarURLID(url);
-  return await deleteDatabaseWorkspaceAvatar(uuid ?? '');
+export const deleteWorkspaceAvatarFromDatabase = async (workspaceId: string): Promise<void> => {
+  return await deleteDatabaseWorkspaceAvatar(workspaceId);
 };
 
 const WorkspaceAvatarWrapper = memo(
   ({
+    workspaceId,
     avatarSrcURL,
     fullName,
     diameter,
     style,
   }: {
+    workspaceId: string;
     avatarSrcURL: string | null;
     fullName: string;
     diameter: number;
     style?: Record<string, string | number>;
   }): JSX.Element => {
     const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
-    const uuid = extractAvatarURLID(avatarSrcURL || '') || '';
 
     useEffect(() => {
       const handleAvatarData = async () => {
@@ -56,7 +49,7 @@ const WorkspaceAvatarWrapper = memo(
             await handleDownload(avatarSrcURL);
             return;
           }
-          if (uuid && uuid.length > 0) deleteDatabaseWorkspaceAvatar(uuid);
+          if (avatarSrcURL && avatarSrcURL.length > 0) deleteDatabaseWorkspaceAvatar(workspaceId);
           setAvatarBlob(null);
         } catch (error) {
           Sentry.captureException(error, {
@@ -76,18 +69,18 @@ const WorkspaceAvatarWrapper = memo(
       const response = await fetch(url);
       const data = await response.blob();
       setAvatarBlob(data);
-      await saveWorkspaceAvatarToDatabase(url, data);
+      await saveWorkspaceAvatarToDatabase(workspaceId, url, data);
     };
 
     const handleDownload = async (url: string) => {
-      const databaseAvatarData = await getDatabaseWorkspaceAvatar(uuid);
+      const databaseAvatarData = await getDatabaseWorkspaceAvatar(workspaceId).catch();
 
       if (!databaseAvatarData) {
         downloadAndSaveAvatar(url);
         return;
       }
 
-      const existsNewAvatar = databaseAvatarData.uuid !== extractAvatarURLID(url);
+      const existsNewAvatar = databaseAvatarData.srcURL !== url;
 
       if (existsNewAvatar) {
         return downloadAndSaveAvatar(url);

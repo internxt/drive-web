@@ -6,9 +6,10 @@
   "featuresBanner": {
     "label": {
       "upTo": "",
-      "discount": "Changements apportés à votre plan gratuit"
+      "discount": "80% DE RÉDUCTION"
     },
-    "title": "Attention !",
+    "title": "Profitez des offres d'été d'Internxt",
+
     "subtitle": {
       "line1": "Le plan gratuit d'Internxt sera réduit à 1 Go le 1er juillet.",
       "line2": {
@@ -26,7 +27,7 @@
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 30 juin"
+      "L'offre se termine le 19 août"
     ],
     "copied": "Copié dans le presse-papiers"
   },

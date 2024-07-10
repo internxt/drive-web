@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
 import Tabs from '../../../../components/Tabs';
-import { ActiveTab, TypeTabs } from '../../../../types/types';
+import { ActiveTab, TypeTabs, MemberRole } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
@@ -14,19 +14,41 @@ import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { Teams } from '../../../../types/types';
 import { getMemberRole } from 'app/newSettings/utils/membersUtils';
 import Usage from 'app/newSettings/components/Usage/Usage';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
+  getWorkspacesMembers: (string) => void;
 }
 
-const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
+const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsContainer) => {
   const { translate } = useTranslationContext();
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
   const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
   const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
-  const memberRole = getMemberRole(member);
+  const [memberRole, setMemberRole] = useState<MemberRole>('current');
+
+  useEffect(() => {
+    const memberRole = getMemberRole(member);
+    setMemberRole(memberRole);
+  }, []);
+
+  const deactivateMember = async () => {
+    try {
+      setIsDeactivatingMember(true);
+      await workspacesService.deactivateMember(member.workspaceId, member.memberId);
+      getWorkspacesMembers(member.workspaceId);
+      setMemberRole('deactivated');
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsDeactivatingMember(false);
+      setIsDeactivateModalOpen(false);
+    }
+  };
 
   //  MOCK DATA TO BE IMPLENTED
   const isActivityEnabled = Math.random() < 0.5;
@@ -77,7 +99,7 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
       view: <TeamsTab role={memberRole} teams={teams.teams} isTeams={teams.isTeams} />,
     },
   ];
-  const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
+  // const [activeTab, setActiveTab] = useState<ActiveTab>(tabs[0]);
 
   return (
     <div className="flex flex-col space-y-8">
@@ -95,32 +117,35 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
             rolePosition: 'column',
           }}
         />
-        <div className="relative flex items-center justify-end">
-          <button
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
-            onClick={() => setIsOptionsOpen(!isOptionsOpen)}
-          >
-            <DotsThreeVertical size={24} />
-          </button>
-          {isOptionsOpen && (
-            <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
-              <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
-                <button
+        {!member.isOwner && !member.deactivated && (
+          <div className="relative flex items-center justify-end">
+            <button
+              className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
+              onClick={() => setIsOptionsOpen(!isOptionsOpen)}
+            >
+              <DotsThreeVertical size={24} />
+            </button>
+            {isOptionsOpen && (
+              <button onClick={() => setIsOptionsOpen(false)} className="absolute flex h-full w-full">
+                <div className="absolute right-0 top-16 flex flex-col items-center justify-center rounded-md border border-gray-10 bg-gray-5 shadow-sm">
+                  {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
+                  {/* <button
                   onClick={() => setIsRequestChangePasswordModalOpen(true)}
                   className="flex h-10 w-full items-center justify-center rounded-t-md px-3 hover:bg-gray-20"
                 >
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
-                </button>
-                <button
-                  onClick={() => setIsDeactivateModalOpen(true)}
-                  className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
-                >
-                  <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
-                </button>
-              </div>
-            </button>
-          )}
-        </div>
+                </button> */}
+                  <button
+                    onClick={() => setIsDeactivateModalOpen(true)}
+                    className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                  >
+                    <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
+                  </button>
+                </div>
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <Card className={' w-full space-y-6 '}>
         {member ? (
@@ -136,18 +161,13 @@ const MemberDetailsContainer = ({ member }: MemberDetailsContainer) => {
           </div>
         )}
       </Card>
-      <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
+      {/* NOT INCLUDED IN INITIAL SCOPE OF MVP */}
+      {/* <Tabs tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} /> */}
       <DeactivateMemberModal
         name={member.member.name + ' ' + member.member.lastname}
         isOpen={isDeactivateModalOpen}
         onClose={() => setIsDeactivateModalOpen(false)}
-        onDeactivate={() => {
-          setIsDeactivatingMember(true);
-          setTimeout(() => {
-            setIsDeactivatingMember(false);
-            setIsDeactivateModalOpen(false);
-          }, 2000);
-        }}
+        onDeactivate={deactivateMember}
         isLoading={isDeactivatingMember}
       />
       <RequestPasswordChangeModal

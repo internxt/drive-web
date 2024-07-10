@@ -339,6 +339,13 @@ export function getWorkspaceFiles(
   return workspaceClient.getFiles(workspaceId, folderId, offset, limit, 'plainName', 'ASC');
 }
 
+export function deactivateMember(workspaceId: string, memberId: string): Promise<void> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.deactivateMember(workspaceId, memberId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -375,6 +382,7 @@ const workspacesService = {
   getAllWorkspaceTeamSharedFolderFolders,
   getWorkspaceFolders,
   getWorkspaceFiles,
+  deactivateMember,
 };
 
 export default workspacesService;

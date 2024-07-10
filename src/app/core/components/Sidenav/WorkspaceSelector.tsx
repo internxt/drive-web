@@ -1,8 +1,8 @@
 import { CaretUpDown, Check, Icon } from '@phosphor-icons/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import Avatar from '../../../shared/components/Avatar';
+import WorkspaceAvatarWrapper from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
 
 export interface Workspace {
   uuid: string;
@@ -44,7 +44,12 @@ const WorkspaceCard = ({
   return (
     <button className="w-full px-2 py-3 text-left hover:bg-gray-5 dark:hover:bg-gray-10" onClick={handleOnClick}>
       <div className="flex w-full flex-row items-center justify-between space-x-2">
-        <Avatar diameter={28} fullName={workspace.name} src={workspace.avatar ? workspace.avatar : null} />
+        <WorkspaceAvatarWrapper
+          diameter={28}
+          workspaceId={workspace.uuid}
+          fullName={workspace.name}
+          avatarSrcURL={workspace.avatar}
+        />
         <div className="flex grow flex-col truncate">
           <p className="truncate text-sm font-medium leading-4 text-gray-100">{workspace.name}</p>
           <p className="truncate text-xs font-medium leading-3 text-gray-60">
@@ -107,10 +112,11 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
         onClick={toggleDropdown}
       >
         <div className="flex w-full flex-row items-center justify-between space-x-2">
-          <Avatar
+          <WorkspaceAvatarWrapper
             diameter={28}
+            workspaceId={selectedWorkspace?.uuid ?? ''}
             fullName={selectedWorkspace?.name ?? ''}
-            src={selectedWorkspace?.avatar ? selectedWorkspace.avatar : null}
+            avatarSrcURL={selectedWorkspace?.avatar ?? null}
           />
           <div className="flex grow flex-col truncate">
             <p className="truncate text-sm font-medium leading-4 text-gray-100">{selectedWorkspace?.name}</p>

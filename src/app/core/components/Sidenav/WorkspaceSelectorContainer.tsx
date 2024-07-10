@@ -94,7 +94,7 @@ const parseWorkspaces = (workspaces: WorkspaceData[]): Workspace[] =>
       name: workspace.workspace.name,
       uuid: workspace.workspace.id,
       type: 'Business',
-      avatar: null,
+      avatar: workspace.workspace.avatar,
     };
   });
 

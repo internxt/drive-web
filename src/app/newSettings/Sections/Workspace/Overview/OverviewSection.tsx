@@ -1,30 +1,30 @@
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { PencilSimple } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
+import workspacesService from '../../../../core/services/workspace.service';
 import { UsageDetailsProps } from '../../../../drive/services/usage.service';
+import Section from '../../../../newSettings/components/Section';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import Button from '../../../../shared/components/Button/Button';
 import Card from '../../../../shared/components/Card';
 import Dropdown from '../../../../shared/components/Dropdown';
 import Modal from '../../../../shared/components/Modal';
 import Spinner from '../../../../shared/components/Spinner/Spinner';
 import { RootState } from '../../../../store';
+import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { PlanState } from '../../../../store/slices/plan';
+import { workspaceThunks, workspacesActions } from '../../../../store/slices/workspaces/workspacesStore';
 import DetailsInput from '../../../components/DetailsInput';
 import UsageContainer from '../../../containers/UsageContainer';
 import { getProductCaptions } from '../../../utils/productUtils';
 import { getSubscriptionData } from '../../../utils/suscriptionUtils';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
-import workspacesService from '../../../../core/services/workspace.service';
-import { WorkspaceTeam, WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
-import { workspaceThunks, workspacesActions } from '../../../../store/slices/workspaces/workspacesStore';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
-import Section from '../../../../newSettings/components/Section';
 
 const subscription = 'Free';
 
@@ -32,12 +32,17 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
-  const companyName = selectedWorkspace?.workspace.name || '';
-  const description = selectedWorkspace?.workspace.description || '';
-  const avatarSrcURL = selectedWorkspace?.workspace.avatar || '';
-  const isOwner =
-    (currentUserId && selectedWorkspace?.workspace.ownerId && currentUserId === selectedWorkspace.workspace.ownerId) ||
-    false;
+
+  if (!selectedWorkspace?.workspace.id) {
+    return null;
+  }
+
+  const workspaceId = selectedWorkspace.workspace.id;
+  const companyName = selectedWorkspace.workspace.name;
+  const description = selectedWorkspace.workspace.description;
+  const avatarSrcURL = selectedWorkspace.workspace.avatar;
+  const ownerId = selectedWorkspace.workspace.ownerId;
+  const isOwner = (currentUserId && ownerId && currentUserId === ownerId) || false;
 
   const [isEditingDetails, setIsEditingDetails] = useState(false);
   const [editedCompanyName, setEditedCompanyName] = useState(companyName);
@@ -102,10 +107,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
     setIsSavingProfileDetails(true);
     try {
-      if (!selectedWorkspace?.workspace.id) {
-        throw new Error('Tried to edit workspace details without id');
-      }
-      await workspacesService.editWorkspace(selectedWorkspace.workspace.id, {
+      await workspacesService.editWorkspace(workspaceId, {
         name: newCompanyName,
         description: newAboutCompany,
       });
@@ -113,7 +115,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
       setAboutCompany(newAboutCompany);
       dispatch(
         workspacesActions.patchWorkspace({
-          workspaceId: selectedWorkspace.workspace.id,
+          workspaceId,
           patch: {
             name: newCompanyName,
             description: newAboutCompany,
@@ -130,12 +132,9 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
 
   const uploadAvatar = async ({ avatar }: { avatar: Blob }) => {
     try {
-      if (!selectedWorkspace?.workspace.id) {
-        throw new Error('Tried to upload workspace avatar without id');
-      }
       await dispatch(
         workspaceThunks.updateWorkspaceAvatar({
-          workspaceId: selectedWorkspace.workspace.id,
+          workspaceId,
           avatar,
         }),
       ).unwrap();
@@ -147,13 +146,8 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   };
 
   const deleteAvatar = async () => {
-    if (selectedWorkspace?.workspace.id) {
-      await dispatch(
-        workspaceThunks.deleteWorkspaceAvatar({
-          workspaceId: selectedWorkspace.workspace.id,
-          avatarSrcURL,
-        }),
-      ).unwrap();
+    if (workspaceId) {
+      await dispatch(workspaceThunks.deleteWorkspaceAvatar({ workspaceId })).unwrap();
       notificationsService.show({ type: ToastType.Success, text: t('views.account.avatar.removed') });
     } else {
       errorService.reportError(new Error('Tried to delete workspace avatar without id'));
@@ -163,6 +157,7 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
   return (
     <Section title="Overview" onClosePreferences={onClosePreferences}>
       <WorkspaceProfileCard
+        workspaceId={workspaceId}
         companyName={editedCompanyName}
         description={aboutCompany}
         avatarSrcURL={avatarSrcURL}
@@ -344,6 +339,7 @@ const WorkspaceOverviewDetails = ({
 };
 
 interface WorkspaceProfileCardProps {
+  workspaceId: string;
   avatarSrcURL: string | null;
   companyName: string;
   description: string;
@@ -354,6 +350,7 @@ interface WorkspaceProfileCardProps {
 }
 
 const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
+  workspaceId,
   avatarSrcURL,
   companyName,
   description,
@@ -382,7 +379,12 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
               openDirection={'right'}
             >
               <div className="relative">
-                <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
+                <WorkspaceAvatarWrapper
+                  diameter={128}
+                  workspaceId={workspaceId}
+                  fullName={companyName}
+                  avatarSrcURL={avatarSrcURL}
+                />
                 {
                   <div className="absolute -bottom-1.5 -right-0.5 flex h-8 w-8 items-center justify-center rounded-full border-3 border-surface bg-gray-5 text-gray-60 dark:bg-gray-10">
                     <PencilSimple size={16} />
@@ -401,7 +403,12 @@ const WorkspaceProfileCard: React.FC<WorkspaceProfileCardProps> = ({
             />
           </>
         ) : (
-          <WorkspaceAvatarWrapper diameter={128} fullName={companyName} avatarSrcURL={avatarSrcURL} />
+          <WorkspaceAvatarWrapper
+            diameter={128}
+            workspaceId={workspaceId}
+            fullName={companyName}
+            avatarSrcURL={avatarSrcURL}
+          />
         )}
       </div>
 

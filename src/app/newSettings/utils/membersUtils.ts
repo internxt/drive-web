@@ -21,6 +21,7 @@ const getMemberRole = (member: WorkspaceUser) => {
   isOwner && isManager && (role = 'owner');
   !isOwner && isManager && (role = 'manager');
   isDeactivated && (role = 'deactivated');
+  !isOwner && !isManager && !isDeactivated && (role = 'member');
 
   return role;
 };
