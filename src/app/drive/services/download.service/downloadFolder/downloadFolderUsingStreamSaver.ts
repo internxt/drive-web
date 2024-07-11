@@ -4,9 +4,10 @@ import JSZip from 'jszip';
 import internal from 'stream';
 import streamSaver from 'streamsaver';
 
+import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import errorService from 'app/core/services/error.service';
 import { t } from 'i18next';
-import { DriveFileData, DriveFolderData, FolderTree } from '../../../types';
+import { DriveFileData, DriveFolderData } from '../../../types';
 import folderService from '../../folder.service';
 import { getEnvironmentConfig, Network } from '../../network.service';
 
@@ -36,7 +37,7 @@ export default async function downloadFolderUsingStreamSaver({
   const actionStates: ActionState[] = [];
   const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isWorkspace);
   const network = new Network(bridgeUser, bridgePass, encryptionKey);
-  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.uuid);
   const zip = new JSZip();
   const isBrave = !!(navigator.brave && (await navigator.brave.isBrave()));
 

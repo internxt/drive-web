@@ -1,6 +1,7 @@
 import { aes } from '@internxt/lib';
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { Iterator } from 'app/core/collections';
@@ -18,10 +19,11 @@ import httpService from '../../core/services/http.service';
 import localStorageService from '../../core/services/local-storage.service';
 import workspacesService from '../../core/services/workspace.service';
 import { DevicePlatform } from '../../core/types';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../types';
+import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData } from '../types';
 import { updateDatabaseFileSourceData } from './database.service';
 import { addAllFilesToZip, addAllSharedFilesToZip } from './filesZip.service';
 import { addAllFoldersToZip, addAllSharedFoldersToZip } from './foldersZip.service';
+import newStorageService from './new-storage.service';
 
 export interface IFolders {
   bucket: string;
@@ -562,18 +564,20 @@ async function downloadFolderAsZip(
 }
 
 // NEED TO REVIEW THIS FUNCTION BEFORE MERGE, FOR NOW IS NOT WORKING WITH WORKSPACES FILES
-async function fetchFolderTree(folderId: number): Promise<{
+async function fetchFolderTree(folderUUID: string): Promise<{
   tree: FolderTree;
   folderDecryptedNames: Record<number, string>;
   fileDecryptedNames: Record<number, string>;
   size: number;
 }> {
-  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
+  // const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
+  const { tree } = await newStorageService.getFolderTree(folderUUID);
+  const size = tree.size;
   const folderDecryptedNames: Record<number, string> = {};
   const fileDecryptedNames: Record<number, string> = {};
 
   // ! Decrypts folders and files names
-  const pendingFolders: FolderTree[] = [tree];
+  const pendingFolders = [tree];
   while (pendingFolders.length > 0) {
     const currentTree = pendingFolders[0];
     const { folders, files } = {
@@ -581,10 +585,7 @@ async function fetchFolderTree(folderId: number): Promise<{
       files: currentTree.files,
     };
 
-    folderDecryptedNames[currentTree.id] = aes.decrypt(
-      currentTree.name,
-      `${process.env.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
-    );
+    folderDecryptedNames[currentTree.id] = currentTree.plainName;
 
     for (const file of files) {
       fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);

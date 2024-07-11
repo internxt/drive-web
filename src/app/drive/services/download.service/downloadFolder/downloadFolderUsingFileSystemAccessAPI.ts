@@ -1,8 +1,9 @@
 import { items } from '@internxt/lib';
 
+import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
 import { FlatFolderZip } from 'app/core/services/zip.service';
 import network from 'app/network';
-import { DriveFolderData, FolderTree } from '../../../types';
+import { DriveFolderData } from '../../../types';
 import folderService from '../../folder.service';
 import { getEnvironmentConfig } from '../../network.service';
 
@@ -42,7 +43,7 @@ async function downloadFolder(
 ) {
   const { abortController, updateProgress } = opts;
   const { bridgeUser, bridgePass, encryptionKey } = environment;
-  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.uuid);
   const pendingFolders: { path: string; data: FolderTree }[] = [{ path: '', data: tree }];
 
   const zip = new FlatFolderZip(folder.name, {
