@@ -571,7 +571,8 @@ export default connect((state: RootState) => ({
     state.ui.isCreateFolderDialogOpen ||
     state.ui.isNameCollisionDialogOpen ||
     state.ui.isReachedPlanLimitDialogOpen ||
-    state.ui.isItemDetailsDialogOpen,
+    state.ui.isItemDetailsDialogOpen ||
+    state.ui.isPreferencesDialogOpen,
 }))(DriveExplorerList);
 
 const skinSkeleton = [
