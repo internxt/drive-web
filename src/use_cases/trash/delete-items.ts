@@ -18,7 +18,7 @@ async function deleteItemsPermanently({
   maxConcurrentRequests,
   trashClient,
 }: {
-  items: { id: number | string; type: string }[];
+  items: { uuid: string; type: string }[];
   maxItemsToDelete: number;
   maxConcurrentRequests: number;
   trashClient: Trash;
@@ -42,9 +42,9 @@ async function deleteItemsPermanently({
 }
 
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
-  const items: Array<{ id: number | string; type: string }> = itemsToDelete.map((item) => {
+  const items: Array<{ uuid: string; type: string }> = itemsToDelete.map((item) => {
     return {
-      id: item.id,
+      uuid: item.uuid,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
