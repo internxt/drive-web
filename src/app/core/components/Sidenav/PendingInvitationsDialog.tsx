@@ -1,4 +1,5 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
+import { useAppDispatch } from 'app/store/hooks';
 import dayjs from 'dayjs';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import errorService from 'app/core/services/error.service';
@@ -7,6 +8,7 @@ import Modal from 'app/shared/components/Modal';
 import { CheckCircle, X } from '@phosphor-icons/react';
 import workspacesService from 'app/core/services/workspace.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 
 const PendingInvitationsDialog = ({
   pendingWorkspacesInvites,
@@ -21,6 +23,7 @@ const PendingInvitationsDialog = ({
   isLoading: boolean;
   setIsLoading: (boolean) => void;
 }) => {
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const token = localStorageService.get('xNewToken');
 
@@ -39,6 +42,7 @@ const PendingInvitationsDialog = ({
     setIsLoading(true);
     try {
       token && (await workspacesService.acceptWorkspaceInvite({ invitationId, token }));
+      dispatch(workspaceThunks.fetchWorkspaces());
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
