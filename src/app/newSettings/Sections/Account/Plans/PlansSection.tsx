@@ -429,6 +429,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           />
         )}
       </div>
+
       <CancelSubscriptionModal
         isOpen={isCancelSubscriptionModalOpen}
         onClose={() => {
