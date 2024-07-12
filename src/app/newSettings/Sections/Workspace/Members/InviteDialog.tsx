@@ -1,5 +1,6 @@
-import { UserPlus, X } from '@phosphor-icons/react';
 import { KeyboardEvent, useState } from 'react';
+import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
+import { UserPlus, X } from '@phosphor-icons/react';
 import { useForm } from 'react-hook-form';
 import { IFormValues } from '../../../../core/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
@@ -43,14 +44,16 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
 
   const onAddUsers = async () => {
     const isDuplicated = usersToInvite.find((user) => user.email === email);
+    const isValid = isValidEmail(email);
 
-    if (isDuplicated) {
+    if (isDuplicated || !isValid) {
       setEmailAccent('error');
       return;
     }
 
     // MOCKED
     setUsersToInvite([...usersToInvite, { name: email, email, lastname: '', avatar: null, id: email }]);
+    setEmailAccent('');
   };
 
   const onInviteUser = async () => {
