@@ -1,5 +1,5 @@
 import { Trash } from '@internxt/sdk/dist/drive';
-import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
+import { DeleteItemsPermanentlyByUUIDPayload } from '@internxt/sdk/dist/drive/trash/types';
 import { t } from 'i18next';
 import { SdkFactory } from '../../app/core/factory/sdk';
 import errorService from '../../app/core/services/error.service';
@@ -27,7 +27,9 @@ async function deleteItemsPermanently({
 
   for (let i = 0; i < items.length; i += maxItemsToDelete) {
     const itemsToDelete = items.slice(i, i + maxItemsToDelete);
-    const promise = trashClient.deleteItemsPermanently({ items: itemsToDelete } as DeleteItemsPermanentlyPayload);
+    const promise = trashClient.deleteItemsPermanentlyByUUID({
+      items: itemsToDelete,
+    } as DeleteItemsPermanentlyByUUIDPayload);
     promises.push(promise);
 
     if (promises.length === maxConcurrentRequests) {
