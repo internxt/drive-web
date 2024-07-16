@@ -14,7 +14,6 @@ import { useSelector } from 'react-redux';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
-import workspacesService from '../../../../core/services/workspace.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
@@ -36,6 +35,7 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
+import { shareItemWithTeam } from '../utils';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -173,42 +173,28 @@ const DriveTopBarActions = ({
     }
   };
 
-  const shareWithTeam = async (item) => {
-    const driveItem = item as DriveItemData;
-    if (selectedWorkspace) {
-      const editorRole = roles.find((role) => role.name === 'EDITOR');
-      if (editorRole) {
-        try {
-          await workspacesService.shareItemWithTeam({
-            workspaceId: selectedWorkspace?.workspace?.id,
-            itemId: driveItem.uuid,
-            itemType: driveItem.isFolder ? 'folder' : 'file',
-            teamUUID: selectedWorkspace?.workspace.defaultTeamId,
-            // ADDED EDITOR ROLE BY DEFAULT
-            roleId: editorRole?.id,
-          });
-          notificationsService.show({
-            text: translate('workspaces.messages.sharedSuccess'),
-            type: ToastType.Success,
-          });
-        } catch (error) {
-          notificationsService.show({
-            text: translate('modals.shareModal.errors.copy-to-clipboard'),
-            type: ToastType.Error,
-          });
-        }
-      } else {
+  const shareWithTeam = async (driveItem: DriveItemData) => {
+    const editorRole = roles.find((role) => role.name === 'EDITOR');
+    if (selectedWorkspace && editorRole) {
+      const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
+      if (isSharedSuccessfully) {
         notificationsService.show({
-          text: translate('modals.shareModal.errors.copy-to-clipboard'),
-          type: ToastType.Error,
+          text: translate('workspaces.messages.sharedSuccess'),
+          type: ToastType.Success,
         });
+        return;
       }
     }
+
+    notificationsService.show({
+      text: translate('modals.shareModal.errors.copy-to-clipboard'),
+      type: ToastType.Error,
+    });
   };
 
   const workspaceItemMenu = contextMenuWorkspaceFile({
     shareLink: onOpenShareSettingsButtonClicked,
-    shareWithTeam: shareWithTeam,
+    shareWithTeam,
     openPreview: onOpenPreviewButtonClicked,
     showDetails: onShowDetailsButtonClicked,
     getLink: onSelectedOneItemShare,
@@ -220,7 +206,7 @@ const DriveTopBarActions = ({
 
   const workspaceFolderMenu = contextMenuWorkspaceFolder({
     shareLink: onOpenShareSettingsButtonClicked,
-    shareWithTeam: shareWithTeam,
+    shareWithTeam,
     showDetails: onShowDetailsButtonClicked,
     getLink: onSelectedOneItemShare,
     renameItem: onSelectedOneItemRename,

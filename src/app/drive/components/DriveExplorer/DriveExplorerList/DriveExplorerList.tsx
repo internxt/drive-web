@@ -22,6 +22,7 @@ import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.
 import { DriveItemData, DriveItemDetails } from '../../../types';
 import EditItemNameDialog from '../../EditItemNameDialog/EditItemNameDialog';
 import DriveExplorerListItem from '../DriveExplorerItem/DriveExplorerListItem/DriveExplorerListItem';
+import { shareItemWithTeam } from '../utils';
 import {
   contextMenuDriveFolderNotSharedLink,
   contextMenuDriveFolderShared,
@@ -374,35 +375,22 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const shareWithTeam = useCallback(
     async (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      if (selectedWorkspace) {
-        const editorRole = roles.find((role) => role.name === 'EDITOR');
-        if (editorRole) {
-          try {
-            await workspacesService.shareItemWithTeam({
-              workspaceId: selectedWorkspace?.workspace?.id,
-              itemId: driveItem.uuid,
-              itemType: driveItem.isFolder ? 'folder' : 'file',
-              teamUUID: selectedWorkspace?.workspace.defaultTeamId,
-              // ADDED EDITOR ROLE BY DEFAULT
-              roleId: editorRole?.id,
-            });
-            notificationsService.show({
-              text: translate('workspaces.messages.sharedSuccess'),
-              type: ToastType.Success,
-            });
-          } catch (error) {
-            notificationsService.show({
-              text: translate('modals.shareModal.errors.copy-to-clipboard'),
-              type: ToastType.Error,
-            });
-          }
-        } else {
+      const editorRole = roles.find((role) => role.name === 'EDITOR');
+      if (selectedWorkspace && editorRole) {
+        const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
+        if (isSharedSuccessfully) {
           notificationsService.show({
-            text: translate('modals.shareModal.errors.copy-to-clipboard'),
-            type: ToastType.Error,
+            text: translate('workspaces.messages.sharedSuccess'),
+            type: ToastType.Success,
           });
+          return;
         }
       }
+
+      notificationsService.show({
+        text: translate('modals.shareModal.errors.copy-to-clipboard'),
+        type: ToastType.Error,
+      });
     },
     [dispatch, workspacesService, selectedWorkspace, roles, notificationsService],
   );
