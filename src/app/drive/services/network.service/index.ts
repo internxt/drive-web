@@ -217,12 +217,11 @@ export function getEnvironmentConfig(isWorkspace?: boolean): EnvironmentConfig {
   const workspace = localStorageService.getB2BWorkspace();
 
   if (isWorkspace && workspaceCredentials && workspace) {
-    const user = localStorageService.getUser() as UserSettings;
-
     return {
       bridgeUser: workspaceCredentials?.credentials?.networkUser,
       bridgePass: workspaceCredentials?.credentials?.networkPass,
-      encryptionKey: user.mnemonic,
+      // decrypted mnemonic
+      encryptionKey: workspace.workspaceUser.key,
       bucketId: workspaceCredentials?.bucket,
       useProxy: process.env.REACT_APP_DONT_USE_PROXY !== 'true',
     };

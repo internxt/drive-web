@@ -182,7 +182,8 @@ class UploadManager {
             }
           },
           {
-            isTeam: false,
+            // TODO: review upload flow to check if it's needed to pass isTeam if it is workspace
+            isTeam: false, //!!this.options?.ownerUserAuthenticationData?.workspaceId,
             trackingParameters: { isMultipleUpload, processIdentifier: this.uploadUUIDV4 },
             abortController: this.abortController ?? fileData.abortController,
             ownerUserAuthenticationData: this.options?.ownerUserAuthenticationData,

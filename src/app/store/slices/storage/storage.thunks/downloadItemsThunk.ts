@@ -34,7 +34,11 @@ type DownloadItemsThunkPayload = (DriveItemData & {
 
 export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPayload, { state: RootState }>(
   'storage/downloadItems',
-  async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue }) => {
+  async (items: DownloadItemsThunkPayload, { dispatch, requestId, rejectWithValue, getState }) => {
+    const state = getState();
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
     if (items.length > 1) {
       await dispatch(
         downloadItemsAsZipThunk({ items, fileIterator: createFilesIterator, folderIterator: createFoldersIterator }),
@@ -98,10 +102,20 @@ export const downloadItemsThunk = createAsyncThunk<void, DownloadItemsThunkPaylo
       } else {
         const isSharedFile = !!item.sharingOptions;
         if (isSharedFile && item.sharingOptions) {
+          const isWorkspace = !!selectedWorkspace;
+          const sharingOptions = isWorkspace
+            ? {
+                credentials: {
+                  user: workspaceCredentials?.credentials?.networkUser,
+                  pass: workspaceCredentials?.credentials.networkPass,
+                },
+                mnemonic: selectedWorkspace?.workspaceUser.key,
+              }
+            : undefined;
           await dispatch(
             storageThunks.downloadFileThunk({
               file: item as DriveFileData,
-              options: { taskId, sharingOptions: item.sharingOptions },
+              options: { taskId, sharingOptions: sharingOptions ?? item.sharingOptions },
             }),
           );
         } else {
@@ -158,10 +172,12 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
     const folderName = sharedFolderName ?? `Internxt (${formattedDate})`;
     const folder = new FlatFolderZip(folderName, {});
 
-    const workspaceCredentialsForOptions = {
-      user: workspaceCredentials?.credentials.networkUser,
-      pass: workspaceCredentials?.credentials.networkPass,
-    };
+    const workspaceCredentialsForOptions = workspaceCredentials?.credentials.networkUser
+      ? {
+          user: workspaceCredentials?.credentials.networkUser,
+          pass: workspaceCredentials?.credentials.networkPass,
+        }
+      : undefined;
     const moreOptions = {
       credentials: workspaceCredentialsForOptions ?? credentials,
       mnemonic,
@@ -298,7 +314,7 @@ export const downloadItemsAsZipThunk = createAsyncThunk<void, DownloadItemsAsZip
                 user: workspaceCredentials?.credentials.networkUser ?? credentials?.user ?? user.bridgeUser,
                 pass: workspaceCredentials?.credentials.networkPass ?? credentials?.pass ?? user.userId,
               },
-              mnemonic: mnemonic ?? user.mnemonic,
+              mnemonic: selectedWorkspace?.workspaceUser.key ?? mnemonic ?? user.mnemonic,
               options: {
                 abortController,
                 notifyProgress: (totalBytes, downloadedBytes) => {

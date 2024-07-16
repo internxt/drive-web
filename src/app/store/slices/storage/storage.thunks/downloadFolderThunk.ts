@@ -96,6 +96,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
                 pass: workspaceCredentials?.credentials.networkPass,
               },
               workspaceId: selectedWorkspace?.workspace.id,
+              mnemonic: selectedWorkspace.workspaceUser.key,
             }
           : undefined;
         await folderService.downloadFolderAsZip(

@@ -612,7 +612,7 @@ export const decryptMnemonic = async (encryptionKey: string): Promise<string | u
 
 export async function downloadSharedFiles({
   creds,
-  encryptionKey,
+  decryptedEncryptionKey,
   selectedItems,
   dispatch,
   token,
@@ -620,15 +620,14 @@ export async function downloadSharedFiles({
   teamId,
 }: {
   creds: { user: string; pass: string };
-  encryptionKey: string;
+  decryptedEncryptionKey: string;
   selectedItems: any[];
   dispatch: any;
   token?: string;
   workspaceId?: string;
   teamId?: string;
 }): Promise<void> {
-  const decryptedKey = await decryptMnemonic(encryptionKey);
-
+  const decryptedKey = decryptedEncryptionKey;
   if (selectedItems.length === 1 && !selectedItems[0].isFolder) {
     try {
       const sharingOptions = {
@@ -675,7 +674,7 @@ export async function downloadSharedFiles({
       downloadItemsAsZipThunk({
         items: selectedItems,
         credentials: creds,
-        mnemonic: decryptedKey as string,
+        mnemonic: decryptedKey,
         fileIterator: createFilesIterator,
         folderIterator: createFoldersIterator,
         areSharedItems: true,
