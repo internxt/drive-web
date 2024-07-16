@@ -54,6 +54,7 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
     // MOCKED
     setUsersToInvite([...usersToInvite, { name: email, email, lastname: '', avatar: null, id: email }]);
     setEmailAccent('');
+    setEmail('');
   };
 
   const onInviteUser = async () => {
@@ -71,7 +72,6 @@ const UserInviteDialog = ({ isOpen, onClose, processInvitation }: UserInviteDial
     if (keyPressed === ' ' || keyPressed === ',') {
       event.preventDefault();
       onAddUsers();
-      setEmail('');
     }
   };
 
