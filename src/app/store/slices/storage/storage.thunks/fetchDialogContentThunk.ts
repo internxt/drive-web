@@ -6,7 +6,7 @@ import { storageActions } from '..';
 import { RootState } from '../../..';
 import { SdkFactory } from '../../../../core/factory/sdk';
 import databaseService, { DatabaseCollection } from '../../../../database/services/database.service';
-import { DriveItemData } from '../../../../drive/types';
+import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
@@ -35,7 +35,11 @@ export const fetchDialogContentThunk = createAsyncThunk<void, string, { state: R
     }
 
     await responsePromise.then(async (response) => {
-      const folders = response.children.map((folder) => ({ ...folder, isFolder: true }));
+      const folders = response.children.map((folder) => ({
+        ...folder,
+        isFolder: true,
+        name: (folder as DriveFolderData).plainName,
+      }));
       const items = _.concat(folders as DriveItemData[], response.files as DriveItemData[]);
       dispatch(
         storageActions.setMoveDialogItems({

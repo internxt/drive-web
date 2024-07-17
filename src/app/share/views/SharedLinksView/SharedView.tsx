@@ -326,9 +326,9 @@ function SharedView({
     };
 
     try {
-      const mnemonic = await decryptMnemonic(
-        shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey,
-      );
+      const mnemonic =
+        selectedWorkspace?.workspaceUser.key ??
+        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
       handleOpemItemPreview(true, { ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
@@ -388,7 +388,8 @@ function SharedView({
         token,
       };
     } else {
-      const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
+      const mnemonicDecrypted =
+        selectedWorkspace?.workspaceUser.key ?? (ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null);
       if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
         ownerUserAuthenticationData = {
           bridgeUser: filesOwnerCredentials?.networkUser,

@@ -19,7 +19,7 @@ import errorService from '../../../../core/services/error.service';
 import workspacesService from '../../../../core/services/workspace.service';
 import { uploadFileWithManager } from '../../../../network/UploadManager';
 import DatabaseUploadRepository from '../../../../repositories/DatabaseUploadRepository';
-import shareService, { decryptMnemonic } from '../../../../share/services/share.service';
+import shareService from '../../../../share/services/share.service';
 import { planThunks } from '../../plan';
 import { uiActions } from '../../ui';
 import workspacesSelectors from '../../workspaces/workspaces.selectors';
@@ -166,11 +166,10 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
     let ownerUserAuthenticationData: any = null;
     const workspaceId = selectedWorkspace?.workspace?.id;
     if (workspaceId) {
-      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
       ownerUserAuthenticationData = {
         bridgeUser: workspaceCredentials?.credentials.networkUser,
         bridgePass: workspaceCredentials?.credentials.networkPass,
-        encryptionKey: decryptedMnemonic,
+        encryptionKey: selectedWorkspace?.workspaceUser?.key,
         bucketId: workspaceCredentials?.bucket,
         workspaceId: workspaceId,
         workspacesToken: workspaceCredentials?.tokenHeader,
@@ -360,11 +359,10 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
 
     let ownerUserAuthenticationDataForWorkspaces: any = null;
     if (workspaceId) {
-      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
       ownerUserAuthenticationDataForWorkspaces = {
         bridgeUser: workspaceCredentials?.credentials.networkUser,
         bridgePass: workspaceCredentials?.credentials.networkPass,
-        encryptionKey: decryptedMnemonic,
+        encryptionKey: selectedWorkspace?.workspaceUser?.key,
         bucketId: workspaceCredentials?.bucket,
         workspaceId: workspaceId,
         workspacesToken: workspaceCredentials?.tokenHeader,
@@ -450,11 +448,10 @@ export const uploadItemsParallelThunk = createAsyncThunk<void, UploadItemsPayloa
     let ownerUserAuthenticationData: any = null;
     const workspaceId = selectedWorkspace?.workspace?.id;
     if (workspaceId) {
-      const decryptedMnemonic = await decryptMnemonic(selectedWorkspace?.workspaceUser?.key);
       ownerUserAuthenticationData = {
         bridgeUser: workspaceCredentials?.credentials.networkUser,
         bridgePass: workspaceCredentials?.credentials.networkPass,
-        encryptionKey: decryptedMnemonic,
+        encryptionKey: selectedWorkspace?.workspaceUser?.key,
         bucketId: workspaceCredentials?.bucket,
         workspaceId: workspaceId,
         workspacesToken: workspaceCredentials?.tokenHeader,

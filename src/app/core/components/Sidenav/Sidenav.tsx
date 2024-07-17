@@ -1,5 +1,5 @@
 import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import desktopService from 'app/core/services/desktop.service';
@@ -17,6 +17,8 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppSelector } from 'app/store/hooks';
 
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import envService from '../../services/env.service';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 
 interface SidenavProps {
@@ -31,6 +33,7 @@ interface SidenavProps {
 const Sidenav = (props: SidenavProps) => {
   const { user } = props;
   const { translate } = useTranslationContext();
+  const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -67,18 +70,22 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          {user && <WorkspaceSelectorContainer user={user} />}
+          {!envService.isProduction() && user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
-          <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
+          {!isB2BWorskpace && (
+            <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
+          )}
           <SidenavItem
             label={translate('sideNav.shared')}
             to="/shared"
             Icon={Users}
             notifications={pendingInvitations.length}
           />
-          <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />
+          {!isB2BWorskpace && <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />}
           <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
-          <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          {!isB2BWorskpace && (
+            <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          )}
         </div>
         {subscription && subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 

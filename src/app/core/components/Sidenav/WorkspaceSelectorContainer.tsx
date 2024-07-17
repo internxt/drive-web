@@ -1,15 +1,14 @@
-import { useEffect, useState } from 'react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import { PendingWorkspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { PendingInvitesResponse, PendingWorkspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { planThunks } from 'app/store/slices/plan';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import PendingInvitationsDialog from '../../../core/components/Sidenav/PendingInvitationsDialog';
+import errorService from '../../../core/services/error.service';
+import workspacesService from '../../../core/services/workspace.service';
 import { RootState } from '../../../store';
 import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
-import workspacesService from '../../../core/services/workspace.service';
-import errorService from '../../../core/services/error.service';
-import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
-import PendingInvitationsDialog from '../../../core/components/Sidenav/PendingInvitationsDialog';
-import { planThunks } from 'app/store/slices/plan';
 
 const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
   const dispatch = useDispatch();

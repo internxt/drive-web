@@ -454,7 +454,7 @@ const contextMenuWorkspaceFolder = ({
 }: {
   shareLink: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;
-  shareWithTeam: (item: DriveItemData) => void;
+  shareWithTeam: (item: DriveItemData) => Promise<void>;
   showDetails: (item: DriveItemData) => void;
   renameItem: (item: DriveItemData) => void;
   moveItem: (item: DriveItemData) => void;
@@ -485,7 +485,7 @@ const contextMenuWorkspaceFile = ({
   moveToTrash,
 }: {
   shareLink: (item: DriveItemData) => void;
-  shareWithTeam: (item: DriveItemData) => void;
+  shareWithTeam: (item: DriveItemData) => Promise<void>;
   openPreview?: (item: DriveItemData) => void;
   showDetails: (item: DriveItemData) => void;
   getLink: (item: DriveItemData) => void;

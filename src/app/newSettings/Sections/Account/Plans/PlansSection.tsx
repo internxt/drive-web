@@ -4,9 +4,11 @@ import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
+import envService from '../../../../core/services/env.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { bytesToString } from '../../../../drive/services/size.service';
+import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
 import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import moneyService from '../../../../payment/services/money.service';
@@ -32,7 +34,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const dispatch = useAppDispatch();
   const FREE_PLAN_DATA = {
     amount: 0,
-    bytes: 2147483648,
+    bytes: FreeStoragePlan.storageLimit,
     id: 'free',
     currency: translate('preferences.account.plans.freeForever'),
     interval: 'month',
@@ -63,7 +65,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const currentChangePlanType = getCurrentChangePlanType({
     priceSelected,
     currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
-    currentPlan: isIndividualSubscriptionSelected ? plan.individualPlan : plan.businessPlan,
+    planLimit: plan.planLimit,
     isFreePriceSelected: priceSelected?.id === 'free',
   });
 
@@ -320,19 +322,20 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       )}
       <div className="flex flex-col">
         <div className="mb-2 flex justify-center">
-          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-            <IntervalSwitch
-              active={isIndividualSubscriptionSelected}
-              text={translate('general.workspaces.personal')}
-              onClick={() => handleSubscriptionInterval(UserType.Individual)}
-            />
-
-            <IntervalSwitch
-              active={!isIndividualSubscriptionSelected}
-              text={translate('general.workspaces.business')}
-              onClick={() => handleSubscriptionInterval(UserType.Business)}
-            />
-          </div>
+          {!envService.isProduction() && (
+            <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
+              <IntervalSwitch
+                active={isIndividualSubscriptionSelected}
+                text={translate('general.workspaces.personal')}
+                onClick={() => handleSubscriptionInterval(UserType.Individual)}
+              />
+              <IntervalSwitch
+                active={!isIndividualSubscriptionSelected}
+                text={translate('general.workspaces.business')}
+                onClick={() => handleSubscriptionInterval(UserType.Business)}
+              />
+            </div>
+          )}
         </div>
         <div className="flex justify-center">
           <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
@@ -355,7 +358,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         </div>
       </div>
       <div className="flex flex-row space-x-6">
-        <div className="flex flex-1 flex-col items-center items-stretch space-y-2.5">
+        <div className="flex flex-1 flex-col items-stretch space-y-2.5">
           {isIndividualSubscriptionSelected && individualPrices && (
             <PlanSelectionCard
               key={FREE_PLAN_DATA.id}
@@ -426,6 +429,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           />
         )}
       </div>
+
       <CancelSubscriptionModal
         isOpen={isCancelSubscriptionModalOpen}
         onClose={() => {
