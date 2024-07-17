@@ -1,14 +1,14 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-import { RootState } from '../..';
+import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { GetMemberUsageResponse } from '@internxt/sdk/dist/workspaces';
+import workspacesService from 'app/core/services/workspace.service';
 import limitService from 'app/drive/services/limit.service';
 import usageService from 'app/drive/services/usage.service';
-import { sessionSelectors } from '../session/session.selectors';
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
-import { StoragePlan, UserSubscription, UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { RootState } from '../..';
 import paymentService from '../../../payment/services/payment.service';
-import { GetMemberDetailsResponse } from '@internxt/sdk/dist/workspaces';
-import workspacesService from 'app/core/services/workspace.service';
+import { sessionSelectors } from '../session/session.selectors';
 
 export interface PlanState {
   isLoadingPlans: boolean;
@@ -103,25 +103,24 @@ export const fetchSubscriptionThunk = createAsyncThunk<
   }
 });
 
-export const fetchBusinessLimitUsageThunk = createAsyncThunk<
-  GetMemberDetailsResponse | null,
-  void,
-  { state: RootState }
->('plan/fetchBusinessLimitUsage', async (payload: void, { getState }) => {
-  const isAuthenticated = getState().user.isAuthenticated;
-  const userUuid = getState().user.user?.uuid;
+export const fetchBusinessLimitUsageThunk = createAsyncThunk<GetMemberUsageResponse | null, void, { state: RootState }>(
+  'plan/fetchBusinessLimitUsage',
+  async (payload: void, { getState }) => {
+    const isAuthenticated = getState().user.isAuthenticated;
+    const userUuid = getState().user.user?.uuid;
 
-  if (isAuthenticated) {
-    const { selectedWorkspace } = getState().workspaces;
+    if (isAuthenticated) {
+      const { selectedWorkspace } = getState().workspaces;
 
-    if (selectedWorkspace) {
-      const workspaceId = selectedWorkspace?.workspace.id;
-      if (workspaceId && userUuid) return workspacesService.getMemberDetails(workspaceId, userUuid);
+      if (selectedWorkspace) {
+        const workspaceId = selectedWorkspace?.workspace.id;
+        if (workspaceId && userUuid) return workspacesService.getUsage(workspaceId);
+      }
     }
-  }
 
-  return null;
-});
+    return null;
+  },
+);
 
 export const planSlice = createSlice({
   name: 'plan',
@@ -194,9 +193,9 @@ export const planSlice = createSlice({
     builder
       .addCase(fetchBusinessLimitUsageThunk.pending, () => undefined)
       .addCase(fetchBusinessLimitUsageThunk.fulfilled, (state, action) => {
-        const spaceLimit = Number(action.payload?.user.spaceLimit) || 0;
-        const driveUsage = Number(action.payload?.user.driveUsage) || 0;
-        const backupsUsage = Number(action.payload?.user.backupsUsage) || 0;
+        const spaceLimit = Number(action.payload?.spaceLimit) || 0;
+        const driveUsage = Number(action.payload?.driveUsage) || 0;
+        const backupsUsage = Number(action.payload?.backupsUsage) || 0;
 
         state.businessPlanLimit = spaceLimit;
         state.businessPlanUsage = driveUsage + backupsUsage;
