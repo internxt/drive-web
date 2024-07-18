@@ -1,10 +1,10 @@
 import { DisplayPrice, RenewalPeriod, StoragePlan, UserSubscription } from '@internxt/sdk/dist/drive/payments/types';
+import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
+import { bytesToString } from 'app/drive/services/size.service';
 import { t } from 'i18next';
 import { FreeStoragePlan } from '../../../../../drive/types';
 import moneyService from '../../../../../payment/services/money.service';
 import { ChangePlanType } from '../components/PlanCard';
-import { UsageResponse } from '@internxt/sdk/dist/drive/storage/types';
-import { bytesToString } from 'app/drive/services/size.service';
 
 function displayAmount(value: number, decimalPoints = 2) {
   return (value / 100).toFixed(decimalPoints);
@@ -13,18 +13,18 @@ function displayAmount(value: number, decimalPoints = 2) {
 const getCurrentChangePlanType = ({
   priceSelected,
   currentUserSubscription,
-  currentPlan,
+  planLimit,
   isFreePriceSelected,
 }: {
   priceSelected: DisplayPrice;
   currentUserSubscription: UserSubscription | null;
-  currentPlan: StoragePlan | null;
+  planLimit: number | null;
   isFreePriceSelected: boolean;
 }): ChangePlanType => {
   const isIntervalSelected =
     priceSelected?.interval === 'month' || priceSelected?.interval === 'year' || priceSelected?.interval === 'lifetime';
 
-  const currentStorage = currentPlan?.storageLimit ? parseInt(currentPlan.storageLimit.toString()) : 0;
+  const currentStorage = planLimit ?? 0;
   const selectedPlanStorage = priceSelected?.bytes;
 
   if (currentUserSubscription?.type === 'free' && isFreePriceSelected) {

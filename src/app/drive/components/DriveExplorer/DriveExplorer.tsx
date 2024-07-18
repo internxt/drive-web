@@ -19,6 +19,7 @@ import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 
+import { Role } from '@internxt/sdk/dist/drive/share/types';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
@@ -112,6 +113,7 @@ interface DriveExplorerProps {
     root: boolean,
     folderId?: number | undefined,
   ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
+  roles: Role[];
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -136,6 +138,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     hasMoreFiles,
     user,
     getTrashPaginated,
+    roles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -770,6 +773,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
               driveActionsRef={divRef}
+              roles={roles}
             />
           </div>
           {isTrash && (
@@ -1080,5 +1084,6 @@ export default connect((state: RootState) => {
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

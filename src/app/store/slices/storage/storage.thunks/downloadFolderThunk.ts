@@ -88,6 +88,17 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
       if (isFirefox) {
         await downloadFolderUsingBlobs({ folder, updateProgressCallback, isWorkspace: !!selectedWorkspace });
       } else {
+        const existSelectedWorkspace = !!selectedWorkspace;
+        const credentials = existSelectedWorkspace
+          ? {
+              credentials: {
+                user: workspaceCredentials?.credentials.networkUser,
+                pass: workspaceCredentials?.credentials.networkPass,
+              },
+              workspaceId: selectedWorkspace?.workspace.id,
+              mnemonic: selectedWorkspace.workspaceUser.key,
+            }
+          : undefined;
         await folderService.downloadFolderAsZip(
           folder.id,
           folder.name,
@@ -98,11 +109,7 @@ export const downloadFolderThunk = createAsyncThunk<void, DownloadFolderThunkPay
             updateProgressCallback(progress);
           },
           {
-            credentials: {
-              user: workspaceCredentials?.credentials.networkUser,
-              pass: workspaceCredentials?.credentials.networkPass,
-            },
-            workspaceId: selectedWorkspace?.workspace.id,
+            ...credentials,
           },
         );
       }

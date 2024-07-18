@@ -2,6 +2,7 @@ import { useSelector } from 'react-redux';
 import navigationService from '../../core/services/navigation.service';
 import { useTranslationContext } from '../../i18n/provider/TranslationProvider';
 import { RootState } from '../../store';
+import workspacesSelectors from '../../store/slices/workspaces/workspaces.selectors';
 import SectionList from '../components/SectionList';
 
 export interface NavSection {
@@ -45,6 +46,7 @@ export const sectionItems = [
     subsection: 'billing',
     isSubsection: true,
     notificationsNumber: 0,
+    onlyOwner: true,
   },
   { section: 'account', isSection: true, notificationsNumber: 0 },
   {
@@ -76,6 +78,7 @@ export const sectionItems = [
 const SectionListContainer = ({ activeSection, changeSection }) => {
   const { translate } = useTranslationContext();
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const isOwner = useSelector(workspacesSelectors.isWorkspaceOwner);
 
   const goSection = ({ section, subsection }: { section?: string; subsection?: string }) => {
     if (section && subsection) {
@@ -92,6 +95,10 @@ const SectionListContainer = ({ activeSection, changeSection }) => {
     if (sectionItem.section === 'workspace' && !selectedWorkspace) {
       return false;
     }
+    if (sectionItem.onlyOwner && !isOwner) {
+      return false;
+    }
+
     return true;
   });
 

@@ -1,4 +1,4 @@
-import { PendingWorkspace, WorkspaceCredentialsDetails, Workspace, WorkspaceData } from '@internxt/sdk/dist/workspaces';
+import { PendingWorkspace, Workspace, WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '../..';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
@@ -6,14 +6,15 @@ import navigationService from '../../../core/services/navigation.service';
 import workspacesService from '../../../core/services/workspace.service';
 import { AppView } from '../../../core/types';
 import { encryptMessageWithPublicKey } from '../../../crypto/services/pgp.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { planThunks } from '../plan';
-import sessionThunks from '../session/session.thunks';
-import workspacesSelectors from './workspaces.selectors';
 import {
   deleteWorkspaceAvatarFromDatabase,
   saveWorkspaceAvatarToDatabase,
 } from '../../../newSettings/Sections/Workspace/Overview/components/WorkspaceAvatarWrapper';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { decryptMnemonic } from '../../../share/services/share.service';
+import { planThunks } from '../plan';
+import sessionThunks from '../session/session.thunks';
+import workspacesSelectors from './workspaces.selectors';
 
 export interface PersonalWorkspace {
   uuid: string;
@@ -40,6 +41,20 @@ const initialState: WorkspacesState = {
   isLoadingWorkspaces: false,
 };
 
+const decryptWorkspacesMnemonic = async (workspaces: WorkspaceData[]): Promise<WorkspaceData[]> => {
+  return await Promise.all(
+    workspaces.map(async (workspace) => {
+      return {
+        ...workspace,
+        workspaceUser: {
+          ...workspace.workspaceUser,
+          key: await decryptMnemonic(workspace.workspaceUser.key),
+        },
+      } as WorkspaceData;
+    }),
+  );
+};
+
 const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
   'workspaces/updateWorkspaces',
   async (_, { dispatch, getState }) => {
@@ -48,8 +63,8 @@ const fetchWorkspaces = createAsyncThunk<void, undefined, { state: RootState }>(
 
     if (isUserLogged) {
       const workspaces = await workspacesService.getWorkspaces();
-
-      dispatch(workspacesActions.setWorkspaces([...workspaces.availableWorkspaces]));
+      const workspacesWithDecryptedMnemonic = await decryptWorkspacesMnemonic(workspaces.availableWorkspaces);
+      dispatch(workspacesActions.setWorkspaces(workspacesWithDecryptedMnemonic));
       dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
       dispatch(planThunks.initializeThunk());
     }
@@ -153,7 +168,14 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
       dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
       if (selectedWorkspace) {
-        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+        const selectedWorkspaceWithDecryptedMnemonic = {
+          ...selectedWorkspace,
+          workspaceUser: {
+            ...selectedWorkspace.workspaceUser,
+            key: await decryptMnemonic(selectedWorkspace.workspaceUser.key),
+          },
+        } as WorkspaceData;
+        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspaceWithDecryptedMnemonic));
         dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }
     } catch (error) {

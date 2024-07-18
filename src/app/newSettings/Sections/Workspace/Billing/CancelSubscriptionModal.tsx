@@ -1,16 +1,16 @@
-import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { ArrowRight } from '@phosphor-icons/react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import analyticsService from '../../../../analytics/services/analytics.service';
+import sizeService from '../../../../drive/services/size.service';
+import { FreeStoragePlan } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
+import paymentService from '../../../../payment/services/payment.service';
 import Button from '../../../../shared/components/Button/Button';
 import Modal from '../../../../shared/components/Modal';
-import { FreeStoragePlan } from '../../../../drive/types';
-import sizeService from '../../../../drive/services/size.service';
-import paymentService from '../../../../payment/services/payment.service';
-import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import { useAppDispatch } from '../../../../store/hooks';
 import { planThunks } from '../../../../store/slices/plan';
-import analyticsService from '../../../../analytics/services/analytics.service';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 const CancelSubscriptionModal = ({
   isOpen,
@@ -38,7 +38,7 @@ const CancelSubscriptionModal = ({
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    if (userType === UserType.Individual)
+    if (userType === UserType.Individual && isOpen)
       paymentService
         .requestPreventCancellation()
         .then((response) => {
@@ -51,10 +51,10 @@ const CancelSubscriptionModal = ({
             type: ToastType.Error,
           });
         });
-  }, []);
+  }, [isOpen]);
 
   useEffect(() => {
-    if (couponAvailable) {
+    if (couponAvailable && isOpen) {
       setStep(1);
       analyticsService.page('Cancelation incentive');
     }

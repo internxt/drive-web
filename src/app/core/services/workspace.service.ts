@@ -11,17 +11,18 @@ import {
   CreateTeamData,
   CreateWorkspaceSharingPayload,
   FileEntry,
+  GetMemberDetailsResponse,
+  GetMemberUsageResponse,
   InviteMemberBody,
   ListWorkspaceSharedItemsResponse,
   OrderByOptions,
+  PendingInvitesResponse,
   WorkspaceCredentialsDetails,
   WorkspaceMembers,
+  WorkspacePendingInvitations,
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
-  WorkspacePendingInvitations,
-  PendingInvitesResponse,
-  GetMemberDetailsResponse,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -346,6 +347,13 @@ export function deactivateMember(workspaceId: string, memberId: string): Promise
   });
 }
 
+export function getUsage(workspaceId: string): Promise<GetMemberUsageResponse> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getMemberUsage(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -383,6 +391,7 @@ const workspacesService = {
   getWorkspaceFolders,
   getWorkspaceFiles,
   deactivateMember,
+  getUsage,
 };
 
 export default workspacesService;

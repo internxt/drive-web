@@ -1,3 +1,4 @@
+import { Role } from '@internxt/sdk/dist/drive/share/types';
 import {
   ClockCounterClockwise,
   DotsThreeVertical,
@@ -9,11 +10,13 @@ import {
   Users,
 } from '@phosphor-icons/react';
 import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import { useSelector } from 'react-redux';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { DriveItemData, DriveItemDetails, FileViewMode } from '../../../../drive/types';
 import { useTranslationContext } from '../../../../i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../../notifications/services/notifications.service';
 import shareService from '../../../../share/services/share.service';
 import Button from '../../../../shared/components/Button/Button';
 import Dropdown from '../../../../shared/components/Dropdown';
@@ -28,8 +31,11 @@ import {
   contextMenuDriveFolderShared,
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
+  contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
+import { shareItemWithTeam } from '../utils';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -39,6 +45,7 @@ const DriveTopBarActions = ({
   isTrash,
   hasItems,
   driveActionsRef,
+  roles,
 }: {
   selectedItems: DriveItemData[];
   currentFolderId: string;
@@ -47,12 +54,14 @@ const DriveTopBarActions = ({
   isTrash: boolean;
   hasItems: boolean;
   driveActionsRef?: React.MutableRefObject<HTMLDivElement | null>;
+  roles: Role[];
 }) => {
   const dispatch = useAppDispatch();
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspaceSelected = !!selectedWorkspace;
 
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
-  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const viewMode = useAppSelector((state) => state.storage.viewMode);
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
@@ -164,7 +173,57 @@ const DriveTopBarActions = ({
     }
   };
 
+  const shareWithTeam = async (driveItem: DriveItemData) => {
+    const editorRole = roles.find((role) => role.name === 'EDITOR');
+    if (selectedWorkspace && editorRole) {
+      const isSharedSuccessfully = await shareItemWithTeam(driveItem, selectedWorkspace, editorRole);
+      if (isSharedSuccessfully) {
+        notificationsService.show({
+          text: translate('workspaces.messages.sharedSuccess'),
+          type: ToastType.Success,
+        });
+        return;
+      }
+    }
+
+    notificationsService.show({
+      text: translate('modals.shareModal.errors.copy-to-clipboard'),
+      type: ToastType.Error,
+    });
+  };
+
+  const workspaceItemMenu = contextMenuWorkspaceFile({
+    shareLink: onOpenShareSettingsButtonClicked,
+    shareWithTeam,
+    openPreview: onOpenPreviewButtonClicked,
+    showDetails: onShowDetailsButtonClicked,
+    getLink: onSelectedOneItemShare,
+    renameItem: onSelectedOneItemRename,
+    moveItem: onMoveItemButtonClicked,
+    downloadItem: onDownloadButtonClicked,
+    moveToTrash: onBulkDeleteButtonClicked,
+  });
+
+  const workspaceFolderMenu = contextMenuWorkspaceFolder({
+    shareLink: onOpenShareSettingsButtonClicked,
+    shareWithTeam,
+    showDetails: onShowDetailsButtonClicked,
+    getLink: onSelectedOneItemShare,
+    renameItem: onSelectedOneItemRename,
+    moveItem: onMoveItemButtonClicked,
+    downloadItem: onDownloadButtonClicked,
+    moveToTrash: onBulkDeleteButtonClicked,
+  });
+
   const dropdownActions = () => {
+    if (isWorkspaceSelected) {
+      if (selectedItems[0].isFolder) {
+        return workspaceFolderMenu;
+      } else {
+        return workspaceItemMenu;
+      }
+    }
+
     if (selectedItems[0].sharings && selectedItems[0].sharings?.length > 0) {
       return selectedItems[0].isFolder
         ? contextMenuDriveFolderShared({

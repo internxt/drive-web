@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
+import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
@@ -39,7 +40,6 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-import { Portal } from '@headlessui/react';
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
@@ -115,7 +115,9 @@ const App = (props: AppProps): JSX.Element => {
 
       RealtimeService.getInstance().init();
       // TODO: CHANGE BY WORKSPACE INITIALIZATOR
-      dispatch(workspaceThunks.fetchWorkspaces());
+      if (!envService.isProduction()) {
+        dispatch(workspaceThunks.fetchWorkspaces());
+      }
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,

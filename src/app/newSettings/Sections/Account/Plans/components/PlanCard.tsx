@@ -14,6 +14,7 @@ interface PlanCardProps {
   changePlanType: ChangePlanType;
   isCurrentPlan?: boolean;
   isLoading: boolean;
+  disableActionButton: boolean;
 }
 
 const PlanCard = ({
@@ -25,6 +26,7 @@ const PlanCard = ({
   changePlanType,
   isCurrentPlan,
   isLoading,
+  disableActionButton,
 }: PlanCardProps) => {
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
@@ -41,7 +43,12 @@ const PlanCard = ({
             {billing && '/' + billing}
           </span>
         </div>
-        <ChangePlanButton type={changePlanType} onClick={onClick} isLoading={isLoading} />
+        <ChangePlanButton
+          type={changePlanType}
+          onClick={onClick}
+          isLoading={isLoading}
+          disabled={disableActionButton}
+        />
       </div>
       <Divider />
       <PlanDetailsList planSpace={capacity} />
@@ -118,25 +125,25 @@ const PlanDetailsList = ({ planSpace }) => {
   );
 };
 
-const ChangePlanButton = ({ type, onClick, isLoading }) => {
+const ChangePlanButton = ({ type, onClick, isLoading, disabled }) => {
   const changeButtonTypes = {
     upgrade: (
-      <Button onClick={onClick} variant="primary" loading={isLoading}>
+      <Button onClick={onClick} variant="primary" loading={isLoading} disabled={disabled}>
         {t('preferences.account.plans.upgrade')}
       </Button>
     ),
     downgrade: (
-      <Button onClick={onClick} variant="secondary" loading={isLoading}>
+      <Button onClick={onClick} variant="secondary" loading={isLoading} disabled={disabled}>
         {t('preferences.account.plans.downgrade')}
       </Button>
     ),
     free: (
-      <button onClick={onClick} className="text-left text-lg font-medium leading-5 text-primary">
+      <button onClick={onClick} className="text-left text-lg font-medium leading-5 text-primary" disabled={disabled}>
         {t('preferences.account.plans.free')}
       </button>
     ),
     manageBilling: (
-      <Button onClick={onClick} variant="secondary">
+      <Button onClick={onClick} variant="secondary" disabled={disabled}>
         {t('preferences.account.plans.manageBilling')}
       </Button>
     ),

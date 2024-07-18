@@ -42,9 +42,9 @@ const SharedItemListContainer = ({
   onOpenItemPreview,
 }: ShareItemListContainerProps) => {
   const dispatch = useDispatch();
-  const selectedWorskpace = useSelector(workspacesSelectors.getSelectedWorkspace);
-  const workspaceId = selectedWorskpace?.workspace.id;
-  const defaultTeamId = selectedWorskpace?.workspace.defaultTeamId;
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
   const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
   const { state, actionDispatch } = useShareViewContext();
 
@@ -94,6 +94,7 @@ const SharedItemListContainer = ({
   const downloadItem = async (shareItem: AdvancedSharedItem): Promise<void> => {
     try {
       if (shareItem.isRootLink) {
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(shareItem.encryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -101,7 +102,7 @@ const SharedItemListContainer = ({
           },
           dispatch,
           selectedItems,
-          encryptionKey: shareItem.encryptionKey,
+          decryptedEncryptionKey: encryptionKey as string,
           token: undefined,
           workspaceId,
           teamId: defaultTeamId,
@@ -122,7 +123,7 @@ const SharedItemListContainer = ({
           );
           sharedToken = token;
         }
-
+        const encryptionKey = selectedWorkspace?.workspaceUser?.key ?? (await decryptMnemonic(sharedItemEncryptionKey));
         await shareService.downloadSharedFiles({
           creds: {
             user: shareItem.credentials.networkUser,
@@ -130,7 +131,7 @@ const SharedItemListContainer = ({
           },
           dispatch,
           selectedItems,
-          encryptionKey: sharedItemEncryptionKey,
+          decryptedEncryptionKey: encryptionKey as string,
           token: sharedToken,
           workspaceId,
           teamId: defaultTeamId,
@@ -162,9 +163,9 @@ const SharedItemListContainer = ({
     };
 
     try {
-      const mnemonic = await decryptMnemonic(
-        shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey,
-      );
+      const mnemonic =
+        selectedWorkspace?.workspaceUser.key ??
+        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : sharedItemEncryptionKey));
       onOpenItemPreview({ ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
