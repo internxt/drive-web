@@ -128,7 +128,9 @@ export default function BackupsAsFoldersList({
             isLoading={isLoading}
             itemComposition={[
               (item) => {
-                const displayName = item.type ? `${item.name}.${item.type}` : item.name;
+                const displayName = item.type
+                  ? `${item.plainName ?? item.name}.${item.type}`
+                  : item.plainName ?? item.name;
                 const Icon = iconService.getItemIcon(item.isFolder, item.type);
 
                 return (
