@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from '../../../../../store/hooks';
 import { storageActions } from '../../../../../store/slices/storage';
 import storageThunks from '../../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../../store/slices/ui';
-import workspacesSelectors from '../../../../../store/slices/workspaces/workspaces.selectors';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 export interface DriveItemActions {
   nameInputRef: React.RefObject<HTMLInputElement>;
@@ -37,7 +37,8 @@ export interface DriveItemActions {
 const useDriveItemActions = (item): DriveItemActions => {
   const dispatch = useAppDispatch();
   const nameInputRef = useMemo(() => createRef<HTMLInputElement>(), []);
-  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+  const isWorkspace = !!selectedWorkspace;
 
   const onRenameItemButtonClicked = () => {
     dispatch(storageActions.setItemToRename(item as DriveItemData));
@@ -60,7 +61,7 @@ const useDriveItemActions = (item): DriveItemActions => {
   };
 
   const onOpenPreviewButtonClicked = () => {
-    navigationService.pushFile(item.uuid);
+    navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
   const onGetLinkButtonClicked = () => {
@@ -111,13 +112,13 @@ const useDriveItemActions = (item): DriveItemActions => {
 
     if (item.isFolder) {
       dispatch(storageActions.setForceLoading(true));
-      navigationService.pushFolder(item.uuid);
+      navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     } else {
       if (isRecentsView) {
         dispatch(uiActions.setIsFileViewerOpen(true));
         dispatch(uiActions.setFileViewerItem(item));
       } else {
-        navigationService.pushFile(item.uuid);
+        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }
     }
   };

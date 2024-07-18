@@ -91,7 +91,11 @@ export default function AccountPopover({
           <div
             className="cursor-pointer text-sm font-medium text-primary no-underline"
             onClick={() => {
-              navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
+              navigationService.openPreferencesDialog({
+                section: 'account',
+                subsection: 'billing',
+                workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+              });
               dispatch(uiActions.setIsPreferencesDialogOpen(true));
             }}
           >
@@ -107,7 +111,11 @@ export default function AccountPopover({
       <div
         className="flex cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
         onClick={() => {
-          navigationService.openPreferencesDialog({ section: 'general', subsection: 'general' });
+          navigationService.openPreferencesDialog({
+            section: 'general',
+            subsection: 'general',
+            workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+          });
           dispatch(uiActions.setIsPreferencesDialogOpen(true));
         }}
       >

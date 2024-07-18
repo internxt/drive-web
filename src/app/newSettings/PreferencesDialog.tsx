@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useSelector } from 'react-redux';
+import { RootState } from 'app/store';
 
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -25,6 +27,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
   const { haveParamsChanged, isPreferencesDialogOpen } = props;
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
   const params = new URLSearchParams(window.location.search);
   const currentSectionParams = params.getAll('section');
@@ -54,7 +57,7 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
 
   const onClosePreferences = () => {
     dispatch(uiActions.setIsPreferencesDialogOpen(false));
-    navigationService.closePreferencesDialog();
+    navigationService.closePreferencesDialog({ workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId });
   };
 
   return (

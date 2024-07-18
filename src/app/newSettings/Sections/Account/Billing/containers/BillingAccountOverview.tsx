@@ -1,5 +1,8 @@
 import { t } from 'i18next';
 
+import { RootState } from 'app/store';
+import { useSelector } from 'react-redux';
+
 import localStorageService from 'app/core/services/local-storage.service';
 import navigationService from 'app/core/services/navigation.service';
 import { bytesToString } from '../../../../../drive/services/size.service';
@@ -24,6 +27,7 @@ const BillingAccountOverview = ({ plan, changeSection }: BillingAccountOverviewP
   const subscriptionData: { amountInterval: string; interval: 'monthly' | 'yearly'; renewDate: string } | undefined =
     getSubscriptionData({ userSubscription: plan.individualSubscription, plan, local });
   const nextBillingDate = getNextBillingDate(plan.individualSubscription);
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
   return (
     <section className="flex flex-row">
@@ -68,7 +72,11 @@ const BillingAccountOverview = ({ plan, changeSection }: BillingAccountOverviewP
               <Button
                 variant="primary"
                 onClick={() => {
-                  navigationService.openPreferencesDialog({ section: 'account', subsection: 'plans' });
+                  navigationService.openPreferencesDialog({
+                    section: 'account',
+                    subsection: 'plans',
+                    workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+                  });
                   changeSection({ section: 'account', subsection: 'plans' });
                 }}
               >

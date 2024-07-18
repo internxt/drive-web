@@ -29,6 +29,7 @@ import {
   contextMenuDriveItemShared,
   contextMenuDriveNotSharedLink,
 } from '../DriveExplorerList/DriveItemContextMenu';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const DriveTopBarActions = ({
   selectedItems,
@@ -51,6 +52,7 @@ const DriveTopBarActions = ({
 
   const { translate } = useTranslationContext();
   const { dirtyName } = useDriveItemStoreProps();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const viewMode = useAppSelector((state) => state.storage.viewMode);
   const separatorV = <div className="mx-3 my-2 border-r border-gray-10" />;
@@ -145,7 +147,7 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    navigationService.pushFile(selectedItems[0].uuid);
+    navigationService.pushFile(selectedItems[0].uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
   const onRecoverButtonClicked = (): void => {

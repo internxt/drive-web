@@ -40,6 +40,8 @@ import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
 import { Portal } from '@headlessui/react';
+import { useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -77,6 +79,7 @@ const App = (props: AppProps): JSX.Element => {
   const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
     path: navigationService.history.location.pathname,
   });
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   useBeforeUnload();
 
@@ -113,7 +116,6 @@ const App = (props: AppProps): JSX.Element => {
       RealtimeService.getInstance().init();
       // TODO: CHANGE BY WORKSPACE INITIALIZATOR
       dispatch(workspaceThunks.fetchWorkspaces());
-      dispatch(workspaceThunks.checkAndSetLocalWorkspace());
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -154,7 +156,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
       navigationService.push(AppView.Drive);
     } else {
-      navigationService.pushFolder(fileViewerItem?.folderUuid);
+      navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
 
     dispatch(uiActions.setFileViewerItem(null));

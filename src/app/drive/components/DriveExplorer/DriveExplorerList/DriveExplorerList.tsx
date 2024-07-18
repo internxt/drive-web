@@ -222,7 +222,7 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
   const openPreview = useCallback(
     (item: ContextMenuDriveItem) => {
       const driveItem = item as DriveItemData;
-      navigationService.pushFile(driveItem.uuid);
+      navigationService.pushFile(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     },
     [dispatch, uiActions],
   );
@@ -523,9 +523,9 @@ const DriveExplorerList: React.FC<DriveExplorerListProps> = memo((props) => {
           onNextPage={onEndOfScroll}
           onEnterPressed={(driveItem) => {
             if (driveItem.isFolder) {
-              navigationService.pushFolder(driveItem.uuid);
+              navigationService.pushFolder(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
             } else {
-              navigationService.pushFile(driveItem.uuid);
+              navigationService.pushFile(driveItem.uuid, selectedWorkspace?.workspaceUser.workspaceId);
             }
           }}
           hasMoreItems={hasMoreItems}
