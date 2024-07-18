@@ -1,5 +1,6 @@
 import { DisplayPrice, UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -42,6 +43,9 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
+  const workspaces = useSelector<RootState, WorkspaceData[]>((state) => state.workspaces.workspaces);
+  const isUserOwningWorkspace = workspaces.some((workspace) => workspace.workspace.ownerId === user?.uuid);
+
   const { individualSubscription, businessSubscription } = plan;
   let stripe;
 
@@ -54,6 +58,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
   const [selectedSubscription, setSelectedSubscription] = useState<UserType>(UserType.Individual);
   const isIndividualSubscriptionSelected = selectedSubscription == UserType.Individual;
+  const isBussinessSubscriptionSelected = selectedSubscription == UserType.Business;
 
   const defaultInterval = plan.individualPlan?.renewalPeriod === 'monthly' ? 'month' : 'year';
   const [selectedInterval, setSelectedInterval] = useState<DisplayPrice['interval']>(defaultInterval);
@@ -258,8 +263,8 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       notificationsService.show({ text: translate('notificationMessages.successCancelSubscription') });
       setIsCancelSubscriptionModalOpen(false);
       trackCanceledSubscription({ feedback });
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      errorService.reportError(error);
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
@@ -349,11 +354,13 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
               text={translate('general.renewal.annually')}
               onClick={() => setSelectedInterval('year')}
             />
-            <IntervalSwitch
-              active={selectedInterval === 'lifetime'}
-              text={translate('general.renewal.lifetime')}
-              onClick={() => setSelectedInterval('lifetime')}
-            />
+            {isIndividualSubscriptionSelected && (
+              <IntervalSwitch
+                active={selectedInterval === 'lifetime'}
+                text={translate('general.renewal.lifetime')}
+                onClick={() => setSelectedInterval('lifetime')}
+              />
+            )}
           </div>
         </div>
       </div>
@@ -403,6 +410,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             billing={''}
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
+            disableActionButton={false}
           />
         ) : (
           <PlanCard
@@ -419,13 +427,13 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                 ? moneyService.getCurrencySymbol(priceSelected?.currency)
                 : translate('preferences.account.plans.freeForever')
             }
-            // TODO: CHECK AFTER MERGE IF NEED TO CHANGE THE DECIMALS DISPLAYED
             price={priceSelected ? displayAmount(priceSelected.amount) : '0'}
             billing={
               priceSelected ? translate(`preferences.account.plans.${priceSelected.interval}`).toLowerCase() : ''
             }
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
+            disableActionButton={isUserOwningWorkspace && isBussinessSubscriptionSelected}
           />
         )}
       </div>
