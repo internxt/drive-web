@@ -15,6 +15,7 @@ interface PlanCardProps {
   isCurrentPlan?: boolean;
   isLoading: boolean;
   disableActionButton: boolean;
+  isBusiness?: boolean;
 }
 
 const PlanCard = ({
@@ -27,7 +28,9 @@ const PlanCard = ({
   isCurrentPlan,
   isLoading,
   disableActionButton,
+  isBusiness = false,
 }: PlanCardProps) => {
+  const perUser = isBusiness ? '/user' : '';
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
@@ -40,7 +43,7 @@ const PlanCard = ({
           </div>
           <span className=" text-base font-normal leading-5 text-gray-60">
             {currency + price}
-            {billing && '/' + billing}
+            {billing && '/' + billing + perUser}
           </span>
         </div>
         <ChangePlanButton
@@ -136,11 +139,6 @@ const ChangePlanButton = ({ type, onClick, isLoading, disabled }) => {
       <Button onClick={onClick} variant="secondary" loading={isLoading} disabled={disabled}>
         {t('preferences.account.plans.downgrade')}
       </Button>
-    ),
-    free: (
-      <button onClick={onClick} className="text-left text-lg font-medium leading-5 text-primary" disabled={disabled}>
-        {t('preferences.account.plans.free')}
-      </button>
     ),
     manageBilling: (
       <Button onClick={onClick} variant="secondary" disabled={disabled}>

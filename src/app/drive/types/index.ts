@@ -141,8 +141,8 @@ export enum DownloadFolderMethod {
 }
 
 export enum FreeStoragePlan {
-  simpleName = '2GB',
-  storageLimit = 2147483648,
+  simpleName = '1GB',
+  storageLimit = 1073741824,
 }
 
 export type DriveItemDetails = (DriveItemData | AdvancedSharedItem) & {
