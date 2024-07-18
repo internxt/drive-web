@@ -9,6 +9,7 @@ import usageService from 'app/drive/services/usage.service';
 import { RootState } from '../..';
 import paymentService from '../../../payment/services/payment.service';
 import { sessionSelectors } from '../session/session.selectors';
+import { FreeStoragePlan } from 'app/drive/types';
 
 export interface PlanState {
   isLoadingPlans: boolean;
@@ -235,7 +236,7 @@ export const planSelectors = {
     const individualPlanLimit = state.plan.individualPlan ? state.plan.individualPlan.storageLimit : 0;
     const limit = isTeam
       ? state.plan.planLimit / (team?.total_members || 1)
-      : state.plan.planLimit || individualPlanLimit;
+      : state.plan.planLimit || individualPlanLimit || FreeStoragePlan.storageLimit;
 
     return limit;
   },

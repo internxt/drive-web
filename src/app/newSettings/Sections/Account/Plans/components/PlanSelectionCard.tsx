@@ -10,6 +10,7 @@ interface PlanSelectionCardProps {
   onClick: () => void;
   isCurrentPlan?: boolean;
   displayBillingSlash?: boolean;
+  isBusiness?: boolean;
 }
 
 const PlanSelectionCard = ({
@@ -21,13 +22,20 @@ const PlanSelectionCard = ({
   onClick,
   isCurrentPlan,
   displayBillingSlash,
+  isBusiness = false,
 }: PlanSelectionCardProps) => {
   const selectedValidation = (isSelected && isCurrentPlan) || isSelected;
   const isSelectedOutsideBorderStyle = selectedValidation ? 'border-transparent' : '';
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  const displayText = displayBillingSlash ? `${amount} ${currency}/${billing}` : `${amount} ${currency} ${billing}`;
+  let perUser = isBusiness ? '/user' : '';
+  if (isBusiness && !displayBillingSlash) {
+    perUser = ' user';
+  }
+  const displayText = displayBillingSlash
+    ? `${amount} ${currency}/${billing}${perUser}`
+    : `${amount} ${currency} ${billing}${perUser}`;
   return (
     <div
       className={`rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
