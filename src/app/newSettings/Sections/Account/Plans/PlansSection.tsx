@@ -70,7 +70,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
   const currentChangePlanType = getCurrentChangePlanType({
     priceSelected,
     currentUserSubscription: isIndividualSubscriptionSelected ? individualSubscription : businessSubscription,
-    planLimit: plan.planLimit,
+    planLimit: isIndividualSubscriptionSelected ? plan.planLimit : plan.businessPlanLimit,
     isFreePriceSelected: priceSelected?.id === 'free',
   });
 

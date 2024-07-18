@@ -5,31 +5,25 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { PlanState, planThunks } from 'app/store/slices/plan';
 
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Section from 'app/newSettings/components/Section';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import paymentService from 'app/payment/services/payment.service';
+import { useAppDispatch } from 'app/store/hooks';
+import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import { BillingDetails } from '../../../types/types';
+import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
+import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
-import CancelSubscription from '../../Account/Billing/components/CancelSubscription';
-import paymentService from 'app/payment/services/payment.service';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { trackCanceledSubscription } from 'app/analytics/services/analytics.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import navigationService from 'app/core/services/navigation.service';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
-import { useAppDispatch } from 'app/store/hooks';
 
-// MOCKED DATA
-const address = 'La Marina de Valencia, Muelle de la Aduana s/n, La Marina de Valencia, Muelle de la Aduana s/n, Spain';
-const addressOptional = '';
-const postalCode = '46024';
-const region = 'Valencia';
-const city = 'Valencia';
-const country = 'Spain';
+// TODO: ADD REAL DATA WHEN BACKEND IS READY
+const address = 'La Marina de Valencia, Muelle de la Aduana s/n';
 const phone = '+34432445236';
 const owner = 'Fran Villalba Segarra';
 const isOwner = true;
@@ -39,7 +33,7 @@ interface BillingWorkspaceSectionProps {
   onClosePreferences: () => void;
 }
 
-const BillingWorkspaceSection = ({ onClosePreferences, changeSection }: BillingWorkspaceSectionProps) => {
+const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSectionProps) => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
@@ -54,11 +48,6 @@ const BillingWorkspaceSection = ({ onClosePreferences, changeSection }: BillingW
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [billingDetails, setBillingDetails] = useState<BillingDetails>({
     address,
-    addressOptional,
-    country,
-    city,
-    region,
-    postalCode,
     phone,
   });
 

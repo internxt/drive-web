@@ -20,13 +20,9 @@ const EditBillingDetailsModal = ({
   isLoading?: boolean;
 }) => {
   const MAX_INPUT_LENGHT = 50;
-  const { address, addressOptional, country, city, region, postalCode, phone } = billingDetails;
+  const { address, phone } = billingDetails;
   const [editedAddress, setEditedAddress] = useState(address);
-  const [editedAddressOptional, setEditedAddressOptional] = useState(addressOptional ?? '');
-  const [editedCountry, setEditedCountry] = useState(country);
-  const [editedCity, setEditedCity] = useState(city);
-  const [editedRegion, setEditedRegion] = useState(region);
-  const [editedPostal, setEditedPostal] = useState(postalCode);
+
   const [editedPhone, setEditedPhone] = useState(phone);
 
   return (
@@ -42,50 +38,6 @@ const EditBillingDetailsModal = ({
             disabled={isLoading}
             hideMaxLength
           />
-          <div className="flex flex-row space-x-5">
-            <DetailsInput
-              label="Appt, unit, suite, etc"
-              textValue={editedAddressOptional}
-              onChangeTextValue={setEditedAddressOptional}
-              maxLength={MAX_INPUT_LENGHT}
-              disabled={isLoading}
-              hideMaxLength
-            />
-            <DetailsInput
-              label="Country"
-              textValue={editedCountry}
-              onChangeTextValue={setEditedCountry}
-              maxLength={MAX_INPUT_LENGHT}
-              disabled={isLoading}
-              hideMaxLength
-            />
-          </div>
-          <div className="flex flex-row space-x-5">
-            <DetailsInput
-              label="City / Town / Village"
-              textValue={editedCity}
-              onChangeTextValue={setEditedCity}
-              maxLength={MAX_INPUT_LENGHT}
-              disabled={isLoading}
-              hideMaxLength
-            />
-            <DetailsInput
-              label="Province / Region"
-              textValue={editedRegion}
-              onChangeTextValue={setEditedRegion}
-              maxLength={MAX_INPUT_LENGHT}
-              disabled={isLoading}
-              hideMaxLength
-            />
-            <DetailsInput
-              label="Postal code"
-              textValue={editedPostal}
-              onChangeTextValue={setEditedPostal}
-              maxLength={MAX_INPUT_LENGHT}
-              disabled={isLoading}
-              hideMaxLength
-            />
-          </div>
           <DetailsInput
             label="Phone"
             textValue={editedPhone}
@@ -106,11 +58,7 @@ const EditBillingDetailsModal = ({
             onClick={() =>
               onSave({
                 address: editedAddress,
-                addressOptional: editedAddressOptional,
-                country: editedCountry,
-                city: editedCity,
-                region: editedRegion,
-                postalCode: editedPostal,
+
                 phone: editedPhone,
               })
             }

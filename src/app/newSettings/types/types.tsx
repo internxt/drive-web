@@ -46,11 +46,6 @@ export interface ActivityFiltersProps {
 
 export type BillingDetails = {
   address: string;
-  addressOptional?: string;
-  country: string;
-  city: string;
-  region: string;
-  postalCode: string;
   phone: string;
 };
 
