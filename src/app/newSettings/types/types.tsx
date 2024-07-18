@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 export interface SelectSectionProps {
   section: string;
   subsection?: string;
+  workspaceUuid?: string;
 }
 
 export interface PreferencesDialogProps {

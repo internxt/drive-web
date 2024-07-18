@@ -82,7 +82,6 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-    navigationService.replaceState(currentFile?.uuid);
     dispatch(uiActions.setFileViewerItem(currentFile));
     if (currentFile && !updateProgress && !isDownloadStarted) {
       setIsDownloadStarted(true);

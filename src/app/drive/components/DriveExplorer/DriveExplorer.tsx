@@ -69,6 +69,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -141,6 +142,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -312,9 +314,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
-        navigationService.pushFolder(item.uuid);
+        navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       } else {
-        navigationService.pushFile(item.uuid);
+        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }
     },
     [dispatch],

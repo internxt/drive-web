@@ -25,7 +25,6 @@ import { useAppDispatch, useAppSelector } from '../../../../store/hooks';
 import { storageActions } from '../../../../store/slices/storage';
 import storageThunks from '../../../../store/slices/storage/storage.thunks';
 import { uiActions } from '../../../../store/slices/ui';
-import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import useDriveItemStoreProps from '../DriveExplorerItem/hooks/useDriveStoreProps';
 import {
   contextMenuDriveFolderNotSharedLink,
@@ -35,6 +34,7 @@ import {
   contextMenuWorkspaceFile,
   contextMenuWorkspaceFolder,
 } from '../DriveExplorerList/DriveItemContextMenu';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import { shareItemWithTeam } from '../utils';
 
 const DriveTopBarActions = ({
@@ -156,7 +156,7 @@ const DriveTopBarActions = ({
   };
 
   const onOpenPreviewButtonClicked = (): void => {
-    navigationService.pushFile(selectedItems[0].uuid);
+    navigationService.pushFile(selectedItems[0].uuid, selectedWorkspace?.workspaceUser.workspaceId);
   };
 
   const onRecoverButtonClicked = (): void => {

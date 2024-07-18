@@ -36,6 +36,7 @@ const AccountUsageContainer = ({
   const backupsProduct = products.find((product) => product.name === 'Backups');
   const driveUsage = driveProduct ? driveProduct?.usageInBytes : 0;
   const backupsUsage = backupsProduct ? backupsProduct?.usageInBytes : 0;
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
   useEffect(() => {
     usageService
@@ -51,7 +52,11 @@ const AccountUsageContainer = ({
 
   const openTrashDialog = () => dispatch(uiActions.setIsClearTrashDialogOpen(true));
   const navigateToPlansSubSection = () => {
-    navigationService.openPreferencesDialog({ section: 'account', subsection: 'plans' });
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
     changeSection({ section: 'account', subsection: 'plans' });
   };
 

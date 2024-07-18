@@ -82,7 +82,11 @@ const SectionListContainer = ({ activeSection, changeSection }) => {
 
   const goSection = ({ section, subsection }: { section?: string; subsection?: string }) => {
     if (section && subsection) {
-      navigationService.openPreferencesDialog({ section: section, subsection: subsection });
+      navigationService.openPreferencesDialog({
+        section: section,
+        subsection: subsection,
+        workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+      });
       changeSection({ section, subsection });
     }
   };

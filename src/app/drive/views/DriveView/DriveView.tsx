@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -17,6 +17,9 @@ import { useAppSelector } from '../../../store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
+import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import workspacesService from 'app/core/services/workspace.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -28,9 +31,13 @@ export interface DriveViewProps {
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
-  const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
+  const { isFileView, isFolderView, itemUuid, workspaceUuid } = useDriveNavigation();
   const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
   const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
+  const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
+  const [tokenHeader, setTokenHeader] = useState<string>('');
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const isSelectedWorkspace = selectedWorkspace?.workspace.id === workspaceUuid;
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -47,18 +54,36 @@ const DriveView = (props: DriveViewProps) => {
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
 
-    if (isFolderView && itemUuid) {
-      goFolder(itemUuid, credentials?.tokenHeader);
+    if (isFolderView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
+      setWorkspaceWithUrl(workspaceUuid);
+    } else if (isFolderView && itemUuid) {
+      goFolder(itemUuid, tokenHeader);
     }
 
-    if (isFileView && itemUuid) {
-      showFile(itemUuid, credentials?.tokenHeader);
+    if (isFileView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
+      setWorkspaceWithUrl(workspaceUuid);
+    } else if (isFileView && itemUuid) {
+      showFile(itemUuid, tokenHeader);
     }
-  }, [isFileView, isFolderView, itemUuid, credentials]);
+  }, [isFileView, isFolderView, itemUuid, credentials, workspaceUuid]);
+
+  const setWorkspaceWithUrl = async (workspaceId: string) => {
+    try {
+      const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
+      const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
+      dispatch(workspacesActions.setCredentials(credentials));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
+      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      setTokenHeader(credentials.tokenHeader);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
     try {
-      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid, workspacesToken);
 
       dispatch(
         storageThunks.goToFolderThunk({

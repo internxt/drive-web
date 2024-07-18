@@ -41,6 +41,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     interval: 'month',
   } as DisplayPrice;
 
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
   const user = useSelector<RootState, UserSettings | undefined>((state) => state.user.user);
   const workspaces = useSelector<RootState, WorkspaceData[]>((state) => state.workspaces.workspaces);
@@ -93,13 +94,25 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
 
     if (currentChangePlanType === 'manageBilling' && isIndividualSubscriptionSelected) {
-      navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
+      navigationService.openPreferencesDialog({
+        section: 'account',
+        subsection: 'billing',
+        workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+      });
       changeSection({ section: 'account', subsection: 'billing' });
     } else if (currentChangePlanType === 'manageBilling' && !isIndividualSubscriptionSelected) {
-      navigationService.openPreferencesDialog({ section: 'workspace', subsection: 'billing' });
+      navigationService.openPreferencesDialog({
+        section: 'workspace',
+        subsection: 'billing',
+        workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+      });
       changeSection({ section: 'workspace', subsection: 'billing' });
     } else if (currentChangePlanType === 'free') {
-      navigationService.openPreferencesDialog({ section: 'account', subsection: 'account' });
+      navigationService.openPreferencesDialog({
+        section: 'account',
+        subsection: 'account',
+        workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+      });
       changeSection({ section: 'account', subsection: 'account' });
     } else {
       setPriceSelected(price);

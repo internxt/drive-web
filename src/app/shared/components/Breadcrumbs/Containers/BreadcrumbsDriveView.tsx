@@ -47,7 +47,7 @@ const BreadcrumbsDriveView = (props: BreadcrumbsDriveViewProps) => {
           label: path.name,
           icon: null,
           active: i < namePath.length - 1,
-          onClick: () => navigationService.pushFolder(path.uuid),
+          onClick: () => navigationService.pushFolder(path.uuid, selectedWorkspace?.workspaceUser.workspaceId),
         });
       });
     }

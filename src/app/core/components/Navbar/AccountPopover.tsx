@@ -88,15 +88,19 @@ export default function AccountPopover({
           {translate('views.account.popover.spaceUsed', { space: percentageUsed })}
         </p>
         {plan.showUpgrade && (
-          <div
-            className="cursor-pointer text-sm font-medium text-primary no-underline"
+          <button
+            className="w-full cursor-pointer text-sm font-medium text-primary no-underline"
             onClick={() => {
-              navigationService.openPreferencesDialog({ section: 'account', subsection: 'billing' });
+              navigationService.openPreferencesDialog({
+                section: 'account',
+                subsection: 'billing',
+                workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+              });
               dispatch(uiActions.setIsPreferencesDialogOpen(true));
             }}
           >
             {translate('actions.upgrade')}
-          </div>
+          </button>
         )}
       </div>
       {separator}
@@ -104,16 +108,20 @@ export default function AccountPopover({
         <Desktop size={20} />
         <p className="ml-3">{translate('views.account.popover.downloadApp')}</p>
       </Item>
-      <div
-        className="flex cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
+      <button
+        className="flex w-full cursor-pointer items-center px-3 py-2 text-gray-80 no-underline hover:bg-gray-1 hover:text-gray-80 dark:hover:bg-gray-10"
         onClick={() => {
-          navigationService.openPreferencesDialog({ section: 'general', subsection: 'general' });
+          navigationService.openPreferencesDialog({
+            section: 'general',
+            subsection: 'general',
+            workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+          });
           dispatch(uiActions.setIsPreferencesDialogOpen(true));
         }}
       >
         <Gear size={20} />
         <p className="ml-3">{translate('views.account.popover.settings')}</p>
-      </div>
+      </button>
       {user && user.sharedWorkspace && (
         <Item onClick={onGuestInviteClick}>
           <UserPlus size={20} />
