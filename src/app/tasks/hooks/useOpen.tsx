@@ -1,8 +1,7 @@
 import { useCallback } from 'react';
-import { useSelector } from 'react-redux';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import navigationService from '../../core/services/navigation.service';
 import { TaskNotification, TaskType } from '../types';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface OpenItem {
   openItem: () => void;
@@ -12,13 +11,18 @@ type OpenItemProps = {
   notification: TaskNotification;
   showOpenFileError: () => void;
   showOpenFolderError: () => void;
+  selectedWorkspace?: WorkspaceData | null;
 };
 
-export const useOpenItem = ({ notification, showOpenFileError, showOpenFolderError }: OpenItemProps): OpenItem => {
+export const useOpenItem = ({
+  notification,
+  showOpenFileError,
+  showOpenFolderError,
+  selectedWorkspace,
+}: OpenItemProps): OpenItem => {
   const openItem = useCallback(() => {
     const { item, action } = notification;
     const isFolderUpload = action === TaskType.UploadFolder;
-    const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
 
     if (isFolderUpload) {
       if (notification?.itemUUID?.rootFolderUUID) {

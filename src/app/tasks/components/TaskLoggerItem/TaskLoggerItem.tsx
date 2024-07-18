@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useOpenItem } from '../../hooks/useOpen';
 import { useRetryDownload, useRetryUpload } from '../../hooks/useRetry';
 
@@ -9,6 +10,7 @@ import { useReduxActions } from '../../../store/slices/storage/hooks/useReduxAct
 import tasksService from '../../services/tasks.service';
 import { TaskData, TaskNotification, TaskStatus, TaskType, UploadFileData, UploadFolderData } from '../../types';
 import { TaskLoggerActions } from '../TaskLoggerActions/TaskLoggerActions';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const THREE_HUNDRED_MB_IN_BYTES = 3 * 100 * 1024 * 1024;
 interface TaskLoggerItemProps {
@@ -69,6 +71,7 @@ const resetTaskProgress = (notification: TaskNotification) => {
 const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Element => {
   const [isHovered, setIsHovered] = useState(false);
   const [isRetryActionDisabled, setIsRetryActionDisabled] = useState(false);
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
 
   const { openItem } = useOpenItem({
     notification,
@@ -84,6 +87,7 @@ const TaskLoggerItem = ({ notification, task }: TaskLoggerItemProps): JSX.Elemen
         type: ToastType.Error,
       });
     },
+    selectedWorkspace,
   });
   const { downloadItemsAsZip, downloadItems, uploadFolder, uploadItem, uploadSharedItem } = useReduxActions();
   const { retryDownload } = useRetryDownload({
