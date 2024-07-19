@@ -1559,12 +1559,25 @@
         "lifetime": "終身",
         "planFeaturesList": {
           "title": "計劃詳情",
-          "storage": "存儲",
-          "featureOne": "跨設備同步。",
-          "featureTwo": "無限帶寬。",
-          "featureThree": "零知識文件存儲和共享。",
-          "featureFour": "軍事級加密。",
-          "featureFive": "備份您電腦中的任何文件夾。"
+          "storage": " 的儲存空間",
+          "featureOne": "加密文件和文件夾共享。",
+          "featureTwo": "密碼保護的文件共享。",
+          "featureThree": "從任何設備訪問您的文件。",
+          "featureFour": "上傳文件最大可達20GB。",
+          "featureFive": "雙重身份驗證 (2FA)。",
+          "featureSix": "高級客戶支持。",
+          "featureSeven": "30天退款保證。"
+        },
+        "businessPlanFeaturesList": {
+          "title": "計劃詳情",
+          "storage": " 的儲存空間",
+          "featureOne": "加密文件和文件夾共享。",
+          "featureTwo": "創建和管理用戶及團隊。",
+          "featureThree": "從3名用戶起至多100名用戶。",
+          "featureFour": "符合GDPR規範。",
+          "featureFive": "上傳文件最大可達20GB。",
+          "featureSix": "管理帳戶帳單和付款。",
+          "featureSeven": "高級客戶支持。"
         },
         "user": "用戶"
       },

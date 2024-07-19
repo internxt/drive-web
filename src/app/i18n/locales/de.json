@@ -1537,13 +1537,26 @@
         "month": "Monat",
         "lifetime": "Lifetime",
         "planFeaturesList": {
-          "title": "Tarifdetails",
+          "title": "Pläne-Details",
           "storage": " Speicherplatz",
-          "featureOne": "Synchronisierung über Geräte hinweg.",
-          "featureTwo": "Unbegrenzter Datenverkehr.",
-          "featureThree": "Datenspeicherung und -freigabe ohne Wissen des Anbieters.",
-          "featureFour": "Verschlüsselung auf Militärniveau.",
-          "featureFive": "Backup beliebiger Ordner auf Ihrem Computer."
+          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
+          "featureTwo": "Passwortgeschütztes Teilen von Dateien.",
+          "featureThree": "Zugriff auf Ihre Dateien von jedem Gerät.",
+          "featureFour": "Hochladen von Dateien bis zu 20 GB.",
+          "featureFive": "Zwei-Faktor-Authentifizierung (2FA).",
+          "featureSix": "Premium-Kundensupport.",
+          "featureSeven": "30-Tage Geld-zurück-Garantie."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Pläne-Details",
+          "storage": " Speicherplatz",
+          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
+          "featureTwo": "Erstellen und Verwalten von Benutzern und Teams.",
+          "featureThree": "Ab 3 Benutzern und bis zu 100.",
+          "featureFour": "DSGVO-konform.",
+          "featureFive": "Hochladen von Dateien bis zu 20 GB.",
+          "featureSix": "Verwalten von Kontoabrechnungen und Zahlungen.",
+          "featureSeven": "Premium-Kundensupport."
         },
         "user": "Benutzer"
       },

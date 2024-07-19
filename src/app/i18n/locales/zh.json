@@ -1596,12 +1596,25 @@
         "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "计划详情",
-          "storage": " 存储",
-          "featureOne": "跨设备同步。",
-          "featureTwo": "无限带宽。",
-          "featureThree": "零知识文件存储和共享。",
-          "featureFour": "军用级加密。",
-          "featureFive": "备份计算机上的任何文件夹。"
+          "storage": " 的存储空间",
+          "featureOne": "加密文件和文件夹共享。",
+          "featureTwo": "密码保护的文件共享。",
+          "featureThree": "从任何设备访问您的文件。",
+          "featureFour": "上传文件最大可达20GB。",
+          "featureFive": "双重身份验证 (2FA)。",
+          "featureSix": "高级客户支持。",
+          "featureSeven": "30天退款保证。"
+        },
+        "businessPlanFeaturesList": {
+          "title": "计划详情",
+          "storage": " 的存储空间",
+          "featureOne": "加密文件和文件夹共享。",
+          "featureTwo": "创建和管理用户及团队。",
+          "featureThree": "从3名用户起至多100名用户。",
+          "featureFour": "符合GDPR规范。",
+          "featureFive": "上传文件最大可达20GB。",
+          "featureSix": "管理账户账单和付款。",
+          "featureSeven": "高级客户支持。"
         },
         "user": "用户"
       },

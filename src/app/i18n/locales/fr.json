@@ -1525,11 +1525,24 @@
         "planFeaturesList": {
           "title": "Détails du plan",
           "storage": " de stockage",
-          "featureOne": "Synchronisation sur tous les appareils.",
-          "featureTwo": "Bande passante illimitée.",
-          "featureThree": "Stockage et partage de fichiers sans connaissance du fournisseur.",
-          "featureFour": "Chiffrement de qualité militaire.",
-          "featureFive": "Sauvegarde de n'importe quel dossier sur votre ordinateur."
+          "featureOne": "Partage de fichiers et dossiers chiffrés.",
+          "featureTwo": "Partage de fichiers protégé par mot de passe.",
+          "featureThree": "Accédez à vos fichiers depuis n'importe quel appareil.",
+          "featureFour": "Téléchargez des fichiers jusqu'à 20 Go.",
+          "featureFive": "Authentification à deux facteurs (2FA).",
+          "featureSix": "Support client premium.",
+          "featureSeven": "Garantie de remboursement de 30 jours."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Détails du plan",
+          "storage": " de stockage",
+          "featureOne": "Partage de fichiers et dossiers chiffrés.",
+          "featureTwo": "Créer et gérer des utilisateurs et des équipes.",
+          "featureThree": "À partir de 3 utilisateurs et jusqu'à 100.",
+          "featureFour": "Conformité au RGPD.",
+          "featureFive": "Téléchargez des fichiers jusqu'à 20 Go.",
+          "featureSix": "Gérer la facturation et les paiements du compte.",
+          "featureSeven": "Support client premium."
         },
         "user": "Utilisateur"
       },

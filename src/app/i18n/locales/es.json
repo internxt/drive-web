@@ -1575,11 +1575,24 @@
         "planFeaturesList": {
           "title": "Detalles del plan",
           "storage": " de almacenamiento",
-          "featureOne": "Sincronización en todos los dispositivos.",
-          "featureTwo": "Ancho de banda ilimitado.",
-          "featureThree": "Almacenamiento y compartición de archivos sin conocimiento del proveedor.",
-          "featureFour": "Cifrado de grado militar.",
-          "featureFive": "Copia de seguridad de cualquier carpeta en su computadora."
+          "featureOne": "Compartir archivos y carpetas cifrados.",
+          "featureTwo": "Compartir archivos con contraseña.",
+          "featureThree": "Accede a tus archivos desde cualquier dispositivo.",
+          "featureFour": "Sube archivos de hasta 20 GB.",
+          "featureFive": "Autenticación de dos factores (2FA).",
+          "featureSix": "Soporte al cliente premium.",
+          "featureSeven": "Garantía de devolución de dinero de 30 días."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Detalles del plan",
+          "storage": " de almacenamiento",
+          "featureOne": "Compartir archivos y carpetas cifrados.",
+          "featureTwo": "Crear y gestionar usuarios y equipos.",
+          "featureThree": "Desde 3 usuarios y hasta 100.",
+          "featureFour": "Cumplimiento con el GDPR.",
+          "featureFive": "Sube archivos de hasta 20 GB.",
+          "featureSix": "Gestionar la facturación y los pagos de la cuenta.",
+          "featureSeven": "Soporte al cliente premium."
         },
         "user": "Usuario"
       },

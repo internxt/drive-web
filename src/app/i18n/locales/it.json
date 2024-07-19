@@ -1583,12 +1583,25 @@
         "lifetime": "Lifetime",
         "planFeaturesList": {
           "title": "Dettagli del piano",
-          "storage": " di archiviazione",
-          "featureOne": "Sincronizzazione su tutti i dispositivi.",
-          "featureTwo": "Banda larga illimitata.",
-          "featureThree": "Archiviazione e condivisione file a conoscenza zero del fornitore.",
-          "featureFour": "Crittografia di livello militare.",
-          "featureFive": "Backup di qualsiasi cartella sul tuo computer."
+          "storage": " di spazio di archiviazione",
+          "featureOne": "Condivisione di file e cartelle crittografati.",
+          "featureTwo": "Condivisione di file protetta da password.",
+          "featureThree": "Accedi ai tuoi file da qualsiasi dispositivo.",
+          "featureFour": "Carica file fino a 20 GB.",
+          "featureFive": "Autenticazione a due fattori (2FA).",
+          "featureSix": "Supporto clienti premium.",
+          "featureSeven": "Garanzia di rimborso di 30 giorni."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Dettagli del piano",
+          "storage": " di spazio di archiviazione",
+          "featureOne": "Condivisione di file e cartelle crittografati.",
+          "featureTwo": "Crea e gestisci utenti e team.",
+          "featureThree": "A partire da 3 utenti e fino a 100.",
+          "featureFour": "Conformità GDPR.",
+          "featureFive": "Carica file fino a 20 GB.",
+          "featureSix": "Gestisci la fatturazione e i pagamenti dell'account.",
+          "featureSeven": "Supporto clienti premium."
         },
         "user": "Utente"
       },

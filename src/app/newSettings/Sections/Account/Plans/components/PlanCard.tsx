@@ -55,7 +55,7 @@ const PlanCard = ({
         />
       </div>
       <Divider />
-      <PlanDetailsList planSpace={capacity} />
+      <PlanDetailsList planSpace={capacity} isBusiness={isBusiness} />
     </div>
   );
 };
@@ -66,7 +66,8 @@ const Divider = () => (
   </div>
 );
 
-const PlanDetailsList = ({ planSpace }) => {
+const PlanDetailsList = ({ planSpace, isBusiness }: { planSpace: string; isBusiness: boolean }) => {
+  const planType = isBusiness ? 'businessPlanFeaturesList' : 'planFeaturesList';
   return (
     <div className="flex flex-col space-y-2">
       <span className="text-sm font-semibold text-gray-100">
@@ -89,7 +90,7 @@ const PlanDetailsList = ({ planSpace }) => {
             <Check size={20} width={20} height={20} />
           </div>
           <span className="text-base font-normal text-gray-100">
-            {t('preferences.account.plans.planFeaturesList.featureOne')}
+            {t(`preferences.account.plans.${planType}.featureOne`)}
           </span>
         </div>
         <div className="flex flex-row items-center space-x-2">
@@ -97,7 +98,7 @@ const PlanDetailsList = ({ planSpace }) => {
             <Check size={20} width={20} height={20} />
           </div>
           <span className="text-base font-normal text-gray-100">
-            {t('preferences.account.plans.planFeaturesList.featureTwo')}
+            {t(`preferences.account.plans.${planType}.featureTwo`)}
           </span>
         </div>
         <div className="flex flex-row space-x-2">
@@ -105,7 +106,7 @@ const PlanDetailsList = ({ planSpace }) => {
             <Check size={20} width={20} height={20} />
           </div>
           <span className="text-base font-normal text-gray-100">
-            {t('preferences.account.plans.planFeaturesList.featureThree')}
+            {t(`preferences.account.plans.${planType}.featureThree`)}
           </span>
         </div>
         <div className="flex flex-row items-center space-x-2">
@@ -113,7 +114,7 @@ const PlanDetailsList = ({ planSpace }) => {
             <Check size={20} width={20} height={20} />
           </div>
           <span className="text-base font-normal text-gray-100">
-            {t('preferences.account.plans.planFeaturesList.featureFour')}
+            {t(`preferences.account.plans.${planType}.featureFour`)}
           </span>
         </div>
         <div className="flex flex-row space-x-2">
@@ -121,7 +122,23 @@ const PlanDetailsList = ({ planSpace }) => {
             <Check size={20} width={20} height={20} />
           </div>
           <span className="text-base font-normal text-gray-100">
-            {t('preferences.account.plans.planFeaturesList.featureFive')}
+            {t(`preferences.account.plans.${planType}.featureFive`)}
+          </span>
+        </div>
+        <div className="flex flex-row space-x-2">
+          <div className="mt-1">
+            <Check size={20} width={20} height={20} />
+          </div>
+          <span className="text-base font-normal text-gray-100">
+            {t(`preferences.account.plans.${planType}.featureSix`)}
+          </span>
+        </div>
+        <div className="flex flex-row space-x-2">
+          <div className="mt-1">
+            <Check size={20} width={20} height={20} />
+          </div>
+          <span className="text-base font-normal text-gray-100">
+            {t(`preferences.account.plans.${planType}.featureSeven`)}
           </span>
         </div>
       </div>

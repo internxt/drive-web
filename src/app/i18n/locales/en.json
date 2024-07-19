@@ -1597,11 +1597,24 @@
         "planFeaturesList": {
           "title": "Plan details",
           "storage": " of storage",
-          "featureOne": "Sync across devices.",
-          "featureTwo": "Unlimited bandwidth.",
-          "featureThree": "Zero-knowledge file storage and sharing.",
-          "featureFour": "Military-grade encryption.",
-          "featureFive": "Backup any folder in your computer."
+          "featureOne": "Encrypted file and folder sharing.",
+          "featureTwo": "Password-protected file sharing.",
+          "featureThree": "Access your files from any device.",
+          "featureFour": "Upload files up to 20GB.",
+          "featureFive": "Two-factor authentication (2FA).",
+          "featureSix": "Premium customer support.",
+          "featureSeven": "30-day money-back guarantee."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Plan details",
+          "storage": " of storage",
+          "featureOne": "Encrypted file and folder sharing.",
+          "featureTwo": "Create and manage users & teams.",
+          "featureThree": "Starting at 3 users and up to 100.",
+          "featureFour": "GDPR compliant.",
+          "featureFive": "Upload files of up to 20GB.",
+          "featureSix": "Manage account billing & payments.",
+          "featureSeven": "Premium customer support."
         },
         "user": "user"
       },
