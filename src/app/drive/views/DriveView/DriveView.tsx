@@ -57,7 +57,8 @@ const DriveView = (props: DriveViewProps) => {
     if (isFolderView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
       setWorkspaceWithUrl(workspaceUuid);
     } else if (isFolderView && itemUuid && !workspaceUuid) {
-      setPersonalWithUrl(itemUuid);
+      setPersonalWithUrl();
+      goFolder(itemUuid);
     } else if (isFolderView && itemUuid) {
       goFolder(itemUuid, tokenHeader);
     }
@@ -65,7 +66,8 @@ const DriveView = (props: DriveViewProps) => {
     if (isFileView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
       setWorkspaceWithUrl(workspaceUuid);
     } else if (isFileView && itemUuid && !workspaceUuid) {
-      setPersonalWithUrl(itemUuid);
+      setPersonalWithUrl();
+      showFile(itemUuid);
     } else if (isFileView && itemUuid) {
       showFile(itemUuid, tokenHeader);
     }
@@ -85,12 +87,11 @@ const DriveView = (props: DriveViewProps) => {
     }
   };
 
-  const setPersonalWithUrl = (itemUuid) => {
+  const setPersonalWithUrl = () => {
     dispatch(workspacesActions.setCredentials(null));
     dispatch(workspacesActions.setSelectedWorkspace(null));
     localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
     localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
-    isFolderView ? goFolder(itemUuid) : showFile(itemUuid);
   };
 
   const goFolder = async (folderUuid: string, workspacesToken?: string) => {
