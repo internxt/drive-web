@@ -1580,7 +1580,8 @@
           "featureThree": "Almacenamiento y compartición de archivos sin conocimiento del proveedor.",
           "featureFour": "Cifrado de grado militar.",
           "featureFive": "Copia de seguridad de cualquier carpeta en su computadora."
-        }
+        },
+        "user": "Usuario"
       },
       "billing": {
         "title": "Facturación"

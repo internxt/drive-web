@@ -1589,7 +1589,8 @@
           "featureThree": "Archiviazione e condivisione file a conoscenza zero del fornitore.",
           "featureFour": "Crittografia di livello militare.",
           "featureFive": "Backup di qualsiasi cartella sul tuo computer."
-        }
+        },
+        "user": "Utente"
       },
       "billing": {
         "title": "Fatturazione"

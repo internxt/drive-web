@@ -30,7 +30,8 @@ const PlanCard = ({
   disableActionButton,
   isBusiness = false,
 }: PlanCardProps) => {
-  const perUser = isBusiness ? '/user' : '';
+  const userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
+
   return (
     <div className={'flex w-80 flex-col rounded-xl border border-gray-10 bg-gray-5 p-4 '}>
       <div className="flex flex-col space-y-3">
@@ -43,7 +44,7 @@ const PlanCard = ({
           </div>
           <span className=" text-base font-normal leading-5 text-gray-60">
             {currency + price}
-            {billing && '/' + billing + perUser}
+            {billing && '/' + billing + userText}
           </span>
         </div>
         <ChangePlanButton
