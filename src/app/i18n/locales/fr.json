@@ -1530,7 +1530,8 @@
           "featureThree": "Stockage et partage de fichiers sans connaissance du fournisseur.",
           "featureFour": "Chiffrement de qualité militaire.",
           "featureFive": "Sauvegarde de n'importe quel dossier sur votre ordinateur."
-        }
+        },
+        "user": "Utilisateur"
       },
       "billing": {
         "title": "Billing"

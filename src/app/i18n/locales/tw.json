@@ -1565,7 +1565,8 @@
           "featureThree": "零知識文件存儲和共享。",
           "featureFour": "軍事級加密。",
           "featureFive": "備份您電腦中的任何文件夾。"
-        }
+        },
+        "user": "用戶"
       },
       "billing": {
         "title": "計費"

@@ -1602,7 +1602,8 @@
           "featureThree": "零知识文件存储和共享。",
           "featureFour": "军用级加密。",
           "featureFive": "备份计算机上的任何文件夹。"
-        }
+        },
+        "user": "用户"
       },
       "billing": {
         "title": "计费"

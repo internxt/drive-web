@@ -1544,7 +1544,8 @@
           "featureThree": "Datenspeicherung und -freigabe ohne Wissen des Anbieters.",
           "featureFour": "Verschlüsselung auf Militärniveau.",
           "featureFive": "Backup beliebiger Ordner auf Ihrem Computer."
-        }
+        },
+        "user": "Benutzer"
       },
       "billing": {
         "title": "Billing"

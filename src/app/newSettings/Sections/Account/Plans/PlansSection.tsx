@@ -410,6 +410,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
                   : businessSubscription?.type === 'subscription' && businessSubscription?.priceId === plan.id
               }
               displayBillingSlash={plan.interval !== 'lifetime'}
+              isBusiness={isBussinessSubscriptionSelected}
             />
           ))}
         </div>
@@ -447,6 +448,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
             changePlanType={currentChangePlanType}
             isLoading={isLoadingCheckout}
             disableActionButton={isUserOwningWorkspace && isBussinessSubscriptionSelected}
+            isBusiness={isBussinessSubscriptionSelected}
           />
         )}
       </div>

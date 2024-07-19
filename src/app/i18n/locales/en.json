@@ -1602,7 +1602,8 @@
           "featureThree": "Zero-knowledge file storage and sharing.",
           "featureFour": "Military-grade encryption.",
           "featureFive": "Backup any folder in your computer."
-        }
+        },
+        "user": "user"
       },
       "billing": {
         "title": "Billing"

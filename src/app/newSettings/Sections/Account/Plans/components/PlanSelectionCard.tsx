@@ -29,13 +29,13 @@ const PlanSelectionCard = ({
   const isSelectedInsideBorderStyle = selectedValidation
     ? '!border-primary ring ring-primary/10 bg-primary/3 dark:bg-primary/10 dark:ring-primary/30'
     : '';
-  let perUser = isBusiness ? '/user' : '';
+  let userText = isBusiness ? '/' + t('preferences.account.plans.user') : '';
   if (isBusiness && !displayBillingSlash) {
-    perUser = ' user';
+    userText = ' ' + t('preferences.account.plans.user');
   }
   const displayText = displayBillingSlash
-    ? `${amount} ${currency}/${billing}${perUser}`
-    : `${amount} ${currency} ${billing}${perUser}`;
+    ? `${amount} ${currency}/${billing}${userText}`
+    : `${amount} ${currency} ${billing}${userText}`;
   return (
     <div
       className={`rounded-2xl border border-gray-10 bg-surface dark:border-highlight/10 dark:bg-highlight/5 ${
