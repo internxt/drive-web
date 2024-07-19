@@ -1447,6 +1447,12 @@
           "deactivate": "Desactivar",
           "deactivating": "Desactivando"
         },
+        "reactivationModal": {
+          "title": "Reactivar miembro",
+          "description": "{{name}} recuperará acceso al espacio de trabajo.",
+          "reactivate": "Reactivar",
+          "reactivating": "Reactivando"
+        },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
@@ -1503,6 +1509,7 @@
         },
         "actions": {
           "deactivate": "Desactivar miembro",
+          "reactivate": "Reactivar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },

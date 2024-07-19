@@ -1469,6 +1469,12 @@
           "deactivate": "停用",
           "deactivating": "正在停用"
         },
+        "reactivationModal": {
+          "title": "重新激活成员",
+          "description": "{{name}} 将恢复对工作区的访问权限。",
+          "reactivate": "重新激活",
+          "reactivating": "重新激活中"
+        },
         "changePasswordModal": {
           "title": "请求更改密码",
           "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
@@ -1525,6 +1531,7 @@
         },
         "actions": {
           "deactivate": "停用会员",
+          "reactivate": "重新激活成员",
           "passwordChange": "请求更改密码"
         }
       },

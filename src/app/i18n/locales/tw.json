@@ -1435,6 +1435,12 @@
           "deactivate": "停用",
           "deactivating": "正在停用"
         },
+        "reactivationModal": {
+          "title": "重新啟用成員",
+          "description": "{{name}} 將恢復對工作區的訪問權限。",
+          "reactivate": "重新啟用",
+          "reactivating": "正在重新啟用"
+        },
         "changePasswordModal": {
           "title": "要求更改密碼",
           "description": "用戶將收到更新個人帳戶密碼的建議。如果您認為其密碼可能已被洩露，請使用此功能。",
@@ -1491,6 +1497,7 @@
         },
         "actions": {
           "deactivate": "停用成員",
+          "reactivate": "重新啟用成員",
           "passwordChange": "要求更改密碼"
         }
       },

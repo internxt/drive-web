@@ -1411,6 +1411,12 @@
           "deactivate": "Deaktivieren",
           "deactivating": "Deaktivierung läuft"
         },
+        "reactivationModal": {
+          "title": "Mitglied reaktivieren",
+          "description": "{{name}} wird wieder Zugriff auf den Arbeitsbereich erhalten.",
+          "reactivate": "Reaktivieren",
+          "reactivating": "Reaktivieren"
+        },
         "changePasswordModal": {
           "title": "Passwortänderung anfordern",
           "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
@@ -1467,6 +1473,7 @@
         },
         "actions": {
           "deactivate": "Mitglied deaktivieren",
+          "reactivate": "Mitglied reaktivieren",
           "passwordChange": "Passwortänderung anfordern"
         }
       },
