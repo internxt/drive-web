@@ -1459,6 +1459,12 @@
           "deactivate": "Disattiva",
           "deactivating": "Disattivazione in corso"
         },
+        "reactivationModal": {
+          "title": "Riattiva membro",
+          "description": "{{name}} riacquisterà l'accesso allo spazio di lavoro.",
+          "reactivate": "Riattiva",
+          "reactivating": "Riattivazione"
+        },
         "changePasswordModal": {
           "title": "Richiedi cambio password",
           "description": "L'utente riceverà una raccomandazione per aggiornare la password del proprio account personale. Utilizza questa funzione se ritieni che la sua password possa essere stata compromessa.",
@@ -1515,6 +1521,7 @@
         },
         "actions": {
           "deactivate": "Disattiva membro",
+          "reactivate": "Riattiva membro",
           "passwordChange": "Richiedi la modifica della password"
         }
       },
