@@ -9,7 +9,6 @@
       "discount": "80% DE RÉDUCTION"
     },
     "title": "Profitez des offres d'été d'Internxt",
-
     "subtitle": {
       "line1": "Le plan gratuit d'Internxt sera réduit à 1 Go le 1er juillet.",
       "line2": {
@@ -1544,7 +1543,7 @@
           "featureSix": "Gérer la facturation et les paiements du compte.",
           "featureSeven": "Support client premium."
         },
-        "user": "Utilisateur"
+        "user": "utilisateur"
       },
       "billing": {
         "title": "Billing"
