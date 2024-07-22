@@ -669,6 +669,9 @@
             "title": "个人资料详情",
             "cancelButton": "取消",
             "saveButton": "保存更改"
+          },
+          "errors": {
+            "minNameLength": "公司名称必须至少有3个字符"
           }
         },
         "billing": {

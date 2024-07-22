@@ -69,6 +69,13 @@ export const moveItemsThunk = createAsyncThunk<void, MoveItemsPayload, { state: 
             }),
           );
 
+          dispatch(
+            storageActions.pushItems({
+              folderIds: [destinationFolderId],
+              items: item,
+            }),
+          );
+
           // Updates destination folder content in local database
           const destinationLevelDatabaseContent = await databaseService.get(
             DatabaseCollection.Levels,

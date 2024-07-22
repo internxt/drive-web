@@ -581,6 +581,9 @@
             "title": "Profil Details",
             "cancelButton": "Abbrechen",
             "saveButton": "Änderungen speichern"
+          },
+          "errors": {
+            "minNameLength": "Der Firmenname muss mindestens 3 Zeichen lang sein"
           }
         },
         "billing": {
@@ -1558,7 +1561,7 @@
           "featureSix": "Verwalten von Kontoabrechnungen und Zahlungen.",
           "featureSeven": "Premium-Kundensupport."
         },
-        "user": "Benutzer"
+        "user": "benutzer"
       },
       "billing": {
         "title": "Billing"

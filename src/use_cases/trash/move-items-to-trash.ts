@@ -92,7 +92,8 @@ const moveItemsToTrash = async (itemsToTrash: DriveItemData[], onSuccess?: () =>
         onClick: async () => {
           notificationsService.dismiss(id);
           if (itemsToTrash.length > 0) {
-            const destinationId = itemsToTrash[0].uuid;
+            const destinationId = itemsToTrash[0].isFolder ? itemsToTrash[0].parentUuid : itemsToTrash[0].folderUuid;
+
             store.dispatch(
               storageActions.pushItems({ updateRecents: true, items: itemsToTrash, folderIds: [destinationId] }),
             );

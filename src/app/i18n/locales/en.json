@@ -668,6 +668,9 @@
             "title": "Profile Details",
             "cancelButton": "Cancel",
             "saveButton": "Save Changes"
+          },
+          "errors": {
+            "minNameLength": "The company name must have at least 3 characters"
           }
         },
         "billing": {
