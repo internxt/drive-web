@@ -349,10 +349,9 @@ export function deactivateMember(workspaceId: string, memberId: string): Promise
 
 export function reactivateMember(workspaceId: string, memberId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  // ADD REACTIVATION CALL
-  // return workspaceClient.deactivateMember(workspaceId, memberId).catch((error) => {
-  //   throw errorService.castError(error);
-  // });
+  return workspaceClient.activateMember(workspaceId, memberId).catch((error) => {
+    throw errorService.castError(error);
+  });
 }
 
 export function getUsage(workspaceId: string): Promise<GetMemberUsageResponse> {
