@@ -603,6 +603,9 @@
             "title": "Détails du profil",
             "cancelButton": "Annuler",
             "saveButton": "Enregistrer les modifications"
+          },
+          "errors": {
+            "minNameLength": "Le nom de l'entreprise doit comporter au moins 3 caractères"
           }
         },
         "billing": {
@@ -1544,7 +1547,7 @@
           "featureSix": "Gérer la facturation et les paiements du compte.",
           "featureSeven": "Support client premium."
         },
-        "user": "Utilisateur"
+        "user": "utilisateur"
       },
       "billing": {
         "title": "Billing"

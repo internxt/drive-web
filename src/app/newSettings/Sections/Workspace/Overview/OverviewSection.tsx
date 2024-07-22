@@ -27,6 +27,7 @@ import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModa
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
 
 const subscription = 'Free';
+const MIN_NAME_LENGTH = 3;
 
 const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const dispatch = useAppDispatch();
@@ -106,6 +107,14 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
 
   const onSaveProfileDetails = async (newCompanyName: string, newAboutCompany: string) => {
     setIsSavingProfileDetails(true);
+    if (newCompanyName.length < MIN_NAME_LENGTH) {
+      notificationsService.show({
+        type: ToastType.Error,
+        text: t('views.preferences.workspace.overview.errors.minNameLength'),
+      });
+      setIsSavingProfileDetails(false);
+      return;
+    }
     try {
       await workspacesService.editWorkspace(workspaceId, {
         name: newCompanyName,
@@ -124,6 +133,8 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
       );
     } catch (error) {
       errorService.reportError(error);
+      const castedError = errorService.castError(error);
+      notificationsService.show({ type: ToastType.Error, text: castedError.message });
     } finally {
       setIsEditingDetails(false);
       setIsSavingProfileDetails(false);
