@@ -204,6 +204,18 @@ const deleteWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string }, { 
   },
 );
 
+const editWorkspace = createAsyncThunk<
+  void,
+  { workspaceId: string; details: { name?: string; description?: string; address?: string } },
+  { state: RootState }
+>('workspaces/editWorkspace', async (payload, { dispatch }) => {
+  await workspacesService.editWorkspace(payload.workspaceId, payload.details);
+  const { name, description, address } = await workspacesService.getWorkspace(payload.workspaceId);
+  dispatch(
+    workspacesActions.patchWorkspace({ workspaceId: payload.workspaceId, patch: { name, description, address } }),
+  );
+});
+
 export const workspacesSlice = createSlice({
   name: 'user',
   initialState,
@@ -320,6 +332,7 @@ export const workspaceThunks = {
   checkAndSetLocalWorkspace,
   updateWorkspaceAvatar,
   deleteWorkspaceAvatar,
+  editWorkspace,
 };
 
 export default workspacesSlice.reducer;

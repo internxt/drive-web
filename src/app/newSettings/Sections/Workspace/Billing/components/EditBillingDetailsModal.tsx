@@ -23,7 +23,7 @@ const EditBillingDetailsModal = ({
   const { address, phone } = billingDetails;
   const [editedAddress, setEditedAddress] = useState(address);
 
-  const [editedPhone, setEditedPhone] = useState(phone);
+  const [editedPhone, setEditedPhone] = useState(phone || '');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -38,14 +38,16 @@ const EditBillingDetailsModal = ({
             disabled={isLoading}
             hideMaxLength
           />
-          <DetailsInput
-            label="Phone"
-            textValue={editedPhone}
-            onChangeTextValue={setEditedPhone}
-            maxLength={MAX_INPUT_LENGHT}
-            disabled={isLoading}
-            hideMaxLength
-          />
+          {phone && (
+            <DetailsInput
+              label="Phone"
+              textValue={editedPhone}
+              onChangeTextValue={setEditedPhone}
+              maxLength={MAX_INPUT_LENGHT}
+              disabled={isLoading}
+              hideMaxLength
+            />
+          )}
         </div>
 
         <div className="flex w-full flex-row justify-end space-x-2">

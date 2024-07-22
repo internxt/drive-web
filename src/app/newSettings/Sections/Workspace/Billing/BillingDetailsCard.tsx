@@ -23,7 +23,7 @@ const BillingDetailsCard = ({ address, phone, owner, isOwner, onEditButtonClick 
           </div>
 
           <div className="flex w-full min-w-0 grow flex-col space-y-2 ">
-            <Detail label={t('views.preferences.workspace.overview.phone')} value={phone} />
+            {phone && <Detail label={t('views.preferences.workspace.overview.phone')} value={phone} />}
             <Detail label={t('views.preferences.workspace.overview.owner')} value={owner} />
           </div>
         </div>

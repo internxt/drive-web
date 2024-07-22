@@ -12,7 +12,7 @@ import Section from 'app/newSettings/components/Section';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
 import paymentService from 'app/payment/services/payment.service';
 import { useAppDispatch } from 'app/store/hooks';
-import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import { WorkspacesState, workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
 import BillingPaymentMethodCard from '../../../components/BillingPaymentMethodCard';
 import Invoices from '../../../containers/InvoicesContainer';
 import { BillingDetails } from '../../../types/types';
@@ -21,12 +21,7 @@ import { getPlanInfo, getPlanName } from '../../Account/Plans/utils/planUtils';
 import BillingDetailsCard from './BillingDetailsCard';
 import EditBillingDetailsModal from './components/EditBillingDetailsModal';
 import BillingWorkspaceOverview from './containers/BillingWorkspaceOverview';
-
-// TODO: ADD REAL DATA WHEN BACKEND IS READY
-const address = 'La Marina de Valencia, Muelle de la Aduana s/n';
-const phone = '+34432445236';
-const owner = 'Fran Villalba Segarra';
-const isOwner = true;
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 
 interface BillingWorkspaceSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -37,6 +32,12 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const plan = useSelector<RootState, PlanState>((state) => state.plan);
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const { selectedWorkspace } = useSelector<RootState, WorkspacesState>((state) => state.workspaces);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const isOwner = user.uuid === selectedWorkspace?.workspace.ownerId;
+  const owner = isOwner ? `${user.name} ${user.lastname}` : '';
+
   const [isSubscription, setIsSubscription] = useState<boolean>(false);
   const [cancellingSubscription, setCancellingSubscription] = useState<boolean>(false);
   const [isCancelSubscriptionModalOpen, setIsCancelSubscriptionModalOpen] = useState<boolean>(false);
@@ -47,8 +48,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const [isEditingBillingDetails, setIsEditingBillingDetails] = useState(false);
   const [isSavingBillingDetails, setIsSavingBillingDetails] = useState(false);
   const [billingDetails, setBillingDetails] = useState<BillingDetails>({
-    address,
-    phone,
+    address: selectedWorkspace?.workspace.address || '',
   });
 
   useEffect(() => {
@@ -81,12 +81,15 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   }
 
   const onSaveBillingDetails = (newBillingDetails: BillingDetails) => {
-    setIsSavingBillingDetails(true);
-    setTimeout(() => {
-      setBillingDetails(newBillingDetails);
-      setIsSavingBillingDetails(false);
-      setIsEditingBillingDetails(false);
-    }, 2000);
+    if (workspaceId) {
+      setIsSavingBillingDetails(true);
+      dispatch(workspaceThunks.editWorkspace({ workspaceId, details: newBillingDetails }));
+      setTimeout(() => {
+        setBillingDetails(newBillingDetails);
+        setIsSavingBillingDetails(false);
+        setIsEditingBillingDetails(false);
+      }, 2000);
+    }
   };
 
   return (
@@ -94,7 +97,7 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
       <BillingWorkspaceOverview plan={plan} />
       <BillingDetailsCard
         address={billingDetails.address}
-        phone={billingDetails.phone}
+        phone={billingDetails.phone || ''}
         owner={owner}
         isOwner={isOwner}
         onEditButtonClick={() => setIsEditingBillingDetails(true)}

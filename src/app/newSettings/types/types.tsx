@@ -47,7 +47,7 @@ export interface ActivityFiltersProps {
 
 export type BillingDetails = {
   address: string;
-  phone: string;
+  phone?: string;
 };
 
 export type DriveProduct = {

@@ -17,6 +17,7 @@ import {
   ListWorkspaceSharedItemsResponse,
   OrderByOptions,
   PendingInvitesResponse,
+  Workspace,
   WorkspaceCredentialsDetails,
   WorkspaceMembers,
   WorkspacePendingInvitations,
@@ -115,7 +116,7 @@ export function setupWorkspace(workspaceSetupInfo: WorkspaceSetupInfo): Promise<
 
 export async function editWorkspace(
   workspaceId: string,
-  details: { name: string; description: string },
+  details: { name?: string; description?: string; address?: string },
 ): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
   return workspaceClient.editWorkspace(workspaceId, details).catch((error) => {
@@ -354,6 +355,13 @@ export function getUsage(workspaceId: string): Promise<GetMemberUsageResponse> {
   });
 }
 
+export function getWorkspace(workspaceId: string): Promise<Workspace> {
+  const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
+  return workspaceClient.getWorkspace(workspaceId).catch((error) => {
+    throw errorService.castError(error);
+  });
+}
+
 const workspacesService = {
   getWorkspaces,
   getWorkspacesMembers,
@@ -392,6 +400,7 @@ const workspacesService = {
   getWorkspaceFiles,
   deactivateMember,
   getUsage,
+  getWorkspace,
 };
 
 export default workspacesService;
