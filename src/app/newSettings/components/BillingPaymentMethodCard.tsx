@@ -108,6 +108,7 @@ const BillingPaymentMethodCard = ({ userType }: { userType: UserType }) => {
       <EditPaymentMethodModal
         isEditPaymentMethodModalOpen={isEditPaymentMethodModalOpen}
         setIsEditPaymentMethodModalOpen={setIsEditPaymentMethodModalOpen}
+        userType={userType}
       />
     </section>
   );
