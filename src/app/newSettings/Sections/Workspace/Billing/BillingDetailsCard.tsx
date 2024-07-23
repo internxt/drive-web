@@ -5,7 +5,7 @@ import Card from 'app/shared/components/Card';
 import { BillingDetailsCardProps } from '../../../types/types';
 import Detail from './Detail';
 
-const BillingDetailsCard = ({ address, phone, owner, isOwner, onEditButtonClick }: BillingDetailsCardProps) => {
+const BillingDetailsCard = ({ address, phone, isOwner, onEditButtonClick }: BillingDetailsCardProps) => {
   if (!isOwner) return null;
 
   return (
@@ -23,8 +23,7 @@ const BillingDetailsCard = ({ address, phone, owner, isOwner, onEditButtonClick 
           </div>
 
           <div className="flex w-full min-w-0 grow flex-col space-y-2 ">
-            {phone && <Detail label={t('views.preferences.workspace.overview.phone')} value={phone} />}
-            <Detail label={t('views.preferences.workspace.overview.owner')} value={owner} />
+            <Detail label={t('views.preferences.workspace.overview.phone')} value={phone} />
           </div>
         </div>
       </Card>

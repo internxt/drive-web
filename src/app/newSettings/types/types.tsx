@@ -18,8 +18,8 @@ export interface Section {
 export interface BillingDetailsCardProps {
   address: string;
   phone: string;
-  owner: string;
-  isOwner: boolean;
+  owner?: string;
+  isOwner?: boolean;
   onEditButtonClick: () => void;
 }
 
@@ -44,11 +44,6 @@ export interface ActivityFiltersProps {
   selectedRoles: string[];
   setIsSelectedRoles: (selectedRoles) => void;
 }
-
-export type BillingDetails = {
-  address: string;
-  phone?: string;
-};
 
 export type DriveProduct = {
   name: string;
