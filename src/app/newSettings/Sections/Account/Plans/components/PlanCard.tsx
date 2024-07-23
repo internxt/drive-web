@@ -51,7 +51,7 @@ const PlanCard = ({
           type={changePlanType}
           onClick={onClick}
           isLoading={isLoading}
-          disabled={disableActionButton}
+          disabled={changePlanType === 'manageBilling' ? false : disableActionButton}
         />
       </div>
       <Divider />

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import DetailsInput from '../../../../components/DetailsInput';
-import { BillingDetails } from '../../../../types/types';
+import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
 
 const EditBillingDetailsModal = ({
   isOpen,
@@ -15,15 +15,15 @@ const EditBillingDetailsModal = ({
 }: {
   isOpen: boolean;
   onClose: () => void;
-  billingDetails: BillingDetails;
-  onSave: (billinDetails: BillingDetails) => void;
+  billingDetails: CustomerBillingInfo;
+  onSave: (billinDetails: CustomerBillingInfo) => void;
   isLoading?: boolean;
 }) => {
   const MAX_INPUT_LENGHT = 50;
-  const { address, phone } = billingDetails;
-  const [editedAddress, setEditedAddress] = useState(address);
+  const { address, phoneNumber } = billingDetails;
+  const [editedAddress, setEditedAddress] = useState(address || '');
 
-  const [editedPhone, setEditedPhone] = useState(phone);
+  const [editedPhone, setEditedPhone] = useState(phoneNumber || '');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -59,7 +59,7 @@ const EditBillingDetailsModal = ({
               onSave({
                 address: editedAddress,
 
-                phone: editedPhone,
+                phoneNumber: editedPhone,
               })
             }
           >

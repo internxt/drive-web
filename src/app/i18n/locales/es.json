@@ -59,7 +59,6 @@
     "system": "Sistema",
     "starwars": "Star Wars"
   },
-
   "auth": {
     "email": "Correo electrónico",
     "password": "Contraseña",

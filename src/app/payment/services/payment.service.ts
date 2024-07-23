@@ -8,6 +8,7 @@ import {
   UserType,
   InvoicePayload,
   UserSubscription,
+  CustomerBillingInfo,
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
@@ -133,6 +134,11 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.createCheckoutSession(payload);
+  },
+
+  async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.updateCustomerBillingInfo(payload);
   },
 
   // TODO: refactor as individual

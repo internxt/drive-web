@@ -9,15 +9,18 @@ import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import Modal from 'app/shared/components/Modal';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 import EditPaymentMethodForm from './EditPaymentMethodForm';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface EditPaymentMethodModalProps {
   isEditPaymentMethodModalOpen: boolean;
   setIsEditPaymentMethodModalOpen: (isEditPaymentMethodModalOpen) => void;
+  userType: UserType;
 }
 
 const EditPaymentMethodModal = ({
   isEditPaymentMethodModalOpen,
   setIsEditPaymentMethodModalOpen,
+  userType = UserType.Individual,
 }: EditPaymentMethodModalProps) => {
   const [setupIntentSecret, setSetupIntentSecret] = useState<null | string>(null);
 
@@ -25,7 +28,7 @@ const EditPaymentMethodModal = ({
     if (isEditPaymentMethodModalOpen) {
       setSetupIntentSecret(null);
 
-      const { clientSecret } = await paymentService.createSetupIntent();
+      const { clientSecret } = await paymentService.createSetupIntent(userType);
 
       setSetupIntentSecret(clientSecret);
     }
