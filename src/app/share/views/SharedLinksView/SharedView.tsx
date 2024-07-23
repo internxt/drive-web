@@ -514,6 +514,7 @@ function SharedView({
           numberOfPendingInvitations={pendingInvitations.length}
           onClickPendingInvitationsButton={onClickPendingInvitationsButton}
           disableUploadFileButton={isRootFolder}
+          selectedWorkspace={selectedWorkspace}
         />
       </div>
       <WarningMessageWrapper />
