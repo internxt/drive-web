@@ -40,6 +40,7 @@ import shareService, { getSharingRoles } from '../../../share/services/share.ser
 import { AdvancedSharedItem } from '../../../share/types';
 import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
 import { sharedThunks } from '../../../store/slices/sharedLinks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { DriveItemData } from '../../types';
 import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
 import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
@@ -129,6 +130,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const { onCloseDialog } = props;
@@ -566,7 +568,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole !== 'reader' ? (
+                {currentUserFolderRole !== 'reader' && !isWorkspace ? (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
@@ -702,29 +704,31 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             </div>
                           </button>
                           {/* Restricted */}
-                          <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
-                            onClick={() => changeAccess('restricted')}
-                          >
-                            <Users size={32} weight="light" />
-                            <div className="flex flex-1 flex-col items-start">
-                              <p className="text-base font-medium leading-none">
-                                {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                              </p>
-                              <p className="text-left text-sm leading-tight text-gray-60">
-                                {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
-                              </p>
-                            </div>
-                            <div className="flex h-full w-5 items-center justify-center">
-                              {accessMode === 'restricted' ? (
-                                isLoading ? (
-                                  <Spinner className="h-5 w-5" />
-                                ) : (
-                                  <Check size={20} />
-                                )
-                              ) : null}
-                            </div>
-                          </button>
+                          {!isWorkspace && (
+                            <button
+                              className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
+                              onClick={() => changeAccess('restricted')}
+                            >
+                              <Users size={32} weight="light" />
+                              <div className="flex flex-1 flex-col items-start">
+                                <p className="text-base font-medium leading-none">
+                                  {translate('modals.shareModal.general.accessOptions.restricted.title')}
+                                </p>
+                                <p className="text-left text-sm leading-tight text-gray-60">
+                                  {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
+                                </p>
+                              </div>
+                              <div className="flex h-full w-5 items-center justify-center">
+                                {accessMode === 'restricted' ? (
+                                  isLoading ? (
+                                    <Spinner className="h-5 w-5" />
+                                  ) : (
+                                    <Check size={20} />
+                                  )
+                                ) : null}
+                              </div>
+                            </button>
+                          )}
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button

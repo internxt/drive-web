@@ -23,6 +23,7 @@ const ReactivateMemberModal = ({
       onClose={onClose}
       onActionButtonClicked={onReactivate}
       isLoading={isLoading}
+      actionButtonVariant="primary"
       modalTexts={{
         title: translate('preferences.workspace.members.reactivationModal.title'),
         description: translate('preferences.workspace.members.reactivationModal.description', { name }),
