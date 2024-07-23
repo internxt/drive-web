@@ -80,6 +80,7 @@ const Sidenav = (props: SidenavProps) => {
             to="/shared"
             Icon={Users}
             notifications={pendingInvitations.length}
+            isB2BWorskpace={isB2BWorskpace}
           />
           {!isB2BWorskpace && <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />}
           <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
