@@ -22,6 +22,7 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
+import { store } from 'app/store';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
@@ -175,6 +176,7 @@ const MoveItemsDialog = (props: MoveItemsDialogProps): JSX.Element => {
       setIsLoading(false);
       onClose();
       !props.isTrash && setDriveBreadcrumb(itemsToMove);
+      store.dispatch(storageActions.popItemsToDelete(itemsToMove));
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
       errorService.reportError(castedError);
