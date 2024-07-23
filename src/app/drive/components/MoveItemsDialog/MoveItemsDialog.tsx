@@ -9,7 +9,7 @@ import BreadcrumbsMoveItemsDialogView from 'app/shared/components/Breadcrumbs/Co
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
 import Spinner from 'app/shared/components/Spinner/Spinner';
-import { RootState } from 'app/store';
+import { RootState, store } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { setItemsToMove, storageActions } from 'app/store/slices/storage';
 import storageSelectors from 'app/store/slices/storage/storage.selectors';
@@ -22,7 +22,6 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { DriveItemData, FolderPathDialog } from '../../types';
 import CreateFolderDialog from '../CreateFolderDialog/CreateFolderDialog';
-import { store } from 'app/store';
 
 interface MoveItemsDialogProps {
   onItemsMoved?: () => void;
