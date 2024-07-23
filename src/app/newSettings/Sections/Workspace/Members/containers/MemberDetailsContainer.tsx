@@ -19,9 +19,10 @@ import UserCard from '../components/UserCard';
 interface MemberDetailsContainer {
   member: WorkspaceUser;
   getWorkspacesMembers: (string) => void;
+  isOwner: boolean;
 }
 
-const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsContainer) => {
+const MemberDetailsContainer = ({ member, getWorkspacesMembers, isOwner }: MemberDetailsContainer) => {
   const { translate } = useTranslationContext();
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
@@ -132,7 +133,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
             rolePosition: 'column',
           }}
         />
-        {!member.isOwner && (
+        {isOwner && !member.isOwner && (
           <div className="relative flex items-center justify-end">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
@@ -150,7 +151,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
                 >
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button> */}
-                  {!member.deactivated && (
+                  {memberRole !== 'deactivated' && (
                     <button
                       onClick={() => setIsDeactivateModalOpen(true)}
                       className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
@@ -158,7 +159,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
                       <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
                     </button>
                   )}
-                  {member.deactivated && (
+                  {memberRole === 'deactivated' && (
                     <button
                       onClick={() => setIsReactivateModalOpen(true)}
                       className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"

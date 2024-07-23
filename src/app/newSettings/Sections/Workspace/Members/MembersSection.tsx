@@ -12,6 +12,7 @@ import Card from '../../../../shared/components/Card';
 import Input from '../../../../shared/components/Input';
 import { RootState } from '../../../../store';
 import { useAppSelector } from '../../../../store/hooks';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import UserCard from './components/UserCard';
 import InviteDialogContainer from './containers/InviteDialogContainer';
 import MemberDetailsContainer from './containers/MemberDetailsContainer';
@@ -22,6 +23,7 @@ const PENDING_INVITATIONS_OFFSET = 0;
 const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const { translate } = useTranslationContext();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
   const [searchedMemberName, setSearchedMemberName] = useState('');
   const [hoverItemIndex, setHoverItemIndex] = useState<number | null>(null);
   const [isInviteDialogOpen, setIsInviteDialogOpen] = useState(false);
@@ -86,7 +88,11 @@ const MembersSection = ({ onClosePreferences }: { onClosePreferences: () => void
       onClosePreferences={onClosePreferences}
     >
       {selectedMember ? (
-        <MemberDetailsContainer member={selectedMember} getWorkspacesMembers={getWorkspacesMembers} />
+        <MemberDetailsContainer
+          member={selectedMember}
+          getWorkspacesMembers={getWorkspacesMembers}
+          isOwner={isCurrentUserWorkspaceOwner}
+        />
       ) : (
         <>
           {/* MEMBERS AND GUESTS CARDS */}
