@@ -1,7 +1,7 @@
+import { RootState } from 'app/store';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
 
 import navigationService from 'app/core/services/navigation.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
@@ -36,7 +36,10 @@ const PreferencesDialog = (props: PreferencesDialogProps) => {
     section: 'General',
     subsection: 'General',
   });
-  const title = translate(`preferences.navBarSections.${activeSection?.subsection ?? activeSection?.section}`) ?? '';
+  const title =
+    translate(
+      `preferences.navBarSections.${activeSection?.subsection?.toLowerCase() ?? activeSection?.section.toLowerCase()}`,
+    ) ?? '';
 
   useEffect(() => {
     if (currentSectionParams.length > 0) {
