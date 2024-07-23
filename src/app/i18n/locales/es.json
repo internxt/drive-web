@@ -650,6 +650,9 @@
             "title": "Detalles del perfil",
             "cancelButton": "Cancelar",
             "saveButton": "Guardar cambios"
+          },
+          "errors": {
+            "minNameLength": "El nombre de la empresa debe tener al menos 3 caracteres"
           }
         },
         "billing": {
@@ -1446,6 +1449,12 @@
           "deactivate": "Desactivar",
           "deactivating": "Desactivando"
         },
+        "reactivationModal": {
+          "title": "Reactivar miembro",
+          "description": "{{name}} recuperará acceso al espacio de trabajo.",
+          "reactivate": "Reactivar",
+          "reactivating": "Reactivando"
+        },
         "changePasswordModal": {
           "title": "Solicitar cambio de contraseña",
           "description": "El usuario recibirá una recomendación para actualizar la contraseña de su cuenta personal. Utilice esta función si cree que su contraseña podría haber sido comprometida.",
@@ -1502,6 +1511,7 @@
         },
         "actions": {
           "deactivate": "Desactivar miembro",
+          "reactivate": "Reactivar miembro",
           "passwordChange": "Solicitar cambio de contraseña"
         }
       },

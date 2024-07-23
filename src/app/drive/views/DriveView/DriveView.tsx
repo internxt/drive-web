@@ -53,6 +53,9 @@ const DriveView = (props: DriveViewProps) => {
 
   useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
+    if (!workspaceUuid && isSelectedWorkspace) {
+      setPersonalWithUrl();
+    }
 
     if (isFolderView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
       setWorkspaceWithUrl(workspaceUuid);

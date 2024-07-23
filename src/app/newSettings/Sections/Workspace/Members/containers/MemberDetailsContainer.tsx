@@ -1,21 +1,20 @@
-import { useEffect, useState } from 'react';
+import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
 import { DotsThreeVertical } from '@phosphor-icons/react';
+import errorService from 'app/core/services/error.service';
+import workspacesService from 'app/core/services/workspace.service';
+import Usage from 'app/newSettings/components/Usage/Usage';
+import { getMemberRole } from 'app/newSettings/utils/membersUtils';
+import { useEffect, useState } from 'react';
 import { useTranslationContext } from '../../../../../i18n/provider/TranslationProvider';
 import Card from '../../../../../shared/components/Card';
 import Spinner from '../../../../../shared/components/Spinner/Spinner';
-import Tabs from '../../../../components/Tabs';
-import { ActiveTab, TypeTabs, MemberRole } from '../../../../types/types';
+import { MemberRole, Teams, TypeTabs } from '../../../../types/types';
 import ActivityTab from '../components/ActivityTab';
 import DeactivateMemberModal from '../components/DeactivateModal';
+import ReactivateMemberModal from '../components/ReactivateModal';
 import RequestPasswordChangeModal from '../components/RequestPasswordModal';
 import TeamsTab from '../components/TeamsTab';
 import UserCard from '../components/UserCard';
-import { WorkspaceUser } from '@internxt/sdk/dist/workspaces';
-import { Teams } from '../../../../types/types';
-import { getMemberRole } from 'app/newSettings/utils/membersUtils';
-import Usage from 'app/newSettings/components/Usage/Usage';
-import errorService from 'app/core/services/error.service';
-import workspacesService from 'app/core/services/workspace.service';
 
 interface MemberDetailsContainer {
   member: WorkspaceUser;
@@ -27,6 +26,8 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
   const [isOptionsOpen, setIsOptionsOpen] = useState<boolean>(false);
   const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState<boolean>(false);
   const [isDeactivatingMember, setIsDeactivatingMember] = useState<boolean>(false);
+  const [isReactivateModalOpen, setIsReactivateModalOpen] = useState<boolean>(false);
+  const [isReactivatingMember, setIsReactivatingMember] = useState<boolean>(false);
   const [isRequestChangePasswordModalOpen, setIsRequestChangePasswordModalOpen] = useState<boolean>(false);
   const [isSendingPasswordRequest, setIsSendingPasswordRequest] = useState<boolean>(false);
   const [memberRole, setMemberRole] = useState<MemberRole>('current');
@@ -47,6 +48,20 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
     } finally {
       setIsDeactivatingMember(false);
       setIsDeactivateModalOpen(false);
+    }
+  };
+
+  const reactivateMember = async () => {
+    try {
+      setIsReactivatingMember(true);
+      await workspacesService.reactivateMember(member.workspaceId, member.memberId);
+      getWorkspacesMembers(member.workspaceId);
+      setMemberRole('member');
+    } catch (error) {
+      errorService.reportError(error);
+    } finally {
+      setIsReactivatingMember(false);
+      setIsReactivateModalOpen(false);
     }
   };
 
@@ -117,7 +132,7 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
             rolePosition: 'column',
           }}
         />
-        {!member.isOwner && !member.deactivated && (
+        {!member.isOwner && (
           <div className="relative flex items-center justify-end">
             <button
               className="flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-gray-5 shadow-sm"
@@ -135,12 +150,22 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
                 >
                   <span className="truncate">{translate('preferences.workspace.members.actions.passwordChange')}</span>
                 </button> */}
-                  <button
-                    onClick={() => setIsDeactivateModalOpen(true)}
-                    className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
-                  >
-                    <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
-                  </button>
+                  {!member.deactivated && (
+                    <button
+                      onClick={() => setIsDeactivateModalOpen(true)}
+                      className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                    >
+                      <span className="truncate">{translate('preferences.workspace.members.actions.deactivate')}</span>
+                    </button>
+                  )}
+                  {member.deactivated && (
+                    <button
+                      onClick={() => setIsReactivateModalOpen(true)}
+                      className="flex h-10 w-full items-center justify-center rounded-b-md px-3 hover:bg-gray-20"
+                    >
+                      <span className="truncate">{translate('preferences.workspace.members.actions.reactivate')}</span>
+                    </button>
+                  )}
                 </div>
               </button>
             )}
@@ -169,6 +194,13 @@ const MemberDetailsContainer = ({ member, getWorkspacesMembers }: MemberDetailsC
         onClose={() => setIsDeactivateModalOpen(false)}
         onDeactivate={deactivateMember}
         isLoading={isDeactivatingMember}
+      />
+      <ReactivateMemberModal
+        name={member.member.name + ' ' + member.member.lastname}
+        isOpen={isReactivateModalOpen}
+        onClose={() => setIsReactivateModalOpen(false)}
+        onReactivate={reactivateMember}
+        isLoading={isReactivatingMember}
       />
       <RequestPasswordChangeModal
         isOpen={isRequestChangePasswordModalOpen}
