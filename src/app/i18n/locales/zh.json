@@ -9,7 +9,6 @@
       "discount": "80% 折扣"
     },
     "title": "享受 Internxt 的夏季优惠",
-
     "subtitle": {
       "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
       "line2": {
@@ -676,7 +675,9 @@
         },
         "billing": {
           "editBilling": "编辑账单",
-          "billingDetails": "账单详情"
+          "billingDetails": "账单详情",
+          "updatedBillingDetails": "詳細資訊更新成功",
+          "errorUpdatingBillingDetails": "更新您的詳細資訊時出錯。請在幾分鐘後再試一次"
         }
       }
     }

@@ -12,10 +12,7 @@ interface DefaultPaymentMethodProps {
   name?: string;
 }
 
-// MOCKED DATA
-const cardName = 'Fran Villalba Segarra';
-
-export const useDefaultPaymentMethod = (userType?: UserType) => {
+export const useDefaultPaymentMethod = (userFullName: string, userType?: UserType) => {
   const [defaultPaymentMethod, setDefaultPaymentMethod] = useState<DefaultPaymentMethodProps>({
     tag: 'loading',
   });
@@ -24,6 +21,8 @@ export const useDefaultPaymentMethod = (userType?: UserType) => {
     paymentService
       .getDefaultPaymentMethod(userType || UserType.Individual)
       .then((data: PaymentMethod | Source) => {
+        const billingDetailsName = (data as PaymentMethod).billing_details?.name;
+        const cardName = billingDetailsName || userFullName;
         if (data.card) {
           setDefaultPaymentMethod({ tag: 'ready', card: data.card as PaymentMethod['card'], name: cardName });
         } else if ('type' in data) {

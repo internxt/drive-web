@@ -675,7 +675,9 @@
         },
         "billing": {
           "editBilling": "Edit Billing",
-          "billingDetails": "Billing details"
+          "billingDetails": "Billing details",
+          "updatedBillingDetails": "Details updated successfully",
+          "errorUpdatingBillingDetails": "There was an error updating your details. Please try again in a few minutes"
         }
       }
     }
