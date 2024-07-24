@@ -330,13 +330,23 @@ export const workspacesSlice = createSlice({
       })
 
       .addCase(editWorkspace.rejected, () => {
-        notificationsService.show({ text: t('error.serverError'), type: ToastType.Warning });
+        notificationsService.show({
+          text: t('views.preferences.workspace.billing.errorUpdatingBillingDetails'),
+          type: ToastType.Warning,
+        });
       })
       .addCase(editWorkspace.fulfilled, (_, action) => {
-        if (action.payload) {
-          notificationsService.show({ text: 'Information updated', type: ToastType.Success });
+        const isUpdateSuccessful = action.payload;
+        if (isUpdateSuccessful) {
+          notificationsService.show({
+            text: t('views.preferences.workspace.billing.updatedBillingDetails'),
+            type: ToastType.Success,
+          });
         } else {
-          notificationsService.show({ text: t('error.serverError'), type: ToastType.Warning });
+          notificationsService.show({
+            text: t('views.preferences.workspace.billing.errorUpdatingBillingDetails'),
+            type: ToastType.Warning,
+          });
         }
       });
   },

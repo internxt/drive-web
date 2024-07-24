@@ -59,7 +59,6 @@
     "system": "Система",
     "starwars": "Star Wars"
   },
-
   "auth": {
     "email": "Email",
     "password": "Password",
@@ -650,7 +649,9 @@
         },
         "billing": {
           "editBilling": "Изменить оплату",
-          "billingDetails": "Детали оплаты"
+          "billingDetails": "Детали оплаты",
+          "updatedBillingDetails": "Данные успешно обновлены",
+          "errorUpdatingBillingDetails": "Произошла ошибка при обновлении ваших данных. Повторите попытку через несколько минут"
         }
       }
     }

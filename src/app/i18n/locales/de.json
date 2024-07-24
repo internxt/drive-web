@@ -587,7 +587,9 @@
         },
         "billing": {
           "editBilling": "Zahlung bearbeiten",
-          "billingDetails": "Zahlungsdetails"
+          "billingDetails": "Zahlungsdetails",
+          "updatedBillingDetails": "Angaben erfolgreich aktualisiert",
+          "errorUpdatingBillingDetails": "Beim Aktualisieren Ihrer Angaben ist ein Fehler aufgetreten. Bitte versuchen Sie es in ein paar Minuten erneut"
         }
       }
     },

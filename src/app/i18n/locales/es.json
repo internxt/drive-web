@@ -657,7 +657,9 @@
         },
         "billing": {
           "editBilling": "Editar facturación",
-          "billingDetails": "Detalles de facturación"
+          "billingDetails": "Detalles de facturación",
+          "updatedBillingDetails": "Los datos se han actualizado correctamente",
+          "errorUpdatingBillingDetails": "Se ha producido un error al actualizar los datos. Vuelve a intentarlo en unos minutos"
         }
       }
     }
