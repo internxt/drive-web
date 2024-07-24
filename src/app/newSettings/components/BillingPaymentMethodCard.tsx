@@ -15,11 +15,16 @@ import unknownIcon from '../../../assets/icons/card-brands/unknown.png';
 import visaIcon from '../../../assets/icons/card-brands/visa.png';
 import EditPaymentMethodModal from '../Sections/Workspace/Billing/components/EditPaymentMethodModal';
 import { useDefaultPaymentMethod } from '../hooks/useDefaultPaymentMethod';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { RootState } from 'app/store';
+import { useSelector } from 'react-redux';
 
 const BillingPaymentMethodCard = ({ userType }: { userType: UserType }) => {
+  const user = useSelector((state: RootState) => state.user.user) as UserSettings;
+  const userFullName = user.name && user.lastname ? `${user.name} ${user.lastname}` : user.name || user.lastname;
   const [isEditPaymentMethodModalOpen, setIsEditPaymentMethodModalOpen] = useState<boolean>(false);
   const [isPaymentMethod, setIsPaimentMethod] = useState<boolean>(false);
-  const defaultPaymentMethod = useDefaultPaymentMethod(userType);
+  const defaultPaymentMethod = useDefaultPaymentMethod(userFullName, userType);
 
   useEffect(() => {
     (defaultPaymentMethod.tag === 'ready' && defaultPaymentMethod.card) ||

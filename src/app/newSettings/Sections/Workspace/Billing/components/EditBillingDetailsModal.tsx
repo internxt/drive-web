@@ -62,6 +62,7 @@ const EditBillingDetailsModal = ({
                 phoneNumber: editedPhone,
               })
             }
+            disabled={!editedAddress || !editedPhone}
           >
             {t('views.preferences.workspace.overview.editOverviewDetails.saveButton')}
           </Button>

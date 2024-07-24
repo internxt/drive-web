@@ -82,8 +82,10 @@ const BillingWorkspaceSection = ({ onClosePreferences }: BillingWorkspaceSection
   const onSaveBillingDetails = (newBillingDetails: CustomerBillingInfo) => {
     if (workspaceId) {
       setIsSavingBillingDetails(true);
-      dispatch(workspaceThunks.editWorkspace({ workspaceId, details: newBillingDetails })).then(() => {
-        setBillingDetails(newBillingDetails);
+      dispatch(workspaceThunks.editWorkspace({ workspaceId, details: newBillingDetails })).then((data) => {
+        if (data.payload) {
+          setBillingDetails(newBillingDetails);
+        }
       });
       setIsSavingBillingDetails(false);
       setIsEditingBillingDetails(false);

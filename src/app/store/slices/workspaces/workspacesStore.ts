@@ -15,6 +15,7 @@ import { decryptMnemonic } from '../../../share/services/share.service';
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
+import { t } from 'i18next';
 
 export interface PersonalWorkspace {
   uuid: string;
@@ -205,7 +206,7 @@ const deleteWorkspaceAvatar = createAsyncThunk<void, { workspaceId: string }, { 
 );
 
 const editWorkspace = createAsyncThunk<
-  void,
+  boolean,
   { workspaceId: string; details: { name?: string; description?: string; address?: string; phoneNumber?: string } },
   { state: RootState }
 >('workspaces/editWorkspace', async (payload, { dispatch }) => {
@@ -219,7 +220,9 @@ const editWorkspace = createAsyncThunk<
         patch: { name, description, address, phoneNumber },
       }),
     );
+    return true;
   }
+  return false;
 });
 
 export const workspacesSlice = createSlice({
@@ -324,6 +327,17 @@ export const workspacesSlice = createSlice({
 
         state.isLoadingWorkspaces = false;
         notificationsService.show({ text: 'checking workspaces error ' + errorMsg, type: ToastType.Warning });
+      })
+
+      .addCase(editWorkspace.rejected, () => {
+        notificationsService.show({ text: t('error.serverError'), type: ToastType.Warning });
+      })
+      .addCase(editWorkspace.fulfilled, (_, action) => {
+        if (action.payload) {
+          notificationsService.show({ text: 'Information updated', type: ToastType.Success });
+        } else {
+          notificationsService.show({ text: t('error.serverError'), type: ToastType.Warning });
+        }
       });
   },
 });
