@@ -1,11 +1,14 @@
 import { t } from 'i18next';
 import { useState } from 'react';
 
+import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
-import DetailsInput from '../../../../components/DetailsInput';
-import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
 
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
+
+import DetailsInput from '../../../../components/DetailsInput';
 const EditBillingDetailsModal = ({
   isOpen,
   onClose,
@@ -38,14 +41,24 @@ const EditBillingDetailsModal = ({
             disabled={isLoading}
             hideMaxLength
           />
-          <DetailsInput
-            label="Phone"
-            textValue={editedPhone}
-            onChangeTextValue={setEditedPhone}
-            maxLength={MAX_INPUT_LENGHT}
-            disabled={isLoading}
-            hideMaxLength
-          />
+          {/* TODO: styles need to be adjusted */}
+          <div>
+            <span className={'text-sm text-gray-80'}>Phone</span>
+            <div className="inxt-input h-10 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-primary ring-opacity-10 focus:border-primary focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20">
+              <PhoneInput
+                value={editedPhone}
+                onChange={setEditedPhone}
+                className=" bg-white  dark:bg-black"
+                inputClassName="py-1 w-full dark:bg-black px-4 text-lg text-gray-80 dark:text-white outline-none"
+                countrySelectorStyleProps={{
+                  className: 'focus:border-primary',
+                }}
+                disabled={isLoading}
+                defaultCountry="ES"
+                forceDialCode
+              />
+            </div>
+          </div>
         </div>
 
         <div className="flex w-full flex-row justify-end space-x-2">
