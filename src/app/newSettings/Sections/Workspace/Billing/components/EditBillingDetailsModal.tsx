@@ -41,23 +41,20 @@ const EditBillingDetailsModal = ({
             disabled={isLoading}
             hideMaxLength
           />
-          {/* TODO: styles need to be adjusted */}
           <div>
             <span className={'text-sm text-gray-80'}>Phone</span>
-            <div className="inxt-input h-10 w-full rounded-md border bg-transparent text-lg font-normal text-gray-80 outline-none ring-primary ring-opacity-10 focus:border-primary focus:ring-3 disabled:text-gray-40 disabled:placeholder-gray-20 dark:ring-opacity-20">
-              <PhoneInput
-                value={editedPhone}
-                onChange={setEditedPhone}
-                className=" bg-white  dark:bg-black"
-                inputClassName="py-1 w-full dark:bg-black px-4 text-lg text-gray-80 dark:text-white outline-none"
-                countrySelectorStyleProps={{
-                  className: 'focus:border-primary',
-                }}
-                disabled={isLoading}
-                defaultCountry="ES"
-                forceDialCode
-              />
-            </div>
+            <PhoneInput
+              value={editedPhone}
+              onChange={setEditedPhone}
+              inputClassName="!inxt-input !h-10 w-full !rounded-r-md !border !border-gray-20 !bg-transparent !py-1 !px-4 !text-lg !font-normal !text-gray-80 !placeholder-gray-30 !outline-none !ring-primary !ring-opacity-10 !hover:border-gray-30 !focus:border-primary !focus:ring-3 !disabled:border-gray-10 !disabled:text-gray-40 !disabled:placeholder-gray-20 !dark:ring-opacity-20"
+              countrySelectorStyleProps={{
+                buttonClassName:
+                  '!h-10 !bg-transparent !px-2 !py-1 !rounded-l-md !border !border-gray-20 !focus:border-primary !focus-visible:border-primary',
+              }}
+              disabled={isLoading}
+              defaultCountry="es"
+              forceDialCode
+            />
           </div>
         </div>
 
