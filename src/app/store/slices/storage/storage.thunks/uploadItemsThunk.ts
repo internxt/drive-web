@@ -319,6 +319,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
             currentFolderId,
             page,
             offset,
+            isDeepFolder ? ownerUserAuthenticationData?.token ?? '' : '',
           );
           const response = await promise;
           parentFolderContent = response;
@@ -366,6 +367,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
         bucketId: workspaceCredentials?.bucket,
         workspaceId: workspaceId,
         workspacesToken: workspaceCredentials?.tokenHeader,
+        resourcesToken: ownerUserAuthenticationData?.token,
       };
     }
     const filesToUploadData = filesToUpload.map((file) => ({

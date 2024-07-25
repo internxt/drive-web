@@ -36,6 +36,7 @@ type Options = {
     // to manage B2B workspaces
     workspaceId?: string;
     workspacesToken?: string;
+    resourcesToken: string;
   };
   sharedItemData?: {
     isDeepFolder?: boolean;

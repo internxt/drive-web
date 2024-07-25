@@ -34,6 +34,7 @@ export interface FileUploadOptions {
     encryptionKey: string;
     bucketId: string;
     // to manage B2B workspaces
+    resourcesToken: string;
     workspaceId?: string;
     workspacesToken?: string;
   };
@@ -113,12 +114,16 @@ export async function uploadFile(
 
     const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
     const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+    const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
+
     const isWorkspacesUpload = workspaceId && workspacesToken;
     let response;
 
     if (isWorkspacesUpload) {
       // TEMPORARY: For backward compatibility with id
-      const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken);
+      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
+      const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken, resourcesToken);
+
       const name = encryptFilename(file.name, folderMeta.id);
       const dateISO = '2023-05-30T12:34:56.789Z';
       const date = new Date(dateISO);
@@ -135,10 +140,15 @@ export async function uploadFile(
         date: date.toISOString(),
       };
 
-      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId);
+      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
     } else {
       // TEMPORARY: For backward compatibility with id
-      const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId);
+      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
+      const folderMeta = await newStorageService.getFolderMeta(
+        file.parentFolderId,
+        undefined,
+        options.ownerUserAuthenticationData?.token,
+      );
       const name = encryptFilename(file.name, folderMeta.id);
 
       const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
@@ -153,7 +163,7 @@ export async function uploadFile(
         encrypt_version: StorageTypes.EncryptionVersion.Aes03,
       };
 
-      response = await storageClient.createFileEntryByUuid(fileEntry);
+      response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
     }
     if (!response.thumbnails) {
       response = {
