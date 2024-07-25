@@ -290,6 +290,7 @@ export function getAllWorkspaceTeamSharedFolderFolders(
   sharedFolderUUID: string,
   page: number,
   perPage: number,
+  token?: string,
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
@@ -299,6 +300,7 @@ export function getAllWorkspaceTeamSharedFolderFolders(
     sharedFolderUUID,
     page,
     perPage,
+    token,
     orderBy,
   );
 }
@@ -309,6 +311,8 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   sharedFolderUUID: string,
   page: number,
   perPage: number,
+  token?: string,
+
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
@@ -318,6 +322,7 @@ export function getAllWorkspaceTeamSharedFolderFiles(
     sharedFolderUUID,
     page,
     perPage,
+    token,
     orderBy,
   );
 }
