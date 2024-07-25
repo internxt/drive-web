@@ -107,7 +107,7 @@ export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['prog
         passthroughController.close();
         passthroughController = null;
       }
-    }
+    },
   });
 
   zip.ondata = (err, data, final) => {
@@ -137,18 +137,20 @@ export function createFolderWithFilesWritable(progress?: FlatFolderZipOpts['prog
 
       zip.add(writer);
 
-      source.pipeTo(new WritableStream({
-        write(chunk) {
-          processedSize += chunk.length;
+      source.pipeTo(
+        new WritableStream({
+          write(chunk) {
+            processedSize += chunk.length;
 
-          progress?.(processedSize);
+            progress?.(processedSize);
 
-          writer.push(chunk, false);
-        },
-        close() {
-          writer.push(new Uint8Array(0), true);
-        },
-      }));
+            writer.push(chunk, false);
+          },
+          close() {
+            writer.push(new Uint8Array(0), true);
+          },
+        }),
+      );
     },
     addFolder: (name: string): void => {
       const writer = new AsyncZipDeflate(name + '/', {

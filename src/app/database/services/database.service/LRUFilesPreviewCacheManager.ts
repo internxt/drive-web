@@ -1,33 +1,33 @@
-import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 import databaseService, { DatabaseCollection, DriveItemBlobData, LRUCacheTypes } from '.';
+import { ICacheStorage, LRUCache, LRUCacheStruture } from './LRUCache';
 
 class LevelsBlobsPreviewsCache implements ICacheStorage<DriveItemBlobData> {
   async getSize(key: string): Promise<number> {
-    const blobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
-    return blobItem?.preview?.size || 0;
+    const blobItem = await databaseService.get(DatabaseCollection.LevelsBlobs, key);
+    return blobItem?.preview?.size ?? 0;
   }
 
   get(key: string): Promise<DriveItemBlobData | undefined> {
-    const blobItem = databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key));
+    const blobItem = databaseService.get(DatabaseCollection.LevelsBlobs, key);
     return blobItem;
   }
 
   set(key: string, value: DriveItemBlobData): void {
-    databaseService.put(DatabaseCollection.LevelsBlobs, parseInt(key), value);
+    databaseService.put(DatabaseCollection.LevelsBlobs, key, value);
   }
 
   delete(key: string): void {
-    databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key)).then((databaseData) => {
+    databaseService.get(DatabaseCollection.LevelsBlobs, key).then((databaseData) => {
       if (databaseData?.source) {
-        databaseService.put(DatabaseCollection.LevelsBlobs, parseInt(key), { ...databaseData, preview: undefined });
+        databaseService.put(DatabaseCollection.LevelsBlobs, key, { ...databaseData, preview: undefined });
         return;
       }
-      databaseService.delete(DatabaseCollection.LevelsBlobs, parseInt(key));
+      databaseService.delete(DatabaseCollection.LevelsBlobs, key);
     });
   }
 
   async has(key: string): Promise<boolean> {
-    const exists = !!(await databaseService.get(DatabaseCollection.LevelsBlobs, parseInt(key)))?.preview;
+    const exists = !!(await databaseService.get(DatabaseCollection.LevelsBlobs, key))?.preview;
     return exists;
   }
 

@@ -15,20 +15,39 @@ const updateDatabaseProfileAvatar = async ({
   uuid: string;
   sourceURL: string;
   avatarBlob: Blob;
-}): Promise<void> => {
+}): Promise<void> =>
   databaseService.put(DatabaseCollection.Account_settings, 'profile_avatar', {
     srcURL: sourceURL,
     avatarBlob,
     uuid,
   });
-};
 
 const getDatabaseProfileAvatar = async (): Promise<AvatarBlobData | undefined> =>
   databaseService.get(DatabaseCollection.Account_settings, 'profile_avatar');
 
-const deleteDatabaseProfileAvatar = async (): Promise<void> => {
+const deleteDatabaseProfileAvatar = async (): Promise<void> =>
   databaseService.delete(DatabaseCollection.Account_settings, 'profile_avatar');
-};
+
+const updateDatabaseWorkspaceAvatar = async ({
+  uuid,
+  sourceURL,
+  avatarBlob,
+}: {
+  uuid: string;
+  sourceURL: string;
+  avatarBlob: Blob;
+}): Promise<void> =>
+  databaseService.put(DatabaseCollection.WorkspacesAvatarBlobs, uuid, {
+    srcURL: sourceURL,
+    avatarBlob,
+    uuid,
+  });
+
+const getDatabaseWorkspaceAvatar = async (uuid: string): Promise<AvatarBlobData | undefined> =>
+  databaseService.get(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
+
+const deleteDatabaseWorkspaceAvatar = async (uuid: string): Promise<void> =>
+  databaseService.delete(DatabaseCollection.WorkspacesAvatarBlobs, uuid);
 
 const updateDatabaseFilePreviewData = async ({
   fileId,
@@ -42,7 +61,8 @@ const updateDatabaseFilePreviewData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesPreviewCacheManager = await LRUFilesPreviewCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesPreviewCacheManager?.set(
     fileId.toString(),
@@ -80,7 +100,9 @@ const updateDatabaseFileSourceData = async ({
   updatedAt: string;
 }): Promise<void> => {
   const lruFilesCacheManager = await LRUFilesCacheManager.getInstance();
-  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId);
+  // CHECK IF THAT THE PREVIEW KEY IS THE ID HAS ANY UNEXPECTED EFFECT INSTEAD OF BE THE FILE UUID
+
+  const fileData = await databaseService.get(DatabaseCollection.LevelsBlobs, fileId?.toString());
 
   lruFilesCacheManager?.set(
     fileId.toString(),
@@ -109,7 +131,7 @@ const deleteDatabaseItems = async (items: DriveItemData[]): Promise<void> => {
 
   if (foldersInFolder.length) {
     await foldersInFolder.forEach(async (folder) => {
-      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.id as number);
+      const folderItems = await databaseService.get(DatabaseCollection.Levels, folder?.uuid);
 
       if (folderItems) {
         deleteDatabaseItems(folderItems as DriveItemData[]);
@@ -130,10 +152,13 @@ export {
   canFileBeCached,
   deleteDatabaseItems,
   deleteDatabaseProfileAvatar,
+  deleteDatabaseWorkspaceAvatar,
   getDatabaseFilePreviewData,
   getDatabaseFileSourceData,
   getDatabaseProfileAvatar,
+  getDatabaseWorkspaceAvatar,
   updateDatabaseFilePreviewData,
   updateDatabaseFileSourceData,
   updateDatabaseProfileAvatar,
+  updateDatabaseWorkspaceAvatar,
 };

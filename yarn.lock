@@ -1612,10 +1612,10 @@
   resolved "https://npm.pkg.github.com/download/@internxt/prettier-config/1.0.2/5bd220b8de76734448db5475b3e0c01f9d22c19b#5bd220b8de76734448db5475b3e0c01f9d22c19b"
   integrity sha512-t4HiqvCbC7XgQepwWlIaFJe3iwW7HCf6xOSU9nKTV0tiGqOPz7xMtIgLEloQrDA34Cx4PkOYBXrvFPV6RxSFAA==
 
-"@internxt/sdk@^1.4.88":
-  version "1.4.88"
-  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.4.88/4ced3e5ecb671f39e13090841a327989242de50c#4ced3e5ecb671f39e13090841a327989242de50c"
-  integrity sha512-h4yPjXk9778sFy/QtSduTD2mwL8HHMAPgHvD09eIZfDL56k9w4Cey1LrXreNNEFcSHYvmLHC/sOT4sVwEQP1rg==
+"@internxt/sdk@^1.5.2":
+  version "1.5.2"
+  resolved "https://npm.pkg.github.com/download/@internxt/sdk/1.5.2/d60fed5ae5e50c53b5286d150b84adddfd97b9d5#d60fed5ae5e50c53b5286d150b84adddfd97b9d5"
+  integrity sha512-1YtEi0Zs/O7CkKEzPIpaqc1WjNn8bKBdiT1gWLm75P0A4O/n+z2BXTTxdlQLOFeSb19GcNdD74fcq3qUZkKQ8Q==
   dependencies:
     axios "^0.24.0"
     query-string "^7.1.0"
@@ -2744,10 +2744,10 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.5.tgz#38bd1733ae299620771bd414837ade2e57757498"
   integrity sha512-xrO9OoVPqFuYyR/loIHjnbvvyRZREYKLjxV4+dY6v3FQR3stQ9ZxIGkaclF7YhI9hfjpuTbu14hZEy94qKLtOA==
 
-"@types/react-avatar-editor@^12.0.0":
-  version "12.0.0"
-  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-12.0.0.tgz#f800d63fd8fef1d149340d2b295a086fd58eb01e"
-  integrity sha512-835jSnCdQ2Kgrtz2sTYKMv9YSGJG0j2vd8C0sxWtYJoYOmYPs8nt25rTsbCOha3SVzWNiuw1TOQCVqN0iBQgrw==
+"@types/react-avatar-editor@^13.0.2":
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/@types/react-avatar-editor/-/react-avatar-editor-13.0.2.tgz#26c58252e8465f5a99dd146072fe9351c07b9c3f"
+  integrity sha512-vnGU4sx5TDB9JMCuw+kB3+jfDNMhVlpBbgMRZG9NzVnaBb5xUjVV4VmHdD2O8gj/pb5GN+QXKk7jan09aMjG2A==
   dependencies:
     "@types/react" "*"
 
@@ -10696,10 +10696,10 @@ react-app-polyfill@^3.0.0:
     regenerator-runtime "^0.13.9"
     whatwg-fetch "^3.6.2"
 
-react-avatar-editor@^13.0.0:
-  version "13.0.0"
-  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-13.0.0.tgz#55013625ee9ae715c1fe2dc553b8079994d8a5f2"
-  integrity sha512-0xw63MbRRQdDy7YI1IXU9+7tTFxYEFLV8CABvryYOGjZmXRTH2/UA0mafe57ns62uaEFX181kA4XlGlxCaeXKA==
+react-avatar-editor@^13.0.2:
+  version "13.0.2"
+  resolved "https://registry.yarnpkg.com/react-avatar-editor/-/react-avatar-editor-13.0.2.tgz#7ed5a1fd7a9e7bd4b320a3a65df32d3d0e21eb10"
+  integrity sha512-a4ajbi7lwDh98kgEtSEeKMu0vs0CHTczkq4Xcxr1EiwMFH1GlgHCEtwGU8q/H5W8SeLnH4KPK8LUjEEaZXklxQ==
   dependencies:
     "@babel/plugin-transform-runtime" "^7.12.1"
     "@babel/runtime" "^7.12.5"
@@ -10856,6 +10856,11 @@ react-infinite-scroll-component@6.1.0:
   integrity sha512-SQu5nCqy8DxQWpnUVLx7V7b7LcA37aM7tvoWjTLZp1dk6EJibM5/4EJKzOnl07/BsM1Y40sKLuqjCwwH/xV0TQ==
   dependencies:
     throttle-debounce "^2.1.0"
+
+react-international-phone@^4.3.0:
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/react-international-phone/-/react-international-phone-4.3.0.tgz#cb04295b13b5a55f50f36e3c0b7f6c2dc549bb6c"
+  integrity sha512-lIntIkwq2j0m3j4RsRiGJl/buHMLBd+mQ9S9RfiX3KbiUCUtbawoPCV2r8BvyeRMZI0cDtovoukBCuZ+70QzJA==
 
 react-is@^16.13.1, react-is@^16.3.2, react-is@^16.6.0, react-is@^16.7.0:
   version "16.13.1"

@@ -1,5 +1,5 @@
 import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import desktopService from 'app/core/services/desktop.service';
@@ -17,6 +17,10 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsWidget';
 import { useAppSelector } from 'app/store/hooks';
 
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import envService from '../../services/env.service';
+import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
+
 interface SidenavProps {
   user: UserSettings | undefined;
   subscription: UserSubscription | null;
@@ -27,7 +31,9 @@ interface SidenavProps {
 }
 
 const Sidenav = (props: SidenavProps) => {
+  const { user } = props;
   const { translate } = useTranslationContext();
+  const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -50,7 +56,7 @@ const Sidenav = (props: SidenavProps) => {
     navigationService.push(AppView.Drive);
   };
 
-  const { planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = props;
+  const { subscription, planUsage, planLimit, isLoadingPlanLimit, isLoadingPlanUsage } = props;
 
   const pendingInvitations = useAppSelector((state: RootState) => state.shared.pendingInvitations);
 
@@ -64,24 +70,31 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
+          {!envService.isProduction() && user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
-          <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
+          {!isB2BWorskpace && (
+            <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
+          )}
           <SidenavItem
             label={translate('sideNav.shared')}
             to="/shared"
             Icon={Users}
             notifications={pendingInvitations.length}
+            isB2BWorskpace={isB2BWorskpace}
           />
-          <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />
+          {!isB2BWorskpace && <SidenavItem label={translate('sideNav.recents')} to="/recents" Icon={Clock} />}
           <SidenavItem label={translate('sideNav.trash')} to="/trash" Icon={Trash} />
-          <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          {!isB2BWorskpace && (
+            <SidenavItem label={translate('sideNav.desktop')} Icon={Desktop} onClick={onDownloadAppButtonClicked} />
+          )}
         </div>
-        {props.subscription && props.subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
+        {subscription && subscription.type === 'free' ? <ReferralsWidget /> : <div className="grow"></div>}
 
         <div className="mb-11 mt-8 px-5">
           <PlanUsage
             limit={planLimit}
             usage={planUsage}
+            subscriptionType={subscription?.type}
             isLoading={isLoadingPlanUsage || isLoadingPlanLimit}
           ></PlanUsage>
         </div>
@@ -92,8 +105,8 @@ const Sidenav = (props: SidenavProps) => {
 
 export default connect((state: RootState) => ({
   user: state.user.user,
-  planUsage: state.plan.planUsage,
-  subscription: state.plan.subscription,
+  subscription: planSelectors.subscriptionToShow(state),
+  planUsage: planSelectors.planUsageToShow(state),
   planLimit: planSelectors.planLimitToShow(state),
   isLoadingPlanLimit: state.plan.isLoadingPlanLimit,
   isLoadingPlanUsage: state.plan.isLoadingPlanUsage,

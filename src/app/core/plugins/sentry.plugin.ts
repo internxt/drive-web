@@ -1,7 +1,7 @@
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
-import { AppPlugin } from '../../core/types';
 import packageJson from '../../../../package.json';
+import { AppPlugin } from '../../core/types';
 
 const sentryPlugin: AppPlugin = {
   install(): void {

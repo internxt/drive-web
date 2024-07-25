@@ -35,7 +35,7 @@ const initialState: StorageState = {
   filesOnTrashLength: 0,
   viewMode: FileViewMode.List,
   namePath: [],
-  currentPath: { id: 0, name: '' },
+  currentPath: { uuid: '', name: '' },
   filesToRename: [],
   driveFilesToRename: [],
   foldersToRename: [],
@@ -64,7 +64,7 @@ export const storageSlice = createSlice({
   name: 'storage',
   initialState,
   reducers: {
-    setIsLoadingFolder: (state: StorageState, action: PayloadAction<{ folderId: number; value: boolean }>) => {
+    setIsLoadingFolder: (state: StorageState, action: PayloadAction<{ folderId: string; value: boolean }>) => {
       state.loadingFolders[action.payload.folderId] = action.payload.value;
     },
     setForceLoading: (state: StorageState, action: PayloadAction<boolean>) => {
@@ -76,51 +76,51 @@ export const storageSlice = createSlice({
     setIsLoadingDeleted: (state: StorageState, action: PayloadAction<boolean>) => {
       state.isLoadingDeleted = action.payload;
     },
-    setItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+    setItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       state.levels[action.payload.folderId] = action.payload.items;
     },
-    setMoveDialogItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+    setMoveDialogItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       state.moveDialogLevels[action.payload.folderId] = action.payload.items;
     },
-    addItems: (state: StorageState, action: PayloadAction<{ folderId: number; items: DriveItemData[] }>) => {
+    addItems: (state: StorageState, action: PayloadAction<{ folderId: string; items: DriveItemData[] }>) => {
       const newFolderContent = (state.levels[action.payload.folderId] ?? []).concat(action.payload.items);
       const removedDuplicates = removeDuplicates(newFolderContent);
       state.levels[action.payload.folderId] = removedDuplicates;
     },
     setFolderFoldersLength: (
       state: StorageState,
-      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+      action: PayloadAction<{ folderId: string; foldersLength: number }>,
     ) => {
       state.levelsFoldersLength[action.payload.folderId] = action.payload.foldersLength;
     },
-    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+    setFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: string; filesLength: number }>) => {
       state.levelsFilesLength[action.payload.folderId] = action.payload.filesLength;
     },
     addFolderFoldersLength: (
       state: StorageState,
-      action: PayloadAction<{ folderId: number; foldersLength: number }>,
+      action: PayloadAction<{ folderId: string; foldersLength: number }>,
     ) => {
       const foldersLength = state.levelsFoldersLength[action.payload.folderId] ?? 0;
       state.levelsFoldersLength[action.payload.folderId] = foldersLength + action.payload.foldersLength;
     },
-    addFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: number; filesLength: number }>) => {
+    addFolderFilesLength: (state: StorageState, action: PayloadAction<{ folderId: string; filesLength: number }>) => {
       const filesLength = state.levelsFilesLength[action.payload.folderId] ?? 0;
       state.levelsFilesLength[action.payload.folderId] = filesLength + action.payload.filesLength;
     },
-    resetLevelsFoldersLength: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
+    resetLevelsFoldersLength: (state: StorageState, action: PayloadAction<{ folderId: string }>) => {
       state.levelsFoldersLength[action.payload.folderId] = 0;
       state.levelsFilesLength[action.payload.folderId] = 0;
       state.levels[action.payload.folderId] = [];
     },
-    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+    setHasMoreDriveFolders: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFolders[action.payload.folderId] = action.payload.status;
     },
-    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: number; status: boolean }>) => {
+    setHasMoreDriveFiles: (state: StorageState, action: PayloadAction<{ folderId: string; status: boolean }>) => {
       state.hasMoreDriveFiles[action.payload.folderId] = action.payload.status;
     },
     resetDrivePagination: (state: StorageState) => {
-      state.hasMoreDriveFolders[state.currentPath.id] = true;
-      state.hasMoreDriveFiles[state.currentPath.id] = true;
+      state.hasMoreDriveFolders[state.currentPath.uuid] = true;
+      state.hasMoreDriveFiles[state.currentPath.uuid] = true;
     },
     setRecents: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.recents = action.payload;
@@ -162,7 +162,7 @@ export const storageSlice = createSlice({
     setDriveFoldersToRename: (state: StorageState, action: PayloadAction<DriveItemData[]>) => {
       state.driveFoldersToRename = action.payload;
     },
-    setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<number | null>) => {
+    setMoveDestinationFolderId: (state: StorageState, action: PayloadAction<string | null>) => {
       state.moveDestinationFolderId = action.payload;
     },
     setFilters: (state: StorageState, action: PayloadAction<StorageSetFiltersPayload>) => {
@@ -231,16 +231,16 @@ export const storageSlice = createSlice({
       });
     },
     popNamePathUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      const folderIndex: number = state.namePath.map((path) => path.id).indexOf(action.payload.id);
+      const folderIndex: number = state.namePath.map((path) => path.uuid).indexOf(action.payload.uuid);
 
       state.namePath = state.namePath.slice(0, folderIndex + 1);
     },
     popNamePathDialogUpTo: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      const folderIndex: number = state.folderPathDialog.map((path) => path.id).indexOf(action.payload.id);
+      const folderIndex: number = state.folderPathDialog.map((path) => path.uuid).indexOf(action.payload.uuid);
       state.folderPathDialog = state.folderPathDialog.slice(0, folderIndex + 1);
     },
     pushNamePath: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      if (!state.namePath.map((path) => path.id).includes(action.payload.id)) {
+      if (!state.namePath.map((path) => path.uuid).includes(action.payload.uuid)) {
         state.namePath.push(action.payload);
       }
     },
@@ -248,7 +248,7 @@ export const storageSlice = createSlice({
       state.namePath = action.payload;
     },
     pushNamePathDialog: (state: StorageState, action: PayloadAction<FolderPath>) => {
-      if (!state.folderPathDialog.map((path) => path.id).includes(action.payload.id)) {
+      if (!state.folderPathDialog.map((path) => path.uuid).includes(action.payload.uuid)) {
         state.folderPathDialog.push(action.payload);
       }
     },
@@ -273,14 +273,14 @@ export const storageSlice = createSlice({
     },
     patchItem: (
       state: StorageState,
-      action: PayloadAction<{ id: number; folderId: number; isFolder: boolean; patch: DriveItemPatch }>,
+      action: PayloadAction<{ uuid: string; folderId: string; isFolder: boolean; patch: DriveItemPatch }>,
     ) => {
-      const { id, folderId, isFolder, patch } = action.payload;
-
+      const { uuid, folderId, isFolder, patch } = action.payload;
       const folderItems = [...state.levels[folderId]];
+
       if (folderItems) {
-        const item = folderItems.find((i) => i.id === id && !!i.isFolder === !!isFolder);
-        const itemIndex = folderItems.findIndex((i) => i.id === id && !!i.isFolder === !!isFolder);
+        const item = folderItems.find((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
+        const itemIndex = folderItems.findIndex((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
         const itemsToDatabase = [...folderItems];
         itemsToDatabase[itemIndex] = Object.assign({}, item, patch);
 
@@ -290,14 +290,14 @@ export const storageSlice = createSlice({
       }
 
       state.recents = state.recents.map((item) => {
-        if (item.id === id && item.isFolder === isFolder) {
+        if (item.uuid === uuid && item.isFolder === isFolder) {
           Object.assign(item, patch);
         }
         return item;
       });
 
       state.selectedItems = state.selectedItems.map((item) => {
-        if (item.id === id && item.isFolder === isFolder) {
+        if (item.uuid === uuid && item.isFolder === isFolder) {
           Object.assign(item, patch);
         }
         return item;
@@ -307,7 +307,7 @@ export const storageSlice = createSlice({
         Object.assign(state.infoItem, patch);
       } */
     },
-    clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: number }>) => {
+    clearCurrentThumbnailItems: (state: StorageState, action: PayloadAction<{ folderId: string }>) => {
       const { folderId } = action.payload;
 
       if (state.levels[folderId]) {
@@ -334,10 +334,10 @@ export const storageSlice = createSlice({
     },
     pushItems(
       state: StorageState,
-      action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
+      action: PayloadAction<{ updateRecents?: boolean; folderIds?: string[]; items: DriveItemData | DriveItemData[] }>,
     ) {
       const itemsToPush = Array.isArray(action.payload.items) ? action.payload.items : [action.payload.items];
-      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderItems = action.payload.folderIds ?? Object.keys(state.levels).map((folderId) => folderId);
       const folderIds = Array.isArray(folderItems) ? folderItems : [folderItems];
 
       const uniqueNewItemsId = new Set(itemsToPush.map((item) => item.id));
@@ -362,9 +362,9 @@ export const storageSlice = createSlice({
     },
     popItems(
       state: StorageState,
-      action: PayloadAction<{ updateRecents?: boolean; folderIds?: number[]; items: DriveItemData | DriveItemData[] }>,
+      action: PayloadAction<{ updateRecents?: boolean; folderIds?: string[]; items: DriveItemData | DriveItemData[] }>,
     ) {
-      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => parseInt(folderId));
+      const folderIds = action.payload.folderIds || Object.keys(state.levels).map((folderId) => folderId);
       const itemsToDelete = !Array.isArray(action.payload.items) ? [action.payload.items] : action.payload.items;
 
       folderIds.forEach((folderId) => {

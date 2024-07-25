@@ -1,8 +1,8 @@
 import { SharedFiles } from '@internxt/sdk/dist/drive/share/types';
 import { Iterator } from 'app/core/collections';
+import { binaryStreamToBlob } from '../../core/services/stream.service';
 import { FlatFolderZip } from '../../core/services/zip.service';
 import { DriveFileData } from '../types';
-import { binaryStreamToBlob } from '../../core/services/stream.service';
 
 type File = SharedFiles | DriveFileData;
 
@@ -17,7 +17,7 @@ async function addFilesToZip<T extends File>(
 
   const addFileToZip = async (file: T) => {
     const fileStream = await downloadFile(file);
-    zip.addFile(path + '/' + file.name + (file.type ? '.' + file.type : ''), fileStream);
+    zip.addFile(path + '/' + (file.plainName ?? file.name) + (file.type ? '.' + file.type : ''), fileStream);
   };
 
   let pack;
@@ -39,18 +39,17 @@ async function addFilesToZip<T extends File>(
         const [file] = filesChunk;
         await addFileToZip(file);
       } else {
-        const downloadPromises: Promise<({
+        const downloadPromises: Promise<{
           name: string;
           type: string;
           blob: Blob;
-        })>[] = [];
+        }>[] = [];
 
         for (const file of filesChunk) {
-          const downloadPromise = downloadFile(file)
-            .then(async (fileStream) => {
-              const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
-              return { name: file.name, type: file.type, blob: fileBlob };
-            });
+          const downloadPromise = downloadFile(file).then(async (fileStream) => {
+            const fileBlob = await binaryStreamToBlob(fileStream, file.type || '');
+            return { name: file.plainName ?? file.name, type: file.type, blob: fileBlob };
+          });
 
           downloadPromises.push(downloadPromise);
         }
@@ -89,10 +88,7 @@ async function addAllSharedFilesToZip(
   return { files, token: token ?? '' };
 }
 
-function* getFilesChunksUntilMaxCacheSize<T extends File>(
-  maxCacheSizeUsed: number,
-  files: T[]
-): Generator<T[]> {
+function* getFilesChunksUntilMaxCacheSize<T extends File>(maxCacheSizeUsed: number, files: T[]): Generator<T[]> {
   let accumulatedSize = 0;
   let chunk: T[] = [];
 
@@ -113,6 +109,5 @@ function* getFilesChunksUntilMaxCacheSize<T extends File>(
     yield chunk;
   }
 }
-
 
 export { addAllFilesToZip, addAllSharedFilesToZip };

@@ -1,19 +1,19 @@
+import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { backupsActions, backupsThunks } from 'app/store/slices/backups';
 import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
+import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
+import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
+import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
+import { DriveItemData, DriveFolderData as DriveWebFolderData } from '../../../drive/types';
+import Dialog from '../../../shared/components/Dialog/Dialog';
+import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
+import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
 import DeviceList from '../../components/DeviceList/DeviceList';
 import { Device } from '../../types';
-import { backupsActions, backupsThunks } from 'app/store/slices/backups';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { DriveFolderData } from '@internxt/sdk/dist/drive/storage/types';
-import BackupsAsFoldersList from '../../components/BackupsAsFoldersList/BackupsAsFoldersList';
-import { deleteItemsThunk } from '../../../store/slices/storage/storage.thunks/deleteItemsThunk';
-import { DriveFolderData as DriveWebFolderData, DriveItemData } from '../../../drive/types';
-import { deleteBackupDeviceAsFolder } from '../../../drive/services/folder.service';
-import Dialog from '../../../shared/components/Dialog/Dialog';
-import DeleteBackupDialog from '../../../drive/components/DeleteBackupDialog/DeleteBackupDialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import WarningMessageWrapper from '../../../drive/components/WarningMessage/WarningMessageWrapper';
-import BreadcrumbsBackupsView from 'app/shared/components/Breadcrumbs/Containers/BreadcrumbsBackupsView';
 
 export default function BackupsView(): JSX.Element {
   const { translate } = useTranslationContext();
@@ -102,7 +102,7 @@ export default function BackupsView(): JSX.Element {
     body = (
       <BackupsAsFoldersList
         onFolderPush={(folder) => setBackupsAsFoldersPath((current) => [...current, folder])}
-        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].id}
+        folderId={backupsAsFoldersPath[backupsAsFoldersPath.length - 1].uuid}
       />
     );
   }

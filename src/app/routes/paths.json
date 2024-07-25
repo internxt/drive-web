@@ -103,14 +103,6 @@
       "hideSearch": true
     },
     {
-      "id": "preferences",
-      "layout": "header-and-sidenav",
-      "path": "/preferences",
-      "exact": true,
-      "auth": true,
-      "hideSearch": true
-    },
-    {
       "id": "drive-items",
       "layout": "header-and-sidenav",
       "path": "/:itemType/:id",
@@ -198,6 +190,12 @@
       "id": "share-folder-token-2",
       "layout": "share",
       "path": "/d/folder/:token/:code?",
+      "exact": false
+    },
+    {
+      "id": "workspace-guest-invite",
+      "layout": "empty",
+      "path": "/workspace-guest",
       "exact": false
     },
     {

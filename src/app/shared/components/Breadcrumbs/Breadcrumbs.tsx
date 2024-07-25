@@ -33,8 +33,8 @@ export default function Breadcrumbs(props: Readonly<BreadcrumbsProps>): JSX.Elem
     };
 
     for (let i = 0; i < items.length; i++) {
-      const separatorKey = 'breadcrumbSeparator-' + items[i].id + i.toString();
-      const itemKey = 'breadcrumbItem-' + items[i].id + i.toString();
+      const separatorKey = 'breadcrumbSeparator-' + items[i].uuid + i.toString();
+      const itemKey = 'breadcrumbItem-' + items[i].uuid + i.toString();
 
       if (items.length > 3 && i !== 0 && i < items.length - 2) {
         if (i === 1) {

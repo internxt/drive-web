@@ -1,18 +1,12 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
-import * as Sentry from '@sentry/react';
 
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { Abortable } from './Abortable';
-import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
-import localStorageService from 'app/core/services/local-storage.service';
+import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
-import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
-import errorService from '../core/services/error.service';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };

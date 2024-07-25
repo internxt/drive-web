@@ -1,9 +1,12 @@
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { TeamsSettings } from '../../teams/types';
 import { Workspace } from '../types';
 
 export const STORAGE_KEYS = {
   TUTORIAL_COMPLETED_ID: 'signUpTutorialCompleted',
+  B2B_WORKSPACE: 'b2bWorkspace',
+  WORKSPACE_CREDENTIALS: 'workspace_credentials',
 };
 
 function get(key: string): string | null {
@@ -27,7 +30,25 @@ function getTeams(): TeamsSettings | null {
 }
 
 function getWorkspace(): string {
-  return localStorage.getItem('workspace') || Workspace.Individuals;
+  return localStorage.getItem('workspace') ?? Workspace.Individuals;
+}
+
+function getB2BWorkspace(): WorkspaceData | null {
+  const b2bWorkspace = localStorage.getItem(STORAGE_KEYS.B2B_WORKSPACE);
+  if (b2bWorkspace === 'null') return null;
+
+  if (b2bWorkspace) return JSON.parse(b2bWorkspace);
+
+  return null;
+}
+
+function getWorkspaceCredentials(): WorkspaceCredentialsDetails | null {
+  const workspaceCredentials = localStorage.getItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
+  if (workspaceCredentials === 'null') return null;
+
+  if (workspaceCredentials) return JSON.parse(workspaceCredentials);
+
+  return null;
 }
 
 function removeItem(key: string): void {
@@ -59,6 +80,8 @@ function clear(): void {
   localStorage.removeItem('xInvitedToken');
   localStorage.removeItem('xResourcesToken');
   localStorage.removeItem('star_wars_theme_enabled');
+  localStorage.removeItem(STORAGE_KEYS.B2B_WORKSPACE);
+  localStorage.removeItem(STORAGE_KEYS.WORKSPACE_CREDENTIALS);
 }
 
 const localStorageService = {
@@ -71,6 +94,8 @@ const localStorageService = {
   removeItem,
   exists,
   clear,
+  getB2BWorkspace,
+  getWorkspaceCredentials,
 };
 
 export default localStorageService;

@@ -10,9 +10,9 @@ export const resetNamePathThunk = createAsyncThunk<FolderPath[], void, { state: 
   'storage/resetNamePath',
   async (payload: void, { getState, dispatch }) => {
     const { user } = getState().user;
-    const rootFolderId: number = storageSelectors.rootFolderId(getState());
+    const rootFolderId: string = storageSelectors.rootFolderId(getState());
     const rootFolderPath = {
-      id: rootFolderId,
+      uuid: rootFolderId,
       name: 'Drive',
     };
     dispatch(storageActions.resetNamePath());

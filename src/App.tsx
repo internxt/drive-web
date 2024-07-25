@@ -4,6 +4,7 @@ import { Toaster } from 'react-hot-toast';
 import { connect } from 'react-redux';
 import { Redirect, Route, Router, Switch } from 'react-router-dom';
 
+import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
@@ -23,8 +24,11 @@ import { LRUFilesCacheManager } from './app/database/services/database.service/L
 import { LRUFilesPreviewCacheManager } from './app/database/services/database.service/LRUFilesPreviewCacheManager';
 import FileViewerWrapper from './app/drive/components/FileViewer/FileViewerWrapper';
 import Mobile from './app/drive/views/MobileView/MobileView';
+import PreferencesDialog from './app/newSettings/PreferencesDialog';
+import { usePreferencesParamsChange } from './app/newSettings/hooks/usePreferencesParamsChange';
 import NewsletterDialog from './app/newsletter/components/NewsletterDialog/NewsletterDialog';
 import SharingRedirect from './app/routes/Share/ShareRedirection';
+import WorkspacesRedirect from './app/routes/Workspaces/WorkspacesRedirection';
 import { getRoutes } from './app/routes/routes';
 import { domainManager } from './app/share/services/DomainManager';
 import { PreviewFileItem } from './app/share/types';
@@ -32,9 +36,12 @@ import { AppDispatch, RootState } from './app/store';
 import { sessionActions } from './app/store/slices/session';
 import { uiActions } from './app/store/slices/ui';
 import { initializeUserThunk } from './app/store/slices/user';
+import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
+import { useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -43,6 +50,7 @@ interface AppProps {
   isFileViewerOpen: boolean;
   isNewsletterDialogOpen: boolean;
   isSurveyDialogOpen: boolean;
+  isPreferencesDialogOpen: boolean;
   fileViewerItem: PreviewFileItem | null;
   user: UserSettings | undefined;
   namePath: FolderPath[];
@@ -56,6 +64,7 @@ const App = (props: AppProps): JSX.Element => {
     isFileViewerOpen,
     isNewsletterDialogOpen,
     isSurveyDialogOpen,
+    isPreferencesDialogOpen,
     fileViewerItem,
     dispatch,
   } = props;
@@ -64,11 +73,13 @@ const App = (props: AppProps): JSX.Element => {
   const params = new URLSearchParams(window.location.search);
   const skipSignupIfLoggedIn = params.get('skipSignupIfLoggedIn') === 'true';
   const queryParameters = navigationService.history.location.search;
+  const havePreferencesParamsChanged = usePreferencesParamsChange();
   const routes = getRoutes();
   const isDev = !envService.isProduction();
   const currentRouteConfig: AppViewConfig | undefined = configService.getViewConfig({
     path: navigationService.history.location.pathname,
   });
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   useBeforeUnload();
 
@@ -103,7 +114,10 @@ const App = (props: AppProps): JSX.Element => {
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
-
+      // TODO: CHANGE BY WORKSPACE INITIALIZATOR
+      if (!envService.isProduction()) {
+        dispatch(workspaceThunks.fetchWorkspaces());
+      }
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,
@@ -144,7 +158,7 @@ const App = (props: AppProps): JSX.Element => {
       dispatch(uiActions.setIsFileViewerOpen(false));
       navigationService.push(AppView.Drive);
     } else {
-      navigationService.pushFolder(fileViewerItem?.folderUuid);
+      navigationService.pushFolder(fileViewerItem?.folderUuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
 
     dispatch(uiActions.setFileViewerItem(null));
@@ -163,10 +177,17 @@ const App = (props: AppProps): JSX.Element => {
               {t('general.stage.development')}
             </span>
           )}
-
           <Switch>
+            <Route path="/workspaces/:invitationId/:action" component={WorkspacesRedirect} />
             <Route path="/sharings/:sharingId/:action" component={SharingRedirect} />
-            <Redirect from="/account" to="/preferences" />
+            <Redirect from="/s/file/:token([a-z0-9]{20})/:code?" to="/sh/file/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/s/folder/:token([a-z0-9]{20})/:code?" to="/sh/folder/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/s/photos/:token([a-z0-9]{20})/:code?" to="/sh/photos/:token([a-z0-9]{20})/:code?" />
+            <Redirect from="/account" to="/?preferences=open&section=account&subsection=account" />
+            <Redirect
+              from="/preferences"
+              to={`/?preferences=open&section=account&subsection=${params.get('tab') ?? 'account'}`}
+            />
             <Redirect from="/app/:section?" to={{ pathname: '/:section?', search: `${queryParameters}` }} />
             {pathName !== 'checkout-plan' && isMobile && isAuthenticated ? (
               <Route path="*">
@@ -177,16 +198,22 @@ const App = (props: AppProps): JSX.Element => {
             )}
           </Switch>
 
-          <Toaster
-            position="bottom-center"
-            containerStyle={{
-              filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
-            }}
+          <Portal>
+            <Toaster
+              position="bottom-center"
+              containerStyle={{
+                filter: 'drop-shadow(0 32px 40px rgba(18, 22, 25, 0.08))',
+              }}
+            />
+          </Portal>
+
+          <PreferencesDialog
+            haveParamsChanged={havePreferencesParamsChanged}
+            isPreferencesDialogOpen={isPreferencesDialogOpen}
           />
 
           <NewsletterDialog isOpen={isNewsletterDialogOpen} />
           {isSurveyDialogOpen && <SurveyDialog isOpen={isSurveyDialogOpen} />}
-
           {isFileViewerOpen && fileViewerItem && (
             <FileViewerWrapper file={fileViewerItem} onClose={onCloseFileViewer} showPreview={isFileViewerOpen} />
           )}
@@ -204,6 +231,7 @@ export default connect((state: RootState) => ({
   isFileViewerOpen: state.ui.isFileViewerOpen,
   isNewsletterDialogOpen: state.ui.isNewsletterDialogOpen,
   isSurveyDialogOpen: state.ui.isSurveyDialogOpen,
+  isPreferencesDialogOpen: state.ui.isPreferencesDialogOpen,
   fileViewerItem: state.ui.fileViewerItem,
   user: state.user.user,
   namePath: state.storage.namePath,

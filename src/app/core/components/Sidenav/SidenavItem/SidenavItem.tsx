@@ -11,6 +11,7 @@ interface SidenavItemProps {
   Icon: React.ForwardRefExoticComponent<IconProps & React.RefAttributes<SVGSVGElement>>;
   onClick?: () => void;
   iconDataCy?: string;
+  isB2BWorskpace?: boolean;
 }
 
 const SidenavItem = ({
@@ -21,6 +22,7 @@ const SidenavItem = ({
   showNew,
   notifications,
   iconDataCy,
+  isB2BWorskpace,
 }: SidenavItemProps): JSX.Element => {
   const isActive = !!matchPath(window.location.pathname, { path: to, exact: true });
 
@@ -44,7 +46,7 @@ const SidenavItem = ({
           <p className="leading-5">{translate('general.new')}</p>
         </div>
       )}
-      {!!notifications && (
+      {!isB2BWorskpace && !!notifications && (
         <div className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary px-1.5 text-xs text-white">
           <span>{notifications}</span>
         </div>

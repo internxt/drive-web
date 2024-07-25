@@ -15,7 +15,7 @@ import dateService from '../../../../core/services/date.service';
 import { DriveItemBlobData } from '../../../../database/services/database.service';
 import { getDatabaseFileSourceData } from '../../../../drive/services/database.service';
 import { ConnectionLostError } from '../../../../network/requests';
-import { sessionSelectors } from '../../session/session.selectors';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 
 interface DownloadFileThunkOptions {
@@ -58,9 +58,10 @@ export const checkIfCachedSourceIsOlder = ({
 export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload, { state: RootState }>(
   'storage/downloadFile',
   async (payload: DownloadFileThunkPayload, { getState, rejectWithValue }) => {
+    const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(getState());
     const file = payload.file;
     const options = { ...defaultDownloadFileThunkOptions, ...payload.options };
-    const isTeam: boolean = sessionSelectors.isTeam(getState());
+    const isWorkspace = !!selectedWorkspace;
     const task = tasksService.findTask(options.taskId);
     const updateProgressCallback = (progress: number) => {
       if (task?.status !== TaskStatus.Cancelled) {
@@ -114,7 +115,7 @@ export const downloadFileThunk = createAsyncThunk<void, DownloadFileThunkPayload
       } else {
         await downloadService.downloadFile(
           file,
-          isTeam,
+          isWorkspace,
           updateProgressCallback,
           abortController,
           options.sharingOptions,

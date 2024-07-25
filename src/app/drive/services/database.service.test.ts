@@ -8,16 +8,14 @@ describe('databaseService', () => {
 
   const put =
     (database) =>
-      (
-        collectionName: DatabaseCollection,
-        key: AppDatabase[DatabaseCollection]['key'],
-        value: AppDatabase[DatabaseCollection]['value'],
-      ) => {
-        database[collectionName][key] = value;
-        return Promise.resolve();
-      };
+    (
+      collectionName: DatabaseCollection,
+      key: AppDatabase[DatabaseCollection]['key'],
+      value: AppDatabase[DatabaseCollection]['value'],
+    ) => {
+      database[collectionName][key] = value;
+      return Promise.resolve();
+    };
 
-  it('just mocks the test', () => {
-
-  });
+  it('just mocks the test', () => {});
 });
