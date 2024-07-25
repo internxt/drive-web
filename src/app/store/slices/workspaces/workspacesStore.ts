@@ -174,8 +174,6 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
       dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
       if (selectedWorkspace) {
-        console.log({ selectedWorkspace });
-
         localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
         dispatch(planThunks.fetchBusinessLimitUsageThunk());
         dispatch(fetchCredentials());
