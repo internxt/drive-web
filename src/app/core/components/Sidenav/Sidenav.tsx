@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
 import { connect, useSelector } from 'react-redux';
 
@@ -36,7 +35,6 @@ const Sidenav = (props: SidenavProps) => {
   const { user } = props;
   const { translate } = useTranslationContext();
   const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
-  // const isWorkspaceCredentials = useAppSelector((state: RootState) => state.ui.isWorkspaceCredentials);
   const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
 
   const onDownloadAppButtonClicked = (): void => {
