@@ -17,10 +17,11 @@ import { loadStripe, Stripe } from '@stripe/stripe-js';
 import envService from 'app/core/services/env.service';
 import errorService from 'app/core/services/error.service';
 
-const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
+const COUNTRY_API = process.env.REACT_APP_COUNTRY_API_URL;
 
 const productValue = {
   US: 'usd',
+  CA: 'usd',
 };
 
 function displayAmount(value, decimalPoints = 2) {
@@ -46,7 +47,7 @@ export default function PlanSelector({ className = '' }: { className?: string })
   const [priceIdSelected, setPriceIdSelected] = useState('');
 
   useEffect(() => {
-    const app = fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
+    const app = fetch(`${COUNTRY_API}`, {
       method: 'GET',
     });
 
