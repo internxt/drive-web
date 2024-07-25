@@ -24,8 +24,6 @@ export default function Language(): JSX.Element {
   function changeLang(lang: string = localStorageLanguage ?? i18next.language) {
     const sanitizedLang = sanitizeLanguage(lang);
     setLang(sanitizedLang);
-    i18next.changeLanguage(sanitizedLang);
-    dayjs.locale(sanitizedLang);
   }
 
   useEffect(() => {
