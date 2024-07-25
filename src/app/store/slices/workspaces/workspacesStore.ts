@@ -160,25 +160,28 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
         encryptedMnemonic: encryptedMnemonicInBase64,
       });
 
-      const workspaces = await workspacesService.getWorkspaces();
+      // to avoid backend update delay
+      setTimeout(async () => {
+        const workspaces = await workspacesService.getWorkspaces();
 
-      const workspacesWithDecryptedMnemonic = await decryptWorkspacesMnemonic(workspaces.availableWorkspaces);
+        const workspacesWithDecryptedMnemonic = await decryptWorkspacesMnemonic(workspaces.availableWorkspaces);
 
-      const selectedWorkspace = workspacesWithDecryptedMnemonic.find(
-        (workspace) => workspace.workspace.id === pendingWorkspace.id,
-      );
+        const selectedWorkspace = workspacesWithDecryptedMnemonic.find(
+          (workspace) => workspace.workspace.id === pendingWorkspace.id,
+        );
 
-      dispatch(workspacesActions.setWorkspaces(workspacesWithDecryptedMnemonic));
-      dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
+        dispatch(workspacesActions.setWorkspaces(workspacesWithDecryptedMnemonic));
+        dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
 
-      dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
+        dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
-      if (selectedWorkspace) {
-        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
-        dispatch(planThunks.fetchBusinessLimitUsageThunk());
-        dispatch(fetchCredentials());
-        dispatch(sessionThunks.changeWorkspaceThunk());
-      }
+        if (selectedWorkspace) {
+          localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
+          dispatch(planThunks.fetchBusinessLimitUsageThunk());
+          dispatch(fetchCredentials());
+          dispatch(sessionThunks.changeWorkspaceThunk());
+        }
+      }, 1000);
     } catch (error) {
       notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
     }
