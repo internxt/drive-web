@@ -1,5 +1,6 @@
 import { PendingWorkspace, Workspace, WorkspaceCredentialsDetails, WorkspaceData } from '@internxt/sdk/dist/workspaces';
 import { PayloadAction, createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+import { t } from 'i18next';
 import { RootState } from '../..';
 import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
@@ -15,7 +16,6 @@ import { decryptMnemonic } from '../../../share/services/share.service';
 import { planThunks } from '../plan';
 import sessionThunks from '../session/session.thunks';
 import workspacesSelectors from './workspaces.selectors';
-import { t } from 'i18next';
 
 export interface PersonalWorkspace {
   uuid: string;
@@ -162,22 +162,22 @@ const setupWorkspace = createAsyncThunk<void, { pendingWorkspace: PendingWorkspa
 
       const workspaces = await workspacesService.getWorkspaces();
 
-      const selectedWorkspace = workspaces.availableWorkspaces.find(
+      const workspacesWithDecryptedMnemonic = await decryptWorkspacesMnemonic(workspaces.availableWorkspaces);
+
+      const selectedWorkspace = workspacesWithDecryptedMnemonic.find(
         (workspace) => workspace.workspace.id === pendingWorkspace.id,
       );
+
+      dispatch(workspacesActions.setWorkspaces(workspacesWithDecryptedMnemonic));
+      dispatch(workspacesActions.setPendingWorkspaces([...workspaces.pendingWorkspaces]));
 
       dispatch(workspacesActions.setSelectedWorkspace(selectedWorkspace ?? null));
 
       if (selectedWorkspace) {
-        const selectedWorkspaceWithDecryptedMnemonic = {
-          ...selectedWorkspace,
-          workspaceUser: {
-            ...selectedWorkspace.workspaceUser,
-            key: await decryptMnemonic(selectedWorkspace.workspaceUser.key),
-          },
-        } as WorkspaceData;
-        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspaceWithDecryptedMnemonic));
+        localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(selectedWorkspace));
         dispatch(planThunks.fetchBusinessLimitUsageThunk());
+        dispatch(fetchCredentials());
+        dispatch(sessionThunks.changeWorkspaceThunk());
       }
     } catch (error) {
       notificationsService.show({ text: 'Error seting up workspace', type: ToastType.Error });
