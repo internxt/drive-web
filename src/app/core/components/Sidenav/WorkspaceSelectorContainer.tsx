@@ -10,7 +10,13 @@ import { RootState } from '../../../store';
 import { workspaceThunks } from '../../../store/slices/workspaces/workspacesStore';
 import WorkspaceSelector, { Workspace } from './WorkspaceSelector';
 
-const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }) => {
+const WorkspaceSelectorContainer = ({
+  user,
+  setIsWorkspaceLoading,
+}: {
+  user: UserSettings | undefined;
+  setIsWorkspaceLoading: (boolean) => void;
+}) => {
   const dispatch = useDispatch();
   const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
   const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
@@ -37,6 +43,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
   };
 
   const handleWorkspaceChange = (workspaceId: string | null) => {
+    setIsWorkspaceLoading(true);
     const selectedWorkspace = allParsedWorkspaces.find((workspace) => workspace.uuid === workspaceId);
 
     if (selectedWorkspace?.isPending) {
@@ -48,6 +55,7 @@ const WorkspaceSelectorContainer = ({ user }: { user: UserSettings | undefined }
     }
     dispatch(workspaceThunks.setSelectedWorkspace({ workspaceId }));
     dispatch(planThunks.fetchBusinessLimitUsageThunk());
+    setIsWorkspaceLoading(false);
   };
 
   if (!user) return null;

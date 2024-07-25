@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Clock, ClockCounterClockwise, Desktop, FolderSimple, Trash, Users } from '@phosphor-icons/react';
 import { connect, useSelector } from 'react-redux';
 
@@ -20,6 +21,7 @@ import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import envService from '../../services/env.service';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -33,6 +35,7 @@ interface SidenavProps {
 const Sidenav = (props: SidenavProps) => {
   const { user } = props;
   const { translate } = useTranslationContext();
+  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState<boolean>(false);
   const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
 
   const onDownloadAppButtonClicked = (): void => {
@@ -62,6 +65,11 @@ const Sidenav = (props: SidenavProps) => {
 
   return (
     <div className="flex w-64 flex-col">
+      {isWorkspaceLoading && (
+        <div className="absolute z-50 flex h-full w-full items-center justify-center">
+          <Spinner className="h-10 w-10" />
+        </div>
+      )}
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}
@@ -70,7 +78,9 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          {!envService.isProduction() && user && <WorkspaceSelectorContainer user={user} />}
+          {!envService.isProduction() && user && (
+            <WorkspaceSelectorContainer user={user} setIsWorkspaceLoading={setIsWorkspaceLoading} />
+          )}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           {!isB2BWorskpace && (
             <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
