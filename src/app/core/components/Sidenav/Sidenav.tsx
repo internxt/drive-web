@@ -35,8 +35,9 @@ interface SidenavProps {
 const Sidenav = (props: SidenavProps) => {
   const { user } = props;
   const { translate } = useTranslationContext();
-  const [isWorkspaceLoading, setIsWorkspaceLoading] = useState<boolean>(false);
   const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
+  // const isWorkspaceCredentials = useAppSelector((state: RootState) => state.ui.isWorkspaceCredentials);
+  const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -65,7 +66,7 @@ const Sidenav = (props: SidenavProps) => {
 
   return (
     <div className="flex w-64 flex-col">
-      {isWorkspaceLoading && (
+      {isLoadingCredentials && (
         <div className="absolute z-50 flex h-full w-full items-center justify-center">
           <Spinner className="h-10 w-10" />
         </div>
@@ -78,9 +79,7 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          {!envService.isProduction() && user && (
-            <WorkspaceSelectorContainer user={user} setIsWorkspaceLoading={setIsWorkspaceLoading} />
-          )}
+          {!envService.isProduction() && user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           {!isB2BWorskpace && (
             <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
