@@ -1,11 +1,14 @@
 import { t } from 'i18next';
 import { useState } from 'react';
 
+import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
-import DetailsInput from '../../../../components/DetailsInput';
-import { CustomerBillingInfo } from '@internxt/sdk/dist/drive/payments/types';
 
+import { PhoneInput } from 'react-international-phone';
+import 'react-international-phone/style.css';
+
+import DetailsInput from '../../../../components/DetailsInput';
 const EditBillingDetailsModal = ({
   isOpen,
   onClose,
@@ -38,14 +41,21 @@ const EditBillingDetailsModal = ({
             disabled={isLoading}
             hideMaxLength
           />
-          <DetailsInput
-            label="Phone"
-            textValue={editedPhone}
-            onChangeTextValue={setEditedPhone}
-            maxLength={MAX_INPUT_LENGHT}
-            disabled={isLoading}
-            hideMaxLength
-          />
+          <div>
+            <span className={'text-sm text-gray-80'}>Phone</span>
+            <PhoneInput
+              value={editedPhone}
+              onChange={setEditedPhone}
+              inputClassName="!inxt-input !h-10 w-full !rounded-r-md !border !border-gray-20 !bg-transparent !py-1 !px-4 !text-lg !font-normal !text-gray-80 !placeholder-gray-30 !outline-none !ring-primary !ring-opacity-10 !hover:border-gray-30 !focus:border-primary !focus:ring-3 !disabled:border-gray-10 !disabled:text-gray-40 !disabled:placeholder-gray-20 !dark:ring-opacity-20"
+              countrySelectorStyleProps={{
+                buttonClassName:
+                  '!h-10 !bg-transparent !px-2 !py-1 !rounded-l-md !border !border-gray-20 !focus:border-primary !focus-visible:border-primary',
+              }}
+              disabled={isLoading}
+              defaultCountry="es"
+              forceDialCode
+            />
+          </div>
         </div>
 
         <div className="flex w-full flex-row justify-end space-x-2">
