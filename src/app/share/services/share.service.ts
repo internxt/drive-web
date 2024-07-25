@@ -469,6 +469,7 @@ class DirectorySharedFolderIterator implements Iterator<SharedFolders> {
         directoryId,
         this.page,
         this.itemsPerPage,
+        resourcesToken,
       );
       const response = await promise;
       items = response;
@@ -509,6 +510,7 @@ class DirectorySharedFilesIterator implements Iterator<SharedFiles> {
         directoryId,
         this.page,
         this.itemsPerPage,
+        resourcesToken,
       );
       const response = await promise;
       items = response;

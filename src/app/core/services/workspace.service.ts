@@ -312,7 +312,6 @@ export function getAllWorkspaceTeamSharedFolderFiles(
   page: number,
   perPage: number,
   token?: string,
-
   orderBy?: OrderByOptions,
 ): [Promise<ListWorkspaceSharedItemsResponse>, RequestCanceler] {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
