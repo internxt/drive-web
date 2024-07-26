@@ -5,7 +5,6 @@ import Section from 'app/newSettings/components/Section';
 import { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { trackCanceledSubscription } from '../../../../analytics/services/analytics.service';
-import envService from '../../../../core/services/env.service';
 import errorService from '../../../../core/services/error.service';
 import navigationService from '../../../../core/services/navigation.service';
 import { bytesToString } from '../../../../drive/services/size.service';
@@ -340,20 +339,18 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
       )}
       <div className="flex flex-col">
         <div className="mb-2 flex justify-center">
-          {!envService.isProduction() && (
-            <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
-              <IntervalSwitch
-                active={isIndividualSubscriptionSelected}
-                text={translate('general.workspaces.personal')}
-                onClick={() => handleSubscriptionInterval(UserType.Individual)}
-              />
-              <IntervalSwitch
-                active={!isIndividualSubscriptionSelected}
-                text={translate('general.workspaces.business')}
-                onClick={() => handleSubscriptionInterval(UserType.Business)}
-              />
-            </div>
-          )}
+          <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
+            <IntervalSwitch
+              active={isIndividualSubscriptionSelected}
+              text={translate('general.workspaces.personal')}
+              onClick={() => handleSubscriptionInterval(UserType.Individual)}
+            />
+            <IntervalSwitch
+              active={!isIndividualSubscriptionSelected}
+              text={translate('general.workspaces.business')}
+              onClick={() => handleSubscriptionInterval(UserType.Business)}
+            />
+          </div>
         </div>
         <div className="flex justify-center">
           <div className="flex flex-row rounded-lg bg-gray-5 p-0.5 text-sm">
