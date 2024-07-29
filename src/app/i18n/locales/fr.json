@@ -1587,6 +1587,14 @@
     "pending": "Invitations en attente",
     "messages": {
       "sharedSuccess": "Élément partagé avec succès avec l'équipe"
+    },
+    "pendingInvitations": {
+      "empty": "Aucune invitation restante",
+      "title": "Invitations en attente",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "invitedOn": "Invitation envoyée ",
+      "todayAt": "aujourd'hui à "
     }
   }
 }

@@ -1617,6 +1617,14 @@
     },
     "messages": {
       "sharedSuccess": "項目成功與團隊共享"
+    },
+    "pendingInvitations": {
+      "empty": "沒有剩餘的邀請",
+      "title": "待處理的邀請",
+      "accept": "接受",
+      "deny": "拒絕",
+      "invitedOn": "邀請發送 ",
+      "todayAt": "今天在 "
     }
   }
 }
