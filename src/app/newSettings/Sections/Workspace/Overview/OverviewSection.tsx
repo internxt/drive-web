@@ -26,10 +26,14 @@ import { getSubscriptionData } from '../../../utils/suscriptionUtils';
 import UploadAvatarModal from '../../Account/Account/components/UploadAvatarModal';
 import WorkspaceAvatarWrapper from './components/WorkspaceAvatarWrapper';
 
-const subscription = 'Free';
 const MIN_NAME_LENGTH = 3;
 
-const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
+interface OverviewSectionProps {
+  onClosePreferences: () => void;
+  changeSection: ({ section, subsection }) => void;
+}
+
+const OverviewSection = ({ onClosePreferences, changeSection }: OverviewSectionProps) => {
   const dispatch = useAppDispatch();
   const selectedWorkspace = useAppSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const currentUserId = useAppSelector((state: RootState) => state.user.user?.uuid);
@@ -184,9 +188,10 @@ const OverviewSection = ({ onClosePreferences }: { onClosePreferences: () => voi
         products={products}
         isOwner={isOwner}
         subscriptionData={subscriptionData}
-        onMembersCardClick={() => undefined}
+        onMembersCardClick={() => changeSection({ section: 'workspace', subsection: 'members' })}
+        // TODO: ADD NAVIGATION WHEN TEAMS HAS BEEN IMPLEMENTED
         onTeamsCardClick={() => undefined}
-        onBillingCardClick={() => undefined}
+        onBillingCardClick={() => changeSection({ section: 'workspace', subsection: 'billing' })}
       />
       <EditWorkspaceDetailsModal
         isOpen={isEditingDetails}
@@ -314,9 +319,7 @@ const WorkspaceOverviewDetails = ({
           {isOwner && (
             <button className="grow text-left" onClick={onBillingCardClick}>
               <Card className="grow">
-                {subscription === 'Free' ? (
-                  <p className="h-14 text-3xl font-medium leading-9 text-gray-100">{subscription}</p>
-                ) : (
+                {subscriptionData && (
                   <>
                     <p className="text-3xl font-medium leading-9 text-gray-100">
                       {integerPart}
