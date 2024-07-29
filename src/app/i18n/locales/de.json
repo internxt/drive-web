@@ -1601,6 +1601,14 @@
     "pending": "Ausstehende Einladungen",
     "messages": {
       "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+    },
+    "pendingInvitations": {
+      "empty": "Keine Einladungen übrig",
+      "title": "Ausstehende Einladungen",
+      "accept": "Akzeptieren",
+      "deny": "Ablehnen",
+      "invitedOn": "Einladung gesendet ",
+      "todayAt": "heute um "
     }
   }
 }

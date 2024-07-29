@@ -1660,6 +1660,14 @@
     "pending": "Pending Invitations",
     "messages": {
       "sharedSuccess": "Item shared successfully with the team"
+    },
+    "pendingInvitations": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline",
+      "invitedOn": "Invitation sent ",
+      "todayAt": "today at "
     }
   }
 }

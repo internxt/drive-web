@@ -143,7 +143,14 @@ export function useSignUp(
 
     user.mnemonic = decryptTextWithKey(user.mnemonic, password);
 
-    return { xUser: user, xToken: token, mnemonic: user.mnemonic };
+    return {
+      xUser: {
+        ...user,
+        rootFolderId: user.rootFolderUuid ?? user.rootFolderId,
+      },
+      xToken: token,
+      mnemonic: user.mnemonic,
+    };
   };
 
   const generateRegisterDetails = async (

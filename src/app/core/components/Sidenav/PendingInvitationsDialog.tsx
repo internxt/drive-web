@@ -1,14 +1,14 @@
 import { PendingInvitesResponse } from '@internxt/sdk/dist/workspaces';
-import { useAppDispatch } from 'app/store/hooks';
-import dayjs from 'dayjs';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { CheckCircle, X } from '@phosphor-icons/react';
 import errorService from 'app/core/services/error.service';
+import localStorageService from 'app/core/services/local-storage.service';
+import workspacesService from 'app/core/services/workspace.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
 import Modal from 'app/shared/components/Modal';
-import { CheckCircle, X } from '@phosphor-icons/react';
-import workspacesService from 'app/core/services/workspace.service';
-import localStorageService from 'app/core/services/local-storage.service';
+import { useAppDispatch } from 'app/store/hooks';
 import { workspaceThunks } from 'app/store/slices/workspaces/workspacesStore';
+import dayjs from 'dayjs';
 
 const PendingInvitationsDialog = ({
   pendingWorkspacesInvites,
@@ -67,7 +67,7 @@ const PendingInvitationsDialog = ({
     <Modal isOpen={isDialogOpen} onClose={onCloseDialog} className="p-0" maxWidth="max-w-xl">
       <div className="flex w-full flex-col">
         <div className="flex h-full max-h-12 w-full items-center justify-between rounded-t-xl border-b border-gray-10 px-5 py-8">
-          <p className="text-xl font-medium">{translate('modals.sharedInvitationsModal.title')}</p>
+          <p className="text-xl font-medium">{translate('workspaces.pendingInvitations.title')}</p>
           <div className="flex h-full flex-col items-center justify-center">
             <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-md bg-black/0 transition-all duration-200 ease-in-out hover:bg-black/4 active:bg-black/8">
               <X onClick={() => (isLoading ? null : onCloseDialog())} size={22} />
@@ -79,7 +79,7 @@ const PendingInvitationsDialog = ({
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center justify-center space-y-1 rounded-2xl bg-gray-5 p-6 text-lg font-medium text-gray-50">
                 <CheckCircle weight="thin" size={64} />
-                <span>{translate('modals.sharedInvitationsModal.empty')}</span>
+                <span>{translate('workspaces.pendingInvitations.empty')}</span>
               </div>
             </div>
           ) : (
@@ -96,17 +96,22 @@ const PendingInvitationsDialog = ({
                         <div className="flex max-w-xxs flex-col truncate">
                           <p className="truncate font-medium text-gray-100">{invitation.workspace.name}</p>
                           <p className="truncate text-sm text-gray-50">
-                            {translate('modals.sharedInvitationsModal.sharedWith')}{' '}
+                            {translate('workspaces.pendingInvitations.invitedOn')}
+                            {': '}
                             {formatDate(invitation.workspace.createdAt)}
                           </p>
                         </div>
                       </div>
                       <div className="flex flex-row items-center space-x-1.5">
-                        <Button variant="secondary" onClick={() => onDeclineInvitation(invitation.id)}>
-                          {translate('modals.sharedInvitationsModal.deny')}
+                        <Button
+                          variant="secondary"
+                          onClick={() => onDeclineInvitation(invitation.id)}
+                          disabled={isLoading}
+                        >
+                          {translate('workspaces.pendingInvitations.deny')}
                         </Button>
-                        <Button onClick={() => onAcceptInvitation(invitation.id)}>
-                          {translate('modals.sharedInvitationsModal.accept')}
+                        <Button onClick={() => onAcceptInvitation(invitation.id)} loading={isLoading}>
+                          {translate('workspaces.pendingInvitations.accept')}
                         </Button>
                       </div>
                     </div>
