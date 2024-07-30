@@ -6,9 +6,9 @@
   "featuresBanner": {
     "label": {
       "upTo": "高达 ",
-      "discount": "免费计划的变更"
+      "discount": "80% 折扣"
     },
-    "title": "注意！",
+    "title": "享受 Internxt 的夏季优惠",
     "subtitle": {
       "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
       "line2": {
@@ -26,7 +26,7 @@
       "开源和透明",
       "端到端加密传输",
       "无未授权访问",
-      "优惠截止至 6 月 30 日"
+      "优惠截止至8月19日"
     ],
     "copied": "已复制到剪贴板"
   },
@@ -209,12 +209,12 @@
     "renewalPeriod": {
       "monthly": "月度",
       "annually": "年度",
-      "lifetime": "终身"
+      "lifetime": "Lifetime"
     },
     "renewal": {
       "monthly": "月度",
       "annually": "年度",
-      "lifetime": "终身"
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "个人",
@@ -261,7 +261,6 @@
   },
   "sideNav": {
     "drive": "云盘",
-    "photos": "照片",
     "backups": "备份",
     "shared": "共享的",
     "recents": "最近",
@@ -281,18 +280,12 @@
         "dragNDrop": "拖放到此处或单击上传按钮"
       }
     },
-    "photos": {
-      "empty": {
-        "title": "您的相册是空的",
-        "description": "使用Internxt移动应用程序来同步你的照片"
-      }
-    },
     "account": {
       "title": "资料",
       "avatar": {
         "title": "上传新图片",
-        "removePhoto": "删除照片",
-        "updatePhoto": "上传图片",
+        "removePhoto": "删除",
+        "updatePhoto": "上传照片",
         "dragNDrop": "选择或拖动一个图片",
         "success": "头像已成功更新",
         "error": "上传您的头像时出现问题",
@@ -312,7 +305,6 @@
           "usage": "已使用 {{totalUsed}} / {{totalSpace}}",
           "view": {
             "backups": "备份",
-            "photos": "照片",
             "trash": "垃圾箱",
             "free": {
               "planName": "免费计划",
@@ -372,8 +364,8 @@
           },
           "deleteAccount": {
             "head": "删除账户",
-            "description": "如果你删除你的帐户，你的数据将被永远删除。这一操作不能被撤销",
-            "isSubscribed": "请先取消订阅",
+            "description": "您的所有个人数据和您上传到Internxt的所有内容都将永远删除。一旦您删除了您的账户，就无法回头。请务必确认。",
+            "isSubscribed": "请先取消您的订阅",
             "confirmationEmail": "确认邮件已发送"
           }
         },
@@ -423,7 +415,9 @@
           },
           "invoices": {
             "head": "发票",
-            "billingDate": "账单 日期",
+            "billingDate": "日期",
+            "storage": "存储",
+            "ammount": "金额",
             "plan": "计划",
             "empty": {
               "title": "您目前在免费计划中",
@@ -502,7 +496,7 @@
             },
             "button": {
               "back": "保留当前计划",
-              "continue": "更改计划"
+              "continue": "继续"
             }
           }
         },
@@ -539,21 +533,21 @@
           },
           "changePassword": {
             "title": "修改密码",
-            "description": "记住，如果你忘记了你的密码，你将失去对所有文件的访问权限。我们建议使用一个密码管理器。",
+            "description": "我们不存储密码，如果您丢失了密码，您将无法访问您的 Internxt 账户。",
             "button": "修改密码"
           },
           "2FA": {
-            "title": "双因素认证(2FA)",
+            "title": "双因素认证",
             "titleDisable": "禁用双因素身份验证",
-            "description": "双因素认证提供了一个额外的安全性，在登录时需要验证。除了你的密码外，你还需要一个生成的代码。",
-            "button": "激活 2FA",
-            "disable": "禁用双因素认证",
-            "enabled": "已启用",
+            "description": "在登录时要求输入额外的验证码，从而增加一层额外的安全性。",
+            "button": "激活",
+            "disable": "禁用",
+            "enabled": "启用",
             "disabled": "已禁用",
             "modal": {
               "title": "两步验证",
               "stepsLabel": "第 {{current}}/{{total}}步",
-              "button": "激活 2FA",
+              "button": "启用",
               "2FALabelCode": "双因素身份验证代码",
               "or": "或",
               "steps": {
@@ -586,7 +580,7 @@
           },
           "backupKey": {
             "title": "恢复密钥",
-            "description": "如果您忘记了密码，您可以使用唯一的备份密钥来恢复您的账户。 请永远不要与任何人分享此代码。",
+            "description": "备份密钥可在您忘记密码时恢复账户。切勿共享。",
             "button": "导出密码",
             "success": "备份密钥下载成功",
             "error": "我们无法生成您的备份密钥"
@@ -623,6 +617,10 @@
         "title": "出错了",
         "subtitle": "检查链接是否正确或在设置>账户中再次请求电子邮件验证",
         "cta": "转到账户"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "您的电子邮件尚未验证。请检查您的收件箱或 ",
+        "emailNotVerifiedPartTwo": "重新发送验证"
       }
     },
     "emailChange": {
@@ -652,6 +650,36 @@
     "redirectToApp": {
       "message": "谢谢您",
       "goToApp": "回到 app"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "编辑个人资料",
+          "address": "地址",
+          "phone": "电话",
+          "owner": "所有者",
+          "workspaceOverview": "工作区概览",
+          "members": "成员",
+          "teams": "团队",
+          "billed": "{{renewDate}} 结算",
+          "spaceUsed": "已使用空间 ({{percentageUsed}}%)",
+          "totalSpace": "总空间",
+          "editOverviewDetails": {
+            "title": "个人资料详情",
+            "cancelButton": "取消",
+            "saveButton": "保存更改"
+          },
+          "errors": {
+            "minNameLength": "公司名称必须至少有3个字符"
+          }
+        },
+        "billing": {
+          "editBilling": "编辑账单",
+          "billingDetails": "账单详情",
+          "updatedBillingDetails": "詳細資訊更新成功",
+          "errorUpdatingBillingDetails": "更新您的詳細資訊時出錯。請在幾分鐘後再試一次"
+        }
+      }
     }
   },
   "contextMenu": {
@@ -830,32 +858,6 @@
       "sharedWith": "与您共享 ",
       "todayAt": "今天在 "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "个文件 已选择 ",
-      "singleToolBar": "个文件 已选择 ",
-      "multiTitle": "要删除已选择的 {{item}} 个文件吗?",
-      "singleTitle": "要删除已选择的 {{item}} 个文件吗？",
-      "subtitle": "此操作不能被撤销",
-      "buttons": {
-        "cancel": "取消",
-        "delete": "删除"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "分享 {{item}} 张照片",
-      "multiTitle": "分享 {{item}} 张照片",
-      "options": "链接选项",
-      "limit": "限制链接的打开次数",
-      "openCount": "限制打开 ",
-      "times": "次",
-      "change": "更改",
-      "buttons": {
-        "cancel": "取消",
-        "create": "创建链接",
-        "creating": "正在创建链接...",
-        "copyLink": "复制链接"
-      }
-    },
     "friendsInvitedModal": {
       "title": "被邀请的朋友",
       "email": "电子邮件",
@@ -948,7 +950,6 @@
     "emptyPassword": "之前的密码不能为空",
     "errorMovingToTrash": "将项目移至垃圾箱时出错。",
     "errorDeletingFromTrash": "从垃圾箱中删除项目时出错。",
-    "braveNotSupportMultiplePhotosDowload": "Brave 浏览器不支持多张照片下载。",
     "maxSizeUploadLimitError": "文件太大（大于20GB）",
     "connectionLostError": "互联网连接丢失",
     "errorLoadingTrashItems": "加载垃圾箱内的项目时出错"
@@ -1095,15 +1096,6 @@
       },
       "errors": {}
     },
-    "download-photos": {
-      "status": {
-        "pending": "正在下载 {{progress}}%",
-        "success": "已下载",
-        "error": "下载时出错",
-        "cancelled": "下载已取消"
-      },
-      "errors": {}
-    },
     "download-backup": {
       "status": {
         "pending": "等待下载",
@@ -1194,7 +1186,7 @@
     "twoFactorAuthDisabled": "您的双因素身份验证已被禁用",
     "joinedToTheTeam": "您已成功加入团队",
     "done": "完成",
-    "inviteAFriend": "邀请已发送至 {{email}}",
+    "inviteAFriend": "已发送邀请至{{email}}",
     "subscribeToNewsletter": "{{email}} 成功订阅电子报"
   },
   "shareItemDialog": {
@@ -1301,6 +1293,7 @@
     "dropdown": {
       "openPreview": "打开预览",
       "shareLink": "分享",
+      "shareTeam": "与团队分享",
       "manageLinkAccess": "管理访问权限",
       "getLink": "获取链接",
       "rename": "重命名",
@@ -1426,6 +1419,254 @@
     "file": {
       "title": "未找到文件",
       "description": "确保 URL 正确且文件未被移动或删除"
+    }
+  },
+  "preferences": {
+    "title": "首选项",
+    "general": {
+      "title": "常规"
+    },
+    "workspace": {
+      "title": "工作区",
+      "overview": {
+        "title": "概述"
+      },
+      "members": {
+        "title": "成员",
+        "members": "成员",
+        "guests": "访客",
+        "search": "搜索成员",
+        "invite": "邀请",
+        "inviteDialog": {
+          "title": "邀请加入工作区",
+          "inputDescription": "按Enter、空格或逗号分隔电子邮件地址",
+          "remove": "删除",
+          "inviteUsersDescription": "没有Internxt账户的用户将收到一封电子邮件，要求他们在加入工作区之前注册。",
+          "enterUserEmail": "输入要邀请的用户电子邮件",
+          "addMessage": "添加消息",
+          "invite": "邀请"
+        },
+        "invitationFlow": {
+          "acceptedSuccessfully": "成功接受工作区邀请",
+          "declinedSuccessfully": "成功拒绝工作区邀请",
+          "invitationSent": "邀请成功发送",
+          "error": {
+            "errorInviting": "发送邀请至 {{email}} 时出错",
+            "acceptedError": "接受工作区邀请时出错",
+            "declinedError": "拒绝工作区邀请时出错"
+          }
+        },
+        "list": {
+          "user": "用户",
+          "usage": "使用情况",
+          "storage": "存储"
+        },
+        "role": {
+          "owner": "所有者",
+          "manager": "管理员",
+          "member": "成员",
+          "deactivated": "已停用"
+        },
+        "deactivationModal": {
+          "title": "停用成员",
+          "description": "{{name}} 将失去对工作区的访问权限。所有他们的文件和文件夹将保持不变。",
+          "deactivate": "停用",
+          "deactivating": "正在停用"
+        },
+        "reactivationModal": {
+          "title": "重新激活成员",
+          "description": "{{name}} 将恢复对工作区的访问权限。",
+          "reactivate": "重新激活",
+          "reactivating": "重新激活中"
+        },
+        "changePasswordModal": {
+          "title": "请求更改密码",
+          "description": "用户将收到一个建议更新其个人帐户密码的通知。如果您认为他们的密码可能已被泄露，请使用此功能。",
+          "inputPlaceholder": "输入您的消息文本（可选）",
+          "actionButton": "发送请求"
+        },
+        "tabs": {
+          "activity": {
+            "name": "活动",
+            "empty": "无活动",
+            "disabilitedOwner": {
+              "title": "开始使用活动",
+              "subtitle": "通过活动日志记录，清晰了解文件和账户管理的使用情况",
+              "action": "启用活动"
+            },
+            "disabilitedMember": {
+              "title": "活动已禁用",
+              "subtitle": "联系工作区所有者以启用活动日志，进行文件和账户管理"
+            },
+            "roles": {
+              "title": "角色",
+              "member": "成员",
+              "manager": "经理",
+              "owner": "所有者"
+            },
+            "filter": {
+              "button": "过滤器",
+              "title": "过滤器",
+              "clear": "清除",
+              "dateRange": {
+                "title": "日期范围",
+                "7days": "最近 7 天",
+                "30days": "最近 30 天",
+                "90days": "最近 90 天"
+              }
+            }
+          },
+          "teams": {
+            "title": "团队",
+            "role": "角色",
+            "emptyTeamsOwner": {
+              "title": "开始使用团队",
+              "subtitle": "通过将工作区成员分组为团队，更快地管理工作区成员",
+              "action": "创建团队"
+            },
+            "emptyTeamsMember": {
+              "title": "尚未创建团队",
+              "subtitle": "工作区所有者可通过将成员分组为团队来更快地管理成员"
+            },
+            "emptyTeams": {
+              "title": "不属于任何团队"
+            }
+          }
+        },
+        "actions": {
+          "deactivate": "停用会员",
+          "reactivate": "重新激活成员",
+          "passwordChange": "请求更改密码"
+        }
+      },
+      "teams": {
+        "title": "团队"
+      },
+      "billing": {
+        "title": "计费",
+        "nextBillingDate": "下一次账单日期",
+        "planLimit": "以 {{planLimit}} 计划计费",
+        "subscription": "订阅",
+        "lifetimeSubscription": {
+          "planType": "终生",
+          "text": "无预定账单"
+        },
+        "freeSubscription": {
+          "planType": "免费",
+          "action": "升级",
+          "actionDescription": "增加存储空间，获得更多功能"
+        },
+        "paymentMethod": {
+          "title": "付款方式",
+          "editButton": "编辑付款方式",
+          "freePlanTitle": "您使用的是免费 {{planLimit}} 计划",
+          "addButton": "添加付款方式",
+          "empty": "未关联付款方式"
+        },
+        "cancelSubscription": {
+          "title": "取消订阅",
+          "text": "您的计划将降级为免费级别",
+          "button": "取消订购"
+        },
+        "empty": {
+          "text": "以前没有发票"
+        }
+      }
+    },
+    "account": {
+      "title": "账户",
+      "inviteFriend": "邀请朋友",
+      "seeInvitations": "查看邀请",
+      "sendInvitationDescription": "传播消息，每邀请一个朋友获得1 GB免费存储空间。您最多可以获得{{N}}GB。",
+      "sendInvitation": "发送邀请",
+      "enterFriendEmail": "输入朋友的电子邮件",
+      "extraStorage": "额外存储空间",
+      "invitedFriends": "受邀朋友",
+      "friendsInvited": "受邀朋友",
+      "acceptedRequests": "已接受请求",
+      "user": "用户",
+      "status": "状态",
+      "accepted": "已接受",
+      "pending": "待定",
+      "noInvitations": "目前还没有发送邀请",
+      "upgrade": "升级",
+      "levelUpStorage": "升级您的存储空间，并获得许多其他好处",
+      "upgradeNow": "立即升级",
+      "emptyTrash": "清空回收站",
+      "emptryTrashDescription": "回收站中的项目将在15天后被永久删除",
+      "plans": {
+        "title": "计划",
+        "current": "当前",
+        "upgrade": "升级",
+        "downgrade": "降级",
+        "free": "免费获得高达10 GB的空间",
+        "manageBilling": "管理账单",
+        "freeForever": "永久免费",
+        "year": "年",
+        "month": "月",
+        "lifetime": "Lifetime",
+        "planFeaturesList": {
+          "title": "计划详情",
+          "storage": " 的存储空间",
+          "featureOne": "加密文件和文件夹共享。",
+          "featureTwo": "密码保护的文件共享。",
+          "featureThree": "从任何设备访问您的文件。",
+          "featureFour": "上传文件最大可达20GB。",
+          "featureFive": "双重身份验证 (2FA)。",
+          "featureSix": "高级客户支持。",
+          "featureSeven": "30天退款保证。"
+        },
+        "businessPlanFeaturesList": {
+          "title": "计划详情",
+          "storage": " 的存储空间",
+          "featureOne": "加密文件和文件夹共享。",
+          "featureTwo": "创建和管理用户及团队。",
+          "featureThree": "从3名用户起至多100名用户。",
+          "featureFour": "符合GDPR规范。",
+          "featureFive": "上传文件最大可达20GB。",
+          "featureSix": "管理账户账单和付款。",
+          "featureSeven": "高级客户支持。"
+        },
+        "user": "用户"
+      },
+      "billing": {
+        "title": "计费"
+      },
+      "security": {
+        "title": "安全"
+      }
+    },
+    "navBarSections": {
+      "general": "常规",
+      "workspace": "工作区",
+      "overview": "概览",
+      "members": "成员",
+      "teams": "团队",
+      "billing": "账单",
+      "account": "账户",
+      "plans": "计划",
+      "security": "安全"
+    }
+  },
+  "workspaces": {
+    "workspaces": "工作区",
+    "workspace": "工作区",
+    "createWorkspace": "创建工作区",
+    "workspaceTypes": {
+      "personal": "个人工作区",
+      "business": "商务工作区"
+    },
+    "pending": "待发邀请",
+    "messages": {
+      "sharedSuccess": "项目成功与团队共享"
+    },
+    "pendingInvitations": {
+      "empty": "没有剩余的邀请",
+      "title": "待处理的邀请",
+      "accept": "接受",
+      "deny": "拒绝",
+      "invitedOn": "邀请发送 ",
+      "todayAt": "今天在 "
     }
   }
 }

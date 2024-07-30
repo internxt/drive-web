@@ -1,6 +1,7 @@
 import { BrowserHistoryBuildOptions, createBrowserHistory } from 'history';
 import queryString from 'query-string';
 
+import { SelectSectionProps } from 'app/newSettings/types/types';
 import { PATH_NAMES, serverPage } from '../../analytics/services/analytics.service';
 import { AppView } from '../types';
 import configService from './config.service';
@@ -42,11 +43,13 @@ const navigationService = {
 
     instance.push({ pathname: viewConfig?.path ?? 'view-not-found', search: viewSearch });
   },
-  pushFolder(uuid: string | undefined): void {
-    instance.push(`/folder/${uuid}`);
+  pushFolder(folderUuid: string | undefined, workspaceUuid?: string): void {
+    workspaceUuid
+      ? instance.push(`/folder/${folderUuid}?workspaceid=${workspaceUuid}`)
+      : instance.push(`/folder/${folderUuid}`);
   },
-  pushFile(uuid: string | undefined): void {
-    instance.push(`/file/${uuid}`);
+  pushFile(uuid: string | undefined, workspaceUuid?: string): void {
+    workspaceUuid ? instance.push(`/file/${uuid}?workspaceid=${workspaceUuid}`) : instance.push(`/file/${uuid}`);
   },
   isCurrentPath(path: string): boolean {
     const pathname = navigationService.history.location.pathname.split('/');
@@ -57,6 +60,16 @@ const navigationService = {
     const pathname = navigationService.history.location.pathname.split('/');
     const lastSegment = pathname[pathname.length - 1];
     return lastSegment;
+  },
+  openPreferencesDialog({ section, subsection, workspaceUuid }: SelectSectionProps) {
+    workspaceUuid
+      ? instance.push(`?workspaceid=${workspaceUuid}&preferences=open&section=${section}&subsection=${subsection}`)
+      : instance.push(`?preferences=open&section=${section}&subsection=${subsection}`);
+  },
+  closePreferencesDialog({ workspaceUuid }: { workspaceUuid: string | undefined }) {
+    workspaceUuid
+      ? instance.push(`${navigationService.history.location.pathname}?workspaceid=${workspaceUuid}`)
+      : instance.push(navigationService.history.location.pathname);
   },
   replaceState(uuid: string | undefined): void {
     try {

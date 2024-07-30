@@ -22,6 +22,8 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
   const [isLoading, setIsLoading] = useState(false);
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isDeleteItemsDialogOpen);
+  const { selectedWorkspace } = useAppSelector((state: RootState) => state.workspaces);
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
 
   const onClose = (): void => {
     dispatch(uiActions.setIsDeleteItemsDialogOpen(false));
@@ -41,6 +43,7 @@ const DeleteItemsDialog = (props: DeleteItemsDialogProps): JSX.Element => {
       onClose();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);

@@ -6,7 +6,10 @@ import {
   PaymentMethod,
   RedeemCodePayload,
   CreatedSubscriptionData,
+  UserType,
+  InvoicePayload,
   UserSubscription,
+  CustomerBillingInfo,
 } from '@internxt/sdk/dist/drive/payments/types';
 import { RedirectToCheckoutServerOptions, Source, Stripe, StripeError } from '@stripe/stripe-js';
 import { loadStripe } from '@stripe/stripe-js/pure';
@@ -79,19 +82,19 @@ const paymentService = {
     return paymentsClient.createSession(payload);
   },
 
-  async createSetupIntent(): Promise<{ clientSecret: string }> {
+  async createSetupIntent(userType?: UserType): Promise<{ clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getSetupIntent();
+    return paymentsClient.getSetupIntent(userType);
   },
 
-  async getDefaultPaymentMethod(): Promise<PaymentMethod | Source> {
+  async getDefaultPaymentMethod(userType?: UserType): Promise<PaymentMethod | Source> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getDefaultPaymentMethod();
+    return paymentsClient.getDefaultPaymentMethod(userType);
   },
 
-  async getInvoices(): Promise<Invoice[]> {
+  async getInvoices(payload: InvoicePayload): Promise<Invoice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getInvoices({});
+    return paymentsClient.getInvoices(payload);
   },
 
   async redirectToCheckout(options: RedirectToCheckoutServerOptions): Promise<{ error: StripeError }> {
@@ -100,14 +103,14 @@ const paymentService = {
     return stripe.redirectToCheckout(options);
   },
 
-  async getUserSubscription(): Promise<UserSubscription> {
+  async getUserSubscription(userType?: UserType): Promise<UserSubscription> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getUserSubscription();
+    return paymentsClient.getUserSubscription(userType);
   },
 
-  async getPrices(currency?: string): Promise<DisplayPrice[]> {
+  async getPrices(currency?: string, userType?: UserType): Promise<DisplayPrice[]> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.getPrices(currency);
+    return paymentsClient.getPrices(currency, userType);
   },
 
   async isCouponUsedByUser(couponCode: string): Promise<{
@@ -145,10 +148,10 @@ const paymentService = {
     return paymentsClient.updateSubscriptionPrice(priceId, coupon);
   },
 
-  async cancelSubscription(): Promise<void> {
+  async cancelSubscription(userType?: UserType): Promise<void> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
-    return paymentsClient.cancelSubscription();
+    return paymentsClient.cancelSubscription(userType);
   },
 
   async createCheckoutSession(
@@ -157,6 +160,11 @@ const paymentService = {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
 
     return paymentsClient.createCheckoutSession(payload);
+  },
+
+  async updateCustomerBillingInfo(payload: CustomerBillingInfo): Promise<void> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.updateCustomerBillingInfo(payload);
   },
 
   // TODO: refactor as individual

@@ -6,9 +6,9 @@
   "featuresBanner": {
     "label": {
       "upTo": "BIS ZU ",
-      "discount": "Änderungen an Ihrem kostenlosen Plan"
+      "discount": "80% RABATT"
     },
-    "title": "Achtung!",
+    "title": "Genießen Sie die Sommerangebote von Internxt",
     "subtitle": {
       "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
       "line2": {
@@ -26,7 +26,7 @@
       "Open Source und transparent",
       "Ende-zu-Ende-verschlüsselte Übertragungen",
       "Kein unbefugter Zugriff",
-      "Angebot endet am 30. Juni"
+      "Das Angebot endet am 19. August"
     ],
     "copied": "In die Zwischenablage kopiert"
   },
@@ -249,8 +249,8 @@
       "title": "Konto",
       "avatar": {
         "title": "Avatar hochladen",
-        "removePhoto": "Foto löschen",
-        "updatePhoto": "Neues Foto hochladen",
+        "removePhoto": "Löschen",
+        "updatePhoto": "Foto hochladen",
         "dragNDrop": "Wähle ein Bild aus oder lege es ab",
         "success": "Avatar wurde erfolgreich aktualisiert",
         "error": "Beim Hochladen deines Avatars ist etwas passiert",
@@ -328,10 +328,10 @@
             "cta": "Support-Center öffnen"
           },
           "deleteAccount": {
-            "head": "Lösche Konto",
-            "description": "Durch das Löschen deines Kontos löscht Internxt deine Dateien und Daten für immer. Sobald diese Aktion eingeleitet wurde, kann sie nicht mehr rückgängig gemacht werden.",
-            "isSubscribed": "Bitte kündige zuerst dein Abonnement",
-            "confirmationEmail": "Bestätigungs-E-Mail wurde gesendet"
+            "head": "Konto löschen",
+            "description": "Alle Ihre persönlichen Daten und alles, was Sie bei Internxt hochgeladen haben, werden für immer gelöscht. Sobald Sie Ihr Konto gelöscht haben, gibt es kein Zurück mehr. Bitte seien Sie sicher.",
+            "isSubscribed": "Bitte kündigen Sie zuerst Ihr Abonnement",
+            "confirmationEmail": "Bestätigungs-E-Mail gesendet"
           }
         },
         "billing": {
@@ -369,7 +369,9 @@
           },
           "invoices": {
             "head": "Rechnungen",
-            "billingDate": "Rechnungsdatum",
+            "billingDate": "Datum",
+            "storage": "Speicher",
+            "ammount": "Betrag",
             "empty": {
               "title": "Du hast einen kostenlosen Plan",
               "subtitle": "Ausgestellte Rechnungen werden hier automatisch angezeigt, wenn du ein kostenpflichtiges Abonnement hast."
@@ -447,7 +449,7 @@
             },
             "button": {
               "back": "Behalte den aktuellen Plan",
-              "continue": "Plan ändern"
+              "continue": "Weiter"
             }
           }
         },
@@ -484,20 +486,20 @@
           },
           "changePassword": {
             "title": "Passwort ändern",
-            "description": "Merke dir unbedingt dein neues Passwort. Wenn du es verlierst, kannst du nicht mehr auf alle Dateien zugreifen. Wir empfehlen dringend, einen Passwort-Manager zu verwenden.",
+            "description": "Wir speichern keine Passwörter. Wenn Sie Ihr Passwort verlieren, haben Sie keinen Zugang mehr zu Ihrem Internxt-Konto.",
             "button": "Passwort ändern"
           },
           "2FA": {
-            "title": "Zwei-Faktor-Authentifizierung (2FA)",
+            "title": "Zwei-Faktor-Authentifizierung",
             "titleDisable": "Zwei-Faktor-Authentifizierung deaktivieren",
-            "description": "Zwei-Faktor-Authentifizierung bietet eine zusätzliche Sicherheitsebene, indem beim Anmelden eine zusätzliche Verifizierung erforderlich ist. Zusätzlich zu deinem Internxt-Passwort benötigst du auch einen eindeutig generierten Code, der an die E-Mail-Adresse gesendet wird, mit der du dein Konto registriert haben.",
-            "button": "Aktiviere 2FA",
+            "description": "Fügen Sie eine zusätzliche Sicherheitsebene hinzu, indem Sie bei der Anmeldung einen zusätzlichen Verifizierungscode verlangen.",
+            "button": "Aktivieren",
             "enabled": "Aktiviert",
-            "disabled": "Deaktiviert",
+            "disabled": "Deaktivieren",
             "modal": {
               "title": "Zwei-Faktor-Authentifizierung",
               "stepsLabel": "{{current}} von {{total}}",
-              "button": "Aktiviere 2FA",
+              "button": "Aktivieren",
               "2FALabelCode": "Zwei-Faktor-Authentifizierung Code",
               "or": "Oder",
               "steps": {
@@ -530,7 +532,7 @@
           },
           "backupKey": {
             "title": "Backup Schlüssel",
-            "description": "Wenn du dein Passwort vergessen hast, kannst du einen eindeutigen Sicherungsschlüssel verwenden, um dein Konto wiederherzustellen. Gib diesen Code niemals an Dritte weiter.",
+            "description": "Mit dem Backup-Schlüssel können Sie Ihr Konto wiederherstellen, falls Sie Ihr Passwort vergessen haben. Geben Sie ihn niemals weiter.",
             "button": "Exportiere Backup Schlüssel",
             "success": "Sicherungsschlüssel erfolgreich heruntergeladen",
             "error": "Wir konnten deinen Backup-Schlüssel nicht generieren"
@@ -560,6 +562,52 @@
     "redirectToApp": {
       "message": "Danke",
       "goToApp": "Gehe zurück zur App"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Profil bearbeiten",
+          "address": "Adresse",
+          "phone": "Telefon",
+          "owner": "Inhaber",
+          "workspaceOverview": "Übersicht des Arbeitsbereichs",
+          "members": "Mitglieder",
+          "teams": "Teams",
+          "billed": "Abgerechnet am {{renewDate}}",
+          "spaceUsed": "Verwendeter Speicher ({{percentageUsed}}%)",
+          "totalSpace": "Gesamtspeicher",
+          "editOverviewDetails": {
+            "title": "Profil Details",
+            "cancelButton": "Abbrechen",
+            "saveButton": "Änderungen speichern"
+          },
+          "errors": {
+            "minNameLength": "Der Firmenname muss mindestens 3 Zeichen lang sein"
+          }
+        },
+        "billing": {
+          "editBilling": "Zahlung bearbeiten",
+          "billingDetails": "Zahlungsdetails",
+          "updatedBillingDetails": "Angaben erfolgreich aktualisiert",
+          "errorUpdatingBillingDetails": "Beim Aktualisieren Ihrer Angaben ist ein Fehler aufgetreten. Bitte versuchen Sie es in ein paar Minuten erneut"
+        }
+      }
+    },
+    "emailVerification": {
+      "success": {
+        "title": "E-Mail erfolgreich verifiziert",
+        "subtitle": "Du kannst diesen Tab jetzt schließen",
+        "cta": "Öffne Internxt Drive"
+      },
+      "error": {
+        "title": "Etwas ist schief gelaufen",
+        "subtitle": "Überprüfe, ob der Link korrekt ist, oder fordere erneut eine E-Mail-Verifizierung in Einstellungen > Konto an",
+        "cta": "Zum Konto gehen"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Deine E-Mail wurde noch nicht verifiziert. Bitte überprüfe dein Postfach oder ",
+        "emailNotVerifiedPartTwo": "sende die Verifizierung erneut"
+      }
     }
   },
   "contextMenu": {
@@ -1086,7 +1134,7 @@
     "twoFactorAuthDisabled": "Deine Zwei-Faktor-Authentifizierung wurde deaktiviert!",
     "joinedToTheTeam": "Du bist dem Team erfolgreich beigetreten",
     "done": "Erledigt",
-    "inviteAFriend": "Eine Einladung wurde an geschickt {{email}}",
+    "inviteAFriend": "Einladung an {{email}} gesendet",
     "subscribeToNewsletter": "{{email}} Newsletter erfolgreich abonniert"
   },
   "shareItemDialog": {
@@ -1189,6 +1237,7 @@
       "openPreview": "Öffne Vorschau",
       "details": "Einzelheiten",
       "shareLink": "Teilen",
+      "shareTeam": "Mit Team teilen",
       "getLink": "Erhalte Link",
       "rename": "Umbenennen",
       "download": "Herunterladen",
@@ -1312,6 +1361,254 @@
     "file": {
       "title": "Bestand niet gevonden",
       "description": "Controleer of de URL correct is en of het bestand niet verplaatst of verwijderd is."
+    }
+  },
+  "preferences": {
+    "title": "Voreinstellungen",
+    "general": {
+      "title": "Allgemein"
+    },
+    "workspace": {
+      "title": "Arbeitsbereich",
+      "overview": {
+        "title": "Übersicht"
+      },
+      "members": {
+        "title": "Mitglieder",
+        "members": "Mitglieder",
+        "guests": "Gäste",
+        "search": "Mitglieder suchen",
+        "invite": "Einladen",
+        "inviteDialog": {
+          "title": "Zum Arbeitsbereich einladen",
+          "inputDescription": "Drücken Sie Enter, Leerzeichen oder Komma, um E-Mails zu trennen",
+          "remove": "Entfernen",
+          "inviteUsersDescription": "Benutzer ohne ein Internxt-Konto erhalten eine E-Mail, um sich anzumelden, bevor sie dem Arbeitsbereich beitreten können.",
+          "enterUserEmail": "Geben Sie die E-Mail-Adresse des Benutzers ein, den Sie einladen möchten",
+          "addMessage": "Nachricht hinzufügen",
+          "invite": "Einladen"
+        },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Einladung zum Arbeitsbereich erfolgreich angenommen",
+          "declinedSuccessfully": "Einladung zum Arbeitsbereich erfolgreich abgelehnt",
+          "invitationSent": "Einladung erfolgreich gesendet",
+          "error": {
+            "errorInviting": "Fehler beim Senden der Einladung an {{email}}",
+            "acceptedError": "Fehler beim Akzeptieren der Einladung zum Arbeitsbereich",
+            "declinedError": "Fehler beim Ablehnen der Einladung zum Arbeitsbereich"
+          }
+        },
+        "list": {
+          "user": "Benutzer",
+          "usage": "Nutzung",
+          "storage": "Speicher"
+        },
+        "role": {
+          "owner": "Eigentümer",
+          "manager": "Manager",
+          "member": "Mitglied",
+          "deactivated": "Deaktiviert"
+        },
+        "deactivationModal": {
+          "title": "Mitglied deaktivieren",
+          "description": "{{name}} verliert den Zugriff auf den Arbeitsbereich. Alle ihre Dateien und Ordner bleiben unverändert.",
+          "deactivate": "Deaktivieren",
+          "deactivating": "Deaktivierung läuft"
+        },
+        "reactivationModal": {
+          "title": "Mitglied reaktivieren",
+          "description": "{{name}} wird wieder Zugriff auf den Arbeitsbereich erhalten.",
+          "reactivate": "Reaktivieren",
+          "reactivating": "Reaktivieren"
+        },
+        "changePasswordModal": {
+          "title": "Passwortänderung anfordern",
+          "description": "Der Benutzer erhält eine Empfehlung, sein persönliches Kontopasswort zu aktualisieren. Verwenden Sie diese Funktion, wenn Sie glauben, dass sein Passwort möglicherweise kompromittiert wurde.",
+          "inputPlaceholder": "Geben Sie Ihren Nachrichtentext ein (optional)",
+          "actionButton": "Anfrage senden"
+        },
+        "tabs": {
+          "activity": {
+            "name": "Aktivität",
+            "empty": "Keine Aktivität",
+            "disabilitedOwner": {
+              "title": "Erste Schritte mit Activity",
+              "subtitle": "Klare Nutzungseinblicke für Datei- und Kontoverwaltung mit Aktivitätsprotokollierung",
+              "action": "Aktivitätsaufzeichnung aktivieren"
+            },
+            "disabilitedMember": {
+              "title": "Aktivität ist deaktiviert",
+              "subtitle": "Kontaktieren Sie den Besitzer des Arbeitsbereichs, um Aktivitätsprotokolle für die Datei- und Kontoverwaltung zu aktivieren"
+            },
+            "roles": {
+              "title": "Rollen",
+              "member": "Mitglied",
+              "manager": "Manager",
+              "owner": "Owner"
+            },
+            "filter": {
+              "button": "Filter",
+              "title": "Filter",
+              "clear": "Löschen",
+              "dateRange": {
+                "title": "Datumsbereich",
+                "7days": "Letzte 7 Tage",
+                "30days": "Letzte 30 Tage",
+                "90days": "Letzte 90 Tage"
+              }
+            }
+          },
+          "teams": {
+            "title": "Teams",
+            "role": "Rolle",
+            "emptyTeamsOwner": {
+              "title": "Erste Schritte mit Teams",
+              "subtitle": "Verwalten Sie Arbeitsbereich-Mitglieder schneller, indem Sie sie in Teams gruppieren",
+              "action": "Ein Team erstellen"
+            },
+            "emptyTeamsMember": {
+              "title": "Noch keine Teams erstellt",
+              "subtitle": "Arbeitsbereichseigentümer können Mitglieder schneller verwalten, indem sie sie in Teams gruppieren"
+            },
+            "emptyTeams": {
+              "title": "Kein Mitglied in einem Team"
+            }
+          }
+        },
+        "actions": {
+          "deactivate": "Mitglied deaktivieren",
+          "reactivate": "Mitglied reaktivieren",
+          "passwordChange": "Passwortänderung anfordern"
+        }
+      },
+      "teams": {
+        "title": "Teams"
+      },
+      "billing": {
+        "title": "Billing",
+        "nextBillingDate": "Nächstes Abrechnungsdatum",
+        "planLimit": "Abgerechnet für {{planLimit}} plan",
+        "subscription": "Abonnement",
+        "lifetimeSubscription": {
+          "planType": "Lebenslang",
+          "text": "Keine kommenden Rechnungen"
+        },
+        "freeSubscription": {
+          "planType": "Kostenlos",
+          "action": "Upgrade",
+          "actionDescription": "Erhöhen Sie Ihren Speicherplatz und erhalten Sie mehr Funktionen"
+        },
+        "paymentMethod": {
+          "title": "Zahlungsmethode",
+          "editButton": "Zahlungsmethode bearbeiten",
+          "freePlanTitle": "Sie haben einen kostenlosen {{planLimit}} Plan",
+          "addButton": "Zahlungsmethode hinzufügen",
+          "empty": "Keine Zahlungsmethode zugeordnet"
+        },
+        "cancelSubscription": {
+          "title": "Abonnement kündigen",
+          "text": "Ihr Plan wird auf die kostenlose Stufe herabgestuft.",
+          "button": "Abonnement kündigen"
+        },
+        "empty": {
+          "text": "Keine früheren Rechnungen"
+        }
+      }
+    },
+    "account": {
+      "title": "Konto",
+      "inviteFriend": "Freund einladen",
+      "seeInvitations": "Einladungen ansehen",
+      "sendInvitationDescription": "Verbreiten Sie die Nachricht und erhalten Sie 1 GB pro eingeladenem Freund kostenlos. Sie können insgesamt bis zu 4 GB erhalten.",
+      "sendInvitation": "Einladung senden",
+      "enterFriendEmail": "Freundes-E-Mail eingeben",
+      "extraStorage": "Zusätzlicher Speicher",
+      "invitedFriends": "Eingeladene Freunde",
+      "friendsInvited": "Freunde eingeladen",
+      "acceptedRequests": "Akzeptierte Anfragen",
+      "user": "Benutzer",
+      "status": "Status",
+      "accepted": "Akzeptiert",
+      "pending": "Ausstehend",
+      "noInvitations": "Noch keine Einladungen verschickt",
+      "upgrade": "Upgrade",
+      "levelUpStorage": "Erhöhe deinen Speicherplatz und erhalte viele andere Vorteile",
+      "upgradeNow": "Jetzt upgraden",
+      "emptyTrash": "Papierkorb leeren",
+      "emptryTrashDescription": "Elemente im Papierkorb werden nach 15 Tagen endgültig gelöscht",
+      "plans": {
+        "title": "Tarife",
+        "current": "Aktuell",
+        "upgrade": "Upgrade",
+        "downgrade": "Downgrade",
+        "free": "Erhalten Sie bis zu 10 GB kostenlos",
+        "manageBilling": "Abrechnung verwalten",
+        "freeForever": "Für immer kostenlos",
+        "year": "Jahr",
+        "month": "Monat",
+        "lifetime": "Lifetime",
+        "planFeaturesList": {
+          "title": "Pläne-Details",
+          "storage": " Speicherplatz",
+          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
+          "featureTwo": "Passwortgeschütztes Teilen von Dateien.",
+          "featureThree": "Zugriff auf Ihre Dateien von jedem Gerät.",
+          "featureFour": "Hochladen von Dateien bis zu 20 GB.",
+          "featureFive": "Zwei-Faktor-Authentifizierung (2FA).",
+          "featureSix": "Premium-Kundensupport.",
+          "featureSeven": "30-Tage Geld-zurück-Garantie."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Pläne-Details",
+          "storage": " Speicherplatz",
+          "featureOne": "Verschlüsseltes Teilen von Dateien und Ordnern.",
+          "featureTwo": "Erstellen und Verwalten von Benutzern und Teams.",
+          "featureThree": "Ab 3 Benutzern und bis zu 100.",
+          "featureFour": "DSGVO-konform.",
+          "featureFive": "Hochladen von Dateien bis zu 20 GB.",
+          "featureSix": "Verwalten von Kontoabrechnungen und Zahlungen.",
+          "featureSeven": "Premium-Kundensupport."
+        },
+        "user": "benutzer"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "security": {
+        "title": "Sicherheit"
+      }
+    },
+    "navBarSections": {
+      "general": "Allgemein",
+      "workspace": "Arbeitsbereich",
+      "overview": "Übersicht",
+      "members": "Mitglieder",
+      "teams": "Teams",
+      "billing": "Abrechnung",
+      "account": "Konto",
+      "plans": "Pläne",
+      "security": "Sicherheit"
+    }
+  },
+  "workspaces": {
+    "workspaces": "Arbeitsbereiche",
+    "workspace": "Arbeitsbereich",
+    "createWorkspace": "Arbeitsbereich erstellen",
+    "workspaceTypes": {
+      "personal": "Persönlicher Arbeitsbereich",
+      "business": "Geschäftsarbeitsbereich"
+    },
+    "pending": "Ausstehende Einladungen",
+    "messages": {
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+    },
+    "pendingInvitations": {
+      "empty": "Keine Einladungen übrig",
+      "title": "Ausstehende Einladungen",
+      "accept": "Akzeptieren",
+      "deny": "Ablehnen",
+      "invitedOn": "Einladung gesendet ",
+      "todayAt": "heute um "
     }
   }
 }

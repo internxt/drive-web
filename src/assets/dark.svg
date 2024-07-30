@@ -1,0 +1,40 @@
+<svg fill="none" height="88" viewBox="0 0 144 88" width="144" xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <filter id="theme-dark-a" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse" height="96" width="152" x="4" y="14">
+    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+    <feColorMatrix in="SourceAlpha" result="hardAlpha" type="matrix"
+      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+    <feMorphology in="SourceAlpha" operator="erode" radius="3" result="effect1_dropShadow_9973_74" />
+    <feOffset dy="10" />
+    <feGaussianBlur stdDeviation="7.5" />
+    <feComposite in2="hardAlpha" operator="out" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+    <feBlend in2="BackgroundImageFix" mode="normal" result="effect1_dropShadow_9973_74" />
+    <feColorMatrix in="SourceAlpha" result="hardAlpha" type="matrix"
+      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" />
+    <feMorphology in="SourceAlpha" operator="erode" radius="4" result="effect2_dropShadow_9973_74" />
+    <feOffset dy="4" />
+    <feGaussianBlur stdDeviation="3" />
+    <feComposite in2="hardAlpha" operator="out" />
+    <feColorMatrix type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.1 0" />
+    <feBlend in2="effect1_dropShadow_9973_74" mode="normal" result="effect2_dropShadow_9973_74" />
+    <feBlend in="SourceGraphic" in2="effect2_dropShadow_9973_74" mode="normal" result="shape" />
+  </filter>
+  <clipPath id="theme-dark-b">
+    <path d="m0 0h144v88h-144z" />
+  </clipPath>
+  <g clip-path="url(#theme-dark-b)">
+    <path d="m0 0h144v88h-144z" fill="#3a3a3b" />
+    <g filter="url(#theme-dark-a)">
+      <path d="m16 28c0-6.6274 5.3726-12 12-12h116v72h-128z" fill="#18181b" />
+      <path d="m28 16.5h115.5v71h-127v-59.5c0-6.3513 5.1487-11.5 11.5-11.5z" stroke="#464649" />
+      <g fill="#3a3a3b">
+        <rect height="20" rx="4" width="20" x="28" y="28" />
+        <rect height="10" rx="4" width="72" x="58" y="33" />
+        <rect height="20" rx="4" width="20" x="28" y="56" />
+        <path
+          d="m58 65c0-2.2091 1.7909-4 4-4h48c2.209 0 4 1.7909 4 4v2c0 2.2091-1.791 4-4 4h-48c-2.2091 0-4-1.7909-4-4z" />
+      </g>
+    </g>
+  </g>
+</svg>

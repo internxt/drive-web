@@ -1,32 +1,31 @@
-import { Suspense, Fragment, useState, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react';
-import viewers from './viewers';
-
 import UilMultiply from '@iconscout/react-unicons/icons/uil-multiply';
-import { DriveFileData, DriveItemData } from '../../../drive/types';
-import { useAppDispatch, useAppSelector } from '../../../store/hooks';
-import { FileExtensionGroup } from '../../../drive/types/file-types';
-import iconService from '../../../drive/services/icon.service';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
 import { CaretLeft, CaretRight } from '@phosphor-icons/react';
-import TopBarActions from './components/TopBarActions';
+import { isLargeFile } from 'app/core/services/media.service';
+import iconService from 'app/drive/services/icon.service';
+import { DriveFileData, DriveItemData } from 'app/drive/types';
+import { FileExtensionGroup } from 'app/drive/types/file-types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import ShareItemDialog from 'app/share/components/ShareItemDialog/ShareItemDialog';
+import { ListItemMenu } from 'app/shared/components/List/ListItem';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
+import { Fragment, Suspense, useEffect, useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
-import ShareItemDialog from '../../../share/components/ShareItemDialog/ShareItemDialog';
-import { RootState } from '../../../store';
-import { uiActions } from '../../../store/slices/ui';
-import { setItemsToMove, storageActions } from '../../../store/slices/storage';
-import { isLargeFile } from '../../../core/services/media.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import {
-  trackFilePreviewed,
-  trackFilePreviewOpened,
   trackFilePreviewClicked,
+  trackFilePreviewOpened,
+  trackFilePreviewed,
 } from '../../../analytics/services/analytics.service';
-import { ListItemMenu } from '../../../shared/components/List/ListItem';
+import { PreviewFileItem } from '../../../share/types';
+import { setItemsToMove, storageActions } from '../../../store/slices/storage';
 import { TopBarActionsMenu } from './FileViewerWrapper';
 import { NoPreviewIsAvailableComponent } from './components/NoPreviewIsAvailableComponent';
-import { PreviewFileItem } from 'app/share/types';
+import TopBarActions from './components/TopBarActions';
 import { checkIfExtensionIsAllowed, getIsTypeAllowedAndFileExtensionGroupValues } from './utils/fileViewerUtils';
+import viewers from './viewers';
 
 const ESC_KEY_KEYBOARD_CODE = 27;
 interface FileViewerProps {

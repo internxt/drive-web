@@ -1,27 +1,27 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RootState } from '../..';
-
 import { InitializeUserResponse, UpdateProfilePayload } from '@internxt/sdk/dist/drive/users/types';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import dayjs from 'dayjs';
+import { RootState } from '../..';
 import authService from '../../../auth/services/auth.service';
 import userService from '../../../auth/services/user.service';
-import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
 import { AppView, LocalStorageItem } from '../../../core/types';
-import { saveAvatarToDatabase } from '../../../core/views/Preferences/tabs/Account/AvatarWrapper';
 import { deleteDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { saveAvatarToDatabase } from '../../../newSettings/Sections/Account/Account/components/AvatarWrapper';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import tasksService from '../../../tasks/services/tasks.service';
 import { storeTeamsInfo } from '../../../teams/services/teams.service';
-import { isTokenExpired } from '../../utils';
 import { referralsActions } from '../referrals';
 import { sessionActions } from '../session';
 import { sessionSelectors } from '../session/session.selectors';
 import { storageActions } from '../storage';
 import { teamActions } from '../team';
 import { uiActions } from '../ui';
+
+import errorService from '../../../core/services/error.service';
+import { isTokenExpired } from '../../utils';
 
 export interface UserState {
   isInitializing: boolean;

@@ -13,8 +13,8 @@ import { uiActions } from '../../../store/slices/ui';
 import { DriveItemData } from '../../types';
 
 type NameCollisionContainerProps = {
-  currentFolderId: number;
-  moveDestinationFolderId: number | null;
+  currentFolderId: string;
+  moveDestinationFolderId: string | null;
   filesToRename: (File | DriveItemData)[];
   driveFilesToRename: DriveItemData[];
   foldersToRename: (IRoot | DriveItemData)[];
@@ -41,6 +41,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     () => moveDestinationFolderId ?? currentFolderId,
     [moveDestinationFolderId, currentFolderId],
   );
+
   const handleNewItems = (files: (File | DriveItemData)[], folders: (IRoot | DriveItemData)[]) => [
     ...files,
     ...folders,
@@ -98,7 +99,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToMove,
-        destinationFolderId: moveDestinationFolderId as number,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };
@@ -108,7 +109,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
     dispatch(
       storageThunks.moveItemsThunk({
         items: itemsToUpload,
-        destinationFolderId: moveDestinationFolderId as number,
+        destinationFolderId: moveDestinationFolderId as string,
       }),
     );
   };
@@ -251,7 +252,7 @@ const NameCollisionContainer: FC<NameCollisionContainerProps> = ({
   );
 };
 export default connect((state: RootState) => {
-  const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const currentFolderId: string = storageSelectors.currentFolderId(state);
 
   return {
     currentFolderId,

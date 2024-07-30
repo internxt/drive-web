@@ -1,6 +1,6 @@
+import React from 'react';
 import { ReactComponent as Check } from './Check.svg';
 import { ReactComponent as Minus } from './Minus.svg';
-import React from 'react';
 
 interface BaseCheckboxProps {
   id?: string;

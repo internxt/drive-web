@@ -8,7 +8,6 @@ import {
   BaseTask,
   DownloadFilesData,
   DownloadFolderData,
-  DownloadPhotosTask,
   TaskData,
   TaskEvent,
   TaskFilter,
@@ -199,11 +198,6 @@ class TaskManagerService {
         title = itemsLib.getItemDisplayName({ name: task.folder.name });
         break;
       }
-      case TaskType.DownloadPhotos: {
-        const { numberOfPhotos } = task as DownloadPhotosTask;
-        title = `${numberOfPhotos} ${numberOfPhotos > 1 ? 'Photos' : 'Photo'}`;
-        break;
-      }
       case TaskType.RenameFile: {
         title = itemsLib.getItemDisplayName(task.file);
         break;
@@ -258,10 +252,6 @@ class TaskManagerService {
       }
       case TaskType.MoveFolder: {
         icon = iconService.getItemIcon(true, '');
-        break;
-      }
-      case TaskType.DownloadPhotos: {
-        icon = iconService.getItemIcon(false, 'jpeg');
         break;
       }
       case TaskType.RenameFile: {

@@ -52,7 +52,7 @@ const topDropdownBarActionsMenu = ({
   const isSharedView = pathId === 'shared';
   const isTrashView = pathId === 'trash';
 
-  const isSharedItem = (currentFile.sharings && currentFile.sharings?.length > 0) ?? false;
+  const isSharedItem = (currentFile?.sharings && currentFile.sharings?.length > 0) ?? false;
 
   // TODO: QUICK FIX TO THE RELEASE
   // Check why the user field is networkUser in some cases instead of user

@@ -26,12 +26,17 @@ type Options = {
   isRetriedUpload?: boolean;
   showNotifications?: boolean;
   showErrors?: boolean;
+  // TOOD: REMOVE DUPLICATED TYPE FileUploadOptions IN uploadFile.ts
   ownerUserAuthenticationData?: {
     token: string;
     bridgeUser: string;
     bridgePass: string;
     encryptionKey: string;
     bucketId: string;
+    // to manage B2B workspaces
+    workspaceId?: string;
+    workspacesToken?: string;
+    resourcesToken: string;
   };
   sharedItemData?: {
     isDeepFolder?: boolean;
@@ -45,7 +50,7 @@ type UploadManagerFileParams = {
   relatedTaskId?: string;
   fileType?: string;
   userEmail: string;
-  parentFolderId: number;
+  parentFolderId: string;
   onFinishUploadFile?: (driveItemData: DriveFileData, taskId: string) => void;
   abortController?: AbortController;
 };

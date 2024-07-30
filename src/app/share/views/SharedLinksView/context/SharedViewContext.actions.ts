@@ -99,7 +99,7 @@ const setCurrentFolderId = (payload: string): Action => ({
   payload,
 });
 
-const setCurrentParentFolderId = (payload?: number): Action => ({
+const setCurrentParentFolderId = (payload?: string): Action => ({
   type: ActionTypes.SET_CURRENT_PARENT_FOLDER_ID,
   payload,
 });
@@ -125,28 +125,28 @@ const setOwnerEncryptionKey = (payload: null | string): Action => ({
 });
 
 export {
-  setHasMoreFiles,
-  setHasMoreFolders,
-  setPage,
-  setIsLoading,
-  setSharedFolders,
-  setSharedFiles,
-  setOrderBy,
-  setSelectedItems,
-  setItemToView,
-  setEditNameItem,
-  setShowStopSharingConfirmation,
-  setIsFileViewerOpen,
-  setIsEditNameDialogOpen,
-  setIsDeleteDialogModalOpen,
-  setCurrentFolderLevelResourcesToken,
-  setNextFolderLevelResourcesToken,
-  setClickedShareItemUser,
   setClickedShareItemEncryptionKey,
+  setClickedShareItemUser,
   setCurrentFolderId,
+  setCurrentFolderLevelResourcesToken,
   setCurrentParentFolderId,
   setCurrentShareOwnerAvatar,
+  setEditNameItem,
   setFilesOwnerCredentials,
+  setHasMoreFiles,
+  setHasMoreFolders,
+  setIsDeleteDialogModalOpen,
+  setIsEditNameDialogOpen,
+  setIsFileViewerOpen,
+  setIsLoading,
+  setItemToView,
+  setNextFolderLevelResourcesToken,
+  setOrderBy,
   setOwnerBucket,
   setOwnerEncryptionKey,
+  setPage,
+  setSelectedItems,
+  setSharedFiles,
+  setSharedFolders,
+  setShowStopSharingConfirmation,
 };

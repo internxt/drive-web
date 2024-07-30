@@ -13,7 +13,6 @@ import SignUpView from '../../auth/views/SignUpView/SignUpView';
 import UniversalLinkSuccessView from '../../auth/views/UnivesalLinkSuccessView/UniversalLinkSuccessView';
 import BackupsView from '../../backups/views/BackupsView/BackupsView';
 import DeactivationView from '../../core/views/DeactivationView/DeactivationView';
-import Preferences from '../../core/views/Preferences';
 import DriveView from '../../drive/views/DriveView/DriveView';
 import FolderFileNotFound from '../../drive/views/FolderFileNotFound/FolderFileNotFound';
 import RecentsView from '../../drive/views/RecentsView/RecentsView';
@@ -26,6 +25,7 @@ import ShareFileView from '../../share/views/ShareView/ShareFileView';
 import DeactivationTeamsView from '../../teams/views/DeactivationTeamsView/DeactivationTeamsView';
 import JoinTeamView from '../../teams/views/JoinTeamView/JoinTeamView';
 import TeamSuccessView from '../../teams/views/TeamSuccessView/TeamSuccessView';
+import WorkspaceGuestSingUpView from '../../auth/components/SignUp/WorkspaceGuestSignUp';
 import RedirectToAppView from '../../core/views/RedirectToAppView/RedirectToAppView';
 import ShareFolderView from '../../share/views/ShareView/ShareFolderView';
 import ShareGuestSingUpView from '../../share/views/SharedGuestSignUp/ShareGuestSingUpView';
@@ -48,6 +48,7 @@ const views: Array<{
   { id: AppView.Login, component: SignInView },
   { id: AppView.SignupBlog, component: SignupBlog },
   { id: AppView.ShareGuestAcceptInvite, component: ShareGuestSingUpView },
+  { id: AppView.WorkspaceGuestInvite, component: WorkspaceGuestSingUpView },
   { id: AppView.Auth, component: AuthView },
   { id: AppView.ButtonAuth, component: ButtonAuth },
   { id: AppView.RecoverAccount, component: RecoverAccountView },
@@ -55,7 +56,6 @@ const views: Array<{
   { id: AppView.Trash, component: TrashView },
   { id: AppView.Backups, component: BackupsView },
   { id: AppView.Shared, component: SharedViewWrapper },
-  { id: AppView.Preferences, component: Preferences },
   { id: AppView.FolderFileNotFound, component: FolderFileNotFound },
   { id: AppView.TeamsJoin, component: JoinTeamView },
   { id: AppView.GuestAcceptInvite, component: GuestAcceptInvitationView },

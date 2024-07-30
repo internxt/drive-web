@@ -1,13 +1,13 @@
-import { storageActions } from '../../app/store/slices/storage';
-import { store } from '../../app/store';
-import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
-import { SdkFactory } from '../../app/core/factory/sdk';
-import { DriveItemData } from '../../app/drive/types';
-import { DeleteItemsPermanentlyPayload } from '@internxt/sdk/dist/drive/trash/types';
-import { deleteDatabaseItems } from '../../app/drive/services/database.service';
-import { t } from 'i18next';
 import { Trash } from '@internxt/sdk/dist/drive';
+import { DeleteItemsPermanentlyByUUIDPayload } from '@internxt/sdk/dist/drive/trash/types';
+import { t } from 'i18next';
+import { SdkFactory } from '../../app/core/factory/sdk';
 import errorService from '../../app/core/services/error.service';
+import { deleteDatabaseItems } from '../../app/drive/services/database.service';
+import { DriveItemData } from '../../app/drive/types';
+import notificationsService, { ToastType } from '../../app/notifications/services/notifications.service';
+import { store } from '../../app/store';
+import { storageActions } from '../../app/store/slices/storage';
 
 const MAX_ITEMS_TO_DELETE = 20;
 const MAX_CONCURRENT_REQUESTS = 2;
@@ -18,7 +18,7 @@ async function deleteItemsPermanently({
   maxConcurrentRequests,
   trashClient,
 }: {
-  items: { id: number | string; type: string }[];
+  items: { uuid: string; type: string }[];
   maxItemsToDelete: number;
   maxConcurrentRequests: number;
   trashClient: Trash;
@@ -27,7 +27,9 @@ async function deleteItemsPermanently({
 
   for (let i = 0; i < items.length; i += maxItemsToDelete) {
     const itemsToDelete = items.slice(i, i + maxItemsToDelete);
-    const promise = trashClient.deleteItemsPermanently({ items: itemsToDelete } as DeleteItemsPermanentlyPayload);
+    const promise = trashClient.deleteItemsPermanentlyByUUID({
+      items: itemsToDelete,
+    } as DeleteItemsPermanentlyByUUIDPayload);
     promises.push(promise);
 
     if (promises.length === maxConcurrentRequests) {
@@ -42,15 +44,15 @@ async function deleteItemsPermanently({
 }
 
 const DeleteItems = async (itemsToDelete: DriveItemData[]): Promise<void> => {
-  const items: Array<{ id: number | string; type: string }> = itemsToDelete.map((item) => {
+  const items: Array<{ uuid: string; type: string }> = itemsToDelete.map((item) => {
     return {
-      id: item.id,
+      uuid: item.uuid,
       type: item.isFolder ? 'folder' : 'file',
     };
   });
 
   try {
-    const trashClient = await SdkFactory.getNewApiInstance().createTrashClient();
+    const trashClient = SdkFactory.getNewApiInstance().createTrashClient();
     await deleteItemsPermanently({
       items,
       maxItemsToDelete: MAX_ITEMS_TO_DELETE,

@@ -167,7 +167,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
+      if (!redeemCodeObject) {
+        dispatch(planThunks.initializeThunk());
+      }
 
       if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
@@ -184,9 +186,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         window.location.replace(redirectUrl);
         return;
       } else if (redeemCodeObject) {
-        await paymentService.redeemCode(redeemCodeObject).catch((err) => {
-          errorService.reportError(err);
-        });
+        await paymentService.redeemCode(redeemCodeObject);
         dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
       } else {

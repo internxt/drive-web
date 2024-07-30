@@ -1,25 +1,29 @@
 import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
-import { sessionActions } from '..';
 import { RootState } from '../../..';
 
-import localStorageService from '../../../../core/services/local-storage.service';
-import { LocalStorageItem, Workspace } from '../../../../core/types';
-import { planThunks } from '../../plan';
+import navigationService from '../../../../core/services/navigation.service';
+import { AppView } from '../../../../core/types';
+import { storageActions, storageSelectors } from '../../storage';
+import storageThunks from '../../storage/storage.thunks';
+import { fetchPaginatedFolderContentThunk } from '../../storage/storage.thunks/fetchFolderContentThunk';
+import { uiActions } from '../../ui';
 import { SessionState } from '../session.model';
-import { sessionSelectors } from '../session.selectors';
 
 const changeWorkspaceThunk = createAsyncThunk<void, void, { state: RootState }>(
   'session/changeWorkspace',
   async (payload: void, { dispatch, getState }) => {
-    const isTeam: boolean = sessionSelectors.isTeam(getState());
-    const newWorkspace = isTeam ? Workspace.Individuals : Workspace.Business;
+    const state = getState();
+    // const isTeam: boolean = sessionSelectors.isTeam(state);
+    // const newWorkspace = isTeam ? Workspace.Individuals : Workspace.Business;
+    // dispatch(planThunks.initializeThunk());
 
-    dispatch(sessionActions.setWorkspace(newWorkspace));
-    localStorageService.set(LocalStorageItem.Workspace, newWorkspace);
-
-    // TODO: encapsulate reset storage logic
-
-    dispatch(planThunks.initializeThunk());
+    const rootFolderId = storageSelectors.rootFolderId(state);
+    navigationService.push(AppView.Drive);
+    dispatch(uiActions.setIsGlobalSearch(false));
+    dispatch(storageActions.resetDrivePagination());
+    dispatch(storageThunks.resetNamePathThunk());
+    dispatch(storageActions.clearSelectedItems());
+    dispatch(fetchPaginatedFolderContentThunk(rootFolderId));
   },
 );
 

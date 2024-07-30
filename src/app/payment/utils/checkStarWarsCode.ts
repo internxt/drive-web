@@ -26,11 +26,11 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
 
   if (starWarsInLocalStorage === 'true') return true;
 
-  const { subscription } = plan;
+  const { individualSubscription, businessSubscription } = plan;
 
   try {
     // Check if user used the coupon code
-    if (subscription?.type === 'subscription') {
+    if (individualSubscription?.type === 'subscription' || businessSubscription?.type === 'subscription') {
       const coupon = await fetchCouponCode('STAR_WARS_SUBSCRIPTION');
       const couponUsedResult = await paymentService.isCouponUsedByUser(coupon);
 
@@ -41,7 +41,7 @@ export const isStarWarsThemeAvailable = async (plan: PlanState, onSuccess?: () =
       }
 
       return false;
-    } else if (subscription?.type === 'lifetime') {
+    } else if (individualSubscription?.type === 'lifetime' || businessSubscription?.type === 'lifetime') {
       const [twoTB, fiveTB, tenTB] = await Promise.all([
         fetchCouponCode(LifetimeCoupons['2TB']),
         fetchCouponCode(LifetimeCoupons['5TB']),

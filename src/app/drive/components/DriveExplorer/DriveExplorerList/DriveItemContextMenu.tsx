@@ -1,5 +1,4 @@
 import { ListShareLinksItem } from '@internxt/sdk/dist/drive/share/types';
-import { t } from 'i18next';
 import {
   Backspace,
   ClockCounterClockwise,
@@ -12,11 +11,12 @@ import {
   Trash,
   Users,
 } from '@phosphor-icons/react';
+import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import { t } from 'i18next';
 import { Device } from '../../../../backups/types';
-import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 import { DriveFolderData, DriveItemData } from '../../../../drive/types';
 import { AdvancedSharedItem } from '../../../../share/types';
-import { ReactComponent as MoveActionIcon } from 'assets/icons/move.svg';
+import { ListItemMenu } from '../../../../shared/components/List/ListItem';
 
 const getOpenPreviewMenuItem = (openPreview: (target) => void) => ({
   name: t('drive.dropdown.openPreview'),
@@ -31,6 +31,15 @@ const shareLinkMenuItem = (shareLink: (target) => void) => ({
   name: t('drive.dropdown.shareLink'),
   icon: Users,
   action: shareLink,
+  disabled: () => {
+    return false;
+  },
+});
+
+const shareWithTeamMenuItem = (shareWithTeam: (target) => void) => ({
+  name: t('drive.dropdown.shareTeam'),
+  icon: Users,
+  action: shareWithTeam,
   disabled: () => {
     return false;
   },
@@ -433,20 +442,87 @@ const contextMenuMultipleSharedViewAFS = ({
   moveToTrash && getMoveToTrashMenuItem(moveToTrash),
 ];
 
+const contextMenuWorkspaceFolder = ({
+  shareLink,
+  getLink,
+  shareWithTeam,
+  showDetails,
+  renameItem,
+  moveItem,
+  downloadItem,
+  moveToTrash,
+}: {
+  shareLink: (item: DriveItemData) => void;
+  getLink: (item: DriveItemData) => void;
+  shareWithTeam: (item: DriveItemData) => Promise<void>;
+  showDetails: (item: DriveItemData) => void;
+  renameItem: (item: DriveItemData) => void;
+  moveItem: (item: DriveItemData) => void;
+  downloadItem: (item: DriveItemData) => void;
+  moveToTrash: (item: DriveItemData) => void;
+}): ListItemMenu<DriveItemData> => [
+  shareLinkMenuItem(shareLink),
+  getCopyLinkMenuItem(getLink),
+  shareWithTeamMenuItem(shareWithTeam),
+  { name: '', action: () => false, separator: true },
+  showDetailsMenuItem(showDetails),
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
+const contextMenuWorkspaceFile = ({
+  shareLink,
+  shareWithTeam,
+  openPreview,
+  showDetails,
+  getLink,
+  renameItem,
+  moveItem,
+  downloadItem,
+  moveToTrash,
+}: {
+  shareLink: (item: DriveItemData) => void;
+  shareWithTeam: (item: DriveItemData) => Promise<void>;
+  openPreview?: (item: DriveItemData) => void;
+  showDetails: (item: DriveItemData) => void;
+  getLink: (item: DriveItemData) => void;
+  renameItem: (item: DriveItemData) => void;
+  moveItem: (item: DriveItemData) => void;
+  downloadItem: (item: DriveItemData) => void;
+  moveToTrash: (item: DriveItemData) => void;
+}): ListItemMenu<DriveItemData> => [
+  shareLinkMenuItem(shareLink),
+  getCopyLinkMenuItem(getLink),
+  shareWithTeamMenuItem(shareWithTeam),
+  { name: '', action: () => false, separator: true },
+  openPreview && getOpenPreviewMenuItem(openPreview),
+  showDetailsMenuItem(showDetails),
+  getRenameMenuItem(renameItem),
+  getMoveItemMenuItem(moveItem),
+  getDownloadMenuItem(downloadItem),
+  { name: '', action: () => false, separator: true },
+  getMoveToTrashMenuItem(moveToTrash),
+];
+
 export {
-  contextMenuDriveFolderNotSharedLink,
-  contextMenuDriveNotSharedLink,
-  contextMenuSelectedItems,
-  contextMenuDriveItemShared,
-  contextMenuDriveFolderShared,
-  contextMenuTrashItems,
-  contextMenuTrashFolder,
-  contextMenuMultipleSelectedTrashItems,
-  contextMenuSelectedBackupItems,
   contextMenuBackupItems,
-  contextMenuDriveItemSharedsView,
-  contextMenuMultipleSharedView,
-  contextMenuDriveItemSharedAFS,
+  contextMenuDriveFolderNotSharedLink,
+  contextMenuDriveFolderShared,
   contextMenuDriveFolderSharedAFS,
+  contextMenuDriveItemShared,
+  contextMenuDriveItemSharedAFS,
+  contextMenuDriveItemSharedsView,
+  contextMenuDriveNotSharedLink,
+  contextMenuMultipleSelectedTrashItems,
+  contextMenuMultipleSharedView,
   contextMenuMultipleSharedViewAFS,
+  contextMenuSelectedBackupItems,
+  contextMenuSelectedItems,
+  contextMenuTrashFolder,
+  contextMenuTrashItems,
+  contextMenuWorkspaceFile,
+  contextMenuWorkspaceFolder,
 };

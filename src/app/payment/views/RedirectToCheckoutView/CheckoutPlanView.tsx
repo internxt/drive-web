@@ -1,15 +1,15 @@
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-
-import { AppView } from '../../../core/types';
-import { RootState } from '../../../store';
-import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { useAppDispatch } from '../../../store/hooks';
-import navigationService from '../../../core/services/navigation.service';
-import paymentService from '../../services/payment.service';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
-import { PlanState, planActions } from '../../../store/slices/plan';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import paymentService from 'app/payment/services/payment.service';
+import { RootState } from 'app/store';
+import { useAppDispatch } from 'app/store/hooks';
+import { planActions, PlanState } from 'app/store/slices/plan';
+import navigationService from 'app/core/services/navigation.service';
+import { AppView } from 'app/core/types';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
 interface CheckoutOptions {
   price_id: string;
@@ -31,7 +31,9 @@ export default function CheckoutPlanView(): JSX.Element {
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
-  const { subscription } = plan;
+  const { individualSubscription, businessSubscription } = plan;
+  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const subscription = !workspace ? individualSubscription : businessSubscription;
 
   useEffect(() => {
     if (subscription) {
@@ -109,8 +111,13 @@ export default function CheckoutPlanView(): JSX.Element {
       } else {
         try {
           const couponCode = coupon === 'null' ? undefined : coupon;
-          const updatedSubscription = await paymentService.updateSubscriptionPrice(planId, couponCode);
-          dispatch(planActions.setSubscription(updatedSubscription.userSubscription));
+          const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
+          if (userSubscription && userSubscription.type === 'subscription') {
+            if (userSubscription.userType == UserType.Individual)
+              dispatch(planActions.setSubscriptionIndividual(userSubscription));
+            if (userSubscription.userType == UserType.Business)
+              dispatch(planActions.setSubscriptionBusiness(userSubscription));
+          }
           navigationService.push(AppView.Preferences);
         } catch (err) {
           console.error(err);
