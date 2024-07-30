@@ -1,13 +1,6 @@
-import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
 import { Popover } from '@headlessui/react';
-import { connect } from 'react-redux';
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import { RootState } from 'app/store';
-import { uiActions } from 'app/store/slices/ui';
-import Button from 'app/shared/components/Button/Button';
-import Modal from 'app/shared/components/Modal';
-import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import {
   ArrowLeft,
   CaretDown,
@@ -20,30 +13,38 @@ import {
   Users,
   X,
 } from '@phosphor-icons/react';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
+import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
+import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
 import Avatar from 'app/shared/components/Avatar';
+import Button from 'app/shared/components/Button/Button';
+import Modal from 'app/shared/components/Modal';
 import Spinner from 'app/shared/components/Spinner/Spinner';
-import { sharedThunks } from '../../../store/slices/sharedLinks';
-import './ShareDialog.scss';
-import shareService, { getSharingRoles } from '../../../share/services/share.service';
-import errorService from '../../../core/services/error.service';
-import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
+import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { Role } from 'app/store/slices/sharedLinks/types';
+import { uiActions } from 'app/store/slices/ui';
 import copy from 'copy-to-clipboard';
-import { AdvancedSharedItem } from '../../../share/types';
-import { DriveItemData } from '../../types';
+import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { connect } from 'react-redux';
+import { Tooltip } from 'react-tooltip';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackPublicShared } from '../../../analytics/services/analytics.service';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
-import BaseCheckbox from 'app/shared/components/forms/BaseCheckbox/BaseCheckbox';
-import { SharePasswordDisableDialog } from 'app/share/components/SharePasswordDisableDialog/SharePasswordDisableDialog';
-import { SharingMeta } from '@internxt/sdk/dist/drive/share/types';
-import { SharePasswordInputDialog } from 'app/share/components/SharePasswordInputDialog/SharePasswordInputDialog';
-import { Tooltip } from 'react-tooltip';
-import { DELAY_SHOW_MS } from 'app/shared/components/Tooltip/Tooltip';
-import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
-import { MAX_SHARED_NAME_LENGTH } from 'app/share/views/SharedLinksView/SharedView';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import shareService, { getSharingRoles } from '../../../share/services/share.service';
+import { AdvancedSharedItem } from '../../../share/types';
 import { isUserItemOwner } from '../../../share/views/SharedLinksView/sharedViewUtils';
+import { sharedThunks } from '../../../store/slices/sharedLinks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
+import { DriveItemData } from '../../types';
+import ShareInviteDialog from '../ShareInviteDialog/ShareInviteDialog';
+import StopSharingItemDialog from '../StopSharingItemDialog/StopSharingItemDialog';
+import './ShareDialog.scss';
 
 type AccessMode = 'public' | 'restricted';
 type UserRole = 'owner' | 'editor' | 'reader';
@@ -129,6 +130,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
   const { translate } = useTranslationContext();
   const dispatch = useAppDispatch();
   const isOpen = useAppSelector((state: RootState) => state.ui.isShareDialogOpen);
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isToastNotificationOpen = useAppSelector((state: RootState) => state.ui.isToastNotificationOpen);
   const itemToShare = useAppSelector((state) => state.storage.itemToShare);
   const { onCloseDialog } = props;
@@ -217,7 +219,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
     try {
       const invitedUsersList = await shareService.getUsersOfSharedFolder({
         itemType: itemToShare.item.isFolder ? 'folder' : 'file',
-        folderId: itemToShare.item.uuid as string,
+        folderId: itemToShare.item.uuid,
       });
 
       const invitedUsersListParsed = invitedUsersList['users'].map((user) => ({
@@ -233,7 +235,6 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
         const onwerData = getLocalUserData();
         setInvitedUsers([{ ...onwerData, roleName: 'owner' }]);
       }
-      errorService.reportError(error);
     }
   }, [itemToShare, roles]);
 
@@ -567,7 +568,7 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                     </div>
                   </Button>
                 )}
-                {currentUserFolderRole !== 'reader' ? (
+                {currentUserFolderRole !== 'reader' && !isWorkspace ? (
                   <Button variant="secondary" onClick={onInviteUser}>
                     <UserPlus size={24} />
                     <span>{translate('modals.shareModal.list.invite')}</span>
@@ -703,29 +704,31 @@ const ShareDialog = (props: ShareDialogProps): JSX.Element => {
                             </div>
                           </button>
                           {/* Restricted */}
-                          <button
-                            className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
-                            onClick={() => changeAccess('restricted')}
-                          >
-                            <Users size={32} weight="light" />
-                            <div className="flex flex-1 flex-col items-start">
-                              <p className="text-base font-medium leading-none">
-                                {translate('modals.shareModal.general.accessOptions.restricted.title')}
-                              </p>
-                              <p className="text-left text-sm leading-tight text-gray-60">
-                                {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
-                              </p>
-                            </div>
-                            <div className="flex h-full w-5 items-center justify-center">
-                              {accessMode === 'restricted' ? (
-                                isLoading ? (
-                                  <Spinner className="h-5 w-5" />
-                                ) : (
-                                  <Check size={20} />
-                                )
-                              ) : null}
-                            </div>
-                          </button>
+                          {!isWorkspace && (
+                            <button
+                              className="flex h-16 w-full cursor-pointer items-center justify-start space-x-3 rounded-lg px-3 hover:bg-gray-5 dark:hover:bg-gray-10"
+                              onClick={() => changeAccess('restricted')}
+                            >
+                              <Users size={32} weight="light" />
+                              <div className="flex flex-1 flex-col items-start">
+                                <p className="text-base font-medium leading-none">
+                                  {translate('modals.shareModal.general.accessOptions.restricted.title')}
+                                </p>
+                                <p className="text-left text-sm leading-tight text-gray-60">
+                                  {translate('modals.shareModal.general.accessOptions.restricted.subtitle')}
+                                </p>
+                              </div>
+                              <div className="flex h-full w-5 items-center justify-center">
+                                {accessMode === 'restricted' ? (
+                                  isLoading ? (
+                                    <Spinner className="h-5 w-5" />
+                                  ) : (
+                                    <Check size={20} />
+                                  )
+                                ) : null}
+                              </div>
+                            </button>
+                          )}
                           {/* Stop sharing */}
                           {(currentUserFolderRole === 'owner' || isUserOwner || props?.isDriveItem) && (
                             <button

@@ -22,7 +22,7 @@ export namespace TrackingPlan {
     file_upload_id?: string;
     is_multiple: 0 | 1;
     file_name?: string;
-    parent_folder_id: number;
+    parent_folder_id: string;
     is_brave: boolean;
   }
 

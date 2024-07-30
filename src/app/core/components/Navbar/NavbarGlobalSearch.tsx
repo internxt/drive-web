@@ -8,7 +8,6 @@ import { SearchResult } from '@internxt/sdk/dist/drive/storage/types';
 import { Gear, MagnifyingGlass, X } from '@phosphor-icons/react';
 import AccountPopover from './AccountPopover';
 import { PlanState } from '../../../store/slices/plan';
-import { Link } from 'react-router-dom';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import iconService from 'app/drive/services/icon.service';
 import { useHotkeys } from 'react-hotkeys-hook';
@@ -23,6 +22,7 @@ import EmptyState from './EmptyState';
 import FilterItem from './FilterItem';
 import { getItemPlainName } from 'app/crypto/services/utils';
 import navigationService from 'app/core/services/navigation.service';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 interface NavbarProps {
   user: UserSettings | undefined;
@@ -70,6 +70,7 @@ const Navbar = (props: NavbarProps) => {
   const doneTypingInterval = 200;
 
   const isGlobalSearch = useAppSelector((state: RootState) => state.ui.isGlobalSearch);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   useHotkeys(
     ['Meta+F', 'Control+F'],
@@ -127,14 +128,14 @@ const Navbar = (props: NavbarProps) => {
       isGlobalSearch && dispatch(storageThunks.resetNamePathThunk());
       dispatch(uiActions.setIsGlobalSearch(true));
 
-      navigationService.pushFolder(itemData.uuid);
+      navigationService.pushFolder(itemData.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       searchInput.current?.blur();
       setQuery('');
       setSearchResult([]);
       setOpenSearchBox(false);
       setPreventBlur(false);
     } else {
-      navigationService.pushFile(itemData.uuid);
+      navigationService.pushFile(itemData.uuid, selectedWorkspace?.workspaceUser.workspaceId);
     }
   };
 
@@ -340,12 +341,19 @@ const Navbar = (props: NavbarProps) => {
       )}
 
       <div className="flex shrink-0">
-        <Link
-          to="/preferences"
+        <button
+          onClick={() => {
+            navigationService.openPreferencesDialog({
+              section: 'general',
+              subsection: 'general',
+              workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+            });
+            dispatch(uiActions.setIsPreferencesDialogOpen(true));
+          }}
           className="mr-5 flex h-10 w-10 items-center justify-center rounded-lg text-gray-80 hover:bg-gray-5 hover:text-gray-80 active:bg-gray-10"
         >
           <Gear size={24} />
-        </Link>
+        </button>
         <AccountPopover
           className="z-40 mr-5"
           user={user}

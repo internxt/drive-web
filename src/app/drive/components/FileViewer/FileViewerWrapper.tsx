@@ -5,6 +5,7 @@ import { DriveFileData, DriveItemData } from '../../types';
 import { Thumbnail } from '@internxt/sdk/dist/drive/storage/types';
 import { getAppConfig } from 'app/core/services/config.service';
 import localStorageService from 'app/core/services/local-storage.service';
+import navigationService from 'app/core/services/navigation.service';
 import { ListItemMenu } from 'app/shared/components/List/ListItem';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import errorService from '../../../core/services/error.service';
@@ -20,8 +21,8 @@ import {
 } from '../../../drive/services/thumbnail.service';
 import { AdvancedSharedItem, PreviewFileItem, UserRoles } from '../../../share/types';
 import { RootState } from '../../../store';
-import { sessionSelectors } from '../../../store/slices/session/session.selectors';
 import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { getDatabaseFilePreviewData, updateDatabaseFilePreviewData } from '../../services/database.service';
 import downloadService from '../../services/download.service';
 import useDriveItemActions from '../DriveExplorer/DriveExplorerItem/hooks/useDriveItemActions';
@@ -31,7 +32,6 @@ import {
   topDropdownBarActionsMenu,
   useFileViewerKeyboardShortcuts,
 } from './utils/fileViewerWrapperUtils';
-import navigationService from 'app/core/services/navigation.service';
 
 export type TopBarActionsMenu = ListItemMenu<DriveItemData> | ListItemMenu<AdvancedSharedItem> | undefined;
 
@@ -58,7 +58,7 @@ const FileViewerWrapper = ({
   sharedKeyboardShortcuts,
 }: FileViewerWrapperProps): JSX.Element => {
   const dispatch = useAppDispatch();
-  const isTeam = useAppSelector(sessionSelectors.isTeam);
+  const isWorkspace = !!useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const dirtyName = useAppSelector((state: RootState) => state.ui.currentEditingNameDirty);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const currentUserRole = useAppSelector((state: RootState) => state.shared.currentSharingRole);
@@ -66,6 +66,7 @@ const FileViewerWrapper = ({
   const [isDownloadStarted, setIsDownloadStarted] = useState(false);
   const [updateProgress, setUpdateProgress] = useState(0);
   const [currentFile, setCurrentFile] = useState<PreviewFileItem>(file);
+
   const [blob, setBlob] = useState<Blob | null>(null);
 
   const user = localStorageService.getUser();
@@ -81,7 +82,6 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-    navigationService.replaceState(currentFile?.uuid);
     dispatch(uiActions.setFileViewerItem(currentFile));
     if (currentFile && !updateProgress && !isDownloadStarted) {
       setIsDownloadStarted(true);
@@ -109,8 +109,7 @@ const FileViewerWrapper = ({
 
   useEffect(() => {
     setBlob(null);
-
-    if (dirtyName) {
+    if (dirtyName && dirtyName !== '') {
       setCurrentFile?.({
         ...currentFile,
         plainName: dirtyName,
@@ -142,14 +141,18 @@ const FileViewerWrapper = ({
   const driveItemsSort = useAppSelector((state) => state.storage.driveItemsSort);
 
   // Get all files in the current folder, sort the files and find the current file to display the file
-  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderId || '']);
+  const currentItemsFolder = useAppSelector((state) => state.storage.levels[file?.folderUuid || '']);
   const folderFiles = useMemo(() => currentItemsFolder?.filter((item) => !item.isFolder), [currentItemsFolder]);
 
   const sortFolderFiles = useMemo(() => {
     if (folderFiles) {
       return folderFiles.sort((a, b) => {
-        if (driveItemsOrder === OrderDirection.Asc) return a[driveItemsSort] > b[driveItemsSort];
-        else if (driveItemsOrder === OrderDirection.Desc) return a[driveItemsSort] < b[driveItemsSort];
+        if (driveItemsOrder === OrderDirection.Asc) {
+          return a[driveItemsSort] > b[driveItemsSort] ? 1 : -1;
+        } else if (driveItemsOrder === OrderDirection.Desc) {
+          return a[driveItemsSort] < b[driveItemsSort] ? 1 : -1;
+        }
+        return 0;
       });
     }
     return [];
@@ -183,7 +186,7 @@ const FileViewerWrapper = ({
       { ...currentFile, bucketId: currentFile.bucket },
       {
         updateProgressCallback: (progress) => handleProgress(progress, currentFile.type.toLowerCase()),
-        isTeam,
+        isWorkspace,
         abortController,
       },
       currentFile.credentials,
@@ -236,7 +239,7 @@ const FileViewerWrapper = ({
       size: driveFile.size,
       type: driveFile.type,
       content: fileObject,
-      parentFolderId: driveFile.folderId,
+      parentFolderId: driveFile.folderUuid,
     };
 
     const thumbnailGenerated = await getThumbnailFrom(fileUpload);

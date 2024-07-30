@@ -1,9 +1,9 @@
 import { DBSchema } from 'idb';
 import configService from '../../../core/services/config.service';
 import { DriveItemData } from '../../../drive/types';
-import indexedDBService from './indexed-db.service';
-import { LRUCacheStruture } from './LRUCache';
 import { TaskStatus } from '../../../tasks/types';
+import { LRUCacheStruture } from './LRUCache';
+import indexedDBService from './indexed-db.service';
 
 export enum DatabaseProvider {
   IndexedDB = 'indexed-db',
@@ -12,18 +12,16 @@ export enum DatabaseProvider {
 export enum DatabaseCollection {
   Levels = 'levels',
   MoveDialogLevels = 'move_levels',
-  Photos = 'photos',
   LevelsBlobs = 'levels_blobs',
   LRU_cache = 'lru_cache',
   Account_settings = 'account_settings',
   UploadItemStatus = 'upload_item_status',
+  WorkspacesAvatarBlobs = 'workspaces_avatar_blobs',
 }
 
 export enum LRUCacheTypes {
   LevelsBlobs = 'levels_blobs',
   LevelsBlobsPreview = 'levels_blobs_preview',
-  PhotosPreview = 'photos_preview',
-  PhotosSource = 'photos_source',
 }
 
 export type DriveItemBlobData = {
@@ -34,11 +32,6 @@ export type DriveItemBlobData = {
   updatedAt?: string;
 };
 
-export type PhotosData = {
-  preview?: Blob;
-  source?: Blob;
-};
-
 export type AvatarBlobData = {
   srcURL: string;
   avatarBlob: Blob;
@@ -47,28 +40,23 @@ export type AvatarBlobData = {
 
 export interface AppDatabase extends DBSchema {
   levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   move_levels: {
-    key: number;
+    key: string;
     value: DriveItemData[];
     indexes?: Record<string, IDBValidKey>;
   };
   levels_blobs: {
-    key: number;
+    key: string;
     value: DriveItemBlobData;
     indexes?: Record<string, IDBValidKey>;
   };
   lru_cache: {
     key: LRUCacheTypes;
     value: LRUCacheStruture;
-  };
-  photos: {
-    key: string;
-    value: PhotosData;
-    indexes?: Record<string, IDBValidKey>;
   };
   account_settings: {
     key: string;
@@ -77,6 +65,10 @@ export interface AppDatabase extends DBSchema {
   upload_item_status: {
     key: string;
     value: TaskStatus;
+  };
+  workspaces_avatar_blobs: {
+    key: string;
+    value: AvatarBlobData;
   };
 }
 

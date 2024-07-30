@@ -1,8 +1,9 @@
 import { items } from '@internxt/lib';
 
-import { FlatFolderZip } from 'app/core/services/zipFolder.service';
+import { FolderTree } from '@internxt/sdk/dist/drive/storage/types';
+import { FlatFolderZip } from 'app/core/services/zip.service';
 import network from 'app/network';
-import { DriveFolderData, FolderTree } from '../../../types';
+import { DriveFolderData } from '../../../types';
 import folderService from '../../folder.service';
 import { getEnvironmentConfig } from '../../network.service';
 
@@ -10,20 +11,20 @@ import { getEnvironmentConfig } from '../../network.service';
  * @description Downloads a folder using File System Access API
  * TODO: Load levels paginated instead of loading the entire tree at once.
  * @param folderData
- * @param isTeam
+ * @param isWorkspace
  */
 export default function downloadFolderUsingFileSystemAccessAPI({
   folder,
   updateProgressCallback,
-  isTeam,
+  isWorkspace,
   abortController,
 }: {
   folder: DriveFolderData;
   updateProgressCallback?: (progress: number) => void;
-  isTeam: boolean;
+  isWorkspace: boolean;
   abortController?: AbortController;
 }): Promise<void> {
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isTeam);
+  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig(isWorkspace);
 
   return downloadFolder(
     folder,
@@ -42,7 +43,7 @@ async function downloadFolder(
 ) {
   const { abortController, updateProgress } = opts;
   const { bridgeUser, bridgePass, encryptionKey } = environment;
-  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.id);
+  const { tree, folderDecryptedNames, fileDecryptedNames, size } = await folderService.fetchFolderTree(folder.uuid);
   const pendingFolders: { path: string; data: FolderTree }[] = [{ path: '', data: tree }];
 
   const zip = new FlatFolderZip(folder.name, {

@@ -5,10 +5,9 @@ export const INFINITE_LIMIT = 108851651149824;
 
 async function fetchLimit(): Promise<number> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
-  return storageClient.spaceLimit()
-    .then(response => {
-      return response.maxSpaceBytes;
-    });
+  return storageClient.spaceLimit().then((response) => {
+    return response.maxSpaceBytes;
+  });
 }
 
 const formatLimit = (limit: number): string => {

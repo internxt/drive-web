@@ -1,33 +1,30 @@
 import { useEffect } from 'react';
+import errorService from '../../../../core/services/error.service';
 import {
   setCurrentFolderLevelResourcesToken,
   setCurrentShareOwnerAvatar,
   setFilesOwnerCredentials,
-  setHasMoreFolders,
   setHasMoreFiles,
+  setHasMoreFolders,
   setIsLoading,
   setNextFolderLevelResourcesToken,
   setOwnerBucket,
   setOwnerEncryptionKey,
   setPage,
-  setSharedFolders,
   setSharedFiles,
+  setSharedFolders,
 } from '../context/SharedViewContext.actions';
-import errorService from '../../../../core/services/error.service';
 
-import { useShareViewContext } from '../context/SharedViewContextProvider';
-import shareService from '../../../services/share.service';
-import {
-  ListAllSharedFoldersResponse,
-  ListSharedItemsResponse,
-  SharedFiles,
-  SharedFolders,
-} from '@internxt/sdk/dist/drive/share/types';
-import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../types';
+import { ListSharedItemsResponse, SharedFiles, SharedFolders } from '@internxt/sdk/dist/drive/share/types';
+import { useDispatch, useSelector } from 'react-redux';
+import workspacesService from '../../../../core/services/workspace.service';
 import { getItemPlainName } from '../../../../crypto/services/utils';
 import { sharedActions } from '../../../../store/slices/sharedLinks';
-import { useDispatch } from 'react-redux';
+import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
 import { removeDuplicates } from '../../../../utils/driveItemsUtils';
+import shareService from '../../../services/share.service';
+import { AdvancedSharedItem, SharedNetworkCredentials } from '../../../types';
+import { useShareViewContext } from '../context/SharedViewContextProvider';
 
 const ITEMS_PER_PAGE = 30;
 
@@ -72,6 +69,10 @@ const addItemsToList = (
 const useFetchSharedData = () => {
   const { state, actionDispatch } = useShareViewContext();
   const dispatch = useDispatch();
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceCredentials = useSelector(workspacesSelectors.getWorkspaceCredentials);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
 
   const {
     page,
@@ -95,13 +96,13 @@ const useFetchSharedData = () => {
       const isRootFolder = !currentFolderId;
       try {
         if (isRootFolder && hasMoreFolders) {
-          await fetchRootFolders();
+          await fetchRootFolders(workspaceId, defaultTeamId);
         } else if (isRootFolder && !hasMoreFolders && hasMoreFiles) {
-          await fetchRootFiles();
+          await fetchRootFiles(workspaceId, defaultTeamId);
         } else if (!isRootFolder && hasMoreFolders) {
-          await fetchFolders();
+          await fetchFolders(workspaceId, defaultTeamId);
         } else if (!isRootFolder && !hasMoreFolders && hasMoreFiles) {
-          await fetchFiles();
+          await fetchFiles(false, workspaceId, defaultTeamId);
         }
       } catch (error) {
         errorService.reportError(error);
@@ -111,7 +112,7 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchRootFolders = async () => {
+  const fetchRootFolders = async (workspaceId?: string, teamId?: string) => {
     dispatch(sharedActions.setCurrentShareId(null));
     dispatch(sharedActions.setCurrentSharingRole(null));
     actionDispatch(setIsLoading(true));
@@ -120,12 +121,20 @@ const useFetchSharedData = () => {
     actionDispatch(setCurrentShareOwnerAvatar(''));
 
     try {
-      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFolders(page, ITEMS_PER_PAGE);
+      let response;
+
+      if (workspaceId && teamId) {
+        const [promise] = workspacesService.getAllWorkspaceTeamSharedFolders(workspaceId, teamId);
+        response = await promise;
+      } else {
+        response = await shareService.getAllSharedFolders(page, ITEMS_PER_PAGE);
+      }
 
       const folders = parseSharedFolderResponseItems({
         sharedFolderResponseItems: response.folders,
         isFolder: true,
         isFromRootFolder: true,
+        credentials: workspaceCredentials?.credentials,
       });
 
       const items = addItemsToList(shareFolders, folders, page);
@@ -143,16 +152,24 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchRootFiles = async () => {
+  const fetchRootFiles = async (workspaceId?: string, teamId?: string) => {
     actionDispatch(setIsLoading(true));
 
     try {
-      const response: ListAllSharedFoldersResponse = await shareService.getAllSharedFiles(page, ITEMS_PER_PAGE);
+      let response;
+
+      if (workspaceId && teamId) {
+        const [promise] = workspacesService.getAllWorkspaceTeamSharedFiles(workspaceId, teamId);
+        response = await promise;
+      } else {
+        response = await shareService.getAllSharedFiles(page, ITEMS_PER_PAGE);
+      }
 
       const files = parseSharedFolderResponseItems({
         sharedFolderResponseItems: response.files,
         isFolder: false,
         isFromRootFolder: true,
+        credentials: workspaceCredentials?.credentials,
       });
 
       const items = addItemsToList(shareFiles, files, page);
@@ -169,17 +186,31 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchFolders = async () => {
+  const fetchFolders = async (workspaceId?: string, teamId?: string) => {
     if (currentFolderId && hasMoreFolders) {
       actionDispatch(setIsLoading(true));
+
       try {
-        const response: ListSharedItemsResponse & { role: string } = (await shareService.getSharedFolderContent(
-          currentFolderId,
-          'folders',
-          currentFolderLevelResourcesToken,
-          page,
-          ITEMS_PER_PAGE,
-        )) as ListSharedItemsResponse & { role: string };
+        let response;
+        if (workspaceId && teamId) {
+          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+            workspaceId,
+            teamId,
+            currentFolderId,
+            page,
+            ITEMS_PER_PAGE,
+            currentFolderLevelResourcesToken,
+          );
+          response = await promise;
+        } else {
+          response = (await shareService.getSharedFolderContent(
+            currentFolderId,
+            'folders',
+            currentFolderLevelResourcesToken,
+            page,
+            ITEMS_PER_PAGE,
+          )) as ListSharedItemsResponse & { role: string };
+        }
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
@@ -209,24 +240,37 @@ const useFetchSharedData = () => {
     }
   };
 
-  const fetchFiles = async (forceFetch?: boolean) => {
+  const fetchFiles = async (forceFetch: boolean, workspaceId?: string, teamId?: string) => {
     if (currentFolderId && !hasMoreFolders && (hasMoreFiles || forceFetch)) {
       actionDispatch(setIsLoading(true));
       try {
-        const response: ListSharedItemsResponse & { bucket: string; encryptionKey: string } =
-          (await shareService.getSharedFolderContent(
+        let response;
+        if (workspaceId && teamId) {
+          const [promise] = workspacesService.getAllWorkspaceTeamSharedFolderFiles(
+            workspaceId,
+            teamId,
+            currentFolderId,
+            page,
+            ITEMS_PER_PAGE,
+            currentFolderLevelResourcesToken,
+          );
+          response = await promise;
+        } else {
+          response = (await shareService.getSharedFolderContent(
             currentFolderId,
             'files',
             currentFolderLevelResourcesToken,
             page,
             ITEMS_PER_PAGE,
           )) as ListSharedItemsResponse & { bucket: string; encryptionKey: string };
+        }
 
         const token = response.token;
         actionDispatch(setNextFolderLevelResourcesToken(token));
 
-        const networkPass = response.credentials.networkPass;
-        const networkUser = response.credentials.networkUser;
+        const networkPass = response.credentials?.networkPass ?? workspaceCredentials?.credentials.networkPass;
+        const networkUser = response.credentials?.networkUser ?? workspaceCredentials?.credentials.networkUser;
+        const credentials = { networkUser, networkPass };
         actionDispatch(setFilesOwnerCredentials({ networkPass, networkUser }));
         const bucket = response.bucket;
         actionDispatch(setOwnerBucket(bucket));
@@ -235,10 +279,11 @@ const useFetchSharedData = () => {
 
         const files = parseSharedFolderResponseItems({
           sharedFolderResponseItems: response.items,
-          credentials: response.credentials,
+          credentials: credentials,
           isFolder: false,
           isFromRootFolder: false,
         });
+
         const items = addItemsToList(shareFiles, files, page);
 
         const itemsWithoutDuplicates = removeDuplicates(items);

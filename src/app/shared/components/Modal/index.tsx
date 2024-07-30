@@ -1,4 +1,4 @@
-import { Transition, Dialog } from '@headlessui/react';
+import { Dialog, Transition } from '@headlessui/react';
 import { Fragment, ReactNode } from 'react';
 
 export default function Modal({
@@ -7,12 +7,14 @@ export default function Modal({
   children,
   maxWidth,
   className,
+  width,
   preventClosing = false,
 }: {
   isOpen: boolean;
   onClose: () => void;
   children: ReactNode;
   maxWidth?: string;
+  width?: string;
   className?: string;
   preventClosing?: boolean;
 }): JSX.Element {
@@ -28,7 +30,7 @@ export default function Modal({
           leaveFrom="opacity-100"
           leaveTo="opacity-0"
         >
-          <div className="fixed inset-0 z-50 bg-gray-100/50 dark:bg-black/75" />
+          <div className="fixed inset-0 z-50 bg-highlight/40" />
         </Transition.Child>
         <div className="fixed inset-0 z-50">
           <div className="flex min-h-full items-center justify-center">
@@ -42,9 +44,9 @@ export default function Modal({
               leaveTo="opacity-0 scale-95"
             >
               <Dialog.Panel
-                className={`w-full text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
+                className={` ${width ?? 'w-full'} text-gray-100 ${maxWidth ?? 'max-w-lg'} ${
                   className ?? 'p-5'
-                } rounded-2xl bg-surface shadow-subtle-hard transition-all duration-100 ease-out dark:bg-gray-1`}
+                } rounded-2xl bg-surface shadow-subtle-hard transition-all duration-100 ease-out`}
               >
                 {children}
               </Dialog.Panel>

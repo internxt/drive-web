@@ -18,7 +18,8 @@ import { Menu, Transition } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { useHotkeys } from 'react-hotkeys-hook';
 import moveItemsToTrash from 'use_cases/trash/move-items-to-trash';
-import { getTrashPaginated } from '../../../../use_cases/trash/get_trash';
+
+import { Role } from '@internxt/sdk/dist/drive/share/types';
 import BannerWrapper from '../../../banners/BannerWrapper';
 import deviceService from '../../../core/services/device.service';
 import errorService from '../../../core/services/error.service';
@@ -68,6 +69,7 @@ import WarningMessageWrapper from '../WarningMessage/WarningMessageWrapper';
 import './DriveExplorer.scss';
 import { DriveTopBarItems } from './DriveTopBarItems';
 import DriveTopBarActions from './components/DriveTopBarActions';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 
 const TRASH_PAGINATION_OFFSET = 50;
 const UPLOAD_ITEMS_LIMIT = 1000;
@@ -84,7 +86,7 @@ interface DriveExplorerProps {
   onFolderCreated?: () => void;
   onDragAndDropEnd?: () => void;
   user: UserSettings | undefined;
-  currentFolderId: number;
+  currentFolderId: string;
   selectedItems: DriveItemData[];
   storageFilters: StorageFilters;
   isAuthenticated: boolean;
@@ -104,6 +106,14 @@ interface DriveExplorerProps {
   filesOnTrashLength: number;
   hasMoreFolders: boolean;
   hasMoreFiles: boolean;
+  getTrashPaginated?: (
+    limit: number,
+    offset: number | undefined,
+    type: 'files' | 'folders',
+    root: boolean,
+    folderId?: number | undefined,
+  ) => Promise<{ finished: boolean; itemsRetrieved: number }>;
+  roles: Role[];
 }
 
 const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
@@ -127,9 +137,12 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
     hasMoreFolders,
     hasMoreFiles,
     user,
+    getTrashPaginated,
+    roles,
   } = props;
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const hasItems = items.length > 0;
   const hasFilters = storageFilters.text.length > 0;
@@ -301,9 +314,9 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   const onDetailsButtonClicked = useCallback(
     (item: DriveItemData | AdvancedSharedItem) => {
       if (item.isFolder) {
-        navigationService.pushFolder(item.uuid);
+        navigationService.pushFolder(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       } else {
-        navigationService.pushFile(item.uuid);
+        navigationService.pushFile(item.uuid, selectedWorkspace?.workspaceUser.workspaceId);
       }
     },
     [dispatch],
@@ -312,19 +325,21 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
   //TODO: MOVE PAGINATED TRASH LOGIC OUT OF VIEW
   const getMoreTrashFolders = async () => {
     setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
-    const existsMoreFolders = !result.finished;
-
-    setHasMoreTrashFolders(existsMoreFolders);
+    if (getTrashPaginated) {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, folderOnTrashLength, 'folders', true);
+      const existsMoreFolders = !result.finished;
+      setHasMoreTrashFolders(existsMoreFolders);
+    }
     setIsLoadingTrashItems(false);
   };
 
   const getMoreTrashFiles = async () => {
     setIsLoadingTrashItems(true);
-    const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
-
-    const existsMoreItems = !result.finished;
-    setHasMoreItems(existsMoreItems);
+    if (getTrashPaginated) {
+      const result = await getTrashPaginated(TRASH_PAGINATION_OFFSET, filesOnTrashLength, 'files', true);
+      const existsMoreItems = !result.finished;
+      setHasMoreItems(existsMoreItems);
+    }
     setIsLoadingTrashItems(false);
   };
 
@@ -758,6 +773,7 @@ const DriveExplorer = (props: DriveExplorerProps): JSX.Element => {
               setEditNameItem={setEditNameItem}
               hasItems={hasItems}
               driveActionsRef={divRef}
+              roles={roles}
             />
           </div>
           {isTrash && (
@@ -1045,7 +1061,7 @@ const dropTargetCollect: DropTargetCollector<
 };
 
 export default connect((state: RootState) => {
-  const currentFolderId: number = storageSelectors.currentFolderId(state);
+  const currentFolderId: string = storageSelectors.currentFolderId(state);
   const hasMoreFolders = state.storage.hasMoreDriveFolders[currentFolderId] ?? true;
   const hasMoreFiles = state.storage.hasMoreDriveFiles[currentFolderId] ?? true;
 
@@ -1063,10 +1079,11 @@ export default connect((state: RootState) => {
     namePath: state.storage.namePath,
     workspace: state.session.workspace,
     planLimit: planSelectors.planLimitToShow(state),
-    planUsage: state.plan.planUsage,
+    planUsage: planSelectors.planUsageToShow(state),
     folderOnTrashLength: state.storage.folderOnTrashLength,
     filesOnTrashLength: state.storage.filesOnTrashLength,
     hasMoreFolders,
     hasMoreFiles,
+    roles: state.shared.roles,
   };
 })(DropTarget([NativeTypes.FILE], dropTargetSpec, dropTargetCollect)(DriveExplorer));

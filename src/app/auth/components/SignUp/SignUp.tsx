@@ -5,7 +5,7 @@ import { auth } from '@internxt/lib';
 import { Link } from 'react-router-dom';
 import { Info, WarningCircle } from '@phosphor-icons/react';
 import { Helmet } from 'react-helmet-async';
-import localStorageService, { STORAGE_KEYS } from '../../../core/services/local-storage.service';
+import localStorageService from '../../../core/services/local-storage.service';
 
 import { useAppDispatch } from '../../../store/hooks';
 import { userActions, userThunks } from '../../../store/slices/user';
@@ -167,7 +167,9 @@ function SignUp(props: SignUpProps): JSX.Element {
       dispatch(userActions.setUser(user));
       await dispatch(userThunks.initializeUserThunk());
       dispatch(productsThunks.initializeThunk());
-      dispatch(planThunks.initializeThunk());
+      if (!redeemCodeObject) {
+        dispatch(planThunks.initializeThunk());
+      }
 
       if (isNewUser) {
         dispatch(referralsThunks.initializeThunk());
@@ -184,9 +186,7 @@ function SignUp(props: SignUpProps): JSX.Element {
         window.location.replace(redirectUrl);
         return;
       } else if (redeemCodeObject) {
-        await paymentService.redeemCode(redeemCodeObject).catch((err) => {
-          errorService.reportError(err);
-        });
+        await paymentService.redeemCode(redeemCodeObject);
         dispatch(planThunks.initializeThunk());
         navigationService.push(AppView.Drive);
       } else {

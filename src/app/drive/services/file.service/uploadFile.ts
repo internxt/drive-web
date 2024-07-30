@@ -1,16 +1,16 @@
 import { StorageTypes } from '@internxt/sdk/dist/drive';
+import { Network } from 'app/drive/services/network.service';
 import { DriveFileData } from 'app/drive/types';
-import analyticsService from '../../../analytics/services/analytics.service';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
-import { AppView } from '../../../core/types';
+import analyticsService from '../../../analytics/services/analytics.service';
+import { SdkFactory } from '../../../core/factory/sdk';
+import errorService from '../../../core/services/error.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import navigationService from '../../../core/services/navigation.service';
-import { getEnvironmentConfig } from '../network.service';
-import { encryptFilename } from '../../../crypto/services/utils';
-import errorService from '../../../core/services/error.service';
-import { SdkFactory } from '../../../core/factory/sdk';
-import { Network } from 'app/drive/services/network.service';
+import workspacesService from '../../../core/services/workspace.service';
+import { AppView } from '../../../core/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { getEnvironmentConfig } from '../network.service';
 import { generateThumbnailFromFile } from '../thumbnail.service';
 
 export interface FileToUpload {
@@ -18,7 +18,7 @@ export interface FileToUpload {
   size: number;
   type: string;
   content: File;
-  parentFolderId: number;
+  parentFolderId: string;
 }
 
 export interface FileUploadOptions {
@@ -31,6 +31,10 @@ export interface FileUploadOptions {
     bridgePass: string;
     encryptionKey: string;
     bucketId: string;
+    // to manage B2B workspaces
+    resourcesToken: string;
+    workspaceId?: string;
+    workspacesToken?: string;
   };
   abortCallback?: (abort?: () => void) => void;
 }
@@ -106,21 +110,59 @@ export async function uploadFile(
 
     const fileId = await promise;
 
-    const name = encryptFilename(file.name, file.parentFolderId);
+    const workspaceId = options?.ownerUserAuthenticationData?.workspaceId;
+    const workspacesToken = options?.ownerUserAuthenticationData?.workspacesToken;
+    const resourcesToken = options?.ownerUserAuthenticationData?.resourcesToken;
 
-    const storageClient = SdkFactory.getInstance().createStorageClient();
-    const fileEntry: StorageTypes.FileEntry = {
-      id: fileId,
-      type: file.type,
-      size: file.size,
-      name: name,
-      plain_name: file.name,
-      bucket: bucketId,
-      folder_id: file.parentFolderId,
-      encrypt_version: StorageTypes.EncryptionVersion.Aes03,
-    };
+    const isWorkspacesUpload = workspaceId && workspacesToken;
+    let response;
 
-    let response = await storageClient.createFileEntry(fileEntry, options.ownerUserAuthenticationData?.token);
+    if (isWorkspacesUpload) {
+      // TEMPORARY: For backward compatibility with id
+      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
+      // const folderMeta = await newStorageService.getFolderMeta(file.parentFolderId, workspacesToken, resourcesToken);
+      // const name = encryptFilename(file.name, folderMeta.id);
+
+      const dateISO = '2023-05-30T12:34:56.789Z';
+      const date = new Date(dateISO);
+      const workspaceFileEntry = {
+        name: file.name,
+        bucket: bucketId,
+        fileId: fileId,
+        encryptVersion: StorageTypes.EncryptionVersion.Aes03,
+        folderUuid: file.parentFolderId,
+        size: file.size,
+        plainName: file.name,
+        type: file.type,
+        modificationTime: date.toISOString(),
+        date: date.toISOString(),
+      };
+
+      response = await workspacesService.createFileEntry(workspaceFileEntry, workspaceId, resourcesToken);
+    } else {
+      // TEMPORARY: For backward compatibility with id
+      // REMOVE THIS WHEN BACKEND IMPLEMENT ENCRYPTION FOR NAME IN CREATE FILE ENTRY ENPDOINT
+      // const folderMeta = await newStorageService.getFolderMeta(
+      //   file.parentFolderId,
+      //   undefined,
+      //   options.ownerUserAuthenticationData?.token,
+      // );
+      // const name = encryptFilename(file.name, folderMeta.id);
+
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+      const fileEntry: StorageTypes.FileEntryByUuid = {
+        id: fileId,
+        type: file.type,
+        size: file.size,
+        name: file.name,
+        plain_name: file.name,
+        bucket: bucketId,
+        folder_id: file.parentFolderId,
+        encrypt_version: StorageTypes.EncryptionVersion.Aes03,
+      };
+
+      response = await storageClient.createFileEntryByUuid(fileEntry, options.ownerUserAuthenticationData?.token);
+    }
     if (!response.thumbnails) {
       response = {
         ...response,

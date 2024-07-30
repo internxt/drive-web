@@ -6,7 +6,6 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
   return idb.openDB<AppDatabase>(name, version, {
     upgrade: (db, oldVersion) => {
       if (oldVersion === 0) db.createObjectStore('levels');
-      if (oldVersion <= 1) db.createObjectStore('photos');
       if (oldVersion <= 2) {
         const objectStore = db.createObjectStore('levels_blobs');
         objectStore.createIndex('parent_index' as never, 'parentId', { unique: false });
@@ -18,6 +17,9 @@ const open = (name: string, version?: number): Promise<idb.IDBPDatabase<AppDatab
       }
       if (oldVersion <= 4) {
         db.createObjectStore('upload_item_status');
+      }
+      if (oldVersion <= 5) {
+        db.createObjectStore('workspaces_avatar_blobs');
       }
     },
     blocked: () => undefined,

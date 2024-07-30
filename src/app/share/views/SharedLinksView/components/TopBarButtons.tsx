@@ -2,6 +2,7 @@ import { UploadSimple } from '@phosphor-icons/react';
 import Button from '../../../../shared/components/Button/Button';
 import { ChangeEvent, LegacyRef } from 'react';
 import { t } from 'i18next';
+import { WorkspaceData } from '@internxt/sdk/dist/workspaces';
 
 type TopBarButtonsProps = {
   showUploadFileButton: boolean;
@@ -11,6 +12,7 @@ type TopBarButtonsProps = {
   onClickPendingInvitationsButton: () => void;
   onUploadFileInputChanged: (e: ChangeEvent<HTMLInputElement>) => void;
   onUploadFileButtonClicked: () => void;
+  selectedWorkspace: WorkspaceData | null;
 };
 
 const TopBarButtons = ({
@@ -21,6 +23,7 @@ const TopBarButtons = ({
   numberOfPendingInvitations,
   onClickPendingInvitationsButton,
   disableUploadFileButton,
+  selectedWorkspace,
 }: TopBarButtonsProps) => {
   return (
     <div
@@ -52,7 +55,7 @@ const TopBarButtons = ({
           </div>
         </Button>
       )}
-      {numberOfPendingInvitations > 0 && (
+      {numberOfPendingInvitations > 0 && !selectedWorkspace && (
         <Button variant="secondary" onClick={onClickPendingInvitationsButton}>
           <div className="flex items-center space-x-2">
             <span>Pending Invitations</span>

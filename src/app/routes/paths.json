@@ -95,26 +95,9 @@
       "hideSearch": true
     },
     {
-      "id": "photos",
-      "layout": "header-and-sidenav",
-      "path": "/photos",
-      "exact": true,
-      "auth": true,
-      "hideSearch": true
-    },
-
-    {
       "id": "trash",
       "layout": "header-and-sidenav",
       "path": "/trash",
-      "exact": true,
-      "auth": true,
-      "hideSearch": true
-    },
-    {
-      "id": "preferences",
-      "layout": "header-and-sidenav",
-      "path": "/preferences",
       "exact": true,
       "auth": true,
       "hideSearch": true
@@ -207,6 +190,12 @@
       "id": "share-folder-token-2",
       "layout": "share",
       "path": "/d/folder/:token/:code?",
+      "exact": false
+    },
+    {
+      "id": "workspace-guest-invite",
+      "layout": "empty",
+      "path": "/workspace-guest",
       "exact": false
     },
     {

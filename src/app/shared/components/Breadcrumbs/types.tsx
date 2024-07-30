@@ -1,5 +1,5 @@
 export interface BreadcrumbItemData {
-  id: number;
+  uuid: string;
   label: string;
   icon: JSX.Element | null;
   active: boolean;

@@ -34,7 +34,7 @@ export const useReduxActions = () => {
     );
   };
 
-  const uploadItem = (data: { uploadFile: File; parentFolderId: number; taskId: string; fileType: string }) => {
+  const uploadItem = (data: { uploadFile: File; parentFolderId: string; taskId: string; fileType: string }) => {
     dispatch(
       uploadItemsThunk({
         files: [data.uploadFile],
@@ -47,7 +47,7 @@ export const useReduxActions = () => {
 
   const uploadSharedItem = (data: {
     uploadFile: File;
-    parentFolderId: number;
+    parentFolderId: string;
     taskId: string;
     fileType: string;
     sharedItemAuthenticationData: SharedItemAuthenticationData;

@@ -1,9 +1,8 @@
-import { aes } from '@internxt/lib';
 import analyticsService from '../../../analytics/services/analytics.service';
 import errorService from '../../../core/services/error.service';
 import httpService from '../../../core/services/http.service';
 import { DevicePlatform } from '../../../core/types';
-import { DriveFileData, DriveFolderData, DriveFolderMetadataPayload, DriveItemData, FolderTree } from '../../types';
+import { DriveFileData, DriveFolderData, DriveItemData } from '../../types';
 
 import { StorageTypes } from '@internxt/sdk/dist/drive';
 import { RequestCanceler } from '@internxt/sdk/dist/shared/http/types';
@@ -92,22 +91,6 @@ export function createFolder(
     });
 
   return [finalPromise, requestCanceler];
-}
-
-export async function updateMetaData(folderId: number, metadata: DriveFolderMetadataPayload): Promise<void> {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const payload: StorageTypes.UpdateFolderMetadataPayload = {
-    folderId: folderId,
-    changes: metadata,
-  };
-  return storageClient.updateFolder(payload).then(() => {
-    const user: UserSettings = localStorageService.getUser() as UserSettings;
-    analyticsService.trackFolderRename({
-      email: user.email,
-      fileId: folderId,
-      platform: DevicePlatform.Web,
-    });
-  });
 }
 
 export function deleteFolder(folderData: DriveFolderData): Promise<void> {
@@ -321,43 +304,6 @@ async function downloadFolderAsZip(
   }
 }
 
-async function fetchFolderTree(folderId: number): Promise<{
-  tree: FolderTree;
-  folderDecryptedNames: Record<number, string>;
-  fileDecryptedNames: Record<number, string>;
-  size: number;
-}> {
-  const { tree, size } = await httpService.get<{ tree: FolderTree; size: number }>(`/storage/tree/${folderId}`);
-  const folderDecryptedNames: Record<number, string> = {};
-  const fileDecryptedNames: Record<number, string> = {};
-
-  // ! Decrypts folders and files names
-  const pendingFolders: FolderTree[] = [tree];
-  while (pendingFolders.length > 0) {
-    const currentTree = pendingFolders[0];
-    const { folders, files } = {
-      folders: currentTree.children,
-      files: currentTree.files,
-    };
-
-    folderDecryptedNames[currentTree.id] = aes.decrypt(
-      currentTree.name,
-      `${process.env.REACT_APP_CRYPTO_SECRET2}-${currentTree.parentId}`,
-    );
-
-    for (const file of files) {
-      fileDecryptedNames[file.id] = aes.decrypt(file.name, `${process.env.REACT_APP_CRYPTO_SECRET2}-${file.folderId}`);
-    }
-
-    pendingFolders.shift();
-
-    // * Adds current folder folders to pending
-    pendingFolders.push(...folders);
-  }
-
-  return { tree, folderDecryptedNames, fileDecryptedNames, size };
-}
-
 export async function moveFolder(folderId: number, destination: number): Promise<StorageTypes.MoveFolderResponse> {
   const storageClient = SdkFactory.getInstance().createStorageClient();
   const payload: StorageTypes.MoveFolderPayload = {
@@ -387,10 +333,8 @@ export async function moveFolder(folderId: number, destination: number): Promise
 
 const folderService = {
   createFolder,
-  updateMetaData,
   deleteFolder,
   moveFolder,
-  fetchFolderTree,
   downloadFolderAsZip,
 };
 
