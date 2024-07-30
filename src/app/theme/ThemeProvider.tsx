@@ -33,6 +33,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       setCurrentTheme(localStorage.getItem('theme') as Theme);
     } else {
       setCurrentTheme('system');
+      window.matchMedia('(prefers-color-scheme: dark)').matches ? setCheckoutTheme('dark') : setCheckoutTheme('light');
     }
   }, []);
 

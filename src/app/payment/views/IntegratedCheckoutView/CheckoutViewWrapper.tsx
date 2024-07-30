@@ -197,7 +197,7 @@ const CheckoutViewWrapper = () => {
     isUpsellSwitchActivated,
     showUpsellSwitch: !!plan?.upsellPlan,
     amountSaved: plan?.upsellPlan ? (plan?.selectedPlan.amount * 12 - plan?.upsellPlan.amount) / 100 : undefined,
-    amount: plan?.upsellPlan.decimalAmount,
+    amount: plan?.upsellPlan?.decimalAmount,
   };
 
   return (

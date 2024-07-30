@@ -49,7 +49,7 @@ export const ProductFeaturesComponent = ({
   upsellManager,
 }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
-  const { currentTheme } = useThemeContext();
+  const { checkoutTheme } = useThemeContext();
 
   const [couponName, setCouponName] = useState<string>('');
   const { isUpsellSwitchActivated, showUpsellSwitch, onUpsellSwitchButtonClicked } = upsellManager;
@@ -78,7 +78,7 @@ export const ProductFeaturesComponent = ({
       <div className="flex w-full flex-row items-center justify-between space-x-4">
         <p className="text-2xl font-semibold text-gray-100">{translate('checkout.productCard.title')}</p>
         <div className="flex flex-row space-x-2">
-          {currentTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
+          {checkoutTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
         </div>
       </div>
       <div className="flex w-full rounded-2xl border-gray-10 bg-surface p-5">

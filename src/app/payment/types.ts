@@ -90,6 +90,10 @@ export interface PasswordStateProps {
 }
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
+  wallets: {
+    applePay: 'auto',
+    googlePay: 'auto',
+  },
   layout: {
     type: 'accordion',
     defaultCollapsed: false,
