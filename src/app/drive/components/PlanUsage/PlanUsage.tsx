@@ -1,9 +1,12 @@
+import navigationService from 'app/core/services/navigation.service';
 import limitService from 'app/drive/services/limit.service';
 import { bytesToString } from 'app/drive/services/size.service';
 import usageService from 'app/drive/services/usage.service';
-import navigationService from 'app/core/services/navigation.service';
-import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { useDispatch } from 'react-redux';
+import { useAppSelector } from '../../../store/hooks';
+import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 export default function PlanUsage({
   limit,
@@ -19,13 +22,20 @@ export default function PlanUsage({
   className?: string;
 }): JSX.Element {
   const { translate } = useTranslationContext();
+  const dispatch = useDispatch();
   const usagePercent = usageService.getUsagePercent(usage, limit);
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const isLimitReached = usage >= limit;
   const componentColor = isLimitReached ? 'bg-red' : 'bg-primary';
 
   const onUpgradeButtonClicked = () => {
-    navigationService.push(AppView.Preferences, { tab: 'plans' });
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
   };
 
   return (
