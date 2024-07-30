@@ -1,11 +1,11 @@
-import { useAppDispatch, useAppSelector } from 'app/store/hooks';
-import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
-import { uiActions } from 'app/store/slices/ui';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import DriveStorageError from '../../../../assets/images/drive-error.svg';
+import BaseDialog from 'app/shared/components/BaseDialog/BaseDialog';
 import Button from 'app/shared/components/Button/Button';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { uiActions } from 'app/store/slices/ui';
+import DriveStorageError from '../../../../assets/images/drive-error.svg';
 
 const ReachedPlanLimitDialog = (): JSX.Element => {
   const { translate } = useTranslationContext();
@@ -26,7 +26,7 @@ const ReachedPlanLimitDialog = (): JSX.Element => {
   };
 
   return (
-    <BaseDialog hideCloseButton isOpen={isOpen} onClose={onClose}>
+    <BaseDialog hideCloseButton isOpen={isOpen} onClose={onClose} bgColor="bg-surface">
       <div className="px-5 pb-5">
         <img className="mx-auto mb-5" src={DriveStorageError} />
         <div className="mb-2">
