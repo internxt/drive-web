@@ -429,22 +429,19 @@ function SharedView({
 
       const setItemFunction = newItem.isFolder ? setSharedFolders : setSharedFiles;
       const editNameItemUuid = newItem?.uuid ?? '';
-      actionDispatch(
-        setItemFunction(
-          shareItems.map((shareItem) => {
-            const shareItemUuid = (shareItem as unknown as DriveItemData).uuid ?? '';
-            if (
-              shareItemUuid.length > 0 &&
-              editNameItemUuid.length > 0 &&
-              newItem.plainName &&
-              shareItemUuid === editNameItemUuid
-            ) {
-              shareItem.plainName = newItem.plainName;
-            }
-            return shareItem;
-          }),
-        ),
+      const renamedShareItems = shareItems.map((shareItem) => {
+        const shareItemUuid = (shareItem as unknown as DriveItemData).uuid ?? '';
+        const isEditedItem =
+          shareItemUuid.length > 0 && editNameItemUuid.length > 0 && shareItemUuid === editNameItemUuid;
+        if (isEditedItem && newItem.plainName) {
+          shareItem.plainName = newItem.plainName;
+        }
+        return shareItem;
+      });
+      const sharedItemsFiltered = renamedShareItems.filter((item) =>
+        newItem.isFolder ? item.isFolder : !item.isFolder,
       );
+      actionDispatch(setItemFunction(sharedItemsFiltered));
     }
 
     actionDispatch(setIsEditNameDialogOpen(false));
