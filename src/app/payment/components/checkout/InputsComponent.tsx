@@ -5,13 +5,13 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
-interface InputsComponent {
+interface InputsComponentProps {
   errors: FieldErrors<IFormValues>;
   authError?: string;
   register: UseFormRegister<IFormValues>;
 }
 
-export const InputsComponent = ({ register, errors, authError }: InputsComponent) => {
+export const InputsComponent = ({ register, errors, authError }: InputsComponentProps) => {
   const { translate } = useTranslationContext();
 
   return (

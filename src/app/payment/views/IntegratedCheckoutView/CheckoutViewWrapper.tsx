@@ -13,10 +13,21 @@ import RealtimeService from '../../../core/services/socket.service';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { useAppDispatch } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import { AuthMethodTypes, ErrorType, THEME_STYLES } from '../../types';
+import { AuthMethodTypes, ErrorType } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from './checkoutReducer';
 import checkoutService from 'app/payment/services/checkout.service';
 import { useThemeContext } from 'app/theme/ThemeProvider';
+
+export const THEME_STYLES = {
+  dark: {
+    backgroundColor: 'rgb(17 17 17)',
+    textColor: 'rgb(255 255 255)',
+  },
+  light: {
+    backgroundColor: 'rgb(255 255 255)',
+    textColor: 'rgb(17 17 17)',
+  },
+};
 
 export const stripePromise = (async () => {
   const stripeKey = envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
@@ -35,39 +46,39 @@ const CheckoutViewWrapper = () => {
     state;
   const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
 
+  const elementsOptionsParams: StripeElementsOptions = {
+    appearance: {
+      labels: 'above',
+      variables: {
+        spacingAccordionItem: '8px',
+        colorPrimary: textColor,
+      },
+      theme: 'flat',
+      rules: {
+        '.AccordionItem:hover': {
+          color: textColor,
+        },
+        '.TermsText': {
+          color: textColor,
+        },
+        '.AccordionItem': {
+          border: `1px solid ${backgroundColor}`,
+          backgroundColor: backgroundColor,
+        },
+        '.Label': {
+          color: textColor,
+        },
+        '.RedirectText': {
+          color: textColor,
+        },
+      },
+    },
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
     const promotionCode = params.get('promotion_code');
-
-    const elementsOptionsParams: StripeElementsOptions = {
-      appearance: {
-        labels: 'above',
-        variables: {
-          spacingAccordionItem: '8px',
-          colorPrimary: textColor,
-        },
-        theme: 'flat',
-        rules: {
-          '.AccordionItem:hover': {
-            color: textColor,
-          },
-          '.TermsText': {
-            color: textColor,
-          },
-          '.AccordionItem': {
-            border: `1px solid ${backgroundColor}`,
-            backgroundColor: backgroundColor,
-          },
-          '.Label': {
-            color: textColor,
-          },
-          '.RedirectText': {
-            color: textColor,
-          },
-        },
-      },
-    };
 
     if (planId) {
       handleFetchSelectedPlan(planId)

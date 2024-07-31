@@ -40,7 +40,7 @@ export const UserAuthComponent = ({
     signUp: translate('auth.signup.haveAccount'),
   };
 
-  const CHANGE_AUTH_METHOD: Partial<Record<AuthMethodTypes, string>> = {
+  const CHANGE_AUTH_METHOD_TEXT: Partial<Record<AuthMethodTypes, string>> = {
     signIn: translate('auth.login.createAccount'),
     signUp: translate('auth.signup.login'),
   };
@@ -78,7 +78,7 @@ export const UserAuthComponent = ({
             }}
             className="cursor-pointer text-primary"
           >
-            {CHANGE_AUTH_METHOD[authMethod]}
+            {CHANGE_AUTH_METHOD_TEXT[authMethod]}
           </button>
         </div>
       ) : undefined}

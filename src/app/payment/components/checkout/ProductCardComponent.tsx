@@ -6,7 +6,7 @@ import Button from 'app/shared/components/Button/Button';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
+import { CouponCodeData, Currency, CurrentPlanSelected, UpsellManagerProps } from '../../types';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useThemeContext } from 'app/theme/ThemeProvider';
@@ -16,13 +16,7 @@ interface ProductFeaturesComponentProps {
   couponCodeData?: CouponCodeData;
   couponError?: string;
   onCouponInputChange: (promoCode: string) => void;
-  upsellManager: {
-    isUpsellSwitchActivated: boolean;
-    showUpsellSwitch: boolean;
-    onUpsellSwitchButtonClicked: () => void;
-    amountSaved: number | undefined;
-    amount: number | undefined;
-  };
+  upsellManager: UpsellManagerProps;
 }
 
 const Separator = () => <div className="border border-gray-10" />;

@@ -15,9 +15,9 @@ const fetchPlanById = async (planId: string): Promise<PlanData> => {
   return data;
 };
 
-const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCodeData> => {
+const fetchPromotionCodeByName = async (promotionCodeName: string): Promise<CouponCodeData> => {
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?promotionCode=${promotionCode}`,
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?promotionCode=${promotionCodeName}`,
   );
 
   if (response.status !== 200) {
@@ -29,7 +29,7 @@ const fetchPromotionCodeByName = async (promotionCode: string): Promise<CouponCo
 
   return {
     codeId: dataJson.codeId,
-    codeName: promotionCode,
+    codeName: promotionCodeName,
     amountOff: dataJson.amountOff,
     percentOff: dataJson.percentOff,
   };

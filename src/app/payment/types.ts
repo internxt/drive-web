@@ -1,5 +1,5 @@
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { StripePaymentElementOptions, Stripe, StripeElementsOptions } from '@stripe/stripe-js';
+import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
 
 export enum Currency {
   'eur' = '€',
@@ -72,6 +72,14 @@ export enum RenewalPeriod {
 
 export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
 
+export type UpsellManagerProps = {
+  isUpsellSwitchActivated: boolean;
+  showUpsellSwitch: boolean;
+  onUpsellSwitchButtonClicked: () => void;
+  amountSaved: number | undefined;
+  amount: number | undefined;
+};
+
 export type PlanData = {
   selectedPlan: DisplayPrice & { decimalAmount: number };
   upsellPlan: DisplayPrice & { decimalAmount: number };
@@ -88,30 +96,6 @@ export interface PasswordStateProps {
   tag: 'error' | 'warning' | 'success';
   label: string;
 }
-
-export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
-  wallets: {
-    applePay: 'auto',
-    googlePay: 'auto',
-  },
-  layout: {
-    type: 'accordion',
-    defaultCollapsed: false,
-    radios: false,
-    spacedAccordionItems: true,
-  },
-};
-
-export const THEME_STYLES = {
-  dark: {
-    backgroundColor: 'rgb(17 17 17)',
-    textColor: 'rgb(255 255 255)',
-  },
-  light: {
-    backgroundColor: 'rgb(255 255 255)',
-    textColor: 'rgb(17 17 17)',
-  },
-};
 
 export interface CouponCodeData {
   codeId: string;

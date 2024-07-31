@@ -52,11 +52,6 @@ const paymentService = {
     return stripe;
   },
 
-  // async createCustomer(name: string, email: string): Promise<{ customerId: string }> {
-  //   const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-  //   return paymentsClient.createCustomer(name, email);
-  // },
-
   async getCustomerId(name: string, email: string): Promise<{ customerId: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getCustomerId(name, email);

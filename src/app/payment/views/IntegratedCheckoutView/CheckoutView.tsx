@@ -1,7 +1,7 @@
 import { ProductFeaturesComponent } from '../../components/checkout/ProductCardComponent';
 import { HeaderComponent } from '../../components/checkout/Header';
 import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
-import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { AddressElement, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import Button from 'app/shared/components/Button/Button';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { IFormValues } from 'app/core/types';
@@ -12,8 +12,8 @@ import {
   CouponCodeData,
   PartialErrorState,
   ErrorType,
-  PAYMENT_ELEMENT_OPTIONS,
   CurrentPlanSelected,
+  UpsellManagerProps,
 } from '../../types';
 import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
 import { useEffect, useState } from 'react';
@@ -23,19 +23,27 @@ import checkoutService from '../../services/checkout.service';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import { StripePaymentElementOptions } from '@stripe/stripe-js';
+
+export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
+  wallets: {
+    applePay: 'auto',
+    googlePay: 'auto',
+  },
+  layout: {
+    type: 'accordion',
+    defaultCollapsed: false,
+    radios: false,
+    spacedAccordionItems: true,
+  },
+};
 
 interface CheckoutViewProps {
   selectedPlan: CurrentPlanSelected | null;
   authMethod: AuthMethodTypes;
   error?: PartialErrorState;
   couponCodeData?: CouponCodeData;
-  upsellManager: {
-    isUpsellSwitchActivated: boolean;
-    showUpsellSwitch: boolean;
-    onUpsellSwitchButtonClicked: () => void;
-    amountSaved: number | undefined;
-    amount: number | undefined;
-  };
+  upsellManager: UpsellManagerProps;
   onCouponInputChange: (promoCode: string) => void;
   authenticateUser: (email: string, password: string, token: string) => Promise<void>;
   onLogOut: () => Promise<void>;
@@ -207,6 +215,14 @@ const CheckoutView = ({
                 />
                 <div className="flex flex-col space-y-8 pb-20">
                   <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
+                  <AddressElement
+                    options={{
+                      mode: 'billing',
+                      autocomplete: {
+                        mode: 'automatic',
+                      },
+                    }}
+                  />
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && <div className="text-red-dark">{error.stripe}</div>}
                   <Button type="submit" id="submit" className="hidden lg:flex">
