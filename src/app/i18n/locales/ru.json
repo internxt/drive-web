@@ -1508,7 +1508,17 @@
         }
       },
       "teams": {
-        "title": "Команды"
+        "title": "Команды",
+        "createTeam": "Создать команду",
+        "team": "Команда",
+        "members": "члены",
+        "createTeamDialog": {
+          "title": "Новая команда",
+          "label": "Имя",
+          "placeholder": "Введите название команды",
+          "cancel": "Отменить",
+          "create": "Создать"
+        }
       },
       "billing": {
         "title": "Биллинг",

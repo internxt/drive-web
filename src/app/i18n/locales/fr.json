@@ -1468,7 +1468,17 @@
         }
       },
       "teams": {
-        "title": "Équipes"
+        "title": "Équipes",
+        "createTeam": "Créer une équipe",
+        "team": "Équipe",
+        "members": "Membres",
+        "createTeamDialog": {
+          "title": "Nouvelle équipe",
+          "label": "Nom",
+          "placeholder": "Entrez le nom de l'équipe",
+          "cancel": "Annuler",
+          "create": "Créer"
+        }
       },
       "billing": {
         "title": "Billing",

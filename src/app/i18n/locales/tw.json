@@ -1502,7 +1502,17 @@
         }
       },
       "teams": {
-        "title": "團隊"
+        "title": "團隊",
+        "createTeam": "创建团队",
+        "team": "团队",
+        "members": "成员",
+        "createTeamDialog": {
+          "title": "新团队",
+          "label": "名称",
+          "placeholder": "输入队名",
+          "cancel": "取消",
+          "create": "创建"
+        }
       },
       "billing": {
         "title": "計費",

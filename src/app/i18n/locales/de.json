@@ -1482,7 +1482,17 @@
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Team erstellen",
+        "team": "Team",
+        "members": "Mitglieder",
+        "createTeamDialog": {
+          "title": "Neues Team",
+          "label": "Name",
+          "placeholder": "Mannschaftsname eingeben",
+          "cancel": "Abbrechen",
+          "create": "Erstellen"
+        }
       },
       "billing": {
         "title": "Billing",

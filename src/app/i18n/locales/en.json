@@ -1541,7 +1541,17 @@
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Create team",
+        "team": "Team",
+        "members": "Members",
+        "createTeamDialog": {
+          "title": "New team",
+          "label": "Name",
+          "placeholder": "Enter team name",
+          "cancel": "Cancel",
+          "create": "Create"
+        }
       },
       "billing": {
         "title": "Billing",
