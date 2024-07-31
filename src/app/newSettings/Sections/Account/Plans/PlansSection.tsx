@@ -23,6 +23,7 @@ import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
 import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
+import { AppView } from 'app/core/types';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -132,7 +133,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   }, []);
 
-  const showCancelSubscriptionErrorNotificacion = useCallback(
+  const showCancelSubscriptionErrorNotification = useCallback(
     () =>
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
@@ -172,7 +173,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           .catch((err) => {
             const error = errorService.castError(err);
             errorService.reportError(error);
-            showCancelSubscriptionErrorNotificacion();
+            showCancelSubscriptionErrorNotification();
           });
       } else {
         handlePaymentSuccess();
@@ -180,7 +181,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
@@ -202,7 +203,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
@@ -241,7 +242,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
@@ -253,12 +254,24 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     if (!isCurrentPlanTypeSubscription) {
       const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      if (isIndividualSubscriptionSelected) {
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+        });
+      } else {
+        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      }
+
       setIsDialogOpen(false);
     } else {
       const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
       if (isLifetimeIntervalSelected) {
-        await handleLifetimeCheckout({ priceId, currency, userEmail: user.email });
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+        });
+        setIsDialogOpen(false);
       } else {
         await handleSubscriptionPayment(priceId);
         dispatch(planThunks.initializeThunk()).unwrap();

@@ -19,7 +19,6 @@ import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
 import { useEffect, useState } from 'react';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import checkoutService from '../../services/checkout.service';
 import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
@@ -27,7 +26,7 @@ import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import errorService from 'app/core/services/error.service';
 
 const RETURN_URL_DOMAIN =
-  process.env.NODE_ENV === 'development' ? 'https://localhost:3000' : process.env.REACT_APP_HOSTNAME;
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.REACT_APP_HOSTNAME;
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -43,11 +42,15 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 };
 
 interface CheckoutViewProps {
-  selectedPlan: CurrentPlanSelected | null;
+  selectedPlan: CurrentPlanSelected;
   authMethod: AuthMethodTypes;
   error?: PartialErrorState;
   couponCodeData?: CouponCodeData;
   upsellManager: UpsellManagerProps;
+  getClientSecret: (
+    selectedPlan: CurrentPlanSelected,
+    customerId: string,
+  ) => Promise<{ type: string; clientSecret: string }>;
   onCouponInputChange: (promoCode: string) => void;
   authenticateUser: (email: string, password: string, token: string) => Promise<void>;
   onLogOut: () => Promise<void>;
@@ -61,15 +64,13 @@ const CheckoutView = ({
   authMethod,
   error,
   upsellManager,
+  getClientSecret,
   onCouponInputChange,
   authenticateUser,
   onLogOut,
   handleError,
   handleAuthMethod,
 }: CheckoutViewProps) => {
-  let type: string;
-  let clientSecret: string;
-
   const { translate } = useTranslationContext();
 
   const stripe = useStripe();
@@ -79,6 +80,7 @@ const CheckoutView = ({
 
   const [avatarBlob, setAvatarBlob] = useState<Blob | null>(null);
   const [isExecutingPaymentAndAuth, setIsExecutingPaymentAndAuth] = useState<boolean>(false);
+  const [userNameFromAddressElement, setUserNameFromAddressElement] = useState<string>();
 
   const fullName = `${user?.name} ${user?.lastname}`;
 
@@ -129,7 +131,7 @@ const CheckoutView = ({
       };
     } else {
       userData = {
-        name: 'My Internxt',
+        name: userNameFromAddressElement,
         email: email,
       };
     }
@@ -144,33 +146,9 @@ const CheckoutView = ({
 
       const { customerId } = await paymentService.getCustomerId(userData.name, userData.email);
 
-      const { error: submitError } = await elements.submit();
+      await elements.submit();
 
-      if (submitError) {
-        handleError('stripe', submitError.message as string);
-        console.error('Error getting wallet info and validating form', submitError.message);
-        return;
-      }
-
-      if (selectedPlan?.interval === 'lifetime') {
-        const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
-          customerId,
-          selectedPlan.amount,
-          selectedPlan.id,
-          couponCodeData?.codeId,
-        );
-
-        type = clientSecretType;
-        clientSecret = client_secret;
-      } else {
-        const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
-          customerId,
-          selectedPlan?.id as string,
-          couponCodeData?.codeId,
-        );
-        type = clientSecretType;
-        clientSecret = client_secret;
-      }
+      const { clientSecret, type } = await getClientSecret(selectedPlan, customerId);
 
       const confirmIntent = type === 'setup' ? stripe.confirmSetup : stripe.confirmPayment;
 
@@ -221,6 +199,9 @@ const CheckoutView = ({
                 <div className="flex flex-col space-y-8 pb-20">
                   <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
                   <AddressElement
+                    onChange={(e) => {
+                      setUserNameFromAddressElement(e.value.name);
+                    }}
                     options={{
                       mode: 'billing',
                       autocomplete: {
@@ -230,8 +211,13 @@ const CheckoutView = ({
                   />
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && <div className="text-red-dark">{error.stripe}</div>}
-                  <Button type="submit" id="submit" className="hidden lg:flex">
-                    {isExecutingPaymentAndAuth && isValid ? translate('checkout.pay') : translate('checkout.pay')}
+                  <Button
+                    type="submit"
+                    id="submit"
+                    className="hidden lg:flex"
+                    disabled={isExecutingPaymentAndAuth && isValid}
+                  >
+                    {isExecutingPaymentAndAuth && isValid ? translate('checkout.paying') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
@@ -243,8 +229,13 @@ const CheckoutView = ({
                   onCouponInputChange={onCouponInputChange}
                   upsellManager={upsellManager}
                 />
-                <Button type="submit" id="submit" className="flex lg:hidden">
-                  {isExecutingPaymentAndAuth && isValid ? translate('checkout.pay') : translate('checkout.pay')}
+                <Button
+                  type="submit"
+                  id="submit"
+                  className="flex lg:hidden"
+                  disabled={isExecutingPaymentAndAuth && isValid}
+                >
+                  {isExecutingPaymentAndAuth && isValid ? translate('checkout.paying') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>

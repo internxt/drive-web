@@ -13,10 +13,11 @@ import RealtimeService from '../../../core/services/socket.service';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { useAppDispatch } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import { AuthMethodTypes, ErrorType } from '../../types';
+import { AuthMethodTypes, CurrentPlanSelected, ErrorType } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import checkoutService from 'app/payment/services/checkout.service';
 import { useThemeContext } from 'app/theme/ThemeProvider';
+import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
 
 export const THEME_STYLES = {
   dark: {
@@ -77,61 +78,51 @@ const CheckoutViewWrapper = () => {
     },
   };
 
+  const getClientSecret = async (selectedPlan: CurrentPlanSelected, customerId: string) => {
+    if (selectedPlan?.interval === 'lifetime') {
+      const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
+        customerId,
+        selectedPlan.amount,
+        selectedPlan.id,
+        couponCodeData?.codeId,
+      );
+
+      return {
+        type: clientSecretType,
+        clientSecret: client_secret,
+      };
+    } else {
+      const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
+        customerId,
+        selectedPlan?.id as string,
+        couponCodeData?.codeId,
+      );
+      return {
+        type: clientSecretType,
+        clientSecret: client_secret,
+      };
+    }
+  };
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
     const promotionCode = params.get('promotion_code');
 
     if (planId) {
-      handleFetchSelectedPlan(planId)
-        .then(async (plan) => {
-          dispatchReducer({
-            type: 'SET_ELEMENTS_OPTIONS',
-            payload: {
-              ...(elementsOptionsParams as any),
-              mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
-              amount: plan?.selectedPlan.amount,
-              currency: plan?.selectedPlan.currency,
-              payment_method_types: ['card', 'paypal'],
-            },
-          });
-
-          const stripe = await stripePromise;
-          dispatchReducer({ type: 'SET_STRIPE', payload: stripe });
-        })
-        .catch((err) => {
-          const error = err as Error;
-          errorService.reportError(error);
-          navigationService.push(AppView.Drive);
-        });
-
-      if (promotionCode) {
-        handleFetchPromotionCode(promotionCode)
-          .then((promoCodeData) => {
-            dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCodeData });
-          })
-          .catch((err) => {
-            const error = err as Error;
-            console.log('ERROR', error.message);
-            errorService.reportError(error);
-          });
-      }
+      handleFetchSelectedPlan(planId);
     } else {
       navigationService.push(AppView.Drive);
+    }
+
+    if (promotionCode) {
+      handleFetchPromotionCode(promotionCode);
     }
   }, []);
 
   useEffect(() => {
     if (promoCodeName) {
-      handleFetchPromotionCode(promoCodeName)
-        .then((promoCode) => {
-          dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCode });
-        })
-        .catch((err) => {
-          const error = err as Error;
-          handleError('coupon', 'This code does not exist');
-          errorService.reportError(error);
-        });
+      handleFetchPromotionCode(promoCodeName);
     }
   }, [promoCodeName]);
 
@@ -140,21 +131,43 @@ const CheckoutViewWrapper = () => {
       const plan = await checkoutService.fetchPlanById(planId);
       dispatchReducer({ type: 'SET_PLAN', payload: plan });
       dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan.selectedPlan });
+      dispatchReducer({
+        type: 'SET_ELEMENTS_OPTIONS',
+        payload: {
+          ...(elementsOptionsParams as any),
+          mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
+          amount: plan?.selectedPlan.amount,
+          currency: plan?.selectedPlan.currency,
+          payment_method_types: ['card', 'paypal'],
+        },
+      });
+
+      const stripe = await stripePromise;
+      dispatchReducer({ type: 'SET_STRIPE', payload: stripe });
+
       return plan;
     } catch (error) {
       console.error('Error fetching plan or payment intent:', error);
+      errorService.reportError(error);
+      navigationService.push(AppView.Drive);
     }
   }, []);
 
   const handleFetchPromotionCode = useCallback(async (promotionCode: string) => {
-    const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
-
-    return {
-      codeId: promoCodeData.codeId,
-      codeName: promotionCode,
-      amountOff: promoCodeData.amountOff,
-      percentOff: promoCodeData.percentOff,
-    };
+    try {
+      const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
+      const promoCode = {
+        codeId: promoCodeData.codeId,
+        codeName: promotionCode,
+        amountOff: promoCodeData.amountOff,
+        percentOff: promoCodeData.percentOff,
+      };
+      dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCode });
+    } catch (err) {
+      const error = err as Error;
+      errorService.reportError(error);
+      console.error('ERROR FETCHING COUPON: ', error.message);
+    }
   }, []);
 
   const authenticateUser = async (email: string, password: string) => {
@@ -217,18 +230,23 @@ const CheckoutViewWrapper = () => {
 
   return (
     <Elements stripe={stripe} options={elementsOptions}>
-      <CheckoutView
-        selectedPlan={currentPlanSelected}
-        couponCodeData={couponCodeData}
-        authMethod={authMethod}
-        error={error}
-        upsellManager={upsellManager}
-        onCouponInputChange={onCouponInputChange}
-        handleError={handleError}
-        onLogOut={onLogOut}
-        authenticateUser={authenticateUser}
-        handleAuthMethod={handleAuthMethodChange}
-      />
+      {currentPlanSelected ? (
+        <CheckoutView
+          selectedPlan={currentPlanSelected}
+          couponCodeData={couponCodeData}
+          authMethod={authMethod}
+          error={error}
+          upsellManager={upsellManager}
+          getClientSecret={getClientSecret}
+          onCouponInputChange={onCouponInputChange}
+          handleError={handleError}
+          onLogOut={onLogOut}
+          authenticateUser={authenticateUser}
+          handleAuthMethod={handleAuthMethodChange}
+        />
+      ) : (
+        <LoadingPulse />
+      )}
     </Elements>
   );
 };
