@@ -1,6 +1,10 @@
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
+import navigationService from '../../../core/services/navigation.service';
 import { RootState } from '../../../store';
+import { useAppSelector } from '../../../store/hooks';
 import { planSelectors } from '../../../store/slices/plan';
+import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { WarningMessage } from './WarningMessage';
 
 type WarningMessageWrapperProps = {
@@ -16,6 +20,18 @@ const WarningMessageWrapper = ({
   isLoadingPlanLimit,
   isLoadingPlanUsage,
 }: WarningMessageWrapperProps): JSX.Element => {
+  const dispatch = useDispatch();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
+
+  const onUpgradeButtonClicked = () => {
+    navigationService.openPreferencesDialog({
+      section: 'account',
+      subsection: 'plans',
+      workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+    });
+    dispatch(uiActions.setIsPreferencesDialogOpen(true));
+  };
+
   const isLimitReached = planUsage >= planLimit;
   const isLoading = isLoadingPlanLimit || isLoadingPlanUsage;
   const plansNotFetched = planUsage === 0 && planLimit === 0;
@@ -24,7 +40,7 @@ const WarningMessageWrapper = ({
 
   if (plansNotFetched || areNotNumbers || !isLimitReached || isLoading) return <></>;
 
-  return <WarningMessage />;
+  return <WarningMessage onUpgradeButtonClicked={onUpgradeButtonClicked} />;
 };
 
 export default connect((state: RootState) => ({

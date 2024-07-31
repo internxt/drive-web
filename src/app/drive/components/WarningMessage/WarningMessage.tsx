@@ -1,14 +1,8 @@
 import { WarningCircle } from '@phosphor-icons/react';
 import { t } from 'i18next';
 import Button from '../../../shared/components/Button/Button';
-import navigationService from '../../../core/services/navigation.service';
-import { AppView } from '../../../core/types';
 
-export const WarningMessage = (): JSX.Element => {
-  const onUpgradeButtonClicked = () => {
-    navigationService.push(AppView.Preferences, { tab: 'plans' });
-  };
-
+export const WarningMessage = ({ onUpgradeButtonClicked }: { onUpgradeButtonClicked: () => void }): JSX.Element => {
   return (
     <div className="mx-5 my-1 flex h-12 w-auto flex-row items-center rounded-lg bg-red/10">
       <span className="flex w-auto grow flex-row items-center px-4">
