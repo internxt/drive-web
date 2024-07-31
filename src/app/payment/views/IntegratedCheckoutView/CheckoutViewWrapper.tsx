@@ -29,6 +29,8 @@ export const THEME_STYLES = {
   },
 };
 
+const ONE_YEAR_IN_MONTHS = 12;
+
 export const stripePromise = (async () => {
   const stripeKey = envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
   return await loadStripe(stripeKey);
@@ -207,7 +209,9 @@ const CheckoutViewWrapper = () => {
     },
     isUpsellSwitchActivated,
     showUpsellSwitch: !!plan?.upsellPlan,
-    amountSaved: plan?.upsellPlan ? (plan?.selectedPlan.amount * 12 - plan?.upsellPlan.amount) / 100 : undefined,
+    amountSaved: plan?.upsellPlan
+      ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
+      : undefined,
     amount: plan?.upsellPlan?.decimalAmount,
   };
 

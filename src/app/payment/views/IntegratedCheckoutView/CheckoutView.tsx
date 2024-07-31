@@ -24,6 +24,10 @@ import { useSelector } from 'react-redux';
 import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
+import errorService from 'app/core/services/error.service';
+
+const RETURN_URL_DOMAIN =
+  process.env.NODE_ENV === 'development' ? 'https://localhost:3000' : process.env.REACT_APP_HOSTNAME;
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -134,7 +138,7 @@ const CheckoutView = ({
 
     try {
       if (!stripe || !elements) {
-        handleError('stripe', 'Stripe.js has not loaded yet. Please try again later.');
+        console.error('Stripe.js has not loaded yet. Please try again later.');
         return;
       }
 
@@ -174,16 +178,17 @@ const CheckoutView = ({
         elements,
         clientSecret,
         confirmParams: {
-          return_url: 'http://localhost:3000/checkout/success',
+          return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
         },
       });
 
       if (error) {
-        handleError('stripe', 'Something went wrong while confirming payment. Try again.');
+        handleError('stripe', error.message as string);
         console.error('Error in payment intent confirmation: ', error.message);
       }
     } catch (err) {
       const error = err as Error;
+      errorService.reportError(error);
       console.error('Error creating subscription: ', error.stack ?? error.message);
     } finally {
       setIsExecutingPaymentAndAuth(false);
@@ -226,7 +231,7 @@ const CheckoutView = ({
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && <div className="text-red-dark">{error.stripe}</div>}
                   <Button type="submit" id="submit" className="hidden lg:flex">
-                    {isExecutingPaymentAndAuth && isValid ? 'Paying...' : translate('checkout.pay')}
+                    {isExecutingPaymentAndAuth && isValid ? translate('checkout.pay') : translate('checkout.pay')}
                   </Button>
                 </div>
               </div>
@@ -239,7 +244,7 @@ const CheckoutView = ({
                   upsellManager={upsellManager}
                 />
                 <Button type="submit" id="submit" className="flex lg:hidden">
-                  {isExecutingPaymentAndAuth && isValid ? 'Paying...' : translate('checkout.pay')}
+                  {isExecutingPaymentAndAuth && isValid ? translate('checkout.pay') : translate('checkout.pay')}
                 </Button>
               </div>
             </div>

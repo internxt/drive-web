@@ -172,6 +172,59 @@
       "login": "登錄"
     }
   },
+  "checkout": {
+    "title": "您快完成了！請安全結帳：",
+    "pay": "支付",
+    "paying": "正在支付...",
+    "checkout": "結帳",
+    "authComponent": {
+      "title": {
+        "signUp": "創建帳戶",
+        "signIn": "登錄",
+        "userIsSignedIn": "用戶已登錄為"
+      },
+      "emailMustNotBeEmpty": "電子郵件不能為空",
+      "privacyGuarantee": "隱私保證：我們不會分享您的信息，並且只會在提供服務時與您聯繫。"
+    },
+    "paymentTitle": "選擇支付方式",
+    "productCard": {
+      "title": "訂單摘要",
+      "selectedPlan": "選擇的計劃",
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} 計劃"
+      },
+      "billed": {
+        "month": "按月計費",
+        "year": "按年計費",
+        "lifetime": "一次性支付"
+      },
+      "saving": "您節省了 {{percent}}%",
+      "planDetails": {
+        "title": "計劃詳情：",
+        "features": [
+          "{{spaceToUpgrade}} 加密存儲",
+          "加密文件和文件夾共享",
+          "密碼保護的文件共享",
+          "從任何設備訪問您的文件",
+          "訪問我們所有的服務",
+          "上傳文件最大至 20GB",
+          "雙因素認證（2FA）",
+          "高級客戶支持",
+          "30 天退款保證"
+        ]
+      },
+      "total": "總計：",
+      "addCoupon": {
+        "buttonTitle": "添加優惠券",
+        "inputText": "優惠券代碼",
+        "applyCodeButtonTitle": "應用"
+      },
+      "amountSaved": "節省 ",
+      "withAnnualBilling": "按年計費"
+    }
+  },
   "general": {
     "new": "新的",
     "of": "的",

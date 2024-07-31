@@ -172,6 +172,59 @@
       "login": "登录"
     }
   },
+  "checkout": {
+    "title": "您快完成了！请安全结账：",
+    "pay": "支付",
+    "paying": "正在支付...",
+    "checkout": "结账",
+    "authComponent": {
+      "title": {
+        "signUp": "创建账户",
+        "signIn": "登录",
+        "userIsSignedIn": "用户已登录为"
+      },
+      "emailMustNotBeEmpty": "电子邮件不能为空",
+      "privacyGuarantee": "隐私保证：我们不会分享您的信息，并且只会在提供服务时与您联系。"
+    },
+    "paymentTitle": "选择支付方式",
+    "productCard": {
+      "title": "订单摘要",
+      "selectedPlan": "选择的计划",
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}} 计划",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}} 计划"
+      },
+      "billed": {
+        "month": "按月计费",
+        "year": "按年计费",
+        "lifetime": "一次性支付"
+      },
+      "saving": "您节省了 {{percent}}%",
+      "planDetails": {
+        "title": "计划详情：",
+        "features": [
+          "{{spaceToUpgrade}} 加密存储",
+          "加密文件和文件夹共享",
+          "密码保护的文件共享",
+          "从任何设备访问您的文件",
+          "访问我们所有的服务",
+          "上传文件最大至 20GB",
+          "双因素认证（2FA）",
+          "高级客户支持",
+          "30 天退款保证"
+        ]
+      },
+      "total": "总计：",
+      "addCoupon": {
+        "buttonTitle": "添加优惠券",
+        "inputText": "优惠券代码",
+        "applyCodeButtonTitle": "应用"
+      },
+      "amountSaved": "节省 ",
+      "withAnnualBilling": "按年计费"
+    }
+  },
   "general": {
     "new": "新建",
     "of": "/",

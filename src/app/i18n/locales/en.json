@@ -175,6 +175,8 @@
   "checkout": {
     "title": "You're almost there! Checkout securely:",
     "pay": "Pay",
+    "paying": "Paying...",
+    "checkout": "Checkout",
     "authComponent": {
       "title": {
         "signUp": "Create an account",

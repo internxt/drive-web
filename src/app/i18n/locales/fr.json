@@ -155,6 +155,59 @@
       "login": "Connexion"
     }
   },
+  "checkout": {
+    "title": "Vous y êtes presque ! Finalisez votre achat en toute sécurité :",
+    "pay": "Payer",
+    "paying": "Paiement en cours...",
+    "checkout": "Commander",
+    "authComponent": {
+      "title": {
+        "signUp": "Créer un compte",
+        "signIn": "Se connecter",
+        "userIsSignedIn": "Utilisateur connecté en tant que"
+      },
+      "emailMustNotBeEmpty": "L'email ne doit pas être vide",
+      "privacyGuarantee": "Garantie de confidentialité : Nous ne partageons pas vos informations et ne vous contacterons que si nécessaire pour fournir notre service."
+    },
+    "paymentTitle": "Sélectionnez un mode de paiement",
+    "productCard": {
+      "title": "Récapitulatif de la commande",
+      "selectedPlan": "Plan sélectionné",
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - plan de {{interval}}"
+      },
+      "billed": {
+        "month": "Facturé mensuellement",
+        "year": "Facturé annuellement",
+        "lifetime": "Paiement unique"
+      },
+      "saving": "Vous économisez {{percent}}%",
+      "planDetails": {
+        "title": "Détails du plan :",
+        "features": [
+          "{{spaceToUpgrade}} de stockage chiffré",
+          "Partage de fichiers et dossiers chiffrés",
+          "Partage de fichiers protégé par mot de passe",
+          "Accédez à vos fichiers depuis n'importe quel appareil",
+          "Accédez à tous nos services",
+          "Téléchargez des fichiers jusqu'à 20 Go",
+          "Authentification à deux facteurs (2FA)",
+          "Support client premium",
+          "Garantie de remboursement de 30 jours"
+        ]
+      },
+      "total": "Total : ",
+      "addCoupon": {
+        "buttonTitle": "Ajouter un coupon",
+        "inputText": "Code de coupon",
+        "applyCodeButtonTitle": "Appliquer"
+      },
+      "amountSaved": "Économisez ",
+      "withAnnualBilling": "avec facturation annuelle"
+    }
+  },
   "general": {
     "new": "Nouveau",
     "of": "de",
