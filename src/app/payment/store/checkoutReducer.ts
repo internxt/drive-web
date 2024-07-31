@@ -1,4 +1,4 @@
-import { Action, State } from '../../../payment/types';
+import { Action, State } from './types';
 
 export const initialStateForCheckout: State = {
   plan: null,

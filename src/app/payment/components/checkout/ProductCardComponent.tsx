@@ -89,7 +89,7 @@ export const ProductFeaturesComponent = ({
             {/* TODO: Change currency if needed */}
             <p className="font-semibold">{planAmount}€</p>
           </div>
-          {couponCodeData ? (
+          {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
               <div className="flex flex-row items-center space-x-2 text-green-dark">
                 <SealPercent weight="fill" size={24} />
@@ -101,7 +101,7 @@ export const ProductFeaturesComponent = ({
               </div>
               <p className="text-gray-50 line-through">{normalPriceAmount}€</p>
             </div>
-          ) : undefined}
+          )}
           <Separator />
           <div className="flex flex-col space-y-5">
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>

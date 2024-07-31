@@ -14,7 +14,7 @@ import authCheckoutService from '../../services/auth-checkout.service';
 import { useAppDispatch } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
 import { AuthMethodTypes, ErrorType } from '../../types';
-import { checkoutReducer, initialStateForCheckout } from './checkoutReducer';
+import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import checkoutService from 'app/payment/services/checkout.service';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 
