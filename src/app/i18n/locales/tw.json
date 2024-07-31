@@ -1511,7 +1511,8 @@
           "label": "名称",
           "placeholder": "输入队名",
           "cancel": "取消",
-          "create": "创建"
+          "create": "创建",
+          "nameExists": "已存在使用此名称的团队"
         }
       },
       "billing": {

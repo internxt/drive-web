@@ -1550,7 +1550,8 @@
           "label": "Name",
           "placeholder": "Enter team name",
           "cancel": "Cancel",
-          "create": "Create"
+          "create": "Create",
+          "nameExists": "Team with this name already exists"
         }
       },
       "billing": {

@@ -1527,7 +1527,8 @@
           "label": "Nombre",
           "placeholder": "Introduce el nombre del equipo",
           "cancel": "Cancelar",
-          "create": "Crear"
+          "create": "Crear",
+          "nameExists": "Ya existe un equipo con ese nombre"
         }
       },
       "billing": {

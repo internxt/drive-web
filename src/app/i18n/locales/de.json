@@ -1491,7 +1491,8 @@
           "label": "Name",
           "placeholder": "Mannschaftsname eingeben",
           "cancel": "Abbrechen",
-          "create": "Erstellen"
+          "create": "Erstellen",
+          "nameExists": "Team mit diesem Namen existiert bereits"
         }
       },
       "billing": {
