@@ -13,7 +13,6 @@ export interface DriveFolderData {
   encrypt_version: string | null;
   icon: string | null;
   iconId: number | null;
-  parentUuid: string;
   icon_id: number | null;
   isFolder: boolean;
   name: string;
