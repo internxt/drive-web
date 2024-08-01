@@ -68,10 +68,15 @@ export default function CheckoutPlanView(): JSX.Element {
           checkoutOptions.coupon_code = coupon;
         }
 
-        response = await paymentService.createCheckoutSession(checkoutOptions);
-        localStorage.setItem('sessionId', response.sessionId);
+        navigationService.push(AppView.Checkout, {
+          planId: planId,
+          couponCode: coupon,
+        });
 
-        await paymentService.redirectToCheckout(response);
+        // response = await paymentService.createCheckoutSession(checkoutOptions);
+        // localStorage.setItem('sessionId', response.sessionId);
+
+        // await paymentService.redirectToCheckout(response);
       } catch (err) {
         console.error(err);
         notificationsService.show({
@@ -85,22 +90,27 @@ export default function CheckoutPlanView(): JSX.Element {
           if (coupon && coupon !== 'null') {
             checkoutOptions.coupon_code = coupon;
           }
-          response = await paymentService.createCheckoutSession(checkoutOptions);
-          localStorage.setItem('sessionId', response.sessionId);
-          await paymentService.redirectToCheckout(response).then(async (result) => {
-            await paymentService.cancelSubscription();
-            if (result.error) {
-              notificationsService.show({
-                type: ToastType.Error,
-                text: result.error.message as string,
-              });
-            } else {
-              notificationsService.show({
-                type: ToastType.Success,
-                text: 'Payment successful',
-              });
-            }
+          navigationService.push(AppView.Checkout, {
+            planId: planId,
+            couponCode: coupon,
           });
+
+          // response = await paymentService.createCheckoutSession(checkoutOptions);
+          // localStorage.setItem('sessionId', response.sessionId);
+          // await paymentService.redirectToCheckout(response).then(async (result) => {
+          //   await paymentService.cancelSubscription();
+          //   if (result.error) {
+          //     notificationsService.show({
+          //       type: ToastType.Error,
+          //       text: result.error.message as string,
+          //     });
+          //   } else {
+          //     notificationsService.show({
+          //       type: ToastType.Success,
+          //       text: 'Payment successful',
+          //     });
+          //   }
+          // });
         } catch (error) {
           console.error(error);
           notificationsService.show({

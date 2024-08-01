@@ -107,7 +107,7 @@ const CheckoutViewWrapper = () => {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
-    const promotionCode = params.get('promotion_code');
+    const promotionCode = params.get('couponCode');
 
     if (planId) {
       handleFetchSelectedPlan(planId);
