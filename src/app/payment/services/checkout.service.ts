@@ -39,12 +39,14 @@ const getClientSecretForPaymentIntent = async (
   customerId: string,
   amount: number,
   planId: string,
+  token: string,
   promoCode?: string,
 ): Promise<ClientSecretData> => {
   const { clientSecret: client_secret } = await paymentService.createPaymentIntent(
     customerId,
     amount,
     planId,
+    token,
     promoCode,
   );
 
@@ -57,11 +59,13 @@ const getClientSecretForPaymentIntent = async (
 const getClientSecretForSubscriptionIntent = async (
   customerId: string,
   priceId: string,
+  token: string,
   promoCodeId?: string,
 ): Promise<ClientSecretData> => {
   const { type: paymentType, clientSecret: client_secret } = await paymentService.createSubscription(
     customerId,
     priceId,
+    token,
     promoCodeId,
   );
 

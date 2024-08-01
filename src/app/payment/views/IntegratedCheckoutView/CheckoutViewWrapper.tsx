@@ -78,12 +78,13 @@ const CheckoutViewWrapper = () => {
     },
   };
 
-  const getClientSecret = async (selectedPlan: CurrentPlanSelected, customerId: string) => {
+  const getClientSecret = async (selectedPlan: CurrentPlanSelected, token: string, customerId: string) => {
     if (selectedPlan?.interval === 'lifetime') {
       const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
         customerId,
         selectedPlan.amount,
         selectedPlan.id,
+        token,
         couponCodeData?.codeId,
       );
 
@@ -95,6 +96,7 @@ const CheckoutViewWrapper = () => {
       const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
         customerId,
         selectedPlan?.id,
+        token,
         couponCodeData?.codeId,
       );
       return {

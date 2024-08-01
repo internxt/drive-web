@@ -52,24 +52,30 @@ const paymentService = {
     return stripe;
   },
 
-  async getCustomerId(name: string, email: string): Promise<{ customerId: string }> {
+  async getCustomerId(name: string, email: string): Promise<{ customerId: string; token: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.getCustomerId(name, email);
   },
 
-  async createSubscription(customerId: string, priceId: string, promoCode?: string): Promise<CreatedSubscriptionData> {
+  async createSubscription(
+    customerId: string,
+    priceId: string,
+    token: string,
+    promoCode?: string,
+  ): Promise<CreatedSubscriptionData> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createSubscription(customerId, priceId, promoCode);
+    return paymentsClient.createSubscription(customerId, priceId, token, promoCode);
   },
 
   async createPaymentIntent(
     customerId: string,
     amount: number,
     planId: string,
+    token: string,
     promoCode?: string,
   ): Promise<{ clientSecret: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-    return paymentsClient.createPaymentIntent(customerId, amount, planId, promoCode);
+    return paymentsClient.createPaymentIntent(customerId, amount, planId, token, promoCode);
   },
 
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {

@@ -49,6 +49,7 @@ interface CheckoutViewProps {
   upsellManager: UpsellManagerProps;
   getClientSecret: (
     selectedPlan: CurrentPlanSelected,
+    token: string,
     customerId: string,
   ) => Promise<{ type: string; clientSecret: string }>;
   onRemoveAppliedCouponCode: () => void;
@@ -146,11 +147,11 @@ const CheckoutView = ({
         return;
       }
 
-      const { customerId } = await paymentService.getCustomerId(userData.name, userData.email);
+      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
 
       await elements.submit();
 
-      const { clientSecret, type } = await getClientSecret(selectedPlan, customerId);
+      const { clientSecret, type } = await getClientSecret(selectedPlan, token, customerId);
 
       const confirmIntent = type === 'setup' ? stripe.confirmSetup : stripe.confirmPayment;
 
