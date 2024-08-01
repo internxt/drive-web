@@ -200,7 +200,7 @@
         "year": "Billed annually",
         "lifetime": "One-time payment"
       },
-      "saving": "You-re saving {{percent}}%",
+      "saving": "You're saving {{percent}}%",
       "planDetails": {
         "title": "Plan details:",
         "features": [

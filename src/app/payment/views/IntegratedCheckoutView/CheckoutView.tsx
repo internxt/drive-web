@@ -51,6 +51,7 @@ interface CheckoutViewProps {
     selectedPlan: CurrentPlanSelected,
     customerId: string,
   ) => Promise<{ type: string; clientSecret: string }>;
+  onRemoveAppliedCouponCode: () => void;
   onCouponInputChange: (promoCode: string) => void;
   authenticateUser: (email: string, password: string, token: string) => Promise<void>;
   onLogOut: () => Promise<void>;
@@ -69,6 +70,7 @@ const CheckoutView = ({
   authenticateUser,
   onLogOut,
   handleError,
+  onRemoveAppliedCouponCode,
   handleAuthMethod,
 }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
@@ -228,6 +230,7 @@ const CheckoutView = ({
                   couponError={error?.coupon}
                   onCouponInputChange={onCouponInputChange}
                   upsellManager={upsellManager}
+                  onRemoveAppliedCouponCode={onRemoveAppliedCouponCode}
                 />
                 <Button
                   type="submit"

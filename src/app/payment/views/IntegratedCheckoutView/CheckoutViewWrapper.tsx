@@ -94,7 +94,7 @@ const CheckoutViewWrapper = () => {
     } else {
       const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
         customerId,
-        selectedPlan?.id as string,
+        selectedPlan?.id,
         couponCodeData?.codeId,
       );
       return {
@@ -194,6 +194,11 @@ const CheckoutViewWrapper = () => {
 
   const onCouponInputChange = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
 
+  const onRemoveAppliedCouponCode = () => {
+    dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: undefined });
+    dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: undefined });
+  };
+
   const handleAuthMethodChange = (method: AuthMethodTypes) => {
     dispatchReducer({ type: 'SET_AUTH_METHOD', payload: method });
   };
@@ -243,6 +248,7 @@ const CheckoutViewWrapper = () => {
           onLogOut={onLogOut}
           authenticateUser={authenticateUser}
           handleAuthMethod={handleAuthMethodChange}
+          onRemoveAppliedCouponCode={onRemoveAppliedCouponCode}
         />
       ) : (
         <LoadingPulse />

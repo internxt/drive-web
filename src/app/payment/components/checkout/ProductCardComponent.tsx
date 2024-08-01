@@ -1,5 +1,5 @@
 import { Menu, Switch, Transition } from '@headlessui/react';
-import { Check, SealPercent } from '@phosphor-icons/react';
+import { Check, SealPercent, X } from '@phosphor-icons/react';
 import { bytesToString } from 'app/drive/services/size.service';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import Button from 'app/shared/components/Button/Button';
@@ -15,8 +15,9 @@ interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;
   couponCodeData?: CouponCodeData;
   couponError?: string;
-  onCouponInputChange: (promoCode: string) => void;
   upsellManager: UpsellManagerProps;
+  onRemoveAppliedCouponCode: () => void;
+  onCouponInputChange: (promoCode: string) => void;
 }
 
 const Separator = () => <div className="border border-gray-10" />;
@@ -39,8 +40,9 @@ export const ProductFeaturesComponent = ({
   selectedPlan,
   couponCodeData,
   couponError,
-  onCouponInputChange,
   upsellManager,
+  onRemoveAppliedCouponCode,
+  onCouponInputChange,
 }: ProductFeaturesComponentProps) => {
   const { translate, translateList } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
@@ -87,7 +89,10 @@ export const ProductFeaturesComponent = ({
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">{translate(`checkout.productCard.billed.${selectedPlan.interval}`)}</p>
             {/* TODO: Change currency if needed */}
-            <p className="font-semibold">{planAmount}€</p>
+            <p className="font-semibold">
+              {planAmount}
+              {Currency[selectedPlan.currency]}
+            </p>
           </div>
           {couponCodeData && (
             <div className="flex flex-row items-center justify-between font-semibold">
@@ -99,7 +104,10 @@ export const ProductFeaturesComponent = ({
                   })}
                 </p>
               </div>
-              <p className="text-gray-50 line-through">{normalPriceAmount}€</p>
+              <p className="text-gray-50 line-through">
+                {normalPriceAmount}
+                {Currency[selectedPlan.currency]}
+              </p>
             </div>
           )}
           <Separator />
@@ -117,7 +125,10 @@ export const ProductFeaturesComponent = ({
           <Separator />
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
             <p>{translate('checkout.productCard.total')}</p>
-            <p>{planAmount}€</p>
+            <p>
+              {planAmount}
+              {Currency[selectedPlan.currency]}
+            </p>
           </div>
           <Separator />
           {showUpsellSwitch && upsellManager.amountSaved ? (
@@ -162,7 +173,17 @@ export const ProductFeaturesComponent = ({
           {couponCodeData?.codeName ? (
             <div className="flex w-full flex-row justify-between">
               <p className={'font-medium text-gray-50'}>{translate('checkout.productCard.addCoupon.inputText')}</p>
-              <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
+              <div className="flex flex-row items-center gap-2">
+                <p className="text-lg font-medium text-gray-50">{couponCodeData.codeName}</p>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onRemoveAppliedCouponCode();
+                  }}
+                >
+                  <X size={20} className="text-gray-50" />
+                </button>
+              </div>
             </div>
           ) : (
             <Menu>

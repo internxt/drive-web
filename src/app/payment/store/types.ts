@@ -15,8 +15,8 @@ export interface State {
 export type Action =
   | { type: 'SET_PLAN'; payload: PlanData }
   | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: CurrentPlanSelected }
-  | { type: 'SET_PROMO_CODE_NAME'; payload: string }
-  | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData }
+  | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
+  | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
   | { type: 'SET_STRIPE'; payload: Stripe | null }
   | { type: 'SET_ELEMENTS_OPTIONS'; payload: StripeElementsOptions }
   | { type: 'SET_AUTH_METHOD'; payload: AuthMethodTypes }
