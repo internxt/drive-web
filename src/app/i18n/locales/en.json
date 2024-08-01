@@ -1552,6 +1552,15 @@
           "cancel": "Cancel",
           "create": "Create",
           "nameExists": "Team with this name already exists"
+        },
+        "teamDetails": {
+          "member": "Member",
+          "members": "Members",
+          "remove": "Remove",
+          "makeManager": "Make manager",
+          "addMember": "Add member",
+          "rename": "Rename",
+          "delete": "Delete"
         }
       },
       "billing": {

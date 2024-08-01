@@ -1513,6 +1513,15 @@
           "cancel": "取消",
           "create": "创建",
           "nameExists": "已存在使用此名称的团队"
+        },
+        "teamDetails": {
+          "member": "成员",
+          "members": "成员",
+          "remove": "删除",
+          "makeManager": "成为管理者",
+          "addMember": "添加成员",
+          "rename": "重新命名",
+          "delete": "删除"
         }
       },
       "billing": {

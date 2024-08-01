@@ -1529,6 +1529,15 @@
           "cancel": "Cancelar",
           "create": "Crear",
           "nameExists": "Ya existe un equipo con ese nombre"
+        },
+        "teamDetails": {
+          "member": "Miembro",
+          "members": "Miembros",
+          "remove": "Eliminar",
+          "makeManager": "Hacer manager",
+          "addMember": "Añadir Miembro",
+          "rename": "Renombrar",
+          "delete": "Eliminar"
         }
       },
       "billing": {

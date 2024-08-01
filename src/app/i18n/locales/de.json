@@ -1493,6 +1493,15 @@
           "cancel": "Abbrechen",
           "create": "Erstellen",
           "nameExists": "Team mit diesem Namen existiert bereits"
+        },
+        "teamDetails": {
+          "member": "Mitglied",
+          "members": "Mitglieder",
+          "remove": "Entfernen",
+          "makeManager": "Manager erstellen",
+          "addMember": "Mitglied hinzufügen",
+          "rename": "Umbenennen",
+          "delete": "Löschen"
         }
       },
       "billing": {

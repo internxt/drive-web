@@ -1,5 +1,5 @@
 import { t } from 'i18next';
-import { WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
+import { WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
 import Button from 'app/shared/components/Button/Button';
 
@@ -7,11 +7,19 @@ interface TeamsListProps {
   setCreateTeamDialogOpen: (value: boolean) => void;
   teams: WorkspaceTeamResponse;
   isCurrentUserWorkspaceOwner: boolean;
+  setSelectedTeam: (team: WorkspaceTeam) => void;
+  getTeamMembers: (teamId: string) => void;
 }
 
-const TeamsList: React.FC<TeamsListProps> = ({ setCreateTeamDialogOpen, teams, isCurrentUserWorkspaceOwner }) => {
+const TeamsList: React.FC<TeamsListProps> = ({
+  setCreateTeamDialogOpen,
+  teams,
+  isCurrentUserWorkspaceOwner,
+  setSelectedTeam,
+  getTeamMembers,
+}) => {
   return (
-    <>
+    <section className="space-y-3">
       <div className="mt-2 flex items-center justify-between">
         <h2 className="text-xl font-medium text-gray-100">
           <span>{teams.length} </span>
@@ -36,6 +44,10 @@ const TeamsList: React.FC<TeamsListProps> = ({ setCreateTeamDialogOpen, teams, i
           const isLastTeam = teams.length === teams.indexOf(team) + 1;
           return (
             <div
+              onClick={() => {
+                setSelectedTeam(team);
+                getTeamMembers(team.team.id);
+              }}
               key={team.team.id}
               className={`grid h-12 cursor-pointer grid-cols-3 border-x border-b border-gray-10 bg-surface py-2 text-base font-medium hover:bg-gray-5 ${
                 isLastTeam && 'rounded-b-xl'
@@ -47,7 +59,7 @@ const TeamsList: React.FC<TeamsListProps> = ({ setCreateTeamDialogOpen, teams, i
           );
         })}
       </div>
-    </>
+    </section>
   );
 };
 

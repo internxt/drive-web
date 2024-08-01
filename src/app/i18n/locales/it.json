@@ -1539,6 +1539,15 @@
           "cancel": "Annulla",
           "create": "Crea",
           "nameExists": "Una squadra con questo nome esiste già"
+        },
+        "teamDetails": {
+          "member": "Membro",
+          "members": "Membri",
+          "remove": "Rimuovere",
+          "makeManager": "Rendere manager",
+          "addMember": "Aggiungi membro",
+          "rename": "Rinominare",
+          "delete": "Eliminare"
         }
       },
       "billing": {

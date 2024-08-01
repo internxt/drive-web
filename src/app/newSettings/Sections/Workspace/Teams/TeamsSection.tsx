@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { t } from 'i18next';
-import { WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
+import { WorkspaceTeamResponse, WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/workspaces/types';
 
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -11,15 +11,21 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
 import CreateTeamDialog from './components/CreateTeamDialog';
+import TeamDetails from './components/TeamDetails';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
 
   const [teams, setTeams] = useState<WorkspaceTeamResponse>([]);
-  const [createTeamDialogOpen, setCreateTeamDialogOpen] = useState(false);
-  const [newTeamName, setNewTeamName] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [createTeamDialogOpen, setCreateTeamDialogOpen] = useState<boolean>(false);
+  const [newTeamName, setNewTeamName] = useState<string>('');
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
+  const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMembers>([]);
+  const [hoveredMember, setHoveredMember] = useState<string | null>(null);
+  const [isMemberOptionsOpen, setIsMemberOptionsOpen] = useState<boolean>(false);
+  const [isTeamOptionsOpen, setIsTeamOptionsOpen] = useState<boolean>(false);
 
   useEffect(() => {
     getTeams();
@@ -38,6 +44,20 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           type: ToastType.Error,
         });
       }
+    }
+  };
+
+  const getTeamMembers = async (teamId) => {
+    try {
+      const teamMembers = await workspacesService.getTeamMembers(teamId);
+      setSelectedTeamMembers(teamMembers);
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      errorService.reportError(castedError);
+      notificationsService.show({
+        text: castedError.message,
+        type: ToastType.Error,
+      });
     }
   };
 
@@ -78,13 +98,41 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     }
   };
 
+  const handleMemberHover = (memberUuid) => {
+    setHoveredMember(memberUuid);
+  };
+
+  const handleMemberLeave = () => {
+    setHoveredMember(null);
+  };
+
   return (
-    <Section title={t('preferences.workspace.teams.title')} onClosePreferences={onClosePreferences}>
-      <TeamsList
-        setCreateTeamDialogOpen={setCreateTeamDialogOpen}
-        teams={teams}
-        isCurrentUserWorkspaceOwner={isCurrentUserWorkspaceOwner}
-      />
+    <Section
+      title={selectedTeam ? selectedTeam.team.name : t('preferences.workspace.teams.title')}
+      onBackButtonClicked={selectedTeam ? () => setSelectedTeam(null) : undefined}
+      onClosePreferences={onClosePreferences}
+    >
+      {selectedTeam ? (
+        <TeamDetails
+          team={selectedTeam}
+          selectedTeamMembers={selectedTeamMembers}
+          handleMemberHover={handleMemberHover}
+          handleMemberLeave={handleMemberLeave}
+          hoveredMember={hoveredMember}
+          setIsMemberOptionsOpen={setIsMemberOptionsOpen}
+          isMemberOptionsOpen={isMemberOptionsOpen}
+          isTeamOptionsOpen={isTeamOptionsOpen}
+          setIsTeamOptionsOpen={setIsTeamOptionsOpen}
+        />
+      ) : (
+        <TeamsList
+          setCreateTeamDialogOpen={setCreateTeamDialogOpen}
+          teams={teams}
+          isCurrentUserWorkspaceOwner={isCurrentUserWorkspaceOwner}
+          setSelectedTeam={setSelectedTeam}
+          getTeamMembers={getTeamMembers}
+        />
+      )}
       <CreateTeamDialog
         isOpen={createTeamDialogOpen}
         onClose={() => setCreateTeamDialogOpen(false)}
