@@ -107,7 +107,7 @@ const CheckoutView = ({
       handleAuthMethod('userIsSignedIn');
       getDatabaseProfileAvatar()
         .then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null))
-        .catch((err) => {
+        .catch(() => {
           //
         });
     }
@@ -124,7 +124,6 @@ const CheckoutView = ({
 
     let userData;
 
-    // Sign up for the user
     const { email, password, token } = formData;
 
     if (user) {
