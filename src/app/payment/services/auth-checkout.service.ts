@@ -8,6 +8,7 @@ import { planThunks } from 'app/store/slices/plan';
 import { productsThunks } from 'app/store/slices/products';
 import { referralsThunks } from 'app/store/slices/referrals';
 import { initializeUserThunk, userActions, userThunks } from 'app/store/slices/user';
+import { AuthMethodTypes } from '../types';
 
 const signUp = async (
   doRegister: RegisterFunction,
@@ -65,9 +66,24 @@ const logIn = async (email: string, password: string, twoFactorCode: string, dis
   userActions.setUser(user);
 };
 
+const authenticateUser = async (
+  email: string,
+  password: string,
+  authMethod: AuthMethodTypes,
+  dispatch: AppDispatch,
+  doRegister: RegisterFunction,
+) => {
+  if (authMethod === 'signIn') {
+    await authCheckoutService.logIn(email, password, '', dispatch);
+  } else if (authMethod === 'signUp') {
+    await authCheckoutService.signUp(doRegister, email, password, '', dispatch);
+  }
+};
+
 const authCheckoutService = {
   signUp,
   logIn,
+  authenticateUser,
 };
 
 export default authCheckoutService;

@@ -1,23 +1,28 @@
-import { useEffect, useCallback, useReducer, useState } from 'react';
+import { useEffect, useCallback, useReducer, useState, BaseSyntheticEvent } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import navigationService from '../../../core/services/navigation.service';
-import { AppView } from '../../../core/types';
+import { AppView, IFormValues } from '../../../core/types';
 import errorService from '../../../core/services/error.service';
 import CheckoutView from './CheckoutView';
 import envService from '../../../core/services/env.service';
-import { StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
+import { Stripe, StripeElements, StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
 import databaseService from '../../../database/services/database.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import RealtimeService from '../../../core/services/socket.service';
 import authCheckoutService from '../../services/auth-checkout.service';
-import { useAppDispatch } from '../../../store/hooks';
+import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import { AuthMethodTypes, CurrentPlanSelected, ErrorType } from '../../types';
+import { AuthMethodTypes, CouponCodeData, CurrentPlanSelected, ErrorType } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
 import checkoutService from 'app/payment/services/checkout.service';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
+import { useSelector } from 'react-redux';
+import { RootState } from 'app/store';
+import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
+import paymentService from 'app/payment/services/payment.service';
+import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
 
 export const THEME_STYLES = {
   dark: {
@@ -30,7 +35,46 @@ export const THEME_STYLES = {
   },
 };
 
+export type UpsellManagerProps = {
+  isUpsellSwitchActivated: boolean;
+  showUpsellSwitch: boolean;
+  onUpsellSwitchButtonClicked: () => void;
+  amountSaved: number | undefined;
+  amount: number | undefined;
+};
+
+export interface CheckoutViewVariables {
+  isPaying: boolean;
+  error: Partial<Record<ErrorType, string>> | undefined;
+
+  couponCodeData: CouponCodeData | undefined;
+  userInfo: {
+    avatar: Blob | null;
+    name: string;
+    email: string;
+  };
+  currentSelectedPlan: CurrentPlanSelected | null;
+  upsellManager: UpsellManagerProps;
+}
+
+export interface CheckoutViewManager {
+  onCouponInputChange: (coupon: string) => void;
+  onLogOut: () => Promise<void>;
+  onCheckoutButtonClicked: (
+    formData: IFormValues,
+    event: BaseSyntheticEvent<object, any, any> | undefined,
+    stripeSDK: Stripe | null,
+    elements: StripeElements | null,
+  ) => Promise<void>;
+  onRemoveAppliedCouponCode: () => void;
+  handleAuthMethodChange: (method: AuthMethodTypes) => void;
+  onUserNameFromAddressElementChange: (userName: string) => void;
+}
+
 const ONE_YEAR_IN_MONTHS = 12;
+
+const RETURN_URL_DOMAIN =
+  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : process.env.REACT_APP_HOSTNAME;
 
 export const stripePromise = (async () => {
   const stripeKey = envService.isProduction() ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
@@ -40,15 +84,66 @@ export const stripePromise = (async () => {
 const CheckoutViewWrapper = () => {
   const { checkoutTheme } = useThemeContext();
   const dispatch = useAppDispatch();
+  const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
 
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
 
-  const { authMethod, error, currentPlanSelected, plan, stripe, couponCodeData, elementsOptions, promoCodeName } =
-    state;
-  const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
+  const fullName = `${user?.name} ${user?.lastname}`;
 
+  const {
+    authMethod,
+    error,
+    currentSelectedPlan,
+    plan,
+    isPaying,
+    avatarBlob,
+    userNameFromAddressElement,
+    stripe,
+    couponCodeData,
+    elementsOptions,
+    promoCodeName,
+  } = state;
+
+  const userInfo = {
+    name: fullName,
+    avatar: avatarBlob,
+    email: user?.email,
+  };
+
+  const upsellManager = {
+    onUpsellSwitchButtonClicked: () => {
+      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
+      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
+      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
+      dispatchReducer({
+        type: 'SET_ELEMENTS_OPTIONS',
+        payload: {
+          ...(elementsOptions as any),
+          amount: plan![planType].amount,
+        },
+      });
+    },
+    isUpsellSwitchActivated,
+    showUpsellSwitch: !!plan?.upsellPlan,
+    amountSaved: plan?.upsellPlan
+      ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
+      : undefined,
+    amount: plan?.upsellPlan?.decimalAmount,
+  };
+
+  const checkoutViewVariables: CheckoutViewVariables = {
+    isPaying,
+    error,
+    userInfo,
+    couponCodeData,
+    currentSelectedPlan,
+    upsellManager,
+  };
+
+  const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
   const elementsOptionsParams: StripeElementsOptions = {
     appearance: {
       labels: 'above',
@@ -128,6 +223,22 @@ const CheckoutViewWrapper = () => {
     }
   }, [promoCodeName]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      handleAuthMethodChange('userIsSignedIn');
+      getDatabaseProfileAvatar()
+        .then((avatarData) =>
+          dispatchReducer({
+            type: 'SET_AVATAR_BLOB',
+            payload: avatarData?.avatarBlob ?? null,
+          }),
+        )
+        .catch(() => {
+          //
+        });
+    }
+  }, [user]);
+
   const handleFetchSelectedPlan = useCallback(async (planId: string) => {
     try {
       const plan = await checkoutService.fetchPlanById(planId);
@@ -172,27 +283,15 @@ const CheckoutViewWrapper = () => {
     }
   }, []);
 
-  const authenticateUser = async (email: string, password: string) => {
-    try {
-      if (authMethod === 'signIn') {
-        await authCheckoutService.logIn(email, password, '', dispatch);
-      } else if (authMethod === 'signUp') {
-        await authCheckoutService.signUp(doRegister, email, password, '', dispatch);
-      }
-    } catch (err) {
-      const error = err as Error;
-      handleError('auth', error.message);
-      errorService.reportError(error);
-      throw new Error('Authentication failed');
-    }
-  };
-
   const onLogOut = async () => {
     await databaseService.clear();
     localStorageService.clear();
     RealtimeService.getInstance().stop();
     handleAuthMethodChange('signIn');
   };
+
+  const onUserNameFromAddressElementChange = (userName: string) =>
+    dispatchReducer({ type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT', payload: userName });
 
   const onCouponInputChange = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
 
@@ -214,43 +313,106 @@ const CheckoutViewWrapper = () => {
     });
   };
 
-  const upsellManager = {
-    onUpsellSwitchButtonClicked: () => {
-      setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
-      const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
-      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
-      dispatchReducer({
-        type: 'SET_ELEMENTS_OPTIONS',
-        payload: {
-          ...(elementsOptions as any),
-          amount: plan![planType].amount,
+  const setIsUserPaying = (isPaying: boolean) => {
+    dispatchReducer({
+      type: 'SET_IS_PAYING',
+      payload: isPaying,
+    });
+  };
+
+  const onCheckoutButtonClicked = async (
+    formData: IFormValues,
+    event: BaseSyntheticEvent<object, any, any> | undefined,
+    stripeSDK: Stripe | null,
+    elements: StripeElements | null,
+  ) => {
+    event?.preventDefault();
+    setIsUserPaying(true);
+
+    let userData;
+
+    const { email, password } = formData;
+
+    if (user) {
+      userData = {
+        name: fullName,
+        email: user.email,
+      };
+    } else {
+      userData = {
+        name: userNameFromAddressElement,
+        email: email,
+      };
+    }
+
+    try {
+      await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
+    } catch (err) {
+      const error = err as Error;
+      handleError('auth', error.message);
+      errorService.reportError(error);
+      return;
+    }
+
+    try {
+      if (!stripeSDK || !elements) {
+        console.error('Stripe.js has not loaded yet. Please try again later.');
+        return;
+      }
+
+      const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
+
+      const { error: submitError } = await elements.submit();
+
+      if (submitError) {
+        handleError('stripe', submitError.message as string);
+      }
+
+      const { clientSecret, type } = await getClientSecret(
+        currentSelectedPlan as CurrentPlanSelected,
+        token,
+        customerId,
+      );
+
+      const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
+
+      const { error } = await confirmIntent({
+        elements,
+        clientSecret,
+        confirmParams: {
+          return_url: `${RETURN_URL_DOMAIN}/checkout/success`,
         },
       });
-    },
-    isUpsellSwitchActivated,
-    showUpsellSwitch: !!plan?.upsellPlan,
-    amountSaved: plan?.upsellPlan
-      ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
-      : undefined,
-    amount: plan?.upsellPlan?.decimalAmount,
+
+      if (error) {
+        handleError('stripe', error.message as string);
+        console.error('Error in payment intent confirmation: ', error.message);
+      }
+    } catch (err) {
+      const error = err as Error;
+      errorService.reportError(error);
+      console.error('Error creating subscription: ', error.stack ?? error.message);
+    } finally {
+      setIsUserPaying(false);
+    }
+  };
+
+  const checkoutViewManager: CheckoutViewManager = {
+    onCouponInputChange,
+    onLogOut,
+    onCheckoutButtonClicked,
+    onRemoveAppliedCouponCode,
+    handleAuthMethodChange,
+    onUserNameFromAddressElementChange,
   };
 
   return (
     <Elements stripe={stripe} options={elementsOptions}>
-      {currentPlanSelected ? (
+      {currentSelectedPlan ? (
         <CheckoutView
-          selectedPlan={currentPlanSelected}
-          couponCodeData={couponCodeData}
+          checkoutViewVariables={checkoutViewVariables}
           authMethod={authMethod}
-          error={error}
-          upsellManager={upsellManager}
-          getClientSecret={getClientSecret}
-          onCouponInputChange={onCouponInputChange}
-          handleError={handleError}
-          onLogOut={onLogOut}
-          authenticateUser={authenticateUser}
-          handleAuthMethod={handleAuthMethodChange}
-          onRemoveAppliedCouponCode={onRemoveAppliedCouponCode}
+          checkoutViewManager={checkoutViewManager}
         />
       ) : (
         <LoadingPulse />

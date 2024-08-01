@@ -71,14 +71,6 @@ export enum RenewalPeriod {
 
 export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
 
-export type UpsellManagerProps = {
-  isUpsellSwitchActivated: boolean;
-  showUpsellSwitch: boolean;
-  onUpsellSwitchButtonClicked: () => void;
-  amountSaved: number | undefined;
-  amount: number | undefined;
-};
-
 export type PlanData = {
   selectedPlan: DisplayPrice & { decimalAmount: number };
   upsellPlan: DisplayPrice & { decimalAmount: number };

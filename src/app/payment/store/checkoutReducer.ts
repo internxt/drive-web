@@ -2,8 +2,11 @@ import { Action, State } from './types';
 
 export const initialStateForCheckout: State = {
   plan: null,
-  currentPlanSelected: null,
+  currentSelectedPlan: null,
   promoCodeName: '',
+  avatarBlob: null,
+  isPaying: false,
+  userNameFromAddressElement: 'Internxt User',
   couponCodeData: undefined,
   stripe: null,
   elementsOptions: undefined,
@@ -16,7 +19,13 @@ export const checkoutReducer = (state: State, action: Action): State => {
     case 'SET_PLAN':
       return { ...state, plan: action.payload };
     case 'SET_CURRENT_PLAN_SELECTED':
-      return { ...state, currentPlanSelected: action.payload };
+      return { ...state, currentSelectedPlan: action.payload };
+    case 'SET_AVATAR_BLOB':
+      return { ...state, avatarBlob: action.payload };
+    case 'SET_IS_PAYING':
+      return { ...state, isPaying: action.payload };
+    case 'SET_USER_NAME_FROM_ADDRESS_ELEMENT':
+      return { ...state, userNameFromAddressElement: action.payload };
     case 'SET_PROMO_CODE_NAME':
       return { ...state, promoCodeName: action.payload };
     case 'SET_COUPON_CODE_DATA':

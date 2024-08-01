@@ -3,8 +3,11 @@ import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
 
 export interface State {
   plan: PlanData | null;
-  currentPlanSelected: CurrentPlanSelected | null;
+  currentSelectedPlan: CurrentPlanSelected | null;
   stripe: Stripe | null;
+  avatarBlob: Blob | null;
+  isPaying: boolean;
+  userNameFromAddressElement: string;
   authMethod: AuthMethodTypes;
   promoCodeName?: string;
   couponCodeData?: CouponCodeData;
@@ -15,6 +18,9 @@ export interface State {
 export type Action =
   | { type: 'SET_PLAN'; payload: PlanData }
   | { type: 'SET_CURRENT_PLAN_SELECTED'; payload: CurrentPlanSelected }
+  | { type: 'SET_AVATAR_BLOB'; payload: Blob | null }
+  | { type: 'SET_IS_PAYING'; payload: boolean }
+  | { type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT'; payload: string }
   | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
   | { type: 'SET_STRIPE'; payload: Stripe | null }
