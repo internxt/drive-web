@@ -6,10 +6,11 @@ import Button from 'app/shared/components/Button/Button';
 import { ReactComponent as GuaranteeDarkDays } from 'assets/icons/checkout/guarantee-dark.svg';
 import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guarantee-white.svg';
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
-import { CouponCodeData, Currency, CurrentPlanSelected, UpsellManagerProps } from '../../types';
+import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 import { useState } from 'react';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useThemeContext } from 'app/theme/ThemeProvider';
+import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;

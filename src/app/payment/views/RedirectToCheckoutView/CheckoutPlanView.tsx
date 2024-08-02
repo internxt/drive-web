@@ -68,6 +68,7 @@ export default function CheckoutPlanView(): JSX.Element {
           checkoutOptions.coupon_code = coupon;
         }
 
+        // Comment this push and uncomment the code below in case the integrated checkout does not work.
         navigationService.push(AppView.Checkout, {
           planId: planId,
           couponCode: coupon,
@@ -90,6 +91,7 @@ export default function CheckoutPlanView(): JSX.Element {
           if (coupon && coupon !== 'null') {
             checkoutOptions.coupon_code = coupon;
           }
+          // Comment this push and uncomment the code below in case the integrated checkout does not work.
           navigationService.push(AppView.Checkout, {
             planId: planId,
             couponCode: coupon,

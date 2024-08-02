@@ -71,6 +71,7 @@ export enum RenewalPeriod {
 
 export type CurrentPlanSelected = DisplayPrice & { decimalAmount: number };
 
+// Checkout View Data
 export type PlanData = {
   selectedPlan: DisplayPrice & { decimalAmount: number };
   upsellPlan: DisplayPrice & { decimalAmount: number };

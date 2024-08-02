@@ -32,6 +32,7 @@ interface CheckoutViewProps {
 
 const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
+  // This custom hooks should be here. They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 
