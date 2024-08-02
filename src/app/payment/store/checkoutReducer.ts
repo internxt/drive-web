@@ -8,7 +8,6 @@ export const initialStateForCheckout: State = {
   isPaying: false,
   userNameFromAddressElement: 'Internxt User',
   couponCodeData: undefined,
-  stripe: null,
   elementsOptions: undefined,
   error: undefined,
   authMethod: 'signUp',
@@ -30,8 +29,6 @@ export const checkoutReducer = (state: State, action: Action): State => {
       return { ...state, promoCodeName: action.payload };
     case 'SET_COUPON_CODE_DATA':
       return { ...state, couponCodeData: action.payload };
-    case 'SET_STRIPE':
-      return { ...state, stripe: action.payload };
     case 'SET_ELEMENTS_OPTIONS':
       return { ...state, elementsOptions: action.payload };
     case 'SET_AUTH_METHOD':

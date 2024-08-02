@@ -8,7 +8,6 @@ import { ReactComponent as GuaranteeWhiteDays } from 'assets/icons/checkout/guar
 import { DisplayPrice } from '@internxt/sdk/dist/drive/payments/types';
 import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 import { useState } from 'react';
-import { useHotkeys } from 'react-hotkeys-hook';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
 
@@ -60,15 +59,6 @@ export const ProductFeaturesComponent = ({
 
   const planAmount = getProductAmount(selectedPlan.decimalAmount, couponCodeData).toFixed(2);
   const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
-
-  useHotkeys(
-    'enter',
-    (event) => {
-      event.preventDefault();
-      onCouponInputChange(couponName.toUpperCase());
-    },
-    [couponName],
-  );
 
   return (
     <div className="w-full flex-col space-y-4">

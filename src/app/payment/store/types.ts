@@ -1,10 +1,9 @@
 import { AuthMethodTypes, CouponCodeData, CurrentPlanSelected, PartialErrorState, PlanData } from '../types';
-import { Stripe, StripeElementsOptions } from '@stripe/stripe-js';
+import { StripeElementsOptions } from '@stripe/stripe-js';
 
 export interface State {
   plan: PlanData | null;
   currentSelectedPlan: CurrentPlanSelected | null;
-  stripe: Stripe | null;
   avatarBlob: Blob | null;
   isPaying: boolean;
   userNameFromAddressElement: string;
@@ -23,7 +22,6 @@ export type Action =
   | { type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT'; payload: string }
   | { type: 'SET_PROMO_CODE_NAME'; payload: string | undefined }
   | { type: 'SET_COUPON_CODE_DATA'; payload: CouponCodeData | undefined }
-  | { type: 'SET_STRIPE'; payload: Stripe | null }
   | { type: 'SET_ELEMENTS_OPTIONS'; payload: StripeElementsOptions }
   | { type: 'SET_AUTH_METHOD'; payload: AuthMethodTypes }
   | { type: 'SET_ERROR'; payload: PartialErrorState };

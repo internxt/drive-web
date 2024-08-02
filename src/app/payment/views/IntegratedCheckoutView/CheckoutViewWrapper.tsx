@@ -77,6 +77,8 @@ const IS_PRODUCTION = envService.isProduction();
 
 const RETURN_URL_DOMAIN = IS_PRODUCTION ? process.env.REACT_APP_HOSTNAME : 'http://localhost:3000';
 
+let stripe;
+
 export const stripePromise = (async () => {
   const stripeKey = IS_PRODUCTION ? process.env.REACT_APP_STRIPE_PK : process.env.REACT_APP_STRIPE_TEST_PK;
   return await loadStripe(stripeKey);
@@ -102,7 +104,6 @@ const CheckoutViewWrapper = () => {
     isPaying,
     avatarBlob,
     userNameFromAddressElement,
-    stripe,
     couponCodeData,
     elementsOptions,
     promoCodeName,
@@ -179,15 +180,13 @@ const CheckoutViewWrapper = () => {
     const planId = params.get('planId');
     const promotionCode = params.get('couponCode');
 
-    if (planId) {
-      handleFetchSelectedPlan(planId);
-    } else {
+    if (!planId) {
       navigationService.push(AppView.Drive);
+      return;
     }
 
-    if (promotionCode) {
-      handleFetchPromotionCode(promotionCode);
-    }
+    handleFetchSelectedPlan(planId);
+    promotionCode && handleFetchPromotionCode(promotionCode);
   }, []);
 
   useEffect(() => {
@@ -305,8 +304,7 @@ const CheckoutViewWrapper = () => {
         },
       });
 
-      const stripe = await stripePromise;
-      dispatchReducer({ type: 'SET_STRIPE', payload: stripe });
+      stripe = await stripePromise;
 
       return plan;
     } catch (error) {
@@ -354,6 +352,7 @@ const CheckoutViewWrapper = () => {
         token,
         couponCodeData?.codeId,
       );
+
       return {
         type: clientSecretType,
         clientSecret: client_secret,
@@ -408,17 +407,19 @@ const CheckoutViewWrapper = () => {
   };
 
   return (
-    <Elements stripe={stripe} options={elementsOptions}>
-      {currentSelectedPlan ? (
-        <CheckoutView
-          checkoutViewVariables={checkoutViewVariables}
-          authMethod={authMethod}
-          checkoutViewManager={checkoutViewManager}
-        />
+    <>
+      {currentSelectedPlan && stripe ? (
+        <Elements stripe={stripe} options={elementsOptions}>
+          <CheckoutView
+            checkoutViewVariables={checkoutViewVariables}
+            authMethod={authMethod}
+            checkoutViewManager={checkoutViewManager}
+          />
+        </Elements>
       ) : (
         <LoadingPulse />
       )}
-    </Elements>
+    </>
   );
 };
 
