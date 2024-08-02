@@ -176,20 +176,15 @@ const CheckoutViewWrapper = () => {
         updateUserSubscription(planId);
         return;
       }
+      if (checkoutTheme && plan) {
+        const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
+        loadStripe(textColor, backgroundColor, plan);
+      }
     });
 
     promotionCode && handleFetchPromotionCode(promotionCode);
     setIsCheckoutReadyToRender(true);
-  }, []);
-
-  useEffect(() => {
-    if (checkoutTheme && currentSelectedPlan) {
-      const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
-      // setBackgroundColor(backgroundColor);
-      // setTextColor(textColor);
-      loadStripe(textColor, backgroundColor);
-    }
-  }, [checkoutTheme, currentSelectedPlan]);
+  }, [checkoutTheme]);
 
   useEffect(() => {
     if (promoCodeName) {
@@ -288,7 +283,7 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const loadStripe = async (textColor: string, backgroundColor: string) => {
+  const loadStripe = async (textColor: string, backgroundColor: string, plan) => {
     dispatchReducer({
       type: 'SET_ELEMENTS_OPTIONS',
       payload: {
@@ -457,7 +452,7 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {isCheckoutReadyToRender && stripe ? (
+      {isCheckoutReadyToRender && elementsOptions && stripe ? (
         <Elements stripe={stripe} options={elementsOptions}>
           <CheckoutView
             checkoutViewVariables={checkoutViewVariables}

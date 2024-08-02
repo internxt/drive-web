@@ -66,7 +66,7 @@ const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }
             {translate('checkout.title')}
           </p>
           {currentSelectedPlan ? (
-            <div className="flex flex-col items-center justify-center lg:flex-row lg:items-start lg:justify-between">
+            <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
               <div className="flex w-full max-w-xl flex-col space-y-14">
                 <UserAuthComponent
                   errors={errors}
