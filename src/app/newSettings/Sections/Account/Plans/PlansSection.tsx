@@ -258,6 +258,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         onClosePreferences();
         navigationService.push(AppView.Checkout, {
           planId: priceId,
+          currency: currency,
         });
       } else {
         await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
@@ -270,6 +271,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
         onClosePreferences();
         navigationService.push(AppView.Checkout, {
           planId: priceId,
+          currency: currency,
         });
         setIsDialogOpen(false);
       } else {

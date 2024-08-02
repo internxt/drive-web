@@ -61,7 +61,7 @@ export const ProductFeaturesComponent = ({
   const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
 
   return (
-    <div className="w-full flex-col space-y-4">
+    <div className="flex w-full flex-col space-y-4">
       <div className="flex w-full flex-row items-center justify-between space-x-4">
         <p className="text-2xl font-semibold text-gray-100">{translate('checkout.productCard.title')}</p>
         <div className="flex flex-row space-x-2">
@@ -79,7 +79,6 @@ export const ProductFeaturesComponent = ({
           </p>
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">{translate(`checkout.productCard.billed.${selectedPlan.interval}`)}</p>
-            {/* TODO: Change currency if needed */}
             <p className="font-semibold">
               {planAmount}
               {Currency[selectedPlan.currency]}

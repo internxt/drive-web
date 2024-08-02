@@ -54,7 +54,7 @@ const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }
 
   return (
     <form
-      className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen lg:px-16"
+      className="flex h-full overflow-y-scroll bg-gray-1 lg:w-screen xl:px-16"
       onSubmit={handleSubmit((formData, event) =>
         checkoutViewManager.onCheckoutButtonClicked(formData, event, stripeSDK, elements),
       )}
@@ -97,7 +97,7 @@ const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }
                   </Button>
                 </div>
               </div>
-              <div className="flex w-full max-w-lg flex-col space-y-5">
+              <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg lg:pb-0">
                 <ProductFeaturesComponent
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}

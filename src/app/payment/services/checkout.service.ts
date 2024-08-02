@@ -1,10 +1,13 @@
 import paymentService from 'app/payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, PlanData } from '../types';
 
-const fetchPlanById = async (planId: string): Promise<PlanData> => {
-  const response = await fetch(`${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}`, {
-    method: 'GET',
-  });
+const fetchPlanById = async (planId: string, currency?: string): Promise<PlanData> => {
+  const response = await fetch(
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}&currency=${currency}`,
+    {
+      method: 'GET',
+    },
+  );
 
   if (response.status !== 200) {
     throw new Error('Plan not found');
@@ -40,6 +43,7 @@ const getClientSecretForPaymentIntent = async (
   amount: number,
   planId: string,
   token: string,
+  currency: string,
   promoCode?: string,
 ): Promise<ClientSecretData> => {
   const { clientSecret: client_secret } = await paymentService.createPaymentIntent(
@@ -47,6 +51,7 @@ const getClientSecretForPaymentIntent = async (
     amount,
     planId,
     token,
+    currency,
     promoCode,
   );
 
@@ -60,12 +65,14 @@ const getClientSecretForSubscriptionIntent = async (
   customerId: string,
   priceId: string,
   token: string,
+  currency: string,
   promoCodeId?: string,
 ): Promise<ClientSecretData> => {
   const { type: paymentType, clientSecret: client_secret } = await paymentService.createSubscription(
     customerId,
     priceId,
     token,
+    currency,
     promoCodeId,
   );
 

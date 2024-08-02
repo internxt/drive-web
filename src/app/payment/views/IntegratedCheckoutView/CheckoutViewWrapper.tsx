@@ -1,4 +1,4 @@
-import { useEffect, useCallback, useReducer, useState, BaseSyntheticEvent } from 'react';
+import { useEffect, useReducer, useState, BaseSyntheticEvent } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import navigationService from '../../../core/services/navigation.service';
@@ -6,7 +6,7 @@ import { AppView, IFormValues } from '../../../core/types';
 import errorService from '../../../core/services/error.service';
 import CheckoutView from './CheckoutView';
 import envService from '../../../core/services/env.service';
-import { Stripe, StripeElements, StripeElementsOptions, loadStripe } from '@stripe/stripe-js';
+import { Stripe, StripeElements, loadStripe } from '@stripe/stripe-js';
 import databaseService from '../../../database/services/database.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import RealtimeService from '../../../core/services/socket.service';
@@ -23,6 +23,10 @@ import { RootState } from 'app/store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import paymentService from 'app/payment/services/payment.service';
 import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
+import { planActions, PlanState } from 'app/store/slices/plan';
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 
 export const THEME_STYLES = {
   dark: {
@@ -85,14 +89,22 @@ export const stripePromise = (async () => {
 })();
 
 const CheckoutViewWrapper = () => {
+  const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
   const dispatch = useAppDispatch();
+  const userPlan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const { doRegister } = useSignUp('activate');
 
+  const { individualSubscription, businessSubscription } = userPlan;
+  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+
+  const subscription = !workspace ? individualSubscription : businessSubscription;
+
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
+  const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
 
   const fullName = `${user?.name} ${user?.lastname}`;
 
@@ -145,49 +157,39 @@ const CheckoutViewWrapper = () => {
     upsellManager,
   };
 
-  const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
-  const elementsOptionsParams: StripeElementsOptions = {
-    appearance: {
-      labels: 'above',
-      variables: {
-        spacingAccordionItem: '8px',
-        colorPrimary: textColor,
-      },
-      theme: 'flat',
-      rules: {
-        '.AccordionItem:hover': {
-          color: textColor,
-        },
-        '.TermsText': {
-          color: textColor,
-        },
-        '.AccordionItem': {
-          border: `1px solid ${backgroundColor}`,
-          backgroundColor: backgroundColor,
-        },
-        '.Label': {
-          color: textColor,
-        },
-        '.RedirectText': {
-          color: textColor,
-        },
-      },
-    },
-  };
-
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const planId = params.get('planId');
     const promotionCode = params.get('couponCode');
+    const currency = params.get('currency');
+
+    const currencyValue = currency ?? 'eur';
 
     if (!planId) {
       navigationService.push(AppView.Drive);
       return;
     }
 
-    handleFetchSelectedPlan(planId);
+    handleFetchSelectedPlan(planId, currencyValue).then((plan) => {
+      if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
+        setIsCheckoutReadyToRender(false);
+        updateUserSubscription(planId);
+        return;
+      }
+    });
+
     promotionCode && handleFetchPromotionCode(promotionCode);
+    setIsCheckoutReadyToRender(true);
   }, []);
+
+  useEffect(() => {
+    if (checkoutTheme && currentSelectedPlan) {
+      const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
+      // setBackgroundColor(backgroundColor);
+      // setTextColor(textColor);
+      loadStripe(textColor, backgroundColor);
+    }
+  }, [checkoutTheme, currentSelectedPlan]);
 
   useEffect(() => {
     if (promoCodeName) {
@@ -277,44 +279,68 @@ const CheckoutViewWrapper = () => {
 
       if (error) {
         handleError('stripe', error.message as string);
-        console.error('Error in payment intent confirmation: ', error.message);
       }
     } catch (err) {
       const error = err as Error;
       errorService.reportError(error);
-      console.error('Error creating subscription: ', error.stack ?? error.message);
     } finally {
       setIsUserPaying(false);
     }
   };
 
-  const handleFetchSelectedPlan = useCallback(async (planId: string) => {
+  const loadStripe = async (textColor: string, backgroundColor: string) => {
+    dispatchReducer({
+      type: 'SET_ELEMENTS_OPTIONS',
+      payload: {
+        appearance: {
+          labels: 'above',
+          variables: {
+            spacingAccordionItem: '8px',
+            colorPrimary: textColor,
+          },
+          theme: 'flat',
+          rules: {
+            '.AccordionItem:hover': {
+              color: textColor,
+            },
+            '.TermsText': {
+              color: textColor,
+            },
+            '.AccordionItem': {
+              border: `1px solid ${backgroundColor}`,
+              backgroundColor: backgroundColor,
+            },
+            '.Label': {
+              color: textColor,
+            },
+            '.RedirectText': {
+              color: textColor,
+            },
+          },
+        },
+        mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
+        amount: plan?.selectedPlan.amount,
+        currency: plan?.selectedPlan.currency,
+        payment_method_types: ['card', 'paypal'],
+      },
+    });
+
+    stripe = await stripePromise;
+  };
+
+  const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     try {
-      const plan = await checkoutService.fetchPlanById(planId);
+      const plan = await checkoutService.fetchPlanById(planId, currency);
       dispatchReducer({ type: 'SET_PLAN', payload: plan });
       dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan.selectedPlan });
-      dispatchReducer({
-        type: 'SET_ELEMENTS_OPTIONS',
-        payload: {
-          ...(elementsOptionsParams as any),
-          mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
-          amount: plan?.selectedPlan.amount,
-          currency: plan?.selectedPlan.currency,
-          payment_method_types: ['card', 'paypal'],
-        },
-      });
-
-      stripe = await stripePromise;
 
       return plan;
     } catch (error) {
-      console.error('Error fetching plan or payment intent:', error);
       errorService.reportError(error);
-      navigationService.push(AppView.Drive);
     }
-  }, []);
+  };
 
-  const handleFetchPromotionCode = useCallback(async (promotionCode: string) => {
+  const handleFetchPromotionCode = async (promotionCode: string) => {
     try {
       const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
       const promoCode = {
@@ -327,9 +353,9 @@ const CheckoutViewWrapper = () => {
     } catch (err) {
       const error = err as Error;
       errorService.reportError(error);
-      console.error('ERROR FETCHING COUPON: ', error.message);
+      dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: undefined });
     }
-  }, []);
+  };
 
   const getClientSecret = async (selectedPlan: CurrentPlanSelected, token: string, customerId: string) => {
     if (selectedPlan?.interval === 'lifetime') {
@@ -338,6 +364,7 @@ const CheckoutViewWrapper = () => {
         selectedPlan.amount,
         selectedPlan.id,
         token,
+        selectedPlan.currency,
         couponCodeData?.codeId,
       );
 
@@ -350,6 +377,7 @@ const CheckoutViewWrapper = () => {
         customerId,
         selectedPlan?.id,
         token,
+        selectedPlan.currency,
         couponCodeData?.codeId,
       );
 
@@ -357,6 +385,27 @@ const CheckoutViewWrapper = () => {
         type: clientSecretType,
         clientSecret: client_secret,
       };
+    }
+  };
+
+  const updateUserSubscription = async (planId: string, coupon?: string) => {
+    try {
+      const couponCode = coupon === 'null' ? undefined : coupon;
+      const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
+      if (userSubscription && userSubscription.type === 'subscription') {
+        if (userSubscription.userType == UserType.Individual)
+          dispatch(planActions.setSubscriptionIndividual(userSubscription));
+        if (userSubscription.userType == UserType.Business)
+          dispatch(planActions.setSubscriptionBusiness(userSubscription));
+      }
+    } catch (err) {
+      console.error(err);
+      notificationsService.show({
+        text: translate('notificationMessages.errorCancelSubscription'),
+        type: ToastType.Error,
+      });
+    } finally {
+      navigationService.push(AppView.Drive);
     }
   };
 
@@ -408,7 +457,7 @@ const CheckoutViewWrapper = () => {
 
   return (
     <>
-      {currentSelectedPlan && stripe ? (
+      {isCheckoutReadyToRender && stripe ? (
         <Elements stripe={stripe} options={elementsOptions}>
           <CheckoutView
             checkoutViewVariables={checkoutViewVariables}
