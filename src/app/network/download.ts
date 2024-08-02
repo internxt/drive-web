@@ -1,25 +1,12 @@
 import { Environment } from '@internxt/inxt-js';
 import { createDecipheriv, Decipher } from 'crypto';
-import * as Sentry from '@sentry/react';
 
-import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 import { buildProgressStream, joinReadableBinaryStreams } from 'app/core/services/stream.service';
 import { Abortable } from './Abortable';
-import fetchFileBlob from 'app/drive/services/download.service/fetchFileBlob';
-import localStorageService from 'app/core/services/local-storage.service';
+import { getFileInfoWithAuth, getFileInfoWithToken, getMirrors, Mirror } from './requests';
 
-import { SerializablePhoto } from 'app/store/slices/photos';
-import { getEnvironmentConfig } from 'app/drive/services/network.service';
 import { FileVersionOneError } from '@internxt/sdk/dist/network/download';
-import { ErrorWithContext } from '@internxt/sdk/dist/network/errors';
 import downloadFileV2 from './download/v2';
-import {
-  getDatabasePhotosPreviewData,
-  getDatabasePhotosSourceData,
-  updateDatabasePhotosPreviewData,
-  updateDatabasePhotosSourceData,
-} from '../drive/services/database.service';
-import errorService from '../core/services/error.service';
 
 export type DownloadProgressCallback = (totalBytes: number, downloadedBytes: number) => void;
 export type Downloadable = { fileId: string; bucketId: string };
@@ -236,130 +223,4 @@ export function downloadFileToFileSystem(
   const downloadStreamPromise = downloadFile(params);
 
   return [downloadStreamPromise.then((readable) => readable.pipeTo(params.destination)), { abort: () => null }];
-}
-
-export async function getPhotoPreview(
-  {
-    photo,
-    bucketId,
-  }: {
-    photo: SerializablePhoto;
-    bucketId: string;
-  },
-  opts?: {
-    abortController: AbortController;
-  },
-): Promise<string> {
-  let previewInCache;
-  let blob: Blob;
-  try {
-    previewInCache = await getDatabasePhotosPreviewData({ photoId: photo.id });
-  } catch (err) {
-    errorService.reportError(err);
-  }
-
-  if (previewInCache && previewInCache.preview) {
-    blob = previewInCache.preview;
-  } else {
-    const { previewLink: link, previewIndex: index } = photo;
-    const mnemonic = localStorageService.getUser()?.mnemonic as string;
-    const indexBuf = Buffer.from(index, 'hex');
-    const iv = indexBuf.slice(0, 16);
-    const key = await generateFileKey(mnemonic, bucketId, indexBuf);
-    const readable = await getFileDownloadStream(
-      [link],
-      createDecipheriv('aes-256-ctr', key, iv),
-      opts?.abortController,
-    );
-
-    blob = await binaryStreamToBlob(readable);
-    try {
-      await updateDatabasePhotosPreviewData({ photoId: photo.id, preview: blob });
-    } catch (err) {
-      errorService.reportError(err);
-    }
-  }
-
-  return URL.createObjectURL(blob);
-}
-
-export async function getPhotoBlob({
-  photo,
-  bucketId,
-  abortController,
-}: {
-  photo: SerializablePhoto;
-  bucketId: string;
-  abortController?: AbortController;
-}): Promise<Blob> {
-  const previewInCache = await getDatabasePhotosSourceData({ photoId: photo.id });
-
-  if (previewInCache && previewInCache.source) {
-    return Promise.resolve(previewInCache.source);
-  }
-
-  const photoBlob = await fetchFileBlob(
-    { fileId: photo.fileId, bucketId },
-    { updateProgressCallback: () => undefined, abortController },
-  );
-
-  try {
-    await updateDatabasePhotosSourceData({ photoId: photo.id, source: photoBlob });
-  } catch (error) {
-    errorService.reportError(error);
-  }
-  return photoBlob;
-}
-
-export async function getPhotoCachedOrStream({
-  photo,
-  bucketId,
-  onProgress,
-  abortController,
-}: {
-  photo: SerializablePhoto;
-  bucketId: string;
-  onProgress?: (progress: number) => void;
-  abortController?: AbortController;
-}): Promise<Blob | ReadableStream<Uint8Array>> {
-  let previewInCache;
-
-  try {
-    previewInCache = await getDatabasePhotosSourceData({ photoId: photo.id });
-  } catch (error) {
-    errorService.reportError(error);
-  }
-
-  if (previewInCache && previewInCache.source) {
-    onProgress?.(1);
-    return Promise.resolve(previewInCache.source);
-  }
-
-  const { bridgeUser, bridgePass, encryptionKey } = getEnvironmentConfig();
-
-  const downloadedPhotoStream = await downloadFile({
-    bucketId,
-    fileId: photo.fileId,
-    creds: {
-      pass: bridgePass,
-      user: bridgeUser,
-    },
-    mnemonic: encryptionKey,
-    options: {
-      notifyProgress: (totalBytes, downloadedBytes) => onProgress && onProgress(downloadedBytes / totalBytes),
-      abortController,
-    },
-  }).catch((err: ErrorWithContext) => {
-    Sentry.captureException(err, { extra: err.context });
-
-    throw err;
-  });
-
-  const photoBlob = await binaryStreamToBlob(downloadedPhotoStream);
-  try {
-    await updateDatabasePhotosSourceData({ photoId: photo.id, source: photoBlob });
-  } catch (error) {
-    errorService.reportError(error);
-  }
-  return Promise.resolve(photoBlob);
 }

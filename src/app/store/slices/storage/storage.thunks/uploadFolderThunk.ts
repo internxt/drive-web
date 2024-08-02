@@ -1,4 +1,4 @@
-import { ActionReducerMapBuilder, createAsyncThunk } from '@reduxjs/toolkit';
+import { ActionReducerMapBuilder, AnyAction, ThunkDispatch, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { t } from 'i18next';
 import storageThunks from '.';
@@ -10,13 +10,14 @@ import notificationsService, { ToastType } from '../../../../notifications/servi
 import tasksService from '../../../../tasks/services/tasks.service';
 import { TaskStatus, TaskType, UploadFolderTask } from '../../../../tasks/types';
 import { planThunks } from '../../plan';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
 import { StorageState } from '../storage.model';
 import { deleteItemsThunk } from './deleteItemsThunk';
 import { uploadItemsParallelThunk } from './uploadItemsThunk';
 
 export interface IRoot {
   name: string;
-  folderId: number | null;
+  folderId: string | null;
   childrenFiles: File[];
   childrenFolders: IRoot[];
   fullPathEdited: string;
@@ -24,7 +25,7 @@ export interface IRoot {
 
 interface UploadFolderThunkPayload {
   root: IRoot;
-  currentFolderId: number;
+  currentFolderId: string;
   options?: {
     taskId?: string;
     withNotification?: boolean;
@@ -32,9 +33,9 @@ interface UploadFolderThunkPayload {
   };
 }
 
-const handleFoldersRename = async (root: IRoot, currentFolderId: number) => {
-  const storageClient = SdkFactory.getInstance().createStorageClient();
-  const [parentFolderContentPromise] = storageClient.getFolderContent(currentFolderId);
+const handleFoldersRename = async (root: IRoot, currentFolderId: string, tokenHeader?: string) => {
+  const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+  const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(currentFolderId, false, tokenHeader);
   const parentFolderContent = await parentFolderContentPromise;
   const [, , finalFilename] = renameFolderIfNeeded(parentFolderContent.children, root.name);
   const fileContent: IRoot = { ...root, name: finalFilename };
@@ -45,17 +46,46 @@ const wait = (ms: number): Promise<void> => {
   return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
+const stopUploadTask = async (
+  uploadFolderAbortController: AbortController,
+  dispatch: ThunkDispatch<RootState, unknown, AnyAction>,
+  relatedTaskId?: string,
+  rootFolderItem?: DriveFolderData,
+) => {
+  uploadFolderAbortController.abort();
+  const relatedTasks = tasksService.getTasks({ relatedTaskId });
+  const promises: Promise<void>[] = [];
+
+  // Cancels related tasks
+  promises.push(
+    ...(relatedTasks.map((task) => task.stop?.()).filter((promise) => promise !== undefined) as Promise<void>[]),
+  );
+  // Deletes the root folder
+  if (rootFolderItem) {
+    promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
+    const storageClient = SdkFactory.getInstance().createStorageClient();
+    promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
+  }
+  await Promise.all(promises);
+};
+
 export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload, { state: RootState }>(
   'storage/createFolderStructure',
-  async ({ root, currentFolderId, options }, { dispatch, requestId }) => {
-    options = Object.assign({ withNotification: true }, options || {});
+  async ({ root, currentFolderId, options }, { dispatch, requestId, getState }) => {
+    const state = getState();
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
+
+    const workspaceSelected = workspacesSelectors.getSelectedWorkspace(state);
+    const memberId = workspaceSelected?.workspaceUser?.memberId;
+
+    options = { withNotification: true, ...options };
     const uploadFolderAbortController = new AbortController();
 
     let alreadyUploaded = 0;
     let rootFolderItem: DriveFolderData | undefined;
     let rootFolderData: DriveFolderData | undefined;
 
-    const renamedRoot = await handleFoldersRename(root, currentFolderId);
+    const renamedRoot = await handleFoldersRename(root, currentFolderId, workspaceCredentials?.tokenHeader);
     const levels = [renamedRoot];
 
     const itemsUnderRoot = countItemsUnderRoot(renamedRoot);
@@ -107,7 +137,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
-            parentFolderId: level.folderId as number,
+            parentFolderId: level.folderId as string,
             folderName: level.name,
             options: { relatedTaskId: taskId, showErrors: false },
           }),
@@ -121,25 +151,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           tasksService.updateTask({
             taskId,
             merge: {
-              stop: async () => {
-                uploadFolderAbortController.abort();
-                const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
-                const promises: Promise<void>[] = [];
-
-                // Cancels related tasks
-                promises.push(
-                  ...(relatedTasks
-                    .map((task) => task.stop?.())
-                    .filter((promise) => promise !== undefined) as Promise<void>[]),
-                );
-                // Deletes the root folder
-                if (rootFolderItem) {
-                  promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-                  const storageClient = SdkFactory.getInstance().createStorageClient();
-                  promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
-                }
-                await Promise.all(promises);
-              },
+              stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
             },
           });
         }
@@ -148,7 +160,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
           await dispatch(
             uploadItemsParallelThunk({
               files: level.childrenFiles,
-              parentFolderId: createdFolder.id,
+              parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
                 showNotifications: false,
@@ -175,7 +187,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
 
         const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.id });
+          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
         levels.push(...childrenFolders);
@@ -193,6 +205,7 @@ export const uploadFolderThunk = createAsyncThunk<void, UploadFolderThunkPayload
       options.onSuccess?.();
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -252,7 +265,7 @@ function getNextNewName(filename: string, i: number): string {
 
 const generateTaskIdForFolders = (foldersPayload: UploadFolderThunkPayload[]) => {
   return foldersPayload.map(({ root, currentFolderId, options: payloadOptions }) => {
-    const options = Object.assign({ withNotification: true }, payloadOptions || {});
+    const options = { withNotification: true, ...payloadOptions };
 
     const uploadFolderAbortController = new AbortController();
 
@@ -285,11 +298,16 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
   void,
   UploadFolderThunkPayload[],
   { state: RootState }
->('storage/createFolderStructure', async (payload, { dispatch }) => {
+>('storage/createFolderStructure', async (payload, { dispatch, getState }) => {
+  const state = getState();
   const payloadWithTaskId = generateTaskIdForFolders(payload);
+
+  const selectedWorkspace = workspacesSelectors.getSelectedWorkspace(state);
+  const memberId = selectedWorkspace?.workspaceUser?.memberId;
+
   // checking why is not aborting correctly the folder upload
   for (const { root, currentFolderId, options: payloadOptions, taskId, abortController } of payloadWithTaskId) {
-    const options = Object.assign({ withNotification: true }, payloadOptions || {});
+    const options = { withNotification: true, ...payloadOptions };
 
     let alreadyUploaded = 0;
 
@@ -307,7 +325,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         const level: IRoot = levels.shift() as IRoot;
         const createdFolder = await dispatch(
           storageThunks.createFolderThunk({
-            parentFolderId: level.folderId as number,
+            parentFolderId: level.folderId as string,
             folderName: level.name,
             options: { relatedTaskId: taskId, showErrors: false },
           }),
@@ -320,25 +338,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
         tasksService.updateTask({
           taskId,
           merge: {
-            stop: async () => {
-              uploadFolderAbortController.abort();
-              const relatedTasks = tasksService.getTasks({ relatedTaskId: taskId });
-              const promises: Promise<void>[] = [];
-
-              // Cancels related tasks
-              promises.push(
-                ...(relatedTasks
-                  .map((task) => task.stop?.())
-                  .filter((promise) => promise !== undefined) as Promise<void>[]),
-              );
-              // Deletes the root folder
-              if (rootFolderItem) {
-                promises.push(dispatch(deleteItemsThunk([rootFolderItem as DriveItemData])).unwrap());
-                const storageClient = SdkFactory.getInstance().createStorageClient();
-                promises.push(storageClient.deleteFolder(rootFolderItem.id) as Promise<void>);
-              }
-              await Promise.all(promises);
-            },
+            stop: () => stopUploadTask(uploadFolderAbortController, dispatch, taskId, rootFolderItem),
           },
         });
         if (!rootFolderData) {
@@ -351,7 +351,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
           await dispatch(
             uploadItemsParallelThunk({
               files: level.childrenFiles,
-              parentFolderId: createdFolder.id,
+              parentFolderId: createdFolder.uuid,
               options: {
                 relatedTaskId: taskId,
                 showNotifications: false,
@@ -373,7 +373,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
 
         const childrenFolders = [] as IRoot[];
         for (const child of level.childrenFolders) {
-          childrenFolders.push({ ...child, folderId: createdFolder.id });
+          childrenFolders.push({ ...child, folderId: createdFolder.uuid });
         }
 
         levels.push(...childrenFolders);
@@ -391,6 +391,7 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
 
       setTimeout(() => {
         dispatch(planThunks.fetchUsageThunk());
+        if (memberId) dispatch(planThunks.fetchBusinessLimitUsageThunk());
       }, 1000);
     } catch (err: unknown) {
       const castedError = errorService.castError(err);
@@ -404,9 +405,9 @@ export const uploadMultipleFolderThunkNoCheck = createAsyncThunk<
             subtitle: t('tasks.subtitles.upload-failed') as string,
           },
         });
-        continue;
         // Log the error or report it but don't re-throw it to allow the next folder to be processed
-        // errorService.reportError(castedError);
+        errorService.reportError(castedError);
+        continue;
       }
     }
   }

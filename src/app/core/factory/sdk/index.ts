@@ -1,12 +1,12 @@
 import { Auth, Token } from '@internxt/sdk/dist/auth';
 import { Backups, Payments, Referrals, Share, Storage, Trash, Users } from '@internxt/sdk/dist/drive';
-import { Photos } from '@internxt/sdk/dist/photos';
 import { ApiSecurity, ApiUrl, AppDetails } from '@internxt/sdk/dist/shared';
+import { WorkspaceCredentialsDetails, Workspaces } from '@internxt/sdk/dist/workspaces';
 import packageJson from '../../../../../package.json';
 import authService from '../../../auth/services/auth.service';
 import { AppDispatch } from '../../../store';
 import { userThunks } from '../../../store/slices/user';
-import { LocalStorageService } from '../../services/local-storage.service';
+import { LocalStorageService, STORAGE_KEYS } from '../../services/local-storage.service';
 import { Workspace } from '../../types';
 
 export class SdkFactory {
@@ -73,6 +73,13 @@ export class SdkFactory {
     return Storage.client(apiUrl, appDetails, apiSecurity);
   }
 
+  public createWorkspacesClient(): Workspaces {
+    const apiUrl = this.getApiUrl();
+    const appDetails = SdkFactory.getAppDetails();
+    const apiSecurity = this.getNewApiSecurity();
+    return Workspaces.client(apiUrl, appDetails, apiSecurity);
+  }
+
   public createShareClient(): Share {
     const apiUrl = this.getApiUrl();
     const appDetails = SdkFactory.getAppDetails();
@@ -130,25 +137,14 @@ export class SdkFactory {
     return Backups.client(apiUrl, appDetails, apiSecurity);
   }
 
-  public async createPhotosClient(): Promise<Photos> {
-    if (!SdkFactory.sdk.localStorage.get('xToken')) {
-      return new Photos(process.env.REACT_APP_PHOTOS_API_URL);
-    }
-
-    let newToken = SdkFactory.sdk.localStorage.get('xNewToken');
-
-    if (!newToken) {
-      newToken = await authService.getNewToken();
-      SdkFactory.sdk.localStorage.set('xNewToken', newToken);
-    }
-    return new Photos(process.env.REACT_APP_PHOTOS_API_URL, newToken);
-  }
   /** Helpers **/
 
   private getApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    const workspaceToken = this.getWorkspaceToken();
     return {
       token: this.getToken(workspace),
+      workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
@@ -157,8 +153,10 @@ export class SdkFactory {
 
   private getNewApiSecurity(): ApiSecurity {
     const workspace = SdkFactory.sdk.localStorage.getWorkspace();
+    const workspaceToken = this.getWorkspaceToken();
     return {
       token: this.getNewToken(workspace),
+      workspaceToken,
       unauthorizedCallback: async () => {
         SdkFactory.sdk.dispatch(userThunks.logoutThunk());
       },
@@ -205,5 +203,19 @@ export class SdkFactory {
       [Workspace.Business]: SdkFactory.sdk.localStorage.get('xTokenTeam') || '',
     };
     return tokenByWorkspace[workspace];
+  }
+
+  private getWorkspaceToken(): Token | undefined {
+    const workspace = SdkFactory.sdk.localStorage.get(STORAGE_KEYS.B2B_WORKSPACE);
+    let token: string | undefined = undefined;
+    if (workspace) {
+      const credentials: WorkspaceCredentialsDetails | null = JSON.parse(
+        SdkFactory.sdk.localStorage.get(STORAGE_KEYS.WORKSPACE_CREDENTIALS) ?? 'null',
+      );
+      if (credentials) {
+        token = credentials.tokenHeader;
+      }
+    }
+    return token;
   }
 }

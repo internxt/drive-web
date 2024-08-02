@@ -247,7 +247,7 @@ export function trackFolderCreated(payload: { email: string; platform: DevicePla
   // window.analytics.track(AnalyticsTrackNames.FolderCreated, payload);
 }
 
-export function trackFolderRename(payload: { email: string; fileId: number; platform: DevicePlatform }): void {
+export function trackFolderRename(payload: { email: string; fileId: string; platform: DevicePlatform }): void {
   // window.analytics.track(AnalyticsTrackNames.FolderRename, payload);
 }
 
@@ -257,7 +257,7 @@ export function trackFileRename(payload: { email: string; file_id: number | stri
 
 export function trackMoveItem(
   keyOp: string,
-  payload: { email: string; file_id: number; platform: DevicePlatform },
+  payload: { email: string; file_id?: number; uuid?: string; platform: DevicePlatform },
 ): void {
   // window.analytics.track(`${keyOp}-move`.toLowerCase(), payload);
 }

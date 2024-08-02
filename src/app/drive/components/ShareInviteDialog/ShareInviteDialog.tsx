@@ -2,13 +2,13 @@ import { Listbox } from '@headlessui/react';
 import isValidEmail from '@internxt/lib/dist/src/auth/isValidEmail';
 import { CaretDown, Check } from '@phosphor-icons/react';
 import { AsyncThunkAction } from '@reduxjs/toolkit';
-import errorService from 'app/core/services/error.service';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import { TrackingPlan } from '../../../analytics/TrackingPlan';
 import { trackRestrictedShared } from '../../../analytics/services/analytics.service';
 import userService from '../../../auth/services/user.service';
+import errorService from '../../../core/services/error.service';
 import { HTTP_CODES } from '../../../core/services/http.service';
 import AppError, { IFormValues } from '../../../core/types';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
@@ -233,7 +233,7 @@ const ShareInviteDialog = (props: ShareInviteDialogProps): JSX.Element => {
                 >
                   <div className="flex items-center">
                     <Avatar src="" fullName={`${user.email}`} diameter={40} />
-                    <p className="ml-2.5">{user.email}</p>
+                    <p className="ml-2.5 break-all">{user.email}</p>
                   </div>
                   <Listbox value={user.userRole} onChange={(selectedValue) => onEditRole(selectedValue, user)}>
                     <div className="relative">

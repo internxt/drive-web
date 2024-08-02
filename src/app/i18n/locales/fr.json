@@ -4,19 +4,31 @@
     "logOut": "Déconnexion"
   },
   "featuresBanner": {
-    "label": "Économisez 75%",
-    "title": "Protégez vos données du côté obscur",
-    "cta": "Choisir un plan",
+    "label": {
+      "upTo": "",
+      "discount": "80% DE RÉDUCTION"
+    },
+    "title": "Profitez des offres d'été d'Internxt",
+    "subtitle": {
+      "line1": "Le plan gratuit d'Internxt sera réduit à 1 Go le 1er juillet.",
+      "line2": {
+        "normal1": "Évitez cette dégradation en utilisant le code ",
+        "blue": "FREEVIP",
+        "normal2": " pour obtenir 90% de réduction sur n'importe quel plan premium."
+      }
+    },
+    "cta": "Choisissez un plan",
     "guarantee": "Garantie de remboursement de 30 jours",
     "lastCta": "*L'offre est valable pour les comptes gratuits ou les nouveaux clients",
     "features": [
-      "Économisez sur les plans Internxt",
+      "Économisez sur tous les plans Internxt",
       "Stockage cloud sûr et sécurisé",
       "Open source et transparent",
       "Transferts chiffrés de bout en bout",
       "Aucun accès non autorisé",
-      "L'offre se termine le 20 mai"
-    ]
+      "L'offre se termine le 19 août"
+    ],
+    "copied": "Copié dans le presse-papiers"
   },
   "valentinesBanner": {
     "title": "L'amour sans limites !",
@@ -37,7 +49,8 @@
     "it": "Italiano (Italien)",
     "zh": "简体中文 (Chinois)",
     "ru": "Русский (Russe)",
-    "de": "Deutsch (Allemand)"
+    "de": "Deutsch (Allemand)",
+    "zh-tw": "臺灣 (Taïwanais)"
   },
   "theme": {
     "title": "Apparence",
@@ -179,12 +192,12 @@
     "renewalPeriod": {
       "monthly": "mensuel",
       "annually": "annuel",
-      "lifetime": "plan à vie"
+      "lifetime": "lifetime"
     },
     "renewal": {
       "monthly": "Mensuel",
       "annually": "Annuel",
-      "lifetime": "Plan à vie"
+      "lifetime": "Lifetime"
     },
     "workspaces": {
       "personal": "Individuel",
@@ -231,7 +244,6 @@
   },
   "sideNav": {
     "drive": "Drive",
-    "photos": "Photos",
     "backups": "Sauvegardes",
     "shared": "Partagé",
     "recents": "Récent",
@@ -251,18 +263,12 @@
         "dragNDrop": "Glisser-déposer ici ou cliquer sur le bouton de téléchargement"
       }
     },
-    "photos": {
-      "empty": {
-        "title": "Votre galerie est vide",
-        "description": "Utilisez l'app mobile Internxt pour synchroniser vos photos."
-      }
-    },
     "account": {
       "title": "Compte",
       "avatar": {
         "title": "Télécharger une photo",
-        "removePhoto": "Supprimer une photo",
-        "updatePhoto": "Charger une nouvelle photo",
+        "removePhoto": "Supprimer",
+        "updatePhoto": "Charger photo",
         "dragNDrop": "Sélectionner ou faire glisser une photo",
         "success": "Avatar a été mis à jour avec succès",
         "error": "Quelque chose s'est produit lors du téléchargement de votre avatar",
@@ -282,7 +288,6 @@
           "usage": "{{totalUsed}} de {{totalSpace}} utilisés",
           "view": {
             "backups": "Sauvegarde",
-            "photos": "Photos",
             "trash": "Corbeille",
             "free": {
               "planName": "Plan gratuit",
@@ -342,9 +347,9 @@
           },
           "deleteAccount": {
             "head": "Supprimer le compte",
-            "description": "Si vous supprimez votre compte, vos données seront supprimées à jamais. Cette action ne peut être annulée.",
+            "description": "Toutes vos données personnelles et tout ce que vous avez téléchargé sur Internxt seront effacés pour toujours. Une fois que vous aurez supprimé votre compte, il n'y aura pas de retour en arrière. Veuillez être certain.",
             "isSubscribed": "Veuillez d'abord annuler votre abonnement",
-            "confirmationEmail": "L'email de confirmation a été envoyé"
+            "confirmationEmail": "E-mail de confirmation envoyé"
           }
         },
         "billing": {
@@ -367,7 +372,9 @@
           },
           "invoices": {
             "head": "Factures",
-            "billingDate": "Date de facturation",
+            "billingDate": "Date",
+            "storage": "Stockage",
+            "ammount": "Montant",
             "plan": "Plan",
             "empty": {
               "title": "Vous êtes sur le plan gratuit",
@@ -460,21 +467,21 @@
           },
           "changePassword": {
             "title": "Modifier le mot de passe",
-            "description": "N'oubliez pas que si vous oubliez votre mot de passe, vous perdrez l'accès à tous vos fichiers. Nous vous recommandons d'utiliser un gestionnaire de mots de passe.",
+            "description": "Nous ne conservons pas les mots de passe. Si vous perdez votre mot de passe, vous n'aurez plus accès à votre compte Internxt.",
             "button": "Modifier le mot de passe"
           },
           "2FA": {
-            "title": "Authentification à deux facteurs (2FA)",
+            "title": "Authentification à deux facteurs",
             "titleDisable": "Disable Two-Factor Authentication",
-            "description": "L'authentification à deux facteurs offre une sécurité supplémentaire en exigeant une vérification pour la connexion. En plus de votre mot de passe, vous aurez besoin d'un code généré.",
-            "button": "Activer 2FA",
-            "disable": "Désactiver 2FA",
+            "description": "Ajouter une couche supplémentaire de sécurité en demandant un code de vérification supplémentaire lorsque vous vous connectez.",
+            "button": "Activer",
+            "disable": "Désactiver",
             "enabled": "Enabled",
             "disabled": "Disabled",
             "modal": {
               "title": "Authentification en deux étapes",
               "stepsLabel": "{{current}} de {{total}}",
-              "button": "Activer 2FA",
+              "button": "Activer",
               "2FALabelCode": "Two-Factor Authentication code",
               "or": "OU",
               "steps": {
@@ -507,7 +514,7 @@
           },
           "backupKey": {
             "title": "Clé de récupération",
-            "description": "En cas d'oubli de votre mot de passe, vous pouvez utiliser votre clé de récupération pour récupérer votre compte. Ne jamais partager ce code avec qui que ce soit.",
+            "description": "La clé de sauvegarde permet de récupérer le compte en cas d'oubli du mot de passe. Ne le partagez jamais.",
             "button": "Exporter le mot de passe",
             "success": "Clé de sauvegarde téléchargée avec succès",
             "error": "Nous n'avons pas pu générer votre clé de sauvegarde"
@@ -544,6 +551,10 @@
         "title": " Quelque chose s'est mal passé ",
         "subtitle": " Vérifiez si le lien est correct ou redemandez la vérification de l'email dans Paramètres > Compte ",
         "cta": "Aller au Compte"
+      },
+      "message": {
+        "emailNotVerifiedPartOne": "Votre e-mail n'est pas encore vérifié. Veuillez vérifier votre boîte de réception ou ",
+        "emailNotVerifiedPartTwo": "renvoyer la vérification"
       }
     },
     "emailChange": {
@@ -573,6 +584,36 @@
     "redirectToApp": {
       "message": "Merci",
       "goToApp": "Retourner à l'application"
+    },
+    "preferences": {
+      "workspace": {
+        "overview": {
+          "edit": "Modifier le profil",
+          "address": "Adresse",
+          "phone": "Téléphone",
+          "owner": "Propriétaire",
+          "workspaceOverview": "Vue d'ensemble de l'espace de travail",
+          "members": "Membres",
+          "teams": "Équipes",
+          "billed": "Facturé le {{renewDate}}",
+          "spaceUsed": "Espace utilisé ({{percentageUsed}}%)",
+          "totalSpace": "Espace total",
+          "editOverviewDetails": {
+            "title": "Détails du profil",
+            "cancelButton": "Annuler",
+            "saveButton": "Enregistrer les modifications"
+          },
+          "errors": {
+            "minNameLength": "Le nom de l'entreprise doit comporter au moins 3 caractères"
+          }
+        },
+        "billing": {
+          "editBilling": "Modifier la facturation",
+          "billingDetails": "Détails de facturation",
+          "updatedBillingDetails": "Détails mis à jour avec succès",
+          "errorUpdatingBillingDetails": "Une erreur s'est produite lors de la mise à jour de vos informations. Veuillez réessayer dans quelques minutes"
+        }
+      }
     }
   },
   "contextMenu": {
@@ -751,32 +792,6 @@
       "sharedWith": "Partagé avec vous ",
       "todayAt": "aujourd'hui à "
     },
-    "deletePhotosModal": {
-      "multiToolBar": "items selected",
-      "singleToolBar": "item selected",
-      "multiTitle": "Supprimer les {{item}} fichiers sélectionnés ?",
-      "singleTitle": "Supprimer {{item}} fichier sélectionné?",
-      "subtitle": "Cette action ne peut pas être annulée",
-      "buttons": {
-        "cancel": "Annuler",
-        "delete": "Supprimer"
-      }
-    },
-    "sharePhotosModal": {
-      "singleTitle": "Partager {{item}} photo",
-      "multiTitle": "Partager {{item}} photos",
-      "options": "Options du lien",
-      "limit": "Limiter le nombre de fois que le lien peut être ouvert.",
-      "openCount": "Limiter l'ouverture à",
-      "times": "fois",
-      "change": "Modifier",
-      "buttons": {
-        "cancel": "Annuler",
-        "create": "Créer un lien",
-        "creating": "En cours de création...",
-        "copyLink": "Copier le lien"
-      }
-    },
     "friendsInvitedModal": {
       "title": "Amis invités",
       "email": "Email",
@@ -868,7 +883,6 @@
     "incorrectPassword": "Le mot de passe actuel que vous avez introduit ne correspond pas. Veuillez vous assurer qu'il est correct.",
     "emptyPassword": "Le mot de passe précédent ne doit pas être vide",
     "errorMovingToTrash": "Error lors du déplacement des éléments.",
-    "braveNotSupportMultiplePhotosDowload": "Brave ne prend pas en charge le téléchargement de plusieurs photos.",
     "maxSizeUploadLimitError": "Fichier trop volumineux (plus de 20GB)",
     "connectionLostError": "Lost Internet connection",
     "errorLoadingTrashItems": "Erreur de chargement des éléments de la corbeille"
@@ -1015,15 +1029,6 @@
       },
       "errors": {}
     },
-    "download-photos": {
-      "status": {
-        "pending": "Téléchargement de {{progress}}%",
-        "success": "Téléchargé",
-        "error": "Erreur pendant le téléchargement",
-        "cancelled": "Téléchargement annulé"
-      },
-      "errors": {}
-    },
     "download-backup": {
       "status": {
         "pending": "En attente de téléchargement",
@@ -1114,7 +1119,7 @@
     "twoFactorAuthDisabled": "Votre authentification à deux facteurs a été désactivée",
     "joinedToTheTeam": "Vous avez rejoint l'équipe avec succès",
     "done": "Terminé",
-    "inviteAFriend": "Une invitation a été envoyée à {{email}}",
+    "inviteAFriend": "Invitation envoyée à {{email}}",
     "subscribeToNewsletter": "{{email}} s'est abonné avec succès à la newsletter"
   },
   "shareItemDialog": {
@@ -1219,6 +1224,7 @@
       "getLink": "Copier le lien",
       "details": "Détails",
       "shareLink": "Partager",
+      "shareTeam": "Partager avec l'équipe",
       "rename": "Renommer",
       "manageLinkAccess": "Gestion de l'accès",
       "manageAccess": "Gestion de l'accès",
@@ -1341,6 +1347,254 @@
     "file": {
       "title": "Fichier non trouvé",
       "description": "Assurez-vous que l'URL est correcte et que le fichier n'a pas été déplacé ou supprimé."
+    }
+  },
+  "preferences": {
+    "title": "Préférences",
+    "general": {
+      "title": "Général"
+    },
+    "workspace": {
+      "title": "Espace de travail",
+      "overview": {
+        "title": "D'ensemble"
+      },
+      "members": {
+        "title": "Membres",
+        "members": "Membres",
+        "guests": "Invités",
+        "search": "Rechercher des membres",
+        "invite": "Inviter",
+        "inviteDialog": {
+          "title": "Inviter au lieu de travail",
+          "inputDescription": "Appuyez sur Entrée, Espace ou Virgule pour séparer les emails",
+          "remove": "Supprimer",
+          "inviteUsersDescription": "Les utilisateurs sans compte Internxt recevront un email pour s'inscrire avant de rejoindre le lieu de travail.",
+          "enterUserEmail": "Entrer l'email de l'utilisateur à inviter",
+          "addMessage": "Ajouter un message",
+          "invite": "Inviter"
+        },
+        "invitationFlow": {
+          "acceptedSuccessfully": "Invitation à l'espace de travail acceptée avec succès",
+          "declinedSuccessfully": "Invitation à l'espace de travail refusée avec succès",
+          "invitationSent": "Invitation envoyée avec succès",
+          "error": {
+            "errorInviting": "Erreur lors de l'envoi de l'invitation à {{email}}",
+            "acceptedError": "Erreur lors de l'acceptation de l'invitation à l'espace de travail",
+            "declinedError": "Erreur lors du refus de l'invitation à l'espace de travail"
+          }
+        },
+        "list": {
+          "user": "Utilisateur",
+          "usage": "Utilisation",
+          "storage": "Stockage"
+        },
+        "role": {
+          "owner": "Propriétaire",
+          "manager": "Gestionnaire",
+          "member": "Membre",
+          "deactivated": "Désactivé"
+        },
+        "deactivationModal": {
+          "title": "Désactiver le membre",
+          "description": "{{name}} perdra l'accès à l'espace de travail. Tous leurs fichiers et dossiers resteront inchangés.",
+          "deactivate": "Désactiver",
+          "deactivating": "Désactivation en cours"
+        },
+        "reactivationModal": {
+          "title": "Réactiver le membre",
+          "description": "{{name}} retrouvera l'accès à l'espace de travail.",
+          "reactivate": "Réactiver",
+          "reactivating": "Réactivation"
+        },
+        "changePasswordModal": {
+          "title": "Demander un changement de mot de passe",
+          "description": "L'utilisateur recevra une recommandation pour mettre à jour le mot de passe de son compte personnel. Utilisez cette fonction si vous pensez que son mot de passe pourrait avoir été compromis.",
+          "inputPlaceholder": "Saisissez le texte de votre message (optionnel)",
+          "actionButton": "Envoyer la demande"
+        },
+        "tabs": {
+          "activity": {
+            "name": "Activité",
+            "empty": "Pas d'activité",
+            "disabilitedOwner": {
+              "title": "Démarrer avec Activity",
+              "subtitle": "Des perspectives d'utilisation claires pour la gestion des fichiers et des comptes avec l'enregistrement des journaux d'activité",
+              "action": "Activer l'activité"
+            },
+            "disabilitedMember": {
+              "title": "L'activité est désactivée",
+              "subtitle": "Contactez le propriétaire de l'espace de travail pour activer les journaux d'activité pour la gestion des fichiers et des comptes"
+            },
+            "roles": {
+              "title": "Rôles",
+              "member": "Membre",
+              "manager": "Manager",
+              "owner": "Propriétaire"
+            },
+            "filter": {
+              "button": "Filtre",
+              "title": "Filtres",
+              "clear": "Clear",
+              "dateRange": {
+                "title": "Date range",
+                "7days": "7 derniers jours",
+                "30days": "30 derniers jours",
+                "90days": "90 derniers jours"
+              }
+            }
+          },
+          "teams": {
+            "title": "Équipes",
+            "role": "Rôle",
+            "emptyTeamsOwner": {
+              "title": "Commencer avec les équipes",
+              "subtitle": "Gérer plus rapidement les membres de l'espace de travail en les regroupant en équipes",
+              "action": "Créer une équipe"
+            },
+            "emptyTeamsMember": {
+              "title": "Aucune équipe n'a encore été créée",
+              "subtitle": "Le propriétaire de l'espace de travail peut gérer les membres plus rapidement en les regroupant en équipes"
+            },
+            "emptyTeams": {
+              "title": "N'est membre d'aucune équipe"
+            }
+          }
+        },
+        "actions": {
+          "deactivate": "Désactiver le membre",
+          "reactivate": "Réactiver le membre",
+          "passwordChange": "Demande de changement de mot de passe"
+        }
+      },
+      "teams": {
+        "title": "Équipes"
+      },
+      "billing": {
+        "title": "Billing",
+        "nextBillingDate": "Prochaine date de facturation",
+        "planLimit": "Facturé pour un forfait de {{planLimit}}",
+        "subscription": "Abonnement",
+        "lifetimeSubscription": {
+          "planType": "Durée de vie",
+          "text": "Pas de facturation à venir"
+        },
+        "freeSubscription": {
+          "planType": "Gratuit",
+          "action": "Mise à niveau",
+          "actionDescription": "Augmentez votre espace de stockage et bénéficiez de plus de fonctionnalités"
+        },
+        "paymentMethod": {
+          "title": "Mode de paiement",
+          "editButton": "Modifier le mode de paiement",
+          "freePlanTitle": "Vous êtes sur un plan gratuit de {{planLimit}}",
+          "addButton": "Ajouter une méthode de paiement",
+          "empty": "Aucun mode de paiement associé"
+        },
+        "cancelSubscription": {
+          "title": "Annuler l'abonnement",
+          "text": "Votre plan sera rétrogradé au niveau gratuit.",
+          "button": "Annuler l'abonnement"
+        },
+        "empty": {
+          "text": "Pas de factures antérieures"
+        }
+      }
+    },
+    "account": {
+      "title": "Account",
+      "inviteFriend": "Inviter un ami",
+      "seeInvitations": "Voir les invitations",
+      "sendInvitationDescription": "Faites passer le mot et obtenez 1 Go par ami invité gratuitement. Vous pouvez obtenir jusqu'à {{N}}GB au total.",
+      "sendInvitation": "Envoyer une invitation",
+      "enterFriendEmail": "Entrer l'e-mail de l'ami",
+      "extraStorage": "Espace de stockage supplémentaire",
+      "invitedFriends": "Amis invités",
+      "friendsInvited": "Amis invités",
+      "acceptedRequests": "Demandes acceptées",
+      "user": "Utilisateur",
+      "status": "Statut",
+      "accepted": "Accepté",
+      "pending": "En attente",
+      "noInvitations": "Aucune invitation envoyée pour le moment",
+      "upgrade": "Mise à niveau",
+      "levelUpStorage": "Améliorez votre espace de stockage et bénéficiez de nombreux autres avantages",
+      "upgradeNow": "Mettre à niveau maintenant",
+      "emptyTrash": "Vider la corbeille",
+      "emptryTrashDescription": "Les éléments dans la corbeille seront supprimés définitivement après 15 jours",
+      "plans": {
+        "title": "Plans",
+        "current": "Actuel",
+        "upgrade": "Mettre à niveau",
+        "downgrade": "Rétrograder",
+        "free": "Obtenez jusqu'à 10 Go gratuitement",
+        "manageBilling": "Gérer la facturation",
+        "freeForever": "Gratuit pour toujours",
+        "year": "An",
+        "month": "Mois",
+        "lifetime": "Lifetime",
+        "planFeaturesList": {
+          "title": "Détails du plan",
+          "storage": " de stockage",
+          "featureOne": "Partage de fichiers et dossiers chiffrés.",
+          "featureTwo": "Partage de fichiers protégé par mot de passe.",
+          "featureThree": "Accédez à vos fichiers depuis n'importe quel appareil.",
+          "featureFour": "Téléchargez des fichiers jusqu'à 20 Go.",
+          "featureFive": "Authentification à deux facteurs (2FA).",
+          "featureSix": "Support client premium.",
+          "featureSeven": "Garantie de remboursement de 30 jours."
+        },
+        "businessPlanFeaturesList": {
+          "title": "Détails du plan",
+          "storage": " de stockage",
+          "featureOne": "Partage de fichiers et dossiers chiffrés.",
+          "featureTwo": "Créer et gérer des utilisateurs et des équipes.",
+          "featureThree": "À partir de 3 utilisateurs et jusqu'à 100.",
+          "featureFour": "Conformité au RGPD.",
+          "featureFive": "Téléchargez des fichiers jusqu'à 20 Go.",
+          "featureSix": "Gérer la facturation et les paiements du compte.",
+          "featureSeven": "Support client premium."
+        },
+        "user": "utilisateur"
+      },
+      "billing": {
+        "title": "Billing"
+      },
+      "security": {
+        "title": "Sécurité"
+      }
+    },
+    "navBarSections": {
+      "general": "Général",
+      "workspace": "Espace de travail",
+      "overview": "Aperçu",
+      "members": "Membres",
+      "teams": "Équipes",
+      "billing": "Facturation",
+      "account": "Compte",
+      "plans": "Plans",
+      "security": "Sécurité"
+    }
+  },
+  "workspaces": {
+    "workspaces": "Espaces de travail",
+    "workspace": "Espace de travail",
+    "createWorkspace": "Créer un espace de travail",
+    "workspaceTypes": {
+      "personal": "Espace de travail personnel",
+      "business": "Espace de travail professionnel"
+    },
+    "pending": "Invitations en attente",
+    "messages": {
+      "sharedSuccess": "Élément partagé avec succès avec l'équipe"
+    },
+    "pendingInvitations": {
+      "empty": "Aucune invitation restante",
+      "title": "Invitations en attente",
+      "accept": "Accepter",
+      "deny": "Refuser",
+      "invitedOn": "Invitation envoyée ",
+      "todayAt": "aujourd'hui à "
     }
   }
 }

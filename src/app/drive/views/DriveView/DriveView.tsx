@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 import errorService from 'app/core/services/error.service';
 import navigationService from 'app/core/services/navigation.service';
@@ -13,8 +13,13 @@ import storageThunks from 'app/store/slices/storage/storage.thunks';
 import { uiActions } from 'app/store/slices/ui';
 import { Helmet } from 'react-helmet-async';
 import useDriveNavigation from '../../../routes/hooks/Drive/useDrive';
+import { useAppSelector } from '../../../store/hooks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import DriveExplorer from '../../components/DriveExplorer/DriveExplorer';
 import { DriveItemData, FolderPath } from '../../types';
+import { workspacesActions } from 'app/store/slices/workspaces/workspacesStore';
+import localStorageService, { STORAGE_KEYS } from 'app/core/services/local-storage.service';
+import workspacesService from 'app/core/services/workspace.service';
 
 export interface DriveViewProps {
   namePath: FolderPath[];
@@ -26,7 +31,13 @@ export interface DriveViewProps {
 const DriveView = (props: DriveViewProps) => {
   const { dispatch, namePath, items, isLoading } = props;
   const [title, setTitle] = useState('Internxt Drive');
-  const { isFileView, isFolderView, itemUuid } = useDriveNavigation();
+  const { isFileView, isFolderView, itemUuid, workspaceUuid } = useDriveNavigation();
+  const credentials = useAppSelector(workspacesSelectors.getWorkspaceCredentials);
+  const fileViewer = useAppSelector((state: RootState) => state.ui.fileViewerItem);
+  const workspaces = useSelector((state: RootState) => state.workspaces.workspaces);
+  const [tokenHeader, setTokenHeader] = useState<string>('');
+  const selectedWorkspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
+  const isSelectedWorkspace = selectedWorkspace?.workspace.id === workspaceUuid;
 
   useEffect(() => {
     dispatch(uiActions.setIsGlobalSearch(false));
@@ -35,25 +46,64 @@ const DriveView = (props: DriveViewProps) => {
   }, []);
 
   useEffect(() => {
+    if (fileViewer) {
+      setTitle(`${fileViewer?.plainName ?? fileViewer?.name} - Internxt Drive`);
+    }
+  }, [fileViewer]);
+
+  useEffect(() => {
     dispatch(uiActions.setIsFileViewerOpen(false));
+    if (!workspaceUuid && isSelectedWorkspace) {
+      setPersonalWithUrl();
+    }
 
-    if (isFolderView && itemUuid) {
+    if (isFolderView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
+      setWorkspaceWithUrl(workspaceUuid);
+    } else if (isFolderView && itemUuid && !workspaceUuid) {
+      setPersonalWithUrl();
       goFolder(itemUuid);
+    } else if (isFolderView && itemUuid) {
+      goFolder(itemUuid, tokenHeader);
     }
 
-    if (isFileView && itemUuid) {
+    if (isFileView && itemUuid && workspaceUuid && !isSelectedWorkspace) {
+      setWorkspaceWithUrl(workspaceUuid);
+    } else if (isFileView && itemUuid && !workspaceUuid) {
+      setPersonalWithUrl();
       showFile(itemUuid);
+    } else if (isFileView && itemUuid) {
+      showFile(itemUuid, tokenHeader);
     }
-  }, [isFileView, isFolderView, itemUuid]);
+  }, [isFileView, isFolderView, itemUuid, credentials, workspaceUuid]);
 
-  const goFolder = async (folderUuid: string) => {
+  const setWorkspaceWithUrl = async (workspaceId: string) => {
     try {
-      const folderMeta = await newStorageService.getFolderMeta(folderUuid);
+      const credentials = await workspacesService.getWorkspaceCredentials(workspaceId);
+      const workspace = workspaces.find((workspace) => workspace.workspace.id === workspaceUuid);
+      dispatch(workspacesActions.setCredentials(credentials));
+      localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, JSON.stringify(credentials));
+      dispatch(workspacesActions.setSelectedWorkspace(workspace ?? null));
+      localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, JSON.stringify(workspace));
+      setTokenHeader(credentials.tokenHeader);
+    } catch (error) {
+      errorService.reportError(error);
+    }
+  };
+
+  const setPersonalWithUrl = () => {
+    dispatch(workspacesActions.setCredentials(null));
+    dispatch(workspacesActions.setSelectedWorkspace(null));
+    localStorageService.set(STORAGE_KEYS.WORKSPACE_CREDENTIALS, 'null');
+    localStorageService.set(STORAGE_KEYS.B2B_WORKSPACE, 'null');
+  };
+
+  const goFolder = async (folderUuid: string, workspacesToken?: string) => {
+    try {
+      const folderMeta = await newStorageService.getFolderMeta(folderUuid, workspacesToken);
 
       dispatch(
         storageThunks.goToFolderThunk({
           name: folderMeta.plainName,
-          id: folderMeta.id,
           uuid: folderMeta.uuid,
         }),
       );
@@ -66,9 +116,9 @@ const DriveView = (props: DriveViewProps) => {
     }
   };
 
-  const showFile = async (fileUUID: string) => {
+  const showFile = async (fileUUID: string, workspacesToken?: string) => {
     try {
-      const fileMeta = await fileService.getFile(fileUUID);
+      const fileMeta = await fileService.getFile(fileUUID, workspacesToken);
       dispatch(uiActions.setIsFileViewerOpen(true));
       dispatch(uiActions.setFileViewerItem(fileMeta));
       fileMeta.plainName && setTitle(`${fileMeta.plainName}.${fileMeta.type} - Internxt Drive`);
@@ -102,5 +152,6 @@ export default connect((state: RootState) => {
     isLoading: state.storage.loadingFolders[currentFolderId] ?? true,
     currentFolderId,
     items: sortedItems,
+    selectedWorkpace: state.workspaces.selectedWorkspace,
   };
 })(DriveView);

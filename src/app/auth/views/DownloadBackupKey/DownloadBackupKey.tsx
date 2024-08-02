@@ -1,12 +1,12 @@
 import Button from '../../../shared/components/Button/Button';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
-import { handleExport } from '../../../core/views/Preferences/tabs/Security/BackupKey';
+import { handleExportBackupKey } from '../../../utils/backupKeyUtils';
 
 const DownloadBackupKey = ({ onRedirect }: { onRedirect: () => void }) => {
   const { translate } = useTranslationContext();
 
   const handleKeyDownload = () => {
-    handleExport(translate);
+    handleExportBackupKey(translate);
     onRedirect();
   };
 

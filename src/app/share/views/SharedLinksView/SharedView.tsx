@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { ChangeEvent, useEffect, useLayoutEffect, useRef } from 'react';
@@ -32,6 +32,7 @@ import { AdvancedSharedItem, PreviewFileItem, SharedNamePath } from '../../../sh
 import { RootState } from '../../../store';
 import { sharedActions, sharedThunks } from '../../../store/slices/sharedLinks';
 import storageThunks from '../../../store/slices/storage/storage.thunks';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import { handlePrivateSharedFolderAccess } from '../../services/redirections.service';
 import TopBarButtons from './components/TopBarButtons';
 import SharedItemListContainer from './containers/SharedItemListContainer';
@@ -120,18 +121,22 @@ function SharedView({
   const shareItems = [...shareFolders, ...shareFiles];
   const { fetchRootFolders, fetchFiles } = useFetchSharedData();
 
+  const selectedWorkspace = useSelector(workspacesSelectors.getSelectedWorkspace);
+  const workspaceId = selectedWorkspace?.workspace.id;
+  const defaultTeamId = selectedWorkspace?.workspace.defaultTeamId;
+
   useLayoutEffect(() => {
     dispatch(sharedThunks.getPendingInvitations());
 
     if (page === 0 && !folderUUID) {
-      fetchRootFolders();
+      fetchRootFolders(workspaceId, defaultTeamId);
       dispatch(storageActions.resetSharedNamePath());
     }
 
     if (folderUUID) {
       const onRedirectionToFolderError = (errorMessage: string) => {
         notificationsService.show({ text: errorMessage, type: ToastType.Error });
-        fetchRootFolders();
+        fetchRootFolders(workspaceId, defaultTeamId);
       };
 
       handlePrivateSharedFolderAccess({
@@ -139,6 +144,7 @@ function SharedView({
         navigateToFolder: handleOnItemDoubleClick,
         history,
         onError: onRedirectionToFolderError,
+        workspaceItemData: { workspaceId, teamId: defaultTeamId },
       });
     }
   }, []);
@@ -217,7 +223,7 @@ function SharedView({
   const onShowInvitationsModalClose = () => {
     resetSharedViewState();
     actionDispatch(setCurrentFolderId(''));
-    fetchRootFolders();
+    fetchRootFolders(workspaceId, defaultTeamId);
     dispatch(sharedThunks.getPendingInvitations());
     dispatch(uiActions.setIsInvitationsDialogOpen(false));
   };
@@ -251,7 +257,7 @@ function SharedView({
         actionDispatch(setHasMoreFolders(true));
         actionDispatch(setHasMoreFiles(true));
         actionDispatch(setCurrentFolderId(sharedFolderId));
-        actionDispatch(setCurrentParentFolderId(shareItem.id));
+        actionDispatch(setCurrentParentFolderId(shareItem.uuid));
         actionDispatch(setCurrentShareOwnerAvatar(shareItem?.user?.avatar ?? ''));
         actionDispatch(setSelectedItems([]));
       } else {
@@ -320,9 +326,9 @@ function SharedView({
     };
 
     try {
-      const mnemonic = await decryptMnemonic(
-        shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey,
-      );
+      const mnemonic =
+        selectedWorkspace?.workspaceUser.key ??
+        (await decryptMnemonic(shareItem.encryptionKey ? shareItem.encryptionKey : clickedShareItemEncryptionKey));
       handleOpemItemPreview(true, { ...previewItem, mnemonic });
     } catch (err) {
       const error = errorService.castError(err);
@@ -352,7 +358,7 @@ function SharedView({
 
     dispatch(
       storageActions.setItems({
-        folderId: currentParentFolderId as number,
+        folderId: currentParentFolderId as string,
         items: shareItems as unknown as DriveItemData[],
       }),
     );
@@ -382,7 +388,8 @@ function SharedView({
         token,
       };
     } else {
-      const mnemonicDecrypted = ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null;
+      const mnemonicDecrypted =
+        selectedWorkspace?.workspaceUser.key ?? (ownerEncryptionKey ? await decryptMnemonic(ownerEncryptionKey) : null);
       if (filesOwnerCredentials && mnemonicDecrypted && ownerBucket) {
         ownerUserAuthenticationData = {
           bridgeUser: filesOwnerCredentials?.networkUser,
@@ -405,7 +412,7 @@ function SharedView({
     );
 
     actionDispatch(setHasMoreFiles(true));
-    fetchFiles(true);
+    fetchFiles(true, workspaceId, defaultTeamId);
   };
 
   const handleIsItemOwnedByCurrentUser = (givenItemUserUUID?: string) => {
@@ -470,7 +477,7 @@ function SharedView({
         // This is added so that in case the element is no longer shared due
         // to changes in the share dialog it will disappear from the list.
         resetSharedViewState();
-        fetchRootFolders();
+        fetchRootFolders(workspaceId, defaultTeamId);
       }
     }, 200);
   };
@@ -507,6 +514,7 @@ function SharedView({
           numberOfPendingInvitations={pendingInvitations.length}
           onClickPendingInvitationsButton={onClickPendingInvitationsButton}
           disableUploadFileButton={isRootFolder}
+          selectedWorkspace={selectedWorkspace}
         />
       </div>
       <WarningMessageWrapper />

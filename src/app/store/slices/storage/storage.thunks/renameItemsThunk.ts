@@ -1,20 +1,21 @@
 import { ActionReducerMapBuilder, createAsyncThunk, Dispatch } from '@reduxjs/toolkit';
 
-import { StorageState } from '../storage.model';
+import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
+import { DriveItemData } from 'app/drive/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import tasksService from 'app/tasks/services/tasks.service';
+import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
+import { t } from 'i18next';
+import storageThunks from '.';
 import { storageActions } from '..';
 import { RootState } from '../../..';
-import { DriveItemData } from 'app/drive/types';
-import { t } from 'i18next';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import storageSelectors from '../storage.selectors';
-import { RenameFileTask, RenameFolderTask, TaskStatus, TaskType } from 'app/tasks/types';
-import tasksService from 'app/tasks/services/tasks.service';
-import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
-import { uiActions } from '../../ui';
 import { SdkFactory } from '../../../../core/factory/sdk';
-import renameIfNeeded from '@internxt/lib/dist/src/items/renameIfNeeded';
-import storageThunks from '.';
 import errorService from '../../../../core/services/error.service';
+import { uiActions } from '../../ui';
+import workspacesSelectors from '../../workspaces/workspaces.selectors';
+import { StorageState } from '../storage.model';
+import storageSelectors from '../storage.selectors';
+import renameFolderIfNeeded, { IRoot } from './uploadFolderThunk';
 
 const checkRepeatedNameFiles = (destinationFolderFiles: DriveItemData[], files: (DriveItemData | File)[]) => {
   const repeatedFilesInDrive: DriveItemData[] = [];
@@ -98,25 +99,32 @@ export const handleRepeatedUploadingFolders = (
 
 export interface RenameItemsPayload {
   items: DriveItemData[];
-  destinationFolderId: number;
+  destinationFolderId: string;
 }
 
 export const renameItemsThunk = createAsyncThunk<void, RenameItemsPayload, { state: RootState }>(
   'storage/renameItems',
   async ({ items, destinationFolderId }: RenameItemsPayload, { getState, dispatch }) => {
     const promises: Promise<any>[] = [];
+    const state = getState();
+    const workspaceCredentials = workspacesSelectors.getWorkspaceCredentials(state);
 
-    if (items.some((item) => item.isFolder && item.id === destinationFolderId)) {
+    if (items.some((item) => item.isFolder && item.uuid === destinationFolderId)) {
       return void notificationsService.show({ text: t('error.movingItemInsideItself'), type: ToastType.Error });
     }
-    const state = getState();
+
     const currentFolderItems = storageSelectors.currentFolderItems(state);
 
     for (const [index, item] of items.entries()) {
       let itemParsed;
 
-      const storageClient = SdkFactory.getInstance().createStorageClient();
-      const [parentFolderContentPromise] = storageClient.getFolderContent(destinationFolderId);
+      const storageClient = SdkFactory.getNewApiInstance().createNewStorageClient();
+
+      const [parentFolderContentPromise] = storageClient.getFolderContentByUuid(
+        destinationFolderId,
+        false,
+        workspaceCredentials?.tokenHeader,
+      );
       const parentFolderContent = await parentFolderContentPromise;
 
       if (item.isFolder) {

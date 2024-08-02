@@ -206,14 +206,15 @@ export const generateThumbnailFromFile = async (
   return null;
 };
 
-export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isTeam: boolean): Promise<Blob> => {
+export const downloadThumbnail = async (thumbnailToDownload: Thumbnail, isWorkspace: boolean): Promise<Blob> => {
   const updateProgressCallback = () => {
     return;
   };
   const abortController = new AbortController();
+  // TODO: CHECK WHY WITH THUMBNAILS NOT HAS TO USE WORKSPACE CREDENTIALS
   return await fetchFileBlob(
     { fileId: thumbnailToDownload.bucket_file, bucketId: thumbnailToDownload.bucket_id } as Downloadable,
-    { isTeam, updateProgressCallback, abortController },
+    { isWorkspace: false, updateProgressCallback, abortController },
   );
 };
 
@@ -228,8 +229,8 @@ export const setCurrentThumbnail = (
 
   dispatch(
     storageActions.patchItem({
-      id: item.id,
-      folderId: item.isFolder ? item.parentId : item.folderId,
+      uuid: item.uuid,
+      folderId: item.isFolder ? item.parentUuid : item.folderUuid,
       isFolder: item.isFolder,
       patch: {
         currentThumbnail: currentThumbnail,
@@ -241,8 +242,8 @@ export const setCurrentThumbnail = (
 export const setThumbnails = (thumbnails: Thumbnail[], item: DriveItemData, dispatch: AppDispatch): void => {
   dispatch(
     storageActions.patchItem({
-      id: item.id,
-      folderId: item.isFolder ? item.parentId : item.folderId,
+      uuid: item.uuid,
+      folderId: item.isFolder ? item.parentUuid : item.folderUuid,
       isFolder: item.isFolder,
       patch: {
         thumbnails: thumbnails,
