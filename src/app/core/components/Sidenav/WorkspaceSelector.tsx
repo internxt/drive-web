@@ -103,7 +103,7 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
   });
 
   return (
-    <div className="relative mb-2 inline-block w-full">
+    <div className="relative mb-2 inline-block w-full" ref={dropdownRef}>
       {/* TOGGLE BUTTON */}
       <button
         className={`w-full justify-center rounded-lg border border-gray-10 ${
@@ -131,7 +131,6 @@ const WorkspaceSelector: React.FC<WorkspaceSelectorProps> = ({
       </button>
       {/* DROPDOWN LIST */}
       <div
-        ref={dropdownRef}
         className={`fixed left-2 z-50 w-72 overflow-hidden transition-all duration-300 ease-in-out ${
           isWorkspaceSelectorOpen ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
         }`}

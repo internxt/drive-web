@@ -4,13 +4,14 @@ import errorService from '../../../../../core/services/error.service';
 import paymentService from '../../../../../payment/services/payment.service';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 
-const WEBSITE_BASE_URL = process.env.REACT_APP_WEBSITE_URL;
+const COUNTRY_API = process.env.REACT_APP_COUNTRY_API_URL;
 const productValue = {
   US: 'usd',
+  CA: 'usd',
 };
 
 const getCountry = async () =>
-  fetch(`${WEBSITE_BASE_URL}/api/get_country`, {
+  fetch(`${COUNTRY_API}`, {
     method: 'GET',
   });
 

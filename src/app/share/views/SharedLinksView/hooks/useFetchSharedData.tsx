@@ -199,6 +199,7 @@ const useFetchSharedData = () => {
             currentFolderId,
             page,
             ITEMS_PER_PAGE,
+            currentFolderLevelResourcesToken,
           );
           response = await promise;
         } else {
@@ -251,6 +252,7 @@ const useFetchSharedData = () => {
             currentFolderId,
             page,
             ITEMS_PER_PAGE,
+            currentFolderLevelResourcesToken,
           );
           response = await promise;
         } else {

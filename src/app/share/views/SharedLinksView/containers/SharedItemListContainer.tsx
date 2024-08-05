@@ -9,6 +9,7 @@ import { OrderField, SharedItemList } from '../components/SharedItemList';
 
 import errorService from '../../../../core/services/error.service';
 import localStorageService from '../../../../core/services/local-storage.service';
+import workspacesService from '../../../../core/services/workspace.service';
 import { OrderDirection } from '../../../../core/types';
 import { sharedThunks } from '../../../../store/slices/sharedLinks';
 import workspacesSelectors from '../../../../store/slices/workspaces/workspaces.selectors';
@@ -110,8 +111,17 @@ const SharedItemListContainer = ({
       } else {
         const pageItemsNumber = 5;
         let sharedToken;
-        if (workspaceCredentials) {
-          sharedToken = workspaceCredentials.tokenHeader;
+        if (workspaceCredentials && workspaceId && defaultTeamId) {
+          const [responsePromise] = workspacesService.getAllWorkspaceTeamSharedFolderFolders(
+            workspaceId,
+            defaultTeamId,
+            currentFolderId,
+            page,
+            5,
+            currentFolderLevelResourcesToken,
+          );
+          const { token } = await responsePromise;
+          sharedToken = token;
         } else {
           // called to get the necessary token to download the items
           const { token } = await shareService.getSharedFolderContent(

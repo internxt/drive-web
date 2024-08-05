@@ -564,8 +564,9 @@ export default connect((state: RootState) => ({
 }))(DriveExplorerList);
 
 const skinSkeleton = [
-  <div className="flex flex-row items-center space-x-4">
+  <div className="mr-3 flex w-full flex-row items-center space-x-4">
     <div className="h-8 w-8 rounded-md bg-gray-5" />
+    <div className="h-4 w-full rounded bg-gray-5" />
   </div>,
   <div className="h-4 w-64 rounded bg-gray-5" />,
   <div className="ml-3 h-4 w-24 rounded bg-gray-5" />,

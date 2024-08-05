@@ -1648,6 +1648,14 @@
     "messages": {
       "sharedSuccess": "Elemento condiviso con successo con il team",
       "switchingWorkspace": "Cambio di spazio di lavoro"
+    },
+    "pendingInvitations": {
+      "empty": "Nessun invito rimasto",
+      "title": "Inviti in sospeso",
+      "accept": "Accetta",
+      "deny": "Rifiuta",
+      "invitedOn": "Invito inviato ",
+      "todayAt": "oggi alle "
     }
   }
 }

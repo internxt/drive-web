@@ -1660,6 +1660,14 @@
     "messages": {
       "sharedSuccess": "项目成功与团队共享",
       "switchingWorkspace": "切换工作区"
+    },
+    "pendingInvitations": {
+      "empty": "没有剩余的邀请",
+      "title": "待处理的邀请",
+      "accept": "接受",
+      "deny": "拒绝",
+      "invitedOn": "邀请发送 ",
+      "todayAt": "今天在 "
     }
   }
 }

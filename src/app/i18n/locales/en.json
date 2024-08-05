@@ -1661,6 +1661,14 @@
     "messages": {
       "sharedSuccess": "Item shared successfully with the team",
       "switchingWorkspace": "Switching workspace"
+    },
+    "pendingInvitations": {
+      "empty": "No invitations left",
+      "title": "Pending invitations",
+      "accept": "Accept",
+      "deny": "Decline",
+      "invitedOn": "Invitation sent ",
+      "todayAt": "today at "
     }
   }
 }

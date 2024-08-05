@@ -8,6 +8,8 @@ import { Portal } from '@headlessui/react';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import { AppView } from 'app/core/types';
 import { FolderPath } from 'app/drive/types';
+import { useAppSelector } from 'app/store/hooks';
+import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 import i18next, { t } from 'i18next';
 import { pdfjs } from 'react-pdf';
 import { PATH_NAMES, serverPage } from './app/analytics/services/analytics.service';
@@ -40,8 +42,6 @@ import { workspaceThunks } from './app/store/slices/workspaces/workspacesStore';
 import SurveyDialog from './app/survey/components/SurveyDialog/SurveyDialog';
 import { manager } from './app/utils/dnd-utils';
 import useBeforeUnload from './hooks/useBeforeUnload';
-import { useAppSelector } from 'app/store/hooks';
-import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface AppProps {
@@ -114,10 +114,9 @@ const App = (props: AppProps): JSX.Element => {
       await domainManager.fetchDomains();
 
       RealtimeService.getInstance().init();
-      // TODO: CHANGE BY WORKSPACE INITIALIZATOR
-      if (!envService.isProduction()) {
-        dispatch(workspaceThunks.fetchWorkspaces());
-      }
+
+      dispatch(workspaceThunks.fetchWorkspaces());
+
       await props.dispatch(
         initializeUserThunk({
           redirectToLogin: !!currentRouteConfig?.auth,

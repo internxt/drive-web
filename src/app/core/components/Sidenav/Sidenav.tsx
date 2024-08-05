@@ -18,7 +18,6 @@ import ReferralsWidget from 'app/referrals/components/ReferralsWidget/ReferralsW
 import { useAppSelector } from 'app/store/hooks';
 
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
-import envService from '../../services/env.service';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
 import Spinner from 'app/shared/components/Spinner/Spinner';
 
@@ -81,7 +80,7 @@ const Sidenav = (props: SidenavProps) => {
       </div>
       <div className="flex grow flex-col overflow-x-auto border-r border-gray-5 px-2">
         <div className="mt-2">
-          {!envService.isProduction() && user && <WorkspaceSelectorContainer user={user} />}
+          {user && <WorkspaceSelectorContainer user={user} />}
           <SidenavItem label={translate('sideNav.drive')} to="/" Icon={FolderSimple} iconDataCy="sideNavDriveIcon" />
           {!isB2BWorskpace && (
             <SidenavItem label={translate('sideNav.backups')} to="/backups" Icon={ClockCounterClockwise} />
