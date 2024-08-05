@@ -222,6 +222,7 @@ const CheckoutViewWrapper = () => {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
     } catch (err) {
       const error = err as Error;
+      setIsUserPaying(false);
       setError('auth', error.message);
       errorService.reportError(error);
       return;
