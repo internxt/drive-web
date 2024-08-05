@@ -65,10 +65,14 @@ const Sidenav = (props: SidenavProps) => {
   return (
     <div className="flex w-64 flex-col">
       {isLoadingCredentials && (
-        <div className="absolute z-50 flex h-full w-full items-center justify-center">
+        <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
           <Spinner className="h-10 w-10" />
+          <p className="mt-5 text-2xl font-medium text-gray-100">
+            {translate('workspaces.messages.switchingWorkspace')}
+          </p>
         </div>
       )}
+
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}

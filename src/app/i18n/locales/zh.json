@@ -1658,7 +1658,8 @@
     },
     "pending": "待发邀请",
     "messages": {
-      "sharedSuccess": "项目成功与团队共享"
+      "sharedSuccess": "项目成功与团队共享",
+      "switchingWorkspace": "切换工作区"
     }
   }
 }
