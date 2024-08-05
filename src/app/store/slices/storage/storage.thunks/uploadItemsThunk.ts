@@ -60,10 +60,20 @@ const showEmptyFilesNotification = (zeroLengthFilesNumber: number) => {
   }
 };
 
-const isUploadAllowed = ({ state, files, dispatch }: { state: RootState; files: File[]; dispatch }): boolean => {
+const isUploadAllowed = ({
+  state,
+  files,
+  dispatch,
+  isWorkspaceSelected,
+}: {
+  state: RootState;
+  files: File[];
+  dispatch;
+  isWorkspaceSelected: boolean;
+}): boolean => {
   try {
-    const planLimit = state.plan.planLimit;
-    const planUsage = state.plan.planUsage;
+    const planLimit = isWorkspaceSelected ? state.plan.businessPlanLimit : state.plan.planLimit;
+    const planUsage = isWorkspaceSelected ? state.plan.businessPlanUsage : state.plan.planUsage;
     const uploadItemsSize = Object.values(files).reduce((acum, file) => acum + file.size, 0);
     const totalItemsSize = uploadItemsSize + planUsage;
     const isPlanSizeLimitExceeded = planLimit && totalItemsSize >= planLimit;
@@ -176,7 +186,12 @@ export const uploadItemsThunk = createAsyncThunk<void, UploadItemsPayload, { sta
       };
     }
 
-    const continueWithUpload = isUploadAllowed({ state: getState(), files, dispatch });
+    const continueWithUpload = isUploadAllowed({
+      state: getState(),
+      files,
+      dispatch,
+      isWorkspaceSelected: !!workspaceId,
+    });
     if (!continueWithUpload) return;
 
     const { filesToUpload, zeroLengthFilesNumber } = await prepareFilesToUpload({
@@ -293,7 +308,7 @@ export const uploadSharedItemsThunk = createAsyncThunk<void, UploadSharedItemsPa
     const teamId = selectedWorkspace?.workspace.defaultTeamId;
     const options = { ...DEFAULT_OPTIONS, ...payloadOptions };
 
-    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch });
+    const continueWithUpload = isUploadAllowed({ state: state, files, dispatch, isWorkspaceSelected: !!workspaceId });
     if (!continueWithUpload) return;
 
     let zeroLengthFilesNumber = 0;

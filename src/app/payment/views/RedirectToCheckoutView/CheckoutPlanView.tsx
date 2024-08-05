@@ -1,15 +1,17 @@
+import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import paymentService from 'app/payment/services/payment.service';
-import { RootState } from 'app/store';
-import { useAppDispatch } from 'app/store/hooks';
-import { planActions, PlanState } from 'app/store/slices/plan';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
-import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
+import paymentService from 'app/payment/services/payment.service';
+import { RootState } from 'app/store';
+import { useAppDispatch, useAppSelector } from 'app/store/hooks';
+import { planActions, PlanState } from 'app/store/slices/plan';
+import { uiActions } from '../../../store/slices/ui';
+import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
 interface CheckoutOptions {
   price_id: string;
@@ -25,6 +27,7 @@ interface CheckoutOptions {
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector((state: RootState) => state.user.user) as UserSettings;
@@ -118,7 +121,12 @@ export default function CheckoutPlanView(): JSX.Element {
             if (userSubscription.userType == UserType.Business)
               dispatch(planActions.setSubscriptionBusiness(userSubscription));
           }
-          navigationService.push(AppView.Preferences);
+          navigationService.openPreferencesDialog({
+            section: 'account',
+            subsection: 'account',
+            workspaceUuid: selectedWorkspace?.workspaceUser.workspaceId,
+          });
+          dispatch(uiActions.setIsPreferencesDialogOpen(true));
         } catch (err) {
           console.error(err);
           notificationsService.show({

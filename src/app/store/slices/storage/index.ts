@@ -276,7 +276,8 @@ export const storageSlice = createSlice({
       action: PayloadAction<{ uuid: string; folderId: string; isFolder: boolean; patch: DriveItemPatch }>,
     ) => {
       const { uuid, folderId, isFolder, patch } = action.payload;
-      const folderItems = [...state.levels[folderId]];
+      const folder = state.levels[folderId];
+      const folderItems = folder && [...state.levels[folderId]];
 
       if (folderItems) {
         const item = folderItems.find((i) => i.uuid === uuid && !!i.isFolder === !!isFolder);
