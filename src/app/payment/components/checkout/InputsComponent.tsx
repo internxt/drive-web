@@ -16,26 +16,32 @@ export const InputsComponent = ({ register, errors, authError }: InputsComponent
 
   return (
     <>
-      <TextInput
-        placeholder={'Email'}
-        label="email"
-        type="email"
-        register={register}
-        required={true}
-        minLength={{ value: 1, message: translate('checkout.authComponent.emailMustNotBeEmpty') }}
-        error={errors.password}
-      />
-
-      <label className="space-y-0.5">
-        <PasswordInput
-          placeholder={'Password'}
-          label="password"
-          maxLength={MAX_PASSWORD_LENGTH}
+      <div className="flex w-full flex-col gap-1">
+        <p className="text-sm text-gray-80">{translate('checkout.authComponent.signup.emailAddress')}</p>
+        <TextInput
+          placeholder={'Email'}
+          label="email"
+          type="email"
           register={register}
           required={true}
+          minLength={{ value: 1, message: translate('checkout.authComponent.emailMustNotBeEmpty') }}
           error={errors.password}
         />
-      </label>
+      </div>
+
+      <div className="flex w-full flex-col gap-1">
+        <p className="text-sm text-gray-80">{translate('checkout.authComponent.signup.password')}</p>
+        <label className="space-y-0.5">
+          <PasswordInput
+            placeholder={'Password'}
+            label="password"
+            maxLength={MAX_PASSWORD_LENGTH}
+            register={register}
+            required={true}
+            error={errors.password}
+          />
+        </label>
+      </div>
       {authError && <div className="text-red-dark">{authError}</div>}
       <p className="text-sm font-medium text-gray-50">{translate('checkout.authComponent.privacyGuarantee')}</p>
     </>

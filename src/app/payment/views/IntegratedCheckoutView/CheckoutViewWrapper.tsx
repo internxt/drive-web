@@ -39,10 +39,14 @@ export const THEME_STYLES = {
   dark: {
     backgroundColor: 'rgb(17 17 17)',
     textColor: 'rgb(255 255 255)',
+    borderColor: 'rgb(58, 58, 59)',
+    borderInputColor: 'rgb(142, 142, 148)',
   },
   light: {
     backgroundColor: 'rgb(255 255 255)',
     textColor: 'rgb(17 17 17)',
+    borderColor: 'rgb(229, 229, 235)',
+    borderInputColor: 'rgb(174, 174, 179)',
   },
 };
 
@@ -178,8 +182,8 @@ const CheckoutViewWrapper = () => {
           return;
         }
         if (checkoutTheme && plan) {
-          const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
-          loadStripeElements(textColor, backgroundColor, plan);
+          const { backgroundColor, textColor, borderColor, borderInputColor } = THEME_STYLES[checkoutTheme as string];
+          loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, plan);
         }
       })
       .catch(() => {});
@@ -266,7 +270,13 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const loadStripeElements = async (textColor: string, backgroundColor: string, plan: PlanData) => {
+  const loadStripeElements = async (
+    textColor: string,
+    backgroundColor: string,
+    borderColor: string,
+    borderInputColor: string,
+    plan: PlanData,
+  ) => {
     const stripeElementsOptions: StripeElementsOptions = {
       appearance: {
         labels: 'above',
@@ -279,12 +289,34 @@ const CheckoutViewWrapper = () => {
           '.AccordionItem:hover': {
             color: textColor,
           },
+          '.Block': {
+            backgroundColor: backgroundColor,
+          },
           '.TermsText': {
             color: textColor,
           },
           '.AccordionItem': {
-            border: `1px solid ${backgroundColor}`,
+            borderRadius: '16px',
+            borderColor: borderColor,
+            border: '1px solid',
             backgroundColor: backgroundColor,
+          },
+          '.Input': {
+            backgroundColor: backgroundColor,
+            borderRadius: '0.375rem',
+            // borderColor: borderInputColor,
+            border: `1px solid ${borderInputColor}`,
+          },
+          '.Input:focus': {
+            backgroundColor: backgroundColor,
+            // borderColor: borderInputColor,
+            boxShadow: '0px 0px 4px rgb(0 102 255)',
+            border: '0.5px solid rgb(0 102 255)',
+          },
+          '.Input::selection': {
+            backgroundColor: backgroundColor,
+            // borderColor: borderInputColor,
+            border: '0.5px solid rgb(0 102 255)',
           },
           '.Label': {
             color: textColor,

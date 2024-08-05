@@ -161,6 +161,14 @@
     "paying": "Оплата...",
     "checkout": "Оформить заказ",
     "authComponent": {
+      "signup": {
+        "emailAddress": "Ваш адрес электронной почты",
+        "password": "Создайте пароль"
+      },
+      "login": {
+        "emailAddress": "Ваш адрес электронной почты",
+        "password": "Ваш пароль"
+      },
       "title": {
         "signUp": "Создать аккаунт",
         "signIn": "Войти",

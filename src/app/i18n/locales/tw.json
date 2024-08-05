@@ -178,6 +178,14 @@
     "paying": "正在支付...",
     "checkout": "結帳",
     "authComponent": {
+      "signup": {
+        "emailAddress": "您的電子郵件地址",
+        "password": "創建密碼"
+      },
+      "login": {
+        "emailAddress": "您的電子郵件地址",
+        "password": "您的密碼"
+      },
       "title": {
         "signUp": "創建帳戶",
         "signIn": "登錄",

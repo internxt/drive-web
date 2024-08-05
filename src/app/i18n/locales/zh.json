@@ -178,6 +178,14 @@
     "paying": "正在支付...",
     "checkout": "结账",
     "authComponent": {
+      "signup": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "创建密码"
+      },
+      "login": {
+        "emailAddress": "您的电子邮件地址",
+        "password": "您的密码"
+      },
       "title": {
         "signUp": "创建账户",
         "signIn": "登录",

@@ -161,6 +161,14 @@
     "paying": "Paiement en cours...",
     "checkout": "Commander",
     "authComponent": {
+      "signup": {
+        "emailAddress": "Votre adresse email",
+        "password": "Créer un mot de passe"
+      },
+      "login": {
+        "emailAddress": "Votre adresse email",
+        "password": "Votre mot de passe"
+      },
       "title": {
         "signUp": "Créer un compte",
         "signIn": "Se connecter",

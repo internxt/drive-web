@@ -68,7 +68,7 @@ export const ProductFeaturesComponent = ({
           {checkoutTheme === 'dark' ? <GuaranteeWhiteDays className="h-12" /> : <GuaranteeDarkDays className="h-12" />}
         </div>
       </div>
-      <div className="flex w-full rounded-2xl border-gray-10 bg-surface p-5">
+      <div className="flex w-full rounded-2xl border border-gray-10 bg-surface p-5">
         <div className="flex w-full flex-col space-y-5">
           <p>{translate('checkout.productCard.selectedPlan')}</p>
           <p className="text-2xl font-bold text-gray-100">
@@ -105,7 +105,7 @@ export const ProductFeaturesComponent = ({
             <p className="font-medium text-gray-100">{translate('checkout.productCard.planDetails.title')}</p>
             <div className="flex flex-col space-y-4">
               {features.map((feature) => (
-                <div key={feature} className="flex flex-row items-center space-x-3">
+                <div key={feature} className="flex flex-row items-center space-x-2">
                   <Check className="text-green-dark" size={16} weight="bold" />
                   <p className="text-gray-100">{feature}</p>
                 </div>

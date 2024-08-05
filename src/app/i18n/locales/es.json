@@ -157,6 +157,14 @@
     "paying": "Pagando...",
     "checkout": "Finalizar compra",
     "authComponent": {
+      "signup": {
+        "emailAddress": "Tu dirección de correo electrónico",
+        "password": "Crea una contraseña"
+      },
+      "login": {
+        "emailAddress": "Tu dirección de correo electrónico",
+        "password": "Tu contraseña"
+      },
       "title": {
         "signUp": "Crea una cuenta",
         "signIn": "Inicia sesión",

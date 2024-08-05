@@ -178,6 +178,14 @@
     "paying": "Paying...",
     "checkout": "Checkout",
     "authComponent": {
+      "signup": {
+        "emailAddress": "Your email address",
+        "password": "Create password"
+      },
+      "login": {
+        "emailAddress": "Your email address",
+        "password": "Your password"
+      },
       "title": {
         "signUp": "Create an account",
         "signIn": "Log in",
