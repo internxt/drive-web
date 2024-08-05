@@ -8,7 +8,7 @@ interface CreateTeamDialogProps {
   onClose: () => void;
   newTeamName: string;
   setNewTeamName: (name: string) => void;
-  isLoading: boolean;
+  isCreateTeamLoading: boolean;
   createTeam: () => void;
 }
 
@@ -17,7 +17,7 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
   onClose,
   newTeamName,
   setNewTeamName,
-  isLoading,
+  isCreateTeamLoading,
   createTeam,
 }) => {
   const { translate } = useTranslationContext();
@@ -37,10 +37,15 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
         maxLength={50}
       />
       <div className="mt-5 flex w-full flex-row justify-end space-x-2">
-        <Button disabled={isLoading} variant="secondary" onClick={onClose}>
+        <Button disabled={isCreateTeamLoading} variant="secondary" onClick={onClose}>
           {translate('preferences.workspace.teams.createTeamDialog.cancel')}
         </Button>
-        <Button loading={isLoading} variant="primary" onClick={createTeam} disabled={newTeamName.length === 0}>
+        <Button
+          loading={isCreateTeamLoading}
+          variant="primary"
+          onClick={createTeam}
+          disabled={newTeamName.length === 0}
+        >
           {translate('preferences.workspace.teams.createTeamDialog.create')}
         </Button>
       </div>

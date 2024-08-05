@@ -2,21 +2,26 @@ import { t } from 'i18next';
 import { WorkspaceTeam, WorkspaceTeamResponse } from '@internxt/sdk/dist/workspaces/types';
 
 import Button from 'app/shared/components/Button/Button';
+import EmptyTab from 'app/newSettings/components/EmptyTab';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
+import membersTeams from 'assets/icons/empty/members-teams.svg';
 interface TeamsListProps {
-  setCreateTeamDialogOpen: (value: boolean) => void;
+  setIsCreateTeamDialogOpen: (value: boolean) => void;
   teams: WorkspaceTeamResponse;
   isCurrentUserWorkspaceOwner: boolean;
   setSelectedTeam: (team: WorkspaceTeam) => void;
   getTeamMembers: (teamId: string) => void;
+  isGetTeamsLoading: boolean;
 }
 
 const TeamsList: React.FC<TeamsListProps> = ({
-  setCreateTeamDialogOpen,
+  setIsCreateTeamDialogOpen,
   teams,
   isCurrentUserWorkspaceOwner,
   setSelectedTeam,
   getTeamMembers,
+  isGetTeamsLoading,
 }) => {
   return (
     <section className="space-y-3">
@@ -28,37 +33,56 @@ const TeamsList: React.FC<TeamsListProps> = ({
           </span>
         </h2>
         {isCurrentUserWorkspaceOwner && (
-          <Button variant="primary" onClick={() => setCreateTeamDialogOpen(true)}>
+          <Button variant="primary" onClick={() => setIsCreateTeamDialogOpen(true)}>
             {t('preferences.workspace.teams.createTeam')}
           </Button>
         )}
       </div>
-      <div className="rounded-xl">
-        <div className="grid h-12 grid-cols-3 rounded-t-xl border border-gray-10 bg-gray-1 py-2 text-base font-medium">
-          <div className="col-span-2 flex items-center border-r border-gray-10 pl-5">
-            {t('preferences.workspace.teams.team')}
-          </div>
-          <div className="col-span-1 flex items-center pl-5">{t('preferences.workspace.teams.members')}</div>
+      {isGetTeamsLoading ? (
+        <div className="!mt-10 flex flex h-full w-full justify-center">
+          <Spinner className="h-8 w-8" />
         </div>
-        {teams.map((team) => {
-          const isLastTeam = teams.length === teams.indexOf(team) + 1;
-          return (
-            <div
-              onClick={() => {
-                setSelectedTeam(team);
-                getTeamMembers(team.team.id);
-              }}
-              key={team.team.id}
-              className={`grid h-12 cursor-pointer grid-cols-3 border-x border-b border-gray-10 bg-surface py-2 text-base font-medium hover:bg-gray-5 ${
-                isLastTeam && 'rounded-b-xl'
-              }`}
-            >
-              <div className="col-span-2 flex items-center pl-5">{team.team.name}</div>
-              <div className="font-regular col-span-1 flex items-center pl-5">{team.membersCount}</div>
+      ) : teams.length > 0 ? (
+        <div className="rounded-xl">
+          <div className="grid h-12 grid-cols-3 rounded-t-xl border border-gray-10 bg-gray-1 py-2 text-base font-medium">
+            <div className="col-span-2 flex items-center border-r border-gray-10 pl-5">
+              {t('preferences.workspace.teams.team')}
             </div>
-          );
-        })}
-      </div>
+            <div className="col-span-1 flex items-center pl-5">{t('preferences.workspace.teams.members')}</div>
+          </div>
+
+          {teams.map((team) => {
+            const isLastTeam = teams.length === teams.indexOf(team) + 1;
+            return (
+              <div
+                onClick={() => {
+                  setSelectedTeam(team);
+                  getTeamMembers(team.team.id);
+                }}
+                key={team.team.id}
+                className={`grid h-12 cursor-pointer grid-cols-3 border-x border-b border-gray-10 bg-surface py-2 text-base font-medium hover:bg-gray-5 ${
+                  isLastTeam && 'rounded-b-xl'
+                }`}
+              >
+                <div className="col-span-2 flex items-center pl-5">{team.team.name}</div>
+                <div className="font-regular col-span-1 flex items-center pl-5">{team.membersCount}</div>
+              </div>
+            );
+          })}
+        </div>
+      ) : isCurrentUserWorkspaceOwner ? (
+        <EmptyTab
+          icon={membersTeams}
+          title={t('preferences.workspace.members.tabs.teams.emptyTeamsOwner.title')}
+          subtitle={t('preferences.workspace.members.tabs.teams.emptyTeamsOwner.subtitle')}
+        />
+      ) : (
+        <EmptyTab
+          icon={membersTeams}
+          title={t('preferences.workspace.members.tabs.teams.emptyTeamsMember.title')}
+          subtitle={t('preferences.workspace.members.tabs.teams.emptyTeamsMember.subtitle')}
+        />
+      )}
     </section>
   );
 };

@@ -1,11 +1,11 @@
-import { useState } from 'react';
-import { WorkspaceTeam, WorkspaceMembers, TeamMembers } from '@internxt/sdk/dist/workspaces/types';
+import { WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/workspaces/types';
 import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
 import Avatar from 'app/shared/components/Avatar';
 import RoleBadge from 'app/newSettings/Sections/Workspace/Members/components/RoleBadge';
 import Button from 'app/shared/components/Button/Button';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
 interface TeamDetailsProps {
   team: WorkspaceTeam;
@@ -17,6 +17,10 @@ interface TeamDetailsProps {
   setIsMemberOptionsOpen: (isMemberOptionsOpen) => void;
   isTeamOptionsOpen: boolean;
   setIsTeamOptionsOpen: (isTeamOptionsOpen) => void;
+  setIsAddMemberDialogOpen: (boolean) => void;
+  getWorkspacesMembers: () => Promise<void>;
+  isGetTeamMembersLoading: boolean;
+  isCurrentUserWorkspaceOwner: boolean;
 }
 
 const TeamDetails: React.FC<TeamDetailsProps> = ({
@@ -29,6 +33,10 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   setIsMemberOptionsOpen,
   isTeamOptionsOpen,
   setIsTeamOptionsOpen,
+  setIsAddMemberDialogOpen,
+  getWorkspacesMembers,
+  isGetTeamMembersLoading,
+  isCurrentUserWorkspaceOwner,
 }) => {
   return (
     <section className="space-y-3">
@@ -36,26 +44,36 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
         <div>
           <h3 className="text-xl font-medium text-gray-100">{team.team.name}</h3>
           <h4 className="font-regular mt-0.5 text-base text-gray-60">
-            <span>{team.membersCount} </span>
+            <span>{selectedTeamMembers.length} </span>
             <span>
-              {team.membersCount > 1
+              {selectedTeamMembers.length !== 1
                 ? t('preferences.workspace.teams.teamDetails.members')
                 : t('preferences.workspace.teams.teamDetails.member')}
             </span>
           </h4>
         </div>
         <div className="relative flex items-center">
-          <Button variant="secondary" onClick={() => {}}>
-            <span>{t('preferences.workspace.teams.teamDetails.addMember')}</span>
-          </Button>
-          <button
-            className="ml-2 flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-surface text-gray-80 shadow-sm hover:border-gray-20 active:bg-gray-1 dark:bg-gray-5 dark:active:bg-gray-10"
-            onClick={() => {
-              setIsTeamOptionsOpen(!isTeamOptionsOpen);
-            }}
-          >
-            <DotsThreeVertical size={24} />
-          </button>
+          {isCurrentUserWorkspaceOwner && (
+            <div className="flex">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setIsAddMemberDialogOpen(true);
+                  getWorkspacesMembers();
+                }}
+              >
+                <span>{t('preferences.workspace.teams.teamDetails.addMember')}</span>
+              </Button>
+              <button
+                className="ml-2 flex h-10 w-10 items-center justify-center rounded-lg border border-gray-10 bg-surface text-gray-80 shadow-sm hover:border-gray-20 active:bg-gray-1 dark:bg-gray-5 dark:active:bg-gray-10"
+                onClick={() => {
+                  setIsTeamOptionsOpen(!isTeamOptionsOpen);
+                }}
+              >
+                <DotsThreeVertical size={24} />
+              </button>
+            </div>
+          )}
           {isTeamOptionsOpen && (
             <div className="absolute right-0 top-11 z-10 flex w-40 flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
               <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
@@ -68,64 +86,76 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
           )}
         </div>
       </div>
-      <div className="pb-5">
-        {selectedTeamMembers.map((member) => {
-          const isManager = team.team.managerId === member.uuid;
-          const isLastItem = selectedTeamMembers.indexOf(member) === selectedTeamMembers.length - 1;
-          const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
+      {isGetTeamMembersLoading ? (
+        <div className="!mt-10 flex h-full w-full justify-center">
+          <Spinner className="h-8 w-8" />
+        </div>
+      ) : (
+        <div className="pb-5">
+          {selectedTeamMembers.map((member) => {
+            const isManager = team.team.managerId === member.uuid;
+            const isLastItem = selectedTeamMembers.indexOf(member) === selectedTeamMembers.length - 1;
+            const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
 
-          return (
-            <div
-              className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
-                isLastItem && 'rounded-b-xl'
-              } ${isFirstItem && 'rounded-t-xl border-t'}`}
-              onMouseEnter={() => handleMemberHover(member.uuid)}
-              onMouseLeave={handleMemberLeave}
-            >
-              <div className="flex flex-row space-x-2">
-                <Avatar src={member.avatar} fullName={`${member.name} ${member.lastname}`} diameter={36} />
-                <div className="flex flex-col">
-                  <div className="flex flex-row justify-between space-x-2">
-                    <span className="break-all text-base font-medium leading-5 text-gray-100">
-                      {member.name} {member.lastname}
+            return (
+              <div
+                className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
+                  isLastItem && 'rounded-b-xl'
+                } ${isFirstItem && 'rounded-t-xl border-t'}`}
+                onMouseEnter={() => handleMemberHover(member.uuid)}
+                onMouseLeave={handleMemberLeave}
+              >
+                <div className="flex flex-row space-x-2">
+                  <Avatar src={member.avatar} fullName={`${member.name} ${member.lastname}`} diameter={36} />
+                  <div className="flex flex-col">
+                    <div className="flex flex-row justify-between space-x-2">
+                      <span className="break-all text-base font-medium leading-5 text-gray-100">
+                        {member.name} {member.lastname}
+                      </span>
+                      {isManager && (
+                        <RoleBadge
+                          role="manager"
+                          roleText={t('preferences.workspace.members.role.manager')}
+                          size={'small'}
+                        />
+                      )}
+                    </div>
+                    <span className="break-all text-left text-sm font-normal leading-4 text-gray-50">
+                      {member.email}
                     </span>
-                    {isManager && (
-                      <RoleBadge
-                        role="manager"
-                        roleText={t('preferences.workspace.members.role.manager')}
-                        size={'small'}
-                      />
+                  </div>
+                </div>
+                {hoveredMember === member.uuid && !isManager && (
+                  <div className="relative flex items-center">
+                    {isCurrentUserWorkspaceOwner && (
+                      <div className="flex items-center">
+                        <Button variant="secondary" size="medium" onClick={() => {}}>
+                          <span>{t('preferences.workspace.teams.teamDetails.remove')}</span>
+                        </Button>
+                        <button
+                          className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-10 bg-surface text-gray-80 shadow-sm hover:border-gray-20 active:bg-gray-1 dark:bg-gray-5 dark:active:bg-gray-10"
+                          onClick={() => {
+                            setIsMemberOptionsOpen(!isMemberOptionsOpen);
+                          }}
+                        >
+                          <DotsThreeVertical size={24} />
+                        </button>
+                      </div>
+                    )}
+                    {isMemberOptionsOpen && (
+                      <div className="absolute right-0 top-9 z-10 flex w-40 items-center rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
+                        <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
+                          {t('preferences.workspace.teams.teamDetails.makeManager')}
+                        </button>
+                      </div>
                     )}
                   </div>
-                  <span className="break-all text-left text-sm font-normal leading-4 text-gray-50">{member.email}</span>
-                </div>
+                )}
               </div>
-              {hoveredMember === member.uuid && isManager && (
-                <div className="relative flex items-center">
-                  <Button variant="secondary" size="medium" onClick={() => {}}>
-                    <span>{t('preferences.workspace.teams.teamDetails.remove')}</span>
-                  </Button>
-                  <button
-                    className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-10 bg-surface text-gray-80 shadow-sm hover:border-gray-20 active:bg-gray-1 dark:bg-gray-5 dark:active:bg-gray-10"
-                    onClick={() => {
-                      setIsMemberOptionsOpen(!isMemberOptionsOpen);
-                    }}
-                  >
-                    <DotsThreeVertical size={24} />
-                  </button>
-                  {isMemberOptionsOpen && (
-                    <div className="absolute right-0 top-9 z-10 flex w-40 items-center rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
-                      <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
-                        {t('preferences.workspace.teams.teamDetails.makeManager')}
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </section>
   );
 };
