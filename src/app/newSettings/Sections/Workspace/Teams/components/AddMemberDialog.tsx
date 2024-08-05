@@ -64,6 +64,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
 
             return (
               <div
+                key={member.member.uuid}
                 className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
                   isLastItem && 'rounded-b-xl'
                 } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}

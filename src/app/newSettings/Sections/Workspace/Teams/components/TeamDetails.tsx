@@ -104,6 +104,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                 } ${isFirstItem && 'rounded-t-xl border-t'}`}
                 onMouseEnter={() => handleMemberHover(member.uuid)}
                 onMouseLeave={handleMemberLeave}
+                key={member.uuid}
               >
                 <div className="flex flex-row space-x-2">
                   <Avatar src={member.avatar} fullName={`${member.name} ${member.lastname}`} diameter={36} />
