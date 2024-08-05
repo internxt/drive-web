@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { isStarWarsThemeAvailable } from '../../utils/checkStarWarsCode';
+import { planThunks } from 'app/store/slices/plan';
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,10 @@ const CheckoutSuccessView = (): JSX.Element => {
   const plan = useSelector((state: RootState) => state.plan);
 
   const onCheckoutSuccess = useCallback(async () => {
-    await dispatch(userThunks.refreshUserThunk());
+    setTimeout(async () => {
+      await dispatch(userThunks.refreshUserThunk());
+      await dispatch(planThunks.initializeThunk());
+    }, 1000);
     try {
       await analyticsService.trackPaymentConversion();
     } catch (err) {
