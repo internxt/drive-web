@@ -28,7 +28,7 @@ const signUp = async (
   localStorageService.set('xNewToken', xNewToken);
 
   const privateKey = xUser.privateKey
-    ? Buffer.from(await decryptPrivateKey(xUser.privateKey, password)).toString('base64')
+    ? Buffer.from(decryptPrivateKey(xUser.privateKey, password)).toString('base64')
     : undefined;
 
   const user = {

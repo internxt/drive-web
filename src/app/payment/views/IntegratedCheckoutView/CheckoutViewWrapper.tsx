@@ -172,8 +172,6 @@ const CheckoutViewWrapper = () => {
 
     handleFetchSelectedPlan(planId, currencyValue)
       .then((plan) => {
-        console.log('HANDLE FETCH SELECTED PLAN');
-
         if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
           setIsCheckoutReadyToRender(false);
           updateUserSubscription(planId);
