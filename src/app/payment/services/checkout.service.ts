@@ -1,5 +1,5 @@
-import paymentService from 'app/payment/services/payment.service';
-import { ClientSecretData, CouponCodeData, PlanData } from '../types';
+import paymentService from '../../payment/services/payment.service';
+import { ClientSecretData, CouponCodeData, CurrentPlanSelected, PlanData } from '../types';
 
 const fetchPlanById = async (planId: string, currency?: string): Promise<PlanData> => {
   const response = await fetch(
@@ -82,11 +82,48 @@ const getClientSecretForSubscriptionIntent = async (
   };
 };
 
+const getClientSecret = async (
+  selectedPlan: CurrentPlanSelected,
+  token: string,
+  customerId: string,
+  promoCodeId?: CouponCodeData['codeId'],
+) => {
+  if (selectedPlan?.interval === 'lifetime') {
+    const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
+      customerId,
+      selectedPlan.amount,
+      selectedPlan.id,
+      token,
+      selectedPlan.currency,
+      promoCodeId,
+    );
+
+    return {
+      type: clientSecretType,
+      clientSecret: client_secret,
+    };
+  } else {
+    const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
+      customerId,
+      selectedPlan?.id,
+      token,
+      selectedPlan.currency,
+      promoCodeId,
+    );
+
+    return {
+      type: clientSecretType,
+      clientSecret: client_secret,
+    };
+  }
+};
+
 const checkoutService = {
   fetchPlanById,
   fetchPromotionCodeByName,
   getClientSecretForPaymentIntent,
   getClientSecretForSubscriptionIntent,
+  getClientSecret,
 };
 
 export default checkoutService;

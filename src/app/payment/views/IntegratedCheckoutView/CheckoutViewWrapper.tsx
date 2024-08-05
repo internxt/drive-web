@@ -6,27 +6,34 @@ import { AppView, IFormValues } from '../../../core/types';
 import errorService from '../../../core/services/error.service';
 import CheckoutView from './CheckoutView';
 import envService from '../../../core/services/env.service';
-import { Stripe, StripeElements, loadStripe } from '@stripe/stripe-js';
+import {
+  Stripe,
+  StripeElements,
+  StripeElementsOptions,
+  StripeElementsOptionsMode,
+  loadStripe,
+} from '@stripe/stripe-js';
 import databaseService from '../../../database/services/database.service';
 import localStorageService from '../../../core/services/local-storage.service';
 import RealtimeService from '../../../core/services/socket.service';
 import authCheckoutService from '../../services/auth-checkout.service';
 import { useAppDispatch, useAppSelector } from '../../../store/hooks';
 import { useSignUp } from '../../../auth/components/SignUp/useSignUp';
-import { AuthMethodTypes, CouponCodeData, CurrentPlanSelected, ErrorType } from '../../types';
+import { AuthMethodTypes, CurrentPlanSelected, PlanData } from '../../types';
 import { checkoutReducer, initialStateForCheckout } from '../../store/checkoutReducer';
-import checkoutService from 'app/payment/services/checkout.service';
-import { useThemeContext } from 'app/theme/ThemeProvider';
-import LoadingPulse from 'app/shared/components/LoadingPulse/LoadingPulse';
+import checkoutService from '../../../payment/services/checkout.service';
+import { useThemeContext } from '../../../theme/ThemeProvider';
+import LoadingPulse from '../../../shared/components/LoadingPulse/LoadingPulse';
 import { useSelector } from 'react-redux';
-import { RootState } from 'app/store';
+import { RootState } from '../../../store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
-import paymentService from 'app/payment/services/payment.service';
-import { getDatabaseProfileAvatar } from 'app/drive/services/database.service';
-import { planActions, PlanState } from 'app/store/slices/plan';
+import paymentService from '../../../payment/services/payment.service';
+import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
+import { planActions, PlanState } from '../../../store/slices/plan';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
+import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
+import { useCheckout } from 'hooks/checkout/useCheckout';
 
 export const THEME_STYLES = {
   dark: {
@@ -47,18 +54,10 @@ export type UpsellManagerProps = {
   amount: number | undefined;
 };
 
-export interface CheckoutViewVariables {
-  isPaying: boolean;
-  error: Partial<Record<ErrorType, string>> | undefined;
-
-  couponCodeData: CouponCodeData | undefined;
-  userInfo: {
-    avatar: Blob | null;
-    name: string;
-    email: string;
-  };
-  currentSelectedPlan: CurrentPlanSelected | null;
-  upsellManager: UpsellManagerProps;
+export interface UserInfoProps {
+  avatar: Blob | null;
+  name: string;
+  email: string;
 }
 
 export interface CheckoutViewManager {
@@ -89,31 +88,42 @@ export const stripePromise = (async () => {
 })();
 
 const CheckoutViewWrapper = () => {
+  const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
-  const dispatch = useAppDispatch();
+  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const userPlan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
-  const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
+  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const { doRegister } = useSignUp('activate');
 
   const { individualSubscription, businessSubscription } = userPlan;
-  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
 
   const subscription = !workspace ? individualSubscription : businessSubscription;
+  const fullName = `${user?.name} ${user?.lastname}`;
+  const isUserAuthenticated = !!user;
 
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
+  const {
+    onRemoveAppliedCouponCode,
+    setAuthMethod,
+    setAvatarBlob,
+    setCouponCodeName,
+    setError,
+    setIsUserPaying,
+    setPlan,
+    setPromoCodeData,
+    setSelectedPlan,
+    setStripeElementsOptions,
+    setUserNameFromElementAddress,
+  } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
 
-  const fullName = `${user?.name} ${user?.lastname}`;
-
   const {
     authMethod,
-    error,
     currentSelectedPlan,
     plan,
-    isPaying,
     avatarBlob,
     userNameFromAddressElement,
     couponCodeData,
@@ -121,7 +131,7 @@ const CheckoutViewWrapper = () => {
     promoCodeName,
   } = state;
 
-  const userInfo = {
+  const userInfo: UserInfoProps = {
     name: fullName,
     avatar: avatarBlob,
     email: user?.email,
@@ -130,15 +140,14 @@ const CheckoutViewWrapper = () => {
   const upsellManager = {
     onUpsellSwitchButtonClicked: () => {
       setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
+
       const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
-      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan![planType] });
-      dispatchReducer({
-        type: 'SET_ELEMENTS_OPTIONS',
-        payload: {
-          ...(elementsOptions as any),
-          amount: plan![planType].amount,
-        },
-      });
+      const stripeElementsOptions = {
+        ...(elementsOptions as StripeElementsOptionsMode),
+        amount: plan![planType].amount,
+      };
+      setSelectedPlan(plan![planType]);
+      setStripeElementsOptions(stripeElementsOptions);
     },
     isUpsellSwitchActivated,
     showUpsellSwitch: !!plan?.upsellPlan,
@@ -146,15 +155,6 @@ const CheckoutViewWrapper = () => {
       ? (plan?.selectedPlan.amount * ONE_YEAR_IN_MONTHS - plan?.upsellPlan.amount) / 100
       : undefined,
     amount: plan?.upsellPlan?.decimalAmount,
-  };
-
-  const checkoutViewVariables: CheckoutViewVariables = {
-    isPaying,
-    error,
-    userInfo,
-    couponCodeData,
-    currentSelectedPlan,
-    upsellManager,
   };
 
   useEffect(() => {
@@ -170,43 +170,42 @@ const CheckoutViewWrapper = () => {
       return;
     }
 
-    handleFetchSelectedPlan(planId, currencyValue).then((plan) => {
-      if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
-        setIsCheckoutReadyToRender(false);
-        updateUserSubscription(planId);
-        return;
-      }
-      if (checkoutTheme && plan) {
-        const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
-        loadStripe(textColor, backgroundColor, plan);
-      }
-    });
+    handleFetchSelectedPlan(planId, currencyValue)
+      .then((plan) => {
+        console.log('HANDLE FETCH SELECTED PLAN');
+
+        if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
+          setIsCheckoutReadyToRender(false);
+          updateUserSubscription(planId);
+          return;
+        }
+        if (checkoutTheme && plan) {
+          const { backgroundColor, textColor } = THEME_STYLES[checkoutTheme as string];
+          loadStripeElements(textColor, backgroundColor, plan);
+        }
+      })
+      .catch(() => {});
 
     promotionCode && handleFetchPromotionCode(promotionCode);
     setIsCheckoutReadyToRender(true);
   }, [checkoutTheme]);
 
   useEffect(() => {
-    if (promoCodeName) {
-      handleFetchPromotionCode(promoCodeName);
-    }
-  }, [promoCodeName]);
-
-  useEffect(() => {
-    if (isAuthenticated) {
-      handleAuthMethodChange('userIsSignedIn');
+    if (isAuthenticated && user) {
+      setAuthMethod('userIsSignedIn');
       getDatabaseProfileAvatar()
-        .then((avatarData) =>
-          dispatchReducer({
-            type: 'SET_AVATAR_BLOB',
-            payload: avatarData?.avatarBlob ?? null,
-          }),
-        )
+        .then((avatarData) => setAvatarBlob(avatarData?.avatarBlob ?? null))
         .catch(() => {
           //
         });
     }
-  }, [user]);
+  }, [isAuthenticated, user]);
+
+  useEffect(() => {
+    if (promoCodeName) {
+      handleFetchPromotionCode(promoCodeName);
+    }
+  }, [promoCodeName]);
 
   const onCheckoutButtonClicked = async (
     formData: IFormValues,
@@ -217,27 +216,15 @@ const CheckoutViewWrapper = () => {
     event?.preventDefault();
     setIsUserPaying(true);
 
-    let userData;
-
     const { email, password } = formData;
 
-    if (user) {
-      userData = {
-        name: fullName,
-        email: user.email,
-      };
-    } else {
-      userData = {
-        name: userNameFromAddressElement,
-        email: email,
-      };
-    }
+    const userData = getUserInfo(user, email, userNameFromAddressElement, fullName);
 
     try {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
     } catch (err) {
       const error = err as Error;
-      handleError('auth', error.message);
+      setError('auth', error.message);
       errorService.reportError(error);
       return;
     }
@@ -250,16 +237,13 @@ const CheckoutViewWrapper = () => {
 
       const { customerId, token } = await paymentService.getCustomerId(userData.name, userData.email);
 
-      const { error: submitError } = await elements.submit();
+      await elements.submit();
 
-      if (submitError) {
-        handleError('stripe', submitError.message as string);
-      }
-
-      const { clientSecret, type } = await getClientSecret(
+      const { clientSecret, type } = await checkoutService.getClientSecret(
         currentSelectedPlan as CurrentPlanSelected,
         token,
         customerId,
+        couponCodeData?.codeId,
       );
 
       const confirmIntent = type === 'setup' ? stripeSDK.confirmSetup : stripeSDK.confirmPayment;
@@ -273,7 +257,7 @@ const CheckoutViewWrapper = () => {
       });
 
       if (error) {
-        handleError('stripe', error.message as string);
+        setError('stripe', error.message as string);
       }
     } catch (err) {
       const error = err as Error;
@@ -283,42 +267,41 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const loadStripe = async (textColor: string, backgroundColor: string, plan) => {
-    dispatchReducer({
-      type: 'SET_ELEMENTS_OPTIONS',
-      payload: {
-        appearance: {
-          labels: 'above',
-          variables: {
-            spacingAccordionItem: '8px',
-            colorPrimary: textColor,
+  const loadStripeElements = async (textColor: string, backgroundColor: string, plan: PlanData) => {
+    const stripeElementsOptions: StripeElementsOptions = {
+      appearance: {
+        labels: 'above',
+        variables: {
+          spacingAccordionItem: '8px',
+          colorPrimary: textColor,
+        },
+        theme: 'flat',
+        rules: {
+          '.AccordionItem:hover': {
+            color: textColor,
           },
-          theme: 'flat',
-          rules: {
-            '.AccordionItem:hover': {
-              color: textColor,
-            },
-            '.TermsText': {
-              color: textColor,
-            },
-            '.AccordionItem': {
-              border: `1px solid ${backgroundColor}`,
-              backgroundColor: backgroundColor,
-            },
-            '.Label': {
-              color: textColor,
-            },
-            '.RedirectText': {
-              color: textColor,
-            },
+          '.TermsText': {
+            color: textColor,
+          },
+          '.AccordionItem': {
+            border: `1px solid ${backgroundColor}`,
+            backgroundColor: backgroundColor,
+          },
+          '.Label': {
+            color: textColor,
+          },
+          '.RedirectText': {
+            color: textColor,
           },
         },
-        mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
-        amount: plan?.selectedPlan.amount,
-        currency: plan?.selectedPlan.currency,
-        payment_method_types: ['card', 'paypal'],
       },
-    });
+      mode: plan?.selectedPlan.interval === 'lifetime' ? 'payment' : 'subscription',
+      amount: plan?.selectedPlan.amount,
+      currency: plan?.selectedPlan.currency,
+      payment_method_types: ['card', 'paypal'],
+    };
+
+    setStripeElementsOptions(stripeElementsOptions);
 
     stripe = await stripePromise;
   };
@@ -326,12 +309,17 @@ const CheckoutViewWrapper = () => {
   const handleFetchSelectedPlan = async (planId: string, currency?: string) => {
     try {
       const plan = await checkoutService.fetchPlanById(planId, currency);
-      dispatchReducer({ type: 'SET_PLAN', payload: plan });
-      dispatchReducer({ type: 'SET_CURRENT_PLAN_SELECTED', payload: plan.selectedPlan });
+      setPlan(plan);
+      setSelectedPlan(plan.selectedPlan);
 
       return plan;
     } catch (error) {
       errorService.reportError(error);
+      if (user) {
+        navigationService.push(AppView.Drive);
+      } else {
+        navigationService.push(AppView.Signup);
+      }
     }
   };
 
@@ -344,42 +332,11 @@ const CheckoutViewWrapper = () => {
         amountOff: promoCodeData.amountOff,
         percentOff: promoCodeData.percentOff,
       };
-      dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: promoCode });
+      setPromoCodeData(promoCode);
     } catch (err) {
       const error = err as Error;
       errorService.reportError(error);
-      dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: undefined });
-    }
-  };
-
-  const getClientSecret = async (selectedPlan: CurrentPlanSelected, token: string, customerId: string) => {
-    if (selectedPlan?.interval === 'lifetime') {
-      const { clientSecretType, client_secret } = await checkoutService.getClientSecretForPaymentIntent(
-        customerId,
-        selectedPlan.amount,
-        selectedPlan.id,
-        token,
-        selectedPlan.currency,
-        couponCodeData?.codeId,
-      );
-
-      return {
-        type: clientSecretType,
-        clientSecret: client_secret,
-      };
-    } else {
-      const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
-        customerId,
-        selectedPlan?.id,
-        token,
-        selectedPlan.currency,
-        couponCodeData?.codeId,
-      );
-
-      return {
-        type: clientSecretType,
-        clientSecret: client_secret,
-      };
+      setPromoCodeData(undefined);
     }
   };
 
@@ -394,7 +351,6 @@ const CheckoutViewWrapper = () => {
           dispatch(planActions.setSubscriptionBusiness(userSubscription));
       }
     } catch (err) {
-      console.error(err);
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
@@ -408,46 +364,34 @@ const CheckoutViewWrapper = () => {
     await databaseService.clear();
     localStorageService.clear();
     RealtimeService.getInstance().stop();
-    handleAuthMethodChange('signIn');
+    setAuthMethod('signIn');
   };
 
-  const onUserNameFromAddressElementChange = (userName: string) =>
-    dispatchReducer({ type: 'SET_USER_NAME_FROM_ADDRESS_ELEMENT', payload: userName });
+  const getUserInfo = (user: UserSettings, email: string, userNameFromAddressElement: string, fullName: string) => {
+    let userData;
 
-  const onCouponInputChange = (coupon: string) => dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: coupon });
+    if (user) {
+      userData = {
+        name: fullName,
+        email: user.email,
+      };
+    } else {
+      userData = {
+        name: userNameFromAddressElement,
+        email: email,
+      };
+    }
 
-  const onRemoveAppliedCouponCode = () => {
-    dispatchReducer({ type: 'SET_COUPON_CODE_DATA', payload: undefined });
-    dispatchReducer({ type: 'SET_PROMO_CODE_NAME', payload: undefined });
-  };
-
-  const handleAuthMethodChange = (method: AuthMethodTypes) => {
-    dispatchReducer({ type: 'SET_AUTH_METHOD', payload: method });
-  };
-
-  const handleError = (type: ErrorType, error: string) => {
-    dispatchReducer({
-      type: 'SET_ERROR',
-      payload: {
-        [type]: error,
-      },
-    });
-  };
-
-  const setIsUserPaying = (isPaying: boolean) => {
-    dispatchReducer({
-      type: 'SET_IS_PAYING',
-      payload: isPaying,
-    });
+    return userData;
   };
 
   const checkoutViewManager: CheckoutViewManager = {
-    onCouponInputChange,
+    onCouponInputChange: setCouponCodeName,
     onLogOut,
     onCheckoutButtonClicked,
     onRemoveAppliedCouponCode,
-    handleAuthMethodChange,
-    onUserNameFromAddressElementChange,
+    handleAuthMethodChange: setAuthMethod,
+    onUserNameFromAddressElementChange: setUserNameFromElementAddress,
   };
 
   return (
@@ -455,7 +399,10 @@ const CheckoutViewWrapper = () => {
       {isCheckoutReadyToRender && elementsOptions && stripe ? (
         <Elements stripe={stripe} options={elementsOptions}>
           <CheckoutView
-            checkoutViewVariables={checkoutViewVariables}
+            checkoutViewVariables={state}
+            userInfo={userInfo}
+            isUserAuthenticated={isUserAuthenticated}
+            upsellManager={upsellManager}
             authMethod={authMethod}
             checkoutViewManager={checkoutViewManager}
           />

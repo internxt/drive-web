@@ -49,8 +49,8 @@ const logIn = async (email: string, password: string, twoFactorCode: string, dis
   dispatch(userActions.setUser(user));
 
   window.rudderanalytics.identify(user.uuid, { email: user.email, uuid: user.uuid });
-  window.rudderanalytics.track('User Signin', { email: user.email });
-  window.gtag('event', 'User Signin', { method: 'email' });
+  window.rudderanalytics.track('User Signin in Integrated Checkout', { email: user.email });
+  window.gtag('event', 'User Signin in Integrated Checkout', { method: 'email' });
 
   try {
     dispatch(productsThunks.initializeThunk());
@@ -74,9 +74,9 @@ const authenticateUser = async (
   doRegister: RegisterFunction,
 ) => {
   if (authMethod === 'signIn') {
-    await authCheckoutService.logIn(email, password, '', dispatch);
+    await logIn(email, password, '', dispatch);
   } else if (authMethod === 'signUp') {
-    await authCheckoutService.signUp(doRegister, email, password, '', dispatch);
+    await signUp(doRegister, email, password, '', dispatch);
   }
 };
 

@@ -207,45 +207,6 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   };
 
-  const handleLifetimeCheckout = async ({
-    priceId,
-    currency,
-    userEmail,
-  }: {
-    userEmail: string;
-    priceId: string;
-    currency: string;
-  }) => {
-    try {
-      const response = await createCheckoutSession({
-        userEmail,
-        priceId,
-        currency,
-        mode: 'payment',
-      });
-      localStorage.setItem('sessionId', response.sessionId);
-      await paymentService.redirectToCheckout(response).then(async (result) => {
-        await paymentService.cancelSubscription(selectedSubscription);
-        if (result.error) {
-          notificationsService.show({
-            type: ToastType.Error,
-            text: result.error.message as string,
-          });
-          return;
-        }
-
-        notificationsService.show({
-          type: ToastType.Success,
-          text: 'Payment successful',
-        });
-      });
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotification();
-    }
-  };
-
   const onChangePlanClicked = async (priceId: string, currency: string) => {
     setIsLoadingCheckout(true);
     const isCurrentPlanTypeSubscription = isIndividualSubscriptionSelected

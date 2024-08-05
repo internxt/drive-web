@@ -9,7 +9,8 @@ import { AuthMethodTypes } from '../../types';
 import { UserAuthComponent } from '../../components/checkout/UserAuthComponent';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
-import { CheckoutViewManager, CheckoutViewVariables } from './CheckoutViewWrapper';
+import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
+import { State } from 'app/payment/store/types';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -26,17 +27,27 @@ export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
 
 interface CheckoutViewProps {
   authMethod: AuthMethodTypes;
-  checkoutViewVariables: CheckoutViewVariables;
+  userInfo: UserInfoProps;
+  isUserAuthenticated: boolean;
+  upsellManager: UpsellManagerProps;
+  checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
 }
 
-const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }: CheckoutViewProps) => {
+const CheckoutView = ({
+  authMethod,
+  userInfo,
+  isUserAuthenticated,
+  upsellManager,
+  checkoutViewVariables,
+  checkoutViewManager,
+}: CheckoutViewProps) => {
   const { translate } = useTranslationContext();
   // This custom hooks should be here. They cannot be moved to the Parent, because it must be wrapped by <Elements> component.
   const stripeSDK = useStripe();
   const elements = useElements();
 
-  const { isPaying, error, userInfo, couponCodeData, currentSelectedPlan, upsellManager } = checkoutViewVariables;
+  const { isPaying, error, couponCodeData, currentSelectedPlan } = checkoutViewVariables;
 
   const {
     register,
@@ -61,7 +72,7 @@ const CheckoutView = ({ authMethod, checkoutViewVariables, checkoutViewManager }
     >
       <div className="mx-auto flex w-full max-w-screen-xl px-5 py-10">
         <div className="flex w-full flex-col space-y-8 lg:space-y-16">
-          <HeaderComponent />
+          <HeaderComponent isUserAuthenticated={isUserAuthenticated} />
           <p className="text-xl font-bold text-gray-100 md:text-center lg:text-left lg:text-3xl">
             {translate('checkout.title')}
           </p>
