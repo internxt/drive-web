@@ -1488,6 +1488,14 @@
           "addMember": "Ajouter un membre",
           "rename": "Renommer",
           "delete": "Supprimer"
+        },
+        "addMemberDialog": {
+          "title": "Ajouter des membres",
+          "placeholder": "Rechercher un membre",
+          "cancel": "Annuler",
+          "addMember": "Ajouter un membre",
+          "addOneMember": "Ajouter {{membersToInvite}} membre",
+          "addMembers": "Ajouter {{membersToInvite}} membres"
         }
       },
       "billing": {

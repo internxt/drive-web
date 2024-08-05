@@ -1560,6 +1560,14 @@
           "addMember": "添加成员",
           "rename": "重新命名",
           "delete": "删除"
+        },
+        "addMemberDialog": {
+          "title": "添加成员",
+          "placeholder": "搜索成员",
+          "cancel": "取消",
+          "addMember": "添加成员",
+          "addOneMember": "添加{{membersToInvite}}名成员",
+          "addMembers": "添加{{membersToInvite}}名成员"
         }
       },
       "billing": {

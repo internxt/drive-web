@@ -1502,26 +1502,34 @@
         }
       },
       "teams": {
-        "title": "團隊",
-        "createTeam": "创建团队",
-        "team": "团队",
-        "members": "成员",
+        "title": "隊伍",
+        "createTeam": "建立隊伍",
+        "team": "隊伍",
+        "members": "成員",
         "createTeamDialog": {
-          "title": "新团队",
-          "label": "名称",
-          "placeholder": "输入队名",
+          "title": "新隊伍",
+          "label": "名稱",
+          "placeholder": "輸入隊伍名稱",
           "cancel": "取消",
-          "create": "创建",
-          "nameExists": "已存在使用此名称的团队"
+          "create": "建立",
+          "nameExists": "已有相同名稱的隊伍"
         },
         "teamDetails": {
-          "member": "成员",
-          "members": "成员",
-          "remove": "删除",
-          "makeManager": "成为管理者",
-          "addMember": "添加成员",
+          "member": "成員",
+          "members": "成員",
+          "remove": "移除",
+          "makeManager": "設為管理員",
+          "addMember": "新增成員",
           "rename": "重新命名",
-          "delete": "删除"
+          "delete": "刪除"
+        },
+        "addMemberDialog": {
+          "title": "加入成員",
+          "placeholder": "搜尋成員",
+          "cancel": "取消",
+          "addMember": "加入成員",
+          "addOneMember": "加入{{membersToInvite}}位成員",
+          "addMembers": "加入{{membersToInvite}}位成員"
         }
       },
       "billing": {

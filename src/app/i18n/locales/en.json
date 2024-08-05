@@ -1561,6 +1561,14 @@
           "addMember": "Add member",
           "rename": "Rename",
           "delete": "Delete"
+        },
+        "addMemberDialog": {
+          "title": "Add members",
+          "placeholder": "Search member",
+          "cancel": "Cancel",
+          "addMember": "Add member",
+          "addOneMember": "Add {{membersToInvite}} member",
+          "addMembers": "Add {{membersToInvite}} members"
         }
       },
       "billing": {
