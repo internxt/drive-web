@@ -17,10 +17,9 @@ const CheckoutSuccessView = (): JSX.Element => {
   const plan = useSelector((state: RootState) => state.plan);
 
   const onCheckoutSuccess = useCallback(async () => {
-    setTimeout(async () => {
-      await dispatch(userThunks.refreshUserThunk());
-      await dispatch(planThunks.initializeThunk());
-    }, 1000);
+    await dispatch(userThunks.refreshUserThunk());
+    await dispatch(planThunks.initializeThunk());
+
     try {
       await analyticsService.trackPaymentConversion();
     } catch (err) {
