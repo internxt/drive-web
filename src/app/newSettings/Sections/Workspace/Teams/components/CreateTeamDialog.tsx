@@ -44,7 +44,7 @@ const CreateTeamDialog: React.FC<CreateTeamDialogProps> = ({
           loading={isCreateTeamLoading}
           variant="primary"
           onClick={createTeam}
-          disabled={newTeamName.length === 0}
+          disabled={newTeamName.trim().length === 0}
         >
           {translate('preferences.workspace.teams.createTeamDialog.create')}
         </Button>
