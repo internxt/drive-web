@@ -90,17 +90,19 @@ const CheckoutView = ({
                 />
                 <div className="flex flex-col space-y-8 pb-20">
                   <p className="text-2xl font-semibold text-gray-100">2. {translate('checkout.paymentTitle')}</p>
-                  <AddressElement
-                    onChange={(e) => {
-                      checkoutViewManager.onUserNameFromAddressElementChange(e.value.name as string);
-                    }}
-                    options={{
-                      mode: 'billing',
-                      autocomplete: {
-                        mode: 'automatic',
-                      },
-                    }}
-                  />
+                  <div className="flex flex-col rounded-2xl border border-gray-10 bg-surface p-5">
+                    <AddressElement
+                      onChange={(e) => {
+                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name as string);
+                      }}
+                      options={{
+                        mode: 'billing',
+                        autocomplete: {
+                          mode: 'automatic',
+                        },
+                      }}
+                    />
+                  </div>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
                   {error?.stripe && <div className="text-red-dark">{error.stripe}</div>}
                   <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>

@@ -366,6 +366,8 @@ const CheckoutViewWrapper = () => {
       setPromoCodeData(promoCode);
     } catch (err) {
       const error = err as Error;
+      const message = error.message;
+      setError('coupon', message);
       errorService.reportError(error);
       setPromoCodeData(undefined);
     }
