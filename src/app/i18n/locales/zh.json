@@ -1540,7 +1540,35 @@
         }
       },
       "teams": {
-        "title": "团队"
+        "title": "團隊",
+        "createTeam": "创建团队",
+        "team": "团队",
+        "members": "成员",
+        "createTeamDialog": {
+          "title": "新团队",
+          "label": "名称",
+          "placeholder": "输入队名",
+          "cancel": "取消",
+          "create": "创建",
+          "nameExists": "已存在使用此名称的团队"
+        },
+        "teamDetails": {
+          "member": "成员",
+          "members": "成员",
+          "remove": "删除",
+          "makeManager": "成为管理者",
+          "addMember": "添加成员",
+          "rename": "重新命名",
+          "delete": "删除"
+        },
+        "addMemberDialog": {
+          "title": "添加成员",
+          "placeholder": "搜索成员",
+          "cancel": "取消",
+          "addMember": "添加成员",
+          "addOneMember": "添加{{membersToInvite}}名成员",
+          "addMembers": "添加{{membersToInvite}}名成员"
+        }
       },
       "billing": {
         "title": "计费",

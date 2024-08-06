@@ -24,6 +24,7 @@ import {
   WorkspaceSetupInfo,
   WorkspaceTeamResponse,
   WorkspacesResponse,
+  TeamMembers,
 } from '@internxt/sdk/dist/workspaces';
 import { SdkFactory } from '../../core/factory/sdk';
 import errorService from '../../core/services/error.service';
@@ -49,9 +50,9 @@ export function getWorkspaceTeams(workspaceId: string): Promise<WorkspaceTeamRes
   });
 }
 
-export function getTeamMembers(workspaceId: string, teamId: string): Promise<void> {
+export function getTeamMembers(teamId: string): Promise<TeamMembers> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspacesTeamMembers(workspaceId, teamId).catch((error) => {
+  return workspaceClient.getWorkspacesTeamMembers(teamId).catch((error) => {
     throw errorService.castError(error);
   });
 }

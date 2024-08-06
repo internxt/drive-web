@@ -1518,7 +1518,35 @@
         }
       },
       "teams": {
-        "title": "Equipos"
+        "title": "Equipos",
+        "createTeam": "Crear equipo",
+        "team": "Equipo",
+        "members": "Miembros",
+        "createTeamDialog": {
+          "title": "Nuevo equipo",
+          "label": "Nombre",
+          "placeholder": "Introduce el nombre del equipo",
+          "cancel": "Cancelar",
+          "create": "Crear",
+          "nameExists": "Ya existe un equipo con ese nombre"
+        },
+        "teamDetails": {
+          "member": "Miembro",
+          "members": "Miembros",
+          "remove": "Eliminar",
+          "makeManager": "Hacer manager",
+          "addMember": "Añadir Miembro",
+          "rename": "Renombrar",
+          "delete": "Eliminar"
+        },
+        "addMemberDialog": {
+          "title": "Agregar miembros",
+          "placeholder": "Buscar miembro",
+          "cancel": "Cancelar",
+          "addMember": "Agregar miembro",
+          "addOneMember": "Agregar {{membersToInvite}} miembro",
+          "addMembers": "Agregar {{membersToInvite}} miembros"
+        }
       },
       "billing": {
         "title": "Facturación",
