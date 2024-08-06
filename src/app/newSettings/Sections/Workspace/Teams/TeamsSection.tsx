@@ -14,6 +14,7 @@ import TeamsList from './components/TeamsList';
 import CreateTeamDialog from './components/CreateTeamDialog';
 import TeamDetails from './components/TeamDetails';
 import AddMemberDialog from './components/AddMemberDialog';
+import RenameTeamDialog from './components/RenameTeamDialog';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -21,8 +22,11 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
 
   const [teams, setTeams] = useState<WorkspaceTeamResponse>([]);
   const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState<boolean>(false);
+  const [isRenameTeamDialogOpen, setIsRenameTeamDialogOpen] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>('');
+  const [renameTeamName, setRenameTeamName] = useState<string>('');
   const [isCreateTeamLoading, setIsCreateTeamLoading] = useState<boolean>(false);
+  const [isRenameTeamLoading, setIsRenameTeamLoading] = useState<boolean>(false);
   const [isGetTeamsLoading, setIsGetTeamsLoading] = useState<boolean>(false);
   const [isGetTeamMembersLoading, setIsGetTeamMembersLoading] = useState<boolean>(false);
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
@@ -58,6 +62,10 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       try {
         const teams = await workspacesService.getWorkspaceTeams(selectedWorkspace.workspaceUser.workspaceId);
         setTeams(teams);
+        if (selectedTeam) {
+          const team = teams.find((team) => team.team.id === selectedTeam?.team.id);
+          team && setSelectedTeam(team);
+        }
       } catch (err) {
         const castedError = errorService.castError(err);
         errorService.reportError(castedError);
@@ -177,6 +185,35 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     setIsAddMembersLoading(false);
   };
 
+  const renameTeam = async () => {
+    setIsRenameTeamLoading(true);
+    if (selectedWorkspace) {
+      try {
+        const nameExists = teams.some((team) => team.team.name === renameTeamName);
+
+        if (nameExists) {
+          notificationsService.show({
+            text: t('preferences.workspace.teams.createTeamDialog.nameExists'),
+            type: ToastType.Error,
+          });
+          return;
+        }
+        selectedTeam && (await workspacesService.editTeam(selectedTeam?.team.id, renameTeamName));
+        setTimeout(() => {
+          getTeams();
+        }, 500);
+      } catch (err) {
+        const castedError = errorService.castError(err);
+        errorService.reportError(castedError);
+      } finally {
+        setIsRenameTeamLoading(false);
+      }
+      setIsRenameTeamLoading(false);
+      setIsRenameTeamDialogOpen(false);
+      setRenameTeamName('');
+    }
+  };
+
   return (
     <Section
       title={selectedTeam ? selectedTeam.team.name : t('preferences.workspace.teams.title')}
@@ -198,6 +235,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           getWorkspacesMembers={getWorkspacesMembers}
           isGetTeamMembersLoading={isGetTeamMembersLoading}
           isCurrentUserWorkspaceOwner={isCurrentUserWorkspaceOwner}
+          setIsRenameTeamDialogOpen={setIsRenameTeamDialogOpen}
         />
       ) : (
         <TeamsList
@@ -229,6 +267,14 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         setSearchedMemberString={setSearchedMemberString}
         membersToInvite={membersToInvite}
         addMembersToTeam={addMembersToTeam}
+      />
+      <RenameTeamDialog
+        isOpen={isRenameTeamDialogOpen}
+        onClose={() => setIsRenameTeamDialogOpen(false)}
+        renameTeamName={renameTeamName}
+        setRenameTeamName={setRenameTeamName}
+        isRenameTeamLoading={isRenameTeamLoading}
+        renameTeam={renameTeam}
       />
     </Section>
   );

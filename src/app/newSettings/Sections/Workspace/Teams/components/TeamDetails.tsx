@@ -21,6 +21,7 @@ interface TeamDetailsProps {
   getWorkspacesMembers: () => Promise<void>;
   isGetTeamMembersLoading: boolean;
   isCurrentUserWorkspaceOwner: boolean;
+  setIsRenameTeamDialogOpen: (boolean) => void;
 }
 
 const TeamDetails: React.FC<TeamDetailsProps> = ({
@@ -37,6 +38,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   getWorkspacesMembers,
   isGetTeamMembersLoading,
   isCurrentUserWorkspaceOwner,
+  setIsRenameTeamDialogOpen,
 }) => {
   return (
     <section className="space-y-3">
@@ -76,7 +78,13 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
           )}
           {isTeamOptionsOpen && (
             <div className="absolute right-0 top-11 z-10 flex w-40 flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
-              <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
+              <button
+                onClick={() => {
+                  setIsRenameTeamDialogOpen(true);
+                  setIsTeamOptionsOpen(!isTeamOptionsOpen);
+                }}
+                className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100"
+              >
                 {t('preferences.workspace.teams.teamDetails.rename')}
               </button>
               <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">

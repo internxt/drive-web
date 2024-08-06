@@ -1536,6 +1536,14 @@
           "addMember": "Добавить участника",
           "addOneMember": "Добавить {{membersToInvite}} участника",
           "addMembers": "Добавить {{membersToInvite}} участников"
+        },
+        "renameTeamDialog": {
+          "title": "Переименовать команду",
+          "label": "Имя",
+          "placeholder": "Введите новое имя команды",
+          "cancel": "Отмена",
+          "rename": "Переименовать",
+          "nameExists": "Команда с таким именем уже существует"
         }
       },
       "billing": {

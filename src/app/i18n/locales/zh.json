@@ -1568,6 +1568,14 @@
           "addMember": "添加成员",
           "addOneMember": "添加{{membersToInvite}}名成员",
           "addMembers": "添加{{membersToInvite}}名成员"
+        },
+        "renameTeamDialog": {
+          "title": "重命名团队",
+          "label": "名称",
+          "placeholder": "输入新团队名称",
+          "cancel": "取消",
+          "rename": "重命名",
+          "nameExists": "该名称的团队已存在"
         }
       },
       "billing": {
