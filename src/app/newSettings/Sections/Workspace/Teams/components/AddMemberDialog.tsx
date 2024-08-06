@@ -65,13 +65,14 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
 
               return (
                 <div
+                  onClick={() => selectMemberToInvite(member)}
                   key={member.member.uuid}
                   className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
                     isLastItem && 'rounded-b-xl'
                   } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}
                 >
                   <div className="flex flex-row items-center space-x-2">
-                    <BaseCheckbox onClick={() => selectMemberToInvite(member)} checked={isSelectedMember} />
+                    <BaseCheckbox checked={isSelectedMember} />
                     <Avatar
                       src={member.member.avatar}
                       fullName={`${member.member.name} ${member.member.lastname}`}
