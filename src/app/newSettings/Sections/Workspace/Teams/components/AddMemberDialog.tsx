@@ -57,39 +57,42 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
             <Spinner className="h-8 w-8" />
           </div>
         ) : (
-          displayedMembers?.map((member) => {
-            const isLastItem = displayedMembers.indexOf(member) === displayedMembers.length - 1;
-            const isFirstItem = displayedMembers.indexOf(member) === 0;
-            const isSelectedMember = getIsSelectedMember(member);
+          <div className="max-h-72 overflow-y-auto">
+            {displayedMembers?.map((member) => {
+              const isLastItem = displayedMembers.indexOf(member) === displayedMembers.length - 1;
+              const isFirstItem = displayedMembers.indexOf(member) === 0;
+              const isSelectedMember = getIsSelectedMember(member);
 
-            return (
-              <div
-                key={member.member.uuid}
-                className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
-                  isLastItem && 'rounded-b-xl'
-                } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}
-              >
-                <div className="flex flex-row items-center space-x-2">
-                  <BaseCheckbox onClick={() => selectMemberToInvite(member)} checked={isSelectedMember} />
-                  <Avatar
-                    src={member.member.avatar}
-                    fullName={`${member.member.name} ${member.member.lastname}`}
-                    diameter={36}
-                  />
-                  <div className="flex flex-col">
-                    <div className="flex flex-row justify-between space-x-2">
-                      <span className="break-all text-base font-medium leading-5 text-gray-100">
-                        {member.member.name} {member.member.lastname}
+              return (
+                <button
+                  onClick={() => selectMemberToInvite(member)}
+                  key={member.member.uuid}
+                  className={`flex h-14 w-full items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
+                    isLastItem && 'rounded-b-xl'
+                  } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}
+                >
+                  <div className="flex flex-row items-center space-x-2">
+                    <BaseCheckbox checked={isSelectedMember} />
+                    <Avatar
+                      src={member.member.avatar}
+                      fullName={`${member.member.name} ${member.member.lastname}`}
+                      diameter={36}
+                    />
+                    <div className="flex flex-col">
+                      <div className="flex flex-row justify-between space-x-2">
+                        <span className="break-all text-base font-medium leading-5 text-gray-100">
+                          {member.member.name} {member.member.lastname}
+                        </span>
+                      </div>
+                      <span className="break-all text-left text-sm font-normal leading-4 text-gray-50">
+                        {member.member.email}
                       </span>
                     </div>
-                    <span className="break-all text-left text-sm font-normal leading-4 text-gray-50">
-                      {member.member.email}
-                    </span>
                   </div>
-                </div>
-              </div>
-            );
-          })
+                </button>
+              );
+            })}
+          </div>
         )}
       </div>
       <div className="mt-5 flex w-full flex-row justify-end space-x-2">
