@@ -146,6 +146,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
 
   const handleMemberLeave = () => {
     setHoveredMember(null);
+    isMemberOptionsOpen && setIsMemberOptionsOpen(false);
   };
 
   const selectMemberToInvite = (member: WorkspaceUser) => {

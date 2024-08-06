@@ -77,7 +77,12 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
             </div>
           )}
           {isTeamOptionsOpen && (
-            <div className="absolute right-0 top-11 z-10 flex w-40 flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
+            <div
+              onMouseLeave={() => {
+                setIsTeamOptionsOpen(!isTeamOptionsOpen);
+              }}
+              className="absolute right-0 top-11 z-10 flex w-40 flex-col rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm"
+            >
               <button
                 onClick={() => {
                   setIsRenameTeamDialogOpen(true);
@@ -152,8 +157,8 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                       </div>
                     )}
                     {isMemberOptionsOpen && (
-                      <div className="absolute right-0 top-9 z-10 flex w-40 items-center rounded-lg border border-gray-10 bg-surface py-1.5 shadow-sm">
-                        <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
+                      <div className="absolute right-0 top-9 z-10 flex w-40 items-center rounded-lg border border-gray-10 bg-surface shadow-sm">
+                        <button className="font-regular z-50 ml-5 flex h-12 items-center text-base text-gray-100">
                           {t('preferences.workspace.teams.teamDetails.makeManager')}
                         </button>
                       </div>

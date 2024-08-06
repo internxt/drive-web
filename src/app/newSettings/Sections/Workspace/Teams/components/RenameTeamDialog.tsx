@@ -44,7 +44,7 @@ const RenameTeamDialog: React.FC<RenameTeamDialogProps> = ({
           loading={isRenameTeamLoading}
           variant="primary"
           onClick={renameTeam}
-          disabled={renameTeamName.length === 0}
+          disabled={renameTeamName.trim().length === 0}
         >
           {translate('preferences.workspace.teams.renameTeamDialog.rename')}
         </Button>
