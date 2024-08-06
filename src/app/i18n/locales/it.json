@@ -1556,6 +1556,14 @@
           "addMember": "Aggiungi membro",
           "addOneMember": "Aggiungi {{membersToInvite}} membro",
           "addMembers": "Aggiungi {{membersToInvite}} membri"
+        },
+        "renameTeamDialog": {
+          "title": "Rinomina squadra",
+          "label": "Nome",
+          "placeholder": "Inserisci il nuovo nome della squadra",
+          "cancel": "Annulla",
+          "rename": "Rinomina",
+          "nameExists": "Una squadra con questo nome esiste già"
         }
       },
       "billing": {

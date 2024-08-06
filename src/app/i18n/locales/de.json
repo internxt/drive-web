@@ -1510,6 +1510,14 @@
           "addMember": "Mitglied hinzufügen",
           "addOneMember": "{{membersToInvite}} Mitglied hinzufügen",
           "addMembers": "{{membersToInvite}} Mitglieder hinzufügen"
+        },
+        "renameTeamDialog": {
+          "title": "Team umbenennen",
+          "label": "Name",
+          "placeholder": "Neuen Teamnamen eingeben",
+          "cancel": "Abbrechen",
+          "rename": "Umbenennen",
+          "nameExists": "Ein Team mit diesem Namen existiert bereits"
         }
       },
       "billing": {

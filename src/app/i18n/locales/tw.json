@@ -1530,6 +1530,14 @@
           "addMember": "加入成員",
           "addOneMember": "加入{{membersToInvite}}位成員",
           "addMembers": "加入{{membersToInvite}}位成員"
+        },
+        "renameTeamDialog": {
+          "title": "重新命名團隊",
+          "label": "名稱",
+          "placeholder": "輸入新團隊名稱",
+          "cancel": "取消",
+          "rename": "重新命名",
+          "nameExists": "該名稱的團隊已存在"
         }
       },
       "billing": {
