@@ -64,15 +64,10 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
               const isSelectedMember = getIsSelectedMember(member);
 
               return (
-                <div
+                <button
                   onClick={() => selectMemberToInvite(member)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      selectMemberToInvite(member);
-                    }
-                  }}
                   key={member.member.uuid}
-                  className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
+                  className={`flex h-14 w-full items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
                     isLastItem && 'rounded-b-xl'
                   } ${isFirstItem && 'rounded-t-xl border-t'} ${isSelectedMember && '!bg-primary/10'}`}
                 >
@@ -94,7 +89,7 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
                       </span>
                     </div>
                   </div>
-                </div>
+                </button>
               );
             })}
           </div>

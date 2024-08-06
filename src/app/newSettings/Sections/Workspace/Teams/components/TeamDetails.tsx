@@ -98,8 +98,8 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
             const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
 
             return (
-              <div
-                className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
+              <button
+                className={`flex h-14 w-full cursor-default items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
                   isLastItem && 'rounded-b-xl'
                 } ${isFirstItem && 'rounded-t-xl border-t'}`}
                 onMouseEnter={() => handleMemberHover(member.uuid)}
@@ -152,7 +152,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                     )}
                   </div>
                 )}
-              </div>
+              </button>
             );
           })}
         </div>

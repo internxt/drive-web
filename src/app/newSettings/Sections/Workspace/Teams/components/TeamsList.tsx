@@ -56,28 +56,21 @@ const TeamsList: React.FC<TeamsListProps> = ({
           {teams.map((team) => {
             const isLastTeam = teams.length === teams.indexOf(team) + 1;
             return (
-              <div
+              <button
                 onClick={() => {
                   setSelectedTeam(team);
                   getTeamMembers(team.team.id);
                 }}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    setSelectedTeam(team);
-                    getTeamMembers(team.team.id);
-                  }
-                }}
-                role="button"
                 tabIndex={0}
                 aria-label="Select team"
                 key={team.team.id}
-                className={`grid h-12 cursor-pointer grid-cols-3 border-x border-b border-gray-10 bg-surface py-2 text-base font-medium hover:bg-gray-5 ${
+                className={`grid h-12 w-full cursor-pointer grid-cols-3 items-center border-x border-b border-gray-10 bg-surface py-2 text-base font-medium hover:bg-gray-5 ${
                   isLastTeam && 'rounded-b-xl'
                 }`}
               >
                 <div className="col-span-2 flex items-center pl-5">{team.team.name}</div>
                 <div className="font-regular col-span-1 flex items-center pl-5">{team.membersCount}</div>
-              </div>
+              </button>
             );
           })}
         </div>
