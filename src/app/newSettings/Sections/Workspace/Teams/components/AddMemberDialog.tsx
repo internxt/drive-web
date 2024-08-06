@@ -66,6 +66,11 @@ const AddMemberDialog: React.FC<AddMemberDialogProps> = ({
               return (
                 <div
                   onClick={() => selectMemberToInvite(member)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      selectMemberToInvite(member);
+                    }
+                  }}
                   key={member.member.uuid}
                   className={`flex h-14 items-center justify-between border-x border-b border-gray-10 bg-surface px-3 py-2.5 text-base font-medium hover:bg-gray-5 ${
                     isLastItem && 'rounded-b-xl'
