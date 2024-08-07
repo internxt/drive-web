@@ -1554,6 +1554,12 @@
           "cancel": "Cancelar",
           "rename": "Renombrar",
           "nameExists": "Ya existe un equipo con este nombre"
+        },
+        "deleteTeamDialog": {
+          "title": "Eliminar equipo",
+          "description": "se eliminará y los miembros de este equipo pueden perder el acceso a archivos y carpetas compartidos con el equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar equipo"
         }
       },
       "billing": {

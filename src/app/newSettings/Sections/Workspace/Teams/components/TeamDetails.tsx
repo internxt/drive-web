@@ -22,6 +22,7 @@ interface TeamDetailsProps {
   isGetTeamMembersLoading: boolean;
   isCurrentUserWorkspaceOwner: boolean;
   setIsRenameTeamDialogOpen: (boolean) => void;
+  setIsDeleteTeamDialogOpen: (boolean) => void;
 }
 
 const TeamDetails: React.FC<TeamDetailsProps> = ({
@@ -39,6 +40,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   isGetTeamMembersLoading,
   isCurrentUserWorkspaceOwner,
   setIsRenameTeamDialogOpen,
+  setIsDeleteTeamDialogOpen,
 }) => {
   return (
     <section className="space-y-3">
@@ -92,7 +94,13 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
               >
                 {t('preferences.workspace.teams.teamDetails.rename')}
               </button>
-              <button className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100">
+              <button
+                onClick={() => {
+                  setIsDeleteTeamDialogOpen(true);
+                  setIsTeamOptionsOpen(!isTeamOptionsOpen);
+                }}
+                className="font-regular z-50 ml-5 flex h-9 items-center text-base text-gray-100"
+              >
                 {t('preferences.workspace.teams.teamDetails.delete')}
               </button>
             </div>

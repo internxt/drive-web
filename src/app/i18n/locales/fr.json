@@ -1504,6 +1504,12 @@
           "cancel": "Annuler",
           "rename": "Renommer",
           "nameExists": "Une équipe avec ce nom existe déjà"
+        },
+        "deleteTeamDialog": {
+          "title": "Supprimer l'équipe",
+          "description": "sera supprimée et les membres de cette équipe pourraient perdre l'accès aux fichiers et dossiers partagés avec l'équipe.",
+          "cancel": "Annuler",
+          "delete": "Supprimer l'équipe"
         }
       },
       "billing": {

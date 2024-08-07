@@ -1538,6 +1538,12 @@
           "cancel": "取消",
           "rename": "重新命名",
           "nameExists": "該名稱的團隊已存在"
+        },
+        "deleteTeamDialog": {
+          "title": "刪除團隊",
+          "description": "將被刪除，該團隊的成員可能會失去對與團隊共享的文件和文件夾的訪問權限。",
+          "cancel": "取消",
+          "delete": "刪除團隊"
         }
       },
       "billing": {

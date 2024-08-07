@@ -1564,6 +1564,12 @@
           "cancel": "Annulla",
           "rename": "Rinomina",
           "nameExists": "Una squadra con questo nome esiste già"
+        },
+        "deleteTeamDialog": {
+          "title": "Elimina team",
+          "description": "verrà eliminato e i membri di questo team potrebbero perdere l'accesso ai file e alle cartelle condivisi con il team.",
+          "cancel": "Annulla",
+          "delete": "Elimina team"
         }
       },
       "billing": {
