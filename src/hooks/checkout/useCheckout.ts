@@ -51,7 +51,7 @@ export const useCheckout = (dispatchReducer: Dispatch<Action>) => {
     });
   };
 
-  const setError = (type: ErrorType, error: string) => {
+  const setError = (type: ErrorType, error: string | undefined) => {
     dispatchReducer({
       type: 'SET_ERROR',
       payload: {

@@ -10,6 +10,7 @@ import { CouponCodeData, Currency, CurrentPlanSelected } from '../../types';
 import { useState } from 'react';
 import { useThemeContext } from 'app/theme/ThemeProvider';
 import { UpsellManagerProps } from 'app/payment/views/IntegratedCheckoutView/CheckoutViewWrapper';
+import TextInput from 'app/share/components/ShareItemDialog/components/TextInput';
 
 interface ProductFeaturesComponentProps {
   selectedPlan: CurrentPlanSelected;
@@ -197,7 +198,7 @@ export const ProductFeaturesComponent = ({
                   <div className="flex w-full flex-col items-start space-y-1">
                     <p className="text-sm text-gray-80">{translate('checkout.productCard.addCoupon.inputText')}</p>
                     <div className="flex w-full flex-row space-x-3">
-                      <input
+                      <TextInput
                         value={couponName}
                         onChange={(e) => {
                           e.preventDefault();
@@ -208,9 +209,8 @@ export const ProductFeaturesComponent = ({
                         style={{
                           textTransform: 'uppercase',
                         }}
-                        required={true}
                         data-cy={'coupon-code-input'}
-                        className={'inxt-input input-primary'}
+                        className={'inxt-input input-primary dark:bg-transparent'}
                       />
                       <Button
                         disabled={!couponName?.length}

@@ -1,9 +1,9 @@
 import paymentService from '../../payment/services/payment.service';
 import { ClientSecretData, CouponCodeData, CurrentPlanSelected, PlanData } from '../types';
 
-const fetchPlanById = async (planId: string, currency?: string): Promise<PlanData> => {
+const fetchPlanById = async (priceId: string, currency?: string): Promise<PlanData> => {
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${planId}&currency=${currency}`,
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/plan-by-id?planId=${priceId}&currency=${currency}`,
     {
       method: 'GET',
     },
@@ -18,9 +18,9 @@ const fetchPlanById = async (planId: string, currency?: string): Promise<PlanDat
   return data;
 };
 
-const fetchPromotionCodeByName = async (promotionCodeName: string): Promise<CouponCodeData> => {
+const fetchPromotionCodeByName = async (priceId: string, promotionCodeName: string): Promise<CouponCodeData> => {
   const response = await fetch(
-    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?promotionCode=${promotionCodeName}`,
+    `${process.env.REACT_APP_PAYMENTS_API_URL}/promo-code-by-name?priceId=${priceId}&promotionCode=${promotionCodeName}`,
   );
 
   if (response.status !== 200) {

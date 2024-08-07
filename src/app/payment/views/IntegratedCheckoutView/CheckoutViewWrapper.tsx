@@ -123,6 +123,7 @@ const CheckoutViewWrapper = () => {
   } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
+  const [errorTimeout, setErrorTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const {
     authMethod,
@@ -182,13 +183,28 @@ const CheckoutViewWrapper = () => {
           return;
         }
         if (checkoutTheme && plan) {
+          if (promotionCode) {
+            handleFetchPromotionCode(plan.selectedPlan.id as string, promotionCode).catch((err) => {
+              const error = err as Error;
+              const errorMessage = error.message.includes('Promotion code with an id')
+                ? error.message
+                : 'Something went wrong, try again later';
+
+              errorService.reportError(error);
+              setPromoCodeData(undefined);
+              notificationsService.show({
+                text: errorMessage,
+                type: ToastType.Error,
+              });
+            });
+          }
+
           const { backgroundColor, textColor, borderColor, borderInputColor } = THEME_STYLES[checkoutTheme as string];
           loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, plan);
         }
       })
       .catch(() => {});
 
-    promotionCode && handleFetchPromotionCode(promotionCode);
     setIsCheckoutReadyToRender(true);
   }, [checkoutTheme]);
 
@@ -204,10 +220,28 @@ const CheckoutViewWrapper = () => {
   }, [isAuthenticated, user]);
 
   useEffect(() => {
-    if (promoCodeName) {
-      handleFetchPromotionCode(promoCodeName);
+    if (promoCodeName && currentSelectedPlan) {
+      handleFetchPromotionCode(currentSelectedPlan?.id, promoCodeName).catch((err) => {
+        const error = err as Error;
+        const errorMessage = error.message.includes('Promotion code with an id')
+          ? error.message
+          : 'Something went wrong, try again later';
+        setError('coupon', errorMessage);
+        errorService.reportError(error);
+        setPromoCodeData(undefined);
+      });
     }
   }, [promoCodeName]);
+
+  useEffect(() => {
+    if (state.error?.coupon || state.error?.auth || state.error?.stripe) {
+      setTimeout(() => {
+        setError('auth', undefined);
+        setError('stripe', undefined);
+        setError('coupon', undefined);
+      }, 4000);
+    }
+  }, [state.error]);
 
   const onCheckoutButtonClicked = async (
     formData: IFormValues,
@@ -302,9 +336,9 @@ const CheckoutViewWrapper = () => {
             backgroundColor: backgroundColor,
           },
           '.Input': {
-            backgroundColor: backgroundColor,
+            backgroundColor: 'transparent',
             borderRadius: '0.375rem',
-            // borderColor: borderInputColor,
+            color: textColor,
             border: `1px solid ${borderInputColor}`,
           },
           '.Input:focus': {
@@ -354,23 +388,15 @@ const CheckoutViewWrapper = () => {
     }
   };
 
-  const handleFetchPromotionCode = async (promotionCode: string) => {
-    try {
-      const promoCodeData = await checkoutService.fetchPromotionCodeByName(promotionCode);
-      const promoCode = {
-        codeId: promoCodeData.codeId,
-        codeName: promotionCode,
-        amountOff: promoCodeData.amountOff,
-        percentOff: promoCodeData.percentOff,
-      };
-      setPromoCodeData(promoCode);
-    } catch (err) {
-      const error = err as Error;
-      const message = error.message;
-      setError('coupon', message);
-      errorService.reportError(error);
-      setPromoCodeData(undefined);
-    }
+  const handleFetchPromotionCode = async (priceId: string, promotionCode: string) => {
+    const promoCodeData = await checkoutService.fetchPromotionCodeByName(priceId, promotionCode);
+    const promoCode = {
+      codeId: promoCodeData.codeId,
+      codeName: promotionCode,
+      amountOff: promoCodeData.amountOff,
+      percentOff: promoCodeData.percentOff,
+    };
+    setPromoCodeData(promoCode);
   };
 
   const updateUserSubscription = async (planId: string, coupon?: string) => {
