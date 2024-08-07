@@ -120,7 +120,6 @@ const paymentService = {
     couponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
     return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 
