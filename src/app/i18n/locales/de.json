@@ -1524,6 +1524,12 @@
           "description": "wird gelöscht und Mitglieder dieses Teams könnten den Zugriff auf Dateien und Ordner verlieren, die mit dem Team geteilt wurden.",
           "cancel": "Abbrechen",
           "delete": "Team löschen"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Mitglied entfernen",
+          "description": "wird den Zugriff auf Dateien und Ordner verlieren, die mit diesem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Entfernen"
         }
       },
       "billing": {

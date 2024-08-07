@@ -1583,6 +1583,12 @@
           "description": "will be deleted and members of this team may lose access to files and folders shared with the team.",
           "cancel": "Cancel",
           "delete": "Delete Team"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Remove member",
+          "description": "will lose access to files and folders shared with this team.",
+          "cancel": "Cancel",
+          "delete": "Remove"
         }
       },
       "billing": {

@@ -1510,6 +1510,12 @@
           "description": "sera supprimée et les membres de cette équipe pourraient perdre l'accès aux fichiers et dossiers partagés avec l'équipe.",
           "cancel": "Annuler",
           "delete": "Supprimer l'équipe"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Retirer le membre",
+          "description": "perdra l'accès aux fichiers et dossiers partagés avec cette équipe.",
+          "cancel": "Annuler",
+          "delete": "Retirer"
         }
       },
       "billing": {

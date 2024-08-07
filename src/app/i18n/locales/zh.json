@@ -1582,6 +1582,12 @@
           "description": "将被删除，该团队的成员可能会失去对与团队共享的文件和文件夹的访问权限。",
           "cancel": "取消",
           "delete": "删除团队"
+        },
+        "removeTeamMemberDialog": {
+          "title": "移除成员",
+          "description": "将失去对与该团队共享的文件和文件夹的访问权限。",
+          "cancel": "取消",
+          "delete": "移除"
         }
       },
       "billing": {

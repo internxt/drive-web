@@ -1560,6 +1560,12 @@
           "description": "se eliminará y los miembros de este equipo pueden perder el acceso a archivos y carpetas compartidos con el equipo.",
           "cancel": "Cancelar",
           "delete": "Eliminar equipo"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Eliminar miembro",
+          "description": "perderá acceso a archivos y carpetas compartidos con este equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar"
         }
       },
       "billing": {

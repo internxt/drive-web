@@ -23,6 +23,8 @@ interface TeamDetailsProps {
   isCurrentUserWorkspaceOwner: boolean;
   setIsRenameTeamDialogOpen: (boolean) => void;
   setIsDeleteTeamDialogOpen: (boolean) => void;
+  setIsRemoveTeamMemberDialogOpen: (boolean) => void;
+  setTeamMemberToRemove: (TeamMember) => void;
 }
 
 const TeamDetails: React.FC<TeamDetailsProps> = ({
@@ -41,6 +43,8 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   isCurrentUserWorkspaceOwner,
   setIsRenameTeamDialogOpen,
   setIsDeleteTeamDialogOpen,
+  setIsRemoveTeamMemberDialogOpen,
+  setTeamMemberToRemove,
 }) => {
   return (
     <section className="space-y-3">
@@ -151,7 +155,14 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                   <div className="relative flex items-center">
                     {isCurrentUserWorkspaceOwner && (
                       <div className="flex items-center">
-                        <Button variant="secondary" size="medium" onClick={() => {}}>
+                        <Button
+                          variant="secondary"
+                          size="medium"
+                          onClick={() => {
+                            setTeamMemberToRemove(member);
+                            setIsRemoveTeamMemberDialogOpen(true);
+                          }}
+                        >
                           <span>{t('preferences.workspace.teams.teamDetails.remove')}</span>
                         </Button>
                         <button

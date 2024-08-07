@@ -1,6 +1,12 @@
 import { useEffect, useState } from 'react';
 import { t } from 'i18next';
-import { WorkspaceTeamResponse, WorkspaceTeam, TeamMembers, WorkspaceUser } from '@internxt/sdk/dist/workspaces/types';
+import {
+  WorkspaceTeamResponse,
+  WorkspaceTeam,
+  TeamMembers,
+  WorkspaceUser,
+  TeamMember,
+} from '@internxt/sdk/dist/workspaces/types';
 
 import { useAppSelector } from 'app/store/hooks';
 import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selectors';
@@ -16,6 +22,7 @@ import TeamDetails from './components/TeamDetails';
 import AddMemberDialog from './components/AddMemberDialog';
 import RenameTeamDialog from './components/RenameTeamDialog';
 import DeleteTeamDialog from './components/DeleteTeamDialog';
+import RemoveTeamMemberDialog from './components/RemoveTeamMemberDialog';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -25,6 +32,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState<boolean>(false);
   const [isRenameTeamDialogOpen, setIsRenameTeamDialogOpen] = useState<boolean>(false);
   const [isDeleteTeamDialogOpen, setIsDeleteTeamDialogOpen] = useState<boolean>(false);
+  const [isRemoveTeamMemberDialogOpen, setIsRemoveTeamMemberDialogOpen] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>('');
   const [renameTeamName, setRenameTeamName] = useState<string>('');
   const [isCreateTeamLoading, setIsCreateTeamLoading] = useState<boolean>(false);
@@ -34,6 +42,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isGetTeamMembersLoading, setIsGetTeamMembersLoading] = useState<boolean>(false);
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
   const [isAddMembersLoading, setIsAddMembersLoading] = useState<boolean>(false);
+  const [isRemoveTeamMemberLoading, setIsRemoveTeamMemberLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMembers>([]);
   const [hoveredMember, setHoveredMember] = useState<string | null>(null);
@@ -44,6 +53,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [displayedMembers, setDisplayedMembers] = useState(workspaceMembers);
   const [membersToInvite, setMembersToInvite] = useState<WorkspaceUser[]>([]);
   const [searchedMemberString, setSearchedMemberString] = useState<string>('');
+  const [teamMemberToRemove, setTeamMemberToRemove] = useState<TeamMember | null>(null);
 
   useEffect(() => {
     getTeams();
@@ -234,6 +244,26 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     setIsDeleteTeamLoading(false);
   };
 
+  const removeTeamMember = async () => {
+    setIsRemoveTeamMemberLoading(true);
+    try {
+      if (selectedTeam && teamMemberToRemove) {
+        await workspacesService.removeTeamUser(selectedTeam.team.id, teamMemberToRemove?.uuid);
+      }
+      setTimeout(() => {
+        getWorkspacesMembers();
+        getTeamMembers(selectedTeam?.team.id);
+        getTeams();
+      }, 500);
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      errorService.reportError(castedError);
+    }
+    setIsRemoveTeamMemberLoading(false);
+    setIsRemoveTeamMemberDialogOpen(false);
+    setTeamMemberToRemove(null);
+  };
+
   return (
     <Section
       title={selectedTeam ? selectedTeam.team.name : t('preferences.workspace.teams.title')}
@@ -257,6 +287,8 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           isCurrentUserWorkspaceOwner={isCurrentUserWorkspaceOwner}
           setIsRenameTeamDialogOpen={setIsRenameTeamDialogOpen}
           setIsDeleteTeamDialogOpen={setIsDeleteTeamDialogOpen}
+          setIsRemoveTeamMemberDialogOpen={setIsRemoveTeamMemberDialogOpen}
+          setTeamMemberToRemove={setTeamMemberToRemove}
         />
       ) : (
         <TeamsList
@@ -303,6 +335,13 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         isDeleteTeamLoading={isDeleteTeamLoading}
         deleteTeam={deleteTeam}
         selectedTeam={selectedTeam}
+      />
+      <RemoveTeamMemberDialog
+        isOpen={isRemoveTeamMemberDialogOpen}
+        onClose={() => setIsRemoveTeamMemberDialogOpen(false)}
+        isRemoveTeamMemberLoading={isRemoveTeamMemberLoading}
+        removeTeamMember={removeTeamMember}
+        teamMemberToRemove={teamMemberToRemove}
       />
     </Section>
   );
