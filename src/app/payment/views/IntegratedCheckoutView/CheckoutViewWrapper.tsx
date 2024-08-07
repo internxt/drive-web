@@ -50,6 +50,8 @@ export const THEME_STYLES = {
   },
 };
 
+const BORDER_SHADOW = 'rgb(0 102 255)';
+
 export type UpsellManagerProps = {
   isUpsellSwitchActivated: boolean;
   showUpsellSwitch: boolean;
@@ -95,6 +97,7 @@ const CheckoutViewWrapper = () => {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
   const { checkoutTheme } = useThemeContext();
+  const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
   const userPlan = useSelector((state: RootState) => state.plan) as PlanState;
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
@@ -106,8 +109,8 @@ const CheckoutViewWrapper = () => {
   const subscription = !workspace ? individualSubscription : businessSubscription;
   const fullName = `${user?.name} ${user?.lastname}`;
   const isUserAuthenticated = !!user;
+  const isAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
 
-  const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const {
     onRemoveAppliedCouponCode,
     setAuthMethod,
@@ -123,7 +126,6 @@ const CheckoutViewWrapper = () => {
   } = useCheckout(dispatchReducer);
   const [isUpsellSwitchActivated, setIsUpsellSwitchActivated] = useState<boolean>(false);
   const [isCheckoutReadyToRender, setIsCheckoutReadyToRender] = useState<boolean>(false);
-  const [errorTimeout, setErrorTimeout] = useState<NodeJS.Timeout | null>(null);
 
   const {
     authMethod,
@@ -185,17 +187,8 @@ const CheckoutViewWrapper = () => {
         if (checkoutTheme && plan) {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id as string, promotionCode).catch((err) => {
-              const error = err as Error;
-              const errorMessage = error.message.includes('Promotion code with an id')
-                ? error.message
-                : 'Something went wrong, try again later';
-
-              errorService.reportError(error);
-              setPromoCodeData(undefined);
-              notificationsService.show({
-                text: errorMessage,
-                type: ToastType.Error,
-              });
+              const showPromoCodeErrorNotification = true;
+              handlePromoCodeError(err, showPromoCodeErrorNotification);
             });
           }
 
@@ -221,20 +214,12 @@ const CheckoutViewWrapper = () => {
 
   useEffect(() => {
     if (promoCodeName && currentSelectedPlan) {
-      handleFetchPromotionCode(currentSelectedPlan?.id, promoCodeName).catch((err) => {
-        const error = err as Error;
-        const errorMessage = error.message.includes('Promotion code with an id')
-          ? error.message
-          : 'Something went wrong, try again later';
-        setError('coupon', errorMessage);
-        errorService.reportError(error);
-        setPromoCodeData(undefined);
-      });
+      handleFetchPromotionCode(currentSelectedPlan?.id, promoCodeName).catch(handlePromoCodeError);
     }
   }, [promoCodeName]);
 
   useEffect(() => {
-    if (state.error?.coupon || state.error?.auth || state.error?.stripe) {
+    if (isAnyError) {
       setTimeout(() => {
         setError('auth', undefined);
         setError('stripe', undefined);
@@ -344,13 +329,13 @@ const CheckoutViewWrapper = () => {
           '.Input:focus': {
             backgroundColor: backgroundColor,
             // borderColor: borderInputColor,
-            boxShadow: '0px 0px 4px rgb(0 102 255)',
-            border: '0.5px solid rgb(0 102 255)',
+            boxShadow: `0px 0px 4px ${BORDER_SHADOW}`,
+            border: `0.5px solid ${BORDER_SHADOW}`,
           },
           '.Input::selection': {
             backgroundColor: backgroundColor,
             // borderColor: borderInputColor,
-            border: '0.5px solid rgb(0 102 255)',
+            border: `0.5px solid ${BORDER_SHADOW}`,
           },
           '.Label': {
             color: textColor,
@@ -442,6 +427,23 @@ const CheckoutViewWrapper = () => {
     }
 
     return userData;
+  };
+
+  const handlePromoCodeError = (err: unknown, showNotification?: boolean) => {
+    const error = err as Error;
+    const errorMessage = error.message.includes('Promotion code with an id')
+      ? error.message
+      : 'Something went wrong, try again later';
+    setError('coupon', errorMessage);
+    errorService.reportError(error);
+    setPromoCodeData(undefined);
+
+    if (showNotification) {
+      notificationsService.show({
+        text: errorMessage,
+        type: ToastType.Error,
+      });
+    }
   };
 
   const checkoutViewManager: CheckoutViewManager = {
