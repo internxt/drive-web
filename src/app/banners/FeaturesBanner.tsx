@@ -35,9 +35,9 @@ const FeaturesBanner = ({ showBanner, onClose }: { showBanner: boolean; onClose:
             <p className="w-full max-w-[400px] text-5xl font-bold leading-tight ">
               {translate('featuresBanner.title')}
             </p>
-            <p className="w-full max-w-[328px] text-2xl font-bold leading-tight ">
+            {/* <p className="w-full max-w-[328px] text-2xl font-bold leading-tight ">
               {translate('featuresBanner.subtitle')}
-            </p>
+            </p> */}
             <div className="flex flex-col items-center space-y-3 lg:items-start">
               <button
                 onClick={handleOnClick}
