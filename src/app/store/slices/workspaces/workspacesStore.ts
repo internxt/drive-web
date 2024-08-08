@@ -308,6 +308,7 @@ export const workspacesSlice = createSlice({
       .addCase(fetchCredentials.rejected, (state, action) => {
         const errorMsg = action.payload ? action.payload : '';
 
+        state.isLoadingCredentials = false;
         state.isLoadingWorkspaces = false;
         notificationsService.show({
           text: 'Fetching workspace credentials error ' + errorMsg,
