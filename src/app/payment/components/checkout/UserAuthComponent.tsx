@@ -72,7 +72,8 @@ export const UserAuthComponent = ({
         <div className="flex flex-row space-x-2">
           <p className="text-gray-100">{AUTH_LABEL[authMethod]}</p>
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               const newAuthMethod = authMethod === 'signIn' ? 'signUp' : 'signIn';
               onAuthMethodToggled(newAuthMethod);
             }}

@@ -1,4 +1,4 @@
-import { useEffect, useReducer, useState, BaseSyntheticEvent } from 'react';
+import { useEffect, useReducer, useState, BaseSyntheticEvent, useRef } from 'react';
 import { Elements } from '@stripe/react-stripe-js';
 
 import navigationService from '../../../core/services/navigation.service';
@@ -29,7 +29,7 @@ import { RootState } from '../../../store';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import paymentService from '../../../payment/services/payment.service';
 import { getDatabaseProfileAvatar } from '../../../drive/services/database.service';
-import { planActions, PlanState } from '../../../store/slices/plan';
+import { planActions } from '../../../store/slices/plan';
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
 import notificationsService, { ToastType } from '../../../notifications/services/notifications.service';
 import { useTranslationContext } from '../../../i18n/provider/TranslationProvider';
@@ -101,10 +101,11 @@ const CheckoutViewWrapper = () => {
   const { checkoutTheme } = useThemeContext();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const userPlan = useSelector((state: RootState) => state.plan) as PlanState;
+  const userPlan = useSelector((state: RootState) => state.plan);
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
   const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const { doRegister } = useSignUp('activate');
+  const userAuthComponentRef = useRef<HTMLDivElement>(null);
 
   const { individualSubscription, businessSubscription } = userPlan;
 
@@ -149,7 +150,6 @@ const CheckoutViewWrapper = () => {
   const upsellManager = {
     onUpsellSwitchButtonClicked: () => {
       setIsUpsellSwitchActivated(!isUpsellSwitchActivated);
-
       const planType = isUpsellSwitchActivated ? 'selectedPlan' : 'upsellPlan';
       const stripeElementsOptions = {
         ...(elementsOptions as StripeElementsOptionsMode),
@@ -188,7 +188,7 @@ const CheckoutViewWrapper = () => {
         }
         if (checkoutTheme && plan) {
           if (promotionCode) {
-            handleFetchPromotionCode(plan.selectedPlan.id as string, promotionCode).catch((err) => {
+            handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch((err) => {
               const showPromoCodeErrorNotification = true;
               handlePromoCodeError(err, showPromoCodeErrorNotification);
             });
@@ -227,7 +227,7 @@ const CheckoutViewWrapper = () => {
         setError('auth', undefined);
         setError('stripe', undefined);
         setError('coupon', undefined);
-      }, 4000);
+      }, 8000);
     }
   }, [state.error]);
 
@@ -238,6 +238,7 @@ const CheckoutViewWrapper = () => {
     elements: StripeElements | null,
   ) => {
     event?.preventDefault();
+
     setIsUserPaying(true);
 
     const { email, password } = formData;
@@ -248,9 +249,10 @@ const CheckoutViewWrapper = () => {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
     } catch (err) {
       const error = err as Error;
-      setIsUserPaying(false);
       setError('auth', error.message);
+      (userAuthComponentRef.current as any).scrollIntoView();
       errorService.reportError(error);
+      setIsUserPaying(false);
       return;
     }
 
@@ -466,6 +468,7 @@ const CheckoutViewWrapper = () => {
         <Elements stripe={stripe} options={elementsOptions}>
           <CheckoutView
             checkoutViewVariables={state}
+            userAuthComponentRef={userAuthComponentRef}
             userInfo={userInfo}
             isUserAuthenticated={isUserAuthenticated}
             upsellManager={upsellManager}
