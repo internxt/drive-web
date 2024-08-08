@@ -81,8 +81,8 @@ export const ProductFeaturesComponent = ({
           <div className="flex flex-row items-center justify-between text-gray-100">
             <p className="font-medium">{translate(`checkout.productCard.billed.${selectedPlan.interval}`)}</p>
             <p className="font-semibold">
-              {planAmount}
               {Currency[selectedPlan.currency]}
+              {planAmount}
             </p>
           </div>
           {couponCodeData && (
@@ -96,8 +96,8 @@ export const ProductFeaturesComponent = ({
                 </p>
               </div>
               <p className="text-gray-50 line-through">
-                {normalPriceAmount}
                 {Currency[selectedPlan.currency]}
+                {normalPriceAmount}
               </p>
             </div>
           )}
@@ -117,8 +117,8 @@ export const ProductFeaturesComponent = ({
           <div className="flex flex-row items-center justify-between text-2xl font-semibold text-gray-100">
             <p>{translate('checkout.productCard.total')}</p>
             <p>
-              {planAmount}
               {Currency[selectedPlan.currency]}
+              {planAmount}
             </p>
           </div>
           <Separator />
@@ -146,7 +146,8 @@ export const ProductFeaturesComponent = ({
                   <div className="flex h-full rounded-lg bg-green/10 px-3 py-1">
                     <p className="text-sm text-green">
                       {translate('checkout.productCard.amountSaved')}
-                      {upsellManager.amountSaved} {Currency[selectedPlan.currency]}
+                      {Currency[selectedPlan.currency]}
+                      {upsellManager.amountSaved}
                     </p>
                   </div>
                   <p className="font-medium text-gray-80">{translate('checkout.productCard.withAnnualBilling')}</p>
