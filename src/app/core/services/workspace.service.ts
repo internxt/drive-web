@@ -17,6 +17,7 @@ import {
   ListWorkspaceSharedItemsResponse,
   OrderByOptions,
   PendingInvitesResponse,
+  TeamMembers,
   Workspace,
   WorkspaceCredentialsDetails,
   WorkspaceMembers,
@@ -49,9 +50,9 @@ export function getWorkspaceTeams(workspaceId: string): Promise<WorkspaceTeamRes
   });
 }
 
-export function getTeamMembers(workspaceId: string, teamId: string): Promise<void> {
+export function getTeamMembers(teamId: string): Promise<TeamMembers> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.getWorkspacesTeamMembers(workspaceId, teamId).catch((error) => {
+  return workspaceClient.getWorkspacesTeamMembers(teamId).catch((error) => {
     throw errorService.castError(error);
   });
 }

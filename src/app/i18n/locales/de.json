@@ -149,6 +149,72 @@
       "error": "Beim Neustart des Kontos ist etwas schief gelaufen"
     }
   },
+  "checkout": {
+    "title": "Sie sind fast da! Sicher zur Kasse gehen:",
+    "pay": "Bezahlen",
+    "paying": "Bezahlen...",
+    "checkout": "Zur Kasse",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Passwort erstellen"
+      },
+      "signIn": {
+        "emailAddress": "Ihre E-Mail-Adresse",
+        "password": "Ihr Passwort"
+      },
+      "title": {
+        "signUp": "Ein Konto erstellen",
+        "signIn": "Anmelden",
+        "userIsSignedIn": "Benutzer angemeldet als"
+      },
+      "emailMustNotBeEmpty": "Die E-Mail darf nicht leer sein",
+      "privacyGuarantee": "Datenschutzgarantie: Wir teilen Ihre Informationen nicht und werden Sie nur kontaktieren, wenn es notwendig ist, um unseren Service zu bieten."
+    },
+    "paymentTitle": "Wählen Sie eine Zahlungsmethode",
+    "productCard": {
+      "title": "Bestellübersicht",
+      "selectedPlan": "Ausgewählter Plan",
+      "renewalPeriod": {
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
+        "lifetime": "{{spaceToUpgrade}} - {{interval}}-Plan"
+      },
+      "billed": {
+        "month": "Monatliche Abrechnung",
+        "year": "Jährliche Abrechnung",
+        "lifetime": "Einmalige Zahlung"
+      },
+      "saving": "Sie sparen {{percent}}%",
+      "planDetails": {
+        "title": "Plandetails:",
+        "features": [
+          "{{spaceToUpgrade}} verschlüsselter Speicher",
+          "Verschlüsseltes Teilen von Dateien und Ordnern",
+          "Passwortgeschütztes Teilen von Dateien",
+          "Zugriff auf Ihre Dateien von jedem Gerät",
+          "Zugang zu allen unseren Diensten",
+          "Hochladen von Dateien bis zu 20GB",
+          "Zwei-Faktor-Authentifizierung (2FA)",
+          "Premium-Kundensupport",
+          "30-Tage-Geld-zurück-Garantie"
+        ]
+      },
+      "total": "Gesamt: ",
+      "addCoupon": {
+        "buttonTitle": "Gutschein hinzufügen",
+        "inputText": "Gutscheincode",
+        "applyCodeButtonTitle": "Anwenden"
+      },
+      "amountSaved": "Sparen ",
+      "withAnnualBilling": "mit jährlicher Abrechnung"
+    }
+  },
   "general": {
     "new": "Neu",
     "of": "von",

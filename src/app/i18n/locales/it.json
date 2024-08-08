@@ -172,6 +172,72 @@
       "login": "Accedi"
     }
   },
+  "checkout": {
+    "title": "Ci sei quasi! Completa il pagamento in modo sicuro:",
+    "pay": "Paga",
+    "paying": "Pagando...",
+    "checkout": "Pagamento",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Il tuo indirizzo email",
+        "password": "Crea una password"
+      },
+      "signIn": {
+        "emailAddress": "Il tuo indirizzo email",
+        "password": "La tua password"
+      },
+      "title": {
+        "signUp": "Crea un account",
+        "signIn": "Accedi",
+        "userIsSignedIn": "Utente connesso come"
+      },
+      "emailMustNotBeEmpty": "L'email non deve essere vuota",
+      "privacyGuarantee": "Garanzia di privacy: Non condividiamo le tue informazioni e ti contatteremo solo se necessario per fornire il nostro servizio."
+    },
+    "paymentTitle": "Seleziona un metodo di pagamento",
+    "productCard": {
+      "title": "Riepilogo dell'ordine",
+      "selectedPlan": "Piano selezionato",
+      "renewalPeriod": {
+        "month": "mensile",
+        "year": "annuale",
+        "lifetime": "a vita"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - piano {{interval}}"
+      },
+      "billed": {
+        "month": "Fatturato mensilmente",
+        "year": "Fatturato annualmente",
+        "lifetime": "Pagamento unico"
+      },
+      "saving": "Stai risparmiando {{percent}}%",
+      "planDetails": {
+        "title": "Dettagli del piano:",
+        "features": [
+          "{{spaceToUpgrade}} di spazio di archiviazione crittografato",
+          "Condivisione di file e cartelle crittografati",
+          "Condivisione di file protetta da password",
+          "Accedi ai tuoi file da qualsiasi dispositivo",
+          "Accesso a tutti i nostri servizi",
+          "Carica file fino a 20GB",
+          "Autenticazione a due fattori (2FA)",
+          "Assistenza clienti premium",
+          "Garanzia di rimborso di 30 giorni"
+        ]
+      },
+      "total": "Totale: ",
+      "addCoupon": {
+        "buttonTitle": "Aggiungi coupon",
+        "inputText": "Codice coupon",
+        "applyCodeButtonTitle": "Applica"
+      },
+      "amountSaved": "Risparmia ",
+      "withAnnualBilling": "con fatturazione annuale"
+    }
+  },
   "general": {
     "new": "new",
     "of": "di",

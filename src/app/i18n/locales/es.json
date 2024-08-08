@@ -151,6 +151,73 @@
       "login": "Iniciar sesión"
     }
   },
+  "checkout": {
+    "title": "¡Ya casi está! Finaliza tu compra de forma segura:",
+    "pay": "Pagar",
+    "paying": "Pagando...",
+    "checkout": "Finalizar compra",
+    "authComponent": {
+      "signUp": {
+        "emailAddress": "Tu dirección de correo electrónico",
+        "password": "Crea una contraseña"
+      },
+      "signIn": {
+        "emailAddress": "Tu dirección de correo electrónico",
+        "password": "Tu contraseña"
+      },
+      "title": {
+        "signUp": "Crea una cuenta",
+        "signIn": "Inicia sesión",
+        "userIsSignedIn": "Has iniciado sesión como"
+      },
+      "emailMustNotBeEmpty": "El correo electrónico no debe estar vacío",
+      "privacyGuarantee": "Garantía de privacidad: No compartimos su información y solo contactaremos contigo cuando sea necesario para brindar nuestro servicio."
+    },
+    "paymentTitle": "Seleccione un método de pago",
+    "productCard": {
+      "title": "Resumen del pedido",
+      "selectedPlan": "Plan seleccionado",
+      "renewalPeriod": {
+        "month": "mensual",
+        "year": "anual",
+        "lifetime": "lifetime"
+      },
+      "plan": {
+        "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - plan {{interval}}"
+      },
+      "billed": {
+        "month": "Facturado mensualmente",
+        "year": "Facturado anualmente",
+        "lifetime": "Pago único"
+      },
+      "saving": "Estás ahorrando un {{percent}}%",
+      "planDetails": {
+        "title": "Detalles del plan:",
+        "features": [
+          "{{spaceToUpgrade}} de almacenamiento encriptado",
+          "Compartir archivos y carpetas encriptados",
+          "Compartir archivos con protección por contraseña",
+          "Acceda a sus archivos desde cualquier dispositivo",
+          "Acceso a todos nuestros servicios",
+          "Cargar archivos de hasta 20GB",
+          "Autenticación de dos factores (2FA)",
+          "Soporte al cliente premium",
+          "Garantía de devolución de dinero de 30 días"
+        ]
+      },
+      "total": "Total: ",
+      "addCoupon": {
+        "buttonTitle": "Añadir cupón",
+        "inputText": "Código de cupón",
+        "applyCodeButtonTitle": "Aplicar"
+      },
+      "amountSaved": "Ahorre ",
+      "withAnnualBilling": "con facturación anual"
+    }
+  },
+
   "general": {
     "new": "nuevo",
     "of": "de",

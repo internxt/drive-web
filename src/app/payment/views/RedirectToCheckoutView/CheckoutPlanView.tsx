@@ -1,4 +1,6 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -8,8 +10,6 @@ import paymentService from 'app/payment/services/payment.service';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planActions, PlanState } from 'app/store/slices/plan';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { uiActions } from '../../../store/slices/ui';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 

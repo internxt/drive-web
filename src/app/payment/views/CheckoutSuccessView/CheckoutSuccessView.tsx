@@ -3,12 +3,13 @@ import useEffectAsync from 'app/core/hooks/useEffectAsync';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
 import { useAppDispatch } from 'app/store/hooks';
-import { userThunks } from 'app/store/slices/user';
 import { useCallback } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '../../../store';
 import { useThemeContext } from '../../../theme/ThemeProvider';
 import { isStarWarsThemeAvailable } from '../../utils/checkStarWarsCode';
+import { planThunks } from 'app/store/slices/plan';
+import { userThunks } from 'app/store/slices/user';
 
 const CheckoutSuccessView = (): JSX.Element => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,11 @@ const CheckoutSuccessView = (): JSX.Element => {
   const plan = useSelector((state: RootState) => state.plan);
 
   const onCheckoutSuccess = useCallback(async () => {
-    await dispatch(userThunks.refreshUserThunk());
+    setTimeout(async () => {
+      await dispatch(userThunks.initializeUserThunk());
+      await dispatch(planThunks.initializeThunk());
+    }, 3000);
+
     try {
       await analyticsService.trackPaymentConversion();
     } catch (err) {

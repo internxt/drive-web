@@ -5,6 +5,7 @@ import {
   Invoice,
   PaymentMethod,
   RedeemCodePayload,
+  CreatedSubscriptionData,
   UserType,
   InvoicePayload,
   UserSubscription,
@@ -51,6 +52,34 @@ const paymentService = {
     return stripe;
   },
 
+  async getCustomerId(name: string, email: string): Promise<{ customerId: string; token: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.getCustomerId(name, email);
+  },
+
+  async createSubscription(
+    customerId: string,
+    priceId: string,
+    token: string,
+    currency: string,
+    promoCode?: string,
+  ): Promise<CreatedSubscriptionData> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createSubscription(customerId, priceId, token, currency, promoCode);
+  },
+
+  async createPaymentIntent(
+    customerId: string,
+    amount: number,
+    planId: string,
+    token: string,
+    currency?: string,
+    promoCode?: string,
+  ): Promise<{ clientSecret: string }> {
+    const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
+    return paymentsClient.createPaymentIntent(customerId, amount, planId, token, currency, promoCode);
+  },
+
   async createSession(payload: CreatePaymentSessionPayload): Promise<{ id: string }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
     return paymentsClient.createSession(payload);
@@ -91,7 +120,6 @@ const paymentService = {
     couponUsed: boolean;
   }> {
     const paymentsClient = await SdkFactory.getInstance().createPaymentsClient();
-
     return paymentsClient.isCouponUsedByUser({ couponCode: couponCode });
   },
 

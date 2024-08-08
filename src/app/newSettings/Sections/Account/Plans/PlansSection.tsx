@@ -23,6 +23,7 @@ import PlanCard from './components/PlanCard';
 import PlanSelectionCard from './components/PlanSelectionCard';
 import IntervalSwitch from './components/TabButton';
 import { displayAmount, getCurrentChangePlanType, getCurrentUsage, getPlanInfo, getPlanName } from './utils/planUtils';
+import { AppView } from 'app/core/types';
 
 interface PlansSectionProps {
   changeSection: ({ section, subsection }) => void;
@@ -132,7 +133,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     }
   }, []);
 
-  const showCancelSubscriptionErrorNotificacion = useCallback(
+  const showCancelSubscriptionErrorNotification = useCallback(
     () =>
       notificationsService.show({
         text: translate('notificationMessages.errorCancelSubscription'),
@@ -172,7 +173,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           .catch((err) => {
             const error = errorService.castError(err);
             errorService.reportError(error);
-            showCancelSubscriptionErrorNotificacion();
+            showCancelSubscriptionErrorNotification();
           });
       } else {
         handlePaymentSuccess();
@@ -180,7 +181,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
@@ -202,46 +203,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
     } catch (err) {
       const error = errorService.castError(err);
       errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
-    }
-  };
-
-  const handleLifetimeCheckout = async ({
-    priceId,
-    currency,
-    userEmail,
-  }: {
-    userEmail: string;
-    priceId: string;
-    currency: string;
-  }) => {
-    try {
-      const response = await createCheckoutSession({
-        userEmail,
-        priceId,
-        currency,
-        mode: 'payment',
-      });
-      localStorage.setItem('sessionId', response.sessionId);
-      await paymentService.redirectToCheckout(response).then(async (result) => {
-        await paymentService.cancelSubscription(selectedSubscription);
-        if (result.error) {
-          notificationsService.show({
-            type: ToastType.Error,
-            text: result.error.message as string,
-          });
-          return;
-        }
-
-        notificationsService.show({
-          type: ToastType.Success,
-          text: 'Payment successful',
-        });
-      });
-    } catch (err) {
-      const error = errorService.castError(err);
-      errorService.reportError(error);
-      showCancelSubscriptionErrorNotificacion();
+      showCancelSubscriptionErrorNotification();
     }
   };
 
@@ -253,12 +215,26 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
 
     if (!isCurrentPlanTypeSubscription) {
       const mode = selectedInterval === 'lifetime' ? 'payment' : 'subscription';
-      await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      if (isIndividualSubscriptionSelected) {
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+          currency: currency,
+        });
+      } else {
+        await handleCheckoutSession({ priceId, currency, userEmail: user.email, mode });
+      }
+
       setIsDialogOpen(false);
     } else {
       const isLifetimeIntervalSelected = selectedInterval === 'lifetime';
       if (isLifetimeIntervalSelected) {
-        await handleLifetimeCheckout({ priceId, currency, userEmail: user.email });
+        onClosePreferences();
+        navigationService.push(AppView.Checkout, {
+          planId: priceId,
+          currency: currency,
+        });
+        setIsDialogOpen(false);
       } else {
         await handleSubscriptionPayment(priceId);
         dispatch(planThunks.initializeThunk()).unwrap();
