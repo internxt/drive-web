@@ -155,11 +155,11 @@
     "paying": "Bezahlen...",
     "checkout": "Zur Kasse",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Ihre E-Mail-Adresse",
         "password": "Passwort erstellen"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Ihre E-Mail-Adresse",
         "password": "Ihr Passwort"
       },
@@ -175,6 +175,11 @@
     "productCard": {
       "title": "Bestellübersicht",
       "selectedPlan": "Ausgewählter Plan",
+      "renewalPeriod": {
+        "month": "monatlich",
+        "year": "jährlich",
+        "lifetime": "lebenslang"
+      },
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",
         "year": "{{spaceToUpgrade}} - 1 {{interval}}-Plan",

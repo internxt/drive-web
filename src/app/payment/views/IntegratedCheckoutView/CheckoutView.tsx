@@ -93,7 +93,7 @@ const CheckoutView = ({
                   <div className="flex flex-col rounded-2xl border border-gray-10 bg-surface p-5">
                     <AddressElement
                       onChange={(e) => {
-                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name as string);
+                        checkoutViewManager.onUserNameFromAddressElementChange(e.value.name);
                       }}
                       options={{
                         mode: 'billing',
@@ -110,7 +110,7 @@ const CheckoutView = ({
                   </Button>
                 </div>
               </div>
-              <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg lg:pb-0">
+              <div className="top-5 flex w-full max-w-xl flex-col gap-5 pb-10 lg:sticky lg:max-w-lg">
                 <ProductFeaturesComponent
                   selectedPlan={currentSelectedPlan}
                   couponCodeData={couponCodeData}

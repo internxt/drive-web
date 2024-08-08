@@ -161,11 +161,11 @@
     "paying": "Оплата...",
     "checkout": "Оформить заказ",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Ваш адрес электронной почты",
         "password": "Создайте пароль"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Ваш адрес электронной почты",
         "password": "Ваш пароль"
       },
@@ -181,6 +181,11 @@
     "productCard": {
       "title": "Сводка заказа",
       "selectedPlan": "Выбранный план",
+      "renewalPeriod": {
+        "month": "ежемесячный",
+        "year": "ежегодный",
+        "lifetime": "пожизненный"
+      },
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} план",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} план",

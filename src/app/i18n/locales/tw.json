@@ -178,11 +178,11 @@
     "paying": "正在支付...",
     "checkout": "結帳",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "您的電子郵件地址",
         "password": "創建密碼"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "您的電子郵件地址",
         "password": "您的密碼"
       },
@@ -198,6 +198,11 @@
     "productCard": {
       "title": "訂單摘要",
       "selectedPlan": "選擇的計劃",
+      "renewalPeriod": {
+        "month": "每月",
+        "year": "每年",
+        "lifetime": "終身"
+      },
       "plan": {
         "month": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",
         "year": "{{spaceToUpgrade}} - 1 {{interval}} 計劃",

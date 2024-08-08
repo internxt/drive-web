@@ -178,11 +178,11 @@
     "paying": "Paying...",
     "checkout": "Checkout",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Your email address",
         "password": "Create password"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Your email address",
         "password": "Your password"
       },
@@ -196,6 +196,11 @@
     },
     "paymentTitle": "Select a payment method",
     "productCard": {
+      "renewalPeriod": {
+        "month": "month",
+        "year": "year",
+        "lifetime": "lifetime"
+      },
       "title": "Order summary",
       "selectedPlan": "Selected plan",
       "plan": {

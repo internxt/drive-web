@@ -157,11 +157,11 @@
     "paying": "Pagando...",
     "checkout": "Finalizar compra",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Tu dirección de correo electrónico",
         "password": "Crea una contraseña"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Tu dirección de correo electrónico",
         "password": "Tu contraseña"
       },
@@ -177,10 +177,15 @@
     "productCard": {
       "title": "Resumen del pedido",
       "selectedPlan": "Plan seleccionado",
+      "renewalPeriod": {
+        "month": "mensual",
+        "year": "anual",
+        "lifetime": "lifetime"
+      },
       "plan": {
-        "month": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
-        "year": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
-        "lifetime": "{{spaceToUpgrade}} - plan de {{interval}}"
+        "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - plan {{interval}}"
       },
       "billed": {
         "month": "Facturado mensualmente",

@@ -178,11 +178,11 @@
     "paying": "Pagando...",
     "checkout": "Pagamento",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Il tuo indirizzo email",
         "password": "Crea una password"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Il tuo indirizzo email",
         "password": "La tua password"
       },
@@ -198,10 +198,15 @@
     "productCard": {
       "title": "Riepilogo dell'ordine",
       "selectedPlan": "Piano selezionato",
+      "renewalPeriod": {
+        "month": "mensile",
+        "year": "annuale",
+        "lifetime": "a vita"
+      },
       "plan": {
-        "month": "{{spaceToUpgrade}} - 1 piano di {{interval}}",
-        "year": "{{spaceToUpgrade}} - 1 piano di {{interval}}",
-        "lifetime": "{{spaceToUpgrade}} - piano di {{interval}}"
+        "month": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 piano {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - piano {{interval}}"
       },
       "billed": {
         "month": "Fatturato mensilmente",

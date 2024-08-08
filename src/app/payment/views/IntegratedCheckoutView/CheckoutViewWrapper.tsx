@@ -41,12 +41,14 @@ export const THEME_STYLES = {
     textColor: 'rgb(255 255 255)',
     borderColor: 'rgb(58, 58, 59)',
     borderInputColor: 'rgb(142, 142, 148)',
+    labelTextColor: 'rgb(229 229 235)',
   },
   light: {
     backgroundColor: 'rgb(255 255 255)',
     textColor: 'rgb(17 17 17)',
     borderColor: 'rgb(229, 229, 235)',
     borderInputColor: 'rgb(174, 174, 179)',
+    labelTextColor: 'rgb(58 58 59)',
   },
 };
 
@@ -192,8 +194,9 @@ const CheckoutViewWrapper = () => {
             });
           }
 
-          const { backgroundColor, textColor, borderColor, borderInputColor } = THEME_STYLES[checkoutTheme as string];
-          loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, plan);
+          const { backgroundColor, textColor, borderColor, borderInputColor, labelTextColor } =
+            THEME_STYLES[checkoutTheme as string];
+          loadStripeElements(textColor, backgroundColor, borderColor, borderInputColor, labelTextColor, plan);
         }
       })
       .catch(() => {});
@@ -294,6 +297,7 @@ const CheckoutViewWrapper = () => {
     backgroundColor: string,
     borderColor: string,
     borderInputColor: string,
+    labelTextColor: string,
     plan: PlanData,
   ) => {
     const stripeElementsOptions: StripeElementsOptions = {
@@ -338,7 +342,8 @@ const CheckoutViewWrapper = () => {
             border: `0.5px solid ${BORDER_SHADOW}`,
           },
           '.Label': {
-            color: textColor,
+            color: labelTextColor,
+            fontSize: '0.875rem',
           },
           '.RedirectText': {
             color: textColor,

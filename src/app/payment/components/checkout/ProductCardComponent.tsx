@@ -62,7 +62,7 @@ export const ProductFeaturesComponent = ({
   const upsellPlanAmount = upsellManager.amount && getProductAmount(upsellManager.amount, couponCodeData).toFixed(2);
 
   return (
-    <div className="flex w-full flex-col space-y-4">
+    <div className="flex w-full flex-col space-y-4 overflow-y-auto">
       <div className="flex w-full flex-row items-center justify-between space-x-4">
         <p className="text-2xl font-semibold text-gray-100">{translate('checkout.productCard.title')}</p>
         <div className="flex flex-row space-x-2">
@@ -75,7 +75,7 @@ export const ProductFeaturesComponent = ({
           <p className="text-2xl font-bold text-gray-100">
             {translate(`checkout.productCard.plan.${selectedPlan.interval}`, {
               spaceToUpgrade: bytes,
-              interval: selectedPlan.interval,
+              interval: translate(`checkout.productCard.renewalPeriod.${selectedPlan.interval}`),
             })}
           </p>
           <div className="flex flex-row items-center justify-between text-gray-100">

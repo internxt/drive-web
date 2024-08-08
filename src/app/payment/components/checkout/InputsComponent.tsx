@@ -2,22 +2,24 @@ import PasswordInput from 'app/auth/components/PasswordInput/PasswordInput';
 import TextInput from 'app/auth/components/TextInput/TextInput';
 import { IFormValues } from 'app/core/types';
 import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
+import { AuthMethodTypes } from 'app/payment/types';
 import { MAX_PASSWORD_LENGTH } from 'app/shared/components/ValidPassword';
 import { FieldErrors, UseFormRegister } from 'react-hook-form';
 
 interface InputsComponentProps {
   errors: FieldErrors<IFormValues>;
   authError?: string;
+  authMethod: AuthMethodTypes;
   register: UseFormRegister<IFormValues>;
 }
 
-export const InputsComponent = ({ register, errors, authError }: InputsComponentProps) => {
+export const InputsComponent = ({ register, errors, authError, authMethod }: InputsComponentProps) => {
   const { translate } = useTranslationContext();
 
   return (
     <>
       <div className="flex w-full flex-col gap-1">
-        <p className="text-sm text-gray-80">{translate('checkout.authComponent.signup.emailAddress')}</p>
+        <p className="text-sm text-gray-80">{translate('checkout.authComponent.signUp.emailAddress')}</p>
         <TextInput
           placeholder={'Email'}
           label="email"
@@ -30,7 +32,7 @@ export const InputsComponent = ({ register, errors, authError }: InputsComponent
       </div>
 
       <div className="flex w-full flex-col gap-1">
-        <p className="text-sm text-gray-80">{translate('checkout.authComponent.signup.password')}</p>
+        <p className="text-sm text-gray-80">{translate(`checkout.authComponent.${authMethod}.password`)}</p>
         <label className="space-y-0.5">
           <PasswordInput
             placeholder={'Password'}

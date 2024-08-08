@@ -65,7 +65,7 @@ export const UserAuthComponent = ({
             </div>
           </div>
         ) : (
-          <InputsComponent authError={authError} errors={errors} register={register} />
+          <InputsComponent authError={authError} errors={errors} authMethod={authMethod} register={register} />
         )}
       </div>
       {isNotUserSignedIn ? (

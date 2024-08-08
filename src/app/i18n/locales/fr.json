@@ -161,11 +161,11 @@
     "paying": "Paiement en cours...",
     "checkout": "Commander",
     "authComponent": {
-      "signup": {
+      "signUp": {
         "emailAddress": "Votre adresse email",
         "password": "Créer un mot de passe"
       },
-      "login": {
+      "signIn": {
         "emailAddress": "Votre adresse email",
         "password": "Votre mot de passe"
       },
@@ -181,10 +181,15 @@
     "productCard": {
       "title": "Récapitulatif de la commande",
       "selectedPlan": "Plan sélectionné",
+      "renewalPeriod": {
+        "month": "mensuel",
+        "year": "annuel",
+        "lifetime": "à vie"
+      },
       "plan": {
-        "month": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
-        "year": "{{spaceToUpgrade}} - 1 plan de {{interval}}",
-        "lifetime": "{{spaceToUpgrade}} - plan de {{interval}}"
+        "month": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "year": "{{spaceToUpgrade}} - 1 plan {{interval}}",
+        "lifetime": "{{spaceToUpgrade}} - plan {{interval}}"
       },
       "billed": {
         "month": "Facturé mensuellement",
