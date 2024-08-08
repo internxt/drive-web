@@ -1554,6 +1554,24 @@
           "cancel": "Cancelar",
           "rename": "Renombrar",
           "nameExists": "Ya existe un equipo con este nombre"
+        },
+        "deleteTeamDialog": {
+          "title": "Eliminar equipo",
+          "description": "se eliminará y los miembros de este equipo pueden perder el acceso a archivos y carpetas compartidos con el equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar equipo"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Eliminar miembro",
+          "description": "perderá acceso a archivos y carpetas compartidos con este equipo.",
+          "cancel": "Cancelar",
+          "delete": "Eliminar"
+        },
+        "changeManagerDialog": {
+          "title": "Cambiar de administrador",
+          "description": "se convertirá en el administrador de este equipo. El administrador anterior será degradado a miembro del equipo.",
+          "cancel": "Cancelar",
+          "change": "Cambiar"
         }
       },
       "billing": {

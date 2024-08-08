@@ -153,9 +153,9 @@ export function editTeam(teamId: string, name: string): Promise<void> {
   });
 }
 
-export function deleteTeam(teamId: string): Promise<void> {
+export function deleteTeam(workspaceId: string, teamId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.deleteTeam({ teamId }).catch((error) => {
+  return workspaceClient.deleteTeam({ workspaceId, teamId }).catch((error) => {
     throw errorService.castError(error);
   });
 }
@@ -174,9 +174,9 @@ export function removeTeamUser(teamId: string, userUuid: string): Promise<void> 
   });
 }
 
-export function changeTeamManager(teamId: string): Promise<void> {
+export function changeTeamManager(workspaceId: string, teamId: string, userId: string): Promise<void> {
   const workspaceClient = SdkFactory.getNewApiInstance().createWorkspacesClient();
-  return workspaceClient.changeTeamManager(teamId).catch((error) => {
+  return workspaceClient.changeTeamManager(workspaceId, teamId, userId).catch((error) => {
     throw errorService.castError(error);
   });
 }

@@ -1518,6 +1518,24 @@
           "cancel": "Abbrechen",
           "rename": "Umbenennen",
           "nameExists": "Ein Team mit diesem Namen existiert bereits"
+        },
+        "deleteTeamDialog": {
+          "title": "Team löschen",
+          "description": "wird gelöscht und Mitglieder dieses Teams könnten den Zugriff auf Dateien und Ordner verlieren, die mit dem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Team löschen"
+        },
+        "removeTeamMemberDialog": {
+          "title": "Mitglied entfernen",
+          "description": "wird den Zugriff auf Dateien und Ordner verlieren, die mit diesem Team geteilt wurden.",
+          "cancel": "Abbrechen",
+          "delete": "Entfernen"
+        },
+        "changeManagerDialog": {
+          "title": "Manager ändern",
+          "description": "wird zum Manager dieses Teams. Der vorherige Manager wird zum Mitglied des Teams herabgestuft.",
+          "cancel": "Abbrechen",
+          "change": "Ändern"
         }
       },
       "billing": {
