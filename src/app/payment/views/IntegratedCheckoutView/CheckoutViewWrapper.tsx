@@ -333,7 +333,7 @@ const CheckoutViewWrapper = () => {
             border: `0.5px solid ${BORDER_SHADOW}`,
           },
           '.Input::selection': {
-            backgroundColor: backgroundColor,
+            backgroundColor: `${backgroundColor} !important`,
             // borderColor: borderInputColor,
             border: `0.5px solid ${BORDER_SHADOW}`,
           },
