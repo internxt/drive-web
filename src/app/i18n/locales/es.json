@@ -1566,6 +1566,12 @@
           "description": "perderá acceso a archivos y carpetas compartidos con este equipo.",
           "cancel": "Cancelar",
           "delete": "Eliminar"
+        },
+        "changeManagerDialog": {
+          "title": "Cambiar de administrador",
+          "description": "se convertirá en el administrador de este equipo. El administrador anterior será degradado a miembro del equipo.",
+          "cancel": "Cancelar",
+          "change": "Cambiar"
         }
       },
       "billing": {

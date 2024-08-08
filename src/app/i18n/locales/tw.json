@@ -1550,6 +1550,12 @@
           "description": "將失去對與該團隊共享的文件和文件夾的訪問權限。",
           "cancel": "取消",
           "delete": "移除"
+        },
+        "changeManagerDialog": {
+          "title": "更換管理員",
+          "description": "將成為該團隊的管理員。前任管理員將被降級為團隊成員。",
+          "cancel": "取消",
+          "change": "更換"
         }
       },
       "billing": {

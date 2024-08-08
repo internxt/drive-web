@@ -1588,6 +1588,12 @@
           "description": "将失去对与该团队共享的文件和文件夹的访问权限。",
           "cancel": "取消",
           "delete": "移除"
+        },
+        "changeManagerDialog": {
+          "title": "更换管理员",
+          "description": "将成为该团队的管理员。前任管理员将被降级为团队成员。",
+          "cancel": "取消",
+          "change": "更换"
         }
       },
       "billing": {

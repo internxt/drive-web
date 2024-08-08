@@ -1516,6 +1516,12 @@
           "description": "perdra l'accès aux fichiers et dossiers partagés avec cette équipe.",
           "cancel": "Annuler",
           "delete": "Retirer"
+        },
+        "changeManagerDialog": {
+          "title": "Changer de gestionnaire",
+          "description": "deviendra le gestionnaire de cette équipe. L'ancien gestionnaire sera rétrogradé au rang de membre de l'équipe.",
+          "cancel": "Annuler",
+          "change": "Changer"
         }
       },
       "billing": {

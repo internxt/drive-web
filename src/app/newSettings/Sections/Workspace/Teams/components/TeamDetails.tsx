@@ -1,4 +1,4 @@
-import { WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/workspaces/types';
+import { WorkspaceData, WorkspaceTeam, TeamMembers } from '@internxt/sdk/dist/workspaces/types';
 import { t } from 'i18next';
 import { DotsThreeVertical } from '@phosphor-icons/react';
 
@@ -25,6 +25,9 @@ interface TeamDetailsProps {
   setIsDeleteTeamDialogOpen: (boolean) => void;
   setIsRemoveTeamMemberDialogOpen: (boolean) => void;
   setTeamMemberToRemove: (TeamMember) => void;
+  handleChangeManagerClicked: (TeamMember) => void;
+  selectedWorkspace: WorkspaceData | null;
+  isCurrentUserManager: boolean;
 }
 
 const TeamDetails: React.FC<TeamDetailsProps> = ({
@@ -45,6 +48,9 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
   setIsDeleteTeamDialogOpen,
   setIsRemoveTeamMemberDialogOpen,
   setTeamMemberToRemove,
+  handleChangeManagerClicked,
+  selectedWorkspace,
+  isCurrentUserManager,
 }) => {
   return (
     <section className="space-y-3">
@@ -61,7 +67,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
           </h4>
         </div>
         <div className="relative flex items-center">
-          {isCurrentUserWorkspaceOwner && (
+          {(isCurrentUserWorkspaceOwner || isCurrentUserManager) && (
             <div className="flex">
               <Button
                 variant="secondary"
@@ -118,6 +124,7 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
       ) : (
         <div className="pb-5">
           {selectedTeamMembers.map((member) => {
+            const isOwner = selectedWorkspace?.workspace.ownerId === member.uuid;
             const isManager = team.team.managerId === member.uuid;
             const isLastItem = selectedTeamMembers.indexOf(member) === selectedTeamMembers.length - 1;
             const isFirstItem = selectedTeamMembers.indexOf(member) === 0;
@@ -138,7 +145,14 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                       <span className="break-all text-base font-medium leading-5 text-gray-100">
                         {member.name} {member.lastname}
                       </span>
-                      {isManager && (
+                      {isOwner && (
+                        <RoleBadge
+                          role="owner"
+                          roleText={t('preferences.workspace.members.role.owner')}
+                          size={'small'}
+                        />
+                      )}
+                      {isManager && !isOwner && (
                         <RoleBadge
                           role="manager"
                           roleText={t('preferences.workspace.members.role.manager')}
@@ -151,10 +165,10 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                     </span>
                   </div>
                 </div>
-                {hoveredMember === member.uuid && !isManager && (
+                {hoveredMember === member.uuid && (isCurrentUserManager || isCurrentUserWorkspaceOwner) && (
                   <div className="relative flex items-center">
-                    {isCurrentUserWorkspaceOwner && (
-                      <div className="flex items-center">
+                    <div className="flex items-center">
+                      {!isOwner && !isManager && (
                         <Button
                           variant="secondary"
                           size="medium"
@@ -165,6 +179,8 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                         >
                           <span>{t('preferences.workspace.teams.teamDetails.remove')}</span>
                         </Button>
+                      )}
+                      {!isManager && (
                         <button
                           className="ml-2 flex h-7 w-7 items-center justify-center rounded-lg border border-gray-10 bg-surface text-gray-80 shadow-sm hover:border-gray-20 active:bg-gray-1 dark:bg-gray-5 dark:active:bg-gray-10"
                           onClick={() => {
@@ -173,11 +189,16 @@ const TeamDetails: React.FC<TeamDetailsProps> = ({
                         >
                           <DotsThreeVertical size={24} />
                         </button>
-                      </div>
-                    )}
+                      )}
+                    </div>
                     {isMemberOptionsOpen && (
                       <div className="absolute right-0 top-9 z-10 flex w-40 items-center rounded-lg border border-gray-10 bg-surface shadow-sm">
-                        <button className="font-regular z-50 ml-5 flex h-12 items-center text-base text-gray-100">
+                        <button
+                          className="font-regular z-50 ml-5 flex h-12 items-center text-base text-gray-100"
+                          onClick={() => {
+                            handleChangeManagerClicked(member);
+                          }}
+                        >
                           {t('preferences.workspace.teams.teamDetails.makeManager')}
                         </button>
                       </div>

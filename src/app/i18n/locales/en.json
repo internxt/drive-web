@@ -1589,6 +1589,12 @@
           "description": "will lose access to files and folders shared with this team.",
           "cancel": "Cancel",
           "delete": "Remove"
+        },
+        "changeManagerDialog": {
+          "title": "Change manager",
+          "description": "will become the Manager of this team. Previous manager will be downgraded to Member of the team.",
+          "cancel": "Cancel",
+          "change": "Change"
         }
       },
       "billing": {

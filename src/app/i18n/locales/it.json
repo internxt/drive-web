@@ -1576,6 +1576,12 @@
           "description": "perderà l'accesso ai file e alle cartelle condivisi con questo team.",
           "cancel": "Annulla",
           "delete": "Rimuovi"
+        },
+        "changeManagerDialog": {
+          "title": "Cambia manager",
+          "description": "diventerà il manager di questo team. Il precedente manager sarà retrocesso a membro del team.",
+          "cancel": "Annulla",
+          "change": "Cambia"
         }
       },
       "billing": {

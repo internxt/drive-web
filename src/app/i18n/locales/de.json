@@ -1530,6 +1530,12 @@
           "description": "wird den Zugriff auf Dateien und Ordner verlieren, die mit diesem Team geteilt wurden.",
           "cancel": "Abbrechen",
           "delete": "Entfernen"
+        },
+        "changeManagerDialog": {
+          "title": "Manager ändern",
+          "description": "wird zum Manager dieses Teams. Der vorherige Manager wird zum Mitglied des Teams herabgestuft.",
+          "cancel": "Abbrechen",
+          "change": "Ändern"
         }
       },
       "billing": {

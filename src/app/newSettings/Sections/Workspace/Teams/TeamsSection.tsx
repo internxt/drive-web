@@ -23,16 +23,19 @@ import AddMemberDialog from './components/AddMemberDialog';
 import RenameTeamDialog from './components/RenameTeamDialog';
 import DeleteTeamDialog from './components/DeleteTeamDialog';
 import RemoveTeamMemberDialog from './components/RemoveTeamMemberDialog';
+import ChangeManagerDialog from './components/ChangeManagerDialog';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
   const isCurrentUserWorkspaceOwner = useAppSelector(workspacesSelectors.isWorkspaceOwner);
+  const user = useAppSelector((state) => state.user.user);
 
   const [teams, setTeams] = useState<WorkspaceTeamResponse>([]);
   const [isCreateTeamDialogOpen, setIsCreateTeamDialogOpen] = useState<boolean>(false);
   const [isRenameTeamDialogOpen, setIsRenameTeamDialogOpen] = useState<boolean>(false);
   const [isDeleteTeamDialogOpen, setIsDeleteTeamDialogOpen] = useState<boolean>(false);
   const [isRemoveTeamMemberDialogOpen, setIsRemoveTeamMemberDialogOpen] = useState<boolean>(false);
+  const [isChangeManagerDialogOpen, setIsChangeManagerDialogOpen] = useState<boolean>(false);
   const [newTeamName, setNewTeamName] = useState<string>('');
   const [renameTeamName, setRenameTeamName] = useState<string>('');
   const [isCreateTeamLoading, setIsCreateTeamLoading] = useState<boolean>(false);
@@ -43,6 +46,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
   const [isAddMembersLoading, setIsAddMembersLoading] = useState<boolean>(false);
   const [isRemoveTeamMemberLoading, setIsRemoveTeamMemberLoading] = useState<boolean>(false);
+  const [isChangeManagerLoading, setIsChangeManagerLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
   const [selectedTeamMembers, setSelectedTeamMembers] = useState<TeamMembers>([]);
   const [hoveredMember, setHoveredMember] = useState<string | null>(null);
@@ -54,6 +58,9 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [membersToInvite, setMembersToInvite] = useState<WorkspaceUser[]>([]);
   const [searchedMemberString, setSearchedMemberString] = useState<string>('');
   const [teamMemberToRemove, setTeamMemberToRemove] = useState<TeamMember | null>(null);
+  const [newTeamManager, setNewTeamManager] = useState<TeamMember | null>(null);
+  const [currentTeamManager, setCurrentTeamManager] = useState<TeamMember | null>(null);
+  const [isCurrentUserManager, setIsCurrentUserManager] = useState<boolean>(false);
 
   useEffect(() => {
     getTeams();
@@ -75,7 +82,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       try {
         const teams = await workspacesService.getWorkspaceTeams(selectedWorkspace.workspaceUser.workspaceId);
         setTeams(teams);
-        if (selectedTeam && isRenameTeamDialogOpen) {
+        if ((selectedTeam && isRenameTeamDialogOpen) || (selectedTeam && isChangeManagerDialogOpen)) {
           const team = teams.find((team) => team.team.id === selectedTeam?.team.id);
           team && setSelectedTeam(team);
         }
@@ -87,10 +94,11 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     }
   };
 
-  const getTeamMembers = async (teamId) => {
+  const getTeamMembers = async (team: WorkspaceTeam) => {
     setIsGetTeamMembersLoading(true);
     try {
-      const teamMembers = await workspacesService.getTeamMembers(teamId);
+      const teamMembers = await workspacesService.getTeamMembers(team.team.id);
+      user && user.uuid === team.team.managerId ? setIsCurrentUserManager(true) : setIsCurrentUserManager(false);
       setSelectedTeamMembers(teamMembers);
     } catch (err) {
       const castedError = errorService.castError(err);
@@ -189,7 +197,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       setSearchedMemberString('');
       setTimeout(() => {
         getWorkspacesMembers();
-        getTeamMembers(selectedTeam?.team.id);
+        selectedTeam && getTeamMembers(selectedTeam);
         getTeams();
       }, 500);
     } catch (err) {
@@ -231,7 +239,9 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const deleteTeam = async () => {
     setIsDeleteTeamLoading(true);
     try {
-      selectedTeam && (await workspacesService.deleteTeam(selectedTeam.team.id));
+      if (selectedWorkspace && selectedTeam) {
+        await workspacesService.deleteTeam(selectedWorkspace.workspaceUser.workspaceId, selectedTeam.team.id);
+      }
       setSelectedTeam(null);
       setIsDeleteTeamDialogOpen(false);
       setTimeout(() => {
@@ -252,7 +262,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       }
       setTimeout(() => {
         getWorkspacesMembers();
-        getTeamMembers(selectedTeam?.team.id);
+        selectedTeam && getTeamMembers(selectedTeam);
         getTeams();
       }, 500);
     } catch (err) {
@@ -264,10 +274,46 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
     setTeamMemberToRemove(null);
   };
 
+  const changeManager = async () => {
+    setIsChangeManagerLoading(true);
+    try {
+      if (selectedWorkspace && selectedTeam && newTeamManager) {
+        await workspacesService.changeTeamManager(
+          selectedWorkspace.workspaceUser.workspaceId,
+          selectedTeam.team.id,
+          newTeamManager.uuid,
+        );
+      }
+      setTimeout(() => {
+        getTeams();
+        getWorkspacesMembers();
+        selectedTeam && getTeamMembers(selectedTeam);
+      }, 500);
+    } catch (err) {
+      const castedError = errorService.castError(err);
+      errorService.reportError(castedError);
+    }
+    setIsChangeManagerLoading(false);
+    setIsChangeManagerDialogOpen(false);
+  };
+
+  const handleChangeManagerClicked = (member: TeamMember) => {
+    setNewTeamManager(member);
+    selectedTeamMembers.map((member) => member.uuid === selectedTeam?.team.managerId && setCurrentTeamManager(member));
+    setIsChangeManagerDialogOpen(true);
+  };
+
   return (
     <Section
       title={selectedTeam ? selectedTeam.team.name : t('preferences.workspace.teams.title')}
-      onBackButtonClicked={selectedTeam ? () => setSelectedTeam(null) : undefined}
+      onBackButtonClicked={
+        selectedTeam
+          ? () => {
+              setSelectedTeam(null);
+              setIsCurrentUserManager(false);
+            }
+          : undefined
+      }
       onClosePreferences={onClosePreferences}
     >
       {selectedTeam ? (
@@ -289,6 +335,9 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           setIsDeleteTeamDialogOpen={setIsDeleteTeamDialogOpen}
           setIsRemoveTeamMemberDialogOpen={setIsRemoveTeamMemberDialogOpen}
           setTeamMemberToRemove={setTeamMemberToRemove}
+          handleChangeManagerClicked={handleChangeManagerClicked}
+          selectedWorkspace={selectedWorkspace}
+          isCurrentUserManager={isCurrentUserManager}
         />
       ) : (
         <TeamsList
@@ -342,6 +391,14 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         isRemoveTeamMemberLoading={isRemoveTeamMemberLoading}
         removeTeamMember={removeTeamMember}
         teamMemberToRemove={teamMemberToRemove}
+      />
+      <ChangeManagerDialog
+        isOpen={isChangeManagerDialogOpen}
+        onClose={() => setIsChangeManagerDialogOpen(false)}
+        isChangeManagerLoading={isChangeManagerLoading}
+        changeManager={changeManager}
+        newTeamManager={newTeamManager}
+        currentTeamManager={currentTeamManager}
       />
     </Section>
   );
