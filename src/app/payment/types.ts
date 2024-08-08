@@ -104,4 +104,4 @@ export interface ErrorStates {
 
 export type ErrorType = 'auth' | 'stripe' | 'coupon';
 
-export type PartialErrorState = Record<ErrorType, string>;
+export type PartialErrorState = Partial<Record<ErrorType, string>>;
