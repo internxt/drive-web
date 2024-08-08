@@ -321,13 +321,13 @@ const CheckoutViewWrapper = () => {
             backgroundColor: backgroundColor,
           },
           '.Input': {
-            backgroundColor: backgroundColor,
+            backgroundColor: `${backgroundColor} !important`,
             borderRadius: '0.375rem',
             color: textColor,
             border: `1px solid ${borderInputColor}`,
           },
           '.Input:focus': {
-            backgroundColor: backgroundColor,
+            backgroundColor: `${backgroundColor} !important`,
             // borderColor: borderInputColor,
             boxShadow: `0px 0px 4px ${BORDER_SHADOW}`,
             border: `0.5px solid ${BORDER_SHADOW}`,
