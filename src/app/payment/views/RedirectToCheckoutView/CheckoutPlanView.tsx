@@ -39,7 +39,7 @@ export default function CheckoutPlanView(): JSX.Element {
   }
   const { individualSubscription, businessSubscription } = plan;
 
-  const subscription = planType === 'individual' ? individualSubscription : businessSubscription;
+  const subscription = planType === 'business' ? businessSubscription : individualSubscription;
 
   useEffect(() => {
     if (subscription) {
