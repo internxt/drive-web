@@ -101,15 +101,10 @@ const CheckoutViewWrapper = () => {
   const { checkoutTheme } = useThemeContext();
   const [state, dispatchReducer] = useReducer(checkoutReducer, initialStateForCheckout);
   const isAuthenticated = useAppSelector((state) => state.user.isAuthenticated);
-  const userPlan = useSelector((state: RootState) => state.plan);
   const user = useSelector<RootState, UserSettings>((state) => state.user.user!);
-  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
   const { doRegister } = useSignUp('activate');
   const userAuthComponentRef = useRef<HTMLDivElement>(null);
 
-  const { individualSubscription, businessSubscription } = userPlan;
-
-  const subscription = !workspace ? individualSubscription : businessSubscription;
   const fullName = `${user?.name} ${user?.lastname}`;
   const isUserAuthenticated = !!user;
   const isAnyError = state.error?.coupon || state.error?.auth || state.error?.stripe;
