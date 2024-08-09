@@ -4,31 +4,20 @@
     "logOut": "登出"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "高达 ",
-      "discount": "80% 折扣"
-    },
+    "label": "所有计划 80% 折扣",
     "title": "享受 Internxt 的夏季优惠",
-    "subtitle": {
-      "line1": "Internxt 的免费计划将于 7 月 1 日减少到 1GB。",
-      "line2": {
-        "normal1": "使用代码 ",
-        "blue": "FREEVIP",
-        "normal2": " 绕过此降级，享受任何高级计划 90% 的折扣。"
-      }
-    },
+    "subtitle": "通过我们的终身计划赢得我们的高级背包。",
     "cta": "选择计划",
     "guarantee": "30天退款保证",
-    "lastCta": "*优惠适用于免费账户或新客户",
+    "lastCta": "*优惠仅适用于免费账户或新客户",
     "features": [
-      "所有 Internxt 计划均可享受优惠",
+      "在所有Internxt计划上节省",
       "安全可靠的云存储",
-      "开源和透明",
+      "开源且透明",
       "端到端加密传输",
-      "无未授权访问",
-      "优惠截止至8月19日"
-    ],
-    "copied": "已复制到剪贴板"
+      "无未经授权的访问",
+      "优惠截止8月19日"
+    ]
   },
   "valentinesBanner": {
     "title": "爱无极限！",

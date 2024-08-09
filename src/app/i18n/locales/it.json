@@ -9,31 +9,20 @@
     "cta": "Get the deal"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "FINO A ",
-      "discount": "80% DI SCONTO"
-    },
+    "label": "Risparmia l'80%",
     "title": "Approfitta delle offerte estive di Internxt",
-    "subtitle": {
-      "line1": "Il piano gratuito di Internxt sarà ridotto a 1GB il 1 luglio.",
-      "line2": {
-        "normal1": "Evita questo downgrade usando il codice ",
-        "blue": "FREEVIP",
-        "normal2": " per ottenere il 90% di sconto su qualsiasi piano premium."
-      }
-    },
-    "cta": "Scegli il piano",
-    "guarantee": "Garanzia di rimborso di 30 giorni",
-    "lastCta": "*L'offerta è per account gratuiti o nuovi clienti",
+    "subtitle": "Vinci il nostro zaino premium con i nostri piani a vita.",
+    "cta": "Scegli un piano",
+    "guarantee": "Garanzia di rimborso entro 30 giorni",
+    "lastCta": "*L'offerta è valida solo per account gratuiti o nuovi clienti",
     "features": [
       "Risparmia su tutti i piani Internxt",
       "Archiviazione cloud sicura e protetta",
       "Open source e trasparente",
-      "Trasferimenti crittografati end-to-end",
+      "Trasferimenti criptati end-to-end",
       "Nessun accesso non autorizzato",
       "L'offerta termina il 19 agosto"
-    ],
-    "copied": "Copiato negli appunti"
+    ]
   },
   "banner": {
     "label": "Proteggi i tuoi file per sempre",

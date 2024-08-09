@@ -4,22 +4,12 @@
     "logOut": "Cerrar sesión"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "",
-      "discount": "80% DE DESCUENTO"
-    },
+    "label": "Ahorra un 80%",
     "title": "Aprovecha las ofertas de verano de Internxt",
-    "subtitle": {
-      "line1": "A partir del 1 de julio, el plan gratuito de Internxt se reducirá a 1GB. No te quedes sin espacio. ",
-      "line2": {
-        "normal1": "Usa el código ",
-        "blue": "FREEVIP",
-        "normal2": " y obtén un 90% de descuento en cualquier plan premium."
-      }
-    },
+    "subtitle": "Gana nuestra mochila premium con nuestros planes de por vida.",
     "cta": "Elegir plan",
-    "guarantee": "Garantía de devolución del dinero de 30 días",
-    "lastCta": "*Oferta válida para cuentas gratuitas o nuevos usuarios",
+    "guarantee": "Garantía de devolución de 30 días",
+    "lastCta": "*La oferta es para cuentas gratuitas o nuevos clientes",
     "features": [
       "Ahorra en todos los planes de Internxt",
       "Almacenamiento en la nube seguro y protegido",
@@ -27,8 +17,7 @@
       "Transferencias cifradas de extremo a extremo",
       "Sin acceso no autorizado",
       "La oferta termina el 19 de agosto"
-    ],
-    "copied": "Copiado al portapapeles"
+    ]
   },
   "valentinesBanner": {
     "title": "¡Amor sin limites!",

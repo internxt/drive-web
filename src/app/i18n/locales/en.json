@@ -4,19 +4,9 @@
     "logOut": "Log Out"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "UP TO ",
-      "discount": "80% OFF"
-    },
+    "label": "80% OFF all plans",
     "title": "Soak up Internxt's summer deals",
-    "subtitle": {
-      "line1": "Internxt's free plan will be reduced to 1GB on July 1st.",
-      "line2": {
-        "normal1": "Bypass this downgrade using code  ",
-        "blue": "FREEVIP",
-        "normal2": " to get 90% off any premium plan."
-      }
-    },
+    "subtitle": "Win our premium backpack with our lifetime plans.",
     "cta": "Choose plan",
     "guarantee": "30-day money-back guarantee",
     "lastCta": "*Offer is for free accounts or new customers",
@@ -27,8 +17,7 @@
       "End-to-end encrypted transfers",
       "No unauthorized access",
       "Offer ends August 19th"
-    ],
-    "copied": "Copied to clipboard"
+    ]
   },
   "valentinesBanner": {
     "title": "Love without limits!",

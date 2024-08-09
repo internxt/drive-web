@@ -4,31 +4,20 @@
     "logOut": "Log-out"
   },
   "featuresBanner": {
-    "label": {
-      "upTo": "BIS ZU ",
-      "discount": "80% RABATT"
-    },
-    "title": "Genießen Sie die Sommerangebote von Internxt",
-    "subtitle": {
-      "line1": "Der kostenlose Plan von Internxt wird am 1. Juli auf 1 GB reduziert.",
-      "line2": {
-        "normal1": "Umgehen Sie dieses Downgrade mit dem Code ",
-        "blue": "FREEVIP",
-        "normal2": " um 90% Rabatt auf jeden Premium-Plan zu erhalten."
-      }
-    },
-    "cta": "Plan wählen",
-    "guarantee": "30-tägige Geld-zurück-Garantie",
-    "lastCta": "*Angebot gilt für kostenlose Konten oder Neukunden",
+    "label": "Bis zu 80% sparen",
+    "title": "Nutzen Sie die Sommerangebote von Internxt",
+    "subtitle": "Gewinnen Sie unseren Premium-Rucksack mit unseren lebenslangen Plänen.",
+    "cta": "Wähle einen Plan",
+    "guarantee": "30 Tage Geld-zurück-Garantie",
+    "lastCta": "*Angebot gilt für kostenlose Konten oder neue Kunden",
     "features": [
-      "Sparen Sie bei allen Internxt-Plänen",
-      "Sichere und geschützte Cloud-Speicherung",
+      "Sparen bei allen Internxt-Plänen",
+      "Sicherer und geschützter Cloud-Speicher",
       "Open Source und transparent",
-      "Ende-zu-Ende-verschlüsselte Übertragungen",
-      "Kein unbefugter Zugriff",
-      "Das Angebot endet am 19. August"
-    ],
-    "copied": "In die Zwischenablage kopiert"
+      "Ende-zu-Ende verschlüsselte Übertragungen",
+      "Kein unbefugter Zugang",
+      "Angebot endet am 19. August"
+    ]
   },
   "valentinesBanner": {
     "title": "Liebe ohne grenzen!",
