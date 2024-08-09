@@ -44,7 +44,11 @@ export const InputsComponent = ({ register, errors, authError, authMethod }: Inp
           />
         </label>
       </div>
-      {authError && <div className="text-red-dark">{authError}</div>}
+      {authError && (
+        <div id="authError" className="text-red-dark">
+          {authError}
+        </div>
+      )}
       <p className="text-sm font-medium text-gray-50">{translate('checkout.authComponent.privacyGuarantee')}</p>
     </>
   );

@@ -25,7 +25,7 @@ const Separator = () => <div className="border border-gray-10" />;
 
 const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: CouponCodeData): number => {
   if (couponCodeData?.amountOff) {
-    return amount - couponCodeData.amountOff;
+    return amount - couponCodeData.amountOff / 100;
   }
 
   if (couponCodeData?.percentOff) {
@@ -128,9 +128,7 @@ export const ProductFeaturesComponent = ({
                 <div className="flex flex-row items-center gap-4">
                   <Switch
                     checked={isUpsellSwitchActivated}
-                    onChange={() => {
-                      onUpsellSwitchButtonClicked();
-                    }}
+                    onChange={onUpsellSwitchButtonClicked}
                     className={`${
                       isUpsellSwitchActivated ? 'bg-green' : 'bg-gray-10'
                     } relative inline-flex h-6 w-11 items-center rounded-full`}

@@ -1212,6 +1212,7 @@
     "itemDeleted": "{{itemsToDelete}} supprimé",
     "itemsDeleted": "Fichiers supprimés",
     "emailNotEmpty": "L'adresse électronique ne doit pas être vide",
+    "errorCreatingSubscription": "Un problème est survenu lors de la création de votre abonnement",
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
     "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement"

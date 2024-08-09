@@ -1248,7 +1248,8 @@
     "errorCancelSubscription": "取消訂閱時出現問題",
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
-    "alreadyAppliedCoupon": "優惠碼已經應用"
+    "alreadyAppliedCoupon": "優惠碼已經應用",
+    "errorCreatingSubscription": "建立您的訂閱時出現問題"
   },
   "actions": {
     "undo": "撤銷",

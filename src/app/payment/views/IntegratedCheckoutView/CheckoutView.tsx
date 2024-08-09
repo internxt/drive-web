@@ -11,6 +11,7 @@ import { useTranslationContext } from 'app/i18n/provider/TranslationProvider';
 import { StripePaymentElementOptions } from '@stripe/stripe-js';
 import { CheckoutViewManager, UpsellManagerProps, UserInfoProps } from './CheckoutViewWrapper';
 import { State } from 'app/payment/store/types';
+import { LegacyRef } from 'react';
 
 export const PAYMENT_ELEMENT_OPTIONS: StripePaymentElementOptions = {
   wallets: {
@@ -30,6 +31,7 @@ interface CheckoutViewProps {
   userInfo: UserInfoProps;
   isUserAuthenticated: boolean;
   upsellManager: UpsellManagerProps;
+  userAuthComponentRef: LegacyRef<HTMLDivElement>;
   checkoutViewVariables: State;
   checkoutViewManager: CheckoutViewManager;
 }
@@ -39,6 +41,7 @@ const CheckoutView = ({
   userInfo,
   isUserAuthenticated,
   upsellManager,
+  userAuthComponentRef,
   checkoutViewVariables,
   checkoutViewManager,
 }: CheckoutViewProps) => {
@@ -53,14 +56,12 @@ const CheckoutView = ({
     register,
     formState: { errors, isValid },
     handleSubmit,
-    reset,
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
 
   function onAuthMethodToggled(authMethod: AuthMethodTypes) {
     checkoutViewManager.handleAuthMethodChange(authMethod);
-    reset(undefined, { keepErrors: false, keepValues: false });
   }
 
   return (
@@ -78,7 +79,7 @@ const CheckoutView = ({
           </p>
           {currentSelectedPlan ? (
             <div className="flex flex-col items-center justify-center gap-10 lg:flex-row lg:items-start lg:justify-between">
-              <div className="flex w-full max-w-xl flex-col space-y-14">
+              <div className="flex w-full max-w-xl flex-col space-y-14" ref={userAuthComponentRef}>
                 <UserAuthComponent
                   errors={errors}
                   authError={error?.auth}
@@ -104,7 +105,11 @@ const CheckoutView = ({
                     />
                   </div>
                   <PaymentElement options={PAYMENT_ELEMENT_OPTIONS} />
-                  {error?.stripe && <div className="text-red-dark">{error.stripe}</div>}
+                  {error?.stripe && (
+                    <div id="stripeError" className="text-red-dark">
+                      {error.stripe}
+                    </div>
+                  )}
                   <Button type="submit" id="submit" className="hidden lg:flex" disabled={isPaying && isValid}>
                     {isPaying && isValid ? translate('checkout.paying') : translate('checkout.pay')}
                   </Button>
