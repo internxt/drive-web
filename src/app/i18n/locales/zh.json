@@ -1286,7 +1286,8 @@
     "successApplyCoupon": "3个月免费申请",
     "errorApplyCoupon": "应用折扣时出错",
     "alreadyAppliedCoupon": "优惠券已使用",
-    "errorCreatingSubscription": "创建您的订阅时出现问题"
+    "errorCreatingSubscription": "创建您的订阅时出现问题",
+    "errorPurchaseBusinessPlan": "您已经有一个商业计划"
   },
   "actions": {
     "undo": "撤销",

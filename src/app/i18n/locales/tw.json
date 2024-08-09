@@ -1249,7 +1249,8 @@
     "successApplyCoupon": "免費使用3個月的優惠碼已應用",
     "errorApplyCoupon": "應用折扣時出現錯誤",
     "alreadyAppliedCoupon": "優惠碼已經應用",
-    "errorCreatingSubscription": "建立您的訂閱時出現問題"
+    "errorCreatingSubscription": "建立您的訂閱時出現問題",
+    "errorPurchaseBusinessPlan": "您已經有一個商業計劃"
   },
   "actions": {
     "undo": "撤銷",

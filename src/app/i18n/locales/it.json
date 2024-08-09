@@ -1275,7 +1275,8 @@
     "verificationEmail": "L'e-mail di verifica è stata inviata",
     "successCancelSubscription": "L'abbonamento è stato annullato",
     "errorCancelSubscription": "Qualcosa è andato storto durante la cancellazione dell'abbonamento",
-    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento"
+    "errorCreatingSubscription": "Si è verificato un errore durante la creazione del tuo abbonamento",
+    "errorPurchaseBusinessPlan": "Hai già un piano aziendale."
   },
   "actions": {
     "undo": "Annulla",

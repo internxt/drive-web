@@ -1215,7 +1215,8 @@
     "errorCreatingSubscription": "Un problème est survenu lors de la création de votre abonnement",
     "verificationEmail": "Courriel de vérification envoyé",
     "successCancelSubscription": "Votre abonnement a été annulé",
-    "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement"
+    "errorCancelSubscription": "Quelque chose s'est mal passé lors de l'annulation de votre abonnement",
+    "errorPurchaseBusinessPlan": "Vous avez déjà un plan d'affaires."
   },
   "actions": {
     "undo": "Annuler",

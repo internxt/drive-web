@@ -1250,7 +1250,8 @@
     "errorCreatingSubscription": "Algo salió mal al crear tu suscripción",
     "successApplyCoupon": "Se han aplicado 3 meses gratis",
     "errorApplyCoupon": "Se ha producido un error al aplicar el descuento",
-    "alreadyAppliedCoupon": "El cupón ya se ha aplicado"
+    "alreadyAppliedCoupon": "El cupón ya se ha aplicado",
+    "errorPurchaseBusinessPlan": "Ya tienes un plan para empresas"
   },
   "success": {
     "passwordChanged": "Contraseña actualizada correctamente",

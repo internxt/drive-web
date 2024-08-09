@@ -1,6 +1,4 @@
 import { UserType } from '@internxt/sdk/dist/drive/payments/types';
-import { useEffect } from 'react';
-import { useSelector } from 'react-redux';
 import { UserSettings } from '@internxt/sdk/dist/shared/types/userSettings';
 import navigationService from 'app/core/services/navigation.service';
 import { AppView } from 'app/core/types';
@@ -10,6 +8,8 @@ import paymentService from 'app/payment/services/payment.service';
 import { RootState } from 'app/store';
 import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planActions, PlanState } from 'app/store/slices/plan';
+import { useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { uiActions } from '../../../store/slices/ui';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
@@ -27,6 +27,9 @@ interface CheckoutOptions {
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
+  const params = new URLSearchParams(window.location.search);
+  const planType = String(params.get('planType'));
+
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
 
   const plan = useSelector((state: RootState) => state.plan) as PlanState;
@@ -35,8 +38,8 @@ export default function CheckoutPlanView(): JSX.Element {
     navigationService.push(AppView.Login);
   }
   const { individualSubscription, businessSubscription } = plan;
-  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
-  const subscription = !workspace ? individualSubscription : businessSubscription;
+
+  const subscription = planType === 'business' ? businessSubscription : individualSubscription;
 
   useEffect(() => {
     if (subscription) {
@@ -46,11 +49,20 @@ export default function CheckoutPlanView(): JSX.Element {
       const mode = String(params.get('mode') as string | undefined);
       const freeTrials = Number(params.get('freeTrials'));
       const currency = String(params.get('currency'));
-      checkout(planId, currency, coupon, mode, freeTrials);
+      const planType = String(params.get('planType'));
+
+      checkout(planId, currency, coupon, mode, freeTrials, planType);
     }
   }, [subscription]);
 
-  async function checkout(planId: string, currency: string, coupon?: string, mode?: string, freeTrials?: number) {
+  async function checkout(
+    planId: string,
+    currency: string,
+    coupon?: string,
+    mode?: string,
+    freeTrials?: number,
+    planType?: string,
+  ) {
     let response;
 
     const checkoutOptions: CheckoutOptions = {
@@ -113,6 +125,13 @@ export default function CheckoutPlanView(): JSX.Element {
         }
       } else {
         try {
+          if (planType === 'business') {
+            notificationsService.show({
+              text: translate('notificationMessages.errorPurchaseBusinessPlan'),
+              type: ToastType.Info,
+            });
+            navigationService.push(AppView.Login);
+          }
           const couponCode = coupon === 'null' ? undefined : coupon;
           const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
           if (userSubscription && userSubscription.type === 'subscription') {
