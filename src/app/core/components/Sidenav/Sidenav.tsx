@@ -19,6 +19,7 @@ import { useAppSelector } from 'app/store/hooks';
 
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 import WorkspaceSelectorContainer from './WorkspaceSelectorContainer';
+import Spinner from 'app/shared/components/Spinner/Spinner';
 
 interface SidenavProps {
   user: UserSettings | undefined;
@@ -33,6 +34,7 @@ const Sidenav = (props: SidenavProps) => {
   const { user } = props;
   const { translate } = useTranslationContext();
   const isB2BWorskpace = !!useSelector(workspacesSelectors.getSelectedWorkspace);
+  const isLoadingCredentials = useAppSelector((state: RootState) => state.workspaces.isLoadingCredentials);
 
   const onDownloadAppButtonClicked = (): void => {
     const getDownloadApp = async () => {
@@ -61,6 +63,15 @@ const Sidenav = (props: SidenavProps) => {
 
   return (
     <div className="flex w-64 flex-col">
+      {isLoadingCredentials && (
+        <div className="absolute z-50 flex h-full w-full flex-col items-center justify-center bg-highlight/40">
+          <Spinner className="h-10 w-10" />
+          <p className="mt-5 text-2xl font-medium text-gray-100">
+            {translate('workspaces.messages.switchingWorkspace')}
+          </p>
+        </div>
+      )}
+
       <div
         className="flex h-14 shrink-0 cursor-pointer items-center border-b border-gray-5 pl-8 dark:bg-gray-1"
         onClick={onLogoClicked}

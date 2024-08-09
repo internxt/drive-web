@@ -1657,7 +1657,8 @@
     },
     "pending": "Ausstehende Einladungen",
     "messages": {
-      "sharedSuccess": "Element erfolgreich mit dem Team geteilt"
+      "sharedSuccess": "Element erfolgreich mit dem Team geteilt",
+      "switchingWorkspace": "Arbeitsbereich wechseln"
     },
     "pendingInvitations": {
       "empty": "Keine Einladungen übrig",
