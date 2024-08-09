@@ -1285,7 +1285,8 @@
     "errorCancelSubscription": "取消订阅时出了点问题",
     "successApplyCoupon": "3个月免费申请",
     "errorApplyCoupon": "应用折扣时出错",
-    "alreadyAppliedCoupon": "优惠券已使用"
+    "alreadyAppliedCoupon": "优惠券已使用",
+    "errorCreatingSubscription": "创建您的订阅时出现问题"
   },
   "actions": {
     "undo": "撤销",

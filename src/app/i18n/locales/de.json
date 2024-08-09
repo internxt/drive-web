@@ -1229,7 +1229,8 @@
     "emailNotEmpty": "E-Mail darf nicht leer sein",
     "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
-    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten"
+    "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
+    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten"
   },
   "actions": {
     "undo": "Rückgängig machen",

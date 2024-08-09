@@ -282,6 +282,10 @@ const CheckoutViewWrapper = () => {
         setError('stripe', error.message as string);
       }
     } catch (err) {
+      notificationsService.show({
+        text: translate('notificationMessages.errorCreatingSubscription'),
+        type: ToastType.Error,
+      });
       const error = err as Error;
       errorService.reportError(error);
     } finally {

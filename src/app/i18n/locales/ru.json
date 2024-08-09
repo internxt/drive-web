@@ -1254,7 +1254,8 @@
     "emailNotEmpty": "Поле электронной почты не должно быть пустым",
     "verificationEmail": "Электронное письмо с подтверждением отправлено",
     "successCancelSubscription": "Подписка отменена",
-    "errorCancelSubscription": "Произошла ошибка при отмене подписки."
+    "errorCancelSubscription": "Произошла ошибка при отмене подписки.",
+    "errorCreatingSubscription": "Что-то пошло не так при создании вашей подписки"
   },
   "actions": {
     "undo": "Отменить",
