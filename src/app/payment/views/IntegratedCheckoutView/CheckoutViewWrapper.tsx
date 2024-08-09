@@ -184,6 +184,7 @@ const CheckoutViewWrapper = () => {
         if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
           setIsCheckoutReadyToRender(false);
           updateUserSubscription(planId);
+          navigationService.push(AppView.Drive);
           return;
         }
         if (checkoutTheme && plan) {
@@ -247,6 +248,11 @@ const CheckoutViewWrapper = () => {
 
     try {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
+
+      if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
+        await updateUserSubscription(currentSelectedPlan?.id as string);
+        return;
+      }
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
@@ -406,9 +412,8 @@ const CheckoutViewWrapper = () => {
         text: translate('notificationMessages.errorCancelSubscription'),
         type: ToastType.Error,
       });
-    } finally {
-      navigationService.push(AppView.Drive);
     }
+    navigationService.push(AppView.Drive);
   };
 
   const onLogOut = async () => {

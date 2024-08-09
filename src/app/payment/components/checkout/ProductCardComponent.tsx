@@ -25,7 +25,7 @@ const Separator = () => <div className="border border-gray-10" />;
 
 const getProductAmount = (amount: DisplayPrice['amount'], couponCodeData?: CouponCodeData): number => {
   if (couponCodeData?.amountOff) {
-    return amount - couponCodeData.amountOff;
+    return amount - couponCodeData.amountOff / 100;
   }
 
   if (couponCodeData?.percentOff) {
