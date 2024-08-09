@@ -1230,7 +1230,8 @@
     "verificationEmail": "Bestätigungs-E-Mail wurde gesendet",
     "successCancelSubscription": "Dein Abonnement wurde gekündigt",
     "errorCancelSubscription": "Bei der Kündigung deines Abonnements ist ein Fehler aufgetreten",
-    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten"
+    "errorCreatingSubscription": "Beim Erstellen Ihres Abonnements ist ein Fehler aufgetreten",
+    "errorPurchaseBusinessPlan": "Sie haben bereits einen Geschäftstarif."
   },
   "actions": {
     "undo": "Rückgängig machen",
