@@ -181,12 +181,6 @@ const CheckoutViewWrapper = () => {
 
     handleFetchSelectedPlan(planId, currencyValue)
       .then((plan) => {
-        if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
-          setIsCheckoutReadyToRender(false);
-          updateUserSubscription(planId);
-          navigationService.push(AppView.Drive);
-          return;
-        }
         if (checkoutTheme && plan) {
           if (promotionCode) {
             handleFetchPromotionCode(plan.selectedPlan.id, promotionCode).catch((err) => {
@@ -248,11 +242,6 @@ const CheckoutViewWrapper = () => {
 
     try {
       await authCheckoutService.authenticateUser(email, password, authMethod, dispatch, doRegister);
-
-      if (user && subscription?.type === 'subscription' && plan?.selectedPlan.interval !== 'lifetime') {
-        await updateUserSubscription(currentSelectedPlan?.id as string);
-        return;
-      }
     } catch (err) {
       const error = err as Error;
       setError('auth', error.message);
