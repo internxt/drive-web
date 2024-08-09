@@ -55,7 +55,6 @@ const logIn = async (email: string, password: string, twoFactorCode: string, dis
   try {
     dispatch(productsThunks.initializeThunk());
     dispatch(planThunks.initializeThunk());
-    await dispatch(planThunks.initializeThunk());
     dispatch(referralsThunks.initializeThunk());
     await dispatch(initializeUserThunk()).unwrap();
   } catch (e: unknown) {
