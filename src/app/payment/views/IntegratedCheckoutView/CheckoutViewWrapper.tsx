@@ -385,6 +385,7 @@ const CheckoutViewWrapper = () => {
     setPromoCodeData(promoCode);
   };
 
+  // Do not delete, to be used in the next iteration
   const updateUserSubscription = async (planId: string, coupon?: string) => {
     try {
       const couponCode = coupon === 'null' ? undefined : coupon;

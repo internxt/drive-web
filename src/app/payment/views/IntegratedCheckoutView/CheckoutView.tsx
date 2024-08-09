@@ -56,7 +56,6 @@ const CheckoutView = ({
     register,
     formState: { errors, isValid },
     handleSubmit,
-    reset,
   } = useForm<IFormValues>({
     mode: 'onChange',
   });
