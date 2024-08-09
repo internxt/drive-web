@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from 'app/store/hooks';
 import { planActions, PlanState } from 'app/store/slices/plan';
 import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import errorService from '../../../core/services/error.service';
 import { uiActions } from '../../../store/slices/ui';
 import workspacesSelectors from '../../../store/slices/workspaces/workspaces.selectors';
 
@@ -24,6 +25,7 @@ interface CheckoutOptions {
   currency: string;
 }
 
+// THIS ONLY APPLY TO B2B PLANS, BECAUSE B2C USES THE INTEGRATED CHECKOUT
 export default function CheckoutPlanView(): JSX.Element {
   const dispatch = useAppDispatch();
   const { translate } = useTranslationContext();
@@ -34,9 +36,9 @@ export default function CheckoutPlanView(): JSX.Element {
   if (user === undefined) {
     navigationService.push(AppView.Login);
   }
-  const { individualSubscription, businessSubscription } = plan;
-  const workspace = useSelector((state: RootState) => state.workspaces.selectedWorkspace);
-  const subscription = !workspace ? individualSubscription : businessSubscription;
+  const { businessSubscription } = plan;
+
+  const subscription = businessSubscription;
 
   useEffect(() => {
     if (subscription) {
@@ -76,7 +78,7 @@ export default function CheckoutPlanView(): JSX.Element {
 
         await paymentService.redirectToCheckout(response);
       } catch (err) {
-        console.error(err);
+        errorService.reportError(err);
         notificationsService.show({
           text: translate('notificationMessages.errorCancelSubscription'),
           type: ToastType.Error,
@@ -105,7 +107,6 @@ export default function CheckoutPlanView(): JSX.Element {
             }
           });
         } catch (error) {
-          console.error(error);
           notificationsService.show({
             text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
@@ -114,10 +115,12 @@ export default function CheckoutPlanView(): JSX.Element {
       } else {
         try {
           const couponCode = coupon === 'null' ? undefined : coupon;
-          const { userSubscription } = await paymentService.updateSubscriptionPrice(planId, couponCode);
+          const { userSubscription } = await paymentService.updateSubscriptionPrice({
+            priceId: planId,
+            coupon: couponCode,
+            userType: UserType.Business,
+          });
           if (userSubscription && userSubscription.type === 'subscription') {
-            if (userSubscription.userType == UserType.Individual)
-              dispatch(planActions.setSubscriptionIndividual(userSubscription));
             if (userSubscription.userType == UserType.Business)
               dispatch(planActions.setSubscriptionBusiness(userSubscription));
           }
@@ -128,7 +131,6 @@ export default function CheckoutPlanView(): JSX.Element {
           });
           dispatch(uiActions.setIsPreferencesDialogOpen(true));
         } catch (err) {
-          console.error(err);
           notificationsService.show({
             text: translate('notificationMessages.errorCancelSubscription'),
             type: ToastType.Error,
