@@ -350,6 +350,7 @@ const PlansSection = ({ changeSection, onClosePreferences }: PlansSectionProps) 
           onPlanClick={onChangePlanClicked}
           priceIdSelected={priceSelected.id}
           subscriptionSelected={selectedSubscription}
+          isLoading={isLoadingCheckout}
         />
       )}
       <div className="flex flex-col">
