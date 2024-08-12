@@ -339,56 +339,79 @@ export async function trackCancelPayment(priceId: string) {
 export async function trackPaymentConversion() {
   try {
     const checkoutSessionId = localStorage.getItem('sessionId');
-    const { metadata, amount_total, currency, customer, subscription, payment_intent } = (await httpService.get(
-      `${process.env.REACT_APP_API_URL}/stripe/session`,
-      {
+
+    const { username, uuid } = getUser();
+    let metadata, amount_total, currency, customer, subscription, paymentIntent;
+    try {
+      const {
+        metadata: metadataRetrived,
+        amount_total: totalAmountRetrieved,
+        currency: currencyRetrieved,
+        customer: customerRetrieved,
+        subscription: subscriptionId,
+        payment_intent: paymentIntentRetrieved,
+      } = (await httpService.get(`${process.env.REACT_APP_API_URL}/stripe/session`, {
         params: {
           sessionId: checkoutSessionId,
         },
         headers: httpService.getHeaders(true, false),
-      },
-    )) as any;
-    const { username, uuid } = getUser();
+      })) as any;
+      metadata = metadataRetrived;
+      amount_total = totalAmountRetrieved;
+      currency = currencyRetrieved;
+      customer = customerRetrieved;
+      paymentIntent = paymentIntentRetrieved;
+      subscription = subscriptionId;
+    } catch (error) {
+      console.log(error);
+    }
+
+    subscription = subscription ?? localStorageService.get('subscriptionId');
+    paymentIntent = paymentIntent ?? localStorageService.get('paymentIntentId');
     const amount = amount_total * 0.01;
 
-    window.rudderanalytics.identify(uuid, {
-      email: username,
-      plan: metadata.priceId,
-      customer_id: customer,
-      storage_limit: metadata.maxSpaceBytes,
-      plan_name: metadata.name,
-      subscription_id: subscription,
-      payment_intent,
-    });
-    window.rudderanalytics.track(AnalyticsTrackNames.PaymentConversionEvent, {
-      price_id: metadata.priceId,
-      product: metadata.product,
-      email: username,
-      customer_id: customer,
-      currency: currency.toUpperCase(),
-      value: amount,
-      revenue: amount,
-      quantity: 1,
-      type: metadata.type,
-      plan_name: metadata.name,
-      impact_value: amount_total === 0 ? 5 : amount,
-      subscription_id: subscription,
-      payment_intent,
-    });
+    try {
+      window.rudderanalytics.identify(uuid, {
+        email: username,
+        plan: metadata.priceId,
+        customer_id: customer,
+        storage_limit: metadata.maxSpaceBytes,
+        plan_name: metadata.name,
+        subscription_id: subscription,
+        payment_intent: paymentIntent,
+      });
+      window.rudderanalytics.track(AnalyticsTrackNames.PaymentConversionEvent, {
+        price_id: metadata.priceId,
+        product: metadata.product,
+        email: username,
+        customer_id: customer,
+        currency: currency.toUpperCase(),
+        value: amount,
+        revenue: amount,
+        quantity: 1,
+        type: metadata.type,
+        plan_name: metadata.name,
+        impact_value: amount_total === 0 ? 5 : amount,
+        subscription_id: subscription,
+        payment_intent: paymentIntent,
+      });
 
-    window.gtag('event', 'purchase', {
-      transaction_id: uuidv4(),
-      value: amount,
-      currency: currency.toUpperCase(),
-      items: [
-        {
-          item_id: metadata.priceId,
-          item_name: metadata.name,
-          quantity: 1,
-          price: amount,
-        },
-      ],
-    });
+      window.gtag('event', 'purchase', {
+        transaction_id: uuidv4(),
+        value: amount,
+        currency: currency.toUpperCase(),
+        items: [
+          {
+            item_id: metadata.priceId,
+            item_name: metadata.name,
+            quantity: 1,
+            price: amount,
+          },
+        ],
+      });
+    } catch (error) {
+      console.log(error);
+    }
 
     if (source && source !== 'direct') {
       axios
@@ -398,7 +421,7 @@ export async function trackPaymentConversion() {
           properties: {
             impact_value: amount_total === 0 ? 5 : amount,
             subscription_id: subscription,
-            payment_intent,
+            payment_intent: paymentIntent,
           },
           userId: uuid,
           type: 'track',

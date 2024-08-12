@@ -67,18 +67,19 @@ const getClientSecretForSubscriptionIntent = async (
   token: string,
   currency: string,
   promoCodeId?: string,
-): Promise<ClientSecretData> => {
-  const { type: paymentType, clientSecret: client_secret } = await paymentService.createSubscription(
-    customerId,
-    priceId,
-    token,
-    currency,
-    promoCodeId,
-  );
+): Promise<ClientSecretData & { subscriptionId?: string; paymentIntentId?: string }> => {
+  const {
+    type: paymentType,
+    clientSecret: client_secret,
+    subscriptionId,
+    paymentIntentId,
+  } = await paymentService.createSubscription(customerId, priceId, token, currency, promoCodeId);
 
   return {
     clientSecretType: paymentType,
     client_secret,
+    subscriptionId,
+    paymentIntentId,
   };
 };
 
@@ -103,7 +104,7 @@ const getClientSecret = async (
       clientSecret: client_secret,
     };
   } else {
-    const { clientSecretType, client_secret } = await checkoutService.getClientSecretForSubscriptionIntent(
+    const response = await checkoutService.getClientSecretForSubscriptionIntent(
       customerId,
       selectedPlan?.id,
       token,
@@ -111,9 +112,12 @@ const getClientSecret = async (
       promoCodeId,
     );
 
+    const { clientSecretType, client_secret, subscriptionId, paymentIntentId } = response;
     return {
       type: clientSecretType,
       clientSecret: client_secret,
+      subscriptionId,
+      paymentIntentId,
     };
   }
 };
