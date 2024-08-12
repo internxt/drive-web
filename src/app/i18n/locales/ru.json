@@ -1508,7 +1508,43 @@
         }
       },
       "teams": {
-        "title": "Команды"
+        "title": "Команды",
+        "createTeam": "Создать команду",
+        "team": "Команда",
+        "members": "члены",
+        "createTeamDialog": {
+          "title": "Новая команда",
+          "label": "Имя",
+          "placeholder": "Введите название команды",
+          "cancel": "Отменить",
+          "create": "Создать",
+          "nameExists": "Команда с таким названием уже существует"
+        },
+        "teamDetails": {
+          "member": "Член",
+          "members": "Пользователи",
+          "remove": "Удалить",
+          "makeManager": "Сделать менеджером",
+          "addMember": "Добавить члена",
+          "rename": "Переименовать",
+          "delete": "Удалить"
+        },
+        "addMemberDialog": {
+          "title": "Добавить участников",
+          "placeholder": "Поиск участника",
+          "cancel": "Отмена",
+          "addMember": "Добавить участника",
+          "addOneMember": "Добавить {{membersToInvite}} участника",
+          "addMembers": "Добавить {{membersToInvite}} участников"
+        },
+        "renameTeamDialog": {
+          "title": "Переименовать команду",
+          "label": "Имя",
+          "placeholder": "Введите новое имя команды",
+          "cancel": "Отмена",
+          "rename": "Переименовать",
+          "nameExists": "Команда с таким именем уже существует"
+        }
       },
       "billing": {
         "title": "Биллинг",

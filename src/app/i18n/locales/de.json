@@ -1482,7 +1482,43 @@
         }
       },
       "teams": {
-        "title": "Teams"
+        "title": "Teams",
+        "createTeam": "Team erstellen",
+        "team": "Team",
+        "members": "Mitglieder",
+        "createTeamDialog": {
+          "title": "Neues Team",
+          "label": "Name",
+          "placeholder": "Mannschaftsname eingeben",
+          "cancel": "Abbrechen",
+          "create": "Erstellen",
+          "nameExists": "Team mit diesem Namen existiert bereits"
+        },
+        "teamDetails": {
+          "member": "Mitglied",
+          "members": "Mitglieder",
+          "remove": "Entfernen",
+          "makeManager": "Manager erstellen",
+          "addMember": "Mitglied hinzufügen",
+          "rename": "Umbenennen",
+          "delete": "Löschen"
+        },
+        "addMemberDialog": {
+          "title": "Mitglieder hinzufügen",
+          "placeholder": "Mitglied suchen",
+          "cancel": "Abbrechen",
+          "addMember": "Mitglied hinzufügen",
+          "addOneMember": "{{membersToInvite}} Mitglied hinzufügen",
+          "addMembers": "{{membersToInvite}} Mitglieder hinzufügen"
+        },
+        "renameTeamDialog": {
+          "title": "Team umbenennen",
+          "label": "Name",
+          "placeholder": "Neuen Teamnamen eingeben",
+          "cancel": "Abbrechen",
+          "rename": "Umbenennen",
+          "nameExists": "Ein Team mit diesem Namen existiert bereits"
+        }
       },
       "billing": {
         "title": "Billing",

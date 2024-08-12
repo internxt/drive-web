@@ -1468,7 +1468,43 @@
         }
       },
       "teams": {
-        "title": "Équipes"
+        "title": "Équipes",
+        "createTeam": "Créer une équipe",
+        "team": "Équipe",
+        "members": "Membres",
+        "createTeamDialog": {
+          "title": "Nouvelle équipe",
+          "label": "Nom",
+          "placeholder": "Entrez le nom de l'équipe",
+          "cancel": "Annuler",
+          "create": "Créer",
+          "nameExists": "L'équipe portant ce nom existe déjà"
+        },
+        "teamDetails": {
+          "member": "Membre",
+          "members": "Membres",
+          "remove": "Enlever",
+          "makeManager": "Créer un gestionnaire",
+          "addMember": "Ajouter un membre",
+          "rename": "Renommer",
+          "delete": "Supprimer"
+        },
+        "addMemberDialog": {
+          "title": "Ajouter des membres",
+          "placeholder": "Rechercher un membre",
+          "cancel": "Annuler",
+          "addMember": "Ajouter un membre",
+          "addOneMember": "Ajouter {{membersToInvite}} membre",
+          "addMembers": "Ajouter {{membersToInvite}} membres"
+        },
+        "renameTeamDialog": {
+          "title": "Renommer l'équipe",
+          "label": "Nom",
+          "placeholder": "Entrez le nouveau nom de l'équipe",
+          "cancel": "Annuler",
+          "rename": "Renommer",
+          "nameExists": "Une équipe avec ce nom existe déjà"
+        }
       },
       "billing": {
         "title": "Billing",

@@ -1528,7 +1528,43 @@
         }
       },
       "teams": {
-        "title": "Squadre"
+        "title": "Squadre",
+        "createTeam": "Crea squadra",
+        "team": "Squadra",
+        "members": "Membri",
+        "createTeamDialog": {
+          "title": "Nuova squadra",
+          "label": "Nome",
+          "placeholder": "Inserisci il nome della squadra",
+          "cancel": "Annulla",
+          "create": "Crea",
+          "nameExists": "Una squadra con questo nome esiste già"
+        },
+        "teamDetails": {
+          "member": "Membro",
+          "members": "Membri",
+          "remove": "Rimuovere",
+          "makeManager": "Rendere manager",
+          "addMember": "Aggiungi membro",
+          "rename": "Rinominare",
+          "delete": "Eliminare"
+        },
+        "addMemberDialog": {
+          "title": "Aggiungi membri",
+          "placeholder": "Cerca membro",
+          "cancel": "Annulla",
+          "addMember": "Aggiungi membro",
+          "addOneMember": "Aggiungi {{membersToInvite}} membro",
+          "addMembers": "Aggiungi {{membersToInvite}} membri"
+        },
+        "renameTeamDialog": {
+          "title": "Rinomina squadra",
+          "label": "Nome",
+          "placeholder": "Inserisci il nuovo nome della squadra",
+          "cancel": "Annulla",
+          "rename": "Rinomina",
+          "nameExists": "Una squadra con questo nome esiste già"
+        }
       },
       "billing": {
         "title": "Fatturazione",
