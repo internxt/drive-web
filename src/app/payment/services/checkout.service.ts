@@ -111,7 +111,7 @@ const getClientSecret = async (
       selectedPlan.currency,
       promoCodeId,
     );
-    console.log({ response });
+
     const { clientSecretType, client_secret, subscriptionId, paymentIntentId } = response;
     return {
       type: clientSecretType,
