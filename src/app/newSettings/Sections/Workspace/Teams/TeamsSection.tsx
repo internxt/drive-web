@@ -16,13 +16,13 @@ import notificationsService, { ToastType } from 'app/notifications/services/noti
 
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
-import CreateTeamDialog from './components/CreateTeamDialog';
 import TeamDetails from './components/TeamDetails';
 import RenameTeamDialog from './components/RenameTeamDialog';
 import DeleteTeamDialog from './components/DeleteTeamDialog';
 import RemoveTeamMemberDialog from './components/RemoveTeamMemberDialog';
 import ChangeManagerDialog from './components/ChangeManagerDialog';
 import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
+import CreateTeamDialogContainer from './containers/CreateTeamDialogContainer';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -35,9 +35,7 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isDeleteTeamDialogOpen, setIsDeleteTeamDialogOpen] = useState<boolean>(false);
   const [isRemoveTeamMemberDialogOpen, setIsRemoveTeamMemberDialogOpen] = useState<boolean>(false);
   const [isChangeManagerDialogOpen, setIsChangeManagerDialogOpen] = useState<boolean>(false);
-  const [newTeamName, setNewTeamName] = useState<string>('');
   const [renameTeamName, setRenameTeamName] = useState<string>('');
-  const [isCreateTeamLoading, setIsCreateTeamLoading] = useState<boolean>(false);
   const [isRenameTeamLoading, setIsRenameTeamLoading] = useState<boolean>(false);
   const [isDeleteTeamLoading, setIsDeleteTeamLoading] = useState<boolean>(false);
   const [isGetTeamsLoading, setIsGetTeamsLoading] = useState<boolean>(false);
@@ -91,41 +89,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
       errorService.reportError(castedError);
     }
     setIsGetTeamMembersLoading(false);
-  };
-
-  const createTeam = async () => {
-    setIsCreateTeamLoading(true);
-    if (selectedWorkspace) {
-      try {
-        const nameExists = teams.some((team) => team.team.name === newTeamName);
-
-        if (nameExists) {
-          notificationsService.show({
-            text: t('preferences.workspace.teams.createTeamDialog.nameExists'),
-            type: ToastType.Error,
-          });
-          return;
-        }
-
-        await workspacesService.createTeam({
-          workspaceId: selectedWorkspace.workspaceUser.workspaceId,
-          name: newTeamName,
-          managerId: selectedWorkspace.workspaceUser.memberId,
-        });
-        setTimeout(() => {
-          getTeams();
-        }, 500);
-      } catch (err) {
-        const castedError = errorService.castError(err);
-        errorService.reportError(castedError);
-      } finally {
-        setIsCreateTeamLoading(false);
-      }
-
-      setIsCreateTeamLoading(false);
-      setIsCreateTeamDialogOpen(false);
-      setNewTeamName('');
-    }
   };
 
   const getWorkspacesMembers = async () => {
@@ -298,13 +261,13 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
           isGetTeamsLoading={isGetTeamsLoading}
         />
       )}
-      <CreateTeamDialog
+      <CreateTeamDialogContainer
         isOpen={isCreateTeamDialogOpen}
         onClose={() => setIsCreateTeamDialogOpen(false)}
-        newTeamName={newTeamName}
-        setNewTeamName={setNewTeamName}
-        isCreateTeamLoading={isCreateTeamLoading}
-        createTeam={createTeam}
+        selectedWorkspace={selectedWorkspace}
+        teams={teams}
+        getTeams={getTeams}
+        setIsCreateTeamDialogOpen={setIsCreateTeamDialogOpen}
       />
       <AddMemberDialogContainer
         isOpen={isAddMemberDialogOpen}
