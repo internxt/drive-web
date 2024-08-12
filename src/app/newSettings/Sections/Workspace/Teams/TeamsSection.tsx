@@ -13,17 +13,16 @@ import workspacesSelectors from 'app/store/slices/workspaces/workspaces.selector
 import workspacesService from 'app/core/services/workspace.service';
 import errorService from 'app/core/services/error.service';
 import notificationsService, { ToastType } from 'app/notifications/services/notifications.service';
-import { searchMembers, searchMembersEmail } from '../../../../newSettings/utils/membersUtils';
 
 import Section from 'app/newSettings/components/Section';
 import TeamsList from './components/TeamsList';
 import CreateTeamDialog from './components/CreateTeamDialog';
 import TeamDetails from './components/TeamDetails';
-import AddMemberDialog from './components/AddMemberDialog';
 import RenameTeamDialog from './components/RenameTeamDialog';
 import DeleteTeamDialog from './components/DeleteTeamDialog';
 import RemoveTeamMemberDialog from './components/RemoveTeamMemberDialog';
 import ChangeManagerDialog from './components/ChangeManagerDialog';
+import AddMemberDialogContainer from './containers/AddMemberDialogContainer';
 
 const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }) => {
   const selectedWorkspace = useAppSelector(workspacesSelectors.getSelectedWorkspace);
@@ -44,7 +43,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isGetTeamsLoading, setIsGetTeamsLoading] = useState<boolean>(false);
   const [isGetTeamMembersLoading, setIsGetTeamMembersLoading] = useState<boolean>(false);
   const [isGetWorkspacesMembersLoading, setIsGetWorkspacesMembersLoading] = useState<boolean>(false);
-  const [isAddMembersLoading, setIsAddMembersLoading] = useState<boolean>(false);
   const [isRemoveTeamMemberLoading, setIsRemoveTeamMemberLoading] = useState<boolean>(false);
   const [isChangeManagerLoading, setIsChangeManagerLoading] = useState<boolean>(false);
   const [selectedTeam, setSelectedTeam] = useState<WorkspaceTeam | null>(null);
@@ -55,8 +53,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const [isAddMemberDialogOpen, setIsAddMemberDialogOpen] = useState<boolean>(false);
   const [workspaceMembers, setWorkspaceMembers] = useState<WorkspaceUser[] | null>(null);
   const [displayedMembers, setDisplayedMembers] = useState(workspaceMembers);
-  const [membersToInvite, setMembersToInvite] = useState<WorkspaceUser[]>([]);
-  const [searchedMemberString, setSearchedMemberString] = useState<string>('');
   const [teamMemberToRemove, setTeamMemberToRemove] = useState<TeamMember | null>(null);
   const [newTeamManager, setNewTeamManager] = useState<TeamMember | null>(null);
   const [currentTeamManager, setCurrentTeamManager] = useState<TeamMember | null>(null);
@@ -65,16 +61,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   useEffect(() => {
     getTeams();
   }, []);
-
-  useEffect(() => {
-    const membersByName = searchMembers(workspaceMembers, searchedMemberString);
-    const membersByEmail = searchMembersEmail(workspaceMembers, searchedMemberString);
-
-    const newDisplayedMembers = [...membersByName, ...membersByEmail];
-    const uniqueDisplayedMembers = Array.from(new Set(newDisplayedMembers));
-
-    setDisplayedMembers(uniqueDisplayedMembers);
-  }, [searchedMemberString]);
 
   const getTeams = async () => {
     if (selectedWorkspace) {
@@ -168,43 +154,6 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
   const handleMemberLeave = () => {
     setHoveredMember(null);
     isMemberOptionsOpen && setIsMemberOptionsOpen(false);
-  };
-
-  const selectMemberToInvite = (member: WorkspaceUser) => {
-    const isMemberSelected = membersToInvite.some((m) => m.member.uuid === member.member.uuid);
-
-    if (!isMemberSelected) {
-      setMembersToInvite([...membersToInvite, member]);
-    } else {
-      setMembersToInvite(membersToInvite.filter((m) => m.member.uuid !== member.member.uuid));
-    }
-  };
-
-  const getIsSelectedMember = (member: WorkspaceUser) => {
-    return membersToInvite.some((m) => m.member.uuid === member.member.uuid);
-  };
-
-  const addMembersToTeam = () => {
-    setIsAddMembersLoading(true);
-    try {
-      if (selectedTeam) {
-        membersToInvite.map(async (member) => {
-          await workspacesService.addTeamUser(selectedTeam.team.id, member.member.uuid);
-        });
-      }
-      setIsAddMemberDialogOpen(false);
-      setMembersToInvite([]);
-      setSearchedMemberString('');
-      setTimeout(() => {
-        getWorkspacesMembers();
-        selectedTeam && getTeamMembers(selectedTeam);
-        getTeams();
-      }, 500);
-    } catch (err) {
-      const castedError = errorService.castError(err);
-      errorService.reportError(castedError);
-    }
-    setIsAddMembersLoading(false);
   };
 
   const renameTeam = async () => {
@@ -357,18 +306,18 @@ const TeamsSection = ({ onClosePreferences }: { onClosePreferences: () => void }
         isCreateTeamLoading={isCreateTeamLoading}
         createTeam={createTeam}
       />
-      <AddMemberDialog
+      <AddMemberDialogContainer
         isOpen={isAddMemberDialogOpen}
         onClose={() => setIsAddMemberDialogOpen(false)}
+        workspaceMembers={workspaceMembers}
         displayedMembers={displayedMembers}
-        selectMemberToInvite={selectMemberToInvite}
-        getIsSelectedMember={getIsSelectedMember}
+        setDisplayedMembers={setDisplayedMembers}
         isGetWorkspacesMembersLoading={isGetWorkspacesMembersLoading}
-        isAddMembersLoading={isAddMembersLoading}
-        searchedMemberString={searchedMemberString}
-        setSearchedMemberString={setSearchedMemberString}
-        membersToInvite={membersToInvite}
-        addMembersToTeam={addMembersToTeam}
+        selectedTeam={selectedTeam}
+        setIsAddMemberDialogOpen={setIsAddMemberDialogOpen}
+        getWorkspacesMembers={getWorkspacesMembers}
+        getTeamMembers={getTeamMembers}
+        getTeams={getTeams}
       />
       <RenameTeamDialog
         isOpen={isRenameTeamDialogOpen}
