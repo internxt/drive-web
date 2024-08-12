@@ -83,7 +83,7 @@ const getCurrentUsage = (usage: UsageResponse | null) => {
 
 const getRenewalPeriod = (interval?: RenewalPeriod): DisplayPrice['interval'] | null => {
   if (!interval) return null;
-  console.log({ interval });
+
   const mapping: { [key: string]: DisplayPrice['interval'] } = {
     monthly: 'month',
     annually: 'year',
